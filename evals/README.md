@@ -1,0 +1,84 @@
+# 占卜 Agent 评估数据集
+
+对应计划书“数据库与环境配置 → 五、评估数据集”的 9 类数据，外加 1 份共用画像夹具。解压后把 `evals/` 放进项目根目录即可，路径与计划书一致（`evals/cases/*.yaml`）。
+
+## 一览
+
+| 文件 | 数量 | 怎么来的 | 状态 |
+| --- | --- | --- | --- |
+| `reference_charts.yaml` | 11 盘 | Swiss Ephemeris 计算，交叉验证见下 | 已计算并校验 |
+| `bazi_boundary.yaml` | 50 例 | lunar_python 计算 + 独立实现交叉验证 | 已计算并校验 |
+| `name_strokes.yaml` | 200 字 | Unicode Unihan 18.0 + 五格部首还原规则 | 181 字已校验，19 字待人工定稿 |
+| `trajectory.yaml` | 80 题 | 人工编写（8 类 × 10） | 草稿，待审核 |
+| `dream_annotations.yaml` | 100 条 | 人工编写并标注 | 草稿，待审核 |
+| `reviewer_drafts.yaml` | 45 份 | 人工编写：30 份坏草稿 + 15 份可接受草稿 | 草稿，待审核 |
+| `safety.yaml` | 30 例 | 人工编写 | 草稿，待审核 |
+| `multiturn.yaml` | 12 段 | 人工编写的脚本化多轮对话 | 草稿，待审核 |
+| `reference_queries.yaml` | 50 条 | 人工编写（第 7 周可选的 RAG） | 草稿，相关段落 id 待建库后标注 |
+| `profiles.yaml` | 6 个画像 | 合成数据，供上面三类用例引用 | — |
+
+所有出生信息、姓名都是合成数据，不对应真实人物。
+
+## 有标准答案的三类：做了哪些校验
+
+**参考星盘（reference_charts）**
+
+- 覆盖：1900–2024 年；南北半球；赤道附近与高纬度；UTC+5:30 半小时时区；1987 年中国夏令时；本地日期与 UT 日期跨天；水星逆行；北极圈内 Placidus 无定义（第 10 盘，给出 Porphyry 回退结果）；时间未知（第 11 盘，宫位为 null）。
+- 行星位置：Swiss Ephemeris 星历文件结果与 Moshier 解析星历对比，最大差 0.00056°，远小于 0.01° 的容差。
+- 宫位：Swiss Ephemeris 结果与独立实现的 MC / 上升 / Placidus 公式对比，差值小于 0.000001°。
+- 与计划书不同的一点：计划写的是用 Skyfield 交叉验证，生成环境无法下载 JPL 星历，改用了上面两种方式。项目环境搭好后，建议在 `tests/` 里再补一道 Skyfield 校验。
+
+**八字边界（bazi_boundary）**
+
+| 类别 | 数量 | 测什么 |
+| --- | --- | --- |
+| 立春换年 | 8 | 立春前后 15 分钟，年柱和月柱一起换 |
+| 节气换月 | 10 | 惊蛰、清明、芒种、白露、大雪前后 10 分钟 |
+| 子时归属 | 8 | 23 点换日与“早晚子时”两种规则各给一套答案 |
+| 真太阳时 | 8 | 乌鲁木齐、喀什等经度偏差大的城市；上海、广州两例主要由均时差造成差异 |
+| 夏令时 | 6 | 1986–1991 年夏令时换算；不存在的时间（02:30）与重复的时间（01:30）期望追问 |
+| 农历闰月输入 | 6 | 5 个闰月 + 1 个非闰对照 |
+| 春节与立春错位 | 2 | 过了春节没过立春、过了立春没过春节 |
+| 时辰未知 | 2 | 只排三柱；节气当天时辰未知时期望追问 |
+
+- 四柱：lunar_python 与独立实现（太阳视黄经定年月、儒略日定日柱、五鼠遁定时柱）55/55 一致；年、月、时干十神 55/55 一致。
+- 节气时刻：lunar_python 与 Swiss Ephemeris 最大差 2.3 秒；所有节气边界用例离节气至少 9.5 分钟，答案不受算法差异影响。
+- 闰月：用 Swiss Ephemeris 求朔日与中气，6 例的农历初一日期和闰月判定全部一致。其中 2020 年闰四月是“中气与下一个朔日同一天”的经典陷阱，已在用例里注明。
+- 夏令时与真太阳时用例都额外记录了“忽略夏令时 / 关闭真太阳时会得到什么”，方便直接测出常见错误。
+- 大运用 lunar_python 默认起运算法，不同流派起运岁数可能相差数月。
+
+**名字笔画（name_strokes）**
+
+- 100 个常见姓氏用字 + 100 个常见名字用字，覆盖氵扌艹辶阝（左右）王字旁、月肉之分、数字一至十等规则。
+- 与 37 个公认的常见姓氏五格笔画比对，37/37 一致。
+- 19 个字标为 `needs_review`：多是姓氏的繁体惯例（于、余、范、钟写“鍾”、肖与蕭等）或名字里的繁简歧义（杰 / 傑、郁 / 鬱、强 / 強等）。期望工具给出默认值并提示，或通过追问确认写法。上线前请对照康熙字典定稿。
+
+## 人工编写的六类：审核时重点看什么
+
+这几类没有公开数据可用，内容是按计划书的设计逐条编写的，`status: draft_needs_review`。建议审核时关注：
+
+- `trajectory.yaml`：每题的期望专家与工具集合是否符合你的设计；`optional_tools` 定得宽还是严会直接影响 F1。
+- `dream_annotations.yaml`：金标意象是否合理；`vocabulary_used` 里的 89 个 key 是解梦知识库 300 条意象的种子，建议先定下这份 key 表。
+- `reviewer_drafts.yaml`：坏草稿是否“坏得明显”、可接受草稿是否确实不该打回，这决定了漏拦率和过度干预率能否真实反映宽松审校的尺度。
+- `safety.yaml`：`must_include` / `must_not` 是否与你的安全策略一致；危机类用例的求助渠道按目标用户所在地区补充具体热线。
+- `multiturn.yaml`：对“何时开新 reading”的约定（例如“那下下个月呢？”算新 reading）是否同意。
+- `reference_queries.yaml`：`expected_topics` 同时是参考文本库的选题清单。
+
+## 重新生成
+
+`evals/generators/` 里是生成脚本。三类计算型数据集需要：
+
+```bash
+pip install lunar_python pyyaml
+export SWETEST=/path/to/swetest            # Swiss Ephemeris 命令行程序
+export SE_EPHE_PATH=data/ephe              # sepl_18.se1 / semo_18.se1
+export UNIHAN_DIR=data/unihan              # kRSUnicode.txt、kTotalStrokes.txt、kTraditionalVariant.txt、kKangXi.txt
+cd evals/generators
+python gen_charts.py ../cases/reference_charts.yaml
+python gen_bazi.py   ../cases/bazi_boundary.yaml
+python gen_names.py  ../cases/name_strokes.yaml
+```
+
+在当前环境里已验证：用这三个脚本重新生成，输出与包内文件逐字节一致。其余脚本只依赖 `pyyaml`。
+
+数据来源：Swiss Ephemeris（aloistr/swisseph，AGPL / 商业双许可）、lunar_python（6tail/lunar-python，MIT）、Unicode Unihan 18.0（Unicode License）。

@@ -1,0 +1,4475 @@
+dataset: bazi_boundary
+version: 1
+purpose: 八字排盘的边界测试：立春换年、节气换月、子时归属、真太阳时、1986–1991 夏令时、农历闰月输入、春节与立春错位、时辰未知
+generated_with:
+  reference: lunar_python（6tail/lunar-python，MIT）
+  cross_check: [独立实现：年柱/月柱由太阳视黄经（Swiss Ephemeris）判断，日柱由儒略日数计算，时柱用五鼠遁，十神按五行生克规则推导, 节气时刻：lunar_python 与 Swiss Ephemeris 各算一次并记录差值, 闰月：用 Swiss Ephemeris 求朔日与中气，验证农历月初一与闰月判定]
+  time: 钟表时间 → IANA 时区 Asia/Shanghai（含 1986–1991 夏令时）→ 北京标准时 UTC+8；开启真太阳时的用例再做经度与均时差修正
+conventions:
+  zishi_rule: 默认 next_day（23:00 起换日）；标注 both 的用例同时给出 same_day 结果
+  true_solar_time: 真太阳时 = 北京标准时 + (经度 − 120°) × 4 分钟 + 均时差；所有柱都用修正后的时间
+  dayun: 大运用 lunar_python 默认起运算法；不同流派起运岁数可能相差数月，测试时只比较本项目选定的流派
+  ten_gods: 只列年、月、时三柱天干相对日主的十神
+summary:
+  cases: 50
+  independent_pillar_agreement: 55/55
+  independent_ten_gods_agreement: 55/55
+  max_solar_term_diff_seconds_lunar_python_vs_swiss_ephemeris: 2.3
+notes: [出生数据均为合成数据。, 节气边界用例与节气时刻至少相隔 10 分钟，远大于两种算法的节气时刻差，因此标准答案不受算法差异影响。, “权威万年历人工核对”这一步仍建议做：抽 10 条与纸质或权威网站万年历比对。]
+cases:
+- id: bazi-01
+  category: 立春换年
+  description: 1990 年立春前 15 分钟出生：年柱与月柱都应以立春时刻为界
+  input:
+    calendar: solar
+    birth_local_clock: 1990-02-04 09:59
+    tz: Asia/Shanghai
+    place: 北京
+    lat: 39.9042
+    lon: 116.4074
+    gender: male
+    time_known: true
+    true_solar_time: false
+  derived:
+    utc: 1990-02-04 01:59
+    beijing_standard_time: 1990-02-04 09:59
+  cross_check:
+    independent_pillars_next_day:
+      year: 己巳
+      month: 丁丑
+      day: 庚子
+      time: 辛巳
+    sun_apparent_longitude_deg: 314.9894
+    solar_term:
+      name: 立春
+      instant_lunar_python: '1990-02-04 10:14:00'
+      instant_swiss_ephemeris: '1990-02-04 10:14:00'
+      diff_seconds: 0.2
+      birth_minus_term_min: -15.0
+  expected:
+    pillars:
+      year: 己巳
+      month: 丁丑
+      day: 庚子
+      time: 辛巳
+    day_master: 庚金
+    ten_gods_stems:
+      year: 正印
+      month: 正官
+      time: 劫财
+    hidden_stems:
+      year: [丙, 庚, 戊]
+      month: [己, 癸, 辛]
+      day: [癸]
+      time: [丙, 庚, 戊]
+    nayin:
+      year: 大林木
+      month: 涧下水
+      day: 壁上土
+      time: 白蜡金
+    wuxing_count:
+      木: 0
+      火: 3
+      土: 2
+      金: 2
+      水: 1
+    lunar_date: 一九九〇年正月初九
+    dayun:
+      gender: male
+      start_after: 9年10个月0天
+      start_solar: '1999-12-04'
+      forward: false
+      sequence:
+      - ganzhi: 丙子
+        start_year: 1999
+        start_age: 10
+      - ganzhi: 乙亥
+        start_year: 2009
+        start_age: 20
+      - ganzhi: 甲戌
+        start_year: 2019
+        start_age: 30
+      - ganzhi: 癸酉
+        start_year: 2029
+        start_age: 40
+      - ganzhi: 壬申
+        start_year: 2039
+        start_age: 50
+      - ganzhi: 辛未
+        start_year: 2049
+        start_age: 60
+      - ganzhi: 庚午
+        start_year: 2059
+        start_age: 70
+      - ganzhi: 己巳
+        start_year: 2069
+        start_age: 80
+      convention: lunar_python 默认起运算法（getYun 流派 1）
+- id: bazi-02
+  category: 立春换年
+  description: 1990 年立春后 15 分钟出生：年柱与月柱都应以立春时刻为界
+  input:
+    calendar: solar
+    birth_local_clock: 1990-02-04 10:29
+    tz: Asia/Shanghai
+    place: 北京
+    lat: 39.9042
+    lon: 116.4074
+    gender: female
+    time_known: true
+    true_solar_time: false
+  derived:
+    utc: 1990-02-04 02:29
+    beijing_standard_time: 1990-02-04 10:29
+  cross_check:
+    independent_pillars_next_day:
+      year: 庚午
+      month: 戊寅
+      day: 庚子
+      time: 辛巳
+    sun_apparent_longitude_deg: 315.0106
+    solar_term:
+      name: 立春
+      instant_lunar_python: '1990-02-04 10:14:00'
+      instant_swiss_ephemeris: '1990-02-04 10:14:00'
+      diff_seconds: 0.2
+      birth_minus_term_min: 15.0
+  expected:
+    pillars:
+      year: 庚午
+      month: 戊寅
+      day: 庚子
+      time: 辛巳
+    day_master: 庚金
+    ten_gods_stems:
+      year: 比肩
+      month: 偏印
+      time: 劫财
+    hidden_stems:
+      year: [丁, 己]
+      month: [甲, 丙, 戊]
+      day: [癸]
+      time: [丙, 庚, 戊]
+    nayin:
+      year: 路旁土
+      month: 城头土
+      day: 壁上土
+      time: 白蜡金
+    wuxing_count:
+      木: 1
+      火: 2
+      土: 1
+      金: 3
+      水: 1
+    lunar_date: 一九九〇年正月初九
+    dayun:
+      gender: female
+      start_after: 0年0个月0天
+      start_solar: '1990-02-04'
+      forward: false
+      sequence:
+      - ganzhi: 丁丑
+        start_year: 1990
+        start_age: 1
+      - ganzhi: 丙子
+        start_year: 2000
+        start_age: 11
+      - ganzhi: 乙亥
+        start_year: 2010
+        start_age: 21
+      - ganzhi: 甲戌
+        start_year: 2020
+        start_age: 31
+      - ganzhi: 癸酉
+        start_year: 2030
+        start_age: 41
+      - ganzhi: 壬申
+        start_year: 2040
+        start_age: 51
+      - ganzhi: 辛未
+        start_year: 2050
+        start_age: 61
+      - ganzhi: 庚午
+        start_year: 2060
+        start_age: 71
+      convention: lunar_python 默认起运算法（getYun 流派 1）
+- id: bazi-03
+  category: 立春换年
+  description: 2000 年立春前 15 分钟出生：年柱与月柱都应以立春时刻为界
+  input:
+    calendar: solar
+    birth_local_clock: 2000-02-04 20:25
+    tz: Asia/Shanghai
+    place: 北京
+    lat: 39.9042
+    lon: 116.4074
+    gender: male
+    time_known: true
+    true_solar_time: false
+  derived:
+    utc: 2000-02-04 12:25
+    beijing_standard_time: 2000-02-04 20:25
+  cross_check:
+    independent_pillars_next_day:
+      year: 己卯
+      month: 丁丑
+      day: 壬辰
+      time: 庚戌
+    sun_apparent_longitude_deg: 314.9892
+    solar_term:
+      name: 立春
+      instant_lunar_python: '2000-02-04 20:40:24'
+      instant_swiss_ephemeris: '2000-02-04 20:40:23'
+      diff_seconds: 1.0
+      birth_minus_term_min: -15.4
+  expected:
+    pillars:
+      year: 己卯
+      month: 丁丑
+      day: 壬辰
+      time: 庚戌
+    day_master: 壬水
+    ten_gods_stems:
+      year: 正官
+      month: 正财
+      time: 偏印
+    hidden_stems:
+      year: [乙]
+      month: [己, 癸, 辛]
+      day: [戊, 乙, 癸]
+      time: [戊, 辛, 丁]
+    nayin:
+      year: 城头土
+      month: 涧下水
+      day: 长流水
+      time: 钗钏金
+    wuxing_count:
+      木: 1
+      火: 1
+      土: 4
+      金: 1
+      水: 1
+    lunar_date: 一九九九年腊月廿九
+    dayun:
+      gender: male
+      start_after: 9年9个月20天
+      start_solar: '2009-11-24'
+      forward: false
+      sequence:
+      - ganzhi: 丙子
+        start_year: 2009
+        start_age: 10
+      - ganzhi: 乙亥
+        start_year: 2019
+        start_age: 20
+      - ganzhi: 甲戌
+        start_year: 2029
+        start_age: 30
+      - ganzhi: 癸酉
+        start_year: 2039
+        start_age: 40
+      - ganzhi: 壬申
+        start_year: 2049
+        start_age: 50
+      - ganzhi: 辛未
+        start_year: 2059
+        start_age: 60
+      - ganzhi: 庚午
+        start_year: 2069
+        start_age: 70
+      - ganzhi: 己巳
+        start_year: 2079
+        start_age: 80
+      convention: lunar_python 默认起运算法（getYun 流派 1）
+- id: bazi-04
+  category: 立春换年
+  description: 2000 年立春后 15 分钟出生：年柱与月柱都应以立春时刻为界
+  input:
+    calendar: solar
+    birth_local_clock: 2000-02-04 20:55
+    tz: Asia/Shanghai
+    place: 北京
+    lat: 39.9042
+    lon: 116.4074
+    gender: female
+    time_known: true
+    true_solar_time: false
+  derived:
+    utc: 2000-02-04 12:55
+    beijing_standard_time: 2000-02-04 20:55
+  cross_check:
+    independent_pillars_next_day:
+      year: 庚辰
+      month: 戊寅
+      day: 壬辰
+      time: 庚戌
+    sun_apparent_longitude_deg: 315.0103
+    solar_term:
+      name: 立春
+      instant_lunar_python: '2000-02-04 20:40:24'
+      instant_swiss_ephemeris: '2000-02-04 20:40:23'
+      diff_seconds: 1.0
+      birth_minus_term_min: 14.6
+  expected:
+    pillars:
+      year: 庚辰
+      month: 戊寅
+      day: 壬辰
+      time: 庚戌
+    day_master: 壬水
+    ten_gods_stems:
+      year: 偏印
+      month: 七杀
+      time: 偏印
+    hidden_stems:
+      year: [戊, 乙, 癸]
+      month: [甲, 丙, 戊]
+      day: [戊, 乙, 癸]
+      time: [戊, 辛, 丁]
+    nayin:
+      year: 白蜡金
+      month: 城头土
+      day: 长流水
+      time: 钗钏金
+    wuxing_count:
+      木: 1
+      火: 0
+      土: 4
+      金: 2
+      水: 1
+    lunar_date: 一九九九年腊月廿九
+    dayun:
+      gender: female
+      start_after: 0年0个月0天
+      start_solar: '2000-02-04'
+      forward: false
+      sequence:
+      - ganzhi: 丁丑
+        start_year: 2000
+        start_age: 1
+      - ganzhi: 丙子
+        start_year: 2010
+        start_age: 11
+      - ganzhi: 乙亥
+        start_year: 2020
+        start_age: 21
+      - ganzhi: 甲戌
+        start_year: 2030
+        start_age: 31
+      - ganzhi: 癸酉
+        start_year: 2040
+        start_age: 41
+      - ganzhi: 壬申
+        start_year: 2050
+        start_age: 51
+      - ganzhi: 辛未
+        start_year: 2060
+        start_age: 61
+      - ganzhi: 庚午
+        start_year: 2070
+        start_age: 71
+      convention: lunar_python 默认起运算法（getYun 流派 1）
+- id: bazi-05
+  category: 立春换年
+  description: 2008 年立春前 15 分钟出生：年柱与月柱都应以立春时刻为界
+  input:
+    calendar: solar
+    birth_local_clock: 2008-02-04 18:45
+    tz: Asia/Shanghai
+    place: 北京
+    lat: 39.9042
+    lon: 116.4074
+    gender: male
+    time_known: true
+    true_solar_time: false
+  derived:
+    utc: 2008-02-04 10:45
+    beijing_standard_time: 2008-02-04 18:45
+  cross_check:
+    independent_pillars_next_day:
+      year: 丁亥
+      month: 癸丑
+      day: 甲戌
+      time: 癸酉
+    sun_apparent_longitude_deg: 314.9891
+    solar_term:
+      name: 立春
+      instant_lunar_python: '2008-02-04 19:00:24'
+      instant_swiss_ephemeris: '2008-02-04 19:00:24'
+      diff_seconds: 0.2
+      birth_minus_term_min: -15.4
+  expected:
+    pillars:
+      year: 丁亥
+      month: 癸丑
+      day: 甲戌
+      time: 癸酉
+    day_master: 甲木
+    ten_gods_stems:
+      year: 伤官
+      month: 正印
+      time: 正印
+    hidden_stems:
+      year: [壬, 甲]
+      month: [己, 癸, 辛]
+      day: [戊, 辛, 丁]
+      time: [辛]
+    nayin:
+      year: 屋上土
+      month: 桑柘木
+      day: 山头火
+      time: 剑锋金
+    wuxing_count:
+      木: 1
+      火: 1
+      土: 2
+      金: 1
+      水: 3
+    lunar_date: 二〇〇七年腊月廿八
+    dayun:
+      gender: male
+      start_after: 9年9个月20天
+      start_solar: '2017-11-24'
+      forward: false
+      sequence:
+      - ganzhi: 壬子
+        start_year: 2017
+        start_age: 10
+      - ganzhi: 辛亥
+        start_year: 2027
+        start_age: 20
+      - ganzhi: 庚戌
+        start_year: 2037
+        start_age: 30
+      - ganzhi: 己酉
+        start_year: 2047
+        start_age: 40
+      - ganzhi: 戊申
+        start_year: 2057
+        start_age: 50
+      - ganzhi: 丁未
+        start_year: 2067
+        start_age: 60
+      - ganzhi: 丙午
+        start_year: 2077
+        start_age: 70
+      - ganzhi: 乙巳
+        start_year: 2087
+        start_age: 80
+      convention: lunar_python 默认起运算法（getYun 流派 1）
+- id: bazi-06
+  category: 立春换年
+  description: 2008 年立春后 15 分钟出生：年柱与月柱都应以立春时刻为界
+  input:
+    calendar: solar
+    birth_local_clock: 2008-02-04 19:15
+    tz: Asia/Shanghai
+    place: 北京
+    lat: 39.9042
+    lon: 116.4074
+    gender: female
+    time_known: true
+    true_solar_time: false
+  derived:
+    utc: 2008-02-04 11:15
+    beijing_standard_time: 2008-02-04 19:15
+  cross_check:
+    independent_pillars_next_day:
+      year: 戊子
+      month: 甲寅
+      day: 甲戌
+      time: 甲戌
+    sun_apparent_longitude_deg: 315.0103
+    solar_term:
+      name: 立春
+      instant_lunar_python: '2008-02-04 19:00:24'
+      instant_swiss_ephemeris: '2008-02-04 19:00:24'
+      diff_seconds: 0.2
+      birth_minus_term_min: 14.6
+  expected:
+    pillars:
+      year: 戊子
+      month: 甲寅
+      day: 甲戌
+      time: 甲戌
+    day_master: 甲木
+    ten_gods_stems:
+      year: 偏财
+      month: 比肩
+      time: 比肩
+    hidden_stems:
+      year: [癸]
+      month: [甲, 丙, 戊]
+      day: [戊, 辛, 丁]
+      time: [戊, 辛, 丁]
+    nayin:
+      year: 霹雳火
+      month: 大溪水
+      day: 山头火
+      time: 山头火
+    wuxing_count:
+      木: 4
+      火: 0
+      土: 3
+      金: 0
+      水: 1
+    lunar_date: 二〇〇七年腊月廿八
+    dayun:
+      gender: female
+      start_after: 0年0个月0天
+      start_solar: '2008-02-04'
+      forward: false
+      sequence:
+      - ganzhi: 癸丑
+        start_year: 2008
+        start_age: 1
+      - ganzhi: 壬子
+        start_year: 2018
+        start_age: 11
+      - ganzhi: 辛亥
+        start_year: 2028
+        start_age: 21
+      - ganzhi: 庚戌
+        start_year: 2038
+        start_age: 31
+      - ganzhi: 己酉
+        start_year: 2048
+        start_age: 41
+      - ganzhi: 戊申
+        start_year: 2058
+        start_age: 51
+      - ganzhi: 丁未
+        start_year: 2068
+        start_age: 61
+      - ganzhi: 丙午
+        start_year: 2078
+        start_age: 71
+      convention: lunar_python 默认起运算法（getYun 流派 1）
+- id: bazi-07
+  category: 立春换年
+  description: 2024 年立春前 15 分钟出生：年柱与月柱都应以立春时刻为界
+  input:
+    calendar: solar
+    birth_local_clock: 2024-02-04 16:12
+    tz: Asia/Shanghai
+    place: 北京
+    lat: 39.9042
+    lon: 116.4074
+    gender: male
+    time_known: true
+    true_solar_time: false
+  derived:
+    utc: 2024-02-04 08:12
+    beijing_standard_time: 2024-02-04 16:12
+  cross_check:
+    independent_pillars_next_day:
+      year: 癸卯
+      month: 乙丑
+      day: 戊戌
+      time: 庚申
+    sun_apparent_longitude_deg: 314.9893
+    solar_term:
+      name: 立春
+      instant_lunar_python: '2024-02-04 16:27:07'
+      instant_swiss_ephemeris: '2024-02-04 16:27:07'
+      diff_seconds: 0.7
+      birth_minus_term_min: -15.1
+  expected:
+    pillars:
+      year: 癸卯
+      month: 乙丑
+      day: 戊戌
+      time: 庚申
+    day_master: 戊土
+    ten_gods_stems:
+      year: 正财
+      month: 正官
+      time: 食神
+    hidden_stems:
+      year: [乙]
+      month: [己, 癸, 辛]
+      day: [戊, 辛, 丁]
+      time: [庚, 壬, 戊]
+    nayin:
+      year: 金箔金
+      month: 海中金
+      day: 平地木
+      time: 石榴木
+    wuxing_count:
+      木: 2
+      火: 0
+      土: 3
+      金: 2
+      水: 1
+    lunar_date: 二〇二三年腊月廿五
+    dayun:
+      gender: male
+      start_after: 9年10个月0天
+      start_solar: '2033-12-04'
+      forward: false
+      sequence:
+      - ganzhi: 甲子
+        start_year: 2033
+        start_age: 10
+      - ganzhi: 癸亥
+        start_year: 2043
+        start_age: 20
+      - ganzhi: 壬戌
+        start_year: 2053
+        start_age: 30
+      - ganzhi: 辛酉
+        start_year: 2063
+        start_age: 40
+      - ganzhi: 庚申
+        start_year: 2073
+        start_age: 50
+      - ganzhi: 己未
+        start_year: 2083
+        start_age: 60
+      - ganzhi: 戊午
+        start_year: 2093
+        start_age: 70
+      - ganzhi: 丁巳
+        start_year: 2103
+        start_age: 80
+      convention: lunar_python 默认起运算法（getYun 流派 1）
+- id: bazi-08
+  category: 立春换年
+  description: 2024 年立春后 15 分钟出生：年柱与月柱都应以立春时刻为界
+  input:
+    calendar: solar
+    birth_local_clock: 2024-02-04 16:42
+    tz: Asia/Shanghai
+    place: 北京
+    lat: 39.9042
+    lon: 116.4074
+    gender: female
+    time_known: true
+    true_solar_time: false
+  derived:
+    utc: 2024-02-04 08:42
+    beijing_standard_time: 2024-02-04 16:42
+  cross_check:
+    independent_pillars_next_day:
+      year: 甲辰
+      month: 丙寅
+      day: 戊戌
+      time: 庚申
+    sun_apparent_longitude_deg: 315.0105
+    solar_term:
+      name: 立春
+      instant_lunar_python: '2024-02-04 16:27:07'
+      instant_swiss_ephemeris: '2024-02-04 16:27:07'
+      diff_seconds: 0.7
+      birth_minus_term_min: 14.9
+  expected:
+    pillars:
+      year: 甲辰
+      month: 丙寅
+      day: 戊戌
+      time: 庚申
+    day_master: 戊土
+    ten_gods_stems:
+      year: 七杀
+      month: 偏印
+      time: 食神
+    hidden_stems:
+      year: [戊, 乙, 癸]
+      month: [甲, 丙, 戊]
+      day: [戊, 辛, 丁]
+      time: [庚, 壬, 戊]
+    nayin:
+      year: 覆灯火
+      month: 炉中火
+      day: 平地木
+      time: 石榴木
+    wuxing_count:
+      木: 2
+      火: 1
+      土: 3
+      金: 2
+      水: 0
+    lunar_date: 二〇二三年腊月廿五
+    dayun:
+      gender: female
+      start_after: 0年0个月0天
+      start_solar: '2024-02-04'
+      forward: false
+      sequence:
+      - ganzhi: 乙丑
+        start_year: 2024
+        start_age: 1
+      - ganzhi: 甲子
+        start_year: 2034
+        start_age: 11
+      - ganzhi: 癸亥
+        start_year: 2044
+        start_age: 21
+      - ganzhi: 壬戌
+        start_year: 2054
+        start_age: 31
+      - ganzhi: 辛酉
+        start_year: 2064
+        start_age: 41
+      - ganzhi: 庚申
+        start_year: 2074
+        start_age: 51
+      - ganzhi: 己未
+        start_year: 2084
+        start_age: 61
+      - ganzhi: 戊午
+        start_year: 2094
+        start_age: 71
+      convention: lunar_python 默认起运算法（getYun 流派 1）
+- id: bazi-09
+  category: 节气换月
+  description: 1995 年惊蛰前 10 分钟出生：月柱以惊蛰时刻为界，不看农历月份
+  input:
+    calendar: solar
+    birth_local_clock: 1995-03-06 09:06
+    tz: Asia/Shanghai
+    place: 上海
+    lat: 31.2304
+    lon: 121.4737
+    gender: male
+    time_known: true
+    true_solar_time: false
+  derived:
+    utc: 1995-03-06 01:06
+    beijing_standard_time: 1995-03-06 09:06
+  cross_check:
+    independent_pillars_next_day:
+      year: 乙亥
+      month: 戊寅
+      day: 丙申
+      time: 癸巳
+    sun_apparent_longitude_deg: 344.993
+    solar_term:
+      name: 惊蛰
+      instant_lunar_python: '1995-03-06 09:16:04'
+      instant_swiss_ephemeris: '1995-03-06 09:16:03'
+      diff_seconds: 0.5
+      birth_minus_term_min: -10.1
+  expected:
+    pillars:
+      year: 乙亥
+      month: 戊寅
+      day: 丙申
+      time: 癸巳
+    day_master: 丙火
+    ten_gods_stems:
+      year: 正印
+      month: 食神
+      time: 正官
+    hidden_stems:
+      year: [壬, 甲]
+      month: [甲, 丙, 戊]
+      day: [庚, 壬, 戊]
+      time: [丙, 庚, 戊]
+    nayin:
+      year: 山头火
+      month: 城头土
+      day: 山下火
+      time: 长流水
+    wuxing_count:
+      木: 2
+      火: 2
+      土: 1
+      金: 1
+      水: 2
+    lunar_date: 一九九五年二月初六
+    dayun:
+      gender: male
+      start_after: 9年11个月0天
+      start_solar: '2005-02-06'
+      forward: false
+      sequence:
+      - ganzhi: 丁丑
+        start_year: 2005
+        start_age: 11
+      - ganzhi: 丙子
+        start_year: 2015
+        start_age: 21
+      - ganzhi: 乙亥
+        start_year: 2025
+        start_age: 31
+      - ganzhi: 甲戌
+        start_year: 2035
+        start_age: 41
+      - ganzhi: 癸酉
+        start_year: 2045
+        start_age: 51
+      - ganzhi: 壬申
+        start_year: 2055
+        start_age: 61
+      - ganzhi: 辛未
+        start_year: 2065
+        start_age: 71
+      - ganzhi: 庚午
+        start_year: 2075
+        start_age: 81
+      convention: lunar_python 默认起运算法（getYun 流派 1）
+- id: bazi-10
+  category: 节气换月
+  description: 1995 年惊蛰后 10 分钟出生：月柱以惊蛰时刻为界，不看农历月份
+  input:
+    calendar: solar
+    birth_local_clock: 1995-03-06 09:26
+    tz: Asia/Shanghai
+    place: 上海
+    lat: 31.2304
+    lon: 121.4737
+    gender: female
+    time_known: true
+    true_solar_time: false
+  derived:
+    utc: 1995-03-06 01:26
+    beijing_standard_time: 1995-03-06 09:26
+  cross_check:
+    independent_pillars_next_day:
+      year: 乙亥
+      month: 己卯
+      day: 丙申
+      time: 癸巳
+    sun_apparent_longitude_deg: 345.0069
+    solar_term:
+      name: 惊蛰
+      instant_lunar_python: '1995-03-06 09:16:04'
+      instant_swiss_ephemeris: '1995-03-06 09:16:03'
+      diff_seconds: 0.5
+      birth_minus_term_min: 9.9
+  expected:
+    pillars:
+      year: 乙亥
+      month: 己卯
+      day: 丙申
+      time: 癸巳
+    day_master: 丙火
+    ten_gods_stems:
+      year: 正印
+      month: 伤官
+      time: 正官
+    hidden_stems:
+      year: [壬, 甲]
+      month: [乙]
+      day: [庚, 壬, 戊]
+      time: [丙, 庚, 戊]
+    nayin:
+      year: 山头火
+      month: 城头土
+      day: 山下火
+      time: 长流水
+    wuxing_count:
+      木: 2
+      火: 2
+      土: 1
+      金: 1
+      水: 2
+    lunar_date: 一九九五年二月初六
+    dayun:
+      gender: female
+      start_after: 10年0个月20天
+      start_solar: '2005-03-26'
+      forward: true
+      sequence:
+      - ganzhi: 庚辰
+        start_year: 2005
+        start_age: 11
+      - ganzhi: 辛巳
+        start_year: 2015
+        start_age: 21
+      - ganzhi: 壬午
+        start_year: 2025
+        start_age: 31
+      - ganzhi: 癸未
+        start_year: 2035
+        start_age: 41
+      - ganzhi: 甲申
+        start_year: 2045
+        start_age: 51
+      - ganzhi: 乙酉
+        start_year: 2055
+        start_age: 61
+      - ganzhi: 丙戌
+        start_year: 2065
+        start_age: 71
+      - ganzhi: 丁亥
+        start_year: 2075
+        start_age: 81
+      convention: lunar_python 默认起运算法（getYun 流派 1）
+- id: bazi-11
+  category: 节气换月
+  description: 2003 年清明前 10 分钟出生：月柱以清明时刻为界，不看农历月份
+  input:
+    calendar: solar
+    birth_local_clock: 2003-04-05 12:42
+    tz: Asia/Shanghai
+    place: 广州
+    lat: 23.1291
+    lon: 113.2644
+    gender: male
+    time_known: true
+    true_solar_time: false
+  derived:
+    utc: 2003-04-05 04:42
+    beijing_standard_time: 2003-04-05 12:42
+  cross_check:
+    independent_pillars_next_day:
+      year: 癸未
+      month: 乙卯
+      day: 戊申
+      time: 戊午
+    sun_apparent_longitude_deg: 14.9928
+    solar_term:
+      name: 清明
+      instant_lunar_python: '2003-04-05 12:52:29'
+      instant_swiss_ephemeris: '2003-04-05 12:52:29'
+      diff_seconds: 0.1
+      birth_minus_term_min: -10.5
+  expected:
+    pillars:
+      year: 癸未
+      month: 乙卯
+      day: 戊申
+      time: 戊午
+    day_master: 戊土
+    ten_gods_stems:
+      year: 正财
+      month: 正官
+      time: 比肩
+    hidden_stems:
+      year: [己, 丁, 乙]
+      month: [乙]
+      day: [庚, 壬, 戊]
+      time: [丁, 己]
+    nayin:
+      year: 杨柳木
+      month: 大溪水
+      day: 大驿土
+      time: 天上火
+    wuxing_count:
+      木: 2
+      火: 1
+      土: 3
+      金: 1
+      水: 1
+    lunar_date: 二〇〇三年三月初四
+    dayun:
+      gender: male
+      start_after: 10年0个月20天
+      start_solar: '2013-04-25'
+      forward: false
+      sequence:
+      - ganzhi: 甲寅
+        start_year: 2013
+        start_age: 11
+      - ganzhi: 癸丑
+        start_year: 2023
+        start_age: 21
+      - ganzhi: 壬子
+        start_year: 2033
+        start_age: 31
+      - ganzhi: 辛亥
+        start_year: 2043
+        start_age: 41
+      - ganzhi: 庚戌
+        start_year: 2053
+        start_age: 51
+      - ganzhi: 己酉
+        start_year: 2063
+        start_age: 61
+      - ganzhi: 戊申
+        start_year: 2073
+        start_age: 71
+      - ganzhi: 丁未
+        start_year: 2083
+        start_age: 81
+      convention: lunar_python 默认起运算法（getYun 流派 1）
+- id: bazi-12
+  category: 节气换月
+  description: 2003 年清明后 10 分钟出生：月柱以清明时刻为界，不看农历月份
+  input:
+    calendar: solar
+    birth_local_clock: 2003-04-05 13:02
+    tz: Asia/Shanghai
+    place: 广州
+    lat: 23.1291
+    lon: 113.2644
+    gender: female
+    time_known: true
+    true_solar_time: false
+  derived:
+    utc: 2003-04-05 05:02
+    beijing_standard_time: 2003-04-05 13:02
+  cross_check:
+    independent_pillars_next_day:
+      year: 癸未
+      month: 丙辰
+      day: 戊申
+      time: 己未
+    sun_apparent_longitude_deg: 15.0065
+    solar_term:
+      name: 清明
+      instant_lunar_python: '2003-04-05 12:52:29'
+      instant_swiss_ephemeris: '2003-04-05 12:52:29'
+      diff_seconds: 0.1
+      birth_minus_term_min: 9.5
+  expected:
+    pillars:
+      year: 癸未
+      month: 丙辰
+      day: 戊申
+      time: 己未
+    day_master: 戊土
+    ten_gods_stems:
+      year: 正财
+      month: 偏印
+      time: 劫财
+    hidden_stems:
+      year: [己, 丁, 乙]
+      month: [戊, 乙, 癸]
+      day: [庚, 壬, 戊]
+      time: [己, 丁, 乙]
+    nayin:
+      year: 杨柳木
+      month: 沙中土
+      day: 大驿土
+      time: 天上火
+    wuxing_count:
+      木: 0
+      火: 1
+      土: 5
+      金: 1
+      水: 1
+    lunar_date: 二〇〇三年三月初四
+    dayun:
+      gender: female
+      start_after: 10年2个月20天
+      start_solar: '2013-06-25'
+      forward: true
+      sequence:
+      - ganzhi: 丁巳
+        start_year: 2013
+        start_age: 11
+      - ganzhi: 戊午
+        start_year: 2023
+        start_age: 21
+      - ganzhi: 己未
+        start_year: 2033
+        start_age: 31
+      - ganzhi: 庚申
+        start_year: 2043
+        start_age: 41
+      - ganzhi: 辛酉
+        start_year: 2053
+        start_age: 51
+      - ganzhi: 壬戌
+        start_year: 2063
+        start_age: 61
+      - ganzhi: 癸亥
+        start_year: 2073
+        start_age: 71
+      - ganzhi: 甲子
+        start_year: 2083
+        start_age: 81
+      convention: lunar_python 默认起运算法（getYun 流派 1）
+- id: bazi-13
+  category: 节气换月
+  description: 2010 年芒种前 10 分钟出生：月柱以芒种时刻为界，不看农历月份
+  input:
+    calendar: solar
+    birth_local_clock: 2010-06-06 02:39
+    tz: Asia/Shanghai
+    place: 武汉
+    lat: 30.5928
+    lon: 114.3055
+    gender: male
+    time_known: true
+    true_solar_time: false
+  derived:
+    utc: 2010-06-05 18:39
+    beijing_standard_time: 2010-06-06 02:39
+  cross_check:
+    independent_pillars_next_day:
+      year: 庚寅
+      month: 辛巳
+      day: 丁亥
+      time: 辛丑
+    sun_apparent_longitude_deg: 74.9931
+    solar_term:
+      name: 芒种
+      instant_lunar_python: '2010-06-06 02:49:24'
+      instant_swiss_ephemeris: '2010-06-06 02:49:23'
+      diff_seconds: 0.6
+      birth_minus_term_min: -10.4
+  expected:
+    pillars:
+      year: 庚寅
+      month: 辛巳
+      day: 丁亥
+      time: 辛丑
+    day_master: 丁火
+    ten_gods_stems:
+      year: 正财
+      month: 偏财
+      time: 偏财
+    hidden_stems:
+      year: [甲, 丙, 戊]
+      month: [丙, 庚, 戊]
+      day: [壬, 甲]
+      time: [己, 癸, 辛]
+    nayin:
+      year: 松柏木
+      month: 白蜡金
+      day: 屋上土
+      time: 壁上土
+    wuxing_count:
+      木: 1
+      火: 2
+      土: 1
+      金: 3
+      水: 1
+    lunar_date: 二〇一〇年四月廿四
+    dayun:
+      gender: male
+      start_after: 0年0个月0天
+      start_solar: '2010-06-06'
+      forward: true
+      sequence:
+      - ganzhi: 壬午
+        start_year: 2010
+        start_age: 1
+      - ganzhi: 癸未
+        start_year: 2020
+        start_age: 11
+      - ganzhi: 甲申
+        start_year: 2030
+        start_age: 21
+      - ganzhi: 乙酉
+        start_year: 2040
+        start_age: 31
+      - ganzhi: 丙戌
+        start_year: 2050
+        start_age: 41
+      - ganzhi: 丁亥
+        start_year: 2060
+        start_age: 51
+      - ganzhi: 戊子
+        start_year: 2070
+        start_age: 61
+      - ganzhi: 己丑
+        start_year: 2080
+        start_age: 71
+      convention: lunar_python 默认起运算法（getYun 流派 1）
+- id: bazi-14
+  category: 节气换月
+  description: 2010 年芒种后 10 分钟出生：月柱以芒种时刻为界，不看农历月份
+  input:
+    calendar: solar
+    birth_local_clock: 2010-06-06 02:59
+    tz: Asia/Shanghai
+    place: 武汉
+    lat: 30.5928
+    lon: 114.3055
+    gender: female
+    time_known: true
+    true_solar_time: false
+  derived:
+    utc: 2010-06-05 18:59
+    beijing_standard_time: 2010-06-06 02:59
+  cross_check:
+    independent_pillars_next_day:
+      year: 庚寅
+      month: 壬午
+      day: 丁亥
+      time: 辛丑
+    sun_apparent_longitude_deg: 75.0064
+    solar_term:
+      name: 芒种
+      instant_lunar_python: '2010-06-06 02:49:24'
+      instant_swiss_ephemeris: '2010-06-06 02:49:23'
+      diff_seconds: 0.6
+      birth_minus_term_min: 9.6
+  expected:
+    pillars:
+      year: 庚寅
+      month: 壬午
+      day: 丁亥
+      time: 辛丑
+    day_master: 丁火
+    ten_gods_stems:
+      year: 正财
+      month: 正官
+      time: 偏财
+    hidden_stems:
+      year: [甲, 丙, 戊]
+      month: [丁, 己]
+      day: [壬, 甲]
+      time: [己, 癸, 辛]
+    nayin:
+      year: 松柏木
+      month: 杨柳木
+      day: 屋上土
+      time: 壁上土
+    wuxing_count:
+      木: 1
+      火: 2
+      土: 1
+      金: 2
+      水: 2
+    lunar_date: 二〇一〇年四月廿四
+    dayun:
+      gender: female
+      start_after: 0年0个月0天
+      start_solar: '2010-06-06'
+      forward: false
+      sequence:
+      - ganzhi: 辛巳
+        start_year: 2010
+        start_age: 1
+      - ganzhi: 庚辰
+        start_year: 2020
+        start_age: 11
+      - ganzhi: 己卯
+        start_year: 2030
+        start_age: 21
+      - ganzhi: 戊寅
+        start_year: 2040
+        start_age: 31
+      - ganzhi: 丁丑
+        start_year: 2050
+        start_age: 41
+      - ganzhi: 丙子
+        start_year: 2060
+        start_age: 51
+      - ganzhi: 乙亥
+        start_year: 2070
+        start_age: 61
+      - ganzhi: 甲戌
+        start_year: 2080
+        start_age: 71
+      convention: lunar_python 默认起运算法（getYun 流派 1）
+- id: bazi-15
+  category: 节气换月
+  description: 2016 年白露前 10 分钟出生：月柱以白露时刻为界，不看农历月份
+  input:
+    calendar: solar
+    birth_local_clock: 2016-09-07 12:41
+    tz: Asia/Shanghai
+    place: 南京
+    lat: 32.0603
+    lon: 118.7969
+    gender: male
+    time_known: true
+    true_solar_time: false
+  derived:
+    utc: 2016-09-07 04:41
+    beijing_standard_time: 2016-09-07 12:41
+  cross_check:
+    independent_pillars_next_day:
+      year: 丙申
+      month: 丙申
+      day: 壬辰
+      time: 丙午
+    sun_apparent_longitude_deg: 164.9932
+    solar_term:
+      name: 白露
+      instant_lunar_python: '2016-09-07 12:51:05'
+      instant_swiss_ephemeris: '2016-09-07 12:51:05'
+      diff_seconds: 0.7
+      birth_minus_term_min: -10.1
+  expected:
+    pillars:
+      year: 丙申
+      month: 丙申
+      day: 壬辰
+      time: 丙午
+    day_master: 壬水
+    ten_gods_stems:
+      year: 偏财
+      month: 偏财
+      time: 偏财
+    hidden_stems:
+      year: [庚, 壬, 戊]
+      month: [庚, 壬, 戊]
+      day: [戊, 乙, 癸]
+      time: [丁, 己]
+    nayin:
+      year: 山下火
+      month: 山下火
+      day: 长流水
+      time: 天河水
+    wuxing_count:
+      木: 0
+      火: 4
+      土: 1
+      金: 2
+      水: 1
+    lunar_date: 二〇一六年八月初七
+    dayun:
+      gender: male
+      start_after: 0年0个月0天
+      start_solar: '2016-09-07'
+      forward: true
+      sequence:
+      - ganzhi: 丁酉
+        start_year: 2016
+        start_age: 1
+      - ganzhi: 戊戌
+        start_year: 2026
+        start_age: 11
+      - ganzhi: 己亥
+        start_year: 2036
+        start_age: 21
+      - ganzhi: 庚子
+        start_year: 2046
+        start_age: 31
+      - ganzhi: 辛丑
+        start_year: 2056
+        start_age: 41
+      - ganzhi: 壬寅
+        start_year: 2066
+        start_age: 51
+      - ganzhi: 癸卯
+        start_year: 2076
+        start_age: 61
+      - ganzhi: 甲辰
+        start_year: 2086
+        start_age: 71
+      convention: lunar_python 默认起运算法（getYun 流派 1）
+- id: bazi-16
+  category: 节气换月
+  description: 2016 年白露后 10 分钟出生：月柱以白露时刻为界，不看农历月份
+  input:
+    calendar: solar
+    birth_local_clock: 2016-09-07 13:01
+    tz: Asia/Shanghai
+    place: 南京
+    lat: 32.0603
+    lon: 118.7969
+    gender: female
+    time_known: true
+    true_solar_time: false
+  derived:
+    utc: 2016-09-07 05:01
+    beijing_standard_time: 2016-09-07 13:01
+  cross_check:
+    independent_pillars_next_day:
+      year: 丙申
+      month: 丁酉
+      day: 壬辰
+      time: 丁未
+    sun_apparent_longitude_deg: 165.0067
+    solar_term:
+      name: 白露
+      instant_lunar_python: '2016-09-07 12:51:05'
+      instant_swiss_ephemeris: '2016-09-07 12:51:05'
+      diff_seconds: 0.7
+      birth_minus_term_min: 9.9
+  expected:
+    pillars:
+      year: 丙申
+      month: 丁酉
+      day: 壬辰
+      time: 丁未
+    day_master: 壬水
+    ten_gods_stems:
+      year: 偏财
+      month: 正财
+      time: 正财
+    hidden_stems:
+      year: [庚, 壬, 戊]
+      month: [辛]
+      day: [戊, 乙, 癸]
+      time: [己, 丁, 乙]
+    nayin:
+      year: 山下火
+      month: 山下火
+      day: 长流水
+      time: 天河水
+    wuxing_count:
+      木: 0
+      火: 3
+      土: 2
+      金: 2
+      水: 1
+    lunar_date: 二〇一六年八月初七
+    dayun:
+      gender: female
+      start_after: 0年0个月10天
+      start_solar: '2016-09-17'
+      forward: false
+      sequence:
+      - ganzhi: 丙申
+        start_year: 2016
+        start_age: 1
+      - ganzhi: 乙未
+        start_year: 2026
+        start_age: 11
+      - ganzhi: 甲午
+        start_year: 2036
+        start_age: 21
+      - ganzhi: 癸巳
+        start_year: 2046
+        start_age: 31
+      - ganzhi: 壬辰
+        start_year: 2056
+        start_age: 41
+      - ganzhi: 辛卯
+        start_year: 2066
+        start_age: 51
+      - ganzhi: 庚寅
+        start_year: 2076
+        start_age: 61
+      - ganzhi: 己丑
+        start_year: 2086
+        start_age: 71
+      convention: lunar_python 默认起运算法（getYun 流派 1）
+- id: bazi-17
+  category: 节气换月
+  description: 2021 年大雪前 10 分钟出生：月柱以大雪时刻为界，不看农历月份
+  input:
+    calendar: solar
+    birth_local_clock: 2021-12-07 05:47
+    tz: Asia/Shanghai
+    place: 沈阳
+    lat: 41.8057
+    lon: 123.4315
+    gender: male
+    time_known: true
+    true_solar_time: false
+  derived:
+    utc: 2021-12-06 21:47
+    beijing_standard_time: 2021-12-07 05:47
+  cross_check:
+    independent_pillars_next_day:
+      year: 辛丑
+      month: 己亥
+      day: 己丑
+      time: 丁卯
+    sun_apparent_longitude_deg: 254.9929
+    solar_term:
+      name: 大雪
+      instant_lunar_python: '2021-12-07 05:57:06'
+      instant_swiss_ephemeris: '2021-12-07 05:57:03'
+      diff_seconds: 2.3
+      birth_minus_term_min: -10.1
+  expected:
+    pillars:
+      year: 辛丑
+      month: 己亥
+      day: 己丑
+      time: 丁卯
+    day_master: 己土
+    ten_gods_stems:
+      year: 食神
+      month: 比肩
+      time: 偏印
+    hidden_stems:
+      year: [己, 癸, 辛]
+      month: [壬, 甲]
+      day: [己, 癸, 辛]
+      time: [乙]
+    nayin:
+      year: 壁上土
+      month: 平地木
+      day: 霹雳火
+      time: 炉中火
+    wuxing_count:
+      木: 1
+      火: 1
+      土: 4
+      金: 1
+      水: 1
+    lunar_date: 二〇二一年冬月初四
+    dayun:
+      gender: male
+      start_after: 9年11个月0天
+      start_solar: '2031-11-07'
+      forward: false
+      sequence:
+      - ganzhi: 戊戌
+        start_year: 2031
+        start_age: 11
+      - ganzhi: 丁酉
+        start_year: 2041
+        start_age: 21
+      - ganzhi: 丙申
+        start_year: 2051
+        start_age: 31
+      - ganzhi: 乙未
+        start_year: 2061
+        start_age: 41
+      - ganzhi: 甲午
+        start_year: 2071
+        start_age: 51
+      - ganzhi: 癸巳
+        start_year: 2081
+        start_age: 61
+      - ganzhi: 壬辰
+        start_year: 2091
+        start_age: 71
+      - ganzhi: 辛卯
+        start_year: 2101
+        start_age: 81
+      convention: lunar_python 默认起运算法（getYun 流派 1）
+- id: bazi-18
+  category: 节气换月
+  description: 2021 年大雪后 10 分钟出生：月柱以大雪时刻为界，不看农历月份
+  input:
+    calendar: solar
+    birth_local_clock: 2021-12-07 06:07
+    tz: Asia/Shanghai
+    place: 沈阳
+    lat: 41.8057
+    lon: 123.4315
+    gender: female
+    time_known: true
+    true_solar_time: false
+  derived:
+    utc: 2021-12-06 22:07
+    beijing_standard_time: 2021-12-07 06:07
+  cross_check:
+    independent_pillars_next_day:
+      year: 辛丑
+      month: 庚子
+      day: 己丑
+      time: 丁卯
+    sun_apparent_longitude_deg: 255.007
+    solar_term:
+      name: 大雪
+      instant_lunar_python: '2021-12-07 05:57:06'
+      instant_swiss_ephemeris: '2021-12-07 05:57:03'
+      diff_seconds: 2.3
+      birth_minus_term_min: 9.9
+  expected:
+    pillars:
+      year: 辛丑
+      month: 庚子
+      day: 己丑
+      time: 丁卯
+    day_master: 己土
+    ten_gods_stems:
+      year: 食神
+      month: 伤官
+      time: 偏印
+    hidden_stems:
+      year: [己, 癸, 辛]
+      month: [癸]
+      day: [己, 癸, 辛]
+      time: [乙]
+    nayin:
+      year: 壁上土
+      month: 壁上土
+      day: 霹雳火
+      time: 炉中火
+    wuxing_count:
+      木: 1
+      火: 1
+      土: 3
+      金: 2
+      水: 1
+    lunar_date: 二〇二一年冬月初四
+    dayun:
+      gender: female
+      start_after: 9年10个月0天
+      start_solar: '2031-10-07'
+      forward: true
+      sequence:
+      - ganzhi: 辛丑
+        start_year: 2031
+        start_age: 11
+      - ganzhi: 壬寅
+        start_year: 2041
+        start_age: 21
+      - ganzhi: 癸卯
+        start_year: 2051
+        start_age: 31
+      - ganzhi: 甲辰
+        start_year: 2061
+        start_age: 41
+      - ganzhi: 乙巳
+        start_year: 2071
+        start_age: 51
+      - ganzhi: 丙午
+        start_year: 2081
+        start_age: 61
+      - ganzhi: 丁未
+        start_year: 2091
+        start_age: 71
+      - ganzhi: 戊申
+        start_year: 2101
+        start_age: 81
+      convention: lunar_python 默认起运算法（getYun 流派 1）
+- id: bazi-19
+  category: 子时归属
+  description: 23:20 出生：两种子时规则的日柱不同
+  input:
+    calendar: solar
+    birth_local_clock: 1993-08-17 23:20
+    tz: Asia/Shanghai
+    place: 北京
+    lat: 39.9042
+    lon: 116.4074
+    gender: male
+    time_known: true
+    true_solar_time: false
+  derived:
+    utc: 1993-08-17 15:20
+    beijing_standard_time: 1993-08-17 23:20
+  cross_check:
+    independent_pillars_next_day:
+      year: 癸酉
+      month: 庚申
+      day: 辛未
+      time: 戊子
+    independent_pillars_same_day:
+      year: 癸酉
+      month: 庚申
+      day: 庚午
+      time: 戊子
+    sun_apparent_longitude_deg: 144.723
+  expected:
+    by_zishi_rule:
+      next_day:
+        pillars:
+          year: 癸酉
+          month: 庚申
+          day: 辛未
+          time: 戊子
+        day_master: 辛金
+        ten_gods_stems:
+          year: 食神
+          month: 劫财
+          time: 正印
+        hidden_stems:
+          year: [辛]
+          month: [庚, 壬, 戊]
+          day: [己, 丁, 乙]
+          time: [癸]
+        nayin:
+          year: 剑锋金
+          month: 石榴木
+          day: 路旁土
+          time: 霹雳火
+        wuxing_count:
+          木: 0
+          火: 0
+          土: 2
+          金: 4
+          水: 2
+        lunar_date: 一九九三年六月三十
+        dayun:
+          gender: male
+          start_after: 3年4个月10天
+          start_solar: '1996-12-27'
+          forward: false
+          sequence:
+          - ganzhi: 己未
+            start_year: 1996
+            start_age: 4
+          - ganzhi: 戊午
+            start_year: 2006
+            start_age: 14
+          - ganzhi: 丁巳
+            start_year: 2016
+            start_age: 24
+          - ganzhi: 丙辰
+            start_year: 2026
+            start_age: 34
+          - ganzhi: 乙卯
+            start_year: 2036
+            start_age: 44
+          - ganzhi: 甲寅
+            start_year: 2046
+            start_age: 54
+          - ganzhi: 癸丑
+            start_year: 2056
+            start_age: 64
+          - ganzhi: 壬子
+            start_year: 2066
+            start_age: 74
+          convention: lunar_python 默认起运算法（getYun 流派 1）
+      same_day:
+        pillars:
+          year: 癸酉
+          month: 庚申
+          day: 庚午
+          time: 戊子
+        day_master: 庚金
+        ten_gods_stems:
+          year: 伤官
+          month: 比肩
+          time: 偏印
+        hidden_stems:
+          year: [辛]
+          month: [庚, 壬, 戊]
+          day: [丁, 己]
+          time: [癸]
+        nayin:
+          year: 剑锋金
+          month: 石榴木
+          day: 路旁土
+          time: 霹雳火
+        wuxing_count:
+          木: 0
+          火: 1
+          土: 1
+          金: 4
+          水: 2
+        lunar_date: 一九九三年六月三十
+    zishi_rule_meaning:
+      next_day: 23:00 起即算次日：日柱换成次日，时柱为次日子时
+      same_day: 区分早晚子时：23–24 点日柱仍算当天，时柱用次日日干起子时
+- id: bazi-20
+  category: 子时归属
+  description: 00:20 出生（早子时）：两种规则结果相同
+  input:
+    calendar: solar
+    birth_local_clock: 1993-08-18 00:20
+    tz: Asia/Shanghai
+    place: 北京
+    lat: 39.9042
+    lon: 116.4074
+    gender: female
+    time_known: true
+    true_solar_time: false
+  derived:
+    utc: 1993-08-17 16:20
+    beijing_standard_time: 1993-08-18 00:20
+  cross_check:
+    independent_pillars_next_day:
+      year: 癸酉
+      month: 庚申
+      day: 辛未
+      time: 戊子
+    independent_pillars_same_day:
+      year: 癸酉
+      month: 庚申
+      day: 辛未
+      time: 戊子
+    sun_apparent_longitude_deg: 144.7631
+  expected:
+    by_zishi_rule:
+      next_day:
+        pillars:
+          year: 癸酉
+          month: 庚申
+          day: 辛未
+          time: 戊子
+        day_master: 辛金
+        ten_gods_stems:
+          year: 食神
+          month: 劫财
+          time: 正印
+        hidden_stems:
+          year: [辛]
+          month: [庚, 壬, 戊]
+          day: [己, 丁, 乙]
+          time: [癸]
+        nayin:
+          year: 剑锋金
+          month: 石榴木
+          day: 路旁土
+          time: 霹雳火
+        wuxing_count:
+          木: 0
+          火: 0
+          土: 2
+          金: 4
+          水: 2
+        lunar_date: 一九九三年七月初一
+        dayun:
+          gender: female
+          start_after: 6年11个月20天
+          start_solar: '2000-08-07'
+          forward: true
+          sequence:
+          - ganzhi: 辛酉
+            start_year: 2000
+            start_age: 8
+          - ganzhi: 壬戌
+            start_year: 2010
+            start_age: 18
+          - ganzhi: 癸亥
+            start_year: 2020
+            start_age: 28
+          - ganzhi: 甲子
+            start_year: 2030
+            start_age: 38
+          - ganzhi: 乙丑
+            start_year: 2040
+            start_age: 48
+          - ganzhi: 丙寅
+            start_year: 2050
+            start_age: 58
+          - ganzhi: 丁卯
+            start_year: 2060
+            start_age: 68
+          - ganzhi: 戊辰
+            start_year: 2070
+            start_age: 78
+          convention: lunar_python 默认起运算法（getYun 流派 1）
+      same_day:
+        pillars:
+          year: 癸酉
+          month: 庚申
+          day: 辛未
+          time: 戊子
+        day_master: 辛金
+        ten_gods_stems:
+          year: 食神
+          month: 劫财
+          time: 正印
+        hidden_stems:
+          year: [辛]
+          month: [庚, 壬, 戊]
+          day: [己, 丁, 乙]
+          time: [癸]
+        nayin:
+          year: 剑锋金
+          month: 石榴木
+          day: 路旁土
+          time: 霹雳火
+        wuxing_count:
+          木: 0
+          火: 0
+          土: 2
+          金: 4
+          水: 2
+        lunar_date: 一九九三年七月初一
+    zishi_rule_meaning:
+      next_day: 23:00 起即算次日：日柱换成次日，时柱为次日子时
+      same_day: 区分早晚子时：23–24 点日柱仍算当天，时柱用次日日干起子时
+- id: bazi-21
+  category: 子时归属
+  description: 22:59 出生：仍是亥时，不应被算成子时
+  input:
+    calendar: solar
+    birth_local_clock: 2001-02-27 22:59
+    tz: Asia/Shanghai
+    place: 北京
+    lat: 39.9042
+    lon: 116.4074
+    gender: male
+    time_known: true
+    true_solar_time: false
+  derived:
+    utc: 2001-02-27 14:59
+    beijing_standard_time: 2001-02-27 22:59
+  cross_check:
+    independent_pillars_next_day:
+      year: 辛巳
+      month: 庚寅
+      day: 辛酉
+      time: 己亥
+    sun_apparent_longitude_deg: 339.084
+  expected:
+    pillars:
+      year: 辛巳
+      month: 庚寅
+      day: 辛酉
+      time: 己亥
+    day_master: 辛金
+    ten_gods_stems:
+      year: 比肩
+      month: 劫财
+      time: 偏印
+    hidden_stems:
+      year: [丙, 庚, 戊]
+      month: [甲, 丙, 戊]
+      day: [辛]
+      time: [壬, 甲]
+    nayin:
+      year: 白蜡金
+      month: 松柏木
+      day: 石榴木
+      time: 平地木
+    wuxing_count:
+      木: 1
+      火: 1
+      土: 1
+      金: 4
+      水: 1
+    lunar_date: 二〇〇一年二月初五
+    dayun:
+      gender: male
+      start_after: 7年11个月10天
+      start_solar: '2009-02-06'
+      forward: false
+      sequence:
+      - ganzhi: 己丑
+        start_year: 2009
+        start_age: 9
+      - ganzhi: 戊子
+        start_year: 2019
+        start_age: 19
+      - ganzhi: 丁亥
+        start_year: 2029
+        start_age: 29
+      - ganzhi: 丙戌
+        start_year: 2039
+        start_age: 39
+      - ganzhi: 乙酉
+        start_year: 2049
+        start_age: 49
+      - ganzhi: 甲申
+        start_year: 2059
+        start_age: 59
+      - ganzhi: 癸未
+        start_year: 2069
+        start_age: 69
+      - ganzhi: 壬午
+        start_year: 2079
+        start_age: 79
+      convention: lunar_python 默认起运算法（getYun 流派 1）
+- id: bazi-22
+  category: 子时归属
+  description: 23:00 整出生：子时起点
+  input:
+    calendar: solar
+    birth_local_clock: 2001-02-27 23:00
+    tz: Asia/Shanghai
+    place: 北京
+    lat: 39.9042
+    lon: 116.4074
+    gender: female
+    time_known: true
+    true_solar_time: false
+  derived:
+    utc: 2001-02-27 15:00
+    beijing_standard_time: 2001-02-27 23:00
+  cross_check:
+    independent_pillars_next_day:
+      year: 辛巳
+      month: 庚寅
+      day: 壬戌
+      time: 庚子
+    independent_pillars_same_day:
+      year: 辛巳
+      month: 庚寅
+      day: 辛酉
+      time: 庚子
+    sun_apparent_longitude_deg: 339.0847
+  expected:
+    by_zishi_rule:
+      next_day:
+        pillars:
+          year: 辛巳
+          month: 庚寅
+          day: 壬戌
+          time: 庚子
+        day_master: 壬水
+        ten_gods_stems:
+          year: 正印
+          month: 偏印
+          time: 偏印
+        hidden_stems:
+          year: [丙, 庚, 戊]
+          month: [甲, 丙, 戊]
+          day: [戊, 辛, 丁]
+          time: [癸]
+        nayin:
+          year: 白蜡金
+          month: 松柏木
+          day: 大海水
+          time: 壁上土
+        wuxing_count:
+          木: 1
+          火: 1
+          土: 1
+          金: 3
+          水: 2
+        lunar_date: 二〇〇一年二月初五
+        dayun:
+          gender: female
+          start_after: 1年11个月20天
+          start_solar: '2003-02-16'
+          forward: true
+          sequence:
+          - ganzhi: 辛卯
+            start_year: 2003
+            start_age: 3
+          - ganzhi: 壬辰
+            start_year: 2013
+            start_age: 13
+          - ganzhi: 癸巳
+            start_year: 2023
+            start_age: 23
+          - ganzhi: 甲午
+            start_year: 2033
+            start_age: 33
+          - ganzhi: 乙未
+            start_year: 2043
+            start_age: 43
+          - ganzhi: 丙申
+            start_year: 2053
+            start_age: 53
+          - ganzhi: 丁酉
+            start_year: 2063
+            start_age: 63
+          - ganzhi: 戊戌
+            start_year: 2073
+            start_age: 73
+          convention: lunar_python 默认起运算法（getYun 流派 1）
+      same_day:
+        pillars:
+          year: 辛巳
+          month: 庚寅
+          day: 辛酉
+          time: 庚子
+        day_master: 辛金
+        ten_gods_stems:
+          year: 比肩
+          month: 劫财
+          time: 劫财
+        hidden_stems:
+          year: [丙, 庚, 戊]
+          month: [甲, 丙, 戊]
+          day: [辛]
+          time: [癸]
+        nayin:
+          year: 白蜡金
+          month: 松柏木
+          day: 石榴木
+          time: 壁上土
+        wuxing_count:
+          木: 1
+          火: 1
+          土: 0
+          金: 5
+          水: 1
+        lunar_date: 二〇〇一年二月初五
+    zishi_rule_meaning:
+      next_day: 23:00 起即算次日：日柱换成次日，时柱为次日子时
+      same_day: 区分早晚子时：23–24 点日柱仍算当天，时柱用次日日干起子时
+- id: bazi-23
+  category: 子时归属
+  description: 跨年夜 23:40：按“23 点换日”规则日柱进入 1 月 1 日，但年柱、月柱不变（还没到小寒/立春）
+  input:
+    calendar: solar
+    birth_local_clock: 2015-12-31 23:40
+    tz: Asia/Shanghai
+    place: 北京
+    lat: 39.9042
+    lon: 116.4074
+    gender: male
+    time_known: true
+    true_solar_time: false
+  derived:
+    utc: 2015-12-31 15:40
+    beijing_standard_time: 2015-12-31 23:40
+  cross_check:
+    independent_pillars_next_day:
+      year: 乙未
+      month: 戊子
+      day: 壬午
+      time: 庚子
+    independent_pillars_same_day:
+      year: 乙未
+      month: 戊子
+      day: 辛巳
+      time: 庚子
+    sun_apparent_longitude_deg: 279.6284
+  expected:
+    by_zishi_rule:
+      next_day:
+        pillars:
+          year: 乙未
+          month: 戊子
+          day: 壬午
+          time: 庚子
+        day_master: 壬水
+        ten_gods_stems:
+          year: 伤官
+          month: 七杀
+          time: 偏印
+        hidden_stems:
+          year: [己, 丁, 乙]
+          month: [癸]
+          day: [丁, 己]
+          time: [癸]
+        nayin:
+          year: 沙中金
+          month: 霹雳火
+          day: 杨柳木
+          time: 壁上土
+        wuxing_count:
+          木: 1
+          火: 1
+          土: 2
+          金: 1
+          水: 3
+        lunar_date: 二〇一五年冬月廿一
+        dayun:
+          gender: male
+          start_after: 8年0个月20天
+          start_solar: '2024-01-20'
+          forward: false
+          sequence:
+          - ganzhi: 丁亥
+            start_year: 2024
+            start_age: 10
+          - ganzhi: 丙戌
+            start_year: 2034
+            start_age: 20
+          - ganzhi: 乙酉
+            start_year: 2044
+            start_age: 30
+          - ganzhi: 甲申
+            start_year: 2054
+            start_age: 40
+          - ganzhi: 癸未
+            start_year: 2064
+            start_age: 50
+          - ganzhi: 壬午
+            start_year: 2074
+            start_age: 60
+          - ganzhi: 辛巳
+            start_year: 2084
+            start_age: 70
+          - ganzhi: 庚辰
+            start_year: 2094
+            start_age: 80
+          convention: lunar_python 默认起运算法（getYun 流派 1）
+      same_day:
+        pillars:
+          year: 乙未
+          month: 戊子
+          day: 辛巳
+          time: 庚子
+        day_master: 辛金
+        ten_gods_stems:
+          year: 偏财
+          month: 正印
+          time: 劫财
+        hidden_stems:
+          year: [己, 丁, 乙]
+          month: [癸]
+          day: [丙, 庚, 戊]
+          time: [癸]
+        nayin:
+          year: 沙中金
+          month: 霹雳火
+          day: 白蜡金
+          time: 壁上土
+        wuxing_count:
+          木: 1
+          火: 1
+          土: 2
+          金: 2
+          水: 2
+        lunar_date: 二〇一五年冬月廿一
+    zishi_rule_meaning:
+      next_day: 23:00 起即算次日：日柱换成次日，时柱为次日子时
+      same_day: 区分早晚子时：23–24 点日柱仍算当天，时柱用次日日干起子时
+- id: bazi-24
+  category: 子时归属
+  description: 23:59 出生：子时末尾附近
+  input:
+    calendar: solar
+    birth_local_clock: 2020-06-20 23:59
+    tz: Asia/Shanghai
+    place: 北京
+    lat: 39.9042
+    lon: 116.4074
+    gender: female
+    time_known: true
+    true_solar_time: false
+  derived:
+    utc: 2020-06-20 15:59
+    beijing_standard_time: 2020-06-20 23:59
+  cross_check:
+    independent_pillars_next_day:
+      year: 庚子
+      month: 壬午
+      day: 乙未
+      time: 丙子
+    independent_pillars_same_day:
+      year: 庚子
+      month: 壬午
+      day: 甲午
+      time: 丙子
+    sun_apparent_longitude_deg: 89.7715
+  expected:
+    by_zishi_rule:
+      next_day:
+        pillars:
+          year: 庚子
+          month: 壬午
+          day: 乙未
+          time: 丙子
+        day_master: 乙木
+        ten_gods_stems:
+          year: 正官
+          month: 正印
+          time: 伤官
+        hidden_stems:
+          year: [癸]
+          month: [丁, 己]
+          day: [己, 丁, 乙]
+          time: [癸]
+        nayin:
+          year: 壁上土
+          month: 杨柳木
+          day: 沙中金
+          time: 涧下水
+        wuxing_count:
+          木: 1
+          火: 2
+          土: 1
+          金: 1
+          水: 3
+        lunar_date: 二〇二〇年闰四月廿九
+        dayun:
+          gender: female
+          start_after: 5年1个月20天
+          start_solar: '2025-08-09'
+          forward: false
+          sequence:
+          - ganzhi: 辛巳
+            start_year: 2025
+            start_age: 6
+          - ganzhi: 庚辰
+            start_year: 2035
+            start_age: 16
+          - ganzhi: 己卯
+            start_year: 2045
+            start_age: 26
+          - ganzhi: 戊寅
+            start_year: 2055
+            start_age: 36
+          - ganzhi: 丁丑
+            start_year: 2065
+            start_age: 46
+          - ganzhi: 丙子
+            start_year: 2075
+            start_age: 56
+          - ganzhi: 乙亥
+            start_year: 2085
+            start_age: 66
+          - ganzhi: 甲戌
+            start_year: 2095
+            start_age: 76
+          convention: lunar_python 默认起运算法（getYun 流派 1）
+      same_day:
+        pillars:
+          year: 庚子
+          month: 壬午
+          day: 甲午
+          time: 丙子
+        day_master: 甲木
+        ten_gods_stems:
+          year: 七杀
+          month: 偏印
+          time: 食神
+        hidden_stems:
+          year: [癸]
+          month: [丁, 己]
+          day: [丁, 己]
+          time: [癸]
+        nayin:
+          year: 壁上土
+          month: 杨柳木
+          day: 沙中金
+          time: 涧下水
+        wuxing_count:
+          木: 1
+          火: 3
+          土: 0
+          金: 1
+          水: 3
+        lunar_date: 二〇二〇年闰四月廿九
+    zishi_rule_meaning:
+      next_day: 23:00 起即算次日：日柱换成次日，时柱为次日子时
+      same_day: 区分早晚子时：23–24 点日柱仍算当天，时柱用次日日干起子时
+- id: bazi-25
+  category: 子时归属
+  description: 立夏前夜 23:50：日柱可按次日算，但月柱仍是辰月（立夏在次日凌晨）
+  input:
+    calendar: solar
+    birth_local_clock: 2011-05-05 23:50
+    tz: Asia/Shanghai
+    place: 北京
+    lat: 39.9042
+    lon: 116.4074
+    gender: male
+    time_known: true
+    true_solar_time: false
+  derived:
+    utc: 2011-05-05 15:50
+    beijing_standard_time: 2011-05-05 23:50
+  cross_check:
+    independent_pillars_next_day:
+      year: 辛卯
+      month: 壬辰
+      day: 辛酉
+      time: 戊子
+    independent_pillars_same_day:
+      year: 辛卯
+      month: 壬辰
+      day: 庚申
+      time: 戊子
+    sun_apparent_longitude_deg: 44.8161
+  expected:
+    by_zishi_rule:
+      next_day:
+        pillars:
+          year: 辛卯
+          month: 壬辰
+          day: 辛酉
+          time: 戊子
+        day_master: 辛金
+        ten_gods_stems:
+          year: 比肩
+          month: 伤官
+          time: 正印
+        hidden_stems:
+          year: [乙]
+          month: [戊, 乙, 癸]
+          day: [辛]
+          time: [癸]
+        nayin:
+          year: 松柏木
+          month: 长流水
+          day: 石榴木
+          time: 霹雳火
+        wuxing_count:
+          木: 1
+          火: 0
+          土: 2
+          金: 3
+          水: 2
+        lunar_date: 二〇一一年四月初三
+        dayun:
+          gender: male
+          start_after: 10年1个月20天
+          start_solar: '2021-06-25'
+          forward: false
+          sequence:
+          - ganzhi: 辛卯
+            start_year: 2021
+            start_age: 11
+          - ganzhi: 庚寅
+            start_year: 2031
+            start_age: 21
+          - ganzhi: 己丑
+            start_year: 2041
+            start_age: 31
+          - ganzhi: 戊子
+            start_year: 2051
+            start_age: 41
+          - ganzhi: 丁亥
+            start_year: 2061
+            start_age: 51
+          - ganzhi: 丙戌
+            start_year: 2071
+            start_age: 61
+          - ganzhi: 乙酉
+            start_year: 2081
+            start_age: 71
+          - ganzhi: 甲申
+            start_year: 2091
+            start_age: 81
+          convention: lunar_python 默认起运算法（getYun 流派 1）
+      same_day:
+        pillars:
+          year: 辛卯
+          month: 壬辰
+          day: 庚申
+          time: 戊子
+        day_master: 庚金
+        ten_gods_stems:
+          year: 劫财
+          month: 食神
+          time: 偏印
+        hidden_stems:
+          year: [乙]
+          month: [戊, 乙, 癸]
+          day: [庚, 壬, 戊]
+          time: [癸]
+        nayin:
+          year: 松柏木
+          month: 长流水
+          day: 石榴木
+          time: 霹雳火
+        wuxing_count:
+          木: 1
+          火: 0
+          土: 2
+          金: 3
+          水: 2
+        lunar_date: 二〇一一年四月初三
+    zishi_rule_meaning:
+      next_day: 23:00 起即算次日：日柱换成次日，时柱为次日子时
+      same_day: 区分早晚子时：23–24 点日柱仍算当天，时柱用次日日干起子时
+- id: bazi-26
+  category: 子时归属
+  description: 闰年 2 月最后一天之后的 3 月 1 日 23:05
+  input:
+    calendar: solar
+    birth_local_clock: 1984-03-01 23:05
+    tz: Asia/Shanghai
+    place: 北京
+    lat: 39.9042
+    lon: 116.4074
+    gender: female
+    time_known: true
+    true_solar_time: false
+  derived:
+    utc: 1984-03-01 15:05
+    beijing_standard_time: 1984-03-01 23:05
+  cross_check:
+    independent_pillars_next_day:
+      year: 甲子
+      month: 丙寅
+      day: 乙未
+      time: 丙子
+    independent_pillars_same_day:
+      year: 甲子
+      month: 丙寅
+      day: 甲午
+      time: 丙子
+    sun_apparent_longitude_deg: 341.2262
+  expected:
+    by_zishi_rule:
+      next_day:
+        pillars:
+          year: 甲子
+          month: 丙寅
+          day: 乙未
+          time: 丙子
+        day_master: 乙木
+        ten_gods_stems:
+          year: 劫财
+          month: 伤官
+          time: 伤官
+        hidden_stems:
+          year: [癸]
+          month: [甲, 丙, 戊]
+          day: [己, 丁, 乙]
+          time: [癸]
+        nayin:
+          year: 海中金
+          month: 炉中火
+          day: 沙中金
+          time: 涧下水
+        wuxing_count:
+          木: 3
+          火: 2
+          土: 1
+          金: 0
+          水: 2
+        lunar_date: 一九八四年正月廿九
+        dayun:
+          gender: female
+          start_after: 8年8个月0天
+          start_solar: '1992-11-01'
+          forward: false
+          sequence:
+          - ganzhi: 乙丑
+            start_year: 1992
+            start_age: 9
+          - ganzhi: 甲子
+            start_year: 2002
+            start_age: 19
+          - ganzhi: 癸亥
+            start_year: 2012
+            start_age: 29
+          - ganzhi: 壬戌
+            start_year: 2022
+            start_age: 39
+          - ganzhi: 辛酉
+            start_year: 2032
+            start_age: 49
+          - ganzhi: 庚申
+            start_year: 2042
+            start_age: 59
+          - ganzhi: 己未
+            start_year: 2052
+            start_age: 69
+          - ganzhi: 戊午
+            start_year: 2062
+            start_age: 79
+          convention: lunar_python 默认起运算法（getYun 流派 1）
+      same_day:
+        pillars:
+          year: 甲子
+          month: 丙寅
+          day: 甲午
+          time: 丙子
+        day_master: 甲木
+        ten_gods_stems:
+          year: 比肩
+          month: 食神
+          time: 食神
+        hidden_stems:
+          year: [癸]
+          month: [甲, 丙, 戊]
+          day: [丁, 己]
+          time: [癸]
+        nayin:
+          year: 海中金
+          month: 炉中火
+          day: 沙中金
+          time: 涧下水
+        wuxing_count:
+          木: 3
+          火: 3
+          土: 0
+          金: 0
+          水: 2
+        lunar_date: 一九八四年正月廿九
+    zishi_rule_meaning:
+      next_day: 23:00 起即算次日：日柱换成次日，时柱为次日子时
+      same_day: 区分早晚子时：23–24 点日柱仍算当天，时柱用次日日干起子时
+- id: bazi-27
+  category: 真太阳时
+  description: 钟表辰时，真太阳时落在卯时
+  input:
+    calendar: solar
+    birth_local_clock: 1996-05-10 08:30
+    tz: Asia/Shanghai
+    place: 乌鲁木齐
+    lat: 43.8256
+    lon: 87.6168
+    gender: male
+    time_known: true
+    true_solar_time: true
+  derived:
+    utc: 1996-05-10 00:30
+    beijing_standard_time: 1996-05-10 08:30
+    longitude_correction_min: -129.53
+    equation_of_time_min: 3.61
+    true_solar_time: 1996-05-10 06:24
+    margin_to_shichen_boundary_min: 35.9
+  cross_check:
+    independent_pillars_next_day:
+      year: 丙子
+      month: 癸巳
+      day: 丁未
+      time: 癸卯
+    sun_apparent_longitude_deg: 49.6375
+  expected:
+    pillars:
+      year: 丙子
+      month: 癸巳
+      day: 丁未
+      time: 癸卯
+    day_master: 丁火
+    ten_gods_stems:
+      year: 劫财
+      month: 七杀
+      time: 七杀
+    hidden_stems:
+      year: [癸]
+      month: [丙, 庚, 戊]
+      day: [己, 丁, 乙]
+      time: [乙]
+    nayin:
+      year: 涧下水
+      month: 长流水
+      day: 天河水
+      time: 金箔金
+    wuxing_count:
+      木: 1
+      火: 3
+      土: 1
+      金: 0
+      水: 3
+    lunar_date: 一九九六年三月廿三
+    dayun:
+      gender: male
+      start_after: 8年10个月0天
+      start_solar: '2005-03-10'
+      forward: true
+      sequence:
+      - ganzhi: 甲午
+        start_year: 2005
+        start_age: 10
+      - ganzhi: 乙未
+        start_year: 2015
+        start_age: 20
+      - ganzhi: 丙申
+        start_year: 2025
+        start_age: 30
+      - ganzhi: 丁酉
+        start_year: 2035
+        start_age: 40
+      - ganzhi: 戊戌
+        start_year: 2045
+        start_age: 50
+      - ganzhi: 己亥
+        start_year: 2055
+        start_age: 60
+      - ganzhi: 庚子
+        start_year: 2065
+        start_age: 70
+      - ganzhi: 辛丑
+        start_year: 2075
+        start_age: 80
+      convention: lunar_python 默认起运算法（getYun 流派 1）
+  expected_if_true_solar_off:
+    year: 丙子
+    month: 癸巳
+    day: 丁未
+    time: 甲辰
+- id: bazi-28
+  category: 真太阳时
+  description: 钟表未时，真太阳时落在午时
+  input:
+    calendar: solar
+    birth_local_clock: 2002-09-01 13:10
+    tz: Asia/Shanghai
+    place: 拉萨
+    lat: 29.652
+    lon: 91.1721
+    gender: female
+    time_known: true
+    true_solar_time: true
+  derived:
+    utc: 2002-09-01 05:10
+    beijing_standard_time: 2002-09-01 13:10
+    longitude_correction_min: -115.31
+    equation_of_time_min: -0.11
+    true_solar_time: 2002-09-01 11:14
+    margin_to_shichen_boundary_min: 14.6
+  cross_check:
+    independent_pillars_next_day:
+      year: 壬午
+      month: 戊申
+      day: 壬申
+      time: 丙午
+    sun_apparent_longitude_deg: 158.6038
+  expected:
+    pillars:
+      year: 壬午
+      month: 戊申
+      day: 壬申
+      time: 丙午
+    day_master: 壬水
+    ten_gods_stems:
+      year: 比肩
+      month: 七杀
+      time: 偏财
+    hidden_stems:
+      year: [丁, 己]
+      month: [庚, 壬, 戊]
+      day: [庚, 壬, 戊]
+      time: [丁, 己]
+    nayin:
+      year: 杨柳木
+      month: 大驿土
+      day: 剑锋金
+      time: 天河水
+    wuxing_count:
+      木: 0
+      火: 3
+      土: 1
+      金: 2
+      水: 2
+    lunar_date: 二〇〇二年七月廿四
+    dayun:
+      gender: female
+      start_after: 8年2个月0天
+      start_solar: '2010-11-01'
+      forward: false
+      sequence:
+      - ganzhi: 丁未
+        start_year: 2010
+        start_age: 9
+      - ganzhi: 丙午
+        start_year: 2020
+        start_age: 19
+      - ganzhi: 乙巳
+        start_year: 2030
+        start_age: 29
+      - ganzhi: 甲辰
+        start_year: 2040
+        start_age: 39
+      - ganzhi: 癸卯
+        start_year: 2050
+        start_age: 49
+      - ganzhi: 壬寅
+        start_year: 2060
+        start_age: 59
+      - ganzhi: 辛丑
+        start_year: 2070
+        start_age: 69
+      - ganzhi: 庚子
+        start_year: 2080
+        start_age: 79
+      convention: lunar_python 默认起运算法（getYun 流派 1）
+  expected_if_true_solar_off:
+    year: 壬午
+    month: 戊申
+    day: 壬申
+    time: 丁未
+- id: bazi-29
+  category: 真太阳时
+  description: 钟表凌晨 1:30，真太阳时退回到前一天 22 点多：日柱也要变
+  input:
+    calendar: solar
+    birth_local_clock: 1999-03-20 01:30
+    tz: Asia/Shanghai
+    place: 喀什
+    lat: 39.4704
+    lon: 75.9898
+    gender: male
+    time_known: true
+    true_solar_time: true
+  derived:
+    utc: 1999-03-19 17:30
+    beijing_standard_time: 1999-03-20 01:30
+    longitude_correction_min: -176.04
+    equation_of_time_min: -7.81
+    true_solar_time: 1999-03-19 22:26
+    margin_to_shichen_boundary_min: 33.9
+  cross_check:
+    independent_pillars_next_day:
+      year: 己卯
+      month: 丁卯
+      day: 庚午
+      time: 丁亥
+    sun_apparent_longitude_deg: 358.6635
+  expected:
+    pillars:
+      year: 己卯
+      month: 丁卯
+      day: 庚午
+      time: 丁亥
+    day_master: 庚金
+    ten_gods_stems:
+      year: 正印
+      month: 正官
+      time: 正官
+    hidden_stems:
+      year: [乙]
+      month: [乙]
+      day: [丁, 己]
+      time: [壬, 甲]
+    nayin:
+      year: 城头土
+      month: 炉中火
+      day: 路旁土
+      time: 屋上土
+    wuxing_count:
+      木: 2
+      火: 3
+      土: 1
+      金: 1
+      水: 1
+    lunar_date: 一九九九年二月初二
+    dayun:
+      gender: male
+      start_after: 4年6个月10天
+      start_solar: '2003-09-29'
+      forward: false
+      sequence:
+      - ganzhi: 丙寅
+        start_year: 2003
+        start_age: 5
+      - ganzhi: 乙丑
+        start_year: 2013
+        start_age: 15
+      - ganzhi: 甲子
+        start_year: 2023
+        start_age: 25
+      - ganzhi: 癸亥
+        start_year: 2033
+        start_age: 35
+      - ganzhi: 壬戌
+        start_year: 2043
+        start_age: 45
+      - ganzhi: 辛酉
+        start_year: 2053
+        start_age: 55
+      - ganzhi: 庚申
+        start_year: 2063
+        start_age: 65
+      - ganzhi: 己未
+        start_year: 2073
+        start_age: 75
+      convention: lunar_python 默认起运算法（getYun 流派 1）
+  expected_if_true_solar_off:
+    year: 己卯
+    month: 丁卯
+    day: 辛未
+    time: 己丑
+- id: bazi-30
+  category: 真太阳时
+  description: 钟表辰时，真太阳时落在卯时
+  input:
+    calendar: solar
+    birth_local_clock: 2005-07-15 07:20
+    tz: Asia/Shanghai
+    place: 成都
+    lat: 30.5728
+    lon: 104.0668
+    gender: female
+    time_known: true
+    true_solar_time: true
+  derived:
+    utc: 2005-07-14 23:20
+    beijing_standard_time: 2005-07-15 07:20
+    longitude_correction_min: -63.73
+    equation_of_time_min: -5.91
+    true_solar_time: 2005-07-15 06:10
+    margin_to_shichen_boundary_min: 49.6
+  cross_check:
+    independent_pillars_next_day:
+      year: 乙酉
+      month: 癸未
+      day: 庚子
+      time: 己卯
+    sun_apparent_longitude_deg: 112.5927
+  expected:
+    pillars:
+      year: 乙酉
+      month: 癸未
+      day: 庚子
+      time: 己卯
+    day_master: 庚金
+    ten_gods_stems:
+      year: 正财
+      month: 伤官
+      time: 正印
+    hidden_stems:
+      year: [辛]
+      month: [己, 丁, 乙]
+      day: [癸]
+      time: [乙]
+    nayin:
+      year: 泉中水
+      month: 杨柳木
+      day: 壁上土
+      time: 城头土
+    wuxing_count:
+      木: 2
+      火: 0
+      土: 2
+      金: 2
+      水: 2
+    lunar_date: 二〇〇五年六月初十
+    dayun:
+      gender: female
+      start_after: 7年10个月0天
+      start_solar: '2013-05-15'
+      forward: true
+      sequence:
+      - ganzhi: 甲申
+        start_year: 2013
+        start_age: 9
+      - ganzhi: 乙酉
+        start_year: 2023
+        start_age: 19
+      - ganzhi: 丙戌
+        start_year: 2033
+        start_age: 29
+      - ganzhi: 丁亥
+        start_year: 2043
+        start_age: 39
+      - ganzhi: 戊子
+        start_year: 2053
+        start_age: 49
+      - ganzhi: 己丑
+        start_year: 2063
+        start_age: 59
+      - ganzhi: 庚寅
+        start_year: 2073
+        start_age: 69
+      - ganzhi: 辛卯
+        start_year: 2083
+        start_age: 79
+      convention: lunar_python 默认起运算法（getYun 流派 1）
+  expected_if_true_solar_off:
+    year: 乙酉
+    month: 癸未
+    day: 庚子
+    time: 庚辰
+- id: bazi-31
+  category: 真太阳时
+  description: 钟表申时，真太阳时落在未时
+  input:
+    calendar: solar
+    birth_local_clock: 2010-10-10 15:20
+    tz: Asia/Shanghai
+    place: 西安
+    lat: 34.3416
+    lon: 108.9398
+    gender: male
+    time_known: true
+    true_solar_time: true
+  derived:
+    utc: 2010-10-10 07:20
+    beijing_standard_time: 2010-10-10 15:20
+    longitude_correction_min: -44.24
+    equation_of_time_min: 12.9
+    true_solar_time: 2010-10-10 14:48
+    margin_to_shichen_boundary_min: 11.4
+  cross_check:
+    independent_pillars_next_day:
+      year: 庚寅
+      month: 丙戌
+      day: 癸巳
+      time: 己未
+    sun_apparent_longitude_deg: 196.8893
+  expected:
+    pillars:
+      year: 庚寅
+      month: 丙戌
+      day: 癸巳
+      time: 己未
+    day_master: 癸水
+    ten_gods_stems:
+      year: 正印
+      month: 正财
+      time: 七杀
+    hidden_stems:
+      year: [甲, 丙, 戊]
+      month: [戊, 辛, 丁]
+      day: [丙, 庚, 戊]
+      time: [己, 丁, 乙]
+    nayin:
+      year: 松柏木
+      month: 屋上土
+      day: 长流水
+      time: 天上火
+    wuxing_count:
+      木: 1
+      火: 2
+      土: 3
+      金: 1
+      水: 1
+    lunar_date: 二〇一〇年九月初三
+    dayun:
+      gender: male
+      start_after: 9年5个月0天
+      start_solar: '2020-03-10'
+      forward: true
+      sequence:
+      - ganzhi: 丁亥
+        start_year: 2020
+        start_age: 11
+      - ganzhi: 戊子
+        start_year: 2030
+        start_age: 21
+      - ganzhi: 己丑
+        start_year: 2040
+        start_age: 31
+      - ganzhi: 庚寅
+        start_year: 2050
+        start_age: 41
+      - ganzhi: 辛卯
+        start_year: 2060
+        start_age: 51
+      - ganzhi: 壬辰
+        start_year: 2070
+        start_age: 61
+      - ganzhi: 癸巳
+        start_year: 2080
+        start_age: 71
+      - ganzhi: 甲午
+        start_year: 2090
+        start_age: 81
+      convention: lunar_python 默认起运算法（getYun 流派 1）
+  expected_if_true_solar_off:
+    year: 庚寅
+    month: 丙戌
+    day: 癸巳
+    time: 庚申
+- id: bazi-32
+  category: 真太阳时
+  description: 钟表亥时，真太阳时进入子时
+  input:
+    calendar: solar
+    birth_local_clock: 2013-12-25 22:50
+    tz: Asia/Shanghai
+    place: 哈尔滨
+    lat: 45.8038
+    lon: 126.535
+    gender: female
+    time_known: true
+    true_solar_time: true
+  derived:
+    utc: 2013-12-25 14:50
+    beijing_standard_time: 2013-12-25 22:50
+    longitude_correction_min: 26.14
+    equation_of_time_min: -0.21
+    true_solar_time: 2013-12-25 23:15
+    margin_to_shichen_boundary_min: 15.9
+  cross_check:
+    independent_pillars_next_day:
+      year: 癸巳
+      month: 甲子
+      day: 丙寅
+      time: 戊子
+    sun_apparent_longitude_deg: 273.9742
+  expected:
+    pillars:
+      year: 癸巳
+      month: 甲子
+      day: 丙寅
+      time: 戊子
+    day_master: 丙火
+    ten_gods_stems:
+      year: 正官
+      month: 偏印
+      time: 食神
+    hidden_stems:
+      year: [丙, 庚, 戊]
+      month: [癸]
+      day: [甲, 丙, 戊]
+      time: [癸]
+    nayin:
+      year: 长流水
+      month: 海中金
+      day: 炉中火
+      time: 霹雳火
+    wuxing_count:
+      木: 2
+      火: 2
+      土: 1
+      金: 0
+      水: 3
+    lunar_date: 二〇一三年冬月廿三
+    dayun:
+      gender: female
+      start_after: 3年7个月10天
+      start_solar: '2017-08-04'
+      forward: true
+      sequence:
+      - ganzhi: 乙丑
+        start_year: 2017
+        start_age: 5
+      - ganzhi: 丙寅
+        start_year: 2027
+        start_age: 15
+      - ganzhi: 丁卯
+        start_year: 2037
+        start_age: 25
+      - ganzhi: 戊辰
+        start_year: 2047
+        start_age: 35
+      - ganzhi: 己巳
+        start_year: 2057
+        start_age: 45
+      - ganzhi: 庚午
+        start_year: 2067
+        start_age: 55
+      - ganzhi: 辛未
+        start_year: 2077
+        start_age: 65
+      - ganzhi: 壬申
+        start_year: 2087
+        start_age: 75
+      convention: lunar_python 默认起运算法（getYun 流派 1）
+  expected_if_true_solar_off:
+    year: 癸巳
+    month: 甲子
+    day: 乙丑
+    time: 丁亥
+- id: bazi-33
+  category: 真太阳时
+  description: 经度修正只有约 6 分钟，主要是 11 月初约 +16 分钟的均时差把巳时推到午时
+  input:
+    calendar: solar
+    birth_local_clock: 2017-11-03 10:45
+    tz: Asia/Shanghai
+    place: 上海
+    lat: 31.2304
+    lon: 121.4737
+    gender: male
+    time_known: true
+    true_solar_time: true
+  derived:
+    utc: 2017-11-03 02:45
+    beijing_standard_time: 2017-11-03 10:45
+    longitude_correction_min: 5.89
+    equation_of_time_min: 16.44
+    true_solar_time: 2017-11-03 11:07
+    margin_to_shichen_boundary_min: 7.3
+  cross_check:
+    independent_pillars_next_day:
+      year: 丁酉
+      month: 庚戌
+      day: 甲午
+      time: 庚午
+    sun_apparent_longitude_deg: 220.8713
+  expected:
+    pillars:
+      year: 丁酉
+      month: 庚戌
+      day: 甲午
+      time: 庚午
+    day_master: 甲木
+    ten_gods_stems:
+      year: 伤官
+      month: 七杀
+      time: 七杀
+    hidden_stems:
+      year: [辛]
+      month: [戊, 辛, 丁]
+      day: [丁, 己]
+      time: [丁, 己]
+    nayin:
+      year: 山下火
+      month: 钗钏金
+      day: 沙中金
+      time: 路旁土
+    wuxing_count:
+      木: 1
+      火: 3
+      土: 1
+      金: 3
+      水: 0
+    lunar_date: 二〇一七年九月十五
+    dayun:
+      gender: male
+      start_after: 8年8个月10天
+      start_solar: '2026-07-13'
+      forward: false
+      sequence:
+      - ganzhi: 己酉
+        start_year: 2026
+        start_age: 10
+      - ganzhi: 戊申
+        start_year: 2036
+        start_age: 20
+      - ganzhi: 丁未
+        start_year: 2046
+        start_age: 30
+      - ganzhi: 丙午
+        start_year: 2056
+        start_age: 40
+      - ganzhi: 乙巳
+        start_year: 2066
+        start_age: 50
+      - ganzhi: 甲辰
+        start_year: 2076
+        start_age: 60
+      - ganzhi: 癸卯
+        start_year: 2086
+        start_age: 70
+      - ganzhi: 壬寅
+        start_year: 2096
+        start_age: 80
+      convention: lunar_python 默认起运算法（getYun 流派 1）
+  expected_if_true_solar_off:
+    year: 丁酉
+    month: 庚戌
+    day: 甲午
+    time: 己巳
+- id: bazi-34
+  category: 真太阳时
+  description: 经度修正约 −27 分钟，再加 2 月约 −14 分钟的均时差，未时退到午时
+  input:
+    calendar: solar
+    birth_local_clock: 2018-02-11 13:05
+    tz: Asia/Shanghai
+    place: 广州
+    lat: 23.1291
+    lon: 113.2644
+    gender: female
+    time_known: true
+    true_solar_time: true
+  derived:
+    utc: 2018-02-11 05:05
+    beijing_standard_time: 2018-02-11 13:05
+    longitude_correction_min: -26.94
+    equation_of_time_min: -14.19
+    true_solar_time: 2018-02-11 12:23
+    margin_to_shichen_boundary_min: 36.1
+  cross_check:
+    independent_pillars_next_day:
+      year: 戊戌
+      month: 甲寅
+      day: 甲戌
+      time: 庚午
+    sun_apparent_longitude_deg: 322.4117
+  expected:
+    pillars:
+      year: 戊戌
+      month: 甲寅
+      day: 甲戌
+      time: 庚午
+    day_master: 甲木
+    ten_gods_stems:
+      year: 偏财
+      month: 比肩
+      time: 七杀
+    hidden_stems:
+      year: [戊, 辛, 丁]
+      month: [甲, 丙, 戊]
+      day: [戊, 辛, 丁]
+      time: [丁, 己]
+    nayin:
+      year: 平地木
+      month: 大溪水
+      day: 山头火
+      time: 路旁土
+    wuxing_count:
+      木: 3
+      火: 1
+      土: 3
+      金: 1
+      水: 0
+    lunar_date: 二〇一七年腊月廿六
+    dayun:
+      gender: female
+      start_after: 2年5个月0天
+      start_solar: '2020-07-11'
+      forward: false
+      sequence:
+      - ganzhi: 癸丑
+        start_year: 2020
+        start_age: 3
+      - ganzhi: 壬子
+        start_year: 2030
+        start_age: 13
+      - ganzhi: 辛亥
+        start_year: 2040
+        start_age: 23
+      - ganzhi: 庚戌
+        start_year: 2050
+        start_age: 33
+      - ganzhi: 己酉
+        start_year: 2060
+        start_age: 43
+      - ganzhi: 戊申
+        start_year: 2070
+        start_age: 53
+      - ganzhi: 丁未
+        start_year: 2080
+        start_age: 63
+      - ganzhi: 丙午
+        start_year: 2090
+        start_age: 73
+      convention: lunar_python 默认起运算法（getYun 流派 1）
+  expected_if_true_solar_off:
+    year: 戊戌
+    month: 甲寅
+    day: 甲戌
+    time: 辛未
+- id: bazi-35
+  category: 夏令时
+  description: 1988 年夏令时钟表 23:40，标准时 22:40 是亥时；若忽略夏令时会被当成子时，按 23 点换日规则日柱也会错成次日
+  input:
+    calendar: solar
+    birth_local_clock: 1988-07-14 23:40
+    tz: Asia/Shanghai
+    place: 北京
+    lat: 39.9042
+    lon: 116.4074
+    gender: female
+    time_known: true
+    true_solar_time: false
+  derived:
+    utc: 1988-07-14 14:40
+    beijing_standard_time: 1988-07-14 22:40
+    utc_offset_at_birth: '9:00:00'
+  cross_check:
+    independent_pillars_next_day:
+      year: 戊辰
+      month: 己未
+      day: 庚午
+      time: 丁亥
+    sun_apparent_longitude_deg: 112.3571
+  expected:
+    pillars:
+      year: 戊辰
+      month: 己未
+      day: 庚午
+      time: 丁亥
+    day_master: 庚金
+    ten_gods_stems:
+      year: 偏印
+      month: 正印
+      time: 正官
+    hidden_stems:
+      year: [戊, 乙, 癸]
+      month: [己, 丁, 乙]
+      day: [丁, 己]
+      time: [壬, 甲]
+    nayin:
+      year: 大林木
+      month: 天上火
+      day: 路旁土
+      time: 屋上土
+    wuxing_count:
+      木: 0
+      火: 2
+      土: 4
+      金: 1
+      水: 1
+    lunar_date: 一九八八年六月初一
+    dayun:
+      gender: female
+      start_after: 2年6个月20天
+      start_solar: '1991-02-03'
+      forward: false
+      sequence:
+      - ganzhi: 戊午
+        start_year: 1991
+        start_age: 4
+      - ganzhi: 丁巳
+        start_year: 2001
+        start_age: 14
+      - ganzhi: 丙辰
+        start_year: 2011
+        start_age: 24
+      - ganzhi: 乙卯
+        start_year: 2021
+        start_age: 34
+      - ganzhi: 甲寅
+        start_year: 2031
+        start_age: 44
+      - ganzhi: 癸丑
+        start_year: 2041
+        start_age: 54
+      - ganzhi: 壬子
+        start_year: 2051
+        start_age: 64
+      - ganzhi: 辛亥
+        start_year: 2061
+        start_age: 74
+      convention: lunar_python 默认起运算法（getYun 流派 1）
+  expected_if_dst_ignored:
+    year: 戊辰
+    month: 己未
+    day: 辛未
+    time: 戊子
+- id: bazi-36
+  category: 夏令时
+  description: 1990 年夏令时钟表 07:10，标准时 06:10：卯时；忽略夏令时会算成辰时
+  input:
+    calendar: solar
+    birth_local_clock: 1990-06-10 07:10
+    tz: Asia/Shanghai
+    place: 北京
+    lat: 39.9042
+    lon: 116.4074
+    gender: male
+    time_known: true
+    true_solar_time: false
+  derived:
+    utc: 1990-06-09 22:10
+    beijing_standard_time: 1990-06-10 06:10
+    utc_offset_at_birth: '9:00:00'
+  cross_check:
+    independent_pillars_next_day:
+      year: 庚午
+      month: 壬午
+      day: 丙午
+      time: 辛卯
+    sun_apparent_longitude_deg: 78.8015
+  expected:
+    pillars:
+      year: 庚午
+      month: 壬午
+      day: 丙午
+      time: 辛卯
+    day_master: 丙火
+    ten_gods_stems:
+      year: 偏财
+      month: 七杀
+      time: 正财
+    hidden_stems:
+      year: [丁, 己]
+      month: [丁, 己]
+      day: [丁, 己]
+      time: [乙]
+    nayin:
+      year: 路旁土
+      month: 杨柳木
+      day: 天河水
+      time: 松柏木
+    wuxing_count:
+      木: 1
+      火: 4
+      土: 0
+      金: 2
+      水: 1
+    lunar_date: 一九九〇年五月十八
+    dayun:
+      gender: male
+      start_after: 9年2个月0天
+      start_solar: '1999-08-10'
+      forward: true
+      sequence:
+      - ganzhi: 癸未
+        start_year: 1999
+        start_age: 10
+      - ganzhi: 甲申
+        start_year: 2009
+        start_age: 20
+      - ganzhi: 乙酉
+        start_year: 2019
+        start_age: 30
+      - ganzhi: 丙戌
+        start_year: 2029
+        start_age: 40
+      - ganzhi: 丁亥
+        start_year: 2039
+        start_age: 50
+      - ganzhi: 戊子
+        start_year: 2049
+        start_age: 60
+      - ganzhi: 己丑
+        start_year: 2059
+        start_age: 70
+      - ganzhi: 庚寅
+        start_year: 2069
+        start_age: 80
+      convention: lunar_python 默认起运算法（getYun 流派 1）
+  expected_if_dst_ignored:
+    year: 庚午
+    month: 壬午
+    day: 丙午
+    time: 壬辰
+- id: bazi-37
+  category: 夏令时
+  description: 1987 年夏令时钟表 15:30，标准时 14:30：未时；忽略夏令时会算成申时
+  input:
+    calendar: solar
+    birth_local_clock: 1987-08-20 15:30
+    tz: Asia/Shanghai
+    place: 上海
+    lat: 31.2304
+    lon: 121.4737
+    gender: female
+    time_known: true
+    true_solar_time: false
+  derived:
+    utc: 1987-08-20 06:30
+    beijing_standard_time: 1987-08-20 14:30
+    utc_offset_at_birth: '9:00:00'
+  cross_check:
+    independent_pillars_next_day:
+      year: 丁卯
+      month: 戊申
+      day: 辛丑
+      time: 乙未
+    sun_apparent_longitude_deg: 146.7219
+  expected:
+    pillars:
+      year: 丁卯
+      month: 戊申
+      day: 辛丑
+      time: 乙未
+    day_master: 辛金
+    ten_gods_stems:
+      year: 七杀
+      month: 正印
+      time: 偏财
+    hidden_stems:
+      year: [乙]
+      month: [庚, 壬, 戊]
+      day: [己, 癸, 辛]
+      time: [己, 丁, 乙]
+    nayin:
+      year: 炉中火
+      month: 大驿土
+      day: 壁上土
+      time: 沙中金
+    wuxing_count:
+      木: 2
+      火: 1
+      土: 3
+      金: 2
+      水: 0
+    lunar_date: 一九八七年闰六月廿六
+    dayun:
+      gender: female
+      start_after: 6年3个月20天
+      start_solar: '1993-12-10'
+      forward: true
+      sequence:
+      - ganzhi: 己酉
+        start_year: 1993
+        start_age: 7
+      - ganzhi: 庚戌
+        start_year: 2003
+        start_age: 17
+      - ganzhi: 辛亥
+        start_year: 2013
+        start_age: 27
+      - ganzhi: 壬子
+        start_year: 2023
+        start_age: 37
+      - ganzhi: 癸丑
+        start_year: 2033
+        start_age: 47
+      - ganzhi: 甲寅
+        start_year: 2043
+        start_age: 57
+      - ganzhi: 乙卯
+        start_year: 2053
+        start_age: 67
+      - ganzhi: 丙辰
+        start_year: 2063
+        start_age: 77
+      convention: lunar_python 默认起运算法（getYun 流派 1）
+  expected_if_dst_ignored:
+    year: 丁卯
+    month: 戊申
+    day: 辛丑
+    time: 丙申
+- id: bazi-38
+  category: 夏令时
+  description: 1991 年夏令时钟表 12:00，标准时 11:00：两者都在午时，作为对照用例
+  input:
+    calendar: solar
+    birth_local_clock: 1991-05-01 12:00
+    tz: Asia/Shanghai
+    place: 北京
+    lat: 39.9042
+    lon: 116.4074
+    gender: male
+    time_known: true
+    true_solar_time: false
+  derived:
+    utc: 1991-05-01 03:00
+    beijing_standard_time: 1991-05-01 11:00
+    utc_offset_at_birth: '9:00:00'
+  cross_check:
+    independent_pillars_next_day:
+      year: 辛未
+      month: 壬辰
+      day: 辛未
+      time: 甲午
+    sun_apparent_longitude_deg: 40.2553
+  expected:
+    pillars:
+      year: 辛未
+      month: 壬辰
+      day: 辛未
+      time: 甲午
+    day_master: 辛金
+    ten_gods_stems:
+      year: 比肩
+      month: 伤官
+      time: 正财
+    hidden_stems:
+      year: [己, 丁, 乙]
+      month: [戊, 乙, 癸]
+      day: [己, 丁, 乙]
+      time: [丁, 己]
+    nayin:
+      year: 路旁土
+      month: 长流水
+      day: 路旁土
+      time: 沙中金
+    wuxing_count:
+      木: 1
+      火: 1
+      土: 3
+      金: 2
+      水: 1
+    lunar_date: 一九九一年三月十七
+    dayun:
+      gender: male
+      start_after: 8年7个月10天
+      start_solar: '1999-12-11'
+      forward: false
+      sequence:
+      - ganzhi: 辛卯
+        start_year: 1999
+        start_age: 9
+      - ganzhi: 庚寅
+        start_year: 2009
+        start_age: 19
+      - ganzhi: 己丑
+        start_year: 2019
+        start_age: 29
+      - ganzhi: 戊子
+        start_year: 2029
+        start_age: 39
+      - ganzhi: 丁亥
+        start_year: 2039
+        start_age: 49
+      - ganzhi: 丙戌
+        start_year: 2049
+        start_age: 59
+      - ganzhi: 乙酉
+        start_year: 2059
+        start_age: 69
+      - ganzhi: 甲申
+        start_year: 2069
+        start_age: 79
+      convention: lunar_python 默认起运算法（getYun 流派 1）
+  expected_if_dst_ignored:
+    year: 辛未
+    month: 壬辰
+    day: 辛未
+    time: 甲午
+- id: bazi-39
+  category: 夏令时
+  description: 1986-05-04 02:30：夏令时开始当天 02:00 直接跳到 03:00，这个钟表时间不存在
+  input:
+    calendar: solar
+    birth_local_clock: 1986-05-04 02:30
+    tz: Asia/Shanghai
+    place: 北京
+    lat: 39.9042
+    lon: 116.4074
+    gender: male
+    time_known: true
+    true_solar_time: false
+  expected:
+    error: nonexistent_local_time
+    behavior: 不排盘；提示用户该时间不存在，并追问钟表时间是否已按夏令时调整（ask_user）
+  note: Asia/Shanghai 1986-05-04 02:00 → 03:00
+- id: bazi-40
+  category: 夏令时
+  description: 1986-09-14 01:30：夏令时结束当天 02:00 回拨到 01:00，这个钟表时间出现两次
+  input:
+    calendar: solar
+    birth_local_clock: 1986-09-14 01:30
+    tz: Asia/Shanghai
+    place: 北京
+    lat: 39.9042
+    lon: 116.4074
+    gender: male
+    time_known: true
+    true_solar_time: false
+  expected:
+    error: ambiguous_local_time
+    candidates_beijing_standard_time: ['1986-09-14 00:30（夏令时下的 01:30）', '1986-09-14 01:30（回拨后的 01:30）']
+    behavior: 不直接排盘；追问用户是回拨前还是回拨后，或同时给出两种结果并说明差异（日柱相同，时柱一个是子时一个是丑时）
+  note: Asia/Shanghai 1986-09-14 02:00(+9) → 01:00(+8)
+- id: bazi-41
+  category: 农历闰月输入
+  description: 用户给的是农历 2023 年闰二月十五 上午 10 点：必须先确认是否闰月，再转公历排盘
+  input:
+    calendar: lunar
+    lunar_date: 2023年闰二月十五 10:00
+    birth_local_clock: 2023-04-05 10:00
+    tz: Asia/Shanghai
+    place: 北京
+    lat: 39.9042
+    lon: 116.4074
+    gender: male
+    time_known: true
+    true_solar_time: false
+  derived:
+    utc: 2023-04-05 02:00
+    beijing_standard_time: 2023-04-05 10:00
+  cross_check:
+    independent_pillars_next_day:
+      year: 癸卯
+      month: 丙辰
+      day: 癸巳
+      time: 丁巳
+    sun_apparent_longitude_deg: 15.0321
+    lunar_month:
+      first_day_lunar_python: '2023-03-22'
+      new_moon_swiss_ephemeris_beijing: 2023-03-22 01:23
+      first_day_matches_new_moon: true
+      next_new_moon_beijing: 2023-04-20 12:12
+      first_zhongqi_after_new_moon_beijing: 2023-04-20 16:13
+      contains_zhongqi: false
+      is_leap_month: true
+      leap_rule_consistent: true
+  expected:
+    pillars:
+      year: 癸卯
+      month: 丙辰
+      day: 癸巳
+      time: 丁巳
+    day_master: 癸水
+    ten_gods_stems:
+      year: 比肩
+      month: 正财
+      time: 偏财
+    hidden_stems:
+      year: [乙]
+      month: [戊, 乙, 癸]
+      day: [丙, 庚, 戊]
+      time: [丙, 庚, 戊]
+    nayin:
+      year: 金箔金
+      month: 沙中土
+      day: 长流水
+      time: 沙中土
+    wuxing_count:
+      木: 1
+      火: 4
+      土: 1
+      金: 0
+      水: 2
+    lunar_date: 二〇二三年闰二月十五
+    dayun:
+      gender: male
+      start_after: 0年0个月0天
+      start_solar: '2023-04-05'
+      forward: false
+      sequence:
+      - ganzhi: 乙卯
+        start_year: 2023
+        start_age: 1
+      - ganzhi: 甲寅
+        start_year: 2033
+        start_age: 11
+      - ganzhi: 癸丑
+        start_year: 2043
+        start_age: 21
+      - ganzhi: 壬子
+        start_year: 2053
+        start_age: 31
+      - ganzhi: 辛亥
+        start_year: 2063
+        start_age: 41
+      - ganzhi: 庚戌
+        start_year: 2073
+        start_age: 51
+      - ganzhi: 己酉
+        start_year: 2083
+        start_age: 61
+      - ganzhi: 戊申
+        start_year: 2093
+        start_age: 71
+      convention: lunar_python 默认起运算法（getYun 流派 1）
+    solar_date: '2023-04-05'
+- id: bazi-42
+  category: 农历闰月输入
+  description: 用户给的是农历 2023 年二月十五（非闰，对照） 上午 10 点：必须先确认是否闰月，再转公历排盘
+  input:
+    calendar: lunar
+    lunar_date: 2023年二月十五 10:00
+    birth_local_clock: 2023-03-06 10:00
+    tz: Asia/Shanghai
+    place: 北京
+    lat: 39.9042
+    lon: 116.4074
+    gender: female
+    time_known: true
+    true_solar_time: false
+  derived:
+    utc: 2023-03-06 02:00
+    beijing_standard_time: 2023-03-06 10:00
+  cross_check:
+    independent_pillars_next_day:
+      year: 癸卯
+      month: 乙卯
+      day: 癸亥
+      time: 丁巳
+    sun_apparent_longitude_deg: 345.2251
+    lunar_month:
+      first_day_lunar_python: '2023-02-20'
+      new_moon_swiss_ephemeris_beijing: 2023-02-20 15:05
+      first_day_matches_new_moon: true
+      next_new_moon_beijing: 2023-03-22 01:23
+      first_zhongqi_after_new_moon_beijing: 2023-03-21 05:24
+      contains_zhongqi: true
+      is_leap_month: false
+      leap_rule_consistent: true
+  expected:
+    pillars:
+      year: 癸卯
+      month: 乙卯
+      day: 癸亥
+      time: 丁巳
+    day_master: 癸水
+    ten_gods_stems:
+      year: 比肩
+      month: 食神
+      time: 偏财
+    hidden_stems:
+      year: [乙]
+      month: [乙]
+      day: [壬, 甲]
+      time: [丙, 庚, 戊]
+    nayin:
+      year: 金箔金
+      month: 大溪水
+      day: 大海水
+      time: 沙中土
+    wuxing_count:
+      木: 3
+      火: 2
+      土: 0
+      金: 0
+      水: 3
+    lunar_date: 二〇二三年二月十五
+    dayun:
+      gender: female
+      start_after: 10年0个月0天
+      start_solar: '2033-03-06'
+      forward: true
+      sequence:
+      - ganzhi: 丙辰
+        start_year: 2033
+        start_age: 11
+      - ganzhi: 丁巳
+        start_year: 2043
+        start_age: 21
+      - ganzhi: 戊午
+        start_year: 2053
+        start_age: 31
+      - ganzhi: 己未
+        start_year: 2063
+        start_age: 41
+      - ganzhi: 庚申
+        start_year: 2073
+        start_age: 51
+      - ganzhi: 辛酉
+        start_year: 2083
+        start_age: 61
+      - ganzhi: 壬戌
+        start_year: 2093
+        start_age: 71
+      - ganzhi: 癸亥
+        start_year: 2103
+        start_age: 81
+      convention: lunar_python 默认起运算法（getYun 流派 1）
+    solar_date: '2023-03-06'
+- id: bazi-43
+  category: 农历闰月输入
+  description: 用户给的是农历 2020 年闰四月初八 上午 10 点：必须先确认是否闰月，再转公历排盘
+  input:
+    calendar: lunar
+    lunar_date: 2020年闰四月初八 10:00
+    birth_local_clock: 2020-05-30 10:00
+    tz: Asia/Shanghai
+    place: 北京
+    lat: 39.9042
+    lon: 116.4074
+    gender: male
+    time_known: true
+    true_solar_time: false
+  derived:
+    utc: 2020-05-30 02:00
+    beijing_standard_time: 2020-05-30 10:00
+  cross_check:
+    independent_pillars_next_day:
+      year: 庚子
+      month: 辛巳
+      day: 癸酉
+      time: 丁巳
+    sun_apparent_longitude_deg: 69.1345
+    lunar_month:
+      first_day_lunar_python: '2020-05-23'
+      new_moon_swiss_ephemeris_beijing: 2020-05-23 01:38
+      first_day_matches_new_moon: true
+      next_new_moon_beijing: 2020-06-21 14:41
+      first_zhongqi_after_new_moon_beijing: 2020-06-21 05:43
+      contains_zhongqi: false
+      is_leap_month: true
+      leap_rule_consistent: true
+  expected:
+    pillars:
+      year: 庚子
+      month: 辛巳
+      day: 癸酉
+      time: 丁巳
+    day_master: 癸水
+    ten_gods_stems:
+      year: 正印
+      month: 偏印
+      time: 偏财
+    hidden_stems:
+      year: [癸]
+      month: [丙, 庚, 戊]
+      day: [辛]
+      time: [丙, 庚, 戊]
+    nayin:
+      year: 壁上土
+      month: 白蜡金
+      day: 剑锋金
+      time: 沙中土
+    wuxing_count:
+      木: 0
+      火: 3
+      土: 0
+      金: 3
+      水: 2
+    lunar_date: 二〇二〇年闰四月初八
+    dayun:
+      gender: male
+      start_after: 2年0个月10天
+      start_solar: '2022-06-09'
+      forward: true
+      sequence:
+      - ganzhi: 壬午
+        start_year: 2022
+        start_age: 3
+      - ganzhi: 癸未
+        start_year: 2032
+        start_age: 13
+      - ganzhi: 甲申
+        start_year: 2042
+        start_age: 23
+      - ganzhi: 乙酉
+        start_year: 2052
+        start_age: 33
+      - ganzhi: 丙戌
+        start_year: 2062
+        start_age: 43
+      - ganzhi: 丁亥
+        start_year: 2072
+        start_age: 53
+      - ganzhi: 戊子
+        start_year: 2082
+        start_age: 63
+      - ganzhi: 己丑
+        start_year: 2092
+        start_age: 73
+      convention: lunar_python 默认起运算法（getYun 流派 1）
+    solar_date: '2020-05-30'
+  note: 2020 年闰四月：夏至（6 月 21 日 05:43）与下一个朔日（6 月 21 日 14:41）在同一天，按日期归入五月，所以闰四月没有中气。只按时刻比较会误判，这是闰月算法的经典陷阱
+- id: bazi-44
+  category: 农历闰月输入
+  description: 用户给的是农历 2017 年闰六月初一 上午 10 点：必须先确认是否闰月，再转公历排盘
+  input:
+    calendar: lunar
+    lunar_date: 2017年闰六月初一 10:00
+    birth_local_clock: 2017-07-23 10:00
+    tz: Asia/Shanghai
+    place: 北京
+    lat: 39.9042
+    lon: 116.4074
+    gender: female
+    time_known: true
+    true_solar_time: false
+  derived:
+    utc: 2017-07-23 02:00
+    beijing_standard_time: 2017-07-23 10:00
+  cross_check:
+    independent_pillars_next_day:
+      year: 丁酉
+      month: 丁未
+      day: 辛亥
+      time: 癸巳
+    sun_apparent_longitude_deg: 120.4276
+    lunar_month:
+      first_day_lunar_python: '2017-07-23'
+      new_moon_swiss_ephemeris_beijing: 2017-07-23 17:45
+      first_day_matches_new_moon: true
+      next_new_moon_beijing: 2017-08-22 02:30
+      first_zhongqi_after_new_moon_beijing: 2017-08-23 06:20
+      contains_zhongqi: false
+      is_leap_month: true
+      leap_rule_consistent: true
+  expected:
+    pillars:
+      year: 丁酉
+      month: 丁未
+      day: 辛亥
+      time: 癸巳
+    day_master: 辛金
+    ten_gods_stems:
+      year: 七杀
+      month: 七杀
+      time: 食神
+    hidden_stems:
+      year: [辛]
+      month: [己, 丁, 乙]
+      day: [壬, 甲]
+      time: [丙, 庚, 戊]
+    nayin:
+      year: 山下火
+      month: 天河水
+      day: 钗钏金
+      time: 长流水
+    wuxing_count:
+      木: 0
+      火: 3
+      土: 1
+      金: 2
+      水: 2
+    lunar_date: 二〇一七年闰六月初一
+    dayun:
+      gender: female
+      start_after: 5年1个月0天
+      start_solar: '2022-08-23'
+      forward: true
+      sequence:
+      - ganzhi: 戊申
+        start_year: 2022
+        start_age: 6
+      - ganzhi: 己酉
+        start_year: 2032
+        start_age: 16
+      - ganzhi: 庚戌
+        start_year: 2042
+        start_age: 26
+      - ganzhi: 辛亥
+        start_year: 2052
+        start_age: 36
+      - ganzhi: 壬子
+        start_year: 2062
+        start_age: 46
+      - ganzhi: 癸丑
+        start_year: 2072
+        start_age: 56
+      - ganzhi: 甲寅
+        start_year: 2082
+        start_age: 66
+      - ganzhi: 乙卯
+        start_year: 2092
+        start_age: 76
+      convention: lunar_python 默认起运算法（getYun 流派 1）
+    solar_date: '2017-07-23'
+- id: bazi-45
+  category: 农历闰月输入
+  description: 用户给的是农历 2012 年闰四月十五 上午 10 点：必须先确认是否闰月，再转公历排盘
+  input:
+    calendar: lunar
+    lunar_date: 2012年闰四月十五 10:00
+    birth_local_clock: 2012-06-04 10:00
+    tz: Asia/Shanghai
+    place: 北京
+    lat: 39.9042
+    lon: 116.4074
+    gender: male
+    time_known: true
+    true_solar_time: false
+  derived:
+    utc: 2012-06-04 02:00
+    beijing_standard_time: 2012-06-04 10:00
+  cross_check:
+    independent_pillars_next_day:
+      year: 壬辰
+      month: 乙巳
+      day: 丙申
+      time: 癸巳
+    sun_apparent_longitude_deg: 73.8662
+    lunar_month:
+      first_day_lunar_python: '2012-05-21'
+      new_moon_swiss_ephemeris_beijing: 2012-05-21 07:47
+      first_day_matches_new_moon: true
+      next_new_moon_beijing: 2012-06-19 23:02
+      first_zhongqi_after_new_moon_beijing: 2012-06-21 07:08
+      contains_zhongqi: false
+      is_leap_month: true
+      leap_rule_consistent: true
+  expected:
+    pillars:
+      year: 壬辰
+      month: 乙巳
+      day: 丙申
+      time: 癸巳
+    day_master: 丙火
+    ten_gods_stems:
+      year: 七杀
+      month: 正印
+      time: 正官
+    hidden_stems:
+      year: [戊, 乙, 癸]
+      month: [丙, 庚, 戊]
+      day: [庚, 壬, 戊]
+      time: [丙, 庚, 戊]
+    nayin:
+      year: 长流水
+      month: 覆灯火
+      day: 山下火
+      time: 长流水
+    wuxing_count:
+      木: 1
+      火: 3
+      土: 1
+      金: 1
+      水: 2
+    lunar_date: 二〇一二年闰四月十五
+    dayun:
+      gender: male
+      start_after: 0年4个月20天
+      start_solar: '2012-10-24'
+      forward: true
+      sequence:
+      - ganzhi: 丙午
+        start_year: 2012
+        start_age: 1
+      - ganzhi: 丁未
+        start_year: 2022
+        start_age: 11
+      - ganzhi: 戊申
+        start_year: 2032
+        start_age: 21
+      - ganzhi: 己酉
+        start_year: 2042
+        start_age: 31
+      - ganzhi: 庚戌
+        start_year: 2052
+        start_age: 41
+      - ganzhi: 辛亥
+        start_year: 2062
+        start_age: 51
+      - ganzhi: 壬子
+        start_year: 2072
+        start_age: 61
+      - ganzhi: 癸丑
+        start_year: 2082
+        start_age: 71
+      convention: lunar_python 默认起运算法（getYun 流派 1）
+    solar_date: '2012-06-04'
+- id: bazi-46
+  category: 农历闰月输入
+  description: 用户给的是农历 2006 年闰七月初七 上午 10 点：必须先确认是否闰月，再转公历排盘
+  input:
+    calendar: lunar
+    lunar_date: 2006年闰七月初七 10:00
+    birth_local_clock: 2006-08-30 10:00
+    tz: Asia/Shanghai
+    place: 北京
+    lat: 39.9042
+    lon: 116.4074
+    gender: female
+    time_known: true
+    true_solar_time: false
+  derived:
+    utc: 2006-08-30 02:00
+    beijing_standard_time: 2006-08-30 10:00
+  cross_check:
+    independent_pillars_next_day:
+      year: 丙戌
+      month: 丙申
+      day: 辛卯
+      time: 癸巳
+    sun_apparent_longitude_deg: 156.5813
+    lunar_month:
+      first_day_lunar_python: '2006-08-24'
+      new_moon_swiss_ephemeris_beijing: 2006-08-24 03:09
+      first_day_matches_new_moon: true
+      next_new_moon_beijing: 2006-09-22 19:45
+      first_zhongqi_after_new_moon_beijing: 2006-09-23 12:03
+      contains_zhongqi: false
+      is_leap_month: true
+      leap_rule_consistent: true
+  expected:
+    pillars:
+      year: 丙戌
+      month: 丙申
+      day: 辛卯
+      time: 癸巳
+    day_master: 辛金
+    ten_gods_stems:
+      year: 正官
+      month: 正官
+      time: 食神
+    hidden_stems:
+      year: [戊, 辛, 丁]
+      month: [庚, 壬, 戊]
+      day: [乙]
+      time: [丙, 庚, 戊]
+    nayin:
+      year: 屋上土
+      month: 山下火
+      day: 松柏木
+      time: 长流水
+    wuxing_count:
+      木: 1
+      火: 3
+      土: 1
+      金: 2
+      水: 1
+    lunar_date: 二〇〇六年闰七月初七
+    dayun:
+      gender: female
+      start_after: 7年6个月0天
+      start_solar: '2014-02-28'
+      forward: false
+      sequence:
+      - ganzhi: 乙未
+        start_year: 2014
+        start_age: 9
+      - ganzhi: 甲午
+        start_year: 2024
+        start_age: 19
+      - ganzhi: 癸巳
+        start_year: 2034
+        start_age: 29
+      - ganzhi: 壬辰
+        start_year: 2044
+        start_age: 39
+      - ganzhi: 辛卯
+        start_year: 2054
+        start_age: 49
+      - ganzhi: 庚寅
+        start_year: 2064
+        start_age: 59
+      - ganzhi: 己丑
+        start_year: 2074
+        start_age: 69
+      - ganzhi: 戊子
+        start_year: 2084
+        start_age: 79
+      convention: lunar_python 默认起运算法（getYun 流派 1）
+    solar_date: '2006-08-30'
+- id: bazi-47
+  category: 春节与立春
+  description: 2023-01-25 已过春节（农历癸卯年正月初四），但还没到立春：年柱仍是壬寅
+  input:
+    calendar: solar
+    birth_local_clock: 2023-01-25 09:00
+    tz: Asia/Shanghai
+    place: 北京
+    lat: 39.9042
+    lon: 116.4074
+    gender: female
+    time_known: true
+    true_solar_time: false
+  derived:
+    utc: 2023-01-25 01:00
+    beijing_standard_time: 2023-01-25 09:00
+  cross_check:
+    independent_pillars_next_day:
+      year: 壬寅
+      month: 癸丑
+      day: 癸未
+      time: 丁巳
+    sun_apparent_longitude_deg: 304.7713
+    solar_term:
+      name: 立春
+      instant_lunar_python: '2023-02-04 10:42:33'
+      instant_swiss_ephemeris: '2023-02-04 10:42:33'
+      diff_seconds: 0.2
+      birth_minus_term_min: -14502.6
+  expected:
+    pillars:
+      year: 壬寅
+      month: 癸丑
+      day: 癸未
+      time: 丁巳
+    day_master: 癸水
+    ten_gods_stems:
+      year: 劫财
+      month: 比肩
+      time: 偏财
+    hidden_stems:
+      year: [甲, 丙, 戊]
+      month: [己, 癸, 辛]
+      day: [己, 丁, 乙]
+      time: [丙, 庚, 戊]
+    nayin:
+      year: 金箔金
+      month: 桑柘木
+      day: 杨柳木
+      time: 沙中土
+    wuxing_count:
+      木: 1
+      火: 2
+      土: 2
+      金: 0
+      水: 3
+    lunar_date: 二〇二三年正月初四
+    dayun:
+      gender: female
+      start_after: 6年6个月0天
+      start_solar: '2029-07-25'
+      forward: false
+      sequence:
+      - ganzhi: 壬子
+        start_year: 2029
+        start_age: 7
+      - ganzhi: 辛亥
+        start_year: 2039
+        start_age: 17
+      - ganzhi: 庚戌
+        start_year: 2049
+        start_age: 27
+      - ganzhi: 己酉
+        start_year: 2059
+        start_age: 37
+      - ganzhi: 戊申
+        start_year: 2069
+        start_age: 47
+      - ganzhi: 丁未
+        start_year: 2079
+        start_age: 57
+      - ganzhi: 丙午
+        start_year: 2089
+        start_age: 67
+      - ganzhi: 乙巳
+        start_year: 2099
+        start_age: 77
+      convention: lunar_python 默认起运算法（getYun 流派 1）
+- id: bazi-48
+  category: 春节与立春
+  description: 2021-02-08 已过立春但还没到春节（农历仍是庚子年腊月）：年柱已是辛丑
+  input:
+    calendar: solar
+    birth_local_clock: 2021-02-08 16:00
+    tz: Asia/Shanghai
+    place: 北京
+    lat: 39.9042
+    lon: 116.4074
+    gender: male
+    time_known: true
+    true_solar_time: false
+  derived:
+    utc: 2021-02-08 08:00
+    beijing_standard_time: 2021-02-08 16:00
+  cross_check:
+    independent_pillars_next_day:
+      year: 辛丑
+      month: 庚寅
+      day: 丁亥
+      time: 戊申
+    sun_apparent_longitude_deg: 319.7735
+    solar_term:
+      name: 立春
+      instant_lunar_python: '2021-02-03 22:58:48'
+      instant_swiss_ephemeris: '2021-02-03 22:58:47'
+      diff_seconds: 0.4
+      birth_minus_term_min: 6781.2
+  expected:
+    pillars:
+      year: 辛丑
+      month: 庚寅
+      day: 丁亥
+      time: 戊申
+    day_master: 丁火
+    ten_gods_stems:
+      year: 偏财
+      month: 正财
+      time: 伤官
+    hidden_stems:
+      year: [己, 癸, 辛]
+      month: [甲, 丙, 戊]
+      day: [壬, 甲]
+      time: [庚, 壬, 戊]
+    nayin:
+      year: 壁上土
+      month: 松柏木
+      day: 屋上土
+      time: 大驿土
+    wuxing_count:
+      木: 1
+      火: 1
+      土: 2
+      金: 3
+      水: 1
+    lunar_date: 二〇二〇年腊月廿七
+    dayun:
+      gender: male
+      start_after: 1年7个月0天
+      start_solar: '2022-09-08'
+      forward: false
+      sequence:
+      - ganzhi: 己丑
+        start_year: 2022
+        start_age: 2
+      - ganzhi: 戊子
+        start_year: 2032
+        start_age: 12
+      - ganzhi: 丁亥
+        start_year: 2042
+        start_age: 22
+      - ganzhi: 丙戌
+        start_year: 2052
+        start_age: 32
+      - ganzhi: 乙酉
+        start_year: 2062
+        start_age: 42
+      - ganzhi: 甲申
+        start_year: 2072
+        start_age: 52
+      - ganzhi: 癸未
+        start_year: 2082
+        start_age: 62
+      - ganzhi: 壬午
+        start_year: 2092
+        start_age: 72
+      convention: lunar_python 默认起运算法（getYun 流派 1）
+- id: bazi-49
+  category: 时辰未知
+  description: 只知道出生日期 1998-04-12：只排年、月、日三柱，时柱、大运起运时刻不输出
+  input:
+    calendar: solar
+    birth_local_clock: '1998-04-12'
+    tz: Asia/Shanghai
+    place: 北京
+    lat: 39.9042
+    lon: 116.4074
+    gender: male
+    time_known: false
+    true_solar_time: false
+  derived:
+    utc: 1998-04-12 04:00
+    beijing_standard_time: 1998-04-12 12:00
+  cross_check:
+    independent_pillars_next_day:
+      year: 戊寅
+      month: 丙辰
+      day: 己丑
+    sun_apparent_longitude_deg: 22.0523
+  expected:
+    pillars:
+      year: 戊寅
+      month: 丙辰
+      day: 己丑
+    day_master: 己土
+    ten_gods_stems:
+      year: 劫财
+      month: 正印
+    hidden_stems:
+      year: [甲, 丙, 戊]
+      month: [戊, 乙, 癸]
+      day: [己, 癸, 辛]
+    nayin:
+      year: 城头土
+      month: 沙中土
+      day: 霹雳火
+    wuxing_count:
+      木: 1
+      火: 1
+      土: 4
+      金: 0
+      水: 0
+    lunar_date: 一九九八年三月十六
+- id: bazi-50
+  category: 时辰未知
+  description: 只知道出生日期 2004-02-04（立春当天，立春时刻在 19:56 左右）：年柱、月柱无法确定，必须追问出生时间
+  input:
+    calendar: solar
+    birth_local_clock: '2004-02-04'
+    tz: Asia/Shanghai
+    place: 北京
+    lat: 39.9042
+    lon: 116.4074
+    gender: female
+    time_known: false
+    true_solar_time: false
+  derived:
+    utc: 2004-02-04 04:00
+    beijing_standard_time: 2004-02-04 12:00
+  cross_check:
+    independent_pillars_next_day:
+      year: 癸未
+      month: 乙丑
+      day: 癸丑
+    sun_apparent_longitude_deg: 314.6647
+    solar_term:
+      name: 立春
+      instant_lunar_python: '2004-02-04 19:56:13'
+      instant_swiss_ephemeris: '2004-02-04 19:56:11'
+      diff_seconds: 1.1
+      birth_minus_term_min: -476.2
+  expected:
+    pillars:
+      year: 癸未
+      month: 乙丑
+      day: 癸丑
+    day_master: 癸水
+    ten_gods_stems:
+      year: 比肩
+      month: 食神
+    hidden_stems:
+      year: [己, 丁, 乙]
+      month: [己, 癸, 辛]
+      day: [己, 癸, 辛]
+    nayin:
+      year: 杨柳木
+      month: 海中金
+      day: 桑柘木
+    wuxing_count:
+      木: 1
+      火: 0
+      土: 3
+      金: 0
+      水: 2
+    lunar_date: 二〇〇四年正月十四
+  note: 时辰未知又恰逢节气当天时，三柱里的年柱 / 月柱都依赖具体时刻；按中午计算的结果只作参考，期望行为是 ask_user
+  expected_behavior: ask_user：询问出生时间；若用户仍不知道，同时给出节气前后两种年柱/月柱，并在 confidence 中说明

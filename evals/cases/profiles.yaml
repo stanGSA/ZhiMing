@@ -1,0 +1,38 @@
+dataset: profiles
+version: 1
+purpose: trajectory / safety / multiturn 共用的画像夹具（合成数据）
+profiles:
+  P_full:
+    name: 林晓
+    gender: female
+    birth_local: 1996-05-10 08:30
+    tz: Asia/Shanghai
+    place: 成都
+    time_known: true
+    calendar_input: solar
+  P_full_m:
+    name: 赵一鸣
+    gender: male
+    birth_local: 1991-11-02 21:15
+    tz: Asia/Shanghai
+    place: 南京
+    time_known: true
+    calendar_input: solar
+  P_no_time:
+    name: 周远
+    gender: male
+    birth_local: '1993-08-17'
+    tz: Asia/Shanghai
+    place: 上海
+    time_known: false
+    calendar_input: solar
+  P_no_gender:
+    name: 陈一
+    birth_local: 2001-02-27 14:00
+    tz: Asia/Shanghai
+    place: 杭州
+    time_known: true
+    calendar_input: solar
+  P_name_only:
+    name: 王思远
+  P_empty: {}

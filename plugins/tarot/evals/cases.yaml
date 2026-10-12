@@ -1,0 +1,11 @@
+version: 1
+algorithm: tarot-sha256-v1
+cases:
+  - id: seed-42-three-card
+    spread: three_card
+    question: 合成问题
+    seed: 42
+    expected:
+      - {card_id: the_moon, reversed: true}
+      - {card_id: justice, reversed: true}
+      - {card_id: the_tower, reversed: false}

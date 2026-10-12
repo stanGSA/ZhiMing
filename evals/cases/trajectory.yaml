@@ -1,0 +1,933 @@
+dataset: trajectory
+version: 1
+status: draft_needs_review
+purpose: 工具轨迹评估：工具选择 F1、体系越界率、追问误开新 reading 率、是否在缺信息时先追问
+how_to_score:
+  multi_agent: 比较实际咨询的专家集合与 expected.specialists（以及 orchestrator_tools）
+  single_agent: 比较实际调用的计算工具集合与 expected.tools_single
+  f1: 以集合计算 precision / recall；optional_tools 出现与否都不扣分；forbidden_tools 出现记一次越界
+  ordering: compute_transits 必须在 compute_natal_chart 之后，compute_bazi_period 必须在 compute_bazi 之后
+  ask_user: '带 first_action: ask_user 的用例，第一轮只允许 get_profile 与 ask_user；评估脚本用 after_user_answers 模拟用户补充信息后的第二轮'
+  not_scored: get_profile 在会话开始自动调用，不计入 F1
+profiles_file: profiles.yaml
+histories:
+  H_timing:
+    reading_id: r-1001
+    question: 下个月适合跳槽吗？
+    systems_used: [astro, bazi, tarot]
+    tarot:
+      spread: three_card
+      seed: 41237
+      cards:
+      - pos: 1
+        label: 过去
+        card: 宝剑六
+        reversed: false
+      - pos: 2
+        label: 现在
+        card: 高塔
+        reversed: false
+      - pos: 3
+        label: 未来
+        card: 星星
+        reversed: false
+    summary: 下个月可以动，但上旬压力大、中下旬更适合落地；占星与八字在“压力来源”上有分歧。
+    timeframe: 2026-11-07/2026-12-06
+  H_decision:
+    reading_id: r-1002
+    question: A 公司还是 B 公司的 offer？
+    systems_used: [tarot]
+    tarot:
+      spread: decision
+      seed: 90211
+      cards:
+      - pos: 1
+        label: 现状
+        card: 权杖二
+        reversed: false
+      - pos: 2
+        label: 选 A
+        card: 星币八
+        reversed: false
+      - pos: 3
+        label: 选 B
+        card: 圣杯七
+        reversed: true
+    summary: A 更稳、成长路径清晰；B 吸引力强但信息不明朗。
+  H_dream:
+    reading_id: r-1003
+    question: 昨晚梦到掉牙
+    systems_used: [dream]
+    dream_symbols: [掉牙]
+    summary: 多与对失控、变化的担心有关，不代表现实中会发生坏事。
+cases:
+- id: traj-001
+  type: timing
+  question: 下个月适合跳槽吗？
+  profile: P_full
+  expected:
+    specialists: [astro, bazi, tarot]
+    orchestrator_tools: [consult_specialist, submit_reading]
+    tools_single: [compute_natal_chart, compute_transits, compute_bazi, compute_bazi_period, draw_tarot, submit_reading]
+    tarot_spread: three_card
+    timeframe: 下个月
+    forbidden_tools: [analyze_name, lookup_dream_symbols, daily_fortune]
+- id: traj-002
+  type: timing
+  question: 今年下半年感情会有进展吗？
+  profile: P_full_m
+  expected:
+    specialists: [astro, bazi, tarot]
+    orchestrator_tools: [consult_specialist, submit_reading]
+    tools_single: [compute_natal_chart, compute_transits, compute_bazi, compute_bazi_period, draw_tarot, submit_reading]
+    tarot_spread: three_card
+    timeframe: 今年下半年
+    forbidden_tools: [analyze_name, lookup_dream_symbols, daily_fortune]
+- id: traj-003
+  type: timing
+  question: 什么时候适合搬家，最近三个月里挑一挑
+  profile: P_full
+  expected:
+    specialists: [astro, bazi]
+    orchestrator_tools: [consult_specialist, submit_reading]
+    tools_single: [compute_natal_chart, compute_transits, compute_bazi, compute_bazi_period, submit_reading]
+    timeframe: 未来三个月
+    forbidden_tools: [analyze_name, lookup_dream_symbols, daily_fortune]
+    optional_tools: [draw_tarot]
+  note: 挑日子以行运和流日为主，塔罗可选
+- id: traj-004
+  type: timing
+  question: 明年考研上岸的机会大吗？
+  profile: P_full_m
+  expected:
+    specialists: [astro, bazi, tarot]
+    orchestrator_tools: [consult_specialist, submit_reading]
+    tools_single: [compute_natal_chart, compute_transits, compute_bazi, compute_bazi_period, draw_tarot, submit_reading]
+    tarot_spread: three_card
+    timeframe: 明年
+    forbidden_tools: [analyze_name, lookup_dream_symbols, daily_fortune]
+- id: traj-005
+  type: timing
+  question: 这周五去面试顺不顺？
+  profile: P_full
+  expected:
+    specialists: [astro, bazi, tarot]
+    orchestrator_tools: [consult_specialist, submit_reading]
+    tools_single: [compute_natal_chart, compute_transits, compute_bazi, compute_bazi_period, draw_tarot, submit_reading]
+    tarot_spread: single
+    timeframe: 本周五
+    forbidden_tools: [analyze_name, lookup_dream_symbols, daily_fortune]
+  note: 单日问题：行运取当天，八字取流日
+- id: traj-006
+  type: timing
+  question: 我想 12 月开工作室，时机合适吗？
+  profile: P_no_time
+  expected:
+    specialists: [astro, bazi, tarot]
+    orchestrator_tools: [consult_specialist, submit_reading]
+    tools_single: [compute_natal_chart, compute_transits, compute_bazi, compute_bazi_period, draw_tarot, submit_reading]
+    tarot_spread: three_card
+    timeframe: 12 月
+    forbidden_tools: [analyze_name, lookup_dream_symbols, daily_fortune]
+  note: 出生时间未知：画像已记录 time_known=false，不应再次追问；宫位与时柱不可用
+- id: traj-007
+  type: timing
+  question: 下个月适合跳槽吗？
+  profile: P_empty
+  expected:
+    first_action: ask_user
+    ask_for: [birth_datetime, birth_place]
+    before_answer:
+      specialists: []
+      tools_single: []
+    after_user_answers:
+      specialists: [astro, bazi, tarot]
+      tools_single: [compute_natal_chart, compute_transits, compute_bazi, compute_bazi_period, draw_tarot, submit_reading]
+    tarot_spread: three_card
+    forbidden_tools: [analyze_name, lookup_dream_symbols, daily_fortune]
+  note: 画像为空：先追问出生日期时间与地点（性别可一并问）
+- id: traj-008
+  type: timing
+  question: 未来十年哪几年事业运最好？
+  profile: P_no_gender
+  expected:
+    first_action: ask_user
+    ask_for: [gender]
+    before_answer:
+      specialists: []
+      tools_single: []
+    after_user_answers:
+      specialists: [astro, bazi]
+      tools_single: [compute_natal_chart, compute_transits, compute_bazi, compute_bazi_period, submit_reading]
+    forbidden_tools: [draw_tarot, analyze_name, lookup_dream_symbols, daily_fortune]
+  note: 十年跨度需要八字大运，大运依赖性别；其余信息齐全，只追问性别
+- id: traj-009
+  type: timing
+  question: 春节前适合表白吗？
+  profile: P_full_m
+  expected:
+    specialists: [astro, bazi, tarot]
+    orchestrator_tools: [consult_specialist, submit_reading]
+    tools_single: [compute_natal_chart, compute_transits, compute_bazi, compute_bazi_period, draw_tarot, submit_reading]
+    tarot_spread: three_card
+    timeframe: 春节前
+    forbidden_tools: [analyze_name, lookup_dream_symbols, daily_fortune]
+- id: traj-010
+  type: timing
+  question: 最近两周身体不太舒服，是不是运势不好？
+  profile: P_full
+  expected:
+    specialists: [astro, bazi]
+    orchestrator_tools: [consult_specialist, submit_reading]
+    tools_single: [compute_natal_chart, compute_transits, compute_bazi, compute_bazi_period, submit_reading]
+    timeframe: 最近两周
+    forbidden_tools: [analyze_name, lookup_dream_symbols, daily_fortune]
+    optional_tools: [draw_tarot]
+  note: 涉及健康：可做反思性解读，但 safety.flag 必须为 true 并建议就医（见 safety 数据集）
+- id: traj-011
+  type: decision
+  question: A 公司还是 B 公司的 offer？
+  profile: P_full
+  expected:
+    specialists: [tarot]
+    orchestrator_tools: [consult_specialist, submit_reading]
+    tools_single: [draw_tarot, submit_reading]
+    tarot_spread: decision
+    forbidden_tools: [compute_natal_chart, compute_transits, analyze_name, lookup_dream_symbols, daily_fortune]
+    optional_tools: [compute_bazi, compute_bazi_period]
+- id: traj-012
+  type: decision
+  question: 要不要和男朋友分手？
+  profile: P_full
+  expected:
+    specialists: [tarot]
+    orchestrator_tools: [consult_specialist, submit_reading]
+    tools_single: [draw_tarot, submit_reading]
+    tarot_spread: decision
+    forbidden_tools: [compute_natal_chart, compute_transits, compute_bazi, compute_bazi_period, analyze_name, lookup_dream_symbols, daily_fortune]
+- id: traj-013
+  type: decision
+  question: 留在北京还是回成都发展？
+  profile: P_full
+  expected:
+    specialists: [tarot]
+    orchestrator_tools: [consult_specialist, submit_reading]
+    tools_single: [draw_tarot, submit_reading]
+    tarot_spread: decision
+    forbidden_tools: [analyze_name, lookup_dream_symbols, daily_fortune]
+    optional_tools: [compute_bazi, compute_bazi_period, compute_natal_chart, compute_transits]
+- id: traj-014
+  type: decision
+  question: 读博还是直接工作？
+  profile: P_full_m
+  expected:
+    specialists: [tarot]
+    orchestrator_tools: [consult_specialist, submit_reading]
+    tools_single: [draw_tarot, submit_reading]
+    tarot_spread: decision
+    forbidden_tools: [compute_natal_chart, compute_transits, analyze_name, lookup_dream_symbols, daily_fortune]
+    optional_tools: [compute_bazi, compute_bazi_period]
+- id: traj-015
+  type: decision
+  question: 该不该接受这份异地的工作？
+  profile: P_no_time
+  expected:
+    specialists: [tarot]
+    orchestrator_tools: [consult_specialist, submit_reading]
+    tools_single: [draw_tarot, submit_reading]
+    tarot_spread: decision
+    forbidden_tools: [compute_natal_chart, compute_transits, compute_bazi, compute_bazi_period, analyze_name, lookup_dream_symbols, daily_fortune]
+- id: traj-016
+  type: decision
+  question: 租房还是买房？
+  profile: P_full_m
+  expected:
+    specialists: [tarot]
+    orchestrator_tools: [consult_specialist, submit_reading]
+    tools_single: [draw_tarot, submit_reading]
+    tarot_spread: decision
+    forbidden_tools: [compute_natal_chart, compute_transits, compute_bazi, compute_bazi_period, analyze_name, lookup_dream_symbols, daily_fortune]
+  note: 涉及大额财务决定：可以给反思视角，但不得给出确定性的财务建议
+- id: traj-017
+  type: decision
+  question: 两个名字给孩子选哪个：思远还是思源？
+  profile: P_full
+  expected:
+    specialists: [name]
+    orchestrator_tools: [consult_specialist, submit_reading]
+    tools_single: [analyze_name, submit_reading]
+    forbidden_tools: [compute_natal_chart, compute_transits, compute_bazi, compute_bazi_period, lookup_dream_symbols, daily_fortune]
+    optional_tools: [draw_tarot]
+  note: 比较两个名字属于姓名问题，不应走塔罗决策阵
+- id: traj-018
+  type: decision
+  question: 要不要报名下个月的马拉松？
+  profile: P_full
+  expected:
+    specialists: [tarot]
+    orchestrator_tools: [consult_specialist, submit_reading]
+    tools_single: [draw_tarot, submit_reading]
+    tarot_spread: decision
+    forbidden_tools: [compute_natal_chart, compute_transits, compute_bazi, compute_bazi_period, analyze_name, lookup_dream_symbols, daily_fortune]
+- id: traj-019
+  type: decision
+  question: 现在要不要辞职去旅行一年？
+  profile: P_empty
+  expected:
+    specialists: [tarot]
+    orchestrator_tools: [consult_specialist, submit_reading]
+    tools_single: [draw_tarot, submit_reading]
+    tarot_spread: decision
+    forbidden_tools: [compute_natal_chart, compute_transits, compute_bazi, compute_bazi_period, analyze_name, lookup_dream_symbols, daily_fortune]
+  note: 塔罗不需要出生信息：画像为空也不应追问
+- id: traj-020
+  type: decision
+  question: 这次合伙创业要不要加入？
+  profile: P_full_m
+  expected:
+    specialists: [tarot]
+    orchestrator_tools: [consult_specialist, submit_reading]
+    tools_single: [draw_tarot, submit_reading]
+    tarot_spread: decision
+    forbidden_tools: [compute_natal_chart, compute_transits, analyze_name, lookup_dream_symbols, daily_fortune]
+    optional_tools: [compute_bazi, compute_bazi_period]
+- id: traj-021
+  type: trait
+  question: 我适合做什么方向的工作？
+  profile: P_full
+  expected:
+    specialists: [astro, bazi]
+    orchestrator_tools: [consult_specialist, submit_reading]
+    tools_single: [compute_natal_chart, compute_bazi, submit_reading]
+    forbidden_tools: [compute_transits, compute_bazi_period, draw_tarot, analyze_name, lookup_dream_symbols, daily_fortune]
+- id: traj-022
+  type: trait
+  question: 我的性格有什么优缺点？
+  profile: P_full_m
+  expected:
+    specialists: [astro, bazi]
+    orchestrator_tools: [consult_specialist, submit_reading]
+    tools_single: [compute_natal_chart, compute_bazi, submit_reading]
+    forbidden_tools: [compute_transits, compute_bazi_period, draw_tarot, analyze_name, lookup_dream_symbols, daily_fortune]
+- id: traj-023
+  type: trait
+  question: 我天生适合创业吗？
+  profile: P_full
+  expected:
+    specialists: [astro, bazi]
+    orchestrator_tools: [consult_specialist, submit_reading]
+    tools_single: [compute_natal_chart, compute_bazi, submit_reading]
+    forbidden_tools: [compute_transits, compute_bazi_period, draw_tarot, analyze_name, lookup_dream_symbols, daily_fortune]
+- id: traj-024
+  type: trait
+  question: 我在感情里是什么样的人？
+  profile: P_full_m
+  expected:
+    specialists: [astro, bazi]
+    orchestrator_tools: [consult_specialist, submit_reading]
+    tools_single: [compute_natal_chart, compute_bazi, submit_reading]
+    forbidden_tools: [compute_transits, compute_bazi_period, draw_tarot, analyze_name, lookup_dream_symbols, daily_fortune]
+- id: traj-025
+  type: trait
+  question: 我的星盘有什么特点？
+  profile: P_full
+  expected:
+    specialists: [astro]
+    orchestrator_tools: [consult_specialist, submit_reading]
+    tools_single: [compute_natal_chart, submit_reading]
+    forbidden_tools: [compute_transits, compute_bazi, compute_bazi_period, draw_tarot, analyze_name, lookup_dream_symbols, daily_fortune]
+  note: 明确只问星盘
+- id: traj-026
+  type: trait
+  question: 我的命局五行缺什么？
+  profile: P_full_m
+  expected:
+    specialists: [bazi]
+    orchestrator_tools: [consult_specialist, submit_reading]
+    tools_single: [compute_bazi, submit_reading]
+    forbidden_tools: [compute_natal_chart, compute_transits, compute_bazi_period, draw_tarot, analyze_name, lookup_dream_symbols, daily_fortune]
+  note: 明确只问八字
+- id: traj-027
+  type: trait
+  question: 我适合学艺术还是理工？
+  profile: P_no_time
+  expected:
+    specialists: [astro, bazi]
+    orchestrator_tools: [consult_specialist, submit_reading]
+    tools_single: [compute_natal_chart, compute_bazi, submit_reading]
+    forbidden_tools: [compute_transits, compute_bazi_period, draw_tarot, analyze_name, lookup_dream_symbols, daily_fortune]
+  note: 出生时间未知：不得引用宫位、上升和时柱
+- id: traj-028
+  type: trait
+  question: 帮我看看我是什么性格
+  profile: P_empty
+  expected:
+    first_action: ask_user
+    ask_for: [birth_datetime, birth_place]
+    before_answer:
+      specialists: []
+      tools_single: []
+    after_user_answers:
+      specialists: [astro, bazi]
+      tools_single: [compute_natal_chart, compute_bazi, submit_reading]
+    forbidden_tools: [compute_transits, compute_bazi_period, draw_tarot, analyze_name, lookup_dream_symbols, daily_fortune]
+- id: traj-029
+  type: trait
+  question: 我的上升星座是什么？
+  profile: P_no_time
+  expected:
+    first_action: ask_user
+    ask_for: [birth_time]
+    before_answer:
+      specialists: []
+      tools_single: []
+    after_user_answers:
+      specialists: [astro]
+      tools_single: [compute_natal_chart, submit_reading]
+    forbidden_tools: [compute_transits, compute_bazi, compute_bazi_period, draw_tarot, analyze_name, lookup_dream_symbols, daily_fortune]
+  note: 上升必须有出生时间；画像里 time_known=false，应追问一次，用户仍不知道就直说无法确定
+- id: traj-030
+  type: trait
+  question: 我天生财运怎么样？
+  profile: P_full
+  expected:
+    specialists: [astro, bazi]
+    orchestrator_tools: [consult_specialist, submit_reading]
+    tools_single: [compute_natal_chart, compute_bazi, submit_reading]
+    forbidden_tools: [compute_transits, compute_bazi_period, draw_tarot, analyze_name, lookup_dream_symbols, daily_fortune]
+  note: 可以讲倾向，不得给出具体投资建议
+- id: traj-031
+  type: daily
+  question: 今天运势怎么样？
+  profile: P_full
+  expected:
+    specialists: []
+    orchestrator_tools: [daily_fortune, submit_reading]
+    tools_single: [daily_fortune, submit_reading]
+    forbidden_tools: [compute_natal_chart, compute_transits, compute_bazi, compute_bazi_period, analyze_name, lookup_dream_symbols]
+    optional_tools: [draw_tarot]
+- id: traj-032
+  type: daily
+  question: 今天适合签合同吗？
+  profile: P_full_m
+  expected:
+    specialists: []
+    orchestrator_tools: [daily_fortune, submit_reading]
+    tools_single: [daily_fortune, submit_reading]
+    forbidden_tools: [compute_natal_chart, compute_transits, compute_bazi, compute_bazi_period, analyze_name, lookup_dream_symbols]
+    optional_tools: [draw_tarot]
+- id: traj-033
+  type: daily
+  question: 今日运势
+  profile: P_no_time
+  expected:
+    specialists: []
+    orchestrator_tools: [daily_fortune, submit_reading]
+    tools_single: [daily_fortune, submit_reading]
+    forbidden_tools: [compute_natal_chart, compute_transits, compute_bazi, compute_bazi_period, analyze_name, lookup_dream_symbols]
+    optional_tools: [draw_tarot]
+- id: traj-034
+  type: daily
+  question: 今天出门要注意什么？
+  profile: P_full
+  expected:
+    specialists: []
+    orchestrator_tools: [daily_fortune, submit_reading]
+    tools_single: [daily_fortune, submit_reading]
+    forbidden_tools: [compute_natal_chart, compute_transits, compute_bazi, compute_bazi_period, analyze_name, lookup_dream_symbols]
+    optional_tools: [draw_tarot]
+- id: traj-035
+  type: daily
+  question: 今天工作顺不顺？
+  profile: P_full_m
+  expected:
+    specialists: []
+    orchestrator_tools: [daily_fortune, submit_reading]
+    tools_single: [daily_fortune, submit_reading]
+    forbidden_tools: [compute_natal_chart, compute_transits, compute_bazi, compute_bazi_period, analyze_name, lookup_dream_symbols]
+    optional_tools: [draw_tarot]
+- id: traj-036
+  type: daily
+  question: 今天的幸运色是什么？
+  profile: P_full
+  expected:
+    specialists: []
+    orchestrator_tools: [daily_fortune, submit_reading]
+    tools_single: [daily_fortune, submit_reading]
+    forbidden_tools: [compute_natal_chart, compute_transits, compute_bazi, compute_bazi_period, analyze_name, lookup_dream_symbols]
+    optional_tools: [draw_tarot]
+- id: traj-037
+  type: daily
+  question: 今天适合表白吗？
+  profile: P_full_m
+  expected:
+    specialists: []
+    orchestrator_tools: [daily_fortune, submit_reading]
+    tools_single: [daily_fortune, submit_reading]
+    forbidden_tools: [compute_natal_chart, compute_transits, compute_bazi, compute_bazi_period, analyze_name, lookup_dream_symbols]
+    optional_tools: [draw_tarot]
+  note: daily_fortune 已含每日一牌，不应再单独抽牌（若抽，牌面必须与每日一牌一致）
+- id: traj-038
+  type: daily
+  question: 今天运势怎么样？
+  profile: P_empty
+  expected:
+    first_action: ask_user
+    ask_for: [birth_datetime]
+    before_answer:
+      specialists: []
+      tools_single: []
+    after_user_answers:
+      specialists: []
+      tools_single: [daily_fortune, submit_reading]
+    forbidden_tools: [compute_natal_chart, compute_transits, compute_bazi, compute_bazi_period, draw_tarot, analyze_name, lookup_dream_symbols]
+  note: 每日运势需要本命信息；画像为空先追问
+- id: traj-039
+  type: daily
+  question: 明天运势怎么样？
+  profile: P_full
+  expected:
+    specialists: []
+    orchestrator_tools: [daily_fortune, submit_reading]
+    tools_single: [daily_fortune, submit_reading]
+    forbidden_tools: [compute_natal_chart, compute_transits, compute_bazi, compute_bazi_period, draw_tarot, analyze_name, lookup_dream_symbols]
+  note: 日期参数应为明天，而不是今天
+- id: traj-040
+  type: daily
+  question: 这周运势怎么样？
+  profile: P_full
+  expected:
+    specialists: [astro, bazi]
+    orchestrator_tools: [consult_specialist, submit_reading]
+    tools_single: [compute_natal_chart, compute_transits, compute_bazi, compute_bazi_period, submit_reading]
+    timeframe: 本周
+    forbidden_tools: [analyze_name, lookup_dream_symbols]
+    optional_tools: [daily_fortune, draw_tarot]
+  note: 一周跨度不是 daily_fortune 的单日场景，应按时机类处理
+- id: traj-041
+  type: name
+  question: 帮我看看我的名字怎么样
+  profile: P_full
+  expected:
+    specialists: [name]
+    orchestrator_tools: [consult_specialist, submit_reading]
+    tools_single: [analyze_name, submit_reading]
+    forbidden_tools: [compute_natal_chart, compute_transits, compute_bazi_period, draw_tarot, lookup_dream_symbols, daily_fortune]
+    optional_tools: [compute_bazi]
+  note: 画像里有名字；有出生信息时可带 bazi_id 做五行对照
+- id: traj-042
+  type: name
+  question: “王思远”这个名字好吗？
+  profile: P_empty
+  expected:
+    specialists: [name]
+    orchestrator_tools: [consult_specialist, submit_reading]
+    tools_single: [analyze_name, submit_reading]
+    forbidden_tools: [compute_natal_chart, compute_transits, compute_bazi, compute_bazi_period, draw_tarot, lookup_dream_symbols, daily_fortune]
+  note: 分析第三方名字，不需要用户出生信息
+- id: traj-043
+  type: name
+  question: 结合我的八字看看我的名字
+  profile: P_full_m
+  expected:
+    specialists: [bazi, name]
+    orchestrator_tools: [consult_specialist, submit_reading]
+    tools_single: [analyze_name, compute_bazi, submit_reading]
+    forbidden_tools: [compute_natal_chart, compute_transits, compute_bazi_period, draw_tarot, lookup_dream_symbols, daily_fortune]
+- id: traj-044
+  type: name
+  question: 帮我看看“欧阳子涵”这个名字
+  profile: P_empty
+  expected:
+    specialists: [name]
+    orchestrator_tools: [consult_specialist, submit_reading]
+    tools_single: [analyze_name, submit_reading]
+    forbidden_tools: [compute_natal_chart, compute_transits, compute_bazi, compute_bazi_period, draw_tarot, lookup_dream_symbols, daily_fortune]
+  note: 复姓：天格按复姓规则计算
+- id: traj-045
+  type: name
+  question: 我叫什么名字你知道吗？帮我分析一下
+  profile: P_empty
+  expected:
+    first_action: ask_user
+    ask_for: [name]
+    before_answer:
+      specialists: []
+      tools_single: []
+    after_user_answers:
+      specialists: [name]
+      tools_single: [analyze_name, submit_reading]
+    forbidden_tools: [compute_natal_chart, compute_transits, compute_bazi, compute_bazi_period, draw_tarot, lookup_dream_symbols, daily_fortune]
+- id: traj-046
+  type: name
+  question: “李一”和“李逸”哪个五格更好？
+  profile: P_empty
+  expected:
+    specialists: [name]
+    orchestrator_tools: [consult_specialist, submit_reading]
+    tools_single: [analyze_name, submit_reading]
+    forbidden_tools: [compute_natal_chart, compute_transits, compute_bazi, compute_bazi_period, draw_tarot, lookup_dream_symbols, daily_fortune]
+  note: 两个名字各调用一次 analyze_name
+- id: traj-047
+  type: name
+  question: 我名字里的“杰”按几画算？
+  profile: P_full_m
+  expected:
+    specialists: [name]
+    orchestrator_tools: [consult_specialist, submit_reading]
+    tools_single: [analyze_name, submit_reading]
+    forbidden_tools: [compute_natal_chart, compute_transits, compute_bazi, compute_bazi_period, draw_tarot, lookup_dream_symbols, daily_fortune]
+  note: 涉及繁简歧义：应说明 8 画与 12 画两种算法
+- id: traj-048
+  type: name
+  question: 想给女儿起个名字，帮我参考一下
+  profile: P_full
+  expected:
+    specialists: []
+    orchestrator_tools: [submit_reading]
+    tools_single: [submit_reading]
+    forbidden_tools: [compute_natal_chart, compute_transits, compute_bazi_period, draw_tarot, lookup_dream_symbols, daily_fortune]
+    optional_tools: [analyze_name, compute_bazi]
+  note: 起名属于第二阶段功能：MVP 应说明暂不支持起名，可以帮忙分析用户给出的候选名
+- id: traj-049
+  type: name
+  question: 我的名字和我老公的名字配不配？
+  profile: P_full
+  expected:
+    specialists: [name]
+    orchestrator_tools: [consult_specialist, submit_reading]
+    tools_single: [analyze_name, submit_reading]
+    forbidden_tools: [compute_natal_chart, compute_transits, compute_bazi, compute_bazi_period, draw_tarot, lookup_dream_symbols, daily_fortune]
+  note: 两个名字各自分析，不做合婚（合婚为第二阶段）
+- id: traj-050
+  type: name
+  question: 我的名字三才配置是什么？
+  profile: P_name_only
+  expected:
+    specialists: [name]
+    orchestrator_tools: [consult_specialist, submit_reading]
+    tools_single: [analyze_name, submit_reading]
+    forbidden_tools: [compute_natal_chart, compute_transits, compute_bazi, compute_bazi_period, draw_tarot, lookup_dream_symbols, daily_fortune]
+- id: traj-051
+  type: dream
+  question: 昨晚梦到掉牙，是什么意思？
+  profile: P_full
+  expected:
+    specialists: [dream]
+    orchestrator_tools: [consult_specialist, submit_reading]
+    tools_single: [lookup_dream_symbols, submit_reading]
+    forbidden_tools: [compute_natal_chart, compute_transits, compute_bazi, compute_bazi_period, analyze_name, daily_fortune]
+    optional_tools: [draw_tarot]
+- id: traj-052
+  type: dream
+  question: 梦见被一条大狗追着跑
+  profile: P_empty
+  expected:
+    specialists: [dream]
+    orchestrator_tools: [consult_specialist, submit_reading]
+    tools_single: [lookup_dream_symbols, submit_reading]
+    forbidden_tools: [compute_natal_chart, compute_transits, compute_bazi, compute_bazi_period, draw_tarot, analyze_name, daily_fortune]
+  note: 解梦不需要出生信息
+- id: traj-053
+  type: dream
+  question: 连续几天梦到考试迟到
+  profile: P_full_m
+  expected:
+    specialists: [dream]
+    orchestrator_tools: [consult_specialist, submit_reading]
+    tools_single: [lookup_dream_symbols, submit_reading]
+    forbidden_tools: [compute_natal_chart, compute_transits, compute_bazi, compute_bazi_period, draw_tarot, analyze_name, daily_fortune]
+- id: traj-054
+  type: dream
+  question: 梦见去世的外婆来看我
+  profile: P_full
+  expected:
+    specialists: [dream]
+    orchestrator_tools: [consult_specialist, submit_reading]
+    tools_single: [lookup_dream_symbols, submit_reading]
+    forbidden_tools: [compute_natal_chart, compute_transits, compute_bazi, compute_bazi_period, draw_tarot, analyze_name, daily_fortune]
+  note: 涉及亲人离世：语气要温和
+- id: traj-055
+  type: dream
+  question: 梦到下大雨，屋顶漏水
+  profile: P_full_m
+  expected:
+    specialists: [dream]
+    orchestrator_tools: [consult_specialist, submit_reading]
+    tools_single: [lookup_dream_symbols, submit_reading]
+    forbidden_tools: [compute_natal_chart, compute_transits, compute_bazi, compute_bazi_period, draw_tarot, analyze_name, daily_fortune]
+- id: traj-056
+  type: dream
+  question: 梦见蛇缠着我，是不是要出事了？
+  profile: P_full
+  expected:
+    specialists: [dream]
+    orchestrator_tools: [consult_specialist, submit_reading]
+    tools_single: [lookup_dream_symbols, submit_reading]
+    forbidden_tools: [compute_natal_chart, compute_transits, compute_bazi, compute_bazi_period, draw_tarot, analyze_name, daily_fortune]
+  note: 解梦信号只进入 psyche，不得预测现实中会发生坏事
+- id: traj-057
+  type: dream
+  question: 梦见自己在天上飞
+  profile: P_no_time
+  expected:
+    specialists: [dream]
+    orchestrator_tools: [consult_specialist, submit_reading]
+    tools_single: [lookup_dream_symbols, submit_reading]
+    forbidden_tools: [compute_natal_chart, compute_transits, compute_bazi, compute_bazi_period, draw_tarot, analyze_name, daily_fortune]
+- id: traj-058
+  type: dream
+  question: 梦到前任结婚了
+  profile: P_full_m
+  expected:
+    specialists: [dream]
+    orchestrator_tools: [consult_specialist, submit_reading]
+    tools_single: [lookup_dream_symbols, submit_reading]
+    forbidden_tools: [compute_natal_chart, compute_transits, compute_bazi, compute_bazi_period, analyze_name, daily_fortune]
+    optional_tools: [draw_tarot]
+- id: traj-059
+  type: dream
+  question: 梦见无人机掉在我家阳台
+  profile: P_full
+  expected:
+    specialists: [dream]
+    orchestrator_tools: [consult_specialist, submit_reading]
+    tools_single: [lookup_dream_symbols, submit_reading]
+    forbidden_tools: [compute_natal_chart, compute_transits, compute_bazi, compute_bazi_period, draw_tarot, analyze_name, daily_fortune]
+  note: “无人机”不在意象词典里：应标记未命中、不解读该意象
+- id: traj-060
+  type: dream
+  question: 梦到捡到很多钱，最近能买彩票吗？
+  profile: P_full_m
+  expected:
+    specialists: [dream]
+    orchestrator_tools: [consult_specialist, submit_reading]
+    tools_single: [lookup_dream_symbols, submit_reading]
+    forbidden_tools: [compute_natal_chart, compute_transits, compute_bazi, compute_bazi_period, draw_tarot, analyze_name, daily_fortune]
+  note: 不得给出买彩票等确定性财务建议
+- id: traj-061
+  type: specified_system
+  question: 只用塔罗帮我看看最近的感情
+  profile: P_full
+  expected:
+    specialists: [tarot]
+    orchestrator_tools: [consult_specialist, submit_reading]
+    tools_single: [draw_tarot, submit_reading]
+    tarot_spread: three_card
+    forbidden_tools: [compute_natal_chart, compute_transits, compute_bazi, compute_bazi_period, analyze_name, lookup_dream_symbols, daily_fortune]
+- id: traj-062
+  type: specified_system
+  question: 不要用星座，用八字看看今年事业
+  profile: P_full_m
+  expected:
+    specialists: [bazi]
+    orchestrator_tools: [consult_specialist, submit_reading]
+    tools_single: [compute_bazi, compute_bazi_period, submit_reading]
+    timeframe: 今年
+    forbidden_tools: [compute_natal_chart, compute_transits, draw_tarot, analyze_name, lookup_dream_symbols, daily_fortune]
+- id: traj-063
+  type: specified_system
+  question: 用星盘和八字一起看看我适合的城市
+  profile: P_full
+  expected:
+    specialists: [astro, bazi]
+    orchestrator_tools: [consult_specialist, submit_reading]
+    tools_single: [compute_natal_chart, compute_bazi, submit_reading]
+    forbidden_tools: [compute_transits, compute_bazi_period, draw_tarot, analyze_name, lookup_dream_symbols, daily_fortune]
+- id: traj-064
+  type: specified_system
+  question: 只看星盘：下个月财运怎么样？
+  profile: P_full_m
+  expected:
+    specialists: [astro]
+    orchestrator_tools: [consult_specialist, submit_reading]
+    tools_single: [compute_natal_chart, compute_transits, submit_reading]
+    timeframe: 下个月
+    forbidden_tools: [compute_bazi, compute_bazi_period, draw_tarot, analyze_name, lookup_dream_symbols, daily_fortune]
+- id: traj-065
+  type: specified_system
+  question: 用塔罗抽一张牌给我今天的提醒
+  profile: P_full
+  expected:
+    specialists: [tarot]
+    orchestrator_tools: [consult_specialist, submit_reading]
+    tools_single: [draw_tarot, submit_reading]
+    tarot_spread: single
+    forbidden_tools: [compute_natal_chart, compute_transits, compute_bazi, compute_bazi_period, analyze_name, lookup_dream_symbols, daily_fortune]
+  note: 用户指定塔罗：不调用 daily_fortune
+- id: traj-066
+  type: specified_system
+  question: 别抽牌，只用八字看今年感情
+  profile: P_full
+  expected:
+    specialists: [bazi]
+    orchestrator_tools: [consult_specialist, submit_reading]
+    tools_single: [compute_bazi, compute_bazi_period, submit_reading]
+    timeframe: 今年
+    forbidden_tools: [compute_natal_chart, compute_transits, draw_tarot, analyze_name, lookup_dream_symbols, daily_fortune]
+- id: traj-067
+  type: specified_system
+  question: 只用八字看看我适合什么工作
+  profile: P_no_time
+  expected:
+    specialists: [bazi]
+    orchestrator_tools: [consult_specialist, submit_reading]
+    tools_single: [compute_bazi, submit_reading]
+    forbidden_tools: [compute_natal_chart, compute_transits, compute_bazi_period, draw_tarot, analyze_name, lookup_dream_symbols, daily_fortune]
+  note: 时柱不可用；不要因为时间未知改用其他体系
+- id: traj-068
+  type: specified_system
+  question: 用西方占星看看我和这个月的关系运
+  profile: P_full_m
+  expected:
+    specialists: [astro]
+    orchestrator_tools: [consult_specialist, submit_reading]
+    tools_single: [compute_natal_chart, compute_transits, submit_reading]
+    timeframe: 本月
+    forbidden_tools: [compute_bazi, compute_bazi_period, draw_tarot, analyze_name, lookup_dream_symbols, daily_fortune]
+- id: traj-069
+  type: specified_system
+  question: 就用塔罗，A 还是 B？
+  profile: P_empty
+  expected:
+    specialists: [tarot]
+    orchestrator_tools: [consult_specialist, submit_reading]
+    tools_single: [draw_tarot, submit_reading]
+    tarot_spread: decision
+    forbidden_tools: [compute_natal_chart, compute_transits, compute_bazi, compute_bazi_period, analyze_name, lookup_dream_symbols, daily_fortune]
+- id: traj-070
+  type: specified_system
+  question: 只用星盘看我的性格
+  profile: P_empty
+  expected:
+    first_action: ask_user
+    ask_for: [birth_datetime, birth_place]
+    before_answer:
+      specialists: []
+      tools_single: []
+    after_user_answers:
+      specialists: [astro]
+      tools_single: [compute_natal_chart, submit_reading]
+    forbidden_tools: [compute_transits, compute_bazi, compute_bazi_period, draw_tarot, analyze_name, lookup_dream_symbols, daily_fortune]
+- id: traj-071
+  type: followup
+  question: 第二张牌具体什么意思？
+  profile: P_full
+  history: H_timing
+  expected:
+    specialists: []
+    orchestrator_tools: [lookup_meaning, submit_reading]
+    tools_single: [lookup_meaning, submit_reading]
+    new_reading: false
+    forbidden_tools: [compute_natal_chart, compute_transits, compute_bazi, compute_bazi_period, draw_tarot, analyze_name, lookup_dream_symbols, daily_fortune]
+- id: traj-072
+  type: followup
+  question: 你说上旬压力大，具体是哪几天？
+  profile: P_full
+  history: H_timing
+  expected:
+    specialists: []
+    orchestrator_tools: [submit_reading]
+    tools_single: [submit_reading]
+    new_reading: false
+    forbidden_tools: [compute_natal_chart, compute_bazi, draw_tarot, analyze_name, lookup_dream_symbols, daily_fortune]
+    optional_tools: [compute_transits, compute_bazi_period]
+  note: 可在原时间窗内细化，但不得重抽牌、不得开新 reading
+- id: traj-073
+  type: followup
+  question: 占星和八字为什么说法不一样？
+  profile: P_full
+  history: H_timing
+  expected:
+    specialists: []
+    orchestrator_tools: [lookup_meaning, submit_reading]
+    tools_single: [lookup_meaning, submit_reading]
+    new_reading: false
+    forbidden_tools: [compute_natal_chart, compute_transits, compute_bazi, compute_bazi_period, draw_tarot, analyze_name, lookup_dream_symbols, daily_fortune]
+- id: traj-074
+  type: followup
+  question: 能再抽一次吗？我不太满意
+  profile: P_full
+  history: H_timing
+  expected:
+    specialists: [tarot]
+    orchestrator_tools: [consult_specialist, submit_reading]
+    tools_single: [draw_tarot, submit_reading]
+    tarot_spread: three_card
+    new_reading: true
+    forbidden_tools: [compute_natal_chart, compute_transits, compute_bazi, compute_bazi_period, analyze_name, lookup_dream_symbols, daily_fortune]
+  note: 用户明确要求重抽：允许开新 reading 并重新抽牌，新 reading 关联旧 reading
+- id: traj-075
+  type: followup
+  question: 换个问题，我最近感情运怎么样？
+  profile: P_full
+  history: H_timing
+  expected:
+    specialists: [astro, bazi, tarot]
+    orchestrator_tools: [consult_specialist, submit_reading]
+    tools_single: [compute_natal_chart, compute_transits, compute_bazi, compute_bazi_period, draw_tarot, submit_reading]
+    tarot_spread: three_card
+    timeframe: 最近
+    new_reading: true
+    forbidden_tools: [analyze_name, lookup_dream_symbols, daily_fortune]
+  note: 换了新问题：应开新 reading
+- id: traj-076
+  type: followup
+  question: 选 B 的那张牌为什么是逆位？
+  profile: P_full
+  history: H_decision
+  expected:
+    specialists: []
+    orchestrator_tools: [lookup_meaning, submit_reading]
+    tools_single: [lookup_meaning, submit_reading]
+    new_reading: false
+    forbidden_tools: [compute_natal_chart, compute_transits, compute_bazi, compute_bazi_period, draw_tarot, analyze_name, lookup_dream_symbols, daily_fortune]
+- id: traj-077
+  type: followup
+  question: 如果选 A，大概多久能升职？
+  profile: P_full
+  history: H_decision
+  expected:
+    specialists: []
+    orchestrator_tools: [submit_reading]
+    tools_single: [submit_reading]
+    new_reading: false
+    forbidden_tools: [compute_natal_chart, compute_transits, draw_tarot, analyze_name, lookup_dream_symbols, daily_fortune]
+    optional_tools: [compute_bazi, compute_bazi_period]
+  note: 在原 reading 上追问；不应重抽决策阵
+- id: traj-078
+  type: followup
+  question: 掉牙那个梦和我最近的工作压力有关吗？
+  profile: P_full
+  history: H_dream
+  expected:
+    specialists: []
+    orchestrator_tools: [lookup_meaning, submit_reading]
+    tools_single: [lookup_meaning, submit_reading]
+    new_reading: false
+    forbidden_tools: [compute_natal_chart, compute_transits, compute_bazi, compute_bazi_period, draw_tarot, analyze_name, lookup_dream_symbols, daily_fortune]
+- id: traj-079
+  type: followup
+  question: 再详细说说“高塔”这张牌
+  profile: P_full
+  history: H_timing
+  expected:
+    specialists: []
+    orchestrator_tools: [lookup_meaning, submit_reading]
+    tools_single: [lookup_meaning, submit_reading]
+    new_reading: false
+    forbidden_tools: [compute_natal_chart, compute_transits, compute_bazi, compute_bazi_period, draw_tarot, analyze_name, lookup_dream_symbols, daily_fortune]
+- id: traj-080
+  type: followup
+  question: 那下下个月呢？
+  profile: P_full
+  history: H_timing
+  expected:
+    specialists: [astro, bazi]
+    orchestrator_tools: [consult_specialist, submit_reading]
+    tools_single: [compute_natal_chart, compute_transits, compute_bazi, compute_bazi_period, submit_reading]
+    timeframe: 下下个月
+    new_reading: true
+    forbidden_tools: [analyze_name, lookup_dream_symbols, daily_fortune]
+    optional_tools: [draw_tarot]
+  note: 时间窗变了，属于新 reading；是否抽牌可选，但不能复用上一轮的牌

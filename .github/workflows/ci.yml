@@ -1,0 +1,22 @@
+name: deterministic-tests
+on: [push, pull_request, workflow_dispatch]
+jobs:
+  week1:
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    env:
+      PYTHONUTF8: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v7
+        with:
+          version: '0.13.0'
+          python-version: '3.11'
+      - run: uv sync --locked --extra llm
+      - run: uv run python -m knowledge.build
+      - run: uv run python -m scripts.doctor
+      - run: uv run ruff check harness agents common plugins knowledge memory scripts tests app.py cli.py evals
+      - run: uv run ruff format --check harness agents common plugins knowledge memory scripts tests app.py cli.py evals
+      - run: uv run pytest -q

@@ -1,0 +1,3535 @@
+dataset: name_strokes
+version: 1
+purpose: 姓名五格的康熙笔画测试：100 个常见姓氏用字 + 100 个常见名字用字，覆盖部首还原、数字、姓氏繁体惯例等规则
+generated_with:
+  source: Unicode Unihan 18.0（unicode-org/unicodetools 仓库）：kTraditionalVariant、kRSUnicode、kTotalStrokes、kKangXi
+  rule: 康熙笔画 = 部首原字笔画 + 余笔；数字一至十按数值；姓氏繁体按姓氏惯例覆盖
+  cross_check: 与 37 个公认常见姓氏五格笔画比对：37/37 一致
+summary:
+  items: 200
+  auto_ok: 181
+  needs_review: 19
+how_to_use: [auto_ok：规则计算结果，可直接作为期望值。, needs_review：存在繁体写法歧义或流派差异；评估时期望行为是工具给出默认值并在 notes 里提示，或通过 ask_user 让用户确认写法。上线前请人工对照康熙字典定稿。, 五格笔画本身是民间约定，不同书籍对少数字有分歧；本数据集的标准答案就是上面这条规则，项目实现若采用别的约定，需要同步修改。]
+items:
+- id: name-001
+  char: 王
+  role: surname
+  traditional: 王
+  kRSUnicode: 96.-1
+  radical:
+    number: 96
+    char: 玉
+    strokes: 5
+  residual_strokes: -1
+  expected_kangxi_strokes: 4
+  modern_strokes:
+    simplified: 4
+    traditional: 4
+  rules_applied: [部首还原：玉（第 96 部，5 画）+ 余笔 -1]
+  in_kangxi_dictionary: true
+  known_value: 4
+  status: auto_ok
+- id: name-002
+  char: 李
+  role: surname
+  traditional: 李
+  kRSUnicode: '75.3'
+  radical:
+    number: 75
+    char: 木
+    strokes: 4
+  residual_strokes: 3
+  expected_kangxi_strokes: 7
+  modern_strokes:
+    simplified: 7
+    traditional: 7
+  rules_applied: [部首还原：木（第 75 部，4 画）+ 余笔 3]
+  in_kangxi_dictionary: true
+  known_value: 7
+  status: auto_ok
+- id: name-003
+  char: 张
+  role: surname
+  traditional: 張
+  kRSUnicode: '57.8'
+  radical:
+    number: 57
+    char: 弓
+    strokes: 3
+  residual_strokes: 8
+  expected_kangxi_strokes: 11
+  modern_strokes:
+    simplified: 7
+    traditional: 11
+  rules_applied: [部首还原：弓（第 57 部，3 画）+ 余笔 8]
+  in_kangxi_dictionary: true
+  known_value: 11
+  status: auto_ok
+- id: name-004
+  char: 刘
+  role: surname
+  traditional: 劉
+  kRSUnicode: '18.13'
+  radical:
+    number: 18
+    char: 刀
+    strokes: 2
+  residual_strokes: 13
+  expected_kangxi_strokes: 15
+  modern_strokes:
+    simplified: 6
+    traditional: 15
+  rules_applied: [部首还原：刀（第 18 部，2 画）+ 余笔 13]
+  in_kangxi_dictionary: true
+  known_value: 15
+  status: auto_ok
+- id: name-005
+  char: 陈
+  role: surname
+  traditional: 陳
+  kRSUnicode: '170.8'
+  radical:
+    number: 170
+    char: 阜
+    strokes: 8
+  residual_strokes: 8
+  expected_kangxi_strokes: 16
+  modern_strokes:
+    simplified: 8
+    traditional: 10
+  rules_applied: [部首还原：阜（第 170 部，8 画）+ 余笔 8]
+  in_kangxi_dictionary: true
+  differs_from_modern_traditional_count: true
+  known_value: 16
+  status: auto_ok
+- id: name-006
+  char: 杨
+  role: surname
+  traditional: 楊
+  kRSUnicode: '75.9'
+  radical:
+    number: 75
+    char: 木
+    strokes: 4
+  residual_strokes: 9
+  expected_kangxi_strokes: 13
+  modern_strokes:
+    simplified: 7
+    traditional: 13
+  rules_applied: [部首还原：木（第 75 部，4 画）+ 余笔 9]
+  in_kangxi_dictionary: true
+  known_value: 13
+  status: auto_ok
+- id: name-007
+  char: 黄
+  role: surname
+  traditional: 黃
+  kRSUnicode: '201.0'
+  radical:
+    number: 201
+    char: 黃
+    strokes: 12
+  residual_strokes: 0
+  expected_kangxi_strokes: 12
+  modern_strokes:
+    simplified: 11
+    traditional: 12
+  rules_applied: [部首还原：黃（第 201 部，12 画）+ 余笔 0]
+  in_kangxi_dictionary: true
+  known_value: 12
+  status: auto_ok
+- id: name-008
+  char: 赵
+  role: surname
+  traditional: 趙
+  kRSUnicode: '156.7'
+  radical:
+    number: 156
+    char: 走
+    strokes: 7
+  residual_strokes: 7
+  expected_kangxi_strokes: 14
+  modern_strokes:
+    simplified: 9
+    traditional: 14
+  rules_applied: [部首还原：走（第 156 部，7 画）+ 余笔 7]
+  in_kangxi_dictionary: true
+  known_value: 14
+  status: auto_ok
+- id: name-009
+  char: 吴
+  role: surname
+  traditional: 吳
+  kRSUnicode: '30.4'
+  radical:
+    number: 30
+    char: 口
+    strokes: 3
+  residual_strokes: 4
+  expected_kangxi_strokes: 7
+  modern_strokes:
+    simplified: 7
+    traditional: 7
+  rules_applied: [部首还原：口（第 30 部，3 画）+ 余笔 4]
+  in_kangxi_dictionary: true
+  known_value: 7
+  status: auto_ok
+- id: name-010
+  char: 周
+  role: surname
+  traditional: 周
+  kRSUnicode: '30.5'
+  radical:
+    number: 30
+    char: 口
+    strokes: 3
+  residual_strokes: 5
+  expected_kangxi_strokes: 8
+  modern_strokes:
+    simplified: 8
+    traditional: 8
+  rules_applied: [部首还原：口（第 30 部，3 画）+ 余笔 5]
+  in_kangxi_dictionary: true
+  known_value: 8
+  status: auto_ok
+- id: name-011
+  char: 徐
+  role: surname
+  traditional: 徐
+  kRSUnicode: '60.7'
+  radical:
+    number: 60
+    char: 彳
+    strokes: 3
+  residual_strokes: 7
+  expected_kangxi_strokes: 10
+  modern_strokes:
+    simplified: 10
+    traditional: 10
+  rules_applied: [部首还原：彳（第 60 部，3 画）+ 余笔 7]
+  in_kangxi_dictionary: true
+  known_value: 10
+  status: auto_ok
+- id: name-012
+  char: 孙
+  role: surname
+  traditional: 孫
+  kRSUnicode: '39.7'
+  radical:
+    number: 39
+    char: 子
+    strokes: 3
+  residual_strokes: 7
+  expected_kangxi_strokes: 10
+  modern_strokes:
+    simplified: 6
+    traditional: 10
+  rules_applied: [部首还原：子（第 39 部，3 画）+ 余笔 7]
+  in_kangxi_dictionary: true
+  known_value: 10
+  status: auto_ok
+- id: name-013
+  char: 马
+  role: surname
+  traditional: 馬
+  kRSUnicode: '187.0'
+  radical:
+    number: 187
+    char: 馬
+    strokes: 10
+  residual_strokes: 0
+  expected_kangxi_strokes: 10
+  modern_strokes:
+    simplified: 3
+    traditional: 10
+  rules_applied: [部首还原：馬（第 187 部，10 画）+ 余笔 0]
+  in_kangxi_dictionary: true
+  known_value: 10
+  status: auto_ok
+- id: name-014
+  char: 朱
+  role: surname
+  traditional: 朱
+  kRSUnicode: '75.2'
+  radical:
+    number: 75
+    char: 木
+    strokes: 4
+  residual_strokes: 2
+  expected_kangxi_strokes: 6
+  modern_strokes:
+    simplified: 6
+    traditional: 6
+  rules_applied: [姓氏繁体覆盖, 部首还原：木（第 75 部，4 画）+ 余笔 2]
+  in_kangxi_dictionary: true
+  known_value: 6
+  status: needs_review
+  review_reasons: [姓氏“朱”不转写为“硃”]
+- id: name-015
+  char: 胡
+  role: surname
+  traditional: 胡
+  kRSUnicode: '130.5'
+  radical:
+    number: 130
+    char: 肉
+    strokes: 6
+  residual_strokes: 5
+  expected_kangxi_strokes: 11
+  modern_strokes:
+    simplified: 9
+    traditional: 9
+  rules_applied: [姓氏繁体覆盖, 部首还原：肉（第 130 部，6 画）+ 余笔 5]
+  in_kangxi_dictionary: true
+  differs_from_modern_traditional_count: true
+  known_value: 11
+  status: needs_review
+  review_reasons: [姓氏“胡”不转写为“衚”“鬍”]
+- id: name-016
+  char: 郭
+  role: surname
+  traditional: 郭
+  kRSUnicode: '163.8'
+  radical:
+    number: 163
+    char: 邑
+    strokes: 7
+  residual_strokes: 8
+  expected_kangxi_strokes: 15
+  modern_strokes:
+    simplified: 11
+    traditional: 11
+  rules_applied: [部首还原：邑（第 163 部，7 画）+ 余笔 8]
+  in_kangxi_dictionary: true
+  differs_from_modern_traditional_count: true
+  known_value: 15
+  status: auto_ok
+- id: name-017
+  char: 何
+  role: surname
+  traditional: 何
+  kRSUnicode: '9.5'
+  radical:
+    number: 9
+    char: 人
+    strokes: 2
+  residual_strokes: 5
+  expected_kangxi_strokes: 7
+  modern_strokes:
+    simplified: 7
+    traditional: 7
+  rules_applied: [部首还原：人（第 9 部，2 画）+ 余笔 5]
+  in_kangxi_dictionary: true
+  known_value: 7
+  status: auto_ok
+- id: name-018
+  char: 高
+  role: surname
+  traditional: 高
+  kRSUnicode: '189.0'
+  radical:
+    number: 189
+    char: 高
+    strokes: 10
+  residual_strokes: 0
+  expected_kangxi_strokes: 10
+  modern_strokes:
+    simplified: 10
+    traditional: 10
+  rules_applied: [部首还原：高（第 189 部，10 画）+ 余笔 0]
+  in_kangxi_dictionary: true
+  known_value: 10
+  status: auto_ok
+- id: name-019
+  char: 林
+  role: surname
+  traditional: 林
+  kRSUnicode: '75.4'
+  radical:
+    number: 75
+    char: 木
+    strokes: 4
+  residual_strokes: 4
+  expected_kangxi_strokes: 8
+  modern_strokes:
+    simplified: 8
+    traditional: 8
+  rules_applied: [部首还原：木（第 75 部，4 画）+ 余笔 4]
+  in_kangxi_dictionary: true
+  known_value: 8
+  status: auto_ok
+- id: name-020
+  char: 罗
+  role: surname
+  traditional: 羅
+  kRSUnicode: '122.14'
+  radical:
+    number: 122
+    char: 网
+    strokes: 6
+  residual_strokes: 14
+  expected_kangxi_strokes: 20
+  modern_strokes:
+    simplified: 8
+    traditional: 19
+  rules_applied: [部首还原：网（第 122 部，6 画）+ 余笔 14]
+  in_kangxi_dictionary: true
+  differs_from_modern_traditional_count: true
+  known_value: 20
+  status: auto_ok
+- id: name-021
+  char: 郑
+  role: surname
+  traditional: 鄭
+  kRSUnicode: '163.12'
+  radical:
+    number: 163
+    char: 邑
+    strokes: 7
+  residual_strokes: 12
+  expected_kangxi_strokes: 19
+  modern_strokes:
+    simplified: 9
+    traditional: 15
+  rules_applied: [部首还原：邑（第 163 部，7 画）+ 余笔 12]
+  in_kangxi_dictionary: true
+  differs_from_modern_traditional_count: true
+  known_value: 19
+  status: auto_ok
+- id: name-022
+  char: 梁
+  role: surname
+  traditional: 梁
+  kRSUnicode: '75.7'
+  radical:
+    number: 75
+    char: 木
+    strokes: 4
+  residual_strokes: 7
+  expected_kangxi_strokes: 11
+  modern_strokes:
+    simplified: 11
+    traditional: 11
+  rules_applied: [部首还原：木（第 75 部，4 画）+ 余笔 7]
+  in_kangxi_dictionary: true
+  known_value: 11
+  status: auto_ok
+- id: name-023
+  char: 谢
+  role: surname
+  traditional: 謝
+  kRSUnicode: '149.10'
+  radical:
+    number: 149
+    char: 言
+    strokes: 7
+  residual_strokes: 10
+  expected_kangxi_strokes: 17
+  modern_strokes:
+    simplified: 12
+    traditional: 17
+  rules_applied: [部首还原：言（第 149 部，7 画）+ 余笔 10]
+  in_kangxi_dictionary: true
+  known_value: 17
+  status: auto_ok
+- id: name-024
+  char: 宋
+  role: surname
+  traditional: 宋
+  kRSUnicode: '40.4'
+  radical:
+    number: 40
+    char: 宀
+    strokes: 3
+  residual_strokes: 4
+  expected_kangxi_strokes: 7
+  modern_strokes:
+    simplified: 7
+    traditional: 7
+  rules_applied: [部首还原：宀（第 40 部，3 画）+ 余笔 4]
+  in_kangxi_dictionary: true
+  known_value: 7
+  status: auto_ok
+- id: name-025
+  char: 唐
+  role: surname
+  traditional: 唐
+  kRSUnicode: '30.7'
+  radical:
+    number: 30
+    char: 口
+    strokes: 3
+  residual_strokes: 7
+  expected_kangxi_strokes: 10
+  modern_strokes:
+    simplified: 10
+    traditional: 10
+  rules_applied: [部首还原：口（第 30 部，3 画）+ 余笔 7]
+  in_kangxi_dictionary: true
+  known_value: 10
+  status: auto_ok
+- id: name-026
+  char: 许
+  role: surname
+  traditional: 許
+  kRSUnicode: '149.4'
+  radical:
+    number: 149
+    char: 言
+    strokes: 7
+  residual_strokes: 4
+  expected_kangxi_strokes: 11
+  modern_strokes:
+    simplified: 6
+    traditional: 11
+  rules_applied: [部首还原：言（第 149 部，7 画）+ 余笔 4]
+  in_kangxi_dictionary: true
+  known_value: 11
+  status: auto_ok
+- id: name-027
+  char: 韩
+  role: surname
+  traditional: 韓
+  kRSUnicode: '178.8'
+  radical:
+    number: 178
+    char: 韋
+    strokes: 9
+  residual_strokes: 8
+  expected_kangxi_strokes: 17
+  modern_strokes:
+    simplified: 12
+    traditional: 17
+  rules_applied: [部首还原：韋（第 178 部，9 画）+ 余笔 8]
+  in_kangxi_dictionary: true
+  known_value: 17
+  status: auto_ok
+- id: name-028
+  char: 冯
+  role: surname
+  traditional: 馮
+  kRSUnicode: '187.2'
+  radical:
+    number: 187
+    char: 馬
+    strokes: 10
+  residual_strokes: 2
+  expected_kangxi_strokes: 12
+  modern_strokes:
+    simplified: 5
+    traditional: 12
+  rules_applied: [部首还原：馬（第 187 部，10 画）+ 余笔 2]
+  in_kangxi_dictionary: true
+  known_value: 12
+  status: auto_ok
+- id: name-029
+  char: 邓
+  role: surname
+  traditional: 鄧
+  kRSUnicode: '163.12'
+  radical:
+    number: 163
+    char: 邑
+    strokes: 7
+  residual_strokes: 12
+  expected_kangxi_strokes: 19
+  modern_strokes:
+    simplified: 5
+    traditional: 15
+  rules_applied: [部首还原：邑（第 163 部，7 画）+ 余笔 12]
+  in_kangxi_dictionary: true
+  differs_from_modern_traditional_count: true
+  known_value: 19
+  status: auto_ok
+- id: name-030
+  char: 曹
+  role: surname
+  traditional: 曹
+  kRSUnicode: '73.7'
+  radical:
+    number: 73
+    char: 曰
+    strokes: 4
+  residual_strokes: 7
+  expected_kangxi_strokes: 11
+  modern_strokes:
+    simplified: 11
+    traditional: 11
+  rules_applied: [部首还原：曰（第 73 部，4 画）+ 余笔 7]
+  in_kangxi_dictionary: true
+  known_value: 11
+  status: auto_ok
+- id: name-031
+  char: 彭
+  role: surname
+  traditional: 彭
+  kRSUnicode: '59.9'
+  radical:
+    number: 59
+    char: 彡
+    strokes: 3
+  residual_strokes: 9
+  expected_kangxi_strokes: 12
+  modern_strokes:
+    simplified: 12
+    traditional: 12
+  rules_applied: [部首还原：彡（第 59 部，3 画）+ 余笔 9]
+  in_kangxi_dictionary: true
+  known_value: 12
+  status: auto_ok
+- id: name-032
+  char: 曾
+  role: surname
+  traditional: 曾
+  kRSUnicode: '73.8'
+  radical:
+    number: 73
+    char: 曰
+    strokes: 4
+  residual_strokes: 8
+  expected_kangxi_strokes: 12
+  modern_strokes:
+    simplified: 12
+    traditional: 12
+  rules_applied: [部首还原：曰（第 73 部，4 画）+ 余笔 8]
+  in_kangxi_dictionary: true
+  known_value: 12
+  status: auto_ok
+- id: name-033
+  char: 肖
+  role: surname
+  traditional: 肖
+  kRSUnicode: '130.3'
+  radical:
+    number: 130
+    char: 肉
+    strokes: 6
+  residual_strokes: 3
+  expected_kangxi_strokes: 9
+  modern_strokes:
+    simplified: 7
+    traditional: 7
+  rules_applied: [姓氏繁体覆盖, 部首还原：肉（第 130 部，6 画）+ 余笔 3]
+  in_kangxi_dictionary: true
+  differs_from_modern_traditional_count: true
+  status: needs_review
+  review_reasons: [大陆身份证多写“肖”；港台多写“蕭”（20 画），需按用户实际写法确认]
+- id: name-034
+  char: 田
+  role: surname
+  traditional: 田
+  kRSUnicode: '102.0'
+  radical:
+    number: 102
+    char: 田
+    strokes: 5
+  residual_strokes: 0
+  expected_kangxi_strokes: 5
+  modern_strokes:
+    simplified: 5
+    traditional: 5
+  rules_applied: [部首还原：田（第 102 部，5 画）+ 余笔 0]
+  in_kangxi_dictionary: true
+  status: auto_ok
+- id: name-035
+  char: 董
+  role: surname
+  traditional: 董
+  kRSUnicode: '140.9'
+  radical:
+    number: 140
+    char: 艸
+    strokes: 6
+  residual_strokes: 9
+  expected_kangxi_strokes: 15
+  modern_strokes:
+    simplified: 13
+    traditional: 13
+  rules_applied: [部首还原：艸（第 140 部，6 画）+ 余笔 9]
+  in_kangxi_dictionary: true
+  differs_from_modern_traditional_count: true
+  known_value: 15
+  status: auto_ok
+- id: name-036
+  char: 袁
+  role: surname
+  traditional: 袁
+  kRSUnicode: '145.4'
+  radical:
+    number: 145
+    char: 衣
+    strokes: 6
+  residual_strokes: 4
+  expected_kangxi_strokes: 10
+  modern_strokes:
+    simplified: 10
+    traditional: 10
+  rules_applied: [部首还原：衣（第 145 部，6 画）+ 余笔 4]
+  in_kangxi_dictionary: true
+  status: auto_ok
+- id: name-037
+  char: 潘
+  role: surname
+  traditional: 潘
+  kRSUnicode: '85.12'
+  radical:
+    number: 85
+    char: 水
+    strokes: 4
+  residual_strokes: 12
+  expected_kangxi_strokes: 16
+  modern_strokes:
+    simplified: 15
+    traditional: 15
+  rules_applied: [部首还原：水（第 85 部，4 画）+ 余笔 12]
+  in_kangxi_dictionary: true
+  differs_from_modern_traditional_count: true
+  known_value: 16
+  status: auto_ok
+- id: name-038
+  char: 于
+  role: surname
+  traditional: 于
+  kRSUnicode: '7.1'
+  radical:
+    number: 7
+    char: 二
+    strokes: 2
+  residual_strokes: 1
+  expected_kangxi_strokes: 3
+  modern_strokes:
+    simplified: 3
+    traditional: 3
+  rules_applied: [姓氏繁体覆盖, 部首还原：二（第 7 部，2 画）+ 余笔 1]
+  in_kangxi_dictionary: true
+  status: needs_review
+  review_reasons: [姓氏“于”不转写为“於”]
+- id: name-039
+  char: 蒋
+  role: surname
+  traditional: 蔣
+  kRSUnicode: '140.11'
+  radical:
+    number: 140
+    char: 艸
+    strokes: 6
+  residual_strokes: 11
+  expected_kangxi_strokes: 17
+  modern_strokes:
+    simplified: 12
+    traditional: 14
+  rules_applied: [部首还原：艸（第 140 部，6 画）+ 余笔 11]
+  in_kangxi_dictionary: true
+  differs_from_modern_traditional_count: true
+  status: auto_ok
+- id: name-040
+  char: 蔡
+  role: surname
+  traditional: 蔡
+  kRSUnicode: '140.11'
+  radical:
+    number: 140
+    char: 艸
+    strokes: 6
+  residual_strokes: 11
+  expected_kangxi_strokes: 17
+  modern_strokes:
+    simplified: 15
+    traditional: 15
+  rules_applied: [部首还原：艸（第 140 部，6 画）+ 余笔 11]
+  in_kangxi_dictionary: true
+  differs_from_modern_traditional_count: true
+  status: auto_ok
+- id: name-041
+  char: 余
+  role: surname
+  traditional: 余
+  kRSUnicode: '9.5'
+  radical:
+    number: 9
+    char: 人
+    strokes: 2
+  residual_strokes: 5
+  expected_kangxi_strokes: 7
+  modern_strokes:
+    simplified: 7
+    traditional: 7
+  rules_applied: [姓氏繁体覆盖, 部首还原：人（第 9 部，2 画）+ 余笔 5]
+  in_kangxi_dictionary: true
+  status: needs_review
+  review_reasons: [姓氏“余”不转写为“餘”]
+- id: name-042
+  char: 杜
+  role: surname
+  traditional: 杜
+  kRSUnicode: '75.3'
+  radical:
+    number: 75
+    char: 木
+    strokes: 4
+  residual_strokes: 3
+  expected_kangxi_strokes: 7
+  modern_strokes:
+    simplified: 7
+    traditional: 7
+  rules_applied: [部首还原：木（第 75 部，4 画）+ 余笔 3]
+  in_kangxi_dictionary: true
+  status: auto_ok
+- id: name-043
+  char: 叶
+  role: surname
+  traditional: 葉
+  kRSUnicode: '140.9'
+  radical:
+    number: 140
+    char: 艸
+    strokes: 6
+  residual_strokes: 9
+  expected_kangxi_strokes: 15
+  modern_strokes:
+    simplified: 5
+    traditional: 13
+  rules_applied: [姓氏繁体覆盖, 部首还原：艸（第 140 部，6 画）+ 余笔 9]
+  in_kangxi_dictionary: true
+  differs_from_modern_traditional_count: true
+  status: needs_review
+  review_reasons: [姓氏“叶”繁体为“葉”]
+- id: name-044
+  char: 程
+  role: surname
+  traditional: 程
+  kRSUnicode: '115.7'
+  radical:
+    number: 115
+    char: 禾
+    strokes: 5
+  residual_strokes: 7
+  expected_kangxi_strokes: 12
+  modern_strokes:
+    simplified: 12
+    traditional: 12
+  rules_applied: [部首还原：禾（第 115 部，5 画）+ 余笔 7]
+  in_kangxi_dictionary: true
+  status: auto_ok
+- id: name-045
+  char: 苏
+  role: surname
+  traditional: 蘇
+  kRSUnicode: '140.16'
+  radical:
+    number: 140
+    char: 艸
+    strokes: 6
+  residual_strokes: 16
+  expected_kangxi_strokes: 22
+  modern_strokes:
+    simplified: 8
+    traditional: 19
+  rules_applied: [姓氏繁体覆盖, 部首还原：艸（第 140 部，6 画）+ 余笔 16]
+  in_kangxi_dictionary: true
+  differs_from_modern_traditional_count: true
+  status: needs_review
+  review_reasons: [姓氏“苏”繁体为“蘇”，不是“囌”]
+- id: name-046
+  char: 魏
+  role: surname
+  traditional: 魏
+  kRSUnicode: '194.8'
+  radical:
+    number: 194
+    char: 鬼
+    strokes: 10
+  residual_strokes: 8
+  expected_kangxi_strokes: 18
+  modern_strokes:
+    simplified: 18
+    traditional: 18
+  rules_applied: [部首还原：鬼（第 194 部，10 画）+ 余笔 8]
+  in_kangxi_dictionary: true
+  status: auto_ok
+- id: name-047
+  char: 吕
+  role: surname
+  traditional: 呂
+  kRSUnicode: '30.4'
+  radical:
+    number: 30
+    char: 口
+    strokes: 3
+  residual_strokes: 4
+  expected_kangxi_strokes: 7
+  modern_strokes:
+    simplified: 6
+    traditional: 7
+  rules_applied: [部首还原：口（第 30 部，3 画）+ 余笔 4]
+  in_kangxi_dictionary: true
+  status: auto_ok
+- id: name-048
+  char: 丁
+  role: surname
+  traditional: 丁
+  kRSUnicode: '1.1'
+  radical:
+    number: 1
+    char: 一
+    strokes: 1
+  residual_strokes: 1
+  expected_kangxi_strokes: 2
+  modern_strokes:
+    simplified: 2
+    traditional: 2
+  rules_applied: [部首还原：一（第 1 部，1 画）+ 余笔 1]
+  in_kangxi_dictionary: true
+  status: auto_ok
+- id: name-049
+  char: 任
+  role: surname
+  traditional: 任
+  kRSUnicode: '9.4'
+  radical:
+    number: 9
+    char: 人
+    strokes: 2
+  residual_strokes: 4
+  expected_kangxi_strokes: 6
+  modern_strokes:
+    simplified: 6
+    traditional: 6
+  rules_applied: [部首还原：人（第 9 部，2 画）+ 余笔 4]
+  in_kangxi_dictionary: true
+  status: auto_ok
+- id: name-050
+  char: 沈
+  role: surname
+  traditional: 沈
+  kRSUnicode: '85.4'
+  radical:
+    number: 85
+    char: 水
+    strokes: 4
+  residual_strokes: 4
+  expected_kangxi_strokes: 8
+  modern_strokes:
+    simplified: 7
+    traditional: 7
+  rules_applied: [姓氏繁体覆盖, 部首还原：水（第 85 部，4 画）+ 余笔 4]
+  in_kangxi_dictionary: true
+  differs_from_modern_traditional_count: true
+  status: needs_review
+  review_reasons: [姓氏“沈”不转写为“瀋”]
+- id: name-051
+  char: 姚
+  role: surname
+  traditional: 姚
+  kRSUnicode: '38.6'
+  radical:
+    number: 38
+    char: 女
+    strokes: 3
+  residual_strokes: 6
+  expected_kangxi_strokes: 9
+  modern_strokes:
+    simplified: 9
+    traditional: 9
+  rules_applied: [部首还原：女（第 38 部，3 画）+ 余笔 6]
+  in_kangxi_dictionary: true
+  status: auto_ok
+- id: name-052
+  char: 卢
+  role: surname
+  traditional: 盧
+  kRSUnicode: '108.11'
+  radical:
+    number: 108
+    char: 皿
+    strokes: 5
+  residual_strokes: 11
+  expected_kangxi_strokes: 16
+  modern_strokes:
+    simplified: 5
+    traditional: 16
+  rules_applied: [部首还原：皿（第 108 部，5 画）+ 余笔 11]
+  in_kangxi_dictionary: true
+  status: auto_ok
+- id: name-053
+  char: 姜
+  role: surname
+  traditional: 姜
+  kRSUnicode: '38.6'
+  radical:
+    number: 38
+    char: 女
+    strokes: 3
+  residual_strokes: 6
+  expected_kangxi_strokes: 9
+  modern_strokes:
+    simplified: 9
+    traditional: 9
+  rules_applied: [姓氏繁体覆盖, 部首还原：女（第 38 部，3 画）+ 余笔 6]
+  in_kangxi_dictionary: true
+  status: needs_review
+  review_reasons: [姓氏“姜”不转写为“薑”]
+- id: name-054
+  char: 崔
+  role: surname
+  traditional: 崔
+  kRSUnicode: '46.8'
+  radical:
+    number: 46
+    char: 山
+    strokes: 3
+  residual_strokes: 8
+  expected_kangxi_strokes: 11
+  modern_strokes:
+    simplified: 11
+    traditional: 11
+  rules_applied: [部首还原：山（第 46 部，3 画）+ 余笔 8]
+  in_kangxi_dictionary: true
+  status: auto_ok
+- id: name-055
+  char: 钟
+  role: surname
+  traditional: 鍾
+  kRSUnicode: '167.9'
+  radical:
+    number: 167
+    char: 金
+    strokes: 8
+  residual_strokes: 9
+  expected_kangxi_strokes: 17
+  modern_strokes:
+    simplified: 9
+    traditional: 17
+  rules_applied: [姓氏繁体覆盖, 部首还原：金（第 167 部，8 画）+ 余笔 9]
+  in_kangxi_dictionary: true
+  status: needs_review
+  review_reasons: [姓氏多写作“鍾”，而不是“鐘”]
+- id: name-056
+  char: 谭
+  role: surname
+  traditional: 譚
+  kRSUnicode: '149.12'
+  radical:
+    number: 149
+    char: 言
+    strokes: 7
+  residual_strokes: 12
+  expected_kangxi_strokes: 19
+  modern_strokes:
+    simplified: 14
+    traditional: 19
+  rules_applied: [部首还原：言（第 149 部，7 画）+ 余笔 12]
+  in_kangxi_dictionary: true
+  status: auto_ok
+- id: name-057
+  char: 陆
+  role: surname
+  traditional: 陸
+  kRSUnicode: '170.8'
+  radical:
+    number: 170
+    char: 阜
+    strokes: 8
+  residual_strokes: 8
+  expected_kangxi_strokes: 16
+  modern_strokes:
+    simplified: 7
+    traditional: 10
+  rules_applied: [部首还原：阜（第 170 部，8 画）+ 余笔 8]
+  in_kangxi_dictionary: true
+  differs_from_modern_traditional_count: true
+  known_value: 16
+  status: auto_ok
+- id: name-058
+  char: 汪
+  role: surname
+  traditional: 汪
+  kRSUnicode: '85.4'
+  radical:
+    number: 85
+    char: 水
+    strokes: 4
+  residual_strokes: 4
+  expected_kangxi_strokes: 8
+  modern_strokes:
+    simplified: 7
+    traditional: 7
+  rules_applied: [部首还原：水（第 85 部，4 画）+ 余笔 4]
+  in_kangxi_dictionary: true
+  differs_from_modern_traditional_count: true
+  status: auto_ok
+- id: name-059
+  char: 范
+  role: surname
+  traditional: 范
+  kRSUnicode: '140.5'
+  radical:
+    number: 140
+    char: 艸
+    strokes: 6
+  residual_strokes: 5
+  expected_kangxi_strokes: 11
+  modern_strokes:
+    simplified: 9
+    traditional: 9
+  rules_applied: [姓氏繁体覆盖, 部首还原：艸（第 140 部，6 画）+ 余笔 5]
+  in_kangxi_dictionary: true
+  differs_from_modern_traditional_count: true
+  known_value: 11
+  status: needs_review
+  review_reasons: [姓氏“范”不转写为“範”]
+- id: name-060
+  char: 金
+  role: surname
+  traditional: 金
+  kRSUnicode: '167.0'
+  radical:
+    number: 167
+    char: 金
+    strokes: 8
+  residual_strokes: 0
+  expected_kangxi_strokes: 8
+  modern_strokes:
+    simplified: 8
+    traditional: 8
+  rules_applied: [部首还原：金（第 167 部，8 画）+ 余笔 0]
+  in_kangxi_dictionary: true
+  status: auto_ok
+- id: name-061
+  char: 石
+  role: surname
+  traditional: 石
+  kRSUnicode: '112.0'
+  radical:
+    number: 112
+    char: 石
+    strokes: 5
+  residual_strokes: 0
+  expected_kangxi_strokes: 5
+  modern_strokes:
+    simplified: 5
+    traditional: 5
+  rules_applied: [部首还原：石（第 112 部，5 画）+ 余笔 0]
+  in_kangxi_dictionary: true
+  status: auto_ok
+- id: name-062
+  char: 廖
+  role: surname
+  traditional: 廖
+  kRSUnicode: '53.11'
+  radical:
+    number: 53
+    char: 广
+    strokes: 3
+  residual_strokes: 11
+  expected_kangxi_strokes: 14
+  modern_strokes:
+    simplified: 14
+    traditional: 14
+  rules_applied: [部首还原：广（第 53 部，3 画）+ 余笔 11]
+  in_kangxi_dictionary: true
+  status: auto_ok
+- id: name-063
+  char: 贾
+  role: surname
+  traditional: 賈
+  kRSUnicode: '154.6'
+  radical:
+    number: 154
+    char: 貝
+    strokes: 7
+  residual_strokes: 6
+  expected_kangxi_strokes: 13
+  modern_strokes:
+    simplified: 10
+    traditional: 13
+  rules_applied: [部首还原：貝（第 154 部，7 画）+ 余笔 6]
+  in_kangxi_dictionary: true
+  status: auto_ok
+- id: name-064
+  char: 夏
+  role: surname
+  traditional: 夏
+  kRSUnicode: '35.7'
+  radical:
+    number: 35
+    char: 夊
+    strokes: 3
+  residual_strokes: 7
+  expected_kangxi_strokes: 10
+  modern_strokes:
+    simplified: 10
+    traditional: 10
+  rules_applied: [部首还原：夊（第 35 部，3 画）+ 余笔 7]
+  in_kangxi_dictionary: true
+  status: auto_ok
+- id: name-065
+  char: 韦
+  role: surname
+  traditional: 韋
+  kRSUnicode: '178.0'
+  radical:
+    number: 178
+    char: 韋
+    strokes: 9
+  residual_strokes: 0
+  expected_kangxi_strokes: 9
+  modern_strokes:
+    simplified: 4
+    traditional: 9
+  rules_applied: [部首还原：韋（第 178 部，9 画）+ 余笔 0]
+  in_kangxi_dictionary: true
+  status: auto_ok
+- id: name-066
+  char: 付
+  role: surname
+  traditional: 付
+  kRSUnicode: '9.3'
+  radical:
+    number: 9
+    char: 人
+    strokes: 2
+  residual_strokes: 3
+  expected_kangxi_strokes: 5
+  modern_strokes:
+    simplified: 5
+    traditional: 5
+  rules_applied: [部首还原：人（第 9 部，2 画）+ 余笔 3]
+  in_kangxi_dictionary: true
+  status: auto_ok
+- id: name-067
+  char: 方
+  role: surname
+  traditional: 方
+  kRSUnicode: '70.0'
+  radical:
+    number: 70
+    char: 方
+    strokes: 4
+  residual_strokes: 0
+  expected_kangxi_strokes: 4
+  modern_strokes:
+    simplified: 4
+    traditional: 4
+  rules_applied: [部首还原：方（第 70 部，4 画）+ 余笔 0]
+  in_kangxi_dictionary: true
+  status: auto_ok
+- id: name-068
+  char: 白
+  role: surname
+  traditional: 白
+  kRSUnicode: '106.0'
+  radical:
+    number: 106
+    char: 白
+    strokes: 5
+  residual_strokes: 0
+  expected_kangxi_strokes: 5
+  modern_strokes:
+    simplified: 5
+    traditional: 5
+  rules_applied: [部首还原：白（第 106 部，5 画）+ 余笔 0]
+  in_kangxi_dictionary: true
+  status: auto_ok
+- id: name-069
+  char: 邹
+  role: surname
+  traditional: 鄒
+  kRSUnicode: '163.10'
+  radical:
+    number: 163
+    char: 邑
+    strokes: 7
+  residual_strokes: 10
+  expected_kangxi_strokes: 17
+  modern_strokes:
+    simplified: 7
+    traditional: 12
+  rules_applied: [部首还原：邑（第 163 部，7 画）+ 余笔 10]
+  in_kangxi_dictionary: true
+  differs_from_modern_traditional_count: true
+  status: auto_ok
+- id: name-070
+  char: 孟
+  role: surname
+  traditional: 孟
+  kRSUnicode: '39.5'
+  radical:
+    number: 39
+    char: 子
+    strokes: 3
+  residual_strokes: 5
+  expected_kangxi_strokes: 8
+  modern_strokes:
+    simplified: 8
+    traditional: 8
+  rules_applied: [部首还原：子（第 39 部，3 画）+ 余笔 5]
+  in_kangxi_dictionary: true
+  status: auto_ok
+- id: name-071
+  char: 熊
+  role: surname
+  traditional: 熊
+  kRSUnicode: '86.10'
+  radical:
+    number: 86
+    char: 火
+    strokes: 4
+  residual_strokes: 10
+  expected_kangxi_strokes: 14
+  modern_strokes:
+    simplified: 14
+    traditional: 14
+  rules_applied: [部首还原：火（第 86 部，4 画）+ 余笔 10]
+  in_kangxi_dictionary: true
+  status: auto_ok
+- id: name-072
+  char: 秦
+  role: surname
+  traditional: 秦
+  kRSUnicode: '115.5'
+  radical:
+    number: 115
+    char: 禾
+    strokes: 5
+  residual_strokes: 5
+  expected_kangxi_strokes: 10
+  modern_strokes:
+    simplified: 10
+    traditional: 10
+  rules_applied: [部首还原：禾（第 115 部，5 画）+ 余笔 5]
+  in_kangxi_dictionary: true
+  status: auto_ok
+- id: name-073
+  char: 邱
+  role: surname
+  traditional: 邱
+  kRSUnicode: '163.5'
+  radical:
+    number: 163
+    char: 邑
+    strokes: 7
+  residual_strokes: 5
+  expected_kangxi_strokes: 12
+  modern_strokes:
+    simplified: 7
+    traditional: 7
+  rules_applied: [部首还原：邑（第 163 部，7 画）+ 余笔 5]
+  in_kangxi_dictionary: true
+  differs_from_modern_traditional_count: true
+  status: auto_ok
+- id: name-074
+  char: 江
+  role: surname
+  traditional: 江
+  kRSUnicode: '85.3'
+  radical:
+    number: 85
+    char: 水
+    strokes: 4
+  residual_strokes: 3
+  expected_kangxi_strokes: 7
+  modern_strokes:
+    simplified: 6
+    traditional: 6
+  rules_applied: [部首还原：水（第 85 部，4 画）+ 余笔 3]
+  in_kangxi_dictionary: true
+  differs_from_modern_traditional_count: true
+  known_value: 7
+  status: auto_ok
+- id: name-075
+  char: 尹
+  role: surname
+  traditional: 尹
+  kRSUnicode: '4.3'
+  radical:
+    number: 4
+    char: 丿
+    strokes: 1
+  residual_strokes: 3
+  expected_kangxi_strokes: 4
+  modern_strokes:
+    simplified: 4
+    traditional: 4
+  rules_applied: [部首还原：丿（第 4 部，1 画）+ 余笔 3]
+  in_kangxi_dictionary: true
+  status: auto_ok
+- id: name-076
+  char: 薛
+  role: surname
+  traditional: 薛
+  kRSUnicode: '140.13'
+  radical:
+    number: 140
+    char: 艸
+    strokes: 6
+  residual_strokes: 13
+  expected_kangxi_strokes: 19
+  modern_strokes:
+    simplified: 17
+    traditional: 17
+  rules_applied: [部首还原：艸（第 140 部，6 画）+ 余笔 13]
+  in_kangxi_dictionary: true
+  differs_from_modern_traditional_count: true
+  status: auto_ok
+- id: name-077
+  char: 闫
+  role: surname
+  traditional: 閆
+  kRSUnicode: '169.3'
+  radical:
+    number: 169
+    char: 門
+    strokes: 8
+  residual_strokes: 3
+  expected_kangxi_strokes: 11
+  modern_strokes:
+    simplified: 6
+    traditional: 11
+  rules_applied: [部首还原：門（第 169 部，8 画）+ 余笔 3]
+  in_kangxi_dictionary: true
+  status: auto_ok
+- id: name-078
+  char: 段
+  role: surname
+  traditional: 段
+  kRSUnicode: '79.5'
+  radical:
+    number: 79
+    char: 殳
+    strokes: 4
+  residual_strokes: 5
+  expected_kangxi_strokes: 9
+  modern_strokes:
+    simplified: 9
+    traditional: 9
+  rules_applied: [部首还原：殳（第 79 部，4 画）+ 余笔 5]
+  in_kangxi_dictionary: true
+  status: auto_ok
+- id: name-079
+  char: 雷
+  role: surname
+  traditional: 雷
+  kRSUnicode: '173.5'
+  radical:
+    number: 173
+    char: 雨
+    strokes: 8
+  residual_strokes: 5
+  expected_kangxi_strokes: 13
+  modern_strokes:
+    simplified: 13
+    traditional: 13
+  rules_applied: [部首还原：雨（第 173 部，8 画）+ 余笔 5]
+  in_kangxi_dictionary: true
+  status: auto_ok
+- id: name-080
+  char: 侯
+  role: surname
+  traditional: 侯
+  kRSUnicode: '9.7'
+  radical:
+    number: 9
+    char: 人
+    strokes: 2
+  residual_strokes: 7
+  expected_kangxi_strokes: 9
+  modern_strokes:
+    simplified: 9
+    traditional: 9
+  rules_applied: [部首还原：人（第 9 部，2 画）+ 余笔 7]
+  in_kangxi_dictionary: true
+  status: auto_ok
+- id: name-081
+  char: 龙
+  role: surname
+  traditional: 龍
+  kRSUnicode: '212.0'
+  radical:
+    number: 212
+    char: 龍
+    strokes: 16
+  residual_strokes: 0
+  expected_kangxi_strokes: 16
+  modern_strokes:
+    simplified: 5
+    traditional: 16
+  rules_applied: [部首还原：龍（第 212 部，16 画）+ 余笔 0]
+  in_kangxi_dictionary: true
+  status: auto_ok
+- id: name-082
+  char: 史
+  role: surname
+  traditional: 史
+  kRSUnicode: '30.2'
+  radical:
+    number: 30
+    char: 口
+    strokes: 3
+  residual_strokes: 2
+  expected_kangxi_strokes: 5
+  modern_strokes:
+    simplified: 5
+    traditional: 5
+  rules_applied: [部首还原：口（第 30 部，3 画）+ 余笔 2]
+  in_kangxi_dictionary: true
+  status: auto_ok
+- id: name-083
+  char: 陶
+  role: surname
+  traditional: 陶
+  kRSUnicode: '170.8'
+  radical:
+    number: 170
+    char: 阜
+    strokes: 8
+  residual_strokes: 8
+  expected_kangxi_strokes: 16
+  modern_strokes:
+    simplified: 11
+    traditional: 11
+  rules_applied: [部首还原：阜（第 170 部，8 画）+ 余笔 8]
+  in_kangxi_dictionary: true
+  differs_from_modern_traditional_count: true
+  status: auto_ok
+- id: name-084
+  char: 黎
+  role: surname
+  traditional: 黎
+  kRSUnicode: '202.3'
+  radical:
+    number: 202
+    char: 黍
+    strokes: 12
+  residual_strokes: 3
+  expected_kangxi_strokes: 15
+  modern_strokes:
+    simplified: 15
+    traditional: 15
+  rules_applied: [部首还原：黍（第 202 部，12 画）+ 余笔 3]
+  in_kangxi_dictionary: true
+  status: auto_ok
+- id: name-085
+  char: 贺
+  role: surname
+  traditional: 賀
+  kRSUnicode: '154.5'
+  radical:
+    number: 154
+    char: 貝
+    strokes: 7
+  residual_strokes: 5
+  expected_kangxi_strokes: 12
+  modern_strokes:
+    simplified: 9
+    traditional: 12
+  rules_applied: [部首还原：貝（第 154 部，7 画）+ 余笔 5]
+  in_kangxi_dictionary: true
+  status: auto_ok
+- id: name-086
+  char: 顾
+  role: surname
+  traditional: 顧
+  kRSUnicode: '181.12'
+  radical:
+    number: 181
+    char: 頁
+    strokes: 9
+  residual_strokes: 12
+  expected_kangxi_strokes: 21
+  modern_strokes:
+    simplified: 10
+    traditional: 21
+  rules_applied: [部首还原：頁（第 181 部，9 画）+ 余笔 12]
+  in_kangxi_dictionary: true
+  status: auto_ok
+- id: name-087
+  char: 毛
+  role: surname
+  traditional: 毛
+  kRSUnicode: '82.0'
+  radical:
+    number: 82
+    char: 毛
+    strokes: 4
+  residual_strokes: 0
+  expected_kangxi_strokes: 4
+  modern_strokes:
+    simplified: 4
+    traditional: 4
+  rules_applied: [部首还原：毛（第 82 部，4 画）+ 余笔 0]
+  in_kangxi_dictionary: true
+  status: auto_ok
+- id: name-088
+  char: 郝
+  role: surname
+  traditional: 郝
+  kRSUnicode: '163.7'
+  radical:
+    number: 163
+    char: 邑
+    strokes: 7
+  residual_strokes: 7
+  expected_kangxi_strokes: 14
+  modern_strokes:
+    simplified: 9
+    traditional: 9
+  rules_applied: [部首还原：邑（第 163 部，7 画）+ 余笔 7]
+  in_kangxi_dictionary: true
+  differs_from_modern_traditional_count: true
+  status: auto_ok
+- id: name-089
+  char: 龚
+  role: surname
+  traditional: 龔
+  kRSUnicode: '212.6'
+  radical:
+    number: 212
+    char: 龍
+    strokes: 16
+  residual_strokes: 6
+  expected_kangxi_strokes: 22
+  modern_strokes:
+    simplified: 11
+    traditional: 22
+  rules_applied: [部首还原：龍（第 212 部，16 画）+ 余笔 6]
+  in_kangxi_dictionary: true
+  status: auto_ok
+- id: name-090
+  char: 邵
+  role: surname
+  traditional: 邵
+  kRSUnicode: '163.5'
+  radical:
+    number: 163
+    char: 邑
+    strokes: 7
+  residual_strokes: 5
+  expected_kangxi_strokes: 12
+  modern_strokes:
+    simplified: 7
+    traditional: 7
+  rules_applied: [部首还原：邑（第 163 部，7 画）+ 余笔 5]
+  in_kangxi_dictionary: true
+  differs_from_modern_traditional_count: true
+  status: auto_ok
+- id: name-091
+  char: 万
+  role: surname
+  traditional: 萬
+  kRSUnicode: '140.9'
+  radical:
+    number: 140
+    char: 艸
+    strokes: 6
+  residual_strokes: 9
+  expected_kangxi_strokes: 15
+  modern_strokes:
+    simplified: 3
+    traditional: 13
+  rules_applied: [姓氏繁体覆盖, 部首还原：艸（第 140 部，6 画）+ 余笔 9]
+  in_kangxi_dictionary: true
+  differs_from_modern_traditional_count: true
+  status: needs_review
+  review_reasons: [姓氏“万”繁体多写“萬”（15 画）；复姓“万俟”保留“万”，需确认, Unihan 给出多个部首归属：114.8→13 画、140.9→15 画，按康熙字典习惯取 140.9]
+- id: name-092
+  char: 钱
+  role: surname
+  traditional: 錢
+  kRSUnicode: '167.8'
+  radical:
+    number: 167
+    char: 金
+    strokes: 8
+  residual_strokes: 8
+  expected_kangxi_strokes: 16
+  modern_strokes:
+    simplified: 10
+    traditional: 16
+  rules_applied: [部首还原：金（第 167 部，8 画）+ 余笔 8]
+  in_kangxi_dictionary: true
+  status: auto_ok
+- id: name-093
+  char: 严
+  role: surname
+  traditional: 嚴
+  kRSUnicode: '30.17'
+  radical:
+    number: 30
+    char: 口
+    strokes: 3
+  residual_strokes: 17
+  expected_kangxi_strokes: 20
+  modern_strokes:
+    simplified: 7
+    traditional: 20
+  rules_applied: [部首还原：口（第 30 部，3 画）+ 余笔 17]
+  in_kangxi_dictionary: true
+  status: auto_ok
+- id: name-094
+  char: 覃
+  role: surname
+  traditional: 覃
+  kRSUnicode: '146.6'
+  radical:
+    number: 146
+    char: 襾
+    strokes: 6
+  residual_strokes: 6
+  expected_kangxi_strokes: 12
+  modern_strokes:
+    simplified: 12
+    traditional: 12
+  rules_applied: [部首还原：襾（第 146 部，6 画）+ 余笔 6]
+  in_kangxi_dictionary: true
+  status: auto_ok
+- id: name-095
+  char: 武
+  role: surname
+  traditional: 武
+  kRSUnicode: '77.4'
+  radical:
+    number: 77
+    char: 止
+    strokes: 4
+  residual_strokes: 4
+  expected_kangxi_strokes: 8
+  modern_strokes:
+    simplified: 8
+    traditional: 8
+  rules_applied: [部首还原：止（第 77 部，4 画）+ 余笔 4]
+  in_kangxi_dictionary: true
+  status: auto_ok
+- id: name-096
+  char: 戴
+  role: surname
+  traditional: 戴
+  kRSUnicode: '62.13'
+  radical:
+    number: 62
+    char: 戈
+    strokes: 4
+  residual_strokes: 13
+  expected_kangxi_strokes: 17
+  modern_strokes:
+    simplified: 17
+    traditional: 17
+  rules_applied: [部首还原：戈（第 62 部，4 画）+ 余笔 13]
+  in_kangxi_dictionary: true
+  status: auto_ok
+- id: name-097
+  char: 莫
+  role: surname
+  traditional: 莫
+  kRSUnicode: '140.7'
+  radical:
+    number: 140
+    char: 艸
+    strokes: 6
+  residual_strokes: 7
+  expected_kangxi_strokes: 13
+  modern_strokes:
+    simplified: 11
+    traditional: 11
+  rules_applied: [部首还原：艸（第 140 部，6 画）+ 余笔 7]
+  in_kangxi_dictionary: true
+  differs_from_modern_traditional_count: true
+  status: auto_ok
+- id: name-098
+  char: 孔
+  role: surname
+  traditional: 孔
+  kRSUnicode: '39.1'
+  radical:
+    number: 39
+    char: 子
+    strokes: 3
+  residual_strokes: 1
+  expected_kangxi_strokes: 4
+  modern_strokes:
+    simplified: 4
+    traditional: 4
+  rules_applied: [部首还原：子（第 39 部，3 画）+ 余笔 1]
+  in_kangxi_dictionary: true
+  status: auto_ok
+- id: name-099
+  char: 向
+  role: surname
+  traditional: 向
+  kRSUnicode: '30.3'
+  radical:
+    number: 30
+    char: 口
+    strokes: 3
+  residual_strokes: 3
+  expected_kangxi_strokes: 6
+  modern_strokes:
+    simplified: 6
+    traditional: 6
+  rules_applied: [姓氏繁体覆盖, 部首还原：口（第 30 部，3 画）+ 余笔 3]
+  in_kangxi_dictionary: true
+  status: needs_review
+  review_reasons: [姓氏“向”不转写为“嚮”“曏”]
+- id: name-100
+  char: 汤
+  role: surname
+  traditional: 湯
+  kRSUnicode: '85.9'
+  radical:
+    number: 85
+    char: 水
+    strokes: 4
+  residual_strokes: 9
+  expected_kangxi_strokes: 13
+  modern_strokes:
+    simplified: 6
+    traditional: 12
+  rules_applied: [部首还原：水（第 85 部，4 画）+ 余笔 9]
+  in_kangxi_dictionary: true
+  differs_from_modern_traditional_count: true
+  status: auto_ok
+- id: name-101
+  char: 伟
+  role: given
+  traditional: 偉
+  kRSUnicode: '9.9'
+  radical:
+    number: 9
+    char: 人
+    strokes: 2
+  residual_strokes: 9
+  expected_kangxi_strokes: 11
+  modern_strokes:
+    simplified: 6
+    traditional: 11
+  rules_applied: [部首还原：人（第 9 部，2 画）+ 余笔 9]
+  in_kangxi_dictionary: true
+  status: auto_ok
+- id: name-102
+  char: 芳
+  role: given
+  traditional: 芳
+  kRSUnicode: '140.4'
+  radical:
+    number: 140
+    char: 艸
+    strokes: 6
+  residual_strokes: 4
+  expected_kangxi_strokes: 10
+  modern_strokes:
+    simplified: 8
+    traditional: 8
+  rules_applied: [部首还原：艸（第 140 部，6 画）+ 余笔 4]
+  in_kangxi_dictionary: true
+  differs_from_modern_traditional_count: true
+  status: auto_ok
+- id: name-103
+  char: 娜
+  role: given
+  traditional: 娜
+  kRSUnicode: '38.7'
+  radical:
+    number: 38
+    char: 女
+    strokes: 3
+  residual_strokes: 7
+  expected_kangxi_strokes: 10
+  modern_strokes:
+    simplified: 9
+    traditional: 9
+  rules_applied: [部首还原：女（第 38 部，3 画）+ 余笔 7]
+  in_kangxi_dictionary: true
+  differs_from_modern_traditional_count: true
+  status: auto_ok
+- id: name-104
+  char: 敏
+  role: given
+  traditional: 敏
+  kRSUnicode: '66.7'
+  radical:
+    number: 66
+    char: 攴
+    strokes: 4
+  residual_strokes: 7
+  expected_kangxi_strokes: 11
+  modern_strokes:
+    simplified: 11
+    traditional: 11
+  rules_applied: [部首还原：攴（第 66 部，4 画）+ 余笔 7]
+  in_kangxi_dictionary: true
+  status: auto_ok
+- id: name-105
+  char: 静
+  role: given
+  traditional: 靜
+  kRSUnicode: '174.8'
+  radical:
+    number: 174
+    char: 靑
+    strokes: 8
+  residual_strokes: 8
+  expected_kangxi_strokes: 16
+  modern_strokes:
+    simplified: 14
+    traditional: 16
+  rules_applied: [部首还原：靑（第 174 部，8 画）+ 余笔 8]
+  in_kangxi_dictionary: true
+  status: auto_ok
+- id: name-106
+  char: 丽
+  role: given
+  traditional: 麗
+  kRSUnicode: '198.8'
+  radical:
+    number: 198
+    char: 鹿
+    strokes: 11
+  residual_strokes: 8
+  expected_kangxi_strokes: 19
+  modern_strokes:
+    simplified: 8
+    traditional: 19
+  rules_applied: [部首还原：鹿（第 198 部，11 画）+ 余笔 8]
+  in_kangxi_dictionary: true
+  status: needs_review
+  review_reasons: [简繁转换“麗”是常规，但个别人身份证件写“丽”]
+- id: name-107
+  char: 强
+  role: given
+  traditional: 強
+  kRSUnicode: '57.8'
+  radical:
+    number: 57
+    char: 弓
+    strokes: 3
+  residual_strokes: 8
+  expected_kangxi_strokes: 11
+  modern_strokes:
+    simplified: 12
+    traditional: 11
+  rules_applied: [部首还原：弓（第 57 部，3 画）+ 余笔 8]
+  in_kangxi_dictionary: true
+  status: needs_review
+  review_reasons: [“强”与“強”是异体，笔画分别为 12 与 11，各家五格书取法不一]
+- id: name-108
+  char: 磊
+  role: given
+  traditional: 磊
+  kRSUnicode: '112.10'
+  radical:
+    number: 112
+    char: 石
+    strokes: 5
+  residual_strokes: 10
+  expected_kangxi_strokes: 15
+  modern_strokes:
+    simplified: 15
+    traditional: 15
+  rules_applied: [部首还原：石（第 112 部，5 画）+ 余笔 10]
+  in_kangxi_dictionary: true
+  status: auto_ok
+- id: name-109
+  char: 军
+  role: given
+  traditional: 軍
+  kRSUnicode: '159.2'
+  radical:
+    number: 159
+    char: 車
+    strokes: 7
+  residual_strokes: 2
+  expected_kangxi_strokes: 9
+  modern_strokes:
+    simplified: 6
+    traditional: 9
+  rules_applied: [部首还原：車（第 159 部，7 画）+ 余笔 2]
+  in_kangxi_dictionary: true
+  status: auto_ok
+- id: name-110
+  char: 洋
+  role: given
+  traditional: 洋
+  kRSUnicode: '85.6'
+  radical:
+    number: 85
+    char: 水
+    strokes: 4
+  residual_strokes: 6
+  expected_kangxi_strokes: 10
+  modern_strokes:
+    simplified: 9
+    traditional: 9
+  rules_applied: [部首还原：水（第 85 部，4 画）+ 余笔 6]
+  in_kangxi_dictionary: true
+  differs_from_modern_traditional_count: true
+  status: auto_ok
+- id: name-111
+  char: 勇
+  role: given
+  traditional: 勇
+  kRSUnicode: '19.7'
+  radical:
+    number: 19
+    char: 力
+    strokes: 2
+  residual_strokes: 7
+  expected_kangxi_strokes: 9
+  modern_strokes:
+    simplified: 9
+    traditional: 9
+  rules_applied: [部首还原：力（第 19 部，2 画）+ 余笔 7]
+  in_kangxi_dictionary: true
+  status: auto_ok
+- id: name-112
+  char: 艳
+  role: given
+  traditional: 艷
+  kRSUnicode: '139.18'
+  radical:
+    number: 139
+    char: 色
+    strokes: 6
+  residual_strokes: 18
+  expected_kangxi_strokes: 24
+  modern_strokes:
+    simplified: 10
+    traditional: 24
+  rules_applied: [部首还原：色（第 139 部，6 画）+ 余笔 18]
+  in_kangxi_dictionary: true
+  status: needs_review
+  review_reasons: [“艳”的繁体有“豔”“艷”两种写法，笔画不同]
+- id: name-113
+  char: 杰
+  role: given
+  traditional: 傑
+  kRSUnicode: '9.10'
+  radical:
+    number: 9
+    char: 人
+    strokes: 2
+  residual_strokes: 10
+  expected_kangxi_strokes: 12
+  modern_strokes:
+    simplified: 8
+    traditional: 12
+  rules_applied: [部首还原：人（第 9 部，2 画）+ 余笔 10]
+  in_kangxi_dictionary: true
+  status: needs_review
+  review_reasons: [名字中“杰”常保留原字（8 画），也有人写“傑”（12 画）]
+- id: name-114
+  char: 娟
+  role: given
+  traditional: 娟
+  kRSUnicode: '38.7'
+  radical:
+    number: 38
+    char: 女
+    strokes: 3
+  residual_strokes: 7
+  expected_kangxi_strokes: 10
+  modern_strokes:
+    simplified: 10
+    traditional: 10
+  rules_applied: [部首还原：女（第 38 部，3 画）+ 余笔 7]
+  in_kangxi_dictionary: true
+  status: auto_ok
+- id: name-115
+  char: 涛
+  role: given
+  traditional: 濤
+  kRSUnicode: '85.14'
+  radical:
+    number: 85
+    char: 水
+    strokes: 4
+  residual_strokes: 14
+  expected_kangxi_strokes: 18
+  modern_strokes:
+    simplified: 10
+    traditional: 17
+  rules_applied: [部首还原：水（第 85 部，4 画）+ 余笔 14]
+  in_kangxi_dictionary: true
+  differs_from_modern_traditional_count: true
+  status: auto_ok
+- id: name-116
+  char: 明
+  role: given
+  traditional: 明
+  kRSUnicode: '72.4'
+  radical:
+    number: 72
+    char: 日
+    strokes: 4
+  residual_strokes: 4
+  expected_kangxi_strokes: 8
+  modern_strokes:
+    simplified: 8
+    traditional: 8
+  rules_applied: [部首还原：日（第 72 部，4 画）+ 余笔 4]
+  in_kangxi_dictionary: true
+  status: auto_ok
+- id: name-117
+  char: 超
+  role: given
+  traditional: 超
+  kRSUnicode: '156.5'
+  radical:
+    number: 156
+    char: 走
+    strokes: 7
+  residual_strokes: 5
+  expected_kangxi_strokes: 12
+  modern_strokes:
+    simplified: 12
+    traditional: 12
+  rules_applied: [部首还原：走（第 156 部，7 画）+ 余笔 5]
+  in_kangxi_dictionary: true
+  status: auto_ok
+- id: name-118
+  char: 秀
+  role: given
+  traditional: 秀
+  kRSUnicode: '115.2'
+  radical:
+    number: 115
+    char: 禾
+    strokes: 5
+  residual_strokes: 2
+  expected_kangxi_strokes: 7
+  modern_strokes:
+    simplified: 7
+    traditional: 7
+  rules_applied: [部首还原：禾（第 115 部，5 画）+ 余笔 2]
+  in_kangxi_dictionary: true
+  status: auto_ok
+- id: name-119
+  char: 霞
+  role: given
+  traditional: 霞
+  kRSUnicode: '173.9'
+  radical:
+    number: 173
+    char: 雨
+    strokes: 8
+  residual_strokes: 9
+  expected_kangxi_strokes: 17
+  modern_strokes:
+    simplified: 17
+    traditional: 17
+  rules_applied: [部首还原：雨（第 173 部，8 画）+ 余笔 9]
+  in_kangxi_dictionary: true
+  status: auto_ok
+- id: name-120
+  char: 平
+  role: given
+  traditional: 平
+  kRSUnicode: '51.2'
+  radical:
+    number: 51
+    char: 干
+    strokes: 3
+  residual_strokes: 2
+  expected_kangxi_strokes: 5
+  modern_strokes:
+    simplified: 5
+    traditional: 5
+  rules_applied: [部首还原：干（第 51 部，3 画）+ 余笔 2]
+  in_kangxi_dictionary: true
+  status: auto_ok
+- id: name-121
+  char: 刚
+  role: given
+  traditional: 剛
+  kRSUnicode: '18.8'
+  radical:
+    number: 18
+    char: 刀
+    strokes: 2
+  residual_strokes: 8
+  expected_kangxi_strokes: 10
+  modern_strokes:
+    simplified: 6
+    traditional: 10
+  rules_applied: [部首还原：刀（第 18 部，2 画）+ 余笔 8]
+  in_kangxi_dictionary: true
+  status: auto_ok
+- id: name-122
+  char: 桂
+  role: given
+  traditional: 桂
+  kRSUnicode: '75.6'
+  radical:
+    number: 75
+    char: 木
+    strokes: 4
+  residual_strokes: 6
+  expected_kangxi_strokes: 10
+  modern_strokes:
+    simplified: 10
+    traditional: 10
+  rules_applied: [部首还原：木（第 75 部，4 画）+ 余笔 6]
+  in_kangxi_dictionary: true
+  status: auto_ok
+- id: name-123
+  char: 华
+  role: given
+  traditional: 華
+  kRSUnicode: '140.8'
+  radical:
+    number: 140
+    char: 艸
+    strokes: 6
+  residual_strokes: 8
+  expected_kangxi_strokes: 14
+  modern_strokes:
+    simplified: 6
+    traditional: 12
+  rules_applied: [部首还原：艸（第 140 部，6 画）+ 余笔 8]
+  in_kangxi_dictionary: true
+  differs_from_modern_traditional_count: true
+  status: auto_ok
+- id: name-124
+  char: 玉
+  role: given
+  traditional: 玉
+  kRSUnicode: '96.0'
+  radical:
+    number: 96
+    char: 玉
+    strokes: 5
+  residual_strokes: 0
+  expected_kangxi_strokes: 5
+  modern_strokes:
+    simplified: 5
+    traditional: 5
+  rules_applied: [部首还原：玉（第 96 部，5 画）+ 余笔 0]
+  in_kangxi_dictionary: true
+  status: auto_ok
+- id: name-125
+  char: 萍
+  role: given
+  traditional: 萍
+  kRSUnicode: '140.8'
+  radical:
+    number: 140
+    char: 艸
+    strokes: 6
+  residual_strokes: 8
+  expected_kangxi_strokes: 14
+  modern_strokes:
+    simplified: 11
+    traditional: 11
+  rules_applied: [部首还原：艸（第 140 部，6 画）+ 余笔 8]
+  in_kangxi_dictionary: true
+  differs_from_modern_traditional_count: true
+  status: auto_ok
+- id: name-126
+  char: 红
+  role: given
+  traditional: 紅
+  kRSUnicode: '120.3'
+  radical:
+    number: 120
+    char: 糸
+    strokes: 6
+  residual_strokes: 3
+  expected_kangxi_strokes: 9
+  modern_strokes:
+    simplified: 6
+    traditional: 9
+  rules_applied: [部首还原：糸（第 120 部，6 画）+ 余笔 3]
+  in_kangxi_dictionary: true
+  status: auto_ok
+- id: name-127
+  char: 鹏
+  role: given
+  traditional: 鵬
+  kRSUnicode: '196.8'
+  radical:
+    number: 196
+    char: 鳥
+    strokes: 11
+  residual_strokes: 8
+  expected_kangxi_strokes: 19
+  modern_strokes:
+    simplified: 13
+    traditional: 19
+  rules_applied: [部首还原：鳥（第 196 部，11 画）+ 余笔 8]
+  in_kangxi_dictionary: true
+  status: auto_ok
+- id: name-128
+  char: 辉
+  role: given
+  traditional: 輝
+  kRSUnicode: '159.8'
+  radical:
+    number: 159
+    char: 車
+    strokes: 7
+  residual_strokes: 8
+  expected_kangxi_strokes: 15
+  modern_strokes:
+    simplified: 12
+    traditional: 15
+  rules_applied: [部首还原：車（第 159 部，7 画）+ 余笔 8]
+  in_kangxi_dictionary: true
+  status: auto_ok
+- id: name-129
+  char: 建
+  role: given
+  traditional: 建
+  kRSUnicode: '54.6'
+  radical:
+    number: 54
+    char: 廴
+    strokes: 3
+  residual_strokes: 6
+  expected_kangxi_strokes: 9
+  modern_strokes:
+    simplified: 9
+    traditional: 9
+  rules_applied: [部首还原：廴（第 54 部，3 画）+ 余笔 6]
+  in_kangxi_dictionary: true
+  status: auto_ok
+- id: name-130
+  char: 文
+  role: given
+  traditional: 文
+  kRSUnicode: '67.0'
+  radical:
+    number: 67
+    char: 文
+    strokes: 4
+  residual_strokes: 0
+  expected_kangxi_strokes: 4
+  modern_strokes:
+    simplified: 4
+    traditional: 4
+  rules_applied: [部首还原：文（第 67 部，4 画）+ 余笔 0]
+  in_kangxi_dictionary: true
+  status: auto_ok
+- id: name-131
+  char: 浩
+  role: given
+  traditional: 浩
+  kRSUnicode: '85.7'
+  radical:
+    number: 85
+    char: 水
+    strokes: 4
+  residual_strokes: 7
+  expected_kangxi_strokes: 11
+  modern_strokes:
+    simplified: 10
+    traditional: 10
+  rules_applied: [部首还原：水（第 85 部，4 画）+ 余笔 7]
+  in_kangxi_dictionary: true
+  differs_from_modern_traditional_count: true
+  status: auto_ok
+- id: name-132
+  char: 宇
+  role: given
+  traditional: 宇
+  kRSUnicode: '40.3'
+  radical:
+    number: 40
+    char: 宀
+    strokes: 3
+  residual_strokes: 3
+  expected_kangxi_strokes: 6
+  modern_strokes:
+    simplified: 6
+    traditional: 6
+  rules_applied: [部首还原：宀（第 40 部，3 画）+ 余笔 3]
+  in_kangxi_dictionary: true
+  status: auto_ok
+- id: name-133
+  char: 子
+  role: given
+  traditional: 子
+  kRSUnicode: '39.0'
+  radical:
+    number: 39
+    char: 子
+    strokes: 3
+  residual_strokes: 0
+  expected_kangxi_strokes: 3
+  modern_strokes:
+    simplified: 3
+    traditional: 3
+  rules_applied: [部首还原：子（第 39 部，3 画）+ 余笔 0]
+  in_kangxi_dictionary: true
+  status: auto_ok
+- id: name-134
+  char: 欣
+  role: given
+  traditional: 欣
+  kRSUnicode: '76.4'
+  radical:
+    number: 76
+    char: 欠
+    strokes: 4
+  residual_strokes: 4
+  expected_kangxi_strokes: 8
+  modern_strokes:
+    simplified: 8
+    traditional: 8
+  rules_applied: [部首还原：欠（第 76 部，4 画）+ 余笔 4]
+  in_kangxi_dictionary: true
+  status: auto_ok
+- id: name-135
+  char: 怡
+  role: given
+  traditional: 怡
+  kRSUnicode: '61.5'
+  radical:
+    number: 61
+    char: 心
+    strokes: 4
+  residual_strokes: 5
+  expected_kangxi_strokes: 9
+  modern_strokes:
+    simplified: 8
+    traditional: 8
+  rules_applied: [部首还原：心（第 61 部，4 画）+ 余笔 5]
+  in_kangxi_dictionary: true
+  differs_from_modern_traditional_count: true
+  status: auto_ok
+- id: name-136
+  char: 思
+  role: given
+  traditional: 思
+  kRSUnicode: '61.5'
+  radical:
+    number: 61
+    char: 心
+    strokes: 4
+  residual_strokes: 5
+  expected_kangxi_strokes: 9
+  modern_strokes:
+    simplified: 9
+    traditional: 9
+  rules_applied: [部首还原：心（第 61 部，4 画）+ 余笔 5]
+  in_kangxi_dictionary: true
+  status: auto_ok
+- id: name-137
+  char: 雨
+  role: given
+  traditional: 雨
+  kRSUnicode: '173.0'
+  radical:
+    number: 173
+    char: 雨
+    strokes: 8
+  residual_strokes: 0
+  expected_kangxi_strokes: 8
+  modern_strokes:
+    simplified: 8
+    traditional: 8
+  rules_applied: [部首还原：雨（第 173 部，8 画）+ 余笔 0]
+  in_kangxi_dictionary: true
+  status: auto_ok
+- id: name-138
+  char: 晨
+  role: given
+  traditional: 晨
+  kRSUnicode: '72.7'
+  radical:
+    number: 72
+    char: 日
+    strokes: 4
+  residual_strokes: 7
+  expected_kangxi_strokes: 11
+  modern_strokes:
+    simplified: 11
+    traditional: 11
+  rules_applied: [部首还原：日（第 72 部，4 画）+ 余笔 7]
+  in_kangxi_dictionary: true
+  status: auto_ok
+- id: name-139
+  char: 博
+  role: given
+  traditional: 博
+  kRSUnicode: '24.10'
+  radical:
+    number: 24
+    char: 十
+    strokes: 2
+  residual_strokes: 10
+  expected_kangxi_strokes: 12
+  modern_strokes:
+    simplified: 12
+    traditional: 12
+  rules_applied: [部首还原：十（第 24 部，2 画）+ 余笔 10]
+  in_kangxi_dictionary: true
+  status: auto_ok
+- id: name-140
+  char: 轩
+  role: given
+  traditional: 軒
+  kRSUnicode: '159.3'
+  radical:
+    number: 159
+    char: 車
+    strokes: 7
+  residual_strokes: 3
+  expected_kangxi_strokes: 10
+  modern_strokes:
+    simplified: 7
+    traditional: 10
+  rules_applied: [部首还原：車（第 159 部，7 画）+ 余笔 3]
+  in_kangxi_dictionary: true
+  status: auto_ok
+- id: name-141
+  char: 梓
+  role: given
+  traditional: 梓
+  kRSUnicode: '75.7'
+  radical:
+    number: 75
+    char: 木
+    strokes: 4
+  residual_strokes: 7
+  expected_kangxi_strokes: 11
+  modern_strokes:
+    simplified: 11
+    traditional: 11
+  rules_applied: [部首还原：木（第 75 部，4 画）+ 余笔 7]
+  in_kangxi_dictionary: true
+  status: auto_ok
+- id: name-142
+  char: 涵
+  role: given
+  traditional: 涵
+  kRSUnicode: '85.8'
+  radical:
+    number: 85
+    char: 水
+    strokes: 4
+  residual_strokes: 8
+  expected_kangxi_strokes: 12
+  modern_strokes:
+    simplified: 11
+    traditional: 11
+  rules_applied: [部首还原：水（第 85 部，4 画）+ 余笔 8]
+  in_kangxi_dictionary: true
+  differs_from_modern_traditional_count: true
+  status: auto_ok
+- id: name-143
+  char: 诗
+  role: given
+  traditional: 詩
+  kRSUnicode: '149.6'
+  radical:
+    number: 149
+    char: 言
+    strokes: 7
+  residual_strokes: 6
+  expected_kangxi_strokes: 13
+  modern_strokes:
+    simplified: 8
+    traditional: 13
+  rules_applied: [部首还原：言（第 149 部，7 画）+ 余笔 6]
+  in_kangxi_dictionary: true
+  status: auto_ok
+- id: name-144
+  char: 琪
+  role: given
+  traditional: 琪
+  kRSUnicode: '96.8'
+  radical:
+    number: 96
+    char: 玉
+    strokes: 5
+  residual_strokes: 8
+  expected_kangxi_strokes: 13
+  modern_strokes:
+    simplified: 12
+    traditional: 12
+  rules_applied: [部首还原：玉（第 96 部，5 画）+ 余笔 8]
+  in_kangxi_dictionary: true
+  differs_from_modern_traditional_count: true
+  status: auto_ok
+- id: name-145
+  char: 佳
+  role: given
+  traditional: 佳
+  kRSUnicode: '9.6'
+  radical:
+    number: 9
+    char: 人
+    strokes: 2
+  residual_strokes: 6
+  expected_kangxi_strokes: 8
+  modern_strokes:
+    simplified: 8
+    traditional: 8
+  rules_applied: [部首还原：人（第 9 部，2 画）+ 余笔 6]
+  in_kangxi_dictionary: true
+  status: auto_ok
+- id: name-146
+  char: 嘉
+  role: given
+  traditional: 嘉
+  kRSUnicode: '30.11'
+  radical:
+    number: 30
+    char: 口
+    strokes: 3
+  residual_strokes: 11
+  expected_kangxi_strokes: 14
+  modern_strokes:
+    simplified: 14
+    traditional: 14
+  rules_applied: [部首还原：口（第 30 部，3 画）+ 余笔 11]
+  in_kangxi_dictionary: true
+  status: auto_ok
+- id: name-147
+  char: 瑶
+  role: given
+  traditional: 瑤
+  kRSUnicode: '96.10'
+  radical:
+    number: 96
+    char: 玉
+    strokes: 5
+  residual_strokes: 10
+  expected_kangxi_strokes: 15
+  modern_strokes:
+    simplified: 14
+    traditional: 14
+  rules_applied: [部首还原：玉（第 96 部，5 画）+ 余笔 10]
+  in_kangxi_dictionary: true
+  differs_from_modern_traditional_count: true
+  status: auto_ok
+- id: name-148
+  char: 婷
+  role: given
+  traditional: 婷
+  kRSUnicode: '38.9'
+  radical:
+    number: 38
+    char: 女
+    strokes: 3
+  residual_strokes: 9
+  expected_kangxi_strokes: 12
+  modern_strokes:
+    simplified: 12
+    traditional: 12
+  rules_applied: [部首还原：女（第 38 部，3 画）+ 余笔 9]
+  in_kangxi_dictionary: true
+  status: auto_ok
+- id: name-149
+  char: 雪
+  role: given
+  traditional: 雪
+  kRSUnicode: '173.3'
+  radical:
+    number: 173
+    char: 雨
+    strokes: 8
+  residual_strokes: 3
+  expected_kangxi_strokes: 11
+  modern_strokes:
+    simplified: 11
+    traditional: 11
+  rules_applied: [部首还原：雨（第 173 部，8 画）+ 余笔 3]
+  in_kangxi_dictionary: true
+  status: auto_ok
+- id: name-150
+  char: 慧
+  role: given
+  traditional: 慧
+  kRSUnicode: '61.11'
+  radical:
+    number: 61
+    char: 心
+    strokes: 4
+  residual_strokes: 11
+  expected_kangxi_strokes: 15
+  modern_strokes:
+    simplified: 15
+    traditional: 15
+  rules_applied: [部首还原：心（第 61 部，4 画）+ 余笔 11]
+  in_kangxi_dictionary: true
+  status: auto_ok
+- id: name-151
+  char: 晴
+  role: given
+  traditional: 晴
+  kRSUnicode: '72.8'
+  radical:
+    number: 72
+    char: 日
+    strokes: 4
+  residual_strokes: 8
+  expected_kangxi_strokes: 12
+  modern_strokes:
+    simplified: 12
+    traditional: 12
+  rules_applied: [部首还原：日（第 72 部，4 画）+ 余笔 8]
+  in_kangxi_dictionary: true
+  status: auto_ok
+- id: name-152
+  char: 悦
+  role: given
+  traditional: 悅
+  kRSUnicode: '61.7'
+  radical:
+    number: 61
+    char: 心
+    strokes: 4
+  residual_strokes: 7
+  expected_kangxi_strokes: 11
+  modern_strokes:
+    simplified: 10
+    traditional: 10
+  rules_applied: [部首还原：心（第 61 部，4 画）+ 余笔 7]
+  in_kangxi_dictionary: true
+  differs_from_modern_traditional_count: true
+  status: auto_ok
+- id: name-153
+  char: 宁
+  role: given
+  traditional: 寧
+  kRSUnicode: '40.11'
+  radical:
+    number: 40
+    char: 宀
+    strokes: 3
+  residual_strokes: 11
+  expected_kangxi_strokes: 14
+  modern_strokes:
+    simplified: 5
+    traditional: 14
+  rules_applied: [部首还原：宀（第 40 部，3 画）+ 余笔 11]
+  in_kangxi_dictionary: true
+  status: auto_ok
+- id: name-154
+  char: 安
+  role: given
+  traditional: 安
+  kRSUnicode: '40.3'
+  radical:
+    number: 40
+    char: 宀
+    strokes: 3
+  residual_strokes: 3
+  expected_kangxi_strokes: 6
+  modern_strokes:
+    simplified: 6
+    traditional: 6
+  rules_applied: [部首还原：宀（第 40 部，3 画）+ 余笔 3]
+  in_kangxi_dictionary: true
+  status: auto_ok
+- id: name-155
+  char: 泽
+  role: given
+  traditional: 澤
+  kRSUnicode: '85.13'
+  radical:
+    number: 85
+    char: 水
+    strokes: 4
+  residual_strokes: 13
+  expected_kangxi_strokes: 17
+  modern_strokes:
+    simplified: 8
+    traditional: 16
+  rules_applied: [部首还原：水（第 85 部，4 画）+ 余笔 13]
+  in_kangxi_dictionary: true
+  differs_from_modern_traditional_count: true
+  status: auto_ok
+- id: name-156
+  char: 俊
+  role: given
+  traditional: 俊
+  kRSUnicode: '9.7'
+  radical:
+    number: 9
+    char: 人
+    strokes: 2
+  residual_strokes: 7
+  expected_kangxi_strokes: 9
+  modern_strokes:
+    simplified: 9
+    traditional: 9
+  rules_applied: [部首还原：人（第 9 部，2 画）+ 余笔 7]
+  in_kangxi_dictionary: true
+  status: auto_ok
+- id: name-157
+  char: 毅
+  role: given
+  traditional: 毅
+  kRSUnicode: '79.11'
+  radical:
+    number: 79
+    char: 殳
+    strokes: 4
+  residual_strokes: 11
+  expected_kangxi_strokes: 15
+  modern_strokes:
+    simplified: 15
+    traditional: 15
+  rules_applied: [部首还原：殳（第 79 部，4 画）+ 余笔 11]
+  in_kangxi_dictionary: true
+  status: auto_ok
+- id: name-158
+  char: 凯
+  role: given
+  traditional: 凱
+  kRSUnicode: '16.10'
+  radical:
+    number: 16
+    char: 几
+    strokes: 2
+  residual_strokes: 10
+  expected_kangxi_strokes: 12
+  modern_strokes:
+    simplified: 8
+    traditional: 12
+  rules_applied: [部首还原：几（第 16 部，2 画）+ 余笔 10]
+  in_kangxi_dictionary: true
+  status: auto_ok
+- id: name-159
+  char: 睿
+  role: given
+  traditional: 睿
+  kRSUnicode: '109.9'
+  radical:
+    number: 109
+    char: 目
+    strokes: 5
+  residual_strokes: 9
+  expected_kangxi_strokes: 14
+  modern_strokes:
+    simplified: 14
+    traditional: 14
+  rules_applied: [部首还原：目（第 109 部，5 画）+ 余笔 9]
+  in_kangxi_dictionary: true
+  status: auto_ok
+- id: name-160
+  char: 一
+  role: given
+  traditional: 一
+  kRSUnicode: '1.0'
+  radical:
+    number: 1
+    char: 一
+    strokes: 1
+  residual_strokes: 0
+  expected_kangxi_strokes: 1
+  modern_strokes:
+    simplified: 1
+    traditional: 1
+  rules_applied: [部首还原：一（第 1 部，1 画）+ 余笔 0, 数字按数值计：1]
+  in_kangxi_dictionary: true
+  status: auto_ok
+- id: name-161
+  char: 二
+  role: given
+  traditional: 二
+  kRSUnicode: '7.0'
+  radical:
+    number: 7
+    char: 二
+    strokes: 2
+  residual_strokes: 0
+  expected_kangxi_strokes: 2
+  modern_strokes:
+    simplified: 2
+    traditional: 2
+  rules_applied: [部首还原：二（第 7 部，2 画）+ 余笔 0, 数字按数值计：2]
+  in_kangxi_dictionary: true
+  status: auto_ok
+- id: name-162
+  char: 三
+  role: given
+  traditional: 三
+  kRSUnicode: '1.2'
+  radical:
+    number: 1
+    char: 一
+    strokes: 1
+  residual_strokes: 2
+  expected_kangxi_strokes: 3
+  modern_strokes:
+    simplified: 3
+    traditional: 3
+  rules_applied: [部首还原：一（第 1 部，1 画）+ 余笔 2, 数字按数值计：3]
+  in_kangxi_dictionary: true
+  status: auto_ok
+- id: name-163
+  char: 四
+  role: given
+  traditional: 四
+  kRSUnicode: '31.2'
+  radical:
+    number: 31
+    char: 囗
+    strokes: 3
+  residual_strokes: 2
+  expected_kangxi_strokes: 4
+  modern_strokes:
+    simplified: 5
+    traditional: 5
+  rules_applied: [部首还原：囗（第 31 部，3 画）+ 余笔 2, 数字按数值计：4]
+  in_kangxi_dictionary: true
+  differs_from_modern_traditional_count: true
+  status: auto_ok
+- id: name-164
+  char: 五
+  role: given
+  traditional: 五
+  kRSUnicode: '7.2'
+  radical:
+    number: 7
+    char: 二
+    strokes: 2
+  residual_strokes: 2
+  expected_kangxi_strokes: 5
+  modern_strokes:
+    simplified: 4
+    traditional: 4
+  rules_applied: [部首还原：二（第 7 部，2 画）+ 余笔 2, 数字按数值计：5]
+  in_kangxi_dictionary: true
+  differs_from_modern_traditional_count: true
+  status: auto_ok
+- id: name-165
+  char: 六
+  role: given
+  traditional: 六
+  kRSUnicode: '12.2'
+  radical:
+    number: 12
+    char: 八
+    strokes: 2
+  residual_strokes: 2
+  expected_kangxi_strokes: 6
+  modern_strokes:
+    simplified: 4
+    traditional: 4
+  rules_applied: [部首还原：八（第 12 部，2 画）+ 余笔 2, 数字按数值计：6]
+  in_kangxi_dictionary: true
+  differs_from_modern_traditional_count: true
+  status: auto_ok
+- id: name-166
+  char: 七
+  role: given
+  traditional: 七
+  kRSUnicode: '1.1'
+  radical:
+    number: 1
+    char: 一
+    strokes: 1
+  residual_strokes: 1
+  expected_kangxi_strokes: 7
+  modern_strokes:
+    simplified: 2
+    traditional: 2
+  rules_applied: [部首还原：一（第 1 部，1 画）+ 余笔 1, 数字按数值计：7]
+  in_kangxi_dictionary: true
+  differs_from_modern_traditional_count: true
+  status: auto_ok
+- id: name-167
+  char: 八
+  role: given
+  traditional: 八
+  kRSUnicode: '12.0'
+  radical:
+    number: 12
+    char: 八
+    strokes: 2
+  residual_strokes: 0
+  expected_kangxi_strokes: 8
+  modern_strokes:
+    simplified: 2
+    traditional: 2
+  rules_applied: [部首还原：八（第 12 部，2 画）+ 余笔 0, 数字按数值计：8]
+  in_kangxi_dictionary: true
+  differs_from_modern_traditional_count: true
+  status: auto_ok
+- id: name-168
+  char: 九
+  role: given
+  traditional: 九
+  kRSUnicode: '5.1'
+  radical:
+    number: 5
+    char: 乙
+    strokes: 1
+  residual_strokes: 1
+  expected_kangxi_strokes: 9
+  modern_strokes:
+    simplified: 2
+    traditional: 2
+  rules_applied: [部首还原：乙（第 5 部，1 画）+ 余笔 1, 数字按数值计：9]
+  in_kangxi_dictionary: true
+  differs_from_modern_traditional_count: true
+  status: auto_ok
+- id: name-169
+  char: 十
+  role: given
+  traditional: 十
+  kRSUnicode: '24.0'
+  radical:
+    number: 24
+    char: 十
+    strokes: 2
+  residual_strokes: 0
+  expected_kangxi_strokes: 10
+  modern_strokes:
+    simplified: 2
+    traditional: 2
+  rules_applied: [部首还原：十（第 24 部，2 画）+ 余笔 0, 数字按数值计：10]
+  in_kangxi_dictionary: true
+  differs_from_modern_traditional_count: true
+  status: auto_ok
+- id: name-170
+  char: 琳
+  role: given
+  traditional: 琳
+  kRSUnicode: '96.8'
+  radical:
+    number: 96
+    char: 玉
+    strokes: 5
+  residual_strokes: 8
+  expected_kangxi_strokes: 13
+  modern_strokes:
+    simplified: 12
+    traditional: 12
+  rules_applied: [部首还原：玉（第 96 部，5 画）+ 余笔 8]
+  in_kangxi_dictionary: true
+  differs_from_modern_traditional_count: true
+  status: auto_ok
+- id: name-171
+  char: 瑞
+  role: given
+  traditional: 瑞
+  kRSUnicode: '96.9'
+  radical:
+    number: 96
+    char: 玉
+    strokes: 5
+  residual_strokes: 9
+  expected_kangxi_strokes: 14
+  modern_strokes:
+    simplified: 13
+    traditional: 13
+  rules_applied: [部首还原：玉（第 96 部，5 画）+ 余笔 9]
+  in_kangxi_dictionary: true
+  differs_from_modern_traditional_count: true
+  status: auto_ok
+- id: name-172
+  char: 芝
+  role: given
+  traditional: 芝
+  kRSUnicode: '140.4'
+  radical:
+    number: 140
+    char: 艸
+    strokes: 6
+  residual_strokes: 4
+  expected_kangxi_strokes: 10
+  modern_strokes:
+    simplified: 6
+    traditional: 6
+  rules_applied: [部首还原：艸（第 140 部，6 画）+ 余笔 4]
+  in_kangxi_dictionary: true
+  differs_from_modern_traditional_count: true
+  status: auto_ok
+- id: name-173
+  char: 茜
+  role: given
+  traditional: 茜
+  kRSUnicode: '140.6'
+  radical:
+    number: 140
+    char: 艸
+    strokes: 6
+  residual_strokes: 6
+  expected_kangxi_strokes: 12
+  modern_strokes:
+    simplified: 9
+    traditional: 9
+  rules_applied: [部首还原：艸（第 140 部，6 画）+ 余笔 6]
+  in_kangxi_dictionary: true
+  differs_from_modern_traditional_count: true
+  status: auto_ok
+- id: name-174
+  char: 莉
+  role: given
+  traditional: 莉
+  kRSUnicode: '140.7'
+  radical:
+    number: 140
+    char: 艸
+    strokes: 6
+  residual_strokes: 7
+  expected_kangxi_strokes: 13
+  modern_strokes:
+    simplified: 10
+    traditional: 10
+  rules_applied: [部首还原：艸（第 140 部，6 画）+ 余笔 7]
+  in_kangxi_dictionary: true
+  differs_from_modern_traditional_count: true
+  status: auto_ok
+- id: name-175
+  char: 蕊
+  role: given
+  traditional: 蕊
+  kRSUnicode: '140.12'
+  radical:
+    number: 140
+    char: 艸
+    strokes: 6
+  residual_strokes: 12
+  expected_kangxi_strokes: 18
+  modern_strokes:
+    simplified: 16
+    traditional: 16
+  rules_applied: [部首还原：艸（第 140 部，6 画）+ 余笔 12]
+  in_kangxi_dictionary: true
+  differs_from_modern_traditional_count: true
+  status: auto_ok
+- id: name-176
+  char: 荣
+  role: given
+  traditional: 榮
+  kRSUnicode: '75.10'
+  radical:
+    number: 75
+    char: 木
+    strokes: 4
+  residual_strokes: 10
+  expected_kangxi_strokes: 14
+  modern_strokes:
+    simplified: 10
+    traditional: 14
+  rules_applied: [部首还原：木（第 75 部，4 画）+ 余笔 10]
+  in_kangxi_dictionary: true
+  status: auto_ok
+- id: name-177
+  char: 远
+  role: given
+  traditional: 遠
+  kRSUnicode: '162.10'
+  radical:
+    number: 162
+    char: 辵
+    strokes: 7
+  residual_strokes: 10
+  expected_kangxi_strokes: 17
+  modern_strokes:
+    simplified: 7
+    traditional: 13
+  rules_applied: [部首还原：辵（第 162 部，7 画）+ 余笔 10]
+  in_kangxi_dictionary: true
+  differs_from_modern_traditional_count: true
+  status: auto_ok
+- id: name-178
+  char: 达
+  role: given
+  traditional: 達
+  kRSUnicode: '162.9'
+  radical:
+    number: 162
+    char: 辵
+    strokes: 7
+  residual_strokes: 9
+  expected_kangxi_strokes: 16
+  modern_strokes:
+    simplified: 7
+    traditional: 13
+  rules_applied: [部首还原：辵（第 162 部，7 画）+ 余笔 9]
+  in_kangxi_dictionary: true
+  differs_from_modern_traditional_count: true
+  status: auto_ok
+- id: name-179
+  char: 道
+  role: given
+  traditional: 道
+  kRSUnicode: '162.9'
+  radical:
+    number: 162
+    char: 辵
+    strokes: 7
+  residual_strokes: 9
+  expected_kangxi_strokes: 16
+  modern_strokes:
+    simplified: 13
+    traditional: 13
+  rules_applied: [部首还原：辵（第 162 部，7 画）+ 余笔 9]
+  in_kangxi_dictionary: true
+  differs_from_modern_traditional_count: true
+  status: auto_ok
+- id: name-180
+  char: 迪
+  role: given
+  traditional: 迪
+  kRSUnicode: '162.5'
+  radical:
+    number: 162
+    char: 辵
+    strokes: 7
+  residual_strokes: 5
+  expected_kangxi_strokes: 12
+  modern_strokes:
+    simplified: 9
+    traditional: 9
+  rules_applied: [部首还原：辵（第 162 部，7 画）+ 余笔 5]
+  in_kangxi_dictionary: true
+  differs_from_modern_traditional_count: true
+  status: auto_ok
+- id: name-181
+  char: 郁
+  role: given
+  traditional: 郁
+  kRSUnicode: '163.6'
+  radical:
+    number: 163
+    char: 邑
+    strokes: 7
+  residual_strokes: 6
+  expected_kangxi_strokes: 13
+  modern_strokes:
+    simplified: 9
+    traditional: 9
+  rules_applied: [名字用字繁体覆盖, 部首还原：邑（第 163 部，7 画）+ 余笔 6]
+  in_kangxi_dictionary: true
+  differs_from_modern_traditional_count: true
+  status: needs_review
+  review_reasons: [名字中“郁”多为本字（13 画），简繁转换会映射到“鬱”（29 画）]
+- id: name-182
+  char: 邦
+  role: given
+  traditional: 邦
+  kRSUnicode: '163.4'
+  radical:
+    number: 163
+    char: 邑
+    strokes: 7
+  residual_strokes: 4
+  expected_kangxi_strokes: 11
+  modern_strokes:
+    simplified: 7
+    traditional: 7
+  rules_applied: [部首还原：邑（第 163 部，7 画）+ 余笔 4]
+  in_kangxi_dictionary: true
+  differs_from_modern_traditional_count: true
+  status: auto_ok
+- id: name-183
+  char: 都
+  role: given
+  traditional: 都
+  kRSUnicode: '163.9'
+  radical:
+    number: 163
+    char: 邑
+    strokes: 7
+  residual_strokes: 9
+  expected_kangxi_strokes: 16
+  modern_strokes:
+    simplified: 12
+    traditional: 12
+  rules_applied: [部首还原：邑（第 163 部，7 画）+ 余笔 9]
+  in_kangxi_dictionary: true
+  differs_from_modern_traditional_count: true
+  status: auto_ok
+- id: name-184
+  char: 阳
+  role: given
+  traditional: 陽
+  kRSUnicode: '170.9'
+  radical:
+    number: 170
+    char: 阜
+    strokes: 8
+  residual_strokes: 9
+  expected_kangxi_strokes: 17
+  modern_strokes:
+    simplified: 6
+    traditional: 12
+  rules_applied: [部首还原：阜（第 170 部，8 画）+ 余笔 9]
+  in_kangxi_dictionary: true
+  differs_from_modern_traditional_count: true
+  status: auto_ok
+- id: name-185
+  char: 隆
+  role: given
+  traditional: 隆
+  kRSUnicode: '170.9'
+  radical:
+    number: 170
+    char: 阜
+    strokes: 8
+  residual_strokes: 9
+  expected_kangxi_strokes: 17
+  modern_strokes:
+    simplified: 12
+    traditional: 12
+  rules_applied: [部首还原：阜（第 170 部，8 画）+ 余笔 9]
+  in_kangxi_dictionary: true
+  differs_from_modern_traditional_count: true
+  status: auto_ok
+- id: name-186
+  char: 胜
+  role: given
+  traditional: 勝
+  kRSUnicode: '19.10'
+  radical:
+    number: 19
+    char: 力
+    strokes: 2
+  residual_strokes: 10
+  expected_kangxi_strokes: 12
+  modern_strokes:
+    simplified: 9
+    traditional: 12
+  rules_applied: [部首还原：力（第 19 部，2 画）+ 余笔 10]
+  in_kangxi_dictionary: true
+  status: needs_review
+  review_reasons: [“胜”在名字里多对应“勝”（12 画），但“胜”本身也是独立字（肉部 9 画）]
+- id: name-187
+  char: 朋
+  role: given
+  traditional: 朋
+  kRSUnicode: '74.4'
+  radical:
+    number: 74
+    char: 月
+    strokes: 4
+  residual_strokes: 4
+  expected_kangxi_strokes: 8
+  modern_strokes:
+    simplified: 8
+    traditional: 8
+  rules_applied: [部首还原：月（第 74 部，4 画）+ 余笔 4]
+  in_kangxi_dictionary: true
+  status: auto_ok
+- id: name-188
+  char: 清
+  role: given
+  traditional: 清
+  kRSUnicode: '85.8'
+  radical:
+    number: 85
+    char: 水
+    strokes: 4
+  residual_strokes: 8
+  expected_kangxi_strokes: 12
+  modern_strokes:
+    simplified: 11
+    traditional: 11
+  rules_applied: [部首还原：水（第 85 部，4 画）+ 余笔 8]
+  in_kangxi_dictionary: true
+  differs_from_modern_traditional_count: true
+  status: auto_ok
+- id: name-189
+  char: 恒
+  role: given
+  traditional: 恆
+  kRSUnicode: '61.6'
+  radical:
+    number: 61
+    char: 心
+    strokes: 4
+  residual_strokes: 6
+  expected_kangxi_strokes: 10
+  modern_strokes:
+    simplified: 9
+    traditional: 9
+  rules_applied: [部首还原：心（第 61 部，4 画）+ 余笔 6]
+  in_kangxi_dictionary: true
+  differs_from_modern_traditional_count: true
+  status: auto_ok
+- id: name-190
+  char: 祥
+  role: given
+  traditional: 祥
+  kRSUnicode: '113.6'
+  radical:
+    number: 113
+    char: 示
+    strokes: 5
+  residual_strokes: 6
+  expected_kangxi_strokes: 11
+  modern_strokes:
+    simplified: 11
+    traditional: 11
+  rules_applied: [部首还原：示（第 113 部，5 画）+ 余笔 6]
+  in_kangxi_dictionary: true
+  status: auto_ok
+- id: name-191
+  char: 福
+  role: given
+  traditional: 福
+  kRSUnicode: '113.9'
+  radical:
+    number: 113
+    char: 示
+    strokes: 5
+  residual_strokes: 9
+  expected_kangxi_strokes: 14
+  modern_strokes:
+    simplified: 14
+    traditional: 14
+  rules_applied: [部首还原：示（第 113 部，5 画）+ 余笔 9]
+  in_kangxi_dictionary: true
+  status: auto_ok
+- id: name-192
+  char: 礼
+  role: given
+  traditional: 禮
+  kRSUnicode: '113.13'
+  radical:
+    number: 113
+    char: 示
+    strokes: 5
+  residual_strokes: 13
+  expected_kangxi_strokes: 18
+  modern_strokes:
+    simplified: 6
+    traditional: 18
+  rules_applied: [部首还原：示（第 113 部，5 画）+ 余笔 13]
+  in_kangxi_dictionary: true
+  status: auto_ok
+- id: name-193
+  char: 裕
+  role: given
+  traditional: 裕
+  kRSUnicode: '145.7'
+  radical:
+    number: 145
+    char: 衣
+    strokes: 6
+  residual_strokes: 7
+  expected_kangxi_strokes: 13
+  modern_strokes:
+    simplified: 12
+    traditional: 12
+  rules_applied: [部首还原：衣（第 145 部，6 画）+ 余笔 7]
+  in_kangxi_dictionary: true
+  differs_from_modern_traditional_count: true
+  status: auto_ok
+- id: name-194
+  char: 绮
+  role: given
+  traditional: 綺
+  kRSUnicode: '120.8'
+  radical:
+    number: 120
+    char: 糸
+    strokes: 6
+  residual_strokes: 8
+  expected_kangxi_strokes: 14
+  modern_strokes:
+    simplified: 11
+    traditional: 14
+  rules_applied: [部首还原：糸（第 120 部，6 画）+ 余笔 8]
+  in_kangxi_dictionary: true
+  status: auto_ok
+- id: name-195
+  char: 振
+  role: given
+  traditional: 振
+  kRSUnicode: '64.7'
+  radical:
+    number: 64
+    char: 手
+    strokes: 4
+  residual_strokes: 7
+  expected_kangxi_strokes: 11
+  modern_strokes:
+    simplified: 10
+    traditional: 10
+  rules_applied: [部首还原：手（第 64 部，4 画）+ 余笔 7]
+  in_kangxi_dictionary: true
+  differs_from_modern_traditional_count: true
+  status: auto_ok
+- id: name-196
+  char: 心
+  role: given
+  traditional: 心
+  kRSUnicode: '61.0'
+  radical:
+    number: 61
+    char: 心
+    strokes: 4
+  residual_strokes: 0
+  expected_kangxi_strokes: 4
+  modern_strokes:
+    simplified: 4
+    traditional: 4
+  rules_applied: [部首还原：心（第 61 部，4 画）+ 余笔 0]
+  in_kangxi_dictionary: true
+  status: auto_ok
+- id: name-197
+  char: 永
+  role: given
+  traditional: 永
+  kRSUnicode: '85.1'
+  radical:
+    number: 85
+    char: 水
+    strokes: 4
+  residual_strokes: 1
+  expected_kangxi_strokes: 5
+  modern_strokes:
+    simplified: 5
+    traditional: 5
+  rules_applied: [部首还原：水（第 85 部，4 画）+ 余笔 1]
+  in_kangxi_dictionary: true
+  status: auto_ok
+- id: name-198
+  char: 美
+  role: given
+  traditional: 美
+  kRSUnicode: '123.3'
+  radical:
+    number: 123
+    char: 羊
+    strokes: 6
+  residual_strokes: 3
+  expected_kangxi_strokes: 9
+  modern_strokes:
+    simplified: 9
+    traditional: 9
+  rules_applied: [部首还原：羊（第 123 部，6 画）+ 余笔 3]
+  in_kangxi_dictionary: true
+  status: auto_ok
+- id: name-199
+  char: 婉
+  role: given
+  traditional: 婉
+  kRSUnicode: '38.8'
+  radical:
+    number: 38
+    char: 女
+    strokes: 3
+  residual_strokes: 8
+  expected_kangxi_strokes: 11
+  modern_strokes:
+    simplified: 11
+    traditional: 11
+  rules_applied: [部首还原：女（第 38 部，3 画）+ 余笔 8]
+  in_kangxi_dictionary: true
+  status: auto_ok
+- id: name-200
+  char: 彬
+  role: given
+  traditional: 彬
+  kRSUnicode: '59.8'
+  radical:
+    number: 59
+    char: 彡
+    strokes: 3
+  residual_strokes: 8
+  expected_kangxi_strokes: 11
+  modern_strokes:
+    simplified: 11
+    traditional: 11
+  rules_applied: [部首还原：彡（第 59 部，3 画）+ 余笔 8]
+  in_kangxi_dictionary: true
+  status: auto_ok

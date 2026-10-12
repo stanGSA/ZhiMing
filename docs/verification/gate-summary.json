@@ -1,0 +1,282 @@
+{
+  "sanitized": true,
+  "generated_at": "2026-10-12T19:18:35.980064+00:00",
+  "pass": true,
+  "checks": {
+    "coverage_156_plus_7": true,
+    "same_seed_100_repeats": true,
+    "independent_100_draws": true,
+    "pytest_no_failures": true,
+    "guard_and_regressions_present": true,
+    "live_strict_pass": true,
+    "trace_replay_pass": true,
+    "database_integrity": true,
+    "api_available": true,
+    "doctor_required_ok": true
+  },
+  "coverage": {
+    "kb_version": "v1-6d787fced6dae05b",
+    "entries": 163,
+    "card_states": 156,
+    "positions": 7,
+    "coverage": 1.0,
+    "reviewed_count": 0,
+    "reviewed_rate": 0.0,
+    "missing": []
+  },
+  "deterministic_repeats": {
+    "single": true,
+    "three_card": true,
+    "decision": true
+  },
+  "distribution": {
+    "draws": 100,
+    "unique_seeds": 100,
+    "unique_card_sequences": 100,
+    "card_frequency": {
+      "cups_four": 6,
+      "the_empress": 5,
+      "cups_six": 2,
+      "pentacles_three": 7,
+      "wands_two": 3,
+      "swords_seven": 3,
+      "justice": 6,
+      "pentacles_six": 6,
+      "cups_page": 5,
+      "pentacles_ten": 9,
+      "pentacles_queen": 8,
+      "swords_queen": 9,
+      "cups_king": 8,
+      "pentacles_eight": 3,
+      "the_fool": 3,
+      "wands_five": 5,
+      "temperance": 4,
+      "pentacles_king": 3,
+      "pentacles_four": 6,
+      "pentacles_page": 5,
+      "wands_four": 4,
+      "cups_five": 5,
+      "cups_ace": 10,
+      "pentacles_seven": 2,
+      "the_devil": 1,
+      "swords_ten": 5,
+      "wands_king": 8,
+      "wands_ace": 6,
+      "cups_eight": 6,
+      "the_hierophant": 3,
+      "swords_four": 6,
+      "cups_seven": 4,
+      "cups_knight": 4,
+      "pentacles_nine": 4,
+      "wands_page": 4,
+      "swords_eight": 2,
+      "wands_eight": 2,
+      "wands_seven": 4,
+      "the_hermit": 4,
+      "wands_three": 4,
+      "wands_queen": 2,
+      "pentacles_knight": 2,
+      "swords_ace": 2,
+      "swords_three": 1,
+      "judgement": 4,
+      "the_high_priestess": 4,
+      "wands_ten": 5,
+      "wands_knight": 3,
+      "swords_page": 1,
+      "wands_nine": 4,
+      "strength": 3,
+      "the_magician": 2,
+      "the_tower": 4,
+      "cups_ten": 2,
+      "the_emperor": 1,
+      "cups_three": 3,
+      "the_moon": 2,
+      "cups_nine": 3,
+      "wheel_of_fortune": 7,
+      "cups_two": 4,
+      "the_chariot": 2,
+      "death": 5,
+      "swords_nine": 1,
+      "wands_six": 4,
+      "swords_six": 5,
+      "swords_five": 4,
+      "pentacles_five": 2,
+      "pentacles_ace": 4,
+      "swords_king": 3,
+      "swords_knight": 2,
+      "pentacles_two": 1,
+      "cups_queen": 3,
+      "the_lovers": 3,
+      "the_world": 2,
+      "the_hanged_man": 2,
+      "the_star": 1,
+      "the_sun": 2,
+      "swords_two": 1
+    },
+    "orientation_frequency": {
+      "True": 138,
+      "False": 162
+    }
+  },
+  "pytest": {
+    "cases": 85,
+    "failed": [],
+    "required_regressions": {
+      "test_same_draw_cached_changed_draw_blocked": true,
+      "test_guard_errors_are_results": true,
+      "test_profile_evidence_and_cache": true,
+      "test_cross_session_followup": true,
+      "test_redraw_changes_seed_and_preserves_parent": true,
+      "test_original_crisis_fixtures": true,
+      "test_original_mt11_safety_transition": true,
+      "test_seed_changes_and_both_orientations": true,
+      "test_explicit_spread_cannot_be_changed_by_model": true
+    }
+  },
+  "doctor": {
+    "ok": true,
+    "checks": [
+      {
+        "name": "python_3_11",
+        "ok": true,
+        "detail": "3.11.17",
+        "required": true
+      },
+      {
+        "name": "sqlite_fts5",
+        "ok": true,
+        "required": true,
+        "sqlite_version": "3.53.1"
+      },
+      {
+        "name": "iana_timezone",
+        "ok": true,
+        "required": true,
+        "detail": "系统IANA数据或tzdata；后续排盘需要"
+      },
+      {
+        "name": "swisseph",
+        "ok": false,
+        "required": false,
+        "detail": "第二周星盘插件依赖"
+      },
+      {
+        "name": "tarot_kb",
+        "ok": true,
+        "detail": {
+          "kb_version": "v1-6d787fced6dae05b",
+          "entries": 163,
+          "card_states": 156,
+          "positions": 7,
+          "coverage": 1.0,
+          "reviewed_count": 0,
+          "reviewed_rate": 0.0,
+          "missing": []
+        },
+        "required": true
+      },
+      {
+        "name": "pydantic",
+        "ok": true,
+        "required": true
+      },
+      {
+        "name": "yaml",
+        "ok": true,
+        "required": true
+      },
+      {
+        "name": "httpx",
+        "ok": true,
+        "required": true
+      },
+      {
+        "name": "typer",
+        "ok": true,
+        "required": true
+      },
+      {
+        "name": "openai",
+        "ok": true,
+        "required": false
+      },
+      {
+        "name": "anthropic",
+        "ok": true,
+        "required": false
+      },
+      {
+        "name": "OPENAI_API_KEY",
+        "ok": true,
+        "required": false,
+        "detail": "只报告是否配置，不输出密钥；离线演示无需密钥"
+      },
+      {
+        "name": "ANTHROPIC_API_KEY",
+        "ok": false,
+        "required": false,
+        "detail": "只报告是否配置，不输出密钥；离线演示无需密钥"
+      },
+      {
+        "name": "data/ephe",
+        "ok": false,
+        "required": false,
+        "detail": "后续周需要，第一周不安装"
+      },
+      {
+        "name": "data/geo",
+        "ok": false,
+        "required": false,
+        "detail": "后续周需要，第一周不安装"
+      },
+      {
+        "name": "data/unihan",
+        "ok": false,
+        "required": false,
+        "detail": "后续周需要，第一周不安装"
+      },
+      {
+        "name": "data/models",
+        "ok": false,
+        "required": false,
+        "detail": "后续周需要，第一周不安装"
+      }
+    ],
+    "api_probe": {
+      "ok": true,
+      "configured": true,
+      "http_status": 200,
+      "requested_model": "gpt-6.1-sol",
+      "model_available": true
+    }
+  },
+  "schema_version": 2,
+  "database_tables": [
+    "bazi_charts",
+    "charts",
+    "daily",
+    "profile_history",
+    "profiles",
+    "reading_responses",
+    "readings",
+    "review_notes",
+    "specialist_reports"
+  ],
+  "replayed_tool_calls": 23,
+  "initial_gate": {
+    "pass": false,
+    "checks": {
+      "coverage_156_plus_7": true,
+      "same_seed_100_repeats": true,
+      "independent_100_draws": true,
+      "pytest_no_failures": true,
+      "guard_and_regressions_present": true,
+      "live_strict_pass": false,
+      "trace_replay_pass": false,
+      "database_integrity": true,
+      "doctor_required_ok": true
+    }
+  },
+  "limits": "工程门禁不等于上线许可。释义人工审核率0%；未来星历等资产可缺失。",
+  "raw_gate_sha256": "6e216d8608ff8fefba78ae6487243edbabcc896b3e81f58ddb3b5b8c87d186cb"
+}

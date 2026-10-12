@@ -1,0 +1,21 @@
+mode: single
+llm:
+  provider: openai
+  model: gpt-6.1-sol
+  timeout_s: 90
+limits:
+  orchestrator_max_steps: 12
+  request_token_budget: 60000
+  max_parallel_tools: 5
+reviewer:
+  enabled: false
+safety:
+  region: null
+  emergency_contacts:
+    CN: [中国大陆急救120, 中国大陆报警110]
+    US: [美国紧急服务911]
+kb:
+  path: data/kb.sqlite
+paths:
+  app_db: data/app.db
+  runs: runs

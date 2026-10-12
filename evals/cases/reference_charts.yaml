@@ -1,0 +1,2059 @@
+dataset: reference_charts
+version: 1
+purpose: 西方占星排盘的确定性测试：行星黄经、星座、逆行、Placidus 宫位、上升/天顶、主要相位
+generated_with:
+  reference: Swiss Ephemeris（aloistr/swisseph，SE 星历文件 sepl_18.se1 / semo_18.se1）
+  cross_check: 行星：同一库的 Moshier 解析星历（独立理论）；宫位：独立实现的 MC / 上升 / Placidus（Porphyry）公式
+  frame: 地心、视位置、回归黄道（tropical）
+  time: 本地时间按 IANA 时区换算为 UT（Python zoneinfo）
+tolerance:
+  planet_lon_deg: 0.01
+  cusp_deg: 0.01
+aspect_orbs_deg:
+  conjunction: 8
+  opposition: 8
+  trine: 8
+  square: 7
+  sextile: 5
+notes: [出生数据为合成数据，不对应真实人物：星历精度测试与输入是谁无关，用合成数据可避免处理真实个人信息。, 相位容许度是本数据集的约定，项目若改用其他容许度，需要重新生成 aspects 字段。, 计划中写的是用 Skyfield 交叉验证；生成本文件的环境无法下载 JPL 星历，因此改用 SE 文件 vs Moshier。项目环境就绪后，建议在
+    tests/ 中再加一道 Skyfield 校验。]
+cases:
+- id: chart-01
+  label: 19 世纪末 / 伦敦 GMT
+  input:
+    birth_local: 1900-03-21 06:00
+    tz: Europe/London
+    place: London
+    lat: 51.5074
+    lon: -0.1278
+    time_known: true
+  derived:
+    utc_offset: 0:00:00
+    ut: '1900-03-21 06:00:00'
+  expected:
+    planets:
+    - body: Sun
+      lon: 0.1798
+      sign: Aries
+      sign_zh: 白羊
+      deg_in_sign: 0.1798
+      speed_deg_per_day: 0.9922
+      retrograde: false
+      house: 1
+    - body: Moon
+      lon: 234.7619
+      sign: Scorpio
+      sign_zh: 天蝎
+      deg_in_sign: 24.7619
+      speed_deg_per_day: 12.4536
+      retrograde: false
+      house: 8
+    - body: Mercury
+      lon: 7.1076
+      sign: Aries
+      sign_zh: 白羊
+      deg_in_sign: 7.1076
+      speed_deg_per_day: -0.6698
+      retrograde: true
+      house: 1
+    - body: Venus
+      lon: 42.1466
+      sign: Taurus
+      sign_zh: 金牛
+      deg_in_sign: 12.1466
+      speed_deg_per_day: 1.1444
+      retrograde: false
+      house: 1
+    - body: Mars
+      lon: 345.9968
+      sign: Pisces
+      sign_zh: 双鱼
+      deg_in_sign: 15.9968
+      speed_deg_per_day: 0.7849
+      retrograde: false
+      house: 12
+    - body: Jupiter
+      lon: 250.7999
+      sign: Sagittarius
+      sign_zh: 射手
+      deg_in_sign: 10.7999
+      speed_deg_per_day: 0.0208
+      retrograde: false
+      house: 9
+    - body: Saturn
+      lon: 274.5643
+      sign: Capricorn
+      sign_zh: 摩羯
+      deg_in_sign: 4.5643
+      speed_deg_per_day: 0.039
+      retrograde: false
+      house: 10
+    - body: Uranus
+      lon: 252.4773
+      sign: Sagittarius
+      sign_zh: 射手
+      deg_in_sign: 12.4773
+      speed_deg_per_day: -0.003
+      retrograde: true
+      house: 9
+    - body: Neptune
+      lon: 84.279
+      sign: Gemini
+      sign_zh: 双子
+      deg_in_sign: 24.279
+      speed_deg_per_day: 0.0088
+      retrograde: false
+      house: 3
+    - body: Pluto
+      lon: 74.7818
+      sign: Gemini
+      sign_zh: 双子
+      deg_in_sign: 14.7818
+      speed_deg_per_day: 0.0079
+      retrograde: false
+      house: 3
+    house_system: Placidus
+    cusps:
+      1: 355.622
+      2: 45.094
+      3: 69.969
+      4: 88.3237
+      5: 106.3543
+      6: 129.8657
+      7: 175.622
+      8: 225.094
+      9: 249.969
+      10: 268.3237
+      11: 286.3543
+      12: 309.8657
+    asc:
+      lon: 355.622
+      sign_zh: 双鱼
+    mc:
+      lon: 268.3237
+      sign_zh: 射手
+    aspects:
+    - a: Sun
+      b: Moon
+      type: trine
+      angle: 125.418
+      orb: 5.418
+    - a: Sun
+      b: Mercury
+      type: conjunction
+      angle: 6.928
+      orb: 6.928
+    - a: Sun
+      b: Saturn
+      type: square
+      angle: 85.615
+      orb: 4.385
+    - a: Sun
+      b: Neptune
+      type: square
+      angle: 84.099
+      orb: 5.901
+    - a: Mercury
+      b: Jupiter
+      type: trine
+      angle: 116.308
+      orb: 3.692
+    - a: Mercury
+      b: Saturn
+      type: square
+      angle: 92.543
+      orb: 2.543
+    - a: Mercury
+      b: Uranus
+      type: trine
+      angle: 114.63
+      orb: 5.37
+    - a: Venus
+      b: Mars
+      type: sextile
+      angle: 56.15
+      orb: 3.85
+    - a: Venus
+      b: Saturn
+      type: trine
+      angle: 127.582
+      orb: 7.582
+    - a: Mars
+      b: Jupiter
+      type: square
+      angle: 95.197
+      orb: 5.197
+    - a: Mars
+      b: Uranus
+      type: square
+      angle: 93.519
+      orb: 3.519
+    - a: Mars
+      b: Pluto
+      type: square
+      angle: 88.785
+      orb: 1.215
+    - a: Jupiter
+      b: Uranus
+      type: conjunction
+      angle: 1.677
+      orb: 1.677
+    - a: Jupiter
+      b: Pluto
+      type: opposition
+      angle: 176.018
+      orb: 3.982
+    - a: Uranus
+      b: Pluto
+      type: opposition
+      angle: 177.696
+      orb: 2.304
+  cross_check:
+    method: Swiss Ephemeris SE files vs Moshier
+    max_abs_diff_deg: 0.000136
+    houses_method: Swiss Ephemeris 宫位 vs 独立实现的宫位公式（同一 ARMC 与真黄赤交角）
+    houses_max_abs_diff_deg: 0.0
+  note: 早期年份；伦敦当时使用 GMT
+- id: chart-02
+  label: 北京 / 中午过后
+  input:
+    birth_local: 1949-10-01 15:00
+    tz: Asia/Shanghai
+    place: 北京
+    lat: 39.9042
+    lon: 116.4074
+    time_known: true
+  derived:
+    utc_offset: '8:00:00'
+    ut: '1949-10-01 07:00:00'
+  expected:
+    planets:
+    - body: Sun
+      lon: 187.7666
+      sign: Libra
+      sign_zh: 天秤
+      deg_in_sign: 7.7666
+      speed_deg_per_day: 0.9835
+      retrograde: false
+      house: 8
+    - body: Moon
+      lon: 303.0488
+      sign: Aquarius
+      sign_zh: 水瓶
+      deg_in_sign: 3.0488
+      speed_deg_per_day: 12.6229
+      retrograde: false
+      house: 1
+    - body: Mercury
+      lon: 193.1798
+      sign: Libra
+      sign_zh: 天秤
+      deg_in_sign: 13.1798
+      speed_deg_per_day: -1.0975
+      retrograde: true
+      house: 8
+    - body: Venus
+      lon: 229.4351
+      sign: Scorpio
+      sign_zh: 天蝎
+      deg_in_sign: 19.4351
+      speed_deg_per_day: 1.1629
+      retrograde: false
+      house: 9
+    - body: Mars
+      lon: 134.8818
+      sign: Leo
+      sign_zh: 狮子
+      deg_in_sign: 14.8818
+      speed_deg_per_day: 0.604
+      retrograde: false
+      house: 7
+    - body: Jupiter
+      lon: 292.5908
+      sign: Capricorn
+      sign_zh: 摩羯
+      deg_in_sign: 22.5908
+      speed_deg_per_day: 0.0404
+      retrograde: false
+      house: 12
+    - body: Saturn
+      lon: 163.145
+      sign: Virgo
+      sign_zh: 处女
+      deg_in_sign: 13.145
+      speed_deg_per_day: 0.1187
+      retrograde: false
+      house: 7
+    - body: Uranus
+      lon: 94.9752
+      sign: Cancer
+      sign_zh: 巨蟹
+      deg_in_sign: 4.9752
+      speed_deg_per_day: 0.0088
+      retrograde: false
+      house: 5
+    - body: Neptune
+      lon: 194.6444
+      sign: Libra
+      sign_zh: 天秤
+      deg_in_sign: 14.6444
+      speed_deg_per_day: 0.037
+      retrograde: false
+      house: 8
+    - body: Pluto
+      lon: 137.6428
+      sign: Leo
+      sign_zh: 狮子
+      deg_in_sign: 17.6428
+      speed_deg_per_day: 0.0213
+      retrograde: false
+      house: 7
+    house_system: Placidus
+    cusps:
+      1: 301.2477
+      2: 347.248
+      3: 25.7896
+      4: 53.4788
+      5: 75.5195
+      6: 96.4482
+      7: 121.2477
+      8: 167.248
+      9: 205.7896
+      10: 233.4788
+      11: 255.5195
+      12: 276.4482
+    asc:
+      lon: 301.2477
+      sign_zh: 水瓶
+    mc:
+      lon: 233.4788
+      sign_zh: 天蝎
+    aspects:
+    - a: Sun
+      b: Moon
+      type: trine
+      angle: 115.282
+      orb: 4.718
+    - a: Sun
+      b: Mercury
+      type: conjunction
+      angle: 5.413
+      orb: 5.413
+    - a: Sun
+      b: Uranus
+      type: square
+      angle: 92.791
+      orb: 2.791
+    - a: Sun
+      b: Neptune
+      type: conjunction
+      angle: 6.878
+      orb: 6.878
+    - a: Mercury
+      b: Mars
+      type: sextile
+      angle: 58.298
+      orb: 1.702
+    - a: Mercury
+      b: Neptune
+      type: conjunction
+      angle: 1.465
+      orb: 1.465
+    - a: Mercury
+      b: Pluto
+      type: sextile
+      angle: 55.537
+      orb: 4.463
+    - a: Venus
+      b: Mars
+      type: square
+      angle: 94.553
+      orb: 4.553
+    - a: Venus
+      b: Jupiter
+      type: sextile
+      angle: 63.156
+      orb: 3.156
+    - a: Venus
+      b: Pluto
+      type: square
+      angle: 91.792
+      orb: 1.792
+    - a: Mars
+      b: Neptune
+      type: sextile
+      angle: 59.763
+      orb: 0.237
+    - a: Mars
+      b: Pluto
+      type: conjunction
+      angle: 2.761
+      orb: 2.761
+    - a: Neptune
+      b: Pluto
+      type: sextile
+      angle: 57.002
+      orb: 2.998
+  cross_check:
+    method: Swiss Ephemeris SE files vs Moshier
+    max_abs_diff_deg: 0.000127
+    houses_method: Swiss Ephemeris 宫位 vs 独立实现的宫位公式（同一 ARMC 与真黄赤交角）
+    houses_max_abs_diff_deg: 0.0
+  note: 中国标准时间 UTC+8
+- id: chart-03
+  label: 上海 / 1987 夏令时
+  input:
+    birth_local: 1987-06-15 08:30
+    tz: Asia/Shanghai
+    place: 上海
+    lat: 31.2304
+    lon: 121.4737
+    time_known: true
+  derived:
+    utc_offset: '9:00:00'
+    ut: '1987-06-14 23:30:00'
+  expected:
+    planets:
+    - body: Sun
+      lon: 83.3704
+      sign: Gemini
+      sign_zh: 双子
+      deg_in_sign: 23.3704
+      speed_deg_per_day: 0.9549
+      retrograde: false
+      house: 11
+    - body: Moon
+      lon: 307.2999
+      sign: Aquarius
+      sign_zh: 水瓶
+      deg_in_sign: 7.2999
+      speed_deg_per_day: 14.8329
+      retrograde: false
+      house: 7
+    - body: Mercury
+      lon: 105.3696
+      sign: Cancer
+      sign_zh: 巨蟹
+      deg_in_sign: 15.3696
+      speed_deg_per_day: 0.4629
+      retrograde: false
+      house: 12
+    - body: Venus
+      lon: 64.5736
+      sign: Gemini
+      sign_zh: 双子
+      deg_in_sign: 4.5736
+      speed_deg_per_day: 1.2168
+      retrograde: false
+      house: 11
+    - body: Mars
+      lon: 106.0804
+      sign: Cancer
+      sign_zh: 巨蟹
+      deg_in_sign: 16.0804
+      speed_deg_per_day: 0.6432
+      retrograde: false
+      house: 12
+    - body: Jupiter
+      lon: 23.3882
+      sign: Aries
+      sign_zh: 白羊
+      deg_in_sign: 23.3882
+      speed_deg_per_day: 0.1742
+      retrograde: false
+      house: 10
+    - body: Saturn
+      lon: 257.4453
+      sign: Sagittarius
+      sign_zh: 射手
+      deg_in_sign: 17.4453
+      speed_deg_per_day: -0.0734
+      retrograde: true
+      house: 5
+    - body: Uranus
+      lon: 264.7933
+      sign: Sagittarius
+      sign_zh: 射手
+      deg_in_sign: 24.7933
+      speed_deg_per_day: -0.0409
+      retrograde: true
+      house: 5
+    - body: Neptune
+      lon: 276.9938
+      sign: Capricorn
+      sign_zh: 摩羯
+      deg_in_sign: 6.9938
+      speed_deg_per_day: -0.026
+      retrograde: true
+      house: 6
+    - body: Pluto
+      lon: 217.4468
+      sign: Scorpio
+      sign_zh: 天蝎
+      deg_in_sign: 7.4468
+      speed_deg_per_day: -0.0172
+      retrograde: true
+      house: 4
+    house_system: Placidus
+    cusps:
+      1: 117.7926
+      2: 140.3948
+      3: 166.7001
+      4: 198.1066
+      5: 233.0045
+      6: 267.1055
+      7: 297.7926
+      8: 320.3948
+      9: 346.7001
+      10: 18.1066
+      11: 53.0045
+      12: 87.1055
+    asc:
+      lon: 117.7926
+      sign_zh: 巨蟹
+    mc:
+      lon: 18.1066
+      sign_zh: 白羊
+    aspects:
+    - a: Sun
+      b: Jupiter
+      type: sextile
+      angle: 59.982
+      orb: 0.018
+    - a: Sun
+      b: Saturn
+      type: opposition
+      angle: 174.075
+      orb: 5.925
+    - a: Sun
+      b: Uranus
+      type: opposition
+      angle: 178.577
+      orb: 1.423
+    - a: Moon
+      b: Venus
+      type: trine
+      angle: 117.274
+      orb: 2.726
+    - a: Moon
+      b: Pluto
+      type: square
+      angle: 89.853
+      orb: 0.147
+    - a: Mercury
+      b: Mars
+      type: conjunction
+      angle: 0.711
+      orb: 0.711
+    - a: Mercury
+      b: Pluto
+      type: trine
+      angle: 112.077
+      orb: 7.923
+    - a: Jupiter
+      b: Saturn
+      type: trine
+      angle: 125.943
+      orb: 5.943
+    - a: Jupiter
+      b: Uranus
+      type: trine
+      angle: 118.595
+      orb: 1.405
+    - a: Saturn
+      b: Uranus
+      type: conjunction
+      angle: 7.348
+      orb: 7.348
+    - a: Neptune
+      b: Pluto
+      type: sextile
+      angle: 59.547
+      orb: 0.453
+  cross_check:
+    method: Swiss Ephemeris SE files vs Moshier
+    max_abs_diff_deg: 0.000195
+    houses_method: Swiss Ephemeris 宫位 vs 独立实现的宫位公式（同一 ARMC 与真黄赤交角）
+    houses_max_abs_diff_deg: 0.0
+  note: 1987 年中国实行夏令时，本地钟表时间为 UTC+9；不按 IANA 时区换算会差 1 小时
+- id: chart-04
+  label: 纽约 / 跨年前夜
+  input:
+    birth_local: 1995-12-31 23:45
+    tz: America/New_York
+    place: New York
+    lat: 40.7128
+    lon: -74.006
+    time_known: true
+  derived:
+    utc_offset: -1 day, 19:00:00
+    ut: '1996-01-01 04:45:00'
+  expected:
+    planets:
+    - body: Sun
+      lon: 280.0417
+      sign: Capricorn
+      sign_zh: 摩羯
+      deg_in_sign: 10.0417
+      speed_deg_per_day: 1.0191
+      retrograde: false
+      house: 4
+    - body: Moon
+      lon: 49.0914
+      sign: Taurus
+      sign_zh: 金牛
+      deg_in_sign: 19.0914
+      speed_deg_per_day: 12.1051
+      retrograde: false
+      house: 8
+    - body: Mercury
+      lon: 299.3708
+      sign: Capricorn
+      sign_zh: 摩羯
+      deg_in_sign: 29.3708
+      speed_deg_per_day: 1.1525
+      retrograde: false
+      house: 4
+    - body: Venus
+      lon: 312.8645
+      sign: Aquarius
+      sign_zh: 水瓶
+      deg_in_sign: 12.8645
+      speed_deg_per_day: 1.2301
+      retrograde: false
+      house: 5
+    - body: Mars
+      lon: 294.3245
+      sign: Capricorn
+      sign_zh: 摩羯
+      deg_in_sign: 24.3245
+      speed_deg_per_day: 0.7798
+      retrograde: false
+      house: 4
+    - body: Jupiter
+      lon: 269.5228
+      sign: Sagittarius
+      sign_zh: 射手
+      deg_in_sign: 29.5228
+      speed_deg_per_day: 0.2265
+      retrograde: false
+      house: 3
+    - body: Saturn
+      lon: 349.4087
+      sign: Pisces
+      sign_zh: 双鱼
+      deg_in_sign: 19.4087
+      speed_deg_per_day: 0.0677
+      retrograde: false
+      house: 6
+    - body: Uranus
+      lon: 299.3615
+      sign: Capricorn
+      sign_zh: 摩羯
+      deg_in_sign: 29.3615
+      speed_deg_per_day: 0.0564
+      retrograde: false
+      house: 4
+    - body: Neptune
+      lon: 294.6858
+      sign: Capricorn
+      sign_zh: 摩羯
+      deg_in_sign: 24.6858
+      speed_deg_per_day: 0.037
+      retrograde: false
+      house: 4
+    - body: Pluto
+      lon: 241.9562
+      sign: Sagittarius
+      sign_zh: 射手
+      deg_in_sign: 1.9562
+      speed_deg_per_day: 0.0331
+      retrograde: false
+      house: 2
+    house_system: Placidus
+    cusps:
+      1: 185.8553
+      2: 212.3612
+      3: 243.0703
+      4: 276.7751
+      5: 310.2361
+      6: 340.3183
+      7: 5.8553
+      8: 32.3612
+      9: 63.0703
+      10: 96.7751
+      11: 130.2361
+      12: 160.3183
+    asc:
+      lon: 185.8553
+      sign_zh: 天秤
+    mc:
+      lon: 96.7751
+      sign_zh: 巨蟹
+    aspects:
+    - a: Moon
+      b: Venus
+      type: square
+      angle: 96.227
+      orb: 6.227
+    - a: Moon
+      b: Mars
+      type: trine
+      angle: 114.767
+      orb: 5.233
+    - a: Moon
+      b: Saturn
+      type: sextile
+      angle: 59.683
+      orb: 0.317
+    - a: Moon
+      b: Neptune
+      type: trine
+      angle: 114.406
+      orb: 5.594
+    - a: Mercury
+      b: Mars
+      type: conjunction
+      angle: 5.046
+      orb: 5.046
+    - a: Mercury
+      b: Uranus
+      type: conjunction
+      angle: 0.009
+      orb: 0.009
+    - a: Mercury
+      b: Neptune
+      type: conjunction
+      angle: 4.685
+      orb: 4.685
+    - a: Mercury
+      b: Pluto
+      type: sextile
+      angle: 57.415
+      orb: 2.585
+    - a: Mars
+      b: Saturn
+      type: sextile
+      angle: 55.084
+      orb: 4.916
+    - a: Mars
+      b: Uranus
+      type: conjunction
+      angle: 5.037
+      orb: 5.037
+    - a: Mars
+      b: Neptune
+      type: conjunction
+      angle: 0.361
+      orb: 0.361
+    - a: Uranus
+      b: Neptune
+      type: conjunction
+      angle: 4.676
+      orb: 4.676
+    - a: Uranus
+      b: Pluto
+      type: sextile
+      angle: 57.405
+      orb: 2.595
+  cross_check:
+    method: Swiss Ephemeris SE files vs Moshier
+    max_abs_diff_deg: 5.1e-05
+    houses_method: Swiss Ephemeris 宫位 vs 独立实现的宫位公式（同一 ARMC 与真黄赤交角）
+    houses_max_abs_diff_deg: 0.0
+  note: 本地日期与 UT 日期不同（UT 已是次日）
+- id: chart-05
+  label: 新加坡 / 赤道附近
+  input:
+    birth_local: 2000-01-01 00:00
+    tz: Asia/Singapore
+    place: Singapore
+    lat: 1.3521
+    lon: 103.8198
+    time_known: true
+  derived:
+    utc_offset: '8:00:00'
+    ut: '1999-12-31 16:00:00'
+  expected:
+    planets:
+    - body: Sun
+      lon: 279.5194
+      sign: Capricorn
+      sign_zh: 摩羯
+      deg_in_sign: 9.5194
+      speed_deg_per_day: 1.0193
+      retrograde: false
+      house: 4
+    - body: Moon
+      lon: 213.2485
+      sign: Scorpio
+      sign_zh: 天蝎
+      deg_in_sign: 3.2485
+      speed_deg_per_day: 12.1666
+      retrograde: false
+      house: 2
+    - body: Mercury
+      lon: 270.5942
+      sign: Capricorn
+      sign_zh: 摩羯
+      deg_in_sign: 0.5942
+      speed_deg_per_day: 1.5519
+      retrograde: false
+      house: 4
+    - body: Venus
+      lon: 240.5587
+      sign: Sagittarius
+      sign_zh: 射手
+      deg_in_sign: 0.5587
+      speed_deg_per_day: 1.2081
+      retrograde: false
+      house: 3
+    - body: Mars
+      lon: 327.3169
+      sign: Aquarius
+      sign_zh: 水瓶
+      deg_in_sign: 27.3169
+      speed_deg_per_day: 0.7756
+      retrograde: false
+      house: 6
+    - body: Jupiter
+      lon: 25.2203
+      sign: Aries
+      sign_zh: 白羊
+      deg_in_sign: 25.2203
+      speed_deg_per_day: 0.0379
+      retrograde: false
+      house: 8
+    - body: Saturn
+      lon: 40.4129
+      sign: Taurus
+      sign_zh: 金牛
+      deg_in_sign: 10.4129
+      speed_deg_per_day: -0.0215
+      retrograde: true
+      house: 8
+    - body: Uranus
+      lon: 314.7674
+      sign: Aquarius
+      sign_zh: 水瓶
+      deg_in_sign: 14.7674
+      speed_deg_per_day: 0.05
+      retrograde: false
+      house: 5
+    - body: Neptune
+      lon: 303.1634
+      sign: Aquarius
+      sign_zh: 水瓶
+      deg_in_sign: 3.1634
+      speed_deg_per_day: 0.0354
+      retrograde: false
+      house: 5
+    - body: Pluto
+      lon: 251.4254
+      sign: Sagittarius
+      sign_zh: 射手
+      deg_in_sign: 11.4254
+      speed_deg_per_day: 0.0354
+      retrograde: false
+      house: 3
+    house_system: Placidus
+    cusps:
+      1: 172.9447
+      2: 205.1461
+      3: 235.6315
+      4: 263.9913
+      5: 291.8755
+      6: 321.3048
+      7: 352.9447
+      8: 25.1461
+      9: 55.6315
+      10: 83.9913
+      11: 111.8755
+      12: 141.3048
+    asc:
+      lon: 172.9447
+      sign_zh: 处女
+    mc:
+      lon: 83.9913
+      sign_zh: 双子
+    aspects:
+    - a: Sun
+      b: Saturn
+      type: trine
+      angle: 120.893
+      orb: 0.893
+    - a: Moon
+      b: Mercury
+      type: sextile
+      angle: 57.346
+      orb: 2.654
+    - a: Moon
+      b: Mars
+      type: trine
+      angle: 114.068
+      orb: 5.932
+    - a: Moon
+      b: Saturn
+      type: opposition
+      angle: 172.836
+      orb: 7.164
+    - a: Moon
+      b: Neptune
+      type: square
+      angle: 89.915
+      orb: 0.085
+    - a: Mercury
+      b: Mars
+      type: sextile
+      angle: 56.723
+      orb: 3.277
+    - a: Mercury
+      b: Jupiter
+      type: trine
+      angle: 114.626
+      orb: 5.374
+    - a: Venus
+      b: Mars
+      type: square
+      angle: 86.758
+      orb: 3.242
+    - a: Venus
+      b: Neptune
+      type: sextile
+      angle: 62.605
+      orb: 2.605
+    - a: Mars
+      b: Jupiter
+      type: sextile
+      angle: 57.903
+      orb: 2.097
+    - a: Saturn
+      b: Uranus
+      type: square
+      angle: 85.645
+      orb: 4.355
+    - a: Uranus
+      b: Pluto
+      type: sextile
+      angle: 63.342
+      orb: 3.342
+  cross_check:
+    method: Swiss Ephemeris SE files vs Moshier
+    max_abs_diff_deg: 0.000122
+    houses_method: Swiss Ephemeris 宫位 vs 独立实现的宫位公式（同一 ARMC 与真黄赤交角）
+    houses_max_abs_diff_deg: 0.0
+  note: 低纬度；本地午夜对应 UT 前一天 16:00
+- id: chart-06
+  label: 北京 / 夜间
+  input:
+    birth_local: 2008-08-08 20:08
+    tz: Asia/Shanghai
+    place: 北京
+    lat: 39.9042
+    lon: 116.4074
+    time_known: true
+  derived:
+    utc_offset: '8:00:00'
+    ut: '2008-08-08 12:08:00'
+  expected:
+    planets:
+    - body: Sun
+      lon: 136.3126
+      sign: Leo
+      sign_zh: 狮子
+      deg_in_sign: 16.3126
+      speed_deg_per_day: 0.9587
+      retrograde: false
+      house: 6
+    - body: Moon
+      lon: 222.5244
+      sign: Scorpio
+      sign_zh: 天蝎
+      deg_in_sign: 12.5244
+      speed_deg_per_day: 12.0692
+      retrograde: false
+      house: 8
+    - body: Mercury
+      lon: 146.379
+      sign: Leo
+      sign_zh: 狮子
+      deg_in_sign: 26.379
+      speed_deg_per_day: 1.8851
+      retrograde: false
+      house: 6
+    - body: Venus
+      lon: 152.8579
+      sign: Virgo
+      sign_zh: 处女
+      deg_in_sign: 2.8579
+      speed_deg_per_day: 1.229
+      retrograde: false
+      house: 6
+    - body: Mars
+      lon: 173.1111
+      sign: Virgo
+      sign_zh: 处女
+      deg_in_sign: 23.1111
+      speed_deg_per_day: 0.6269
+      retrograde: false
+      house: 7
+    - body: Jupiter
+      lon: 283.9825
+      sign: Capricorn
+      sign_zh: 摩羯
+      deg_in_sign: 13.9825
+      speed_deg_per_day: -0.0902
+      retrograde: true
+      house: 11
+    - body: Saturn
+      lon: 158.6236
+      sign: Virgo
+      sign_zh: 处女
+      deg_in_sign: 8.6236
+      speed_deg_per_day: 0.1199
+      retrograde: false
+      house: 7
+    - body: Uranus
+      lon: 351.9769
+      sign: Pisces
+      sign_zh: 双鱼
+      deg_in_sign: 21.9769
+      speed_deg_per_day: -0.03
+      retrograde: true
+      house: 1
+    - body: Neptune
+      lon: 323.0379
+      sign: Aquarius
+      sign_zh: 水瓶
+      deg_in_sign: 23.0379
+      speed_deg_per_day: -0.027
+      retrograde: true
+      house: 12
+    - body: Pluto
+      lon: 268.7467
+      sign: Sagittarius
+      sign_zh: 射手
+      deg_in_sign: 28.7467
+      speed_deg_per_day: -0.0152
+      retrograde: true
+      house: 10
+    house_system: Placidus
+    cusps:
+      1: 336.1918
+      2: 22.3701
+      3: 53.6399
+      4: 76.9119
+      5: 98.0668
+      6: 121.8847
+      7: 156.1918
+      8: 202.3701
+      9: 233.6399
+      10: 256.9119
+      11: 278.0668
+      12: 301.8847
+    asc:
+      lon: 336.1918
+      sign_zh: 双鱼
+    mc:
+      lon: 256.9119
+      sign_zh: 射手
+    aspects:
+    - a: Sun
+      b: Moon
+      type: square
+      angle: 86.212
+      orb: 3.788
+    - a: Sun
+      b: Neptune
+      type: opposition
+      angle: 173.275
+      orb: 6.725
+    - a: Moon
+      b: Jupiter
+      type: sextile
+      angle: 61.458
+      orb: 1.458
+    - a: Moon
+      b: Saturn
+      type: sextile
+      angle: 63.901
+      orb: 3.901
+    - a: Mercury
+      b: Venus
+      type: conjunction
+      angle: 6.479
+      orb: 6.479
+    - a: Mercury
+      b: Neptune
+      type: opposition
+      angle: 176.659
+      orb: 3.341
+    - a: Mercury
+      b: Pluto
+      type: trine
+      angle: 122.368
+      orb: 2.368
+    - a: Venus
+      b: Saturn
+      type: conjunction
+      angle: 5.766
+      orb: 5.766
+    - a: Venus
+      b: Pluto
+      type: trine
+      angle: 115.889
+      orb: 4.111
+    - a: Mars
+      b: Uranus
+      type: opposition
+      angle: 178.866
+      orb: 1.134
+    - a: Mars
+      b: Pluto
+      type: square
+      angle: 95.636
+      orb: 5.636
+    - a: Jupiter
+      b: Saturn
+      type: trine
+      angle: 125.359
+      orb: 5.359
+    - a: Uranus
+      b: Pluto
+      type: square
+      angle: 83.23
+      orb: 6.77
+  cross_check:
+    method: Swiss Ephemeris SE files vs Moshier
+    max_abs_diff_deg: 0.000171
+    houses_method: Swiss Ephemeris 宫位 vs 独立实现的宫位公式（同一 ARMC 与真黄赤交角）
+    houses_max_abs_diff_deg: 0.0
+  note: 常规用例
+- id: chart-07
+  label: 悉尼 / 南半球 + 夏令时
+  input:
+    birth_local: 2012-02-29 12:00
+    tz: Australia/Sydney
+    place: Sydney
+    lat: -33.8688
+    lon: 151.2093
+    time_known: true
+  derived:
+    utc_offset: '11:00:00'
+    ut: '2012-02-29 01:00:00'
+  expected:
+    planets:
+    - body: Sun
+      lon: 339.8458
+      sign: Pisces
+      sign_zh: 双鱼
+      deg_in_sign: 9.8458
+      speed_deg_per_day: 1.0043
+      retrograde: false
+      house: 10
+    - body: Moon
+      lon: 58.7929
+      sign: Taurus
+      sign_zh: 金牛
+      deg_in_sign: 28.7929
+      speed_deg_per_day: 11.833
+      retrograde: false
+      house: 1
+    - body: Mercury
+      lon: 356.5434
+      sign: Pisces
+      sign_zh: 双鱼
+      deg_in_sign: 26.5434
+      speed_deg_per_day: 1.5138
+      retrograde: false
+      house: 11
+    - body: Venus
+      lon: 23.9903
+      sign: Aries
+      sign_zh: 白羊
+      deg_in_sign: 23.9903
+      speed_deg_per_day: 1.1243
+      retrograde: false
+      house: 12
+    - body: Mars
+      lon: 165.1503
+      sign: Virgo
+      sign_zh: 处女
+      deg_in_sign: 15.1503
+      speed_deg_per_day: -0.3889
+      retrograde: true
+      house: 4
+    - body: Jupiter
+      lon: 36.8581
+      sign: Taurus
+      sign_zh: 金牛
+      deg_in_sign: 6.8581
+      speed_deg_per_day: 0.1791
+      retrograde: false
+      house: 12
+    - body: Saturn
+      lon: 209.1105
+      sign: Libra
+      sign_zh: 天秤
+      deg_in_sign: 29.1105
+      speed_deg_per_day: -0.0363
+      retrograde: true
+      house: 6
+    - body: Uranus
+      lon: 3.129
+      sign: Aries
+      sign_zh: 白羊
+      deg_in_sign: 3.129
+      speed_deg_per_day: 0.0536
+      retrograde: false
+      house: 11
+    - body: Neptune
+      lon: 330.9526
+      sign: Pisces
+      sign_zh: 双鱼
+      deg_in_sign: 0.9526
+      speed_deg_per_day: 0.0377
+      retrograde: false
+      house: 10
+    - body: Pluto
+      lon: 279.1186
+      sign: Capricorn
+      sign_zh: 摩羯
+      deg_in_sign: 9.1186
+      speed_deg_per_day: 0.0209
+      retrograde: false
+      house: 8
+    house_system: Placidus
+    cusps:
+      1: 45.4838
+      2: 74.9439
+      3: 107.6726
+      4: 142.1047
+      5: 174.5058
+      6: 202.2334
+      7: 225.4838
+      8: 254.9439
+      9: 287.6726
+      10: 322.1047
+      11: 354.5058
+      12: 22.2334
+    asc:
+      lon: 45.4838
+      sign_zh: 金牛
+    mc:
+      lon: 322.1047
+      sign_zh: 水瓶
+    aspects:
+    - a: Sun
+      b: Mars
+      type: opposition
+      angle: 174.696
+      orb: 5.304
+    - a: Sun
+      b: Jupiter
+      type: sextile
+      angle: 57.012
+      orb: 2.988
+    - a: Sun
+      b: Pluto
+      type: sextile
+      angle: 60.727
+      orb: 0.727
+    - a: Moon
+      b: Mercury
+      type: sextile
+      angle: 62.25
+      orb: 2.25
+    - a: Moon
+      b: Uranus
+      type: sextile
+      angle: 55.664
+      orb: 4.336
+    - a: Moon
+      b: Neptune
+      type: square
+      angle: 87.84
+      orb: 2.16
+    - a: Mercury
+      b: Uranus
+      type: conjunction
+      angle: 6.586
+      orb: 6.586
+    - a: Venus
+      b: Saturn
+      type: opposition
+      angle: 174.88
+      orb: 5.12
+    - a: Mars
+      b: Pluto
+      type: trine
+      angle: 113.968
+      orb: 6.032
+    - a: Jupiter
+      b: Saturn
+      type: opposition
+      angle: 172.252
+      orb: 7.748
+    - a: Jupiter
+      b: Pluto
+      type: trine
+      angle: 117.739
+      orb: 2.261
+    - a: Saturn
+      b: Neptune
+      type: trine
+      angle: 121.842
+      orb: 1.842
+    - a: Uranus
+      b: Pluto
+      type: square
+      angle: 84.01
+      orb: 5.99
+  cross_check:
+    method: Swiss Ephemeris SE files vs Moshier
+    max_abs_diff_deg: 0.000116
+    houses_method: Swiss Ephemeris 宫位 vs 独立实现的宫位公式（同一 ARMC 与真黄赤交角）
+    houses_max_abs_diff_deg: 0.0
+  note: 南半球；当日为澳洲夏令时 UTC+11；闰日
+- id: chart-08
+  label: 雷克雅未克 / 高纬度
+  input:
+    birth_local: 2019-03-20 22:00
+    tz: Atlantic/Reykjavik
+    place: Reykjavik
+    lat: 64.1466
+    lon: -21.9426
+    time_known: true
+  derived:
+    utc_offset: 0:00:00
+    ut: '2019-03-20 22:00:00'
+  expected:
+    planets:
+    - body: Sun
+      lon: 0.0011
+      sign: Aries
+      sign_zh: 白羊
+      deg_in_sign: 0.0011
+      speed_deg_per_day: 0.9932
+      retrograde: false
+      house: 5
+    - body: Moon
+      lon: 177.8287
+      sign: Virgo
+      sign_zh: 处女
+      deg_in_sign: 27.8287
+      speed_deg_per_day: 15.0415
+      retrograde: false
+      house: 11
+    - body: Mercury
+      lon: 348.978
+      sign: Pisces
+      sign_zh: 双鱼
+      deg_in_sign: 18.978
+      speed_deg_per_day: -0.7352
+      retrograde: true
+      house: 5
+    - body: Venus
+      lon: 322.9097
+      sign: Aquarius
+      sign_zh: 水瓶
+      deg_in_sign: 22.9097
+      speed_deg_per_day: 1.1989
+      retrograde: false
+      house: 4
+    - body: Mars
+      lon: 53.1346
+      sign: Taurus
+      sign_zh: 金牛
+      deg_in_sign: 23.1346
+      speed_deg_per_day: 0.6657
+      retrograde: false
+      house: 8
+    - body: Jupiter
+      lon: 263.6804
+      sign: Sagittarius
+      sign_zh: 射手
+      deg_in_sign: 23.6804
+      speed_deg_per_day: 0.0635
+      retrograde: false
+      house: 3
+    - body: Saturn
+      lon: 289.2329
+      sign: Capricorn
+      sign_zh: 摩羯
+      deg_in_sign: 19.2329
+      speed_deg_per_day: 0.0622
+      retrograde: false
+      house: 3
+    - body: Uranus
+      lon: 30.6992
+      sign: Taurus
+      sign_zh: 金牛
+      deg_in_sign: 0.6992
+      speed_deg_per_day: 0.0511
+      retrograde: false
+      house: 7
+    - body: Neptune
+      lon: 346.6852
+      sign: Pisces
+      sign_zh: 双鱼
+      deg_in_sign: 16.6852
+      speed_deg_per_day: 0.0371
+      retrograde: false
+      house: 5
+    - body: Pluto
+      lon: 292.8556
+      sign: Capricorn
+      sign_zh: 摩羯
+      deg_in_sign: 22.8556
+      speed_deg_per_day: 0.0167
+      retrograde: false
+      house: 3
+    house_system: Placidus
+    cusps:
+      1: 200.7209
+      2: 224.2573
+      3: 257.2135
+      4: 303.8798
+      5: 340.125
+      6: 4.2306
+      7: 20.7209
+      8: 44.2573
+      9: 77.2135
+      10: 123.8798
+      11: 160.125
+      12: 184.2306
+    asc:
+      lon: 200.7209
+      sign_zh: 天秤
+    mc:
+      lon: 123.8798
+      sign_zh: 狮子
+    aspects:
+    - a: Sun
+      b: Moon
+      type: opposition
+      angle: 177.828
+      orb: 2.172
+    - a: Sun
+      b: Jupiter
+      type: square
+      angle: 96.321
+      orb: 6.321
+    - a: Moon
+      b: Mars
+      type: trine
+      angle: 124.694
+      orb: 4.694
+    - a: Moon
+      b: Jupiter
+      type: square
+      angle: 85.852
+      orb: 4.148
+    - a: Moon
+      b: Pluto
+      type: trine
+      angle: 115.027
+      orb: 4.973
+    - a: Mercury
+      b: Mars
+      type: sextile
+      angle: 64.157
+      orb: 4.157
+    - a: Mercury
+      b: Jupiter
+      type: square
+      angle: 85.298
+      orb: 4.702
+    - a: Mercury
+      b: Saturn
+      type: sextile
+      angle: 59.745
+      orb: 0.255
+    - a: Mercury
+      b: Neptune
+      type: conjunction
+      angle: 2.293
+      orb: 2.293
+    - a: Mercury
+      b: Pluto
+      type: sextile
+      angle: 56.122
+      orb: 3.878
+    - a: Venus
+      b: Mars
+      type: square
+      angle: 90.225
+      orb: 0.225
+    - a: Venus
+      b: Jupiter
+      type: sextile
+      angle: 59.229
+      orb: 0.771
+    - a: Mars
+      b: Saturn
+      type: trine
+      angle: 123.902
+      orb: 3.902
+    - a: Mars
+      b: Pluto
+      type: trine
+      angle: 120.279
+      orb: 0.279
+    - a: Jupiter
+      b: Uranus
+      type: trine
+      angle: 127.019
+      orb: 7.019
+    - a: Jupiter
+      b: Neptune
+      type: square
+      angle: 83.005
+      orb: 6.995
+    - a: Saturn
+      b: Neptune
+      type: sextile
+      angle: 57.452
+      orb: 2.548
+    - a: Saturn
+      b: Pluto
+      type: conjunction
+      angle: 3.623
+      orb: 3.623
+  cross_check:
+    method: Swiss Ephemeris SE files vs Moshier
+    max_abs_diff_deg: 0.000344
+    houses_method: Swiss Ephemeris 宫位 vs 独立实现的宫位公式（同一 ARMC 与真黄赤交角）
+    houses_max_abs_diff_deg: 0.0
+  note: 接近春分；高纬度但仍低于极圈，Placidus 可用
+- id: chart-09
+  label: 孟买 / 半小时时区 + 水星逆行
+  input:
+    birth_local: 2024-04-08 12:00
+    tz: Asia/Kolkata
+    place: Mumbai
+    lat: 19.076
+    lon: 72.8777
+    time_known: true
+  derived:
+    utc_offset: '5:30:00'
+    ut: '2024-04-08 06:30:00'
+  expected:
+    planets:
+    - body: Sun
+      lon: 18.9151
+      sign: Aries
+      sign_zh: 白羊
+      deg_in_sign: 18.9151
+      speed_deg_per_day: 0.9832
+      retrograde: false
+      house: 10
+    - body: Moon
+      lon: 11.983
+      sign: Aries
+      sign_zh: 白羊
+      deg_in_sign: 11.983
+      speed_deg_per_day: 15.0512
+      retrograde: false
+      house: 10
+    - body: Mercury
+      lon: 25.1058
+      sign: Aries
+      sign_zh: 白羊
+      deg_in_sign: 25.1058
+      speed_deg_per_day: -0.6085
+      retrograde: true
+      house: 10
+    - body: Venus
+      lon: 3.8353
+      sign: Aries
+      sign_zh: 白羊
+      deg_in_sign: 3.8353
+      speed_deg_per_day: 1.2354
+      retrograde: false
+      house: 9
+    - body: Mars
+      lon: 342.6676
+      sign: Pisces
+      sign_zh: 双鱼
+      deg_in_sign: 12.6676
+      speed_deg_per_day: 0.7776
+      retrograde: false
+      house: 9
+    - body: Jupiter
+      lon: 48.9366
+      sign: Taurus
+      sign_zh: 金牛
+      deg_in_sign: 18.9366
+      speed_deg_per_day: 0.2209
+      retrograde: false
+      house: 11
+    - body: Saturn
+      lon: 344.402
+      sign: Pisces
+      sign_zh: 双鱼
+      deg_in_sign: 14.402
+      speed_deg_per_day: 0.108
+      retrograde: false
+      house: 9
+    - body: Uranus
+      lon: 51.1459
+      sign: Taurus
+      sign_zh: 金牛
+      deg_in_sign: 21.1459
+      speed_deg_per_day: 0.0511
+      retrograde: false
+      house: 11
+    - body: Neptune
+      lon: 358.1724
+      sign: Pisces
+      sign_zh: 双鱼
+      deg_in_sign: 28.1724
+      speed_deg_per_day: 0.036
+      retrograde: false
+      house: 9
+    - body: Pluto
+      lon: 301.962
+      sign: Aquarius
+      sign_zh: 水瓶
+      deg_in_sign: 1.962
+      speed_deg_per_day: 0.0115
+      retrograde: false
+      house: 7
+    house_system: Placidus
+    cusps:
+      1: 104.4503
+      2: 129.2403
+      3: 156.7027
+      4: 188.0456
+      5: 221.6367
+      6: 254.2205
+      7: 284.4503
+      8: 309.2403
+      9: 336.7027
+      10: 8.0456
+      11: 41.6367
+      12: 74.2205
+    asc:
+      lon: 104.4503
+      sign_zh: 巨蟹
+    mc:
+      lon: 8.0456
+      sign_zh: 白羊
+    aspects:
+    - a: Sun
+      b: Moon
+      type: conjunction
+      angle: 6.932
+      orb: 6.932
+    - a: Sun
+      b: Mercury
+      type: conjunction
+      angle: 6.191
+      orb: 6.191
+    - a: Mercury
+      b: Pluto
+      type: square
+      angle: 83.144
+      orb: 6.856
+    - a: Venus
+      b: Neptune
+      type: conjunction
+      angle: 5.663
+      orb: 5.663
+    - a: Venus
+      b: Pluto
+      type: sextile
+      angle: 61.873
+      orb: 1.873
+    - a: Mars
+      b: Saturn
+      type: conjunction
+      angle: 1.734
+      orb: 1.734
+    - a: Jupiter
+      b: Saturn
+      type: sextile
+      angle: 64.535
+      orb: 4.535
+    - a: Jupiter
+      b: Uranus
+      type: conjunction
+      angle: 2.209
+      orb: 2.209
+    - a: Neptune
+      b: Pluto
+      type: sextile
+      angle: 56.21
+      orb: 3.79
+  cross_check:
+    method: Swiss Ephemeris SE files vs Moshier
+    max_abs_diff_deg: 0.000557
+    houses_method: Swiss Ephemeris 宫位 vs 独立实现的宫位公式（同一 ARMC 与真黄赤交角）
+    houses_max_abs_diff_deg: 0.0
+  note: UTC+5:30；当天水星逆行，用于检查逆行标记
+- id: chart-10
+  label: 特罗姆瑟 / 极圈内
+  input:
+    birth_local: 1975-01-15 03:00
+    tz: Europe/Oslo
+    place: Tromsø
+    lat: 69.6492
+    lon: 18.9553
+    time_known: true
+  derived:
+    utc_offset: '1:00:00'
+    ut: '1975-01-15 02:00:00'
+  expected:
+    planets:
+    - body: Sun
+      lon: 294.2886
+      sign: Capricorn
+      sign_zh: 摩羯
+      deg_in_sign: 24.2886
+      speed_deg_per_day: 1.0189
+      retrograde: false
+      house: 2
+    - body: Moon
+      lon: 323.3803
+      sign: Aquarius
+      sign_zh: 水瓶
+      deg_in_sign: 23.3803
+      speed_deg_per_day: 11.8809
+      retrograde: false
+      house: 3
+    - body: Mercury
+      lon: 309.9276
+      sign: Aquarius
+      sign_zh: 水瓶
+      deg_in_sign: 9.9276
+      speed_deg_per_day: 1.5601
+      retrograde: false
+      house: 3
+    - body: Venus
+      lon: 311.0368
+      sign: Aquarius
+      sign_zh: 水瓶
+      deg_in_sign: 11.0368
+      speed_deg_per_day: 1.2524
+      retrograde: false
+      house: 3
+    - body: Mars
+      lon: 265.1209
+      sign: Sagittarius
+      sign_zh: 射手
+      deg_in_sign: 25.1209
+      speed_deg_per_day: 0.7261
+      retrograde: false
+      house: 2
+    - body: Jupiter
+      lon: 345.8634
+      sign: Pisces
+      sign_zh: 双鱼
+      deg_in_sign: 15.8634
+      speed_deg_per_day: 0.1933
+      retrograde: false
+      house: 4
+    - body: Saturn
+      lon: 104.716
+      sign: Cancer
+      sign_zh: 巨蟹
+      deg_in_sign: 14.716
+      speed_deg_per_day: -0.0809
+      retrograde: true
+      house: 8
+    - body: Uranus
+      lon: 212.2506
+      sign: Scorpio
+      sign_zh: 天蝎
+      deg_in_sign: 2.2506
+      speed_deg_per_day: 0.0203
+      retrograde: false
+      house: 12
+    - body: Neptune
+      lon: 250.8805
+      sign: Sagittarius
+      sign_zh: 射手
+      deg_in_sign: 10.8805
+      speed_deg_per_day: 0.0294
+      retrograde: false
+      house: 1
+    - body: Pluto
+      lon: 189.2532
+      sign: Libra
+      sign_zh: 天秤
+      deg_in_sign: 9.2532
+      speed_deg_per_day: -0.002
+      retrograde: true
+      house: 11
+    house_system: Porphyry (fallback)
+    placidus_defined: false
+    cusps:
+      1: 215.4365
+      2: 257.432
+      3: 299.4274
+      4: 341.4229
+      5: 359.4274
+      6: 17.432
+      7: 35.4365
+      8: 77.432
+      9: 119.4274
+      10: 161.4229
+      11: 179.4274
+      12: 197.432
+    asc:
+      lon: 215.4365
+      sign_zh: 天蝎
+    mc:
+      lon: 161.4229
+      sign_zh: 处女
+    aspects:
+    - a: Moon
+      b: Mars
+      type: sextile
+      angle: 58.259
+      orb: 1.741
+    - a: Mercury
+      b: Venus
+      type: conjunction
+      angle: 1.109
+      orb: 1.109
+    - a: Mercury
+      b: Neptune
+      type: sextile
+      angle: 59.047
+      orb: 0.953
+    - a: Mercury
+      b: Pluto
+      type: trine
+      angle: 120.674
+      orb: 0.674
+    - a: Venus
+      b: Neptune
+      type: sextile
+      angle: 60.156
+      orb: 0.156
+    - a: Venus
+      b: Pluto
+      type: trine
+      angle: 121.784
+      orb: 1.784
+    - a: Jupiter
+      b: Saturn
+      type: trine
+      angle: 118.853
+      orb: 1.147
+    - a: Jupiter
+      b: Neptune
+      type: square
+      angle: 94.983
+      orb: 4.983
+    - a: Saturn
+      b: Pluto
+      type: square
+      angle: 84.537
+      orb: 5.463
+    - a: Neptune
+      b: Pluto
+      type: sextile
+      angle: 61.627
+      orb: 1.627
+  cross_check:
+    method: Swiss Ephemeris SE files vs Moshier
+    max_abs_diff_deg: 0.000203
+    houses_method: Swiss Ephemeris 宫位 vs 独立实现的宫位公式（同一 ARMC 与真黄赤交角）
+    houses_max_abs_diff_deg: 0.0
+  note: 纬度 69.6° 在北极圈内，Placidus 宫制在此无定义；期望工具明确报告并回退到指定宫制（此处给出 Porphyry 结果）
+- id: chart-11
+  label: 时间未知 / 成都
+  input:
+    birth_local: 1990-07-07 12:00
+    tz: Asia/Shanghai
+    place: 成都
+    lat: 30.5728
+    lon: 104.0668
+    time_known: false
+  derived:
+    utc_offset: '9:00:00'
+    ut: '1990-07-07 03:00:00'
+  expected:
+    planets:
+    - body: Sun
+      lon: 104.7614
+      sign: Cancer
+      sign_zh: 巨蟹
+      deg_in_sign: 14.7614
+      speed_deg_per_day: 0.9531
+      retrograde: false
+    - body: Moon
+      lon: 274.2236
+      sign: Capricorn
+      sign_zh: 摩羯
+      deg_in_sign: 4.2236
+      speed_deg_per_day: 12.1759
+      retrograde: false
+    - body: Mercury
+      lon: 110.024
+      sign: Cancer
+      sign_zh: 巨蟹
+      deg_in_sign: 20.024
+      speed_deg_per_day: 2.1104
+      retrograde: false
+    - body: Venus
+      lon: 74.3954
+      sign: Gemini
+      sign_zh: 双子
+      deg_in_sign: 14.3954
+      speed_deg_per_day: 1.1927
+      retrograde: false
+    - body: Mars
+      lon: 26.2611
+      sign: Aries
+      sign_zh: 白羊
+      deg_in_sign: 26.2611
+      speed_deg_per_day: 0.6864
+      retrograde: false
+    - body: Jupiter
+      lon: 110.6712
+      sign: Cancer
+      sign_zh: 巨蟹
+      deg_in_sign: 20.6712
+      speed_deg_per_day: 0.224
+      retrograde: false
+    - body: Saturn
+      lon: 292.5808
+      sign: Capricorn
+      sign_zh: 摩羯
+      deg_in_sign: 22.5808
+      speed_deg_per_day: -0.0729
+      retrograde: true
+    - body: Uranus
+      lon: 277.2967
+      sign: Capricorn
+      sign_zh: 摩羯
+      deg_in_sign: 7.2967
+      speed_deg_per_day: -0.0401
+      retrograde: true
+    - body: Neptune
+      lon: 283.146
+      sign: Capricorn
+      sign_zh: 摩羯
+      deg_in_sign: 13.146
+      speed_deg_per_day: -0.027
+      retrograde: true
+    - body: Pluto
+      lon: 225.0673
+      sign: Scorpio
+      sign_zh: 天蝎
+      deg_in_sign: 15.0673
+      speed_deg_per_day: -0.0103
+      retrograde: true
+    cusps: null
+    asc: null
+    mc: null
+    rule: 出生时间未知：按本地中午 12:00 起盘；宫位、上升、天顶必须为 null，月亮位置误差可达 ±6.5°，解读不得引用宫位
+    aspects:
+    - a: Sun
+      b: Mercury
+      type: conjunction
+      angle: 5.263
+      orb: 5.263
+    - a: Sun
+      b: Jupiter
+      type: conjunction
+      angle: 5.91
+      orb: 5.91
+    - a: Sun
+      b: Saturn
+      type: opposition
+      angle: 172.181
+      orb: 7.819
+    - a: Sun
+      b: Uranus
+      type: opposition
+      angle: 172.535
+      orb: 7.465
+    - a: Sun
+      b: Neptune
+      type: opposition
+      angle: 178.385
+      orb: 1.615
+    - a: Sun
+      b: Pluto
+      type: trine
+      angle: 120.306
+      orb: 0.306
+    - a: Moon
+      b: Mars
+      type: trine
+      angle: 112.038
+      orb: 7.962
+    - a: Moon
+      b: Uranus
+      type: conjunction
+      angle: 3.073
+      orb: 3.073
+    - a: Mercury
+      b: Mars
+      type: square
+      angle: 83.763
+      orb: 6.237
+    - a: Mercury
+      b: Jupiter
+      type: conjunction
+      angle: 0.647
+      orb: 0.647
+    - a: Mercury
+      b: Saturn
+      type: opposition
+      angle: 177.443
+      orb: 2.557
+    - a: Mercury
+      b: Neptune
+      type: opposition
+      angle: 173.122
+      orb: 6.878
+    - a: Mercury
+      b: Pluto
+      type: trine
+      angle: 115.043
+      orb: 4.957
+    - a: Mars
+      b: Jupiter
+      type: square
+      angle: 84.41
+      orb: 5.59
+    - a: Mars
+      b: Saturn
+      type: square
+      angle: 93.68
+      orb: 3.68
+    - a: Jupiter
+      b: Saturn
+      type: opposition
+      angle: 178.09
+      orb: 1.91
+    - a: Jupiter
+      b: Neptune
+      type: opposition
+      angle: 172.475
+      orb: 7.525
+    - a: Jupiter
+      b: Pluto
+      type: trine
+      angle: 114.396
+      orb: 5.604
+    - a: Uranus
+      b: Neptune
+      type: conjunction
+      angle: 5.849
+      orb: 5.849
+    - a: Neptune
+      b: Pluto
+      type: sextile
+      angle: 58.079
+      orb: 1.921
+  cross_check:
+    method: Swiss Ephemeris SE files vs Moshier
+    max_abs_diff_deg: 0.000285
+  note: 用户不知道出生时间；工具应按中午起盘，并且不输出宫位与四轴

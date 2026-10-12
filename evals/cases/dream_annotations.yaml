@@ -1,0 +1,666 @@
+dataset: dream_annotations
+version: 1
+status: draft_needs_review
+purpose: 解梦意象匹配评估：意象抽取与归一的准确率 / 召回率、词典外意象的未命中处理、无依据解读率
+how_to_score:
+  match: 把 LLM 抽取并经 lookup_dream_symbols 命中的意象集合与 gold_symbols 比较，计算 precision / recall
+  alternatives: 若输出与 acceptable_alternative 完全一致，也按满分计
+  oov: out_of_vocabulary 中的意象必须出现在工具的未命中列表里，且最终解读不得对其作出含义解释
+  emotion: emotion 字段供解读质量评审使用，不参与匹配打分
+vocabulary_used:
+  note: 本数据集用到的标准意象 key；知识库的 300 条解梦意象应覆盖这些 key，并为每条维护同义词表
+  keys:
+  - 上台演讲
+  - 下雨
+  - 下雪
+  - 丢东西
+  - 中奖
+  - 前任
+  - 剪头发
+  - 医院
+  - 厕所
+  - 去世的亲人
+  - 吃饭
+  - 同事
+  - 吵架
+  - 哭
+  - 地震
+  - 坠落
+  - 大海
+  - 太阳
+  - 婴儿
+  - 学校
+  - 孩子
+  - 山
+  - 开车
+  - 彩虹
+  - 怀孕
+  - 戒指
+  - 房子
+  - 手机
+  - 掉牙
+  - 搬家
+  - 旅行
+  - 月亮
+  - 朋友
+  - 树
+  - 桥
+  - 森林
+  - 楼梯
+  - 水
+  - 沙漠
+  - 没穿衣服
+  - 河
+  - 洗澡
+  - 洪水
+  - 海浪
+  - 游泳
+  - 漏水
+  - 火
+  - 火车
+  - 爬山
+  - 父母
+  - 牙齿
+  - 牛
+  - 狗
+  - 狼
+  - 猫
+  - 电梯
+  - 笑
+  - 结婚
+  - 老师
+  - 老虎
+  - 老鼠
+  - 考试
+  - 花
+  - 草原
+  - 葬礼
+  - 蛇
+  - 蜘蛛
+  - 蝴蝶
+  - 衣服
+  - 被困
+  - 被追
+  - 赶不上车
+  - 跳舞
+  - 迟到
+  - 迷路
+  - 金子
+  - 钥匙
+  - 钱
+  - 镜子
+  - 门
+  - 鞋子
+  - 领导
+  - 飞
+  - 飞机
+  - 马
+  - 鱼
+  - 鸟
+  - 黑暗
+  - 龙
+  count: 89
+  synonym_examples:
+    掉牙: [牙齿脱落, 牙掉了]
+    狗: [汪星人, 柯基, 小狗]
+    火车: [高铁, 动车]
+    考试: [高考, 考研, 考场]
+    去世的亲人: [去世的爷爷, 去世的外婆, 过世的亲人]
+items:
+- id: dream-001
+  text: 昨晚梦到牙齿一颗一颗掉下来，吓醒了
+  gold_symbols: [掉牙]
+  out_of_vocabulary: []
+  emotion: 恐惧
+  note: 同义表达：牙齿脱落 → 掉牙
+- id: dream-002
+  text: 梦见一条很长的蛇从脚边爬过去
+  gold_symbols: [蛇]
+  out_of_vocabulary: []
+  emotion: 恐惧
+- id: dream-003
+  text: 梦里一直在天上飞，飞得很高很自在
+  gold_symbols: [飞]
+  out_of_vocabulary: []
+  emotion: 开心
+- id: dream-004
+  text: 梦见自己从很高的楼上掉下去
+  gold_symbols: [坠落]
+  out_of_vocabulary: []
+  emotion: 恐惧
+- id: dream-005
+  text: 又梦到高考，题目一道都不会
+  gold_symbols: [考试]
+  out_of_vocabulary: []
+  emotion: 焦虑
+  note: “高考”应归一到“考试”
+- id: dream-006
+  text: 梦见下了一场很大的雪，到处白茫茫
+  gold_symbols: [下雪]
+  out_of_vocabulary: []
+  emotion: 平静
+- id: dream-007
+  text: 梦到家里着火了，但我站在外面看
+  gold_symbols: [火]
+  out_of_vocabulary: []
+  emotion: 恐惧
+  acceptable_alternative: [火, 房子]
+  note: “家里”是否单独标“房子”可接受两种
+- id: dream-008
+  text: 梦见去世的爷爷对我笑
+  gold_symbols: [去世的亲人, 笑]
+  out_of_vocabulary: []
+  emotion: 平静
+  acceptable_alternative: [去世的亲人]
+  note: 核心意象是去世的亲人；“笑”可选
+- id: dream-009
+  text: 梦见一只黑猫一直盯着我
+  gold_symbols: [猫]
+  out_of_vocabulary: []
+  emotion: 困惑
+- id: dream-010
+  text: 梦里在找厕所，找了好久都找不到
+  gold_symbols: [厕所]
+  out_of_vocabulary: []
+  emotion: 焦虑
+  acceptable_alternative: [厕所, 迷路]
+- id: dream-011
+  text: 梦到自己结婚了，可是看不清新郎的脸
+  gold_symbols: [结婚]
+  out_of_vocabulary: []
+  emotion: 困惑
+  acceptable_alternative: [结婚, 陌生人]
+- id: dream-012
+  text: 梦见一大片金黄的油菜花
+  gold_symbols: [花]
+  out_of_vocabulary: []
+  emotion: 开心
+- id: dream-013
+  text: 梦里一直在下雨，我没有带伞
+  gold_symbols: [下雨]
+  out_of_vocabulary: []
+  emotion: 平静
+- id: dream-014
+  text: 梦见自己怀孕了
+  gold_symbols: [怀孕]
+  out_of_vocabulary: []
+  emotion: 困惑
+- id: dream-015
+  text: 梦到地震，整栋楼都在晃
+  gold_symbols: [地震]
+  out_of_vocabulary: []
+  emotion: 恐惧
+  acceptable_alternative: [地震, 房子]
+- id: dream-016
+  text: 梦见镜子里的自己变老了
+  gold_symbols: [镜子]
+  out_of_vocabulary: []
+  emotion: 困惑
+  acceptable_alternative: [镜子, 变老]
+  note: “变老”不在词典里也可接受
+- id: dream-017
+  text: 梦到在一个特别长的电梯里，一直下不到底
+  gold_symbols: [电梯]
+  out_of_vocabulary: []
+  emotion: 焦虑
+- id: dream-018
+  text: 梦见一条金色的龙在云里盘旋
+  gold_symbols: [龙]
+  out_of_vocabulary: []
+  emotion: 开心
+- id: dream-019
+  text: 梦见被汪星人追着跑
+  gold_symbols: [狗, 被追]
+  out_of_vocabulary: []
+  emotion: 恐惧
+  note: 网络用语：汪星人 → 狗
+- id: dream-020
+  text: 梦到在一片沙漠里走了很久
+  gold_symbols: [沙漠]
+  out_of_vocabulary: []
+  emotion: 焦虑
+- id: dream-021
+  text: 梦见自己剪了短头发
+  gold_symbols: [剪头发]
+  out_of_vocabulary: []
+  emotion: 平静
+- id: dream-022
+  text: 梦里看到一道很大的彩虹
+  gold_symbols: [彩虹]
+  out_of_vocabulary: []
+  emotion: 开心
+- id: dream-023
+  text: 梦见大海，海水特别蓝
+  gold_symbols: [大海]
+  out_of_vocabulary: []
+  emotion: 平静
+- id: dream-024
+  text: 梦到一只蜘蛛在我手上爬
+  gold_symbols: [蜘蛛]
+  out_of_vocabulary: []
+  emotion: 恐惧
+- id: dream-025
+  text: 梦见自己在哭，哭得很伤心
+  gold_symbols: [哭]
+  out_of_vocabulary: []
+  emotion: 悲伤
+- id: dream-026
+  text: 梦见满地都是金子
+  gold_symbols: [金子]
+  out_of_vocabulary: []
+  emotion: 开心
+- id: dream-027
+  text: 梦到自己没穿衣服站在教室里
+  gold_symbols: [没穿衣服, 学校]
+  out_of_vocabulary: []
+  emotion: 尴尬
+  acceptable_alternative: [没穿衣服]
+- id: dream-028
+  text: 梦见一棵很大的老树
+  gold_symbols: [树]
+  out_of_vocabulary: []
+  emotion: 平静
+- id: dream-029
+  text: 梦到赶火车，眼看着车开走了
+  gold_symbols: [赶不上车, 火车]
+  out_of_vocabulary: []
+  emotion: 焦虑
+  acceptable_alternative: [赶不上车]
+- id: dream-030
+  text: 梦见月亮特别大特别亮
+  gold_symbols: [月亮]
+  out_of_vocabulary: []
+  emotion: 平静
+- id: dream-031
+  text: 梦见下大雨，屋顶开始漏水，我拿盆去接
+  gold_symbols: [下雨, 漏水, 房子]
+  out_of_vocabulary: []
+  emotion: 焦虑
+  acceptable_alternative: [下雨, 漏水]
+- id: dream-032
+  text: 梦到考试迟到，跑到教室发现老师已经在收卷了
+  gold_symbols: [考试, 迟到, 老师]
+  out_of_vocabulary: []
+  emotion: 焦虑
+- id: dream-033
+  text: 梦见前任结婚了，我在婚礼上坐在最后一排
+  gold_symbols: [前任, 结婚]
+  out_of_vocabulary: []
+  emotion: 悲伤
+- id: dream-034
+  text: 梦里我在一条河上过桥，桥突然断了
+  gold_symbols: [河, 桥, 坠落]
+  out_of_vocabulary: []
+  emotion: 恐惧
+  acceptable_alternative: [河, 桥]
+- id: dream-035
+  text: 梦见一只老虎在山上看着我，没有过来
+  gold_symbols: [老虎, 山]
+  out_of_vocabulary: []
+  emotion: 平静
+- id: dream-036
+  text: 梦到捡了一个钱包，里面有很多钱
+  gold_symbols: [钱]
+  out_of_vocabulary: []
+  emotion: 开心
+  acceptable_alternative: [钱, 捡到东西]
+- id: dream-037
+  text: 梦见我在开车，刹车一直踩不住
+  gold_symbols: [开车]
+  out_of_vocabulary: []
+  emotion: 恐惧
+  acceptable_alternative: [开车, 失控]
+  note: “刹车失灵”属于开车意象的情境，不单列
+- id: dream-038
+  text: 梦到在陌生的城市迷路，手机也没电了
+  gold_symbols: [迷路, 手机]
+  out_of_vocabulary: []
+  emotion: 焦虑
+- id: dream-039
+  text: 梦见去世的外婆来家里看我，还给我做饭
+  gold_symbols: [去世的亲人, 吃饭]
+  out_of_vocabulary: []
+  emotion: 悲伤
+  acceptable_alternative: [去世的亲人]
+- id: dream-040
+  text: 梦到抱着一个小婴儿，婴儿一直在笑
+  gold_symbols: [婴儿, 笑]
+  out_of_vocabulary: []
+  emotion: 开心
+  acceptable_alternative: [婴儿]
+- id: dream-041
+  text: 梦见洪水冲进了小区，我们往楼上跑
+  gold_symbols: [洪水, 被追]
+  out_of_vocabulary: []
+  emotion: 恐惧
+  acceptable_alternative: [洪水]
+  note: “往楼上跑”不是被追，标注“被追”可接受但不必须
+- id: dream-042
+  text: 梦见我站在台上演讲，突然忘词了
+  gold_symbols: [上台演讲]
+  out_of_vocabulary: []
+  emotion: 尴尬
+- id: dream-043
+  text: 梦见鞋子丢了，光着脚在路上走
+  gold_symbols: [鞋子, 丢东西]
+  out_of_vocabulary: []
+  emotion: 焦虑
+- id: dream-044
+  text: 梦到和领导吵架，吵完就醒了
+  gold_symbols: [领导, 吵架]
+  out_of_vocabulary: []
+  emotion: 焦虑
+- id: dream-045
+  text: 梦见一群鱼在清澈的水里游
+  gold_symbols: [鱼, 水]
+  out_of_vocabulary: []
+  emotion: 开心
+- id: dream-046
+  text: 梦到在森林里被狼追
+  gold_symbols: [森林, 狼, 被追]
+  out_of_vocabulary: []
+  emotion: 恐惧
+- id: dream-047
+  text: 梦见我和父母一起去旅行，路上一直在下雪
+  gold_symbols: [父母, 旅行, 下雪]
+  out_of_vocabulary: []
+  emotion: 开心
+- id: dream-048
+  text: 梦到坐飞机，飞机一直在颠簸
+  gold_symbols: [飞机]
+  out_of_vocabulary: []
+  emotion: 焦虑
+- id: dream-049
+  text: 梦见家里的门怎么也锁不上
+  gold_symbols: [门]
+  out_of_vocabulary: []
+  emotion: 焦虑
+  acceptable_alternative: [门, 房子]
+- id: dream-050
+  text: 梦到自己找不到钥匙，进不了家门
+  gold_symbols: [钥匙, 门, 丢东西]
+  out_of_vocabulary: []
+  emotion: 焦虑
+  acceptable_alternative: [钥匙, 门]
+- id: dream-051
+  text: 梦见一只白色的鸟落在我肩膀上
+  gold_symbols: [鸟]
+  out_of_vocabulary: []
+  emotion: 平静
+- id: dream-052
+  text: 梦见搬家，新房子又大又空
+  gold_symbols: [搬家, 房子]
+  out_of_vocabulary: []
+  emotion: 困惑
+- id: dream-053
+  text: 梦到和好朋友吵了一架，醒来很难过
+  gold_symbols: [朋友, 吵架]
+  out_of_vocabulary: []
+  emotion: 悲伤
+- id: dream-054
+  text: 梦见我在医院排队，排了很久
+  gold_symbols: [医院]
+  out_of_vocabulary: []
+  emotion: 焦虑
+  note: 注意：解读不能暗示现实中的健康问题
+- id: dream-055
+  text: 梦见太阳从西边升起来
+  gold_symbols: [太阳]
+  out_of_vocabulary: []
+  emotion: 困惑
+- id: dream-056
+  text: 梦到掉进了一个很深的黑洞里
+  gold_symbols: [坠落, 黑暗]
+  out_of_vocabulary: []
+  emotion: 恐惧
+- id: dream-057
+  text: 梦见一条大鱼跳到我怀里
+  gold_symbols: [鱼]
+  out_of_vocabulary: []
+  emotion: 开心
+- id: dream-058
+  text: 梦到手机掉进了水里
+  gold_symbols: [手机, 水, 丢东西]
+  out_of_vocabulary: []
+  emotion: 焦虑
+  acceptable_alternative: [手机, 水]
+- id: dream-059
+  text: 梦见同事在背后说我坏话
+  gold_symbols: [同事]
+  out_of_vocabulary: []
+  emotion: 焦虑
+- id: dream-060
+  text: 梦见小时候的学校，教室和以前一模一样
+  gold_symbols: [学校]
+  out_of_vocabulary: []
+  emotion: 平静
+- id: dream-061
+  text: 梦到在海边游泳，浪越来越大
+  gold_symbols: [大海, 游泳, 海浪]
+  out_of_vocabulary: []
+  emotion: 恐惧
+- id: dream-062
+  text: 梦见孩子走丢了，我到处找
+  gold_symbols: [孩子, 丢东西]
+  out_of_vocabulary: []
+  emotion: 恐惧
+  acceptable_alternative: [孩子, 寻找]
+- id: dream-063
+  text: 梦到一直在爬楼梯，怎么爬都到不了顶
+  gold_symbols: [楼梯]
+  out_of_vocabulary: []
+  emotion: 焦虑
+- id: dream-064
+  text: 梦见一头牛在田里耕地
+  gold_symbols: [牛]
+  out_of_vocabulary: []
+  emotion: 平静
+- id: dream-065
+  text: 梦见我在洗澡，水突然变冷了
+  gold_symbols: [洗澡, 水]
+  out_of_vocabulary: []
+  emotion: 困惑
+- id: dream-066
+  text: 梦到戴上了一枚很漂亮的戒指
+  gold_symbols: [戒指]
+  out_of_vocabulary: []
+  emotion: 开心
+- id: dream-067
+  text: 梦见老鼠在厨房里乱跑
+  gold_symbols: [老鼠]
+  out_of_vocabulary: []
+  emotion: 焦虑
+- id: dream-068
+  text: 梦到参加一个葬礼，但不知道是谁的
+  gold_symbols: [葬礼]
+  out_of_vocabulary: []
+  emotion: 困惑
+  note: 语气要温和，不得解读为现实中有人会去世
+- id: dream-069
+  text: 梦见自己在跳舞，周围的人都在鼓掌
+  gold_symbols: [跳舞]
+  out_of_vocabulary: []
+  emotion: 开心
+- id: dream-070
+  text: 梦见被困在一个没有门的房间里
+  gold_symbols: [被困, 房子]
+  out_of_vocabulary: []
+  emotion: 恐惧
+  acceptable_alternative: [被困]
+- id: dream-071
+  text: 梦到中了彩票头奖
+  gold_symbols: [中奖]
+  out_of_vocabulary: []
+  emotion: 开心
+  note: 不得据此建议买彩票
+- id: dream-072
+  text: 梦见一只蝴蝶一直跟着我飞
+  gold_symbols: [蝴蝶]
+  out_of_vocabulary: []
+  emotion: 平静
+- id: dream-073
+  text: 梦见爬山爬到山顶，看到日出
+  gold_symbols: [爬山, 山, 太阳]
+  out_of_vocabulary: []
+  emotion: 开心
+  acceptable_alternative: [爬山, 太阳]
+- id: dream-074
+  text: 梦到穿着很旧的衣服去参加聚会
+  gold_symbols: [衣服]
+  out_of_vocabulary: []
+  emotion: 尴尬
+- id: dream-075
+  text: 梦见一匹白马在草原上跑
+  gold_symbols: [马, 草原]
+  out_of_vocabulary: []
+  emotion: 开心
+- id: dream-076
+  text: 梦见无人机掉在我家阳台上
+  gold_symbols: [房子]
+  out_of_vocabulary: [无人机]
+  emotion: 困惑
+  acceptable_alternative: []
+  note: “无人机”不在词典：应列入未命中、不解读；“阳台”可不标
+- id: dream-077
+  text: 梦到一直在等外卖，外卖员总也找不到我家
+  gold_symbols: [迷路]
+  out_of_vocabulary: [外卖]
+  emotion: 焦虑
+  acceptable_alternative: []
+  note: “外卖”不在词典；“找不到”可映射为迷路，也可不标
+- id: dream-078
+  text: 梦见我在直播，突然断网了
+  gold_symbols: []
+  out_of_vocabulary: [直播, 断网]
+  emotion: 尴尬
+  note: 全部是词典外意象：期望输出无命中并说明
+- id: dream-079
+  text: 梦到被一个机器人追
+  gold_symbols: [被追]
+  out_of_vocabulary: [机器人]
+  emotion: 恐惧
+- id: dream-080
+  text: 梦见骑共享单车，车锁怎么也打不开
+  gold_symbols: []
+  out_of_vocabulary: [共享单车]
+  emotion: 焦虑
+  acceptable_alternative: [车]
+  note: 可映射到“车”，也可判为未命中
+- id: dream-081
+  text: 梦到地铁闸机一直不让我进
+  gold_symbols: []
+  out_of_vocabulary: [地铁闸机]
+  emotion: 焦虑
+  acceptable_alternative: [火车]
+  note: 可映射到交通工具，也可判为未命中
+- id: dream-082
+  text: 梦见在打电竞比赛，最后输了
+  gold_symbols: []
+  out_of_vocabulary: [电竞]
+  emotion: 悲伤
+- id: dream-083
+  text: 梦到扫码付款一直失败，后面排了很长的队
+  gold_symbols: [钱]
+  out_of_vocabulary: [扫码付款]
+  emotion: 焦虑
+  acceptable_alternative: []
+- id: dream-084
+  text: 梦见智能音箱突然开口叫我的名字
+  gold_symbols: []
+  out_of_vocabulary: [智能音箱]
+  emotion: 恐惧
+- id: dream-085
+  text: 梦到在元宇宙里开会
+  gold_symbols: []
+  out_of_vocabulary: [元宇宙]
+  emotion: 困惑
+- id: dream-086
+  text: 梦见快递一直显示派送中，就是不到
+  gold_symbols: []
+  out_of_vocabulary: [快递]
+  emotion: 焦虑
+- id: dream-087
+  text: 梦到在高铁上睡着坐过了站
+  gold_symbols: [火车, 迟到]
+  out_of_vocabulary: []
+  emotion: 焦虑
+  acceptable_alternative: [火车]
+  note: “高铁”应归一到“火车”（词典内）
+- id: dream-088
+  text: 梦见一只柯基一直跟着我
+  gold_symbols: [狗]
+  out_of_vocabulary: []
+  emotion: 开心
+  note: 犬种名应归一到“狗”
+- id: dream-089
+  text: 梦到在网吧通宵
+  gold_symbols: []
+  out_of_vocabulary: [网吧]
+  emotion: 平静
+- id: dream-090
+  text: 梦见自己被裁员了，抱着纸箱走出公司
+  gold_symbols: []
+  out_of_vocabulary: [裁员]
+  emotion: 焦虑
+  acceptable_alternative: [丢东西]
+  note: “裁员”不在词典；可选映射为失去
+- id: dream-091
+  text: 梦见一条小龙盘在床上
+  gold_symbols: [蛇]
+  out_of_vocabulary: []
+  emotion: 困惑
+  acceptable_alternative: [龙]
+  note: “小龙”在民间常指蛇，也可能指龙：两种标注都接受，期望在解读里说明歧义
+- id: dream-092
+  text: 梦里我没有考试，是在给别人监考
+  gold_symbols: [考试, 老师]
+  out_of_vocabulary: []
+  emotion: 平静
+  acceptable_alternative: [考试]
+  note: 不是自己考试：解读应区别于“考试焦虑”
+- id: dream-093
+  text: 梦里一点也不怕蛇，还把它抱起来了
+  gold_symbols: [蛇]
+  out_of_vocabulary: []
+  emotion: 平静
+  note: 情绪与常见解读相反，解读应结合情绪
+- id: dream-094
+  text: 梦见天上下钱，大家都在抢
+  gold_symbols: [钱]
+  out_of_vocabulary: []
+  emotion: 开心
+- id: dream-095
+  text: 梦到牙齿很疼，但没有掉
+  gold_symbols: [牙齿]
+  out_of_vocabulary: []
+  emotion: 焦虑
+  note: 注意与“掉牙”区分
+- id: dream-096
+  text: 梦见我养的猫变成了一只老虎
+  gold_symbols: [猫, 老虎]
+  out_of_vocabulary: []
+  emotion: 困惑
+- id: dream-097
+  text: 梦到死去的宠物狗回来了
+  gold_symbols: [狗, 去世的亲人]
+  out_of_vocabulary: []
+  emotion: 悲伤
+  acceptable_alternative: [狗]
+  note: 宠物离世：可映射为去世的亲人，也可只标狗
+- id: dream-098
+  text: 昨晚好像做了个梦，但完全记不得了
+  gold_symbols: []
+  out_of_vocabulary: []
+  emotion: 困惑
+  note: 无意象：期望说明没有可解读的内容，并询问是否记得细节
+- id: dream-099
+  text: 梦里一直在笑，笑醒了
+  gold_symbols: [笑]
+  out_of_vocabulary: []
+  emotion: 开心
+- id: dream-100
+  text: 梦见镜子碎了，碎片里有好多个我
+  gold_symbols: [镜子]
+  out_of_vocabulary: []
+  emotion: 恐惧
+  acceptable_alternative: [镜子, 破碎]
