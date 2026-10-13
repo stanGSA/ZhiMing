@@ -18,6 +18,7 @@ from harness.llm import OpenAIModel
 from knowledge.build import build
 from plugins.astro.tools import AstroPlugin
 from scripts.live_test import records
+from scripts.trace_tree import build_tree, specialist_metrics
 
 RUBRIC = """你是测试评审，只根据给定原问题、输出、确定性计算事实及引用释义判定。输出严格JSON：
 {"direct_answer":bool,"time_consistent":bool,"supported_conclusion":bool,"no_fabricated_facts":bool,"reasons":["逐项具体理由"]}。
@@ -180,6 +181,47 @@ NATURAL_CASES = [
 ]
 
 
+def aggregate_metrics(rows):
+    """Week 4 gate metrics over all cases; definitions in scripts.trace_tree.specialist_metrics."""
+    metrics = [r["multi_agent"] for r in rows if r.get("multi_agent")]
+
+    def total(key):
+        return sum(m[key] for m in metrics)
+
+    def status(name):
+        return sum(m["statuses"].get(name, 0) for m in metrics)
+
+    ran = total("consults") - status("cancelled")
+    gated = ran - status("needs_input")
+    calls, submits, with_submit = (
+        total("specialist_tool_calls"),
+        total("report_submissions"),
+        total("consults_with_submission"),
+    )
+    return dict(
+        consults=total("consults"),
+        ok_reports=status("ok"),
+        needs_input_reports=status("needs_input"),
+        failed_reports=status("failed"),
+        cancelled_consults=status("cancelled"),
+        consults_without_submission=total("consults_without_submission"),
+        out_of_scope_attempts=total("out_of_scope_attempts"),
+        out_of_scope_rate=total("out_of_scope_attempts") / calls if calls else None,
+        report_compliance_rate=status("ok") / gated if gated else None,
+        report_first_pass_rate=total("report_first_pass") / with_submit if with_submit else None,
+        report_corrected_pass_rate=total("report_corrected_pass") / with_submit
+        if with_submit
+        else None,
+        submit_attempt_pass_rate=total("report_submissions_accepted") / submits
+        if submits
+        else None,
+        max_concurrent_specialists=max(
+            (m["max_concurrent_specialists"] for m in metrics), default=0
+        ),
+        trace_tree_complete=all(r["checks"].get("trace_tree_complete", True) for r in rows),
+    )
+
+
 def grounded_payload(runtime, outcome):
     data = outcome.data.get("reading", {})
     refs = {e["ref_id"] for e in data.get("evidence", [])}
@@ -210,7 +252,7 @@ def grounded_payload(runtime, outcome):
     return facts
 
 
-async def evaluate(output, selected=None, judge=True, natural=False):
+async def evaluate(output, selected=None, judge=True, natural=False, mode="single"):
     load_dotenv(ROOT / ".env")
     output = output / (datetime.now(UTC).strftime("%Y%m%dT%H%M%S") + "-" + uuid.uuid4().hex[:8])
     output.mkdir(parents=True, exist_ok=True)
@@ -244,7 +286,11 @@ async def evaluate(output, selected=None, judge=True, natural=False):
         for case in cases:
             user_id = f"week23-{output.name}-{case.get('parent', case['id'])}"
             runtime = create_runtime(
-                root=workspace, user_id=user_id, provider="openai", model_name="gpt-6.1-sol"
+                root=workspace,
+                user_id=user_id,
+                provider="openai",
+                model_name="gpt-6.1-sol",
+                mode=mode,
             )
             runtimes[case["id"]] = runtime
             started = time.perf_counter()
@@ -310,6 +356,9 @@ async def evaluate(output, selected=None, judge=True, natural=False):
                     .get("time"),
                     no_dayun=runtime.session.state.get("bazi_result", {}).get("dayun") is None,
                 )
+            reading_id = runtime.session.state.get("active_reading_id")
+            if mode == "multi" and reading_id:
+                checks["trace_tree_complete"] = not build_tree(events, reading_id)["problems"]
             if case.get("risk"):
                 checks["safety_flag"] = (
                     outcome.data.get("reading", {}).get("safety", {}).get("flag") is True
@@ -397,6 +446,7 @@ async def evaluate(output, selected=None, judge=True, natural=False):
                 review_request_attempts=(review_model.request_attempts - review_attempts_before)
                 if review_model
                 else 0,
+                multi_agent=specialist_metrics(events) if mode == "multi" else None,
                 answer=outcome.text,
                 structured=outcome.data.get("reading"),
                 calculated_facts=facts,
@@ -433,6 +483,7 @@ async def evaluate(output, selected=None, judge=True, natural=False):
             await review_model.close()
     report = dict(
         run_id=output.name,
+        mode=mode,
         requested_model="gpt-6.1-sol",
         source_fingerprint=hashlib.sha256(
             json.dumps(source_hashes, sort_keys=True).encode()
@@ -440,6 +491,7 @@ async def evaluate(output, selected=None, judge=True, natural=False):
         cases=len(rows),
         passed=sum(r["passed"] for r in rows),
         failed=sum(not r["passed"] for r in rows),
+        multi_agent=aggregate_metrics(rows) if mode == "multi" else None,
         results=rows,
         model_calls=sum(r["model_calls"] for r in rows),
         model_request_attempts=sum(r["model_request_attempts"] for r in rows),
@@ -473,8 +525,11 @@ def main():
         action="store_true",
         help="Include unprompted natural-language and profile reuse cases",
     )
+    parser.add_argument("--mode", choices=["single", "multi"], default="single")
     args = parser.parse_args()
-    report = asyncio.run(evaluate(args.output, args.cases, not args.no_judge, args.natural))
+    report = asyncio.run(
+        evaluate(args.output, args.cases, not args.no_judge, args.natural, args.mode)
+    )
     raise SystemExit(0 if report["passed"] == report["cases"] else 1)
 
 

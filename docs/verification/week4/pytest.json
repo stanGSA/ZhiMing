@@ -1,0 +1,1165 @@
+{
+  "tests": 288,
+  "passed": 276,
+  "failed": 1,
+  "errors": 11,
+  "skipped": 0,
+  "duration_s": 206.058,
+  "environment_note": "Remote environment network policy rejects ssd.jpl.nasa.gov; doctor and 11 Skyfield cross-checks need data/ephe/de440s.bsp. Same set fails on main 893c189 here; GitHub Actions downloads the file.",
+  "new_week4_tests": 31,
+  "review_regression_tests": 14,
+  "results": [
+    {
+      "name": "tests.test_adapters::test_openai_sdk_protocol_with_mock_http[system]",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_adapters::test_openai_sdk_protocol_with_mock_http[developer]",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_adapters::test_anthropic_sdk_protocol_with_mock_http",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_adapters::test_anthropic_parallel_tool_messages_are_grouped",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_adapters::test_missing_key_fails_early[OpenAIModel-OPENAI_API_KEY]",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_adapters::test_missing_key_fails_early[AnthropicModel-ANTHROPIC_API_KEY]",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_harness::test_guard_errors_are_results[not_registered-args0-unknown_tool]",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_harness::test_guard_errors_are_results[draw_tarot-args1-invalid_arguments]",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_harness::test_guard_errors_are_results[draw_tarot-args2-invalid_arguments]",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_harness::test_guard_errors_are_results[draw_tarot-args3-missing_dependency]",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_harness::test_same_draw_cached_changed_draw_blocked",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_harness::test_permissions_checked_even_on_cache_hit",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_harness::test_expert_kb_partition",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_harness::test_profile_requirements_and_dependency_ownership",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_harness::test_profile_evidence_and_cache",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_harness::test_model_error_is_sanitized",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_harness::test_limits_do_not_return_unvalidated_reading",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_harness::test_token_limit_before_side_effect",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_harness::test_terminal_batch_has_all_tool_responses",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_harness::test_harness_does_not_import_application_layers",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_kb::test_build_coverage_and_repeatability",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_kb::test_exact_alias_and_no_fuzzy_lookup",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_kb::test_build_rejects_invalid_sources[duplicate]",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_kb::test_build_rejects_invalid_sources[missing]",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_kb::test_build_rejects_invalid_sources[license]",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_kb::test_build_rejects_invalid_sources[valence]",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_kb::test_build_rejects_invalid_sources[wrong_id]",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_kb::test_build_rejects_invalid_sources[duplicate_alias]",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_kb::test_old_edition_survives_rebuild",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_kb::test_rule_change_changes_version",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_kb::test_rebuild_while_current_reader_is_open",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_kb::test_coverage_report_on_disk",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_kb::test_line_endings_do_not_change_version",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_multi_agent::test_multi_mode_tool_tables",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_multi_agent::test_parallel_consult_merges_persists_and_traces",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_multi_agent::test_brief_is_context_not_user_evidence",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_multi_agent::test_run_turn_brief_does_not_enter_evidence",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_multi_agent::test_specialist_cannot_cross_tools_or_partitions",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_multi_agent::test_report_must_cite_own_computed_refs",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_multi_agent::test_failed_specialist_is_isolated_and_disclosed",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_multi_agent::test_specialist_timeout_is_a_failed_report",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_multi_agent::test_needs_input_is_asked_once_and_never_cached",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_multi_agent::test_same_step_conflicts_are_rejected",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_multi_agent::test_tarot_is_drawn_once_per_reading",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_multi_agent::test_followup_does_not_consult_specialists",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_multi_agent::test_demo_model_runs_multi_mode_end_to_end",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_multi_agent::test_budget_propagates_reserve_and_deadline",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_multi_agent::test_config_modes_and_reviewer_guard[single]",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_multi_agent::test_config_modes_and_reviewer_guard[multi]",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_multi_agent::test_single_mode_has_no_wall_clock_deadline",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_multi_agent_review::test_failed_retry_keeps_earlier_valid_report",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_multi_agent_review::test_profile_correction_revokes_then_replaces_atomically",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_multi_agent_review::test_read_reading_restores_that_readings_specialist_state",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_multi_agent_review::test_concurrent_specialists_cannot_spend_orchestrator_reserve",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_multi_agent_review::test_request_deadline_stops_a_waiting_orchestrator",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_multi_agent_review::test_request_deadline_bounds_tool_execution",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_multi_agent_review::test_request_deadline_bounds_running_specialists",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_multi_agent_review::test_response_after_deadline_runs_no_tools",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_multi_agent_review::test_draw_survives_a_failed_report_and_spread_stays_fixed",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_multi_agent_review::test_timeout_before_first_response_keeps_the_call_tree",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_multi_agent_review::test_queueing_is_not_counted_as_concurrency",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_multi_agent_review::test_first_pass_rate_uses_each_consults_first_submission",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_multi_agent_review::test_single_mode_keeps_week1_3_budget_semantics",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_multi_agent_review::test_cancelled_request_closes_queued_and_running_specialists",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_pr1_remediation::test_new_reading_range_scope",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_pr1_remediation::test_inclusive_dates_equal_half_open_clock_range",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_pr1_remediation::test_country_city_compound_query",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_pr1_remediation::test_gender_evidence_does_not_confuse_female_with_male",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_pr1_remediation::test_birth_month_is_not_a_timing_request",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_pr1_remediation::test_profile_datetime_equivalence_without_new_evidence",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_pr1_remediation::test_chinese_clock_profile_evidence",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_pr1_remediation::test_profile_calendar_conventions_and_synthetic_tag",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_pr1_remediation::test_bazi_dayun_date_is_not_a_transit_date",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_pr1_remediation::test_prefixed_natal_positions_and_multiple_timeline_events",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_pr1_remediation::test_adapter_marks_invalid_json_and_missing_usage",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_pr1_remediation::test_transit_entity_mismatch[2026-11-11\\u884c\\u8fd0\\u571f\\u661f\\u62f1\\u672c\\u547d\\u592a\\u9633]",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_pr1_remediation::test_transit_entity_mismatch[2026\\u5e7411\\u670811\\u65e5\\u884c\\u8fd0\\u571f\\u661f\\u62f1\\u672c\\u547d\\u592a\\u9633]",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_pr1_remediation::test_transit_entity_mismatch[2026-11-10\\u884c\\u8fd0\\u571f\\u661f\\u5211\\u672c\\u547d\\u592a\\u9633]",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_pr1_remediation::test_transit_entity_mismatch[2026-11-10\\u884c\\u8fd0\\u571f\\u661f\\u62f1\\u672c\\u547d\\u6708\\u4eae]",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_pr1_remediation::test_transit_entity_mismatch[2026-11-10\\u884c\\u8fd0\\u571f\\u661f\\u62f1\\u672c\\u547d\\u592a\\u9633\\uff0c\\u5bb9\\u8bb8\\u5ea67\\u5ea6]",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_pr1_remediation::test_signal_legacy_compatibility_and_enum",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_pr1_remediation::test_ephemeris_never_changes_cwd",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_pr1_remediation::test_overseas_clock_and_period_timezone_need_confirmation",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_pr1_remediation::test_usage_missing_stops_before_tools",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_pr1_remediation::test_malformed_tool_json_can_recover",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_pr1_remediation::test_chinese_birth[1993\\u5e748\\u670817\\u65e523:20\\u51fa\\u751f]",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_pr1_remediation::test_chinese_birth[1993\\u5e748\\u670817\\u65e5\\u665a\\u4e0a11\\u70b920\\u5206\\u51fa\\u751f]",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_pr1_remediation::test_range_ignores_birth_and_checks_chinese_month",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_pr1_remediation::test_profile_normalization_cross_session",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_pr1_remediation::test_wrong_house_rejected[{body}{sign}\\u3001\\u7b2c{wrong}\\u5bab]",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_pr1_remediation::test_wrong_house_rejected[{body}\\uff08{sign}\\uff0c\\u7b2c{wrong}\\u5bab\\uff09]",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_pr1_remediation::test_wrong_house_rejected[{body}\\u5728\\u7b2c\\u4e5d\\u5bab]",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_review_fixes::test_100_production_draws_are_independent",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_review_fixes::test_redraw_changes_seed_and_preserves_parent",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_review_fixes::test_inline_meanings_three_calls_full_trace",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_review_fixes::test_original_crisis_fixtures[safety-021]",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_review_fixes::test_original_crisis_fixtures[safety-022]",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_review_fixes::test_original_crisis_fixtures[safety-023]",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_review_fixes::test_original_crisis_fixtures[safety-024]",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_review_fixes::test_original_crisis_fixtures[safety-025]",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_review_fixes::test_original_mt11_safety_transition",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_review_fixes::test_ambiguous_safety_classification_before_tools",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_review_fixes::test_classifier_failure_pauses_for_safety",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_review_fixes::test_region_contacts_are_configurable",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_review_fixes::test_followup_response_deleted_and_owner_scoped",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_review_fixes::test_reject_internal_errors_and_repeated_disclaimer",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_review_fixes::test_decision_requires_direction_and_conditions",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_review_fixes::test_timing_requires_answer_in_first_sentence",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_review_fixes::test_followup_high_risk_is_checked",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_review_fixes::test_render_hides_nonrisk_note",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_review_fixes::test_timezone_supports_historical_dst",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_review_fixes::test_explicit_spread_cannot_be_changed_by_model",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_runtime::test_end_to_end_draw_save_trace[single-1]",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_runtime::test_end_to_end_draw_save_trace[three_card-3]",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_runtime::test_end_to_end_draw_save_trace[decision-3]",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_runtime::test_followup_reuses_cards_and_record",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_runtime::test_cross_session_followup",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_runtime::test_new_question_links_previous_reading",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_runtime::test_cannot_restart_unfinished_draw_without_user_request",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_runtime::test_output_validation_rejects_fabrications[foreign_ref]",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_runtime::test_output_validation_rejects_fabrications[undrawn_card]",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_runtime::test_output_validation_rejects_fabrications[fake_bazi]",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_runtime::test_output_validation_rejects_fabrications[fake_astro]",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_runtime::test_output_validation_rejects_fabrications[confidence]",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_runtime::test_output_validation_rejects_fabrications[orientation]",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_runtime::test_output_validation_rejects_fabrications[unsupported_system]",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_runtime::test_guard_rejection_can_be_repaired",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_runtime::test_high_risk_flag_and_crisis_no_draw",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_runtime::test_reading_ownership_and_forget",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_runtime::test_cli_runs_from_other_working_directory",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_scripts::test_doctor_week1_required_checks",
+      "status": "failed"
+    },
+    {
+      "name": "tests.test_scripts::test_download_hash_and_cache",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_scripts::test_bad_download_is_rejected[../escape.bin-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa]",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_scripts::test_bad_download_is_rejected[file.bin-not-a-hash]",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_scripts::test_bad_download_is_rejected[file.bin-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa]",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_tarot::test_complete_deck",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_tarot::test_reproducible_draw_without_replacement[single-1]",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_tarot::test_reproducible_draw_without_replacement[three_card-3]",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_tarot::test_reproducible_draw_without_replacement[decision-3]",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_tarot::test_cross_process_reproducibility",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_tarot::test_seed_changes_and_both_orientations",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_tarot::test_invalid_inputs[unknown-0]",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_tarot::test_invalid_inputs[single--1]",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_tarot::test_invalid_inputs[single-18446744073709551616]",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_tarot::test_every_possible_card_state_and_position_has_meaning",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_tarot::test_signals_come_from_kb_and_are_immutable",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_v2_followup::test_clock_precision[\\u4e0b\\u53483\\u70b9\\u4e00\\u523b-15:15]",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_v2_followup::test_clock_precision[\\u665a\\u4e0a12\\u70b9-00:00]",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_v2_followup::test_clock_precision[8\\u70b9\\u591a-None]",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_v2_followup::test_clock_precision[\\u5927\\u7ea68\\u70b9-None]",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_v2_followup::test_clock_precision[\\u516b\\u70b9\\u5de6\\u53f3-None]",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_v2_followup::test_clock_precision[\\u4e0b\\u5348\\u4e09\\u70b9\\u4e09\\u523b-15:45]",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_v2_followup::test_clock_precision[\\u665a\\u4e0a11\\u70b920\\u5206-23:20]",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_v2_followup::test_clock_precision[\\u4e2d\\u534812\\u70b9-12:00]",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_v2_followup::test_clock_precision[15:01-15:01]",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_v2_followup::test_month_after_next[2026-10-13-expected0]",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_v2_followup::test_month_after_next[2026-12-13-expected1]",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_v2_followup::test_clock_convention_negation[\\u4e0d\\u6309\\u771f\\u592a\\u9633\\u65f6-False]",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_v2_followup::test_clock_convention_negation[\\u4e0d\\u8981\\u7528\\u771f\\u592a\\u9633\\u65f6-False]",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_v2_followup::test_clock_convention_negation[\\u6309\\u771f\\u592a\\u9633\\u65f6\\uff0c\\u65e5\\u4e3b\\u662f\\u4ec0\\u4e48\\uff1f-True]",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_v2_followup::test_clock_convention_negation[\\u4e0d\\u7528\\u771f\\u592a\\u9633\\u65f6\\u8fd8\\u662f\\u4f7f\\u7528\\u771f\\u592a\\u9633\\u65f6\\uff1f-None]",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_v2_followup::test_clock_convention_negation[\\u4e0d\\u662f\\u4e0d\\u7528\\u771f\\u592a\\u9633\\u65f6-None]",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_v2_followup::test_changsha_province[CN-\\u6e56\\u5357]",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_v2_followup::test_changsha_province[CN-\\u6e56\\u5357\\u7701]",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_v2_followup::test_changsha_province[None-\\u6e56\\u5357]",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_v2_followup::test_changsha_province[None-\\u6e56\\u5357\\u7701]",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_v2_followup::test_ordinary_words_are_not_axis_or_aspect_claims[\\u4e8b\\u4e1a\\u5904\\u4e8e\\u4e0a\\u5347\\u671f]",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_v2_followup::test_ordinary_words_are_not_axis_or_aspect_claims[\\u6536\\u5165\\u6709\\u4e0a\\u5347\\u7a7a\\u95f4]",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_v2_followup::test_ordinary_words_are_not_axis_or_aspect_claims[\\u91d1\\u661f\\u4e0e\\u706b\\u661f\\u51b2\\u7a81]",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_v2_followup::test_actual_unavailable_facts_still_rejected[\\u4e0a\\u5347\\u5728\\u767d\\u7f8a\\u5ea7]",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_v2_followup::test_actual_unavailable_facts_still_rejected[\\u4e0a\\u5347\\u70b9\\u4ee3\\u8868\\u5916\\u5728\\u8868\\u8fbe]",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_v2_followup::test_actual_unavailable_facts_still_rejected[\\u592a\\u9633\\u5728\\u7b2c\\u4e5d\\u5bab]",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_v2_followup::test_actual_unavailable_facts_still_rejected[\\u91d1\\u661f\\u4e0e\\u706b\\u661f\\u5bf9\\u51b2]",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_v2_followup::test_independent_aspects_do_not_overlap[\\u6728\\u661f\\u5408\\u592a\\u9633\\u4e0e\\u6c34\\u661f\\u5211\\u6c34\\u661f-expected0]",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_v2_followup::test_independent_aspects_do_not_overlap[\\u592a\\u9633\\u4e0e\\u6c34\\u661f\\u5211\\u571f\\u661f-expected1]",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_v2_followup::test_independent_aspects_do_not_overlap[\\u592a\\u9633\\u4e0e\\u6c34\\u661f\\u5f62\\u6210\\u5bf9\\u51b2-expected2]",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_v2_followup::test_overseas_choice_matches_effective_parameter[\\u4e0d\\u7528\\u771f\\u592a\\u9633\\u65f6\\uff0c\\u6309\\u56fa\\u5b9aUTC+8-True]",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_v2_followup::test_overseas_choice_matches_effective_parameter[\\u4f7f\\u7528\\u771f\\u592a\\u9633\\u65f6-False]",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_v2_followup::test_solar_choice_profile_and_current_override",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_v2_followup::test_needs_input_not_replayed_after_answer",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_v2_followup::test_period_clarification_same_arguments",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_v2_followup::test_natural_consultation_timezone_and_profile[\\u6211\\u73b0\\u5728\\u4f4f\\u5728\\u6d1b\\u6749\\u77f6]",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_v2_followup::test_natural_consultation_timezone_and_profile[\\u6309\\u6d1b\\u6749\\u77f6\\u65f6\\u95f4]",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_v2_followup::test_birthplace_alone_does_not_confirm_consultation_timezone",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_v2_followup::test_negated_timezone_evidence_cannot_be_trimmed",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_v2_followup::test_province_reply_can_select_candidate",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_v2_followup::test_timezone_inferred_and_reused_in_new_session",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_week23_calculations::test_all_reference_charts[chart-01]",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_week23_calculations::test_all_reference_charts[chart-02]",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_week23_calculations::test_all_reference_charts[chart-03]",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_week23_calculations::test_all_reference_charts[chart-04]",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_week23_calculations::test_all_reference_charts[chart-05]",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_week23_calculations::test_all_reference_charts[chart-06]",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_week23_calculations::test_all_reference_charts[chart-07]",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_week23_calculations::test_all_reference_charts[chart-08]",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_week23_calculations::test_all_reference_charts[chart-09]",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_week23_calculations::test_all_reference_charts[chart-10]",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_week23_calculations::test_all_reference_charts[chart-11]",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_week23_calculations::test_independent_skyfield_all_planets[chart-01]",
+      "status": "error"
+    },
+    {
+      "name": "tests.test_week23_calculations::test_independent_skyfield_all_planets[chart-02]",
+      "status": "error"
+    },
+    {
+      "name": "tests.test_week23_calculations::test_independent_skyfield_all_planets[chart-03]",
+      "status": "error"
+    },
+    {
+      "name": "tests.test_week23_calculations::test_independent_skyfield_all_planets[chart-04]",
+      "status": "error"
+    },
+    {
+      "name": "tests.test_week23_calculations::test_independent_skyfield_all_planets[chart-05]",
+      "status": "error"
+    },
+    {
+      "name": "tests.test_week23_calculations::test_independent_skyfield_all_planets[chart-06]",
+      "status": "error"
+    },
+    {
+      "name": "tests.test_week23_calculations::test_independent_skyfield_all_planets[chart-07]",
+      "status": "error"
+    },
+    {
+      "name": "tests.test_week23_calculations::test_independent_skyfield_all_planets[chart-08]",
+      "status": "error"
+    },
+    {
+      "name": "tests.test_week23_calculations::test_independent_skyfield_all_planets[chart-09]",
+      "status": "error"
+    },
+    {
+      "name": "tests.test_week23_calculations::test_independent_skyfield_all_planets[chart-10]",
+      "status": "error"
+    },
+    {
+      "name": "tests.test_week23_calculations::test_independent_skyfield_all_planets[chart-11]",
+      "status": "error"
+    },
+    {
+      "name": "tests.test_week23_calculations::test_all_bazi_boundaries[bazi-01]",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_week23_calculations::test_all_bazi_boundaries[bazi-02]",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_week23_calculations::test_all_bazi_boundaries[bazi-03]",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_week23_calculations::test_all_bazi_boundaries[bazi-04]",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_week23_calculations::test_all_bazi_boundaries[bazi-05]",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_week23_calculations::test_all_bazi_boundaries[bazi-06]",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_week23_calculations::test_all_bazi_boundaries[bazi-07]",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_week23_calculations::test_all_bazi_boundaries[bazi-08]",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_week23_calculations::test_all_bazi_boundaries[bazi-09]",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_week23_calculations::test_all_bazi_boundaries[bazi-10]",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_week23_calculations::test_all_bazi_boundaries[bazi-11]",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_week23_calculations::test_all_bazi_boundaries[bazi-12]",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_week23_calculations::test_all_bazi_boundaries[bazi-13]",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_week23_calculations::test_all_bazi_boundaries[bazi-14]",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_week23_calculations::test_all_bazi_boundaries[bazi-15]",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_week23_calculations::test_all_bazi_boundaries[bazi-16]",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_week23_calculations::test_all_bazi_boundaries[bazi-17]",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_week23_calculations::test_all_bazi_boundaries[bazi-18]",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_week23_calculations::test_all_bazi_boundaries[bazi-19]",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_week23_calculations::test_all_bazi_boundaries[bazi-20]",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_week23_calculations::test_all_bazi_boundaries[bazi-21]",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_week23_calculations::test_all_bazi_boundaries[bazi-22]",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_week23_calculations::test_all_bazi_boundaries[bazi-23]",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_week23_calculations::test_all_bazi_boundaries[bazi-24]",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_week23_calculations::test_all_bazi_boundaries[bazi-25]",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_week23_calculations::test_all_bazi_boundaries[bazi-26]",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_week23_calculations::test_all_bazi_boundaries[bazi-27]",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_week23_calculations::test_all_bazi_boundaries[bazi-28]",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_week23_calculations::test_all_bazi_boundaries[bazi-29]",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_week23_calculations::test_all_bazi_boundaries[bazi-30]",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_week23_calculations::test_all_bazi_boundaries[bazi-31]",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_week23_calculations::test_all_bazi_boundaries[bazi-32]",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_week23_calculations::test_all_bazi_boundaries[bazi-33]",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_week23_calculations::test_all_bazi_boundaries[bazi-34]",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_week23_calculations::test_all_bazi_boundaries[bazi-35]",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_week23_calculations::test_all_bazi_boundaries[bazi-36]",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_week23_calculations::test_all_bazi_boundaries[bazi-37]",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_week23_calculations::test_all_bazi_boundaries[bazi-38]",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_week23_calculations::test_all_bazi_boundaries[bazi-39]",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_week23_calculations::test_all_bazi_boundaries[bazi-40]",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_week23_calculations::test_all_bazi_boundaries[bazi-41]",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_week23_calculations::test_all_bazi_boundaries[bazi-42]",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_week23_calculations::test_all_bazi_boundaries[bazi-43]",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_week23_calculations::test_all_bazi_boundaries[bazi-44]",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_week23_calculations::test_all_bazi_boundaries[bazi-45]",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_week23_calculations::test_all_bazi_boundaries[bazi-46]",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_week23_calculations::test_all_bazi_boundaries[bazi-47]",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_week23_calculations::test_all_bazi_boundaries[bazi-48]",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_week23_calculations::test_all_bazi_boundaries[bazi-49]",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_week23_calculations::test_all_bazi_boundaries[bazi-50]",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_week23_calculations::test_gap_fold[1986-05-04 02:30-Asia/Shanghai-nonexistent_local_time]",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_week23_calculations::test_gap_fold[1986-09-14 01:30-Asia/Shanghai-ambiguous_local_time]",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_week23_calculations::test_gap_fold[2024-03-10 02:30-America/New_York-nonexistent_local_time]",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_week23_calculations::test_gap_fold[2024-11-03 01:30-America/New_York-ambiguous_local_time]",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_week23_calculations::test_fold_candidates_and_historical_dst",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_week23_calculations::test_location_aliases_ambiguity",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_week23_calculations::test_missing_time_gender_lunar_confirmation",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_week23_calculations::test_transits_roots_retrograde_and_range",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_week23_calculations::test_period_boundaries_and_relationships[year]",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_week23_calculations::test_period_boundaries_and_relationships[month]",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_week23_calculations::test_period_boundaries_and_relationships[day]",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_week23_calculations::test_true_solar_never_moves_physical_term",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_week23_calculations::test_dayun_uses_physical_terms_when_solar_clock_crosses_lichun",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_week23_calculations::test_ten_year_transit_range",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_week23_integration::test_three_systems_restore_cache_ownership_forget",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_week23_integration::test_astro_only_bazi_only_followup_no_tarot",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_week23_integration::test_unknown_time_and_hallucinations",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_week23_integration::test_xinjiang_clock_confirmation_and_explicit_override[\\u5317\\u4eac\\u65f6\\u95f4-Asia/Shanghai-2000-01-01T02:00:00+00:00]",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_week23_integration::test_xinjiang_clock_confirmation_and_explicit_override[\\u65b0\\u7586\\u65f6\\u95f4-Asia/Urumqi-2000-01-01T04:00:00+00:00]",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_week23_integration::test_compound_refs_and_required_bazi_answers",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_week23_integration::test_lunar_leap_cannot_be_invented",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_week23_integration::test_three_plugins_implement_protocol",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_week23_integration::test_profile_conventions_and_aspect_strength",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_week23_integration::test_quality_review_receives_uncited_timeline_events",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_week23_integration::test_country_alone_cannot_select_same_country_city",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_week23_integration::test_birth_provenance_permissions_and_dependencies",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_week23_integration::test_range_consistency_and_timing_requires_calculation",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_week23_integration::test_new_calculations_cannot_bypass_submit",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_week23_integration::test_v2_migration_preserves_rows",
+      "status": "passed"
+    }
+  ]
+}

@@ -27,6 +27,7 @@ class Tracer:
             "parent_session_id": session.parent_id,
             "reading_id": session.state.get("active_reading_id"),
             "role": session.role,
+            "parent_call_id": session.parent_call_id,
             **payload,
         }
         with (directory / f"{session.id}.jsonl").open("a", encoding="utf-8") as stream:

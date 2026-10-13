@@ -1,0 +1,62 @@
+"""Structured messages between the orchestrator and specialists (no free-text dialogue)."""
+
+from typing import Any, Literal
+
+from pydantic import BaseModel, Field
+
+from common.schemas import Confidence
+from harness.models import StrictInput
+
+
+class Timeframe(StrictInput):
+    start: str = Field(description="用户指定区间的开始日期，YYYY-MM-DD")
+    end: str = Field(description="结束日期，日期型含当天")
+    tz: str | None = Field(default=None, description="咨询区间的IANA时区；不确定时省略")
+
+
+class ConsultInput(StrictInput):
+    system: str = Field(description="专家体系代码，如 astro、bazi、tarot")
+    sub_question: str = Field(min_length=1, max_length=500)
+    timeframe: Timeframe | None = None
+    location_id: str | None = Field(
+        default=None, description="已由 resolve_location 解析的出生地编号"
+    )
+    spread: Literal["single", "three_card", "decision"] | None = Field(
+        default=None, description="仅塔罗：牌阵"
+    )
+
+
+class ReportPoint(StrictInput):
+    ref_id: str
+    text: str = Field(min_length=1, max_length=300)
+
+
+class ReportInput(StrictInput):
+    """What a specialist may write; signals are attached by the harness afterwards."""
+
+    answer: str = Field(min_length=1, max_length=120)
+    points: list[ReportPoint] = Field(min_length=1, max_length=12)
+    missing: list[str] = Field(default_factory=list)
+    confidence: Confidence
+
+
+class SpecialistReport(BaseModel):
+    system: str
+    label: str
+    status: Literal["ok", "needs_input", "failed"]
+    answer: str = ""
+    points: list[ReportPoint] = Field(default_factory=list)
+    missing: list[str] = Field(default_factory=list)
+    confidence: Confidence | None = None
+    needs_input: dict[str, Any] | None = None
+    failure: str | None = None
+    signals: list[dict[str, Any]] = Field(default_factory=list)
+    session_id: str
+    latency_ms: float
+    queue_ms: float = 0.0
+    tokens: int
+    model_calls: int
+    # Profile version the specialist saw; a later profile change makes the result stale.
+    profile_version: int = 0
+    # Set when a retry failed but this system's earlier valid report was kept.
+    retained_previous: bool = False

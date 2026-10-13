@@ -20,7 +20,7 @@ def f1(expected: set, actual: set) -> float:
     return 2 * intersection / (len(expected) + len(actual)) if expected or actual else 1.0
 
 
-async def evaluate(output: Path) -> dict:
+async def evaluate(output: Path, mode: str = "single") -> dict:
     fixture = yaml.safe_load((ROOT / "evals/cases/trajectory.yaml").read_text(encoding="utf-8"))
     cases = [
         case
@@ -36,7 +36,9 @@ async def evaluate(output: Path) -> dict:
             ROOT / "knowledge/sources", workspace / "data/kb.sqlite", ROOT / "knowledge/rules"
         )
         for case in cases:
-            runtime = create_runtime(root=workspace, user_id=case["id"], provider="demo", seed=42)
+            runtime = create_runtime(
+                root=workspace, user_id=case["id"], provider="demo", seed=42, mode=mode
+            )
             try:
                 result = await runtime.turn(case["question"])
                 traces = list(runtime.tracer.user_dir(case["id"]).glob("*.jsonl"))
@@ -50,18 +52,40 @@ async def evaluate(output: Path) -> dict:
                     for row in records
                     if row["event"] == "tool_result" and row["result"]["ok"]
                 }
-                actual -= {"get_profile", "start_reading", "lookup_meaning", "read_reading"}
+                # Child-session traces share the user directory, so computation tools called by
+                # specialists count exactly as in single mode.
+                actual -= {
+                    "get_profile",
+                    "start_reading",
+                    "lookup_meaning",
+                    "read_reading",
+                    "consult_specialist",
+                    "submit_report",
+                }
+                consulted = {
+                    row["call"]["arguments"]["system"]
+                    for row in records
+                    if row["event"] == "tool_result"
+                    and row["call"]["name"] == "consult_specialist"
+                    and row["result"]["ok"]
+                    and row["result"]["data"]["report"]["status"] == "ok"
+                }
                 spread = runtime.session.state.get("tarot_result", {}).get("spread")
                 score = f1(set(case["expected"]["tools_single"]), actual)
+                specialist_score = (
+                    f1(set(case["expected"]["specialists"]), consulted) if mode == "multi" else None
+                )
                 rows.append(
                     {
                         "id": case["id"],
                         "status": result.status,
                         "tool_f1": score,
+                        "specialist_f1": specialist_score,
                         "spread": spread,
                         "expected_spread": case["expected"]["tarot_spread"],
                         "pass": result.status == "submit_reading"
                         and score == 1
+                        and specialist_score in (None, 1)
                         and spread == case["expected"]["tarot_spread"],
                     }
                 )
@@ -83,6 +107,7 @@ async def evaluate(output: Path) -> dict:
     report = {
         "generated_at": datetime.now(UTC).isoformat(),
         "suite": "week1",
+        "mode": mode,
         "provider": "demo",
         "scope": "离线流程验收，不能代表真实 LLM 的工具选择、解读质量或安全能力。",
         "dataset_status": fixture["status"],
@@ -91,21 +116,30 @@ async def evaluate(output: Path) -> dict:
         "passed": sum(row["pass"] for row in rows),
         "skipped": len(fixture["cases"]) - len(rows),
         "offline_tool_f1": sum(row["tool_f1"] for row in rows) / len(rows),
+        "offline_specialist_f1": None
+        if mode == "single"
+        else sum(row["specialist_f1"] for row in rows) / len(rows),
         "seed_vector_pass": vector_ok,
         "results": rows,
     }
     output.mkdir(parents=True, exist_ok=True)
-    (output / "week1-eval.json").write_text(
+    stem = "week1-eval" if mode == "single" else "week1-eval-multi"
+    (output / f"{stem}.json").write_text(
         json.dumps(report, ensure_ascii=False, indent=2), encoding="utf-8"
     )
     text = [
-        "# 第一周离线流程验收",
+        "# 第一周离线流程验收" + ("" if mode == "single" else "（多Agent模式）"),
         "",
         report["scope"],
         "",
         f"- 原数据集状态：{fixture['status']}（未将草稿标为已审核）",
         f"- 适用用例：{len(rows)}；通过：{report['passed']}；后续体系用例跳过：{report['skipped']}",
         f"- 离线工具集合 F1：{report['offline_tool_f1']:.3f}",
+        *(
+            []
+            if mode == "single"
+            else [f"- 离线专家集合 F1：{report['offline_specialist_f1']:.3f}"]
+        ),
         f"- 塔罗条目覆盖：{coverage['coverage']:.0%}（156 牌面状态 + 7 牌位）",
         f"- 人工审核率：{coverage['reviewed_rate']:.0%}",
         f"- 固定 seed 测试向量：{'通过' if vector_ok else '失败'}",
@@ -117,7 +151,7 @@ async def evaluate(output: Path) -> dict:
         f"| {row['id']} | {'通过' if row['pass'] else '失败'} | {row['spread']} | {row['tool_f1']:.3f} |"
         for row in rows
     )
-    (output / "week1-eval.md").write_text("\n".join(text) + "\n", encoding="utf-8")
+    (output / f"{stem}.md").write_text("\n".join(text) + "\n", encoding="utf-8")
     return report
 
 
@@ -125,9 +159,14 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--suite", choices=["week1", "trajectory", "week23"], default="week1")
     parser.add_argument("--output", type=Path, default=ROOT / "reports")
+    parser.add_argument("--mode", choices=["single", "multi"], default="single")
     args = parser.parse_args()
     if args.suite == "week1":
-        report = asyncio.run(evaluate(args.output))
+        report = asyncio.run(evaluate(args.output, args.mode))
+    elif args.mode == "multi":
+        raise SystemExit(
+            "trajectory/week23 是标注路线回放，只适用于 single；多Agent路由需真实模型评估"
+        )
     else:
         from evals.week23 import evaluate as evaluate_week23
 

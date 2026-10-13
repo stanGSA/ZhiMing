@@ -29,6 +29,10 @@ class Tool:
     cache_user_input: bool = False
     validator: Callable[[BaseModel, Session], str | None] | None = None
     model_result: Callable[[dict], dict] | None = None
+    # Calls of a parallel_safe tool in one model step run concurrently; commit then applies
+    # each result to the session one at a time, in the order the model issued the calls.
+    parallel_safe: bool = False
+    commit: Callable[[ToolResult, Session], ToolResult] | None = None
 
     def schema(self) -> dict[str, Any]:
         return {

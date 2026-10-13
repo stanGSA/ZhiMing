@@ -19,11 +19,17 @@ EXPECTED_CASES = 17
 
 
 def records(runtime) -> list[dict]:
-    path = runtime.tracer.user_dir(runtime.session.user_id) / f"{runtime.session.id}.jsonl"
-    return (
-        [json.loads(line) for line in path.read_text(encoding="utf-8").splitlines()]
-        if path.exists()
-        else []
+    """Events of this session and of the specialist sessions it spawned, in time order."""
+    directory = runtime.tracer.user_dir(runtime.session.user_id)
+    rows = [
+        json.loads(line)
+        for path in (sorted(directory.glob("*.jsonl")) if directory.exists() else [])
+        for line in path.read_text(encoding="utf-8").splitlines()
+    ]
+    own = runtime.session.id
+    return sorted(
+        (r for r in rows if own in (r["session_id"], r.get("parent_session_id"))),
+        key=lambda r: r["timestamp"],
     )
 
 
