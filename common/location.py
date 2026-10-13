@@ -1,4 +1,5 @@
 import io
+import json
 import re
 import unicodedata
 import zipfile
@@ -77,7 +78,7 @@ class LocationInput(StrictInput):
 
 
 class Gazetteer:
-    def __init__(self, path: Path = ROOT / "data/geo/cities15000.zip"):
+    def __init__(self, path: Path = ROOT / "data/geo/geonamescache-3.0.2.whl"):
         self.path = path
         self.records, self.index, self.names = {}, {}, {}
 
@@ -85,26 +86,57 @@ class Gazetteer:
         if self.records:
             return
         with zipfile.ZipFile(self.path) as archive:
-            with io.TextIOWrapper(archive.open("cities15000.txt"), encoding="utf-8") as stream:
-                for line in stream:
-                    f = line.rstrip("\n").split("\t")
-                    record = dict(
-                        location_id=f[0],
-                        name=f[1],
-                        country=f[8],
-                        admin1=f[10],
-                        lat=float(f[4]),
-                        lon=float(f[5]),
-                        tz=f[17],
-                        population=int(f[14]),
-                        source="GeoNames",
-                        precision="city centroid",
+            if "geonamescache/data/cities15000.json" in archive.namelist():
+                data = json.loads(archive.read("geonamescache/data/cities15000.json"))
+                rows = [
+                    (
+                        str(c["geonameid"]),
+                        c["name"],
+                        c["countrycode"],
+                        c["admin1code"],
+                        c["latitude"],
+                        c["longitude"],
+                        c["timezone"],
+                        c["population"],
+                        {c["name"], *c["alternatenames"]},
                     )
-                    self.records[f[0]] = record
-                    for name in {f[1], f[2], *f[3].split(",")}:
-                        if name:
-                            self.index.setdefault(normalize(name), set()).add(f[0])
-                            self.names.setdefault(f[0], set()).add(name)
+                    for c in data.values()
+                ]
+            else:
+                # Retain support for historical GeoNames snapshots and caller fixtures.
+                with io.TextIOWrapper(archive.open("cities15000.txt"), encoding="utf-8") as stream:
+                    fields = [line.rstrip("\n").split("\t") for line in stream]
+                rows = [
+                    (
+                        f[0],
+                        f[1],
+                        f[8],
+                        f[10],
+                        float(f[4]),
+                        float(f[5]),
+                        f[17],
+                        int(f[14]),
+                        {f[1], f[2], *f[3].split(",")},
+                    )
+                    for f in fields
+                ]
+            for identity, name, country, admin, lat, lon, tz, population, names in rows:
+                self.records[identity] = dict(
+                    location_id=identity,
+                    name=name,
+                    country=country,
+                    admin1=admin,
+                    lat=lat,
+                    lon=lon,
+                    tz=tz,
+                    population=population,
+                    source="GeoNames",
+                    precision="city centroid",
+                )
+                for alias in names:
+                    if alias:
+                        self.index.setdefault(normalize(alias), set()).add(identity)
+                        self.names.setdefault(identity, set()).add(alias)
         # Administrative suffixes and traditional spellings of common Chinese cities.
         aliases = {
             "北京": "1816670",
@@ -131,9 +163,17 @@ class Gazetteer:
 
     def resolve(self, args: LocationInput):
         self.load()
-        country = country_code(args.country)
+        query, inline_country = args.query, None
+        for prefix, code in sorted(COUNTRY_ALIASES.items(), key=lambda pair: -len(pair[0])):
+            remainder = query[len(prefix) :].lstrip(" ·,，")
+            if query.startswith(prefix) and remainder and normalize(remainder) in self.index:
+                query, inline_country = remainder, code
+                break
+        country = country_code(args.country) or inline_country
         admin = ADMIN_ALIASES.get(country, {}).get(args.admin1, args.admin1)
-        ids = self.index.get(normalize(args.query), set())
+        ids = self.index.get(normalize(query), set())
+        if inline_country and country != inline_country:
+            ids = set()
         matches = [
             self.records[i]
             for i in ids

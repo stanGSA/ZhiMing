@@ -40,13 +40,20 @@ async def run_turn(
             session,
             "model_response",
             step=step,
-            input_tokens=response.input_tokens,
-            output_tokens=response.output_tokens,
+            input_tokens=response.input_tokens if response.usage_available else None,
+            output_tokens=response.output_tokens if response.usage_available else None,
+            usage_available=response.usage_available,
             cached_input_tokens=response.cached_input_tokens,
             requested_model=getattr(model, "model", None),
             returned_model=response.model,
             tool_names=[c.name for c in response.tool_calls],
         )
+        if not response.usage_available:
+            tracer.log(session, "usage_unavailable", step=step)
+            return TurnOutcome(
+                status="usage_unavailable",
+                text="模型服务未返回用量，本轮暂停以避免越过预算；请稍后重试。",
+            )
         if turn_tokens > token_budget:
             break  # Do not execute side effects from an over-budget response.
         if not response.tool_calls:
@@ -71,7 +78,9 @@ async def run_turn(
                         "type": "function",
                         "function": {
                             "name": c.name,
-                            "arguments": json.dumps(c.arguments, ensure_ascii=False),
+                            "arguments": c.raw_arguments
+                            if c.argument_error
+                            else json.dumps(c.arguments, ensure_ascii=False),
                         },
                     }
                     for c in response.tool_calls

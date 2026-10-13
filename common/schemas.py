@@ -31,6 +31,10 @@ class ProfileInput(StrictInput):
         "zishi_rule",
         "true_solar_time",
         "prefs_json",
+        "lat",
+        "lon",
+        "location_id",
+        "consultation_tz",
     ]
     value: Any
     evidence: str = Field(min_length=1)

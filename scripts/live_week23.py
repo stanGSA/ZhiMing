@@ -2,6 +2,7 @@
 
 import argparse
 import asyncio
+import hashlib
 import json
 import shutil
 import time
@@ -130,11 +131,62 @@ CASES = [
     ),
 ]
 
+NATURAL_CASES = [
+    dict(
+        id="natural_astro",
+        question="我1993年8月17日晚上11点20分在北京出生，用占星看看我适合怎样的工作。",
+        tools={"compute_natal_chart", "submit_reading"},
+        systems={"astro"},
+    ),
+    dict(
+        id="natural_bazi",
+        question="我是男性，1993年8月17日晚上11点20分在北京出生。用八字看看日主是什么，我什么时候开始走大运，第一步是什么？",
+        tools={"compute_bazi", "submit_reading"},
+        systems={"bazi"},
+    ),
+    dict(
+        id="profile_reuse",
+        parent="natural_bazi",
+        question="用保存的出生资料，以八字看看2026年11月适合换工作吗？",
+        tools={"compute_bazi", "compute_bazi_period", "submit_reading"},
+        systems={"bazi"},
+    ),
+    dict(
+        id="range_before_birth",
+        question="看2026-11-01至2026-11-30适合求职吗？我生于1993年8月17日晚上11点20分，北京，男性。用占星和八字一起看看。",
+        tools={
+            "compute_natal_chart",
+            "compute_transits",
+            "compute_bazi",
+            "compute_bazi_period",
+            "submit_reading",
+        },
+        systems={"astro", "bazi"},
+    ),
+    dict(
+        id="overseas_bazi",
+        question="我是男性，1995年12月31日晚上11点45分在美国纽约市出生，八字日主是什么？",
+        tools={"compute_bazi", "submit_reading"},
+        systems={"bazi"},
+        clarification="我确认出生地是美国纽约市，location_id为5128581；八字使用真太阳时。",
+    ),
+    dict(
+        id="natural_unknown",
+        question="1998年4月12日北京出生，出生时辰不知道，也查不到。用占星和八字看看工作方式。",
+        tools={"compute_natal_chart", "compute_bazi", "submit_reading"},
+        systems={"astro", "bazi"},
+        unknown=True,
+    ),
+]
+
 
 def grounded_payload(runtime, outcome):
     data = outcome.data.get("reading", {})
     refs = {e["ref_id"] for e in data.get("evidence", [])}
-    facts = {}
+    facts = {
+        "verified_profile": runtime.session.profile,
+        "resolved_locations": list(runtime.session.state.get("locations", {}).values()),
+    }
     for key, result in runtime.session.state.get("calculations", {}).items():
         facts[key] = {
             k: v
@@ -158,15 +210,30 @@ def grounded_payload(runtime, outcome):
     return facts
 
 
-async def evaluate(output, selected=None, judge=True):
+async def evaluate(output, selected=None, judge=True, natural=False):
     load_dotenv(ROOT / ".env")
     output = output / (datetime.now(UTC).strftime("%Y%m%dT%H%M%S") + "-" + uuid.uuid4().hex[:8])
     output.mkdir(parents=True, exist_ok=True)
+    source_files = sorted(
+        p
+        for folder in ("harness", "agents", "common", "plugins", "knowledge", "memory", "scripts")
+        for p in (ROOT / folder).rglob("*")
+        if p.suffix in (".py", ".yaml")
+    ) + [ROOT / "app.py", ROOT / "config.yaml", ROOT / "uv.lock"]
+    source_hashes = {
+        p.relative_to(ROOT).as_posix(): hashlib.sha256(p.read_bytes()).hexdigest()
+        for p in source_files
+    }
+    (output / "source-hashes.json").write_text(
+        json.dumps(source_hashes, indent=2), encoding="utf-8"
+    )
     workspace = output / "workspace"
     workspace.mkdir()
     shutil.copyfile(ROOT / "config.yaml", workspace / "config.yaml")
     build(ROOT / "knowledge/sources", workspace / "data/kb.sqlite", ROOT / "knowledge/rules")
-    cases = [c for c in CASES if not selected or c["id"] in selected]
+    cases = [
+        c for c in CASES + (NATURAL_CASES if natural else []) if not selected or c["id"] in selected
+    ]
     runtimes = {}
     rows = []
     review_model = None
@@ -184,7 +251,10 @@ async def evaluate(output, selected=None, judge=True):
             outcome = await runtime.turn(case["question"])
             clarification = None
             if outcome.status == "ask_user" and case["id"] in ("astro_trait", "astro_timing"):
-                clarification = "出生地点确认是美国纽约市（New York City），候选编号5128581；公历1995-12-31 23:45为确定的当地出生时间。请继续回答原问题。"
+                clarification = "出生地点确认是美国纽约市（New York City），候选编号5128581；公历1995-12-31 23:45为确定的当地出生时间。咨询区间使用America/New_York时区。请继续回答原问题。"
+                outcome = await runtime.turn(clarification)
+            if outcome.status == "ask_user" and case.get("clarification"):
+                clarification = case["clarification"]
                 outcome = await runtime.turn(clarification)
             elapsed = time.perf_counter() - started
             events = records(runtime)
@@ -248,6 +318,7 @@ async def evaluate(output, selected=None, judge=True):
             review = None
             review_usage = {}
             review_elapsed = 0
+            review_attempts_before = review_model.request_attempts if review_model else 0
             if review_model:
                 review_start = time.perf_counter()
                 try:
@@ -275,6 +346,7 @@ async def evaluate(output, selected=None, judge=True):
                     review_usage = dict(
                         input_tokens=reply.input_tokens,
                         output_tokens=reply.output_tokens,
+                        usage_available=reply.usage_available,
                         requested_model="gpt-6.1-sol",
                         returned_model=reply.model,
                     )
@@ -300,6 +372,7 @@ async def evaluate(output, selected=None, judge=True):
             row = dict(
                 id=case["id"],
                 question=case["question"],
+                clarification=clarification,
                 status=outcome.status,
                 checks=checks,
                 engineering_pass=all(checks.values()),
@@ -312,13 +385,17 @@ async def evaluate(output, selected=None, judge=True):
                 review_latency_s=round(review_elapsed, 3),
                 model_calls=len(usage),
                 model_request_attempts=runtime.model.request_attempts,
-                input_tokens=sum(e["input_tokens"] for e in usage),
-                output_tokens=sum(e["output_tokens"] for e in usage),
+                input_tokens=sum(e["input_tokens"] or 0 for e in usage),
+                output_tokens=sum(e["output_tokens"] or 0 for e in usage),
+                usage_missing_calls=sum(not e.get("usage_available", True) for e in usage),
                 cached_input_tokens=sum(e.get("cached_input_tokens") or 0 for e in usage),
                 returned_models=sorted(
                     {e["returned_model"] for e in usage if e.get("returned_model")}
                 ),
                 review_usage=review_usage,
+                review_request_attempts=(review_model.request_attempts - review_attempts_before)
+                if review_model
+                else 0,
                 answer=outcome.text,
                 structured=outcome.data.get("reading"),
                 calculated_facts=facts,
@@ -356,6 +433,9 @@ async def evaluate(output, selected=None, judge=True):
     report = dict(
         run_id=output.name,
         requested_model="gpt-6.1-sol",
+        source_fingerprint=hashlib.sha256(
+            json.dumps(source_hashes, sort_keys=True).encode()
+        ).hexdigest(),
         cases=len(rows),
         passed=sum(r["passed"] for r in rows),
         failed=sum(not r["passed"] for r in rows),
@@ -363,6 +443,7 @@ async def evaluate(output, selected=None, judge=True):
         model_calls=sum(r["model_calls"] for r in rows),
         model_request_attempts=sum(r["model_request_attempts"] for r in rows),
         review_calls=sum(bool(r["review_usage"]) for r in rows),
+        review_request_attempts=sum(r["review_request_attempts"] for r in rows),
         input_tokens=sum(
             r["input_tokens"] + r["review_usage"].get("input_tokens", 0) for r in rows
         ),
@@ -386,8 +467,13 @@ def main():
     parser.add_argument("--output", type=Path, default=ROOT / "reports/week23/live")
     parser.add_argument("--cases", nargs="*")
     parser.add_argument("--no-judge", action="store_true")
+    parser.add_argument(
+        "--natural",
+        action="store_true",
+        help="Include unprompted natural-language and profile reuse cases",
+    )
     args = parser.parse_args()
-    report = asyncio.run(evaluate(args.output, args.cases, not args.no_judge))
+    report = asyncio.run(evaluate(args.output, args.cases, not args.no_judge, args.natural))
     raise SystemExit(0 if report["passed"] == report["cases"] else 1)
 
 

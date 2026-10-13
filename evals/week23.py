@@ -59,7 +59,7 @@ def output(runtime, case):
                 reading="离线标注路线回放：符号主题提示先核实条件、安排沟通与准备，不作为现实事件预测。",
             )
         )
-    summary = "可先核实现实条件再小步尝试；这是标注路线的离线集成回放。"
+    summary = "有条件适合小步尝试，前提是核实现实条件；这是标注路线的离线集成回放。"
     if case["id"] == "traj-048":
         summary = "当前只能提供原局五行计数，不能判断姓名是否合适；姓名比较尚缺后续计算能力。"
     if (state.get("tarot_result") or {}).get("spread") == "decision":
@@ -81,6 +81,11 @@ def output(runtime, case):
 
 
 async def route(runtime, case, profile, start="2026-11-01", end="2026-11-30"):
+    from common.input_evidence import question_range
+
+    explicit = question_range(case["question"], runtime.session.calendar_anchor)
+    if explicit:
+        start, end = explicit
     expected = case["expected"]
     if expected.get("first_action") == "ask_user":
         return await execute(
@@ -242,7 +247,7 @@ async def evaluate(output_dir: Path):
         failed=sum(r["status"] == "failed" for r in rows),
         skipped=sum(r["status"] == "skipped" for r in rows),
         results=rows,
-        scope="Expected routes executed through real guard, registry, deterministic calculators, storage and trace; NOT model-choice F1 or answer-quality evaluation. H_timing/H_decision fixtures are newly computed synthetic histories. First-action asks tested without invented replies; relative windows fixed to an explicitly declared integration range, not a calendar parser benchmark.",
+        scope="Expected routes executed through real guard, registry, deterministic calculators, storage and trace; NOT model-choice F1 or answer-quality evaluation. H_timing/H_decision fixtures are newly computed synthetic histories. First-action asks tested without invented replies; Relative month ranges derive from the runtime calendar anchor; other unspecified ranges use the disclosed integration default.",
         dataset_status=fixture["status"],
     )
     (target / "trajectory.json").write_text(

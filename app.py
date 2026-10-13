@@ -171,6 +171,7 @@ def create_runtime(
     kb = KnowledgeBase(root / config["kb"]["path"])
     store = Store(root / config["paths"]["app_db"])
     session = Session(user_id=user_id, default_seed=seed, profile=store.get_profile(user_id))
+    session.calendar_anchor = datetime.now(ZoneInfo("Asia/Shanghai")).date().isoformat()
     recent = store.recent_readings(user_id)
     session.messages.append(
         {
@@ -197,6 +198,7 @@ def create_runtime(
     )
     registry = Registry()
     plugins = [TarotPlugin(kb), AstroPlugin(kb, store), BaziPlugin(kb, store)]
+    session.output_validators = {plugin.name: plugin.validate_output for plugin in plugins}
     for tool in [
         *common_tools(store, kb),
         location_tool(Gazetteer()),

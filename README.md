@@ -59,7 +59,7 @@ flowchart LR
 
 工具错误作为结构化结果返给模型；模型故障、步数和 token 上限返回明确失败状态。计算后不能用普通文本绕过 `submit_reading`。同一批工具中终止工具后的调用不执行，但仍补齐工具响应，保持两家模型的协议完整。
 
-基础工具：`start_reading`、`get_profile`、`update_profile`、`read_reading`、`lookup_meaning`、`draw_tarot`、`ask_user`、`submit_reading`。用户身份由会话注入，模型不能通过参数指定其他用户。画像写入检查原话证据与字段值；复杂归一化留待后续插件接入。
+基础工具：`start_reading`、`get_profile`、`update_profile`、`read_reading`、`lookup_meaning`、`draw_tarot`、`ask_user`、`submit_reading`。用户身份由会话注入，模型不能通过参数指定其他用户。画像写入检查原话证据与字段值，支持中文日期、时刻、性别及排盘口径规范化。
 
 ## 知识库与数据
 
@@ -73,7 +73,7 @@ flowchart LR
 - `runs/<用户摘要>/<会话>.jsonl`：工具参数、结果、错误、时间和 token 使用量；模型异常只记录异常类别，避免 SDK 错误文本泄露凭据。
 - `evals/cases/` 和 `evals/generators/` 从用户提供的评估数据集复制，保留原稿状态，不改参考答案。
 
-SQLite FTS5 已构建并检查可用；第一周精确查找不依赖分词或向量检索。解梦中文分词与 sqlite-vec 留到对应开发周。`scripts/fetch_data.py` 支持 HTTPS、SHA256 校验、缓存与目录边界检查；清单已固定四项数据的来源、许可、版本与SHA256。GeoNames下载地址内容可能更新，哈希不符时拒绝替换，需人工核对新版本；本地保留原快照。
+SQLite FTS5 已构建并检查可用；第一周精确查找不依赖分词或向量检索。解梦中文分词与 sqlite-vec 留到对应开发周。`scripts/fetch_data.py` 支持 HTTPS、SHA256 校验、缓存与目录边界检查；清单已固定四项数据的来源、许可、版本与SHA256。地名数据改用geonamescache 3.0.2发布归档中的GeoNames cities15000固定快照（只读取JSON，不安装或执行归档代码），固定URL与SHA256；旧快照仍保留本地。CI先下载并核验四项数据，再运行doctor和测试。
 
 ## 测试和验收
 
@@ -139,3 +139,19 @@ $env:PYTHONUTF8 = '1'
 ```
 
 真实测试会产生服务调用与费用，原始记录仅在已忽略目录。`live_week23`逐条检查正面作答、时间范围、计算及引用支持、事实编造，评审也使用同一请求模型；不是独立人工审核。`trajectory`只对当前适用的50题做标注路线集成回放，30题因后续工具或解梦历史跳过，不能当作真实模型工具选择F1。没有执行的全80题真实轨迹、完整30题安全集、远程CI、独立人工万年历抽查和发布审核均不声明通过。
+
+
+## PR #1 整改
+
+[复核修订的缺陷分析](docs/week1-3-缺陷分析.md)和[整改清单](docs/pr1-整改清单.md)分别记录问题与当前状态。中文日期支持规范化，性别画像使用male/female；新问题区间不再混入出生日期。海外八字需确认日时口径，海外行运需确认咨询时区，后者可保存为consultation_tz。插件负责自身输出事实校验，Signal.horizon统一为trait/timing/moment/psyche并兼容读取旧值。新释义仍为草稿，人审0%；新增感情/财务主题为中性占位，不能当作已审核的领域倾向。行运仍定义为精确事件，orb表示解释容许度而非持续窗口筛选。
+
+```powershell
+uv run python -m pytest -q
+uv run python -m scripts.verify_week23 --output reports/pr1-remediation/computations.json
+uv run python -m scripts.live_week23 --natural --output reports/pr1-remediation/live
+uv run python -m scripts.live_pr1
+```
+
+真实测试将保存源文件哈希、原始失败和每题问答，报告区分工程与回答质量；服务返回模型名只作元数据。原始JSON/trace在本地忽略目录，不作为GitHub可下载附件。
+
+2026-10-13本地整改结果：确定性回归216/216、占星11/11、八字50例57变体通过；真实完整批次从12/20改善至17/20。重复题四项回答质量10/10、严格综合8/10；另三题复测严格1/3，分别保留而不拼接。详见[整改验收与复现](docs/pr1-整改验收.md)及[真实模型逐题记录（本地文件）](reports/live-gpt-6.1-sol-pr1.md)。占星时机自动评审服务错误、模型工具误调用和评审不一致仍有记录；人工审核率0%，新版本远程CI未执行，不能将数值通过写成全部验收通过。

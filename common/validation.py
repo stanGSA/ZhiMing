@@ -2,7 +2,6 @@ import re
 
 from common.facts import validate_calculation_facts
 from common.safety import CRISIS as CRISIS  # Backwards-compatible public import.
-from plugins.tarot.catalogue import DECK
 
 HIGH_RISK = re.compile(r"疾病|癌|诊断|停药|治疗|健康|投资|股票|基金|借贷|法律|诉讼|判刑|死亡|寿命")
 
@@ -45,34 +44,17 @@ def validate_reading(reading, session) -> str | None:
             return "二选一summary第一句须明确A/B倾向并写现实条件"
         if not re.search(r"前提|条件|如果|若|先核实|待.*确认", reading.summary):
             return "二选一须说明暂定建议的现实条件"
-    if state.get("response_mode") != "followup" and re.search(r"下个月.*跳槽", state["question"]):
-        if not re.search(
-            r"下个月.*(?:适合|适宜|不宜|建议|可以).*跳槽|(?:适合|不适合|不宜|建议).*下个月.*跳槽",
-            reading.summary.split("。")[0],
-        ):
-            return "跳槽时机summary第一句须直接回答下个月是否适合并说明前提"
-    actual = set(state["facts"])
-    for _, name in DECK:
-        explicit = re.search(
-            rf"(?:【|「|《){re.escape(name)}(?:】|」|》)|{re.escape(name)}(?:正位|逆位|牌)", text
-        )
-        # Full minor-arcana names are unambiguous; common major names need card context.
-        if (
-            explicit or (name.startswith(("权杖", "圣杯", "宝剑", "星币")) and name in text)
-        ) and name not in actual:
-            return f"正文提到未抽出的牌：{name}"
-    cards_by_ref = {c["ref_id"]: c for c in (state.get("tarot_result") or {}).get("cards", [])}
-    for evidence in reading.evidence:
-        if evidence.ref_id not in cards_by_ref:
-            continue
-        card = cards_by_ref[evidence.ref_id]
-        orientation = "逆位" if card["reversed"] else "正位"
-        opposite = "正位" if card["reversed"] else "逆位"
-        if (
-            f"{card['name']}{opposite}" in evidence.reading
-            or f"{card['name']}】{opposite}" in evidence.reading
-        ):
-            return f"牌面方向错误，应为{orientation}"
+    if state.get("response_mode") != "followup" and reading.question_type == "timing":
+        if re.search(r"是否|适合|适宜|什么时候|何时|时机", state["question"]):
+            if not re.search(
+                r"适合|适宜|可以|不宜|暂缓|建议(?:开始|启动|等待|推迟)",
+                reading.summary.split("。")[0],
+            ):
+                return "时机问题summary第一句须直接回答行动倾向并说明现实前提"
+    for validator in session.output_validators.values():
+        error = validator(reading, state)
+        if error:
+            return error
     error = validate_calculation_facts(reading, state)
     if error:
         return error

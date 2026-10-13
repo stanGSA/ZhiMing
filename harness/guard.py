@@ -16,6 +16,12 @@ class Guard:
     def check(
         self, call: ToolCall, session: Session
     ) -> tuple[BaseModel | None, ToolResult | None, str]:
+        if call.argument_error:
+            return (
+                None,
+                ToolResult.failure("invalid_arguments", "工具参数必须是合法JSON对象，请修正后重试"),
+                "",
+            )
         tool = self.registry.tools.get(call.name)
         if tool is None:
             return None, ToolResult.failure("unknown_tool", "工具未注册"), ""
@@ -55,8 +61,17 @@ class Guard:
             if error:
                 return None, ToolResult.failure("validation_failed", error), ""
         context = [session.state.get(field) for field in tool.cache_state_keys]
-        key = f"{session.state.get('active_reading_id', '')}:{context}:{call.name}:" + json.dumps(
-            args.model_dump(mode="json"), ensure_ascii=False, sort_keys=True, separators=(",", ":")
+        profile_version = (
+            None if call.name == "update_profile" else session.profile.get("version", 0)
+        )
+        key = (
+            f"{session.state.get('active_reading_id', '')}:{profile_version}:{context}:{call.name}:"
+            + json.dumps(
+                args.model_dump(mode="json"),
+                ensure_ascii=False,
+                sort_keys=True,
+                separators=(",", ":"),
+            )
         )
         # Permission, provenance and validation always run before returning cached data.
         if tool.idempotent and key in session.cache:

@@ -63,14 +63,23 @@ class OpenAIModel:
         message = result.choices[0].message
         calls = []
         for call in message.tool_calls or []:
-            arguments = json.loads(call.function.arguments)
-            if not isinstance(arguments, dict):
-                raise ValueError("Tool arguments must be an object")
-            calls.append(ToolCall(id=call.id, name=call.function.name, arguments=arguments))
+            raw = call.function.arguments
+            try:
+                arguments = json.loads(raw)
+                if not isinstance(arguments, dict):
+                    raise ValueError("object required")
+                calls.append(ToolCall(id=call.id, name=call.function.name, arguments=arguments))
+            except (ValueError, TypeError):
+                calls.append(
+                    ToolCall(
+                        id=call.id, name=call.function.name, raw_arguments=raw, argument_error=True
+                    )
+                )
         usage = result.usage
         return ModelResponse(
             text=message.content or "",
             model=result.model,
+            usage_available=usage is not None,
             tool_calls=calls,
             input_tokens=usage.prompt_tokens if usage else 0,
             output_tokens=usage.completion_tokens if usage else 0,

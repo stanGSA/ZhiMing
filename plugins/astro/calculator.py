@@ -1,6 +1,10 @@
+import hashlib
 import os
+import shutil
+import tempfile
 from contextlib import contextmanager
 from datetime import UTC, datetime, timedelta
+from functools import lru_cache
 from itertools import combinations
 from pathlib import Path
 from threading import RLock
@@ -74,22 +78,48 @@ ASPECTS = {
 NATIVE_LOCK = RLock()
 
 
+@lru_cache(maxsize=4)
+def native_path(directory, signatures):
+    """Swiss fopen needs an ASCII path on Windows; never change process cwd."""
+    path = str(directory)
+    if os.name != "nt" or path.isascii():
+        return path
+    import ctypes
+
+    buffer = ctypes.create_unicode_buffer(32768)
+    if (
+        ctypes.windll.kernel32.GetShortPathNameW(path, buffer, len(buffer))
+        and buffer.value.isascii()
+    ):
+        return buffer.value
+    # Volumes with 8.3 names disabled need an isolated content-addressed native cache.
+    parent = Path(tempfile.gettempdir()) / "zhiming-ephemeris"
+    if not str(parent).isascii():
+        raise RuntimeError(
+            "Swiss requires an ASCII temporary directory when short paths are disabled"
+        )
+    digest = hashlib.sha256()
+    sources = list(directory.glob("*.se1"))
+    for source in sources:
+        digest.update(source.name.encode())
+        digest.update(source.read_bytes())
+    target = parent / digest.hexdigest()
+    target.mkdir(parents=True, exist_ok=True)
+    for source in sources:
+        destination = target / source.name
+        if not destination.exists() or destination.read_bytes() != source.read_bytes():
+            shutil.copyfile(source, destination)
+    return str(target)
+
+
 @contextmanager
 def ephemeris_path():
-    # Swiss C fopen on Windows cannot read a UTF-8 Chinese absolute path.
-    # Single-agent native calls are synchronous; restore cwd before returning/awaiting.
     with NATIVE_LOCK:
-        previous = Path.cwd()
-        relative = os.path.relpath(EPHE, previous)
-        change = os.name == "nt" and not relative.isascii()
-        try:
-            if change:
-                os.chdir(EPHE)
-            swe.set_ephe_path("." if change else relative)
-            yield
-        finally:
-            if change:
-                os.chdir(previous)
+        signatures = tuple(
+            (p.name, p.stat().st_mtime_ns, p.stat().st_size) for p in EPHE.glob("*.se1")
+        )
+        swe.set_ephe_path(native_path(EPHE, signatures))
+        yield
 
 
 def angular_delta(a, b):

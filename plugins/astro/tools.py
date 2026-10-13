@@ -6,11 +6,13 @@ from common.time_utils import NeedsInput
 from harness.models import StrictInput, ToolResult
 from harness.registry import Tool
 from plugins.astro.calculator import ASPECTS, SIGN_ZH, SIGNS, natal_chart, transits
+from plugins.astro.validation import validate_output
 from plugins.context import (
     BirthInput,
     MeaningPlugin,
     birth_provenance,
     birth_values,
+    period_timezone,
     range_provenance,
 )
 
@@ -19,12 +21,14 @@ class TransitInput(StrictInput):
     chart_id: str
     start: str
     end: str
-    tz: str = "Asia/Shanghai"
+    tz: str | None = None
     orb: float = Field(default=1.0, gt=0, le=8)
     bodies: list[str] | None = None
 
 
 class AstroPlugin(MeaningPlugin):
+    validate_output = staticmethod(validate_output)
+
     name = kb_partition = "astro"
     eval_dir = Path(__file__).parent / "evals"
 
@@ -196,7 +200,7 @@ class AstroPlugin(MeaningPlugin):
                     f"{p['body']}:{p['sign']}",
                     "planet_sign",
                     f"{p['body']}:{p['sign']}",
-                    "long_term",
+                    "trait",
                     None,
                 )
             )
@@ -206,7 +210,7 @@ class AstroPlugin(MeaningPlugin):
                         f"{p['body']}:house{p['house']}",
                         "planet_house",
                         f"{p['body']}:{p['house']}",
-                        "long_term",
+                        "trait",
                         None,
                     )
                 )
@@ -216,7 +220,7 @@ class AstroPlugin(MeaningPlugin):
                     f"natal_aspect{i}:{a['a']}:{a['b']}:{a['type']}",
                     "aspect",
                     a["type"],
-                    "long_term",
+                    "trait",
                     None,
                 )
             )
@@ -229,7 +233,14 @@ class AstroPlugin(MeaningPlugin):
         if not chart:
             return ToolResult.failure("ownership_denied", "chart_id不属于当前用户")
         try:
-            result = transits(chart, args.start, args.end, args.tz, args.orb, args.bodies)
+            result = transits(
+                chart,
+                args.start,
+                args.end,
+                period_timezone(args, session, chart),
+                args.orb,
+                args.bodies,
+            )
         except NeedsInput as exc:
             return exc.result()
         atoms = [
@@ -237,7 +248,7 @@ class AstroPlugin(MeaningPlugin):
                 f"transit:{e['exact_utc']}:{e['transit_body']}:{e['natal_body']}:{e['aspect']}",
                 "aspect",
                 e["aspect"],
-                "short_term",
+                "timing",
                 e["exact_date"],
             )
             for e in result["events"]
@@ -249,9 +260,10 @@ class AstroPlugin(MeaningPlugin):
                     f"transit:{args.start}:{args.end}:no_exact_events",
                     "transit",
                     "no_exact_events",
-                    "short_term",
+                    "timing",
                     f"{args.start}/{args.end}",
                 )
             ]
         session.state["timeframe"] = (args.start, args.end)
+        session.state["timeframe_tz"] = result["tz"]
         return self.attach(result, atoms, session, "transit_result")

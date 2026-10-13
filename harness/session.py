@@ -20,6 +20,8 @@ class Session:
     total_tokens: int = 0
     user_messages: list[str] = field(default_factory=list)
     default_seed: int | None = None
+    calendar_anchor: str | None = None
+    output_validators: dict[str, Any] = field(default_factory=dict)
 
     def append_user(self, text: str) -> None:
         self.user_messages.append(text)
@@ -38,6 +40,7 @@ class Session:
             "active_reading_id": uuid.uuid4().hex,
             "parent_reading_id": previous,
             "question": question,
+            "question_message_index": max(0, len(self.user_messages) - 1),
             "seed": seed,
             "signals": [],
             "facts": [],

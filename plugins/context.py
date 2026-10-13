@@ -4,7 +4,8 @@ import re
 
 from pydantic import Field
 
-from common.time_utils import NeedsInput
+from common.input_evidence import question_range, reading_text, supported_birth
+from common.time_utils import NeedsInput, date_range
 from harness.models import StrictInput
 from plugins.base import Signal
 
@@ -26,7 +27,9 @@ def birth_values(args, session):
         tz=args.tz or profile.get("tz"),
         lat=args.lat if args.lat is not None else profile.get("lat"),
         lon=args.lon if args.lon is not None else profile.get("lon"),
-        time_known=args.time_known,
+        time_known=args.time_known
+        if "time_known" in args.model_fields_set
+        else profile.get("time_known", args.time_known),
         fold=args.fold,
     )
     location = session.state.get("locations", {}).get(args.location_id)
@@ -58,14 +61,13 @@ def birth_values(args, session):
 def birth_provenance(args, session):
     text = " ".join(session.user_messages)
     # Preserve punctuation equivalence without allowing fabricated dates or hours.
-    normalized = re.sub(r"[年月/.]", "-", text).replace("日", " ").replace("T", " ")
     birth = args.birth_local
     if birth and birth != session.profile.get("birth_local_dt"):
-        date = birth[:10]
-        if date not in normalized:
+        known = args.time_known and len(birth) > 10
+        if not supported_birth(birth, text, known) and not supported_birth(
+            birth, str(session.profile.get("birth_local_dt", "")), known
+        ):
             return "出生日期必须来自用户原话或已有画像，不能猜测"
-        if args.time_known and len(birth) > 10 and birth[11:16] not in text:
-            return "出生时刻必须有用户原话依据"
     if (
         not args.time_known
         and session.profile.get("time_known") is not False
@@ -97,16 +99,52 @@ def birth_provenance(args, session):
 
 
 def range_provenance(args, session):
-    text = " ".join(session.user_messages)
+    text = reading_text(session)
     # Explicit date range must match the human input; relative calendar requests are
     # anchored by the injected Asia/Shanghai date, never the host's timezone.
-    explicit = re.findall(r"\d{4}-\d{2}-\d{2}", text)
-    if len(explicit) >= 2 and (args.start[:10], args.end[:10]) != (explicit[-2], explicit[-1]):
-        return "计算日期范围必须与用户明确指定范围一致"
+    explicit = question_range(text, getattr(session, "calendar_anchor", None))
+    tz = (
+        getattr(args, "tz", None)
+        or session.profile.get("consultation_tz")
+        or session.state.get("timeframe_tz")
+        or "Asia/Shanghai"
+    )
+    try:
+        actual = date_range(args.start, args.end, tz, 3660)
+        if explicit and actual != date_range(*explicit, tz, 3660):
+            return "计算日期范围必须与用户明确指定范围一致"
+    except NeedsInput as exc:
+        return exc.question
     current = session.state.get("timeframe")
-    if current and current != (args.start, args.end):
+    if current and actual != date_range(*current, session.state.get("timeframe_tz", tz), 3660):
         return "同一reading各体系必须使用相同时间范围；不同区间请开始新问题"
     return None
+
+
+def period_timezone(args, session, chart):
+    """Consultation timezone is separate from the birth clock timezone."""
+    tz = args.tz or session.profile.get("consultation_tz") or session.state.get("timeframe_tz")
+    text = reading_text(session)
+    birth_tz = chart.get("input", {}).get("tz")
+    if not tz and birth_tz == "Asia/Shanghai":
+        tz = birth_tz
+    if not tz:
+        raise NeedsInput(
+            "confirm_period_timezone",
+            "请确认咨询日期区间使用的IANA时区，例如America/New_York或Asia/Shanghai；出生地不一定是当前所在地。",
+        )
+    if args.tz and tz != session.profile.get("consultation_tz") and tz != "Asia/Shanghai":
+        if tz not in text and not (
+            tz == birth_tz and re.search(r"出生地时间|出生地当地|按当地", text)
+        ):
+            raise NeedsInput("confirm_period_timezone", "请确认日期区间使用的时区：" + tz)
+    if (
+        args.tz == "Asia/Shanghai"
+        and birth_tz != "Asia/Shanghai"
+        and not any(x in text for x in ("北京时间", "Asia/Shanghai"))
+    ):
+        raise NeedsInput("confirm_period_timezone", "海外资料请确认咨询区间是否使用北京时间。")
+    return tz
 
 
 class MeaningPlugin:
