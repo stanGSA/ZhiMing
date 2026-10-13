@@ -1,0 +1,550 @@
+{
+  "run_id": "20261013T201413-457d0a57",
+  "mode": "multi",
+  "requested_model": "gpt-6.1-sol",
+  "source_fingerprint": "6c17c66101873aa75ad8dca6845e741728f9f04aca3ab7c170b000b0cfddbbc9",
+  "cases": 6,
+  "passed": 2,
+  "failed": 4,
+  "multi_agent": {
+    "consults": 10,
+    "ok_reports": 5,
+    "needs_input_reports": 1,
+    "failed_reports": 4,
+    "cancelled_consults": 0,
+    "consults_without_submission": 5,
+    "out_of_scope_attempts": 0,
+    "out_of_scope_rate": 0.0,
+    "report_compliance_rate": 0.5555555555555556,
+    "report_first_pass_rate": 0.8,
+    "report_corrected_pass_rate": 1.0,
+    "submit_attempt_pass_rate": 0.8333333333333334,
+    "max_concurrent_specialists": 3,
+    "trace_tree_complete": true
+  },
+  "reviewer_agent": {
+    "reviews": 3,
+    "verdicts": {
+      "pass": 3
+    },
+    "readings_reviewed": 3,
+    "readings_revised": 0,
+    "revise_rate": 0.0,
+    "dropped_notes": 0,
+    "rejected_reviews": 0,
+    "reviewer_tokens": 16957
+  },
+  "model_calls": 69,
+  "model_request_attempts": 69,
+  "review_calls": 6,
+  "review_request_attempts": 6,
+  "input_tokens": 636903,
+  "output_tokens": 19121,
+  "scope": "Synthetic data; same requested model for agent/rubric judge, not independent identity or human review; final answers also require separate inspection.",
+  "results": [
+    {
+      "id": "bazi_trait",
+      "status": "submit_reading",
+      "checks": {
+        "expected_status": true,
+        "expected_tools": true,
+        "zero_tool_errors": true,
+        "no_model_error": true,
+        "saved": true,
+        "systems": true,
+        "valid_refs": true,
+        "trace_tree_complete": true
+      },
+      "engineering_pass": true,
+      "quality_pass": true,
+      "quality_review": {
+        "direct_answer": true,
+        "time_consistent": true,
+        "supported_conclusion": true,
+        "no_fabricated_facts": true,
+        "reasons": [
+          "direct_answer：summary第一句直接给出辛金日主、可考虑的工作方式、1996年12月27日起运及首步大运己未，正面回答用户要求；正文补充十神关系，且只使用八字、不下喜用神结论。",
+          "time_consistent：按指定北京时间1993年8月17日23:20、23点换日且不使用真太阳时处理，四柱与给定计算事实一致；年、月柱仍以实际节气划分。起运日期及出生后3年4个月10天的间隔与给定结果一致，也未将起运日期解释为现实工作事件日期。",
+          "supported_conclusion：日主、四柱、透干与藏干十神均有给定计算事实支持；稳定输出、明确资源与职责分配、学习整理并落实交付的建议，分别对应所引用食神、劫财、正印释义。阴年男性逆排及由庚申逆至己未符合引用的起运规则。虽然未提供立秋精确时刻与原始间隔，起运日期已有确定性计算结果支持，回答也明确说明无法完整展开验算。",
+          "no_fabricated_facts：出生资料来自题目，四柱、十神、起运间隔、日期和首运均与给定事实一致；工作方式使用“可”“可以考虑”等建议措辞，没有编造个人性格、职业能力、工作经历或家庭事实，也没有利用五行计数推断喜用神。"
+        ]
+      },
+      "tool_errors": [],
+      "latency_s": 105.455,
+      "review_latency_s": 13.525,
+      "model_calls": 8,
+      "model_request_attempts": 8,
+      "review_request_attempts": 1,
+      "input_tokens": 54768,
+      "output_tokens": 2424,
+      "review_usage": {
+        "input_tokens": 8271,
+        "output_tokens": 394,
+        "usage_available": true,
+        "requested_model": "gpt-6.1-sol",
+        "returned_model": "gpt-6.1-sol"
+      },
+      "reviewer_agent": {
+        "reviews": 1,
+        "verdicts": {
+          "pass": 1
+        },
+        "readings_reviewed": 1,
+        "readings_revised": 0,
+        "revise_rate": 0.0,
+        "dropped_notes": 0,
+        "rejected_reviews": 0,
+        "reviewer_tokens": 5527,
+        "reviewer_latency_ms": [
+          5368.162
+        ]
+      },
+      "tools": [
+        "compute_bazi",
+        "consult_specialist",
+        "get_profile",
+        "resolve_location",
+        "start_reading",
+        "submit_reading",
+        "submit_report",
+        "submit_review"
+      ]
+    },
+    {
+      "id": "bazi_followup",
+      "status": "submit_reading",
+      "checks": {
+        "expected_status": true,
+        "expected_tools": true,
+        "zero_tool_errors": true,
+        "no_model_error": true,
+        "saved": true,
+        "systems": true,
+        "valid_refs": true,
+        "no_recalculation": true,
+        "response_saved": true,
+        "trace_tree_complete": true
+      },
+      "engineering_pass": true,
+      "quality_pass": true,
+      "quality_review": {
+        "direct_answer": true,
+        "time_consistent": true,
+        "supported_conclusion": true,
+        "no_fabricated_facts": true,
+        "reasons": [
+          "summary第一句直接给出日主辛金、首步大运己未及1996年12月27日起运，正面回答用户所问，并以解释原记录为范围。",
+          "起运日期及出生后3年4个月10天均与给定记录一致；23点换日仅用于日柱，年、月柱仍按实际节气划分，没有将节气边界当作公历整月，也没有将起运日期解释为现实事件日期。",
+          "日柱辛未对应日主辛金，未中己、丁、乙对应偏印、七杀、偏财，均有确定性事实支持。癸年男性逆排、从庚申逆退一位为己未，有所引用大运释义支持；对起运日期只解释已存结果，并明确原始节气间隔不足以完整验算。",
+          "四柱、出生钟表时间、性别、换日规则、起运日期及首运干支均来自给定事实，没有编造人格、职业、家庭经历或喜用神判断。需要区分的是，cache_reused为false，不能据此确认其实际执行了缓存读取；但该字段本身也不足以证明回答中的八字事实是编造的。"
+        ]
+      },
+      "tool_errors": [],
+      "latency_s": 33.78,
+      "review_latency_s": 16.646,
+      "model_calls": 4,
+      "model_request_attempts": 4,
+      "review_request_attempts": 1,
+      "input_tokens": 37342,
+      "output_tokens": 699,
+      "review_usage": {
+        "input_tokens": 7080,
+        "output_tokens": 414,
+        "usage_available": true,
+        "requested_model": "gpt-6.1-sol",
+        "returned_model": "gpt-6.1-sol"
+      },
+      "reviewer_agent": {
+        "reviews": 0,
+        "verdicts": {},
+        "readings_reviewed": 0,
+        "readings_revised": 0,
+        "revise_rate": null,
+        "dropped_notes": 0,
+        "rejected_reviews": 0,
+        "reviewer_tokens": 0,
+        "reviewer_latency_ms": []
+      },
+      "tools": [
+        "get_profile",
+        "lookup_meaning",
+        "read_reading",
+        "submit_reading"
+      ]
+    },
+    {
+      "id": "astro_timing",
+      "status": "limit_reached",
+      "checks": {
+        "expected_status": false,
+        "expected_tools": false,
+        "zero_tool_errors": true,
+        "no_model_error": false,
+        "saved": false,
+        "systems": false,
+        "valid_refs": true,
+        "trace_tree_complete": true
+      },
+      "engineering_pass": false,
+      "quality_pass": false,
+      "quality_review": {
+        "direct_answer": false,
+        "time_consistent": false,
+        "supported_conclusion": false,
+        "no_fabricated_facts": false,
+        "reasons": [
+          "direct_answer：回答首句仅说明步数或 token 上限，没有回答2026年11月是否适合启动求职，也没有给出条件建议。出生时间、地点和咨询时区均已明确，不需要继续追问。",
+          "time_consistent：回答没有计算或分析America/New_York时区下2026-11-01至2026-11-30的完整行运区间，无法满足指定时间范围的要求；虽未将相位日期当作录用日期，但这不足以使时间范围要求合格。",
+          "supported_conclusion：给定事实仅支持纽约市的地点及其时区，没有本命盘、完整区间行运计算或相关引用释义；回答也没有形成可由这些计算支持的求职判断。",
+          "no_fabricated_facts：回答声称“已有抽牌保留”，但给定资料没有任何抽牌记录支持这一说法，且用户明确要求只用西方占星。"
+        ]
+      },
+      "tool_errors": [],
+      "latency_s": 230.754,
+      "review_latency_s": 11.257,
+      "model_calls": 25,
+      "model_request_attempts": 25,
+      "review_request_attempts": 1,
+      "input_tokens": 218822,
+      "output_tokens": 3311,
+      "review_usage": {
+        "input_tokens": 4781,
+        "output_tokens": 264,
+        "usage_available": true,
+        "requested_model": "gpt-6.1-sol",
+        "returned_model": "gpt-6.1-sol"
+      },
+      "reviewer_agent": {
+        "reviews": 0,
+        "verdicts": {},
+        "readings_reviewed": 0,
+        "readings_revised": 0,
+        "revise_rate": null,
+        "dropped_notes": 0,
+        "rejected_reviews": 0,
+        "reviewer_tokens": 0,
+        "reviewer_latency_ms": []
+      },
+      "tools": [
+        "ask_user",
+        "compute_natal_chart",
+        "compute_transits",
+        "consult_specialist",
+        "get_profile",
+        "resolve_location",
+        "start_reading"
+      ]
+    },
+    {
+      "id": "three_system_timing",
+      "status": "submit_reading",
+      "checks": {
+        "expected_status": true,
+        "expected_tools": true,
+        "zero_tool_errors": false,
+        "no_model_error": false,
+        "saved": true,
+        "systems": false,
+        "valid_refs": true,
+        "trace_tree_complete": true
+      },
+      "engineering_pass": false,
+      "quality_pass": false,
+      "quality_review": {
+        "direct_answer": true,
+        "time_consistent": true,
+        "supported_conclusion": false,
+        "no_fabricated_facts": true,
+        "reasons": [
+          "summary第一句明确回答“有条件适合在2026年11月启动求职”，并列出岗位匹配、成果可验证、职责与薪资清楚等现实条件，正面回应是否适合的问题。",
+          "使用了用户指定的2026-11-01至2026-11-30范围，按北京时间2026-11-07 17:52:05立冬划分戊戌、己亥流月，与给定计算一致；明确11月30日不是换月点，也未将节气流月当作公历整月或把精确时刻当作现实事件日期。",
+          "八字四柱、流年流月、十神及冲害关系均有给定计算支持，准备材料、小批量试投、核实岗位边界等建议符合引用释义；三张塔罗的牌面、正逆位及反思建议也与抽牌事实和释义相符。但用户要求占星、八字和塔罗共同回答并计算区间行运，输出仅完成八字与塔罗，明确缺少占星区间行运报告，因此三体系综合结论的依据不完整。低置信度说明不能补足这一缺失。",
+          "未编造出生资料、星体落座或宫位、干支十神、起运或个人经历；23点换日、不用真太阳时及四柱均与给定事实一致。现实建议以条件或行动建议表述，未断言用户已经在职、经历合作问题或必然获录用。用户更信八字的偏好已体现在verified_profile的system_weights.bazi为1.5。"
+        ]
+      },
+      "tool_errors": [
+        {
+          "tool": "update_profile",
+          "code": "validation_failed",
+          "error": "历法与子时规则须有原话明确支持"
+        },
+        {
+          "tool": "update_profile",
+          "code": "validation_failed",
+          "error": "历法与子时规则须有原话明确支持"
+        },
+        {
+          "tool": "submit_reading",
+          "code": "validation_failed",
+          "error": "西方占星专家未完成，confidence.reason须说明缺少该体系及原因"
+        }
+      ],
+      "latency_s": 150.011,
+      "review_latency_s": 15.376,
+      "model_calls": 16,
+      "model_request_attempts": 16,
+      "review_request_attempts": 1,
+      "input_tokens": 128555,
+      "output_tokens": 5007,
+      "review_usage": {
+        "input_tokens": 10863,
+        "output_tokens": 444,
+        "usage_available": true,
+        "requested_model": "gpt-6.1-sol",
+        "returned_model": "gpt-6.1-sol"
+      },
+      "reviewer_agent": {
+        "reviews": 1,
+        "verdicts": {
+          "pass": 1
+        },
+        "readings_reviewed": 1,
+        "readings_revised": 0,
+        "revise_rate": 0.0,
+        "dropped_notes": 0,
+        "rejected_reviews": 0,
+        "reviewer_tokens": 5786,
+        "reviewer_latency_ms": [
+          3721.737
+        ]
+      },
+      "tools": [
+        "compute_bazi",
+        "compute_bazi_period",
+        "compute_natal_chart",
+        "compute_transits",
+        "consult_specialist",
+        "draw_tarot",
+        "get_profile",
+        "merge_signals",
+        "resolve_location",
+        "start_reading",
+        "submit_reading",
+        "submit_report",
+        "submit_review",
+        "update_profile"
+      ]
+    },
+    {
+      "id": "unknown_time",
+      "status": "submit_reading",
+      "checks": {
+        "expected_status": true,
+        "expected_tools": true,
+        "zero_tool_errors": false,
+        "no_model_error": true,
+        "saved": true,
+        "systems": true,
+        "valid_refs": true,
+        "null_axes": true,
+        "no_hour": true,
+        "no_dayun": true,
+        "trace_tree_complete": true
+      },
+      "engineering_pass": false,
+      "quality_pass": true,
+      "quality_review": {
+        "direct_answer": true,
+        "time_consistent": true,
+        "supported_conclusion": true,
+        "no_fabricated_facts": true,
+        "reasons": [
+          "direct_answer：summary第一句直接给出项目推进、需求与流程改进、知识管理及培训支持等工作探索方向，并明确需以实际技能和小项目成果验证，正面回答了工作方向问题。",
+          "time_consistent：本题属于职业倾向分析，无指定预测时间范围；回答使用本命落座、相位和日期基准三柱，没有将节气流月当作公历整月，也没有把精确相位当成现实事件日期。对未知出生时间及日柱换日边界作了条件限定。",
+          "supported_conclusion：太阳和水星白羊、金星双鱼、日土合相、水天六分相、火海四分相均有计算事实及相关释义支持，所建议的项目责任、需求梳理、工具应用、流程自动化和任务边界与释义相符。八字的丙辰月柱正印、戊寅年柱劫财与己土日期基准一致，学习支持及资源分配的释义支持条件性的知识管理、培训支持和协作探索。回答没有据单个相位断言录用，也未用五行计数判断喜用神。",
+          "no_fabricated_facts：所述星体落座、相位、年柱、月柱、日期基准日主及十神均与给定事实一致；没有补造出生时间、性别、宫位、上升、四轴、时柱、大运或个人经历。现实建议均以尝试、考察和成果验证表达，未将技能或职业适配写成已知个人事实。"
+        ]
+      },
+      "tool_errors": [
+        {
+          "tool": "submit_report",
+          "code": "validation_failed",
+          "error": "出生时间未知，不能使用宫位或四轴解读"
+        }
+      ],
+      "latency_s": 120.117,
+      "review_latency_s": 15.166,
+      "model_calls": 12,
+      "model_request_attempts": 12,
+      "review_request_attempts": 1,
+      "input_tokens": 94435,
+      "output_tokens": 4185,
+      "review_usage": {
+        "input_tokens": 11573,
+        "output_tokens": 410,
+        "usage_available": true,
+        "requested_model": "gpt-6.1-sol",
+        "returned_model": "gpt-6.1-sol"
+      },
+      "reviewer_agent": {
+        "reviews": 1,
+        "verdicts": {
+          "pass": 1
+        },
+        "readings_reviewed": 1,
+        "readings_revised": 0,
+        "revise_rate": 0.0,
+        "dropped_notes": 0,
+        "rejected_reviews": 0,
+        "reviewer_tokens": 5644,
+        "reviewer_latency_ms": [
+          4982.888
+        ]
+      },
+      "tools": [
+        "compute_bazi",
+        "compute_natal_chart",
+        "consult_specialist",
+        "get_profile",
+        "merge_signals",
+        "resolve_location",
+        "start_reading",
+        "submit_reading",
+        "submit_report",
+        "submit_review"
+      ]
+    },
+    {
+      "id": "week5_followup",
+      "status": "submit_reading",
+      "checks": {
+        "expected_status": true,
+        "expected_tools": true,
+        "zero_tool_errors": true,
+        "no_model_error": true,
+        "saved": true,
+        "systems": false,
+        "valid_refs": true,
+        "no_recalculation": true,
+        "response_saved": true,
+        "trace_tree_complete": true
+      },
+      "engineering_pass": false,
+      "quality_pass": false,
+      "quality_review": {
+        "direct_answer": true,
+        "time_consistent": true,
+        "supported_conclusion": false,
+        "no_fabricated_facts": false,
+        "reasons": [
+          "direct_answer：summary第一句直接回应了是否存在可核实的占星与八字分歧，并明确保留八字有条件支持11月启动求职的方向和权重1.5，形式上正面回答了用户所问。",
+          "time_consistent：两个时间区间与给定流月计算一致，以北京时间2026年11月7日17:52:05立冬为界区分戊戌月和己亥月；明确11月30日只是查询终点，没有把节气流月当成公历整月，也没有给塔罗提醒编配具体日期。",
+          "supported_conclusion：正印对应准备与行动、偏印对应小实验检验、地支害对应协调与边界、权杖八逆位对应推进与沟通检查，均有计算事实或引用释义支持，现实建议也采用条件表达。但给定资料没有上次占星报告、失败记录或原合并结论，无法支持“上次没有可核实的分歧”“占星未完成有效报告”“原合并结果没有记录体系张力”等关键历史判断，因此未完成有证据支持的分歧解释。",
+          "no_fabricated_facts：八字月柱、十神、申亥害、塔罗牌位与权重1.5均与给定事实相符；但输出额外断言上次占星专家因步数或预算上限未提交报告，并将当前方向称为上次原结论。给定事实未提供这些历史记录，不能将其表述为已核实事实。"
+        ]
+      },
+      "tool_errors": [],
+      "latency_s": 43.277,
+      "review_latency_s": 16.267,
+      "model_calls": 4,
+      "model_request_attempts": 4,
+      "review_request_attempts": 1,
+      "input_tokens": 50932,
+      "output_tokens": 1092,
+      "review_usage": {
+        "input_tokens": 9481,
+        "output_tokens": 477,
+        "usage_available": true,
+        "requested_model": "gpt-6.1-sol",
+        "returned_model": "gpt-6.1-sol"
+      },
+      "reviewer_agent": {
+        "reviews": 0,
+        "verdicts": {},
+        "readings_reviewed": 0,
+        "readings_revised": 0,
+        "revise_rate": null,
+        "dropped_notes": 0,
+        "rejected_reviews": 0,
+        "reviewer_tokens": 0,
+        "reviewer_latency_ms": []
+      },
+      "tools": [
+        "get_profile",
+        "lookup_meaning",
+        "read_reading",
+        "submit_reading"
+      ]
+    }
+  ],
+  "preference_boundary": {
+    "initial_weights": {
+      "bazi": 1.5
+    },
+    "followup_weights": {
+      "bazi": 1.5
+    },
+    "explicit_preference_saved": true,
+    "double_negation_preserves_weights": true
+  },
+  "followup_scoring_audit": {
+    "id": "week5_followup",
+    "original_checks": {
+      "expected_status": true,
+      "expected_tools": true,
+      "zero_tool_errors": true,
+      "no_model_error": true,
+      "saved": true,
+      "systems": false,
+      "valid_refs": true,
+      "no_recalculation": true,
+      "response_saved": true,
+      "trace_tree_complete": true
+    },
+    "original_quality_review": {
+      "direct_answer": true,
+      "time_consistent": true,
+      "supported_conclusion": false,
+      "no_fabricated_facts": false,
+      "reasons": [
+        "direct_answer：summary第一句直接回应了是否存在可核实的占星与八字分歧，并明确保留八字有条件支持11月启动求职的方向和权重1.5，形式上正面回答了用户所问。",
+        "time_consistent：两个时间区间与给定流月计算一致，以北京时间2026年11月7日17:52:05立冬为界区分戊戌月和己亥月；明确11月30日只是查询终点，没有把节气流月当成公历整月，也没有给塔罗提醒编配具体日期。",
+        "supported_conclusion：正印对应准备与行动、偏印对应小实验检验、地支害对应协调与边界、权杖八逆位对应推进与沟通检查，均有计算事实或引用释义支持，现实建议也采用条件表达。但给定资料没有上次占星报告、失败记录或原合并结论，无法支持“上次没有可核实的分歧”“占星未完成有效报告”“原合并结果没有记录体系张力”等关键历史判断，因此未完成有证据支持的分歧解释。",
+        "no_fabricated_facts：八字月柱、十神、申亥害、塔罗牌位与权重1.5均与给定事实相符；但输出额外断言上次占星专家因步数或预算上限未提交报告，并将当前方向称为上次原结论。给定事实未提供这些历史记录，不能将其表述为已核实事实。"
+      ]
+    },
+    "corrected_checks": {
+      "expected_status": true,
+      "expected_tools": true,
+      "zero_tool_errors": true,
+      "no_model_error": true,
+      "saved": true,
+      "systems": true,
+      "valid_refs": true,
+      "no_recalculation": true,
+      "response_saved": true,
+      "trace_tree_complete": true
+    },
+    "corrected_engineering_pass": true,
+    "corrected_quality_review": {
+      "direct_answer": true,
+      "time_consistent": true,
+      "supported_conclusion": true,
+      "no_fabricated_facts": true,
+      "reasons": [
+        "direct_answer：summary第一句直接回答所谓分歧是否可核实，并明确保留八字有条件支持11月启动求职的方向及1.5权重。原记录确实没有有效占星报告，因此解释缺少可比较的占星方向，而不虚构两体系分歧，符合本次恢复记录的要求。",
+        "time_consistent：保留原查询2026年11月1日至11月30日，以北京时间11月7日17:52:05立冬为戊戌与己亥流月的边界，与确定性计算一致；明确11月30日是查询终点而非换月点。未给塔罗附加具体日期，也未编造占星相位或将其当作现实事件日期。",
+        "supported_conclusion：正印对应学习、支持与避免只准备不行动，偏印对应小实验检验与不急于下结论，申亥害对应协调和边界，权杖八逆位对应推进节奏与沟通遗漏，均有实际记录及相关引用释义支持。求职行动表述为条件建议，并保留原记录的有条件启动结论，没有推导必然录用或求职失败。",
+        "no_fabricated_facts：八字流月、十神、申亥害、原塔罗牌位及八字权重均与给定事实一致；占星未提交有效报告及原合并记录无体系张力也有保存记录支持。未编造出生资料、星体落座或宫位、个人经历，也未将既有牌面冒充占星结论；输出使用原记录，没有引入新排盘或新抽牌结果。"
+      ]
+    },
+    "corrected_quality_pass": true,
+    "input_tokens": 10937,
+    "output_tokens": 428,
+    "usage_available": true,
+    "returned_model": "gpt-6.1-sol",
+    "latency_s": 16.771,
+    "request_attempts": 1,
+    "scope": "Rejudge identical original runtime answer with saved historical evidence omitted by the original rubric packet; inherit actual saved systems. Original run unchanged."
+  },
+  "original_engineering_passed": 2,
+  "original_quality_passed": 3,
+  "adjusted_engineering_passed": 3,
+  "adjusted_quality_passed": 4,
+  "adjusted_combined_passed": 3,
+  "natural_runtime_tension_count": 0,
+  "truthful_tension_disclosure_rate": null,
+  "truthful_tension_disclosure_scope": "No natural runtime tensions; denominator is zero. Directed synthetic disclosures excluded.",
+  "runtime_latency_total_s": 683.394,
+  "rubric_latency_total_s": 88.237
+}
