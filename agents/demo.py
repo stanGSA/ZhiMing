@@ -33,6 +33,12 @@ class DemoModel:
 
         if "submit_report" in available:
             return self.specialist(messages, results, call)
+        if "submit_review" in available:
+            # Offline rule baseline standing in for the reviewer model.
+            from agents.reviewer import rule_review
+
+            packet = json.loads(question)
+            return call("submit_review", rule_review(packet))
         if re.search(r"第二张|第一张|第三张|第[123]张|这张牌|什么意思|刚才.*牌", question):
             read = next(
                 (r["data"].get("reading") for r in results if r["ok"] and "reading" in r["data"]),

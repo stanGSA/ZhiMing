@@ -24,6 +24,6 @@ jobs:
       - run: uv run python -m scripts.fetch_data
       - run: uv run python -m knowledge.build
       - run: uv run python -m scripts.doctor
-      - run: uv run ruff check harness agents common plugins knowledge memory scripts tests app.py cli.py evals
-      - run: uv run ruff format --check harness agents common plugins knowledge memory scripts tests app.py cli.py evals
+      - run: uv run ruff check harness agents common plugins knowledge memory signals scripts tests app.py cli.py evals
+      - run: uv run ruff format --check harness agents common plugins knowledge memory signals scripts tests app.py cli.py evals
       - run: uv run pytest -q

@@ -11,6 +11,10 @@ class EmptyInput(StrictInput):
 
 class StartInput(StrictInput):
     question: str = Field(min_length=1, max_length=2000)
+    parent_reading_id: str | None = Field(
+        default=None,
+        description="可选：跨会话回访或更正时，关联的本用户历史记录编号（来自最近记录或read_reading）",
+    )
 
 
 class LookupInput(StrictInput):
@@ -35,6 +39,7 @@ class ProfileInput(StrictInput):
         "lon",
         "location_id",
         "consultation_tz",
+        "system_weights",
     ]
     value: Any
     evidence: str = Field(min_length=1)

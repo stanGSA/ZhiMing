@@ -453,9 +453,10 @@ def test_v2_migration_preserves_rows(tmp_path):
     db.close()
     store = Store(path)
     try:
-        assert store.db.execute("PRAGMA user_version").fetchone()[0] == 3
+        assert store.db.execute("PRAGMA user_version").fetchone()[0] == 4
         row = store.db.execute("SELECT * FROM readings WHERE reading_id='legacy'").fetchone()
         assert tuple(row)[:14] == original
         assert store.get_reading("owner", "legacy")["calculations_json"] == {}
+        assert store.get_reading("owner", "legacy")["merge_json"] == {}
     finally:
         store.close()

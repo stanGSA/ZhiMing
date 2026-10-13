@@ -7,6 +7,7 @@ llm:
 models:
   orchestrator: gpt-6.1-sol
   specialist: gpt-6.1-sol
+  reviewer: gpt-6.1-sol           # 可换更小的模型；未设置时沿用 specialist
 limits:
   orchestrator_max_steps: 12
   request_token_budget: 180000
@@ -16,8 +17,13 @@ limits:
   specialist_timeout_s: 120
   orchestrator_reserve_tokens: 30000
   max_parallel_specialists: 3
+  reviewer_max_steps: 3
+  reviewer_token_budget: 12000
+  reviewer_timeout_s: 60
 reviewer:
-  enabled: false
+  enabled: true               # 只在 multi 模式生效；single 模式是对照基线，不审校
+  strictness: lenient         # lenient | strict | off（对照实验用）
+  max_rounds: 1
 safety:
   region: null
   emergency_contacts:

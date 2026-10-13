@@ -49,10 +49,13 @@ class Store:
                 ("chart_id", "TEXT"),
                 ("bazi_id", "TEXT"),
                 ("calculations_json", "TEXT NOT NULL DEFAULT '{}'"),
+                # Week 5: the cross-system table as computed when the reading was saved, so a
+                # later weight or rule change never rewrites what an old reading said.
+                ("merge_json", "TEXT NOT NULL DEFAULT '{}'"),
             ):
                 if name not in columns:
                     self.db.execute(f"ALTER TABLE readings ADD COLUMN {name} {definition}")
-            self.db.execute("PRAGMA user_version=3")
+            self.db.execute("PRAGMA user_version=4")
 
     def cached_calculation(self, system, user_id, inputs, calculate):
         import hashlib
@@ -124,12 +127,18 @@ class Store:
         return {**profile, "version": version}
 
     def save_reading(
-        self, session, output: dict, mode: str = "single", reports: dict | None = None
+        self,
+        session,
+        output: dict,
+        mode: str = "single",
+        reports: dict | None = None,
+        merge: dict | None = None,
+        reviews: list[dict] | None = None,
     ) -> None:
         state = session.state
         with self.db:
             self.db.execute(
-                "INSERT INTO readings(reading_id,user_id,session_id,parent_reading_id,question,question_type,systems_used,tarot_json,signals_json,output_json,kb_version,profile_version,mode,created_at,chart_id,bazi_id,calculations_json) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
+                "INSERT INTO readings(reading_id,user_id,session_id,parent_reading_id,question,question_type,systems_used,tarot_json,signals_json,output_json,kb_version,profile_version,mode,created_at,chart_id,bazi_id,calculations_json,merge_json) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
                 (
                     state["active_reading_id"],
                     session.user_id,
@@ -148,8 +157,22 @@ class Store:
                     state.get("chart_id"),
                     state.get("bazi_id"),
                     json.dumps(state.get("calculations", {}), ensure_ascii=False),
+                    json.dumps(merge or {}, ensure_ascii=False, default=str),
                 ),
             )
+            # Reviews happen before the reading exists; they are written in the same
+            # transaction so a released reading always carries its review history.
+            for review in reviews or []:
+                details = {k: v for k, v in review.items() if k not in ("round", "verdict")}
+                self.db.execute(
+                    "INSERT INTO review_notes VALUES(?,?,?,?)",
+                    (
+                        state["active_reading_id"],
+                        review["round"],
+                        review["verdict"],
+                        json.dumps(details, ensure_ascii=False),
+                    ),
+                )
             # Signals already live in readings.signals_json; keep only their references here.
             for system, report in (reports or {}).items():
                 stored = {k: v for k, v in report.items() if k != "signals"}
@@ -186,9 +209,23 @@ class Store:
             "signals_json",
             "output_json",
             "calculations_json",
+            "merge_json",
         ):
-            result[field] = json.loads(result[field]) if result[field] else None
+            if field in result:
+                result[field] = json.loads(result[field]) if result[field] else None
         return result
+
+    def review_notes(self, user_id: str, reading_id: str) -> list[dict]:
+        rows = self.db.execute(
+            "SELECT n.round, n.verdict, n.issues_json FROM review_notes n "
+            "JOIN readings r ON r.reading_id = n.reading_id WHERE r.user_id=? AND n.reading_id=? "
+            "ORDER BY n.round",
+            (user_id, reading_id),
+        ).fetchall()
+        return [
+            {"round": row["round"], "verdict": row["verdict"], **json.loads(row["issues_json"])}
+            for row in rows
+        ]
 
     def recent_readings(self, user_id: str, limit: int = 3) -> list[dict]:
         rows = self.db.execute(
