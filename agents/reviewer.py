@@ -22,6 +22,7 @@ from common.validation import HIGH_RISK
 from harness.loop import CURRENT_CALL_ID, run_turn
 from harness.models import StrictInput, TurnOutcome
 from harness.registry import Registry, Tool
+from signals.merge import model_view
 
 REASONS = ("off_topic", "hidden_tension", "safety")
 STRICT_REASONS = ("caution", "style")
@@ -155,14 +156,11 @@ def render_body(output: dict) -> str:
 
 
 def packet_from_reading(output: dict, question: str, merged: dict | None) -> dict:
-    tensions = [
-        dict(id=t["id"], theme=t["theme"], theme_label=t["theme_label"], sides=t["side_texts"])
-        for t in (merged or {}).get("tensions", [])
-    ]
-    resonances = [
-        dict(id=r["id"], theme=r["theme"], theme_label=r["theme_label"], sides=r["side_texts"])
-        for r in (merged or {}).get("resonances", [])
-    ]
+    # The same projection the orchestrator saw, so both read one faithful table.
+    view = model_view(merged) if merged else {"tensions": [], "resonances": []}
+    keys = ("id", "theme", "theme_label", "horizon", "sides", "windows")
+    tensions = [{k: t[k] for k in keys if k in t} for t in view["tensions"]]
+    resonances = [{k: r[k] for k in keys if k in r} for r in view["resonances"]]
     return dict(
         question=question,
         draft=dict(summary=output["summary"], body=render_body(output)),

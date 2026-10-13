@@ -92,7 +92,8 @@ def disclose(merge):
         dict(
             theme=t["theme"],
             sides=t["sides"],
-            how_to_read="两边体系看法不同，需结合现实条件同时看待。",
+            how_to_read="两边体系看法不同，需结合现实条件同时看待。"
+            + (f"（日期：{'、'.join(t['windows'])}）" if t.get("windows") else ""),
         )
         for t in merge["tensions"]
     ]

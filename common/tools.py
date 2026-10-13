@@ -29,7 +29,11 @@ from signals.merge import fingerprint, merge_signals, model_view, undisclosed
 
 SYSTEM_NAMES = {"astro": r"占星|星盘|星座", "bazi": r"八字|命理|四柱", "tarot": r"塔罗|牌"}
 PREFER = r"更信|更相信|更看重|侧重|偏好|以.{0,4}为主|多看|优先"
-DISCOUNT = r"不太信|不怎么信|不信|少看|淡化|不看重|参考就好"
+DISCOUNT = r"不太信|不怎么信|不信|少看|淡化|不看重|参考就好|不是"
+NEGATED_PREFER = (
+    r"(?:不|没有|并不|并没有|别|不是)(?:很|太)?(?:更信|更相信|更看重|偏好|侧重|优先|多看)"
+)
+CLAUSE = re.compile(r"[，,。；;！!？?、\n]|而且|而是|而|但是|但|可是|不过|然而")
 # What an ask_user question may not ask again once the profile holds it, unless a tool asked
 # for it in this turn (needs_input) or the user is correcting it.
 REASK = {
@@ -73,20 +77,52 @@ def known_fields(profile: dict) -> set[str]:
     return known
 
 
+def stance(clause: str) -> int | None:
+    """+1 prefer, -1 discount, None when the clause states no clear preference."""
+    if re.search(NEGATED_PREFER, clause):
+        return None
+    if re.search(DISCOUNT, clause):
+        return -1
+    if re.search(PREFER, clause):
+        return 1
+    return None
+
+
 def weights_validator(value, evidence: str) -> str | None:
+    """Every changed weight must follow the user's own stance on that very system.
+
+    The evidence is split into clauses; a system's stance comes only from clauses that name
+    that system and no other, so "我更信八字，不太信占星" supports bazi > 1 and astro < 1 but
+    never the reverse, and a negated preference ("不更信八字") supports nothing.
+    """
     if not isinstance(value, dict) or not value:
         return "体系权重须为 {体系: 权重} 对象"
+    clauses = [c for c in CLAUSE.split(evidence) if c.strip()]
     for system, weight in value.items():
         if system not in SYSTEM_NAMES:
             return f"未知体系：{system}"
         if type(weight) not in (int, float) or not 0.5 <= weight <= 2:
             return "体系权重须在0.5到2之间"
-        if weight != 1 and not re.search(SYSTEM_NAMES[system], evidence):
+        if weight == 1:
+            continue
+        own = [
+            c
+            for c in clauses
+            if re.search(SYSTEM_NAMES[system], c)
+            and not any(re.search(SYSTEM_NAMES[o], c) for o in SYSTEM_NAMES if o != system)
+        ]
+        if not own:
+            if any(re.search(SYSTEM_NAMES[system], c) for c in clauses):
+                return "一句话同时提到多个体系时无法判断偏好，请分别说明对每个体系的看法"
             return "调整权重的体系必须在用户原话中出现"
-        if weight > 1 and not re.search(PREFER, evidence):
-            return "提高权重须有“更信/更看重”等明确原话"
-        if weight < 1 and not re.search(DISCOUNT, evidence):
-            return "降低权重须有“不太信/少看”等明确原话"
+        stances = {stance(c) for c in own} - {None}
+        if len(stances) != 1:
+            return f"原话对{system}没有明确且一致的偏好（注意否定说法）"
+        wanted = stances.pop()
+        if weight > 1 and wanted != 1:
+            return "提高权重须有针对该体系的“更信/更看重”原话"
+        if weight < 1 and wanted != -1:
+            return "降低权重须有针对该体系的“不太信/少看”原话"
     return None
 
 
@@ -186,7 +222,18 @@ def common_tools(store, kb: KnowledgeBase, mode: str = "single", reviewer=None) 
         return state["merge"]
 
     def merge_tool(args, session):
-        if not session.state.get("signals"):
+        state = session.state
+        if state.get("response_mode") == "followup":
+            # A follow-up explains what the reading said: never recompute with today's weights
+            # or rules. A new evaluation is a new reading linked to the old one.
+            snapshot = state.get("merge_snapshot")
+            if not snapshot:
+                return ToolResult.failure(
+                    "missing_snapshot",
+                    "该历史记录没有保存合并表；需要重新评估请开新记录并关联旧记录",
+                )
+            return {"merge": model_view(snapshot), "snapshot": True}
+        if not state.get("signals"):
             return ToolResult.failure("missing_signals", "本记录还没有任何体系的信号")
         return {"merge": model_view(merged_for(session))}
 
@@ -416,25 +463,38 @@ def common_tools(store, kb: KnowledgeBase, mode: str = "single", reviewer=None) 
         for key in ("chart_id", "bazi_id"):
             if result.get(key):
                 session.state[key] = result[key]
-        # A follow-up explains the saved cross-system table, never a recomputed one.
+        # A follow-up explains the saved cross-system table, never a recomputed one: the full
+        # snapshot is pinned to the session for merge_signals and the disclosure check.
         stored = result.get("merge_json") or {}
+        if "tensions" in stored:
+            session.state["merge_snapshot"] = stored
         result["merge"] = model_view(stored) if "tensions" in stored else None
         return {"reading": result}
 
     def validate_submit(args, session):
         error = validate_reading(args, session)
-        if error or mode != "multi" or session.state.get("response_mode") == "followup":
+        if error or mode != "multi":
             return error
-        missing = undisclosed(merged_for(session), args)
-        if missing:
-            detail = "；".join(
-                f"{t['id']}（{t['theme_label']}：{' / '.join(t['side_texts'])}）" for t in missing
-            )
-            return (
+        state = session.state
+        if state.get("response_mode") == "followup":
+            # A follow-up may answer a narrow question, but it may not drop or contradict the
+            # saved reading's disagreements: its tensions must still cover the snapshot.
+            table = state.get("merge_snapshot")
+            where = "原记录的张力不能在追问中丢失，须保留在tensions中："
+        else:
+            table = merged_for(session)
+            where = (
                 "信号表中的张力未披露，须写进tensions（theme、两边体系各自怎么说、how_to_read）："
-                + detail
             )
+        missing = undisclosed(table, args) if table else []
+        if missing:
+            return where + "；".join(describe(t) for t in missing)
         return None
+
+    def describe(tension) -> str:
+        windows = [w["window"] for w in tension["windows"] if w["window"]]
+        when = f"，日期：{'、'.join(windows[:5])}" if windows else ""
+        return f"{tension['id']}（{tension['theme_label']}{when}：{' / '.join(tension['side_texts'])}）"
 
     def user_question(session) -> str:
         index = session.state.get("question_message_index", 0)

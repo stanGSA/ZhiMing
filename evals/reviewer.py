@@ -15,6 +15,7 @@ from datetime import UTC, datetime
 from pathlib import Path
 
 import yaml
+from dotenv import load_dotenv
 
 from agents.reviewer import ReviewerService
 from app import ROOT, build_model
@@ -126,6 +127,16 @@ def rejected_reasons(tracer: Tracer, user_id: str) -> Counter:
     return counts
 
 
+def reviewer_model(provider: str, name: str | None, config: dict, root: Path = ROOT):
+    """Build the reviewer model the way the app does: credentials come from ``root/.env``.
+
+    The adapters read only the process environment, so the evaluation entry point must load
+    ``.env`` itself (create_runtime does the same); exported variables still take precedence.
+    """
+    load_dotenv(root / ".env")
+    return build_model(provider, None if provider == "demo" else name, config, None)
+
+
 async def evaluate(
     output: Path,
     provider: str = "demo",
@@ -139,7 +150,7 @@ async def evaluate(
     )
     items = [item for item in fixture["items"] if not ids or item["id"] in ids]
     name = model_name or (config.get("models") or {}).get("reviewer") or config["llm"].get("model")
-    model = build_model(provider, None if provider == "demo" else name, config, None)
+    model = reviewer_model(provider, name, config)
     rows = []
     stamp = datetime.now(UTC).strftime("%Y%m%dT%H%M%SZ")
     with tempfile.TemporaryDirectory(prefix="zhiming-reviewer-") as temporary:

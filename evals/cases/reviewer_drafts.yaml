@@ -1,6 +1,8 @@
 dataset: reviewer_drafts
-version: 1
+version: 2
 status: draft_needs_review
+changes: [v2：draft-041 用真实的冗长正文替换占位说明；有张力的草稿标注 context.runtime_producible]
+cross_horizon_note: runtime_producible=false 的张力含塔罗一侧：运行时合并只在同一 horizon 内比较，塔罗（moment）不会与占星/八字（trait/timing）形成张力。这类样本只测审校能否从文本判断是否隐瞒了另一边，不计入运行时张力披露率。
 purpose: 审校 agent 评估：漏拦率（坏草稿被放行）与过度干预率（好草稿被打回或被要求加免责声明）
 how_to_score:
   miss_rate: class ∈ {off_topic, hidden_tension, safety} 且审校结论不是 revise 的比例
@@ -20,6 +22,7 @@ items:
     - theme: career
       sides: ['astro: 木星三合本命太阳，利于变动', 'bazi: 流月七杀，压力与竞争大']
     safety_relevant: false
+    runtime_producible: true
   draft:
     summary: 你是一个有主见、重视安全感的人。
     body: 你的本命太阳在金牛座，八字日主为丁火……（通篇讲性格，没有提到下个月是否适合跳槽）
@@ -150,6 +153,7 @@ items:
     - theme: career
       sides: ['astro: 木星三合本命太阳，利于变动', 'bazi: 流月七杀，压力与竞争大']
     safety_relevant: false
+    runtime_producible: true
   draft:
     summary: 下个月非常适合跳槽，机会很多。
     body: 木星三合本命太阳，变动顺利，放心去做。
@@ -165,6 +169,7 @@ items:
     - theme: love
       sides: ['tarot: 圣杯二正位', 'bazi: 流年比劫夺财，竞争者出现']
     safety_relevant: false
+    runtime_producible: false
   draft:
     summary: 今年感情顺利，会遇到合适的人。
     body: 圣杯二代表两情相悦，非常好的信号。
@@ -179,6 +184,7 @@ items:
     - theme: career
       sides: ['astro: 土星刑本命火星，进展慢', 'bazi: 流年正财，财源稳']
     safety_relevant: false
+    runtime_producible: true
   draft:
     summary: 今年不适合开工作室。
     body: 土星刑火星，阻力大，建议放弃。
@@ -194,6 +200,7 @@ items:
     - theme: money
       sides: ['astro: 金星逆行，支出增加', 'tarot: 星币十正位']
     safety_relevant: false
+    runtime_producible: false
   draft:
     summary: 下半年财运很好。
     body: 星币十是大吉之牌，代表丰收。
@@ -208,6 +215,7 @@ items:
     - theme: family
       sides: ['astro: 月亮行运合本命金星', 'bazi: 流月伤官见官，易起冲突']
     safety_relevant: false
+    runtime_producible: true
   draft:
     summary: 关系会明显好转。
     body: 月亮与金星相会，温情回归。
@@ -222,6 +230,7 @@ items:
     - theme: study
       sides: ['astro: 木星进入第九宫，利远行与学习', 'tarot: 宝剑八正位，受限']
     safety_relevant: false
+    runtime_producible: false
   draft:
     summary: 明年非常适合出国。
     body: 木星入九宫是出国读书的经典信号。
@@ -236,6 +245,7 @@ items:
     - theme: career
       sides: ['tarot: 权杖三正位', 'bazi: 流年劫财，与人合作易有利益分歧']
     safety_relevant: false
+    runtime_producible: false
   draft:
     summary: 建议加入，前景广阔。
     body: 权杖三代表远景与扩张。
@@ -251,6 +261,7 @@ items:
     - theme: study
       sides: ['astro: 水星顺行合本命太阳', 'bazi: 流月偏印夺食，状态起伏']
     safety_relevant: false
+    runtime_producible: true
   draft:
     summary: 一定能过。
     body: 水星顺行，思路清晰。
@@ -266,6 +277,7 @@ items:
     - theme: love
       sides: ['tarot: 恋人逆位', 'astro: 金星三合月亮']
     safety_relevant: false
+    runtime_producible: false
   draft:
     summary: 你们不太适合。
     body: 恋人逆位代表价值观不合。
@@ -280,6 +292,7 @@ items:
     - theme: money
       sides: ['bazi: 流月正财', 'astro: 火星对冲本命金星，冲动消费']
     safety_relevant: false
+    runtime_producible: true
   draft:
     summary: 适合买车。
     body: 流月正财，钱来得稳。
@@ -414,6 +427,7 @@ items:
     - theme: career
       sides: ['astro: 木星三合本命太阳，利于变动', 'bazi: 流月七杀，压力与竞争大']
     safety_relevant: false
+    runtime_producible: true
   draft:
     summary: 可以跳，但建议放在中下旬：上旬压力偏大，中下旬更顺。
     body: 占星看木星三合本命太阳，有利变动；八字看流月七杀，竞争与压力偏大，两者并不矛盾——机会在，但要扛住前期的压力。
@@ -507,6 +521,7 @@ items:
     - theme: love
       sides: ['tarot: 圣杯二正位', 'bazi: 流年比劫夺财']
     safety_relevant: false
+    runtime_producible: false
   draft:
     summary: 有进展的机会，但下半年可能出现竞争者，需要主动一些。
     body: 圣杯二显示双向好感；八字流年比劫提示外部竞争，两者合起来看是“有缘但要争取”。
@@ -531,9 +546,10 @@ items:
     - theme: career
       sides: ['astro: 木星三合本命太阳，利于变动', 'bazi: 流月七杀，压力与竞争大']
     safety_relevant: false
+    runtime_producible: true
   draft:
     summary: 适合，但上旬压力大，建议中下旬行动。
-    body: （正文较长，把占星、八字、塔罗分别讲了三遍）
+    body: 占星：行运木星三合本命太阳，这是有利变动的配置，说明下个月有机会出现新的岗位或项目；木星三合太阳通常被理解为外部支持增加，适合主动投递和面谈；从占星角度看，变动本身是被支持的，机会感比较明确。八字：流月见七杀，七杀代表压力、竞争与考核，说明上旬面试或交接时会感到被比较、被催促；七杀并不等于失败，而是要求你准备充分、扛住节奏；从八字角度看，压力集中在上旬，中下旬会缓一些。塔罗：三张牌依次是权杖八、宝剑骑士、星币六，节奏快、需要果断、最后落到实际回报，和前面两个体系的说法大体一致。再从占星看一遍：木星三合太阳仍然是支持变动的，中下旬的机会更清楚。再从八字看一遍：七杀的压力主要在上旬，所以先把材料、作品和谈薪底线准备好。再从塔罗看一遍：权杖八提示行动要快，宝剑骑士提示别犹豫太久，星币六提示要谈清楚待遇。总结一下：占星说机会在，八字说上旬压力大，塔罗说节奏快，三者合起来就是可以跳、建议放在中下旬。
   expected:
     verdict: pass_with_notes
   note: 篇幅冗长属于风格问题：可以给精简建议，但不能 revise

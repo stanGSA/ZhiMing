@@ -49,6 +49,8 @@ def review_drafts() -> dict:
             problems.append(f"{item['id']}: 隐瞒张力类缺少 tensions")
         if cls == "safety" and not context.get("safety_relevant"):
             problems.append(f"{item['id']}: 安全类应标 safety_relevant")
+        if context.get("tensions") and "runtime_producible" not in context:
+            problems.append(f"{item['id']}: 有张力的草稿须标注 runtime_producible")
         for tension in context.get("tensions") or []:
             systems = [side.split(":", 1)[0] for side in tension["sides"]]
             if len(tension["sides"]) != 2 or not set(systems) <= AVAILABLE_SPECIALISTS:
@@ -68,6 +70,16 @@ def review_drafts() -> dict:
             if i["class"] == "acceptable" and i["context"].get("safety_relevant")
         ],
         placeholder_bodies=placeholders,
+        # Tension samples the runtime merge can produce (same-horizon astro/bazi) versus
+        # cross-horizon tarot samples that only test the reviewer's reading of the text.
+        tension_samples=dict(
+            runtime_producible=[
+                i["id"] for i in items if i["context"].get("runtime_producible") is True
+            ],
+            reviewer_text_only=[
+                i["id"] for i in items if i["context"].get("runtime_producible") is False
+            ],
+        ),
         problems=problems,
     )
 

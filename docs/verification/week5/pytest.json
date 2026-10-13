@@ -1,15 +1,25 @@
 {
-  "tests": 320,
-  "passed": 308,
+  "tests": 335,
+  "passed": 323,
   "failed": 1,
   "errors": 11,
   "skipped": 0,
-  "duration_s": 228.188,
+  "duration_s": 233.097,
   "environment_note": "Remote environment network policy rejects ssd.jpl.nasa.gov; doctor and 11 Skyfield cross-checks need data/ephe/de440s.bsp. Same set fails on main fcfd88e here; GitHub Actions downloads the file.",
-  "new_week5_tests": 32,
+  "week5_tests": 47,
+  "week5_passed": 47,
+  "first_version_week5_tests": 32,
+  "review_regression_tests": 15,
   "mutation_checks": {
-    "caught": 16,
-    "total": 16
+    "first_version": {
+      "caught": 15,
+      "total": 15,
+      "note": "16 in the first report; the weight-evidence mutation targets replaced code and is superseded by two review mutations"
+    },
+    "pr3_review": {
+      "caught": 10,
+      "total": 10
+    }
   },
   "results": [
     {
@@ -1290,6 +1300,66 @@
     },
     {
       "name": "tests.test_week5::test_week1_offline_replay_counts_only_computation_tools",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_week5::test_reversed_windows_keep_their_own_directions",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_week5::test_reversed_windows_need_their_dates_disclosed",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_week5::test_folded_windows_aggregate_numbers_by_duration",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_week5::test_reviewer_eval_loads_dotenv_without_network",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_week5::test_weights_bind_each_system_to_its_own_clause[\\u6211\\u66f4\\u4fe1\\u516b\\u5b57\\uff0c\\u4e0d\\u592a\\u4fe1\\u5360\\u661f-value0-True]",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_week5::test_weights_bind_each_system_to_its_own_clause[\\u6211\\u66f4\\u4fe1\\u516b\\u5b57\\uff0c\\u4e0d\\u592a\\u4fe1\\u5360\\u661f-value1-False]",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_week5::test_weights_bind_each_system_to_its_own_clause[\\u6211\\u66f4\\u4fe1\\u516b\\u5b57\\uff0c\\u4e0d\\u592a\\u4fe1\\u5360\\u661f-value2-False]",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_week5::test_weights_bind_each_system_to_its_own_clause[\\u6211\\u4e0d\\u66f4\\u4fe1\\u516b\\u5b57-value3-False]",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_week5::test_weights_bind_each_system_to_its_own_clause[\\u6211\\u5e76\\u4e0d\\u662f\\u66f4\\u770b\\u91cd\\u516b\\u5b57-value4-False]",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_week5::test_weights_bind_each_system_to_its_own_clause[\\u6211\\u66f4\\u4fe1\\u516b\\u5b57\\u800c\\u4e0d\\u662f\\u5360\\u661f-value5-True]",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_week5::test_weights_bind_each_system_to_its_own_clause[\\u6bd4\\u8d77\\u5360\\u661f\\u6211\\u66f4\\u4fe1\\u516b\\u5b57-value6-False]",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_week5::test_weights_bind_each_system_to_its_own_clause[\\u516b\\u5b57\\u6211\\u66f4\\u4fe1\\uff0c\\u5360\\u661f\\u4e5f\\u66f4\\u4fe1-value7-True]",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_week5::test_weights_bind_each_system_to_its_own_clause[\\u5360\\u661f\\u53c2\\u8003\\u5c31\\u597d-value8-True]",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_week5::test_weights_bind_each_system_to_its_own_clause[\\u5360\\u661f\\u53c2\\u8003\\u5c31\\u597d-value9-False]",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_week5::test_reversed_dates_end_to_end",
       "status": "passed"
     }
   ]

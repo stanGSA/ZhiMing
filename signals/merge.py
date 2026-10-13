@@ -21,7 +21,7 @@ from zoneinfo import ZoneInfo
 
 DEFAULT_RULE = {
     "system": "merge",
-    "version": 1,
+    "version": 2,
     "direction_threshold": 0.05,
     "tension_strength": 0.4,
     "resonance_strength": 0.3,
@@ -149,6 +149,59 @@ def segments(signals: list[dict], tz: str) -> list[tuple[datetime | None, dateti
     return pieces
 
 
+SIGN = {1: "+", -1: "-"}
+
+
+def fold(pieces: list[dict], applied: dict, rule: dict, tz: str) -> tuple[list[dict], list[dict]]:
+    """Aggregate the per-piece sides of one window by duration.
+
+    Directions are identical across the pieces (that is why they were folded); valence is the
+    duration-weighted mean, strength the maximum, ``reviewed`` only if every piece was
+    reviewed. Each piece's own numbers are kept in ``segments`` for the saved table.
+    """
+
+    def duration(piece):
+        if piece["start"] is None:
+            return 1.0
+        return (piece["end"] - piece["start"]).total_seconds()
+
+    total = sum(duration(p) for p in pieces)
+    folded = []
+    for index, first in enumerate(pieces[0]["sides"]):
+        column = [p["sides"][index] for p in pieces]
+        refs = list(dict.fromkeys(r for s in column for r in s["refs"]))
+        words = list(dict.fromkeys(k for s in column for k in s["keywords"]))
+        folded.append(
+            dict(
+                first,
+                valence=round(
+                    sum(duration(p) * s["valence"] for p, s in zip(pieces, column, strict=True))
+                    / total,
+                    4,
+                ),
+                strength=max(s["strength"] for s in column),
+                refs=refs[: rule["max_refs_per_side"]],
+                keywords=words[:4],
+                reviewed=all(s["reviewed"] for s in column),
+            )
+        )
+    segments_out = []
+    if len(pieces) > 1:
+        for piece in pieces:
+            weight = sum(applied[s["system"]] for s in piece["sides"])
+            segments_out.append(
+                dict(
+                    window=window_label(piece["start"], piece["end"], tz),
+                    valences={s["system"]: s["valence"] for s in piece["sides"]},
+                    combined_valence=round(
+                        sum(applied[s["system"]] * s["valence"] for s in piece["sides"]) / weight,
+                        4,
+                    ),
+                )
+            )
+    return folded, segments_out
+
+
 def merge_signals(
     signals: list[dict],
     rule: dict | None = None,
@@ -180,15 +233,12 @@ def merge_signals(
             sides = [side(system, items, rule) for system, items in sorted(per_system.items())]
             kind = classify(sides, rule)
             signature = (kind, tuple((s["system"], s["direction"]) for s in sides))
-            # Adjacent pieces with the same verdict and directions are one window.
+            piece = dict(start=start, end=end, sides=sides)
+            # Adjacent pieces with the same verdict and directions are one window; their
+            # numbers are kept per piece and aggregated by duration below.
             if previous and previous["signature"] == signature and previous["end"] == start:
                 previous["end"] = end
-                for old, new in zip(previous["sides"], sides, strict=True):
-                    old["refs"] = list(dict.fromkeys(old["refs"] + new["refs"]))[
-                        : rule["max_refs_per_side"]
-                    ]
-                    old["strength"] = max(old["strength"], new["strength"])
-                    old["keywords"] = list(dict.fromkeys(old["keywords"] + new["keywords"]))[:4]
+                previous["pieces"].append(piece)
                 continue
             previous = dict(
                 horizon=horizon,
@@ -196,27 +246,34 @@ def merge_signals(
                 start=start,
                 end=end,
                 kind=kind,
-                sides=sides,
+                pieces=[piece],
                 signature=signature,
             )
             groups.append(previous)
-    items: dict[tuple[str, str, str], dict] = {}
+    items: dict[tuple, dict] = {}
     for group in groups:
         if group["kind"] is None:
             continue
-        sides = group["sides"]
+        sides, segments_out = fold(group["pieces"], applied, rule, tz)
         total = sum(applied[s["system"]] for s in sides)
         combined = sum(applied[s["system"]] * s["valence"] for s in sides) / total
         active = [s for s in sides if s["direction"]]
+        # One item per direction pattern: windows where the directions are reversed (astro
+        # positive here, negative there) are separate items, so every window listed under an
+        # item really has that item's sides.
+        pattern = tuple((s["system"], s["direction"]) for s in active)
+        key = (group["kind"], group["horizon"], group["theme"], pattern)
         item = items.setdefault(
-            (group["kind"], group["horizon"], group["theme"]),
+            key,
             dict(
-                id=f"{group['kind']}:{group['horizon']}:{group['theme']}",
+                id=f"{group['kind']}:{group['horizon']}:{group['theme']}:"
+                + "/".join(f"{system}{SIGN[d]}" for system, d in pattern),
                 kind=group["kind"],
                 horizon=group["horizon"],
                 horizon_label=HORIZON_LABELS.get(group["horizon"], group["horizon"]),
                 theme=group["theme"],
                 theme_label=rule["theme_labels"].get(group["theme"], group["theme"]),
+                pattern={system: d for system, d in pattern},
                 windows=[],
             ),
         )
@@ -228,30 +285,38 @@ def merge_signals(
                 combined_valence=round(combined, 4),
                 # The weaker side bounds how clear the disagreement or agreement is.
                 clarity=round(min(s["strength"] for s in active), 4),
+                segments=segments_out,
             )
         )
     tensions, resonances = [], []
     for item in items.values():
         windows = item["windows"]
-        strongest = max(windows, key=lambda w: (w["clarity"], -windows.index(w)))
         refs: dict[str, list[str]] = {}
+        keywords: dict[str, list[str]] = {}
+        strength: dict[str, float] = {}
         for window in windows:
             for entry in window["sides"]:
                 if entry["direction"]:
-                    merged = refs.get(entry["system"], []) + entry["refs"]
-                    refs[entry["system"]] = list(dict.fromkeys(merged))[: rule["max_refs_per_side"]]
+                    system = entry["system"]
+                    merged = refs.get(system, []) + entry["refs"]
+                    refs[system] = list(dict.fromkeys(merged))[: rule["max_refs_per_side"]]
+                    words = keywords.get(system, []) + entry["keywords"]
+                    keywords[system] = list(dict.fromkeys(words))[:4]
+                    strength[system] = max(strength.get(system, 0.0), entry["strength"])
+        summary_sides = [
+            dict(system=system, direction=item["pattern"][system], keywords=keywords[system])
+            for system in sorted(item["pattern"])
+        ]
         item.update(
             systems=sorted(refs),
             refs=refs,
-            side_texts=strongest["side_texts"],
-            strongest_window=strongest["window"],
+            side_texts=[side_text(s) for s in summary_sides],
+            strength=strength,
         )
         if item["kind"] == "tension":
             tensions.append(item)
         else:
-            item["confidence"] = (
-                "high" if any(len(w["side_texts"]) >= 3 for w in windows) else "medium"
-            )
+            item["confidence"] = "high" if len(item["pattern"]) >= 3 else "medium"
             resonances.append(item)
     return dict(
         merge_version=rule["version"],
@@ -280,6 +345,7 @@ def model_view(merged: dict) -> dict:
             refs=entry["refs"],
         )
         if windows:
+            # Every window listed here has exactly the directions in ``sides``.
             view["windows"] = windows[:MAX_WINDOWS_SHOWN]
             view["window_count"] = len(windows)
         if "confidence" in entry:
@@ -292,30 +358,60 @@ def model_view(merged: dict) -> dict:
         tensions=[item(t) for t in merged["tensions"]],
         resonances=[item(r) for r in merged["resonances"]],
         note="每条tension都必须写进submit_reading.tensions：theme用此处theme，sides分别写明两边体系怎么说，"
-        "how_to_read说明如何同时看待；timeline只用windows中的实际日期。不能只讲好听的一边。",
+        "how_to_read说明如何同时看待；timeline只用windows中的实际日期。同一主题在不同日期方向相反时"
+        "是两条tension，各自写明对应日期，不能互相套用。不能只讲好听的一边。",
     )
+
+
+def date_forms(label: str) -> set[str]:
+    """Ways a window's start date may be written: 2026-11-03, 11-03, 11月3日, 11月03日."""
+    day = date.fromisoformat(label[:10])
+    return {
+        day.isoformat(),
+        day.strftime("%m-%d"),
+        f"{day.month}月{day.day}日",
+        f"{day.month}月{day.day:02d}日",
+    }
 
 
 def undisclosed(merged: dict, reading) -> list[dict]:
     """Tensions the reading does not disclose with both sides.
 
     A tension is disclosed when some entry in ``reading.tensions`` names its theme (code or
-    Chinese label) and mentions every opposing system (code or label) across its sides.
+    Chinese label), mentions every opposing system (code or label) across its sides and says
+    how to read it. When the same theme has tensions in opposite directions on different
+    dates, a theme alone cannot tell them apart: the entry must also name one of that
+    tension's dates.
     """
     labels = {**DEFAULT_RULE["system_labels"]}
+    tensions = merged.get("tensions", [])
+    patterns: dict[tuple[str, str], int] = {}
+    for tension in tensions:
+        key = (tension["horizon"], tension["theme"])
+        patterns[key] = patterns.get(key, 0) + 1
     missing = []
-    for tension in merged.get("tensions", []):
+    for tension in tensions:
         names = {tension["theme"], tension["theme_label"]}
+        dates = set()
+        if patterns[(tension["horizon"], tension["theme"])] > 1:
+            for window in tension["windows"]:
+                if window["window"]:
+                    dates |= date_forms(window["window"])
         disclosed = False
         for entry in reading.tensions:
             if not any(name and name in entry.theme for name in names):
                 continue
             text = " ".join(entry.sides)
-            if len(entry.sides) >= 2 and all(
+            if len(entry.sides) < 2 or not entry.how_to_read.strip():
+                continue
+            if not all(
                 system in text or labels.get(system, system) in text
                 for system in tension["systems"]
             ):
-                disclosed = disclosed or bool(entry.how_to_read.strip())
+                continue
+            if dates and not any(d in text + entry.how_to_read for d in dates):
+                continue
+            disclosed = True
         if not disclosed:
             missing.append(tension)
     return missing
