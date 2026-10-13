@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import asyncio
 import json
 import shutil
 import time
@@ -20,7 +21,7 @@ from common.safety import AMBIGUOUS_DISTRESS, CRISIS, SAFETY_PROMPT, support_tex
 from common.tools import common_tools
 from harness.budget import Budget
 from harness.llm import AnthropicModel, OpenAIModel
-from harness.loop import run_turn
+from harness.loop import TIMEOUT_TEXT, run_turn
 from harness.models import TurnOutcome
 from harness.registry import Registry
 from harness.session import Session
@@ -118,7 +119,7 @@ class Runtime:
             else None
         )
         self.session.budget = Budget(self.token_budget, deadline=deadline)
-        return await run_turn(
+        turn = run_turn(
             self.session,
             message,
             self.model,
@@ -126,7 +127,18 @@ class Runtime:
             self.tracer,
             self.max_steps,
             self.token_budget,
+            admission=self.mode == "multi",
         )
+        if deadline is None:
+            return await turn
+        try:
+            # Hard wall clock for the whole request: cancels running specialists too. The loop
+            # already stops at the deadline between and during model calls; this also bounds
+            # tool execution such as waiting on specialists.
+            return await asyncio.wait_for(turn, self.request_timeout_s)
+        except TimeoutError:
+            self.tracer.log(self.session, "request_timeout", timeout_s=self.request_timeout_s)
+            return TurnOutcome(status="timeout", text=TIMEOUT_TEXT)
 
     def forget(self) -> None:
         self.store.forget(self.session.user_id)

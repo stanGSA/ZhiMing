@@ -51,9 +51,10 @@ def validate_reading(reading, session) -> str | None:
                 reading.summary.split("。")[0],
             ):
                 return "时机问题summary第一句须直接回答行动倾向并说明现实前提"
-    # Failure isolation: an unavailable specialist may be skipped, never silently.
+    # Failure isolation: an unavailable specialist may be skipped, never silently. A
+    # follow-up answers from the stored reading, whose disclosure was made when it was saved.
     for system, report in (state.get("specialist_reports") or {}).items():
-        if report["status"] == "ok":
+        if report["status"] == "ok" or state.get("response_mode") == "followup":
             continue
         if system in reading.systems_used:
             return f"{report['label']}专家没有有效报告，systems_used不能包含{system}"

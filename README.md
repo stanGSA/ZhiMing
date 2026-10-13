@@ -117,13 +117,17 @@ SQLite FTS5 已构建并检查可用；第一周精确查找不依赖分词或�
   - 编排者写的子问题不算用户原话，出生资料仍按用户原话核验；
   - 专家需要补充资料时由编排者统一追问，追问结果不缓存；
   - 专家超时、异常或预算用尽时返回失败报告，最终回答不能把该体系列入 `systems_used`，必须在置信度说明里写明缺少哪个体系；
-  - 塔罗在同一记录内只抽一次；
+  - 同一体系重试失败时保留该体系先前的有效报告（标记 `retained_previous`）；画像版本已变化时撤销旧结果。成功报告按体系原子替换信号、引用和计算事实；
+  - 塔罗在同一记录内只抽一次：抽牌成功即保留牌面和牌阵，即使随后报告失败，重试也只能据此写报告，不能换牌阵；
+  - `read_reading` 恢复历史记录时同时恢复该记录的专家报告，不带入当前记录的状态；
   - 追问原记录不再咨询专家。
-- **预算**：一次请求一个预算（`request_token_budget`；多 Agent 模式另有墙钟上限 `request_timeout_s`），编排者与专家共享；每位专家另有 `specialist_token_budget`、`specialist_timeout_s`、`specialist_max_steps`，`orchestrator_reserve_tokens` 给编排者保留收尾额度。当前数值是初值，需按真实运行重新标定。
-- **trace**：子会话写各自的 JSONL，带 `parent_session_id` 和 `parent_call_id`；父会话记录 `specialist_started/finished`。`python -m scripts.trace_tree --user <用户> --reading <记录>` 重建调用树并检查完整性。
+- **预算**：一次请求一个预算（`request_token_budget`），编排者与专家共享；每位专家另有 `specialist_token_budget`、`specialist_timeout_s`、`specialist_max_steps`。当前数值是初值，需按真实运行重新标定。
+  - 多 Agent 模式采用准入控制：每次模型调用前按输入估算加 2048 输出额度预占，并发专家不能合计超出剩余额度，也不能占用 `orchestrator_reserve_tokens`；返回后按实际用量结算。这是软上限：实际用量超过估算的部分记为 `budget_overrun`，只有这部分超额可能挤占保留额度。单 Agent 模式不做估算，与前三周相同。
+  - 多 Agent 模式的 `request_timeout_s` 是整次请求的墙钟上限：等待中的模型调用、专家执行与排队、异步工具都在到期时取消，到期后返回的响应不执行工具，结果为 `timeout`。排盘等同步计算不能中途打断，算完后才响应取消。单 Agent 模式不加墙钟上限。
+- **trace**：子会话写各自的 JSONL，带 `parent_session_id` 和 `parent_call_id`，创建即记 `session_started`，正常、超时或取消都记 `session_finished`；父会话记录 `specialist_queued`、`specialist_started`（获得并发许可后）和 `specialist_finished`。`python -m scripts.trace_tree --user <用户> --reading <记录>` 重建调用树并检查完整性。
 - **评估**：
   - `python -m evals.run --suite week1 --mode multi` 是 demo 模型的离线流程回放；
-  - `python -m scripts.live_v2_review --suite baseline --mode multi` 用真实模型串行跑 20 题，结果附带专家越权、报告首次通过率和并发度指标。真实模型结果尚未产生。
+  - `python -m scripts.live_v2_review --suite baseline --mode multi` 用真实模型串行跑 20 题，结果附带专家越权、报告合规率（≥98% 关口口径）、首次通过率、修正后通过率、实际并发度、排队时间和调用树完整性。指标口径见 [第四周验收](docs/week4-验收报告.md)。真实模型结果尚未产生。
 
 
 ## Week2 / Week3 用法与计算约定

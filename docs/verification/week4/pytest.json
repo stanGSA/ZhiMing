@@ -1,12 +1,13 @@
 {
-  "tests": 275,
-  "passed": 263,
+  "tests": 288,
+  "passed": 276,
   "failed": 1,
   "errors": 11,
   "skipped": 0,
-  "duration_s": 186.277,
+  "duration_s": 206.058,
   "environment_note": "Remote environment network policy rejects ssd.jpl.nasa.gov; doctor and 11 Skyfield cross-checks need data/ephe/de440s.bsp. Same set fails on main 893c189 here; GitHub Actions downloads the file.",
-  "new_week4_tests": 18,
+  "new_week4_tests": 31,
+  "review_regression_tests": 14,
   "results": [
     {
       "name": "tests.test_adapters::test_openai_sdk_protocol_with_mock_http[system]",
@@ -177,10 +178,6 @@
       "status": "passed"
     },
     {
-      "name": "tests.test_multi_agent::test_reserve_keeps_budget_for_orchestrator",
-      "status": "passed"
-    },
-    {
       "name": "tests.test_multi_agent::test_same_step_conflicts_are_rejected",
       "status": "passed"
     },
@@ -210,6 +207,62 @@
     },
     {
       "name": "tests.test_multi_agent::test_single_mode_has_no_wall_clock_deadline",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_multi_agent_review::test_failed_retry_keeps_earlier_valid_report",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_multi_agent_review::test_profile_correction_revokes_then_replaces_atomically",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_multi_agent_review::test_read_reading_restores_that_readings_specialist_state",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_multi_agent_review::test_concurrent_specialists_cannot_spend_orchestrator_reserve",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_multi_agent_review::test_request_deadline_stops_a_waiting_orchestrator",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_multi_agent_review::test_request_deadline_bounds_tool_execution",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_multi_agent_review::test_request_deadline_bounds_running_specialists",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_multi_agent_review::test_response_after_deadline_runs_no_tools",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_multi_agent_review::test_draw_survives_a_failed_report_and_spread_stays_fixed",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_multi_agent_review::test_timeout_before_first_response_keeps_the_call_tree",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_multi_agent_review::test_queueing_is_not_counted_as_concurrency",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_multi_agent_review::test_first_pass_rate_uses_each_consults_first_submission",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_multi_agent_review::test_single_mode_keeps_week1_3_budget_semantics",
+      "status": "passed"
+    },
+    {
+      "name": "tests.test_multi_agent_review::test_cancelled_request_closes_queued_and_running_specialists",
       "status": "passed"
     },
     {
@@ -478,8 +531,7 @@
     },
     {
       "name": "tests.test_scripts::test_doctor_week1_required_checks",
-      "status": "failed",
-      "reason": "JPL DE440s download blocked in this environment (de440s.bsp missing)"
+      "status": "failed"
     },
     {
       "name": "tests.test_scripts::test_download_hash_and_cache",
@@ -751,58 +803,47 @@
     },
     {
       "name": "tests.test_week23_calculations::test_independent_skyfield_all_planets[chart-01]",
-      "status": "error",
-      "reason": "JPL DE440s download blocked in this environment (de440s.bsp missing)"
+      "status": "error"
     },
     {
       "name": "tests.test_week23_calculations::test_independent_skyfield_all_planets[chart-02]",
-      "status": "error",
-      "reason": "JPL DE440s download blocked in this environment (de440s.bsp missing)"
+      "status": "error"
     },
     {
       "name": "tests.test_week23_calculations::test_independent_skyfield_all_planets[chart-03]",
-      "status": "error",
-      "reason": "JPL DE440s download blocked in this environment (de440s.bsp missing)"
+      "status": "error"
     },
     {
       "name": "tests.test_week23_calculations::test_independent_skyfield_all_planets[chart-04]",
-      "status": "error",
-      "reason": "JPL DE440s download blocked in this environment (de440s.bsp missing)"
+      "status": "error"
     },
     {
       "name": "tests.test_week23_calculations::test_independent_skyfield_all_planets[chart-05]",
-      "status": "error",
-      "reason": "JPL DE440s download blocked in this environment (de440s.bsp missing)"
+      "status": "error"
     },
     {
       "name": "tests.test_week23_calculations::test_independent_skyfield_all_planets[chart-06]",
-      "status": "error",
-      "reason": "JPL DE440s download blocked in this environment (de440s.bsp missing)"
+      "status": "error"
     },
     {
       "name": "tests.test_week23_calculations::test_independent_skyfield_all_planets[chart-07]",
-      "status": "error",
-      "reason": "JPL DE440s download blocked in this environment (de440s.bsp missing)"
+      "status": "error"
     },
     {
       "name": "tests.test_week23_calculations::test_independent_skyfield_all_planets[chart-08]",
-      "status": "error",
-      "reason": "JPL DE440s download blocked in this environment (de440s.bsp missing)"
+      "status": "error"
     },
     {
       "name": "tests.test_week23_calculations::test_independent_skyfield_all_planets[chart-09]",
-      "status": "error",
-      "reason": "JPL DE440s download blocked in this environment (de440s.bsp missing)"
+      "status": "error"
     },
     {
       "name": "tests.test_week23_calculations::test_independent_skyfield_all_planets[chart-10]",
-      "status": "error",
-      "reason": "JPL DE440s download blocked in this environment (de440s.bsp missing)"
+      "status": "error"
     },
     {
       "name": "tests.test_week23_calculations::test_independent_skyfield_all_planets[chart-11]",
-      "status": "error",
-      "reason": "JPL DE440s download blocked in this environment (de440s.bsp missing)"
+      "status": "error"
     },
     {
       "name": "tests.test_week23_calculations::test_all_bazi_boundaries[bazi-01]",

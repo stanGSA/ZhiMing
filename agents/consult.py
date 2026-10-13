@@ -22,6 +22,8 @@ FAILURES = {
     "error": "专家执行异常",
     "text": "专家未提交结构化报告",
 }
+# Reading-state values a specialist contributes; all are owned by exactly one system except
+# the shared timeframe and knowledge edition.
 SINGLE_VALUE_KEYS = (
     "natal_result",
     "transit_result",
@@ -32,6 +34,8 @@ SINGLE_VALUE_KEYS = (
     "bazi_id",
     "kb_version",
     "tarot_drawn",
+    "timeframe",
+    "timeframe_tz",
 )
 VISIBLE = ("system", "label", "status", "answer", "points", "missing", "confidence")
 
@@ -44,6 +48,9 @@ def project(data: dict) -> dict:
         visible["needs_input"] = report["needs_input"]
     if report["status"] == "failed":
         visible["failure"] = report["failure"]
+    if report.get("retained_previous"):
+        visible["retained_previous"] = True
+        visible["note"] = "本次重试未成功；该体系此前的有效报告保留不变，可继续引用其ref_id。"
     return {"report": visible}
 
 
@@ -55,22 +62,73 @@ def stop_on_needs_input(call, result: ToolResult) -> TurnOutcome | None:
     return None
 
 
-def merge(parent: dict, child: dict) -> str | None:
+def conflict(parent: dict, child: dict, system: str) -> str | None:
+    """A specialist may not change a value another system's merged result depends on."""
+    for owner, contrib in parent.get("specialist_contrib", {}).items():
+        if owner == system:
+            continue
+        for key in ("timeframe", "timeframe_tz"):
+            if key in contrib["values"] and child.get(key) not in (None, contrib["values"][key]):
+                return "专家计算的时间范围与本记录其它体系不一致"
+    return None
+
+
+def revoke(parent: dict, system: str) -> None:
+    """Remove everything one system contributed, so a replaced or stale result leaves no trace."""
+    contribs = parent.setdefault("specialist_contrib", {})
+    contrib = contribs.pop(system, None)
+    parent["signals"] = [s for s in parent["signals"] if s["system"] != system]
+    if contrib is None:
+        return
+    parent["allowed_refs"] -= contrib["allowed_refs"]
+    parent["kb_refs"] -= contrib["kb_refs"]
+    parent["facts"] = [f for f in parent["facts"] if f not in contrib["facts"]]
+    for key in contrib["calculations"]:
+        parent.get("calculations", {}).pop(key, None)
+    for key, value in contrib["values"].items():
+        shared = any(other["values"].get(key) == value for other in contribs.values())
+        if parent.get(key) == value and not shared:
+            parent.pop(key, None)
+
+
+def merge(parent: dict, child: dict, system: str) -> None:
     """Fold a successful child's reading state into the parent; the parent stays the writer."""
-    for key in ("timeframe", "timeframe_tz"):
-        if parent.get(key) and child.get(key) and parent[key] != child[key]:
-            return "专家计算的时间范围与本记录已有范围不一致"
     seen = {(s["ref_id"], s["theme"]) for s in parent["signals"]}
     parent["signals"].extend(s for s in child["signals"] if (s["ref_id"], s["theme"]) not in seen)
     parent["allowed_refs"].update(child["allowed_refs"])
     parent["kb_refs"].update(child["kb_refs"])
     parent["facts"].extend(f for f in child["facts"] if f not in parent["facts"])
-    parent.setdefault("calculations", {}).update(child.get("calculations", {}))
+    calculations = child.get("calculations", {})
+    parent.setdefault("calculations", {}).update(calculations)
     parent.setdefault("locations", {}).update(child.get("locations", {}))
-    for key in (*SINGLE_VALUE_KEYS, "timeframe", "timeframe_tz"):
-        if child.get(key) is not None:
-            parent[key] = child[key]
-    return None
+    values = {key: child[key] for key in SINGLE_VALUE_KEYS if child.get(key) is not None}
+    parent.update(values)
+    parent.setdefault("specialist_contrib", {})[system] = dict(
+        allowed_refs=set(child["allowed_refs"]),
+        kb_refs=set(child["kb_refs"]),
+        facts=list(child["facts"]),
+        calculations=list(calculations),
+        values=values,
+    )
+
+
+def computed_results(child, spec: SpecialistSpec) -> list[dict]:
+    """Projected results of the plugin's own calculation tools, as the specialist saw them."""
+    names = {
+        call["id"]: call["function"]["name"]
+        for message in child.messages
+        for call in message.get("tool_calls") or []
+    }
+    own = set(spec.registry.tools) - {"lookup_meaning", "submit_report"}
+    results = []
+    for message in child.messages:
+        name = names.get(message.get("tool_call_id"))
+        if message["role"] != "tool" or name not in own:
+            continue
+        payload = json.loads(message["content"])
+        if payload["ok"] and payload["data"].get("status") != "needs_input":
+            results.append({"tool": name, "data": payload["data"]})
+    return results
 
 
 class ConsultService:
@@ -114,6 +172,10 @@ class ConsultService:
         requested = state.get("requested_spread")
         if args.spread and requested and args.spread != requested:
             return "必须使用用户明确指定的牌阵"
+        kept = state.get("specialist_facts", {}).get(args.system, {})
+        drawn = (kept.get("values", {}).get("tarot_result") or {}).get("spread")
+        if args.spread and drawn and args.spread != drawn:
+            return f"本记录已抽牌（{drawn}），重试不能更换牌阵；重抽须用户明确要求并开始新记录"
         if args.timeframe:
             error = range_provenance(
                 SimpleNamespace(
@@ -137,14 +199,18 @@ class ConsultService:
         payload = args.model_dump(mode="json") if spec.repeatable else {"system": args.system}
         return json.dumps([payload, context], ensure_ascii=False, sort_keys=True)
 
-    def child_state(self, args: ConsultInput, parent: dict) -> dict:
+    def child_state(self, spec: SpecialistSpec, args: ConsultInput, parent: dict) -> dict:
+        kept = parent.get("specialist_facts", {}).get(spec.system)
+        drawn = (kept or {}).get("values", {}).get("tarot_result") or {}
         state = {
             "active_reading_id": parent["active_reading_id"],
             "parent_reading_id": parent.get("parent_reading_id"),
             "question": parent["question"],
             "question_message_index": parent.get("question_message_index", 0),
             "seed": parent.get("seed"),
-            "requested_spread": args.spread or parent.get("requested_spread"),
+            "requested_spread": drawn.get("spread")
+            or args.spread
+            or parent.get("requested_spread"),
             "signals": [],
             "facts": [],
             "allowed_refs": set(),
@@ -163,6 +229,15 @@ class ConsultService:
             state["timeframe"] = parent["timeframe"]
             if parent.get("timeframe_tz"):
                 state["timeframe_tz"] = parent["timeframe_tz"]
+        if kept:
+            # A non-repeatable calculation (the draw) survived a failed attempt: restore it so
+            # the retry writes its report from the same facts and cannot draw again.
+            state["signals"] = [dict(s) for s in kept["signals"]]
+            state["allowed_refs"] = set(kept["allowed_refs"])
+            state["kb_refs"] = set(kept["kb_refs"])
+            state["facts"] = list(kept["facts"])
+            state["calculations"] = dict(kept["calculations"])
+            state.update(kept["values"])
         return state
 
     def spawn(self, spec: SpecialistSpec, args: ConsultInput, session):
@@ -185,7 +260,7 @@ class ConsultService:
             spec.system,
             spec.system,
             messages=messages,
-            state=self.child_state(args, session.state),
+            state=self.child_state(spec, args, session.state),
             profile=profile,
             parent_call_id=CURRENT_CALL_ID.get(),
             budget=None
@@ -194,7 +269,8 @@ class ConsultService:
             continue_prompt=CONTINUE_PROMPT,
         )
 
-    def brief(self, args: ConsultInput, session) -> str:
+    def brief(self, spec: SpecialistSpec, args: ConsultInput, session) -> str:
+        kept = session.state.get("specialist_facts", {}).get(spec.system)
         return json.dumps(
             {
                 "system": args.system,
@@ -203,18 +279,23 @@ class ConsultService:
                 "timeframe": args.timeframe.model_dump() if args.timeframe else None,
                 "location_id": args.location_id,
                 "spread": args.spread,
+                "existing_results": kept["results"] if kept else None,
             },
             ensure_ascii=False,
         )
 
-    def report(self, spec, child, outcome: TurnOutcome, latency_ms: float) -> SpecialistReport:
+    def report(
+        self, spec, child, outcome: TurnOutcome, latency_ms: float, queue_ms: float
+    ) -> SpecialistReport:
         common = dict(
             system=spec.system,
             label=spec.label,
             session_id=child.id,
             latency_ms=round(latency_ms, 3),
+            queue_ms=round(queue_ms, 3),
             tokens=child.total_tokens,
             model_calls=child.model_calls,
+            profile_version=child.profile.get("version", 0),
         )
         if outcome.status == "submit_report":
             own = [s for s in child.state["signals"] if s["system"] == spec.system]
@@ -239,6 +320,18 @@ class ConsultService:
             status="failed", failure=FAILURES.get(outcome.status, outcome.status), **common
         )
 
+    def finished(self, session, child, spec, status, **fields) -> None:
+        self.tracer.log(child, "session_finished", system=spec.system, status=status)
+        self.tracer.log(
+            session,
+            "specialist_finished",
+            system=spec.system,
+            child_session_id=child.id,
+            call_id=child.parent_call_id,
+            status=status,
+            **fields,
+        )
+
     async def consult(self, args: ConsultInput, session) -> ToolResult:
         spec = self.specs[args.system]
         state = session.state
@@ -258,71 +351,155 @@ class ConsultService:
                     "timeframe_conflict", "同一记录内各专家必须使用相同时间范围"
                 )
         inflight.add(args.system)
+        child = self.spawn(spec, args, session)
+        brief = self.brief(spec, args, session)
+        # The child's trace exists from the start, so a timeout before its first model
+        # response still leaves a complete call tree.
+        self.tracer.log(child, "session_started", system=spec.system)
+        self.tracer.log(
+            session,
+            "specialist_queued",
+            system=spec.system,
+            child_session_id=child.id,
+            call_id=child.parent_call_id,
+        )
+        queued = time.perf_counter()
+        started = None
         try:
-            child = self.spawn(spec, args, session)
-            self.tracer.log(
-                session,
-                "specialist_started",
-                system=spec.system,
-                child_session_id=child.id,
-                call_id=child.parent_call_id,
-            )
-            started = time.perf_counter()
             async with self.semaphore:
+                started = time.perf_counter()
+                self.tracer.log(
+                    session,
+                    "specialist_started",
+                    system=spec.system,
+                    child_session_id=child.id,
+                    call_id=child.parent_call_id,
+                )
                 try:
                     outcome = await asyncio.wait_for(
                         run_turn(
                             child,
-                            self.brief(args, session),
+                            brief,
                             self.model,
                             spec.registry,
                             self.tracer,
                             self.max_steps,
                             self.token_budget,
                             as_evidence=False,
+                            admission=True,
                             on_tool_result=stop_on_needs_input,
                         ),
                         self.timeout,
                     )
                 except TimeoutError:
+                    self.tracer.log(child, "timeout", timeout_s=self.timeout)
                     outcome = TurnOutcome(status="timeout", text="")
                 except Exception as exc:
                     self.tracer.log(child, "specialist_error", error_type=type(exc).__name__)
                     outcome = TurnOutcome(status="error", text="")
-            report = self.report(spec, child, outcome, (time.perf_counter() - started) * 1000)
-            self.tracer.log(
+        except asyncio.CancelledError:
+            # The whole request was cancelled (e.g. its wall-clock limit): close the subtree.
+            now = time.perf_counter()
+            self.finished(
                 session,
-                "specialist_finished",
-                system=spec.system,
-                child_session_id=child.id,
-                call_id=child.parent_call_id,
-                status=report.status,
-                failure=report.failure,
-                latency_ms=report.latency_ms,
-                tokens=report.tokens,
-                model_calls=report.model_calls,
+                child,
+                spec,
+                "cancelled",
+                queue_ms=round(((started or now) - queued) * 1000, 3),
+                latency_ms=round((now - started) * 1000, 3) if started else 0.0,
+                tokens=child.total_tokens,
+                model_calls=child.model_calls,
             )
-            return ToolResult(
-                data={
-                    "report": report.model_dump(mode="json"),
-                    "_child_state": child.state if report.status == "ok" else None,
-                    "_cache_key": key,
-                }
-            )
+            raise
         finally:
             inflight.discard(args.system)
+        now = time.perf_counter()
+        report = self.report(
+            spec, child, outcome, (now - started) * 1000, (started - queued) * 1000
+        )
+        self.finished(
+            session,
+            child,
+            spec,
+            report.status,
+            failure=report.failure,
+            queue_ms=report.queue_ms,
+            latency_ms=report.latency_ms,
+            tokens=report.tokens,
+            model_calls=report.model_calls,
+        )
+        kept = None
+        if not spec.repeatable and report.status != "ok":
+            own = [s for s in child.state["signals"] if s["system"] == spec.system]
+            if own:
+                kept = dict(
+                    signals=own,
+                    allowed_refs=set(child.state["allowed_refs"]),
+                    kb_refs=set(child.state["kb_refs"]),
+                    facts=list(child.state["facts"]),
+                    calculations=dict(child.state.get("calculations", {})),
+                    values={
+                        k: child.state[k]
+                        for k in SINGLE_VALUE_KEYS
+                        if child.state.get(k) is not None and k not in ("timeframe", "timeframe_tz")
+                    },
+                    results=computed_results(child, spec),
+                )
+        return ToolResult(
+            data={
+                "report": report.model_dump(mode="json"),
+                "_child_state": child.state if report.status == "ok" else None,
+                "_kept_facts": kept,
+                "_cache_key": key,
+            }
+        )
 
     def commit(self, result: ToolResult, session) -> ToolResult:
+        """Apply one consult result to the reading, in call order.
+
+        A valid report replaces the system's earlier contribution atomically. A failed or
+        incomplete retry keeps an earlier valid report unless the profile changed since, in
+        which case the stale contribution is revoked and the failure becomes effective.
+        """
+        state = session.state
         data = dict(result.data)
         child_state = data.pop("_child_state", None)
+        kept = data.pop("_kept_facts", None)
         key = data.pop("_cache_key", None)
         report = data["report"]
+        system = report["system"]
+        reports = state.setdefault("specialist_reports", {})
+        state.setdefault("specialist_attempts", []).append(
+            {k: report.get(k) for k in ("system", "status", "failure", "session_id")}
+        )
+        if result.cached:
+            reports[system] = report
+            return result.model_copy(update={"data": data})
         if child_state is not None:
-            error = merge(session.state, child_state)
+            error = conflict(state, child_state, system)
             if error:
                 report = {**report, "status": "failed", "failure": error, "signals": []}
+            else:
+                revoke(state, system)
+                merge(state, child_state, system)
+                state.setdefault("specialist_facts", {}).pop(system, None)
+                if key:
+                    state.setdefault("consult_cache", {})[key] = report
+                reports[system] = report
                 data["report"] = report
-            elif key:
-                session.state.setdefault("consult_cache", {})[key] = report
-        session.state.setdefault("specialist_reports", {})[report["system"]] = report
+                return result.model_copy(update={"data": data})
+        if kept:
+            state.setdefault("specialist_facts", {})[system] = kept
+        previous = reports.get(system)
+        current_version = session.profile.get("version", 0)
+        if (
+            previous
+            and previous["status"] == "ok"
+            and previous.get("profile_version", 0) == current_version
+        ):
+            data["report"] = {**report, "retained_previous": True}
+        else:
+            revoke(state, system)
+            reports[system] = report
+            data["report"] = report
         return result.model_copy(update={"data": data})

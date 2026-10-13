@@ -254,6 +254,13 @@ def common_tools(store, kb: KnowledgeBase, mode: str = "single") -> list[Tool]:
                     if version_kb is not kb:
                         version_kb.close()
         session.cache.clear()
+        # Replace, not update: nothing from the previously active reading may leak into the
+        # restored one (calculations, specialist reports, consult caches).
+        session.state = dict(
+            asked_this_turn=session.state.get("asked_this_turn", False),
+            question_message_index=max(0, len(session.user_messages) - 1),
+            specialist_reports=store.specialist_reports(session.user_id, result["reading_id"]),
+        )
         session.state.update(
             active_reading_id=result["reading_id"],
             parent_reading_id=result["parent_reading_id"],

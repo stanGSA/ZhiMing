@@ -53,5 +53,10 @@ class SpecialistReport(BaseModel):
     signals: list[dict[str, Any]] = Field(default_factory=list)
     session_id: str
     latency_ms: float
+    queue_ms: float = 0.0
     tokens: int
     model_calls: int
+    # Profile version the specialist saw; a later profile change makes the result stale.
+    profile_version: int = 0
+    # Set when a retry failed but this system's earlier valid report was kept.
+    retained_previous: bool = False

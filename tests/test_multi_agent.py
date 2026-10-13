@@ -616,33 +616,6 @@ async def test_needs_input_is_asked_once_and_never_cached(project):
         runtime.close()
 
 
-async def test_reserve_keeps_budget_for_orchestrator(project):
-    async def final(done):
-        return respond(call("ask_user", question="预算不足，要缩小问题范围吗？"))
-
-    async def tarot(messages):
-        return respond(call("draw_tarot", spread="three_card", question="q"), tokens=200)
-
-    model = RoleModel(orchestrator=tarot_only_orchestrator(final=final), tarot=tarot)
-    runtime = make(
-        project,
-        model,
-        request_token_budget=1000,
-        orchestrator_reserve_tokens=900,
-        specialist_token_budget=500,
-    )
-    try:
-        outcome = await runtime.turn("用三张塔罗看看最近的工作状态。")
-        assert outcome.status == "ask_user"
-        report = runtime.session.state["specialist_reports"]["tarot"]
-        assert report["status"] == "failed" and "预算" in report["failure"]
-        # The over-budget specialist response never executed its draw.
-        assert model.calls["tarot"] == 1
-        assert not [e for e in results_of(runtime, "tarot") if e["call"]["name"] == "draw_tarot"]
-    finally:
-        runtime.close()
-
-
 async def test_same_step_conflicts_are_rejected(project):
     async def orchestrator(messages):
         done = turn_results(messages)

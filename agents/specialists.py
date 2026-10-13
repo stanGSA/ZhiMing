@@ -11,6 +11,7 @@ SHARED_RULES = """你在隔离的子会话中工作：只看得到编排者给�
 只用本体系工具。出生资料只能来自画像或用户原话；地点只用子问题里的location_id或画像，不能自行填写经纬度、时区、fold、性别或口径。工具返回status=needs_input时停止计算，系统会把问题交给编排者统一追问，不要猜测答案。
 要点的ref_id必须逐字使用工具结果interpretations或牌面中的ref_id（不是kb_ref）；每条要点用一句话写清计算事实及其象征主题，不编造落座、宫位、相位、干支、牌面或日期。
 answer用一句话回答子问题，给出有条件的倾向和现实前提；不评论其它体系，不写免责声明、审核、知识库或工具等内部信息。释义未人工审核时confidence为low并说明原因。
+子问题JSON中existing_results不为空时，表示本记录已完成这些计算（例如已经抽出的牌），直接据此写报告，不要重算或重抽。
 计算完成后调用submit_report提交answer、points、missing（不可用或缺失的信息）和confidence；不要输出普通文本。"""
 
 ASTRO_PROMPT = f"""你是知命的西方占星专家。

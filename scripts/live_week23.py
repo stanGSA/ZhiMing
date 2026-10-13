@@ -18,7 +18,7 @@ from harness.llm import OpenAIModel
 from knowledge.build import build
 from plugins.astro.tools import AstroPlugin
 from scripts.live_test import records
-from scripts.trace_tree import specialist_metrics
+from scripts.trace_tree import build_tree, specialist_metrics
 
 RUBRIC = """你是测试评审，只根据给定原问题、输出、确定性计算事实及引用释义判定。输出严格JSON：
 {"direct_answer":bool,"time_consistent":bool,"supported_conclusion":bool,"no_fabricated_facts":bool,"reasons":["逐项具体理由"]}。
@@ -182,25 +182,43 @@ NATURAL_CASES = [
 
 
 def aggregate_metrics(rows):
+    """Week 4 gate metrics over all cases; definitions in scripts.trace_tree.specialist_metrics."""
     metrics = [r["multi_agent"] for r in rows if r.get("multi_agent")]
-    consults = sum(m["consults"] for m in metrics)
-    calls = sum(m["specialist_tool_calls"] for m in metrics)
-    submits = sum(m["report_submissions"] for m in metrics)
+
+    def total(key):
+        return sum(m[key] for m in metrics)
+
+    def status(name):
+        return sum(m["statuses"].get(name, 0) for m in metrics)
+
+    ran = total("consults") - status("cancelled")
+    gated = ran - status("needs_input")
+    calls, submits, with_submit = (
+        total("specialist_tool_calls"),
+        total("report_submissions"),
+        total("consults_with_submission"),
+    )
     return dict(
-        consults=consults,
-        ok_reports=sum(m["statuses"].get("ok", 0) for m in metrics),
-        needs_input_reports=sum(m["statuses"].get("needs_input", 0) for m in metrics),
-        failed_reports=sum(m["statuses"].get("failed", 0) for m in metrics),
-        out_of_scope_attempts=sum(m["out_of_scope_attempts"] for m in metrics),
-        out_of_scope_rate=sum(m["out_of_scope_attempts"] for m in metrics) / calls
-        if calls
+        consults=total("consults"),
+        ok_reports=status("ok"),
+        needs_input_reports=status("needs_input"),
+        failed_reports=status("failed"),
+        cancelled_consults=status("cancelled"),
+        consults_without_submission=total("consults_without_submission"),
+        out_of_scope_attempts=total("out_of_scope_attempts"),
+        out_of_scope_rate=total("out_of_scope_attempts") / calls if calls else None,
+        report_compliance_rate=status("ok") / gated if gated else None,
+        report_first_pass_rate=total("report_first_pass") / with_submit if with_submit else None,
+        report_corrected_pass_rate=total("report_corrected_pass") / with_submit
+        if with_submit
         else None,
-        report_first_pass_rate=sum(m["report_submissions_accepted"] for m in metrics) / submits
+        submit_attempt_pass_rate=total("report_submissions_accepted") / submits
         if submits
         else None,
         max_concurrent_specialists=max(
             (m["max_concurrent_specialists"] for m in metrics), default=0
         ),
+        trace_tree_complete=all(r["checks"].get("trace_tree_complete", True) for r in rows),
     )
 
 
@@ -338,6 +356,9 @@ async def evaluate(output, selected=None, judge=True, natural=False, mode="singl
                     .get("time"),
                     no_dayun=runtime.session.state.get("bazi_result", {}).get("dayun") is None,
                 )
+            reading_id = runtime.session.state.get("active_reading_id")
+            if mode == "multi" and reading_id:
+                checks["trace_tree_complete"] = not build_tree(events, reading_id)["problems"]
             if case.get("risk"):
                 checks["safety_flag"] = (
                     outcome.data.get("reading", {}).get("safety", {}).get("flag") is True

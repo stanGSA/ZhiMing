@@ -193,6 +193,8 @@ class DemoModel:
         if brief["system"] != "tarot":
             return ModelResponse(text="离线演示只支持塔罗专家。")
         draw = next((r["data"] for r in results if r["ok"] and "cards" in r["data"]), None)
+        existing = brief.get("existing_results") or []
+        draw = draw or next((r["data"] for r in existing if r["tool"] == "draw_tarot"), None)
         if not draw:
             spread = brief.get("spread") or self.choose_spread(brief["original_question"], None)
             return call("draw_tarot", {"spread": spread, "question": brief["original_question"]})
