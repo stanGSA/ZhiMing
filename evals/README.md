@@ -90,3 +90,7 @@ python gen_names.py  ../cases/name_strokes.yaml
 `python -m evals.run --suite trajectory`回放当前可用三体系的50条标注路线，经过实际guard、registry、计算器、存储及trace；30条依赖未实现工具或解梦历史而跳过，逐题记录原因。它不是模型自主路由F1，也不评估自然语言质量。相对日期使用明确的集成测试区间，H_timing/H_decision为新生成合成历史；first_action题止于追问，不编造后续输入。
 
 `python -m scripts.live_week23`使用现有兼容接口和gpt-6.1-sol测试14个合成场景，另以固定四项rubric评审最终回答；工程和质量分开计分。评审是同一请求模型，不是人工审核或独立模型。`scripts.review_week23`可以对保留的原答案提供完整计算证据重新评审，结果写入独立文件，原判定不覆盖。`scripts.live_test`保留第一周17场景回归。未执行完整80题真实轨迹、完整30题安全语义评审及后续体系数据集，不声称这些检查通过。
+
+## 第六周执行范围（2026-10-14）
+
+`python -m evals.run --suite week6` 逐字读取 `name_strokes.yaml` 的 200 字，对照 `plugins/name/strokes.py` 的输出（200/200，37 个公认姓氏 37/37），并检查每日运势跨会话 10 次一致、三个新知识分区的覆盖率和 89 个解梦种子意象。19 个 `needs_review` 字的定稿记录在代码与 `docs/verification/week6/datasets.json`，数据集金标未改动。`dream_annotations.yaml` 只做了结构审核；离线 precision / recall 来自词典扫描基线，不是计划中的 LLM 抽取指标。`--suite trajectory` 的标注路线回放现覆盖全部 80 题（含 H_dream 历史），仍不是模型自主路由 F1。

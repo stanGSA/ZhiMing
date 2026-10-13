@@ -220,6 +220,10 @@ class ConsultService:
             "locations": dict(parent.get("locations", {})),
             "location_aliases": dict(parent.get("location_aliases", {})),
         }
+        if spec.system == "name" and parent.get("bazi_id"):
+            # The name specialist may set its names beside the bazi already computed in this
+            # reading (counts only); it never computes bazi itself.
+            state["bazi_id"] = parent["bazi_id"]
         if args.timeframe:
             state["timeframe_required"] = True
             state["timeframe"] = (args.timeframe.start, args.timeframe.end)
@@ -280,6 +284,11 @@ class ConsultService:
                 "location_id": args.location_id,
                 "spread": args.spread,
                 "existing_results": kept["results"] if kept else None,
+                **(
+                    {"bazi_id": session.state["bazi_id"]}
+                    if spec.system == "name" and session.state.get("bazi_id")
+                    else {}
+                ),
             },
             ensure_ascii=False,
         )

@@ -165,7 +165,12 @@ class MeaningPlugin:
             entry = self.kb.lookup(self.name, kind, key)
             if entry is None:
                 raise ValueError(f"Missing knowledge entry: {self.name}/{kind}/{key}")
-            ref = f"{self.name}:{result.get('chart_id') or result.get('bazi_id')}:{fact}"
+            identity = (
+                result[self.id_key]
+                if getattr(self, "id_key", None)
+                else result.get("chart_id") or result.get("bazi_id")
+            )
+            ref = f"{self.name}:{identity}:{fact}"
             components = [entry]
             for component_kind, component_key in self.compound_keys(result, kind, key, fact):
                 component = self.kb.lookup(self.name, component_kind, component_key)

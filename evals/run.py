@@ -161,7 +161,7 @@ async def evaluate(output: Path, mode: str = "single") -> dict:
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument(
-        "--suite", choices=["week1", "trajectory", "week23", "reviewer"], default="week1"
+        "--suite", choices=["week1", "trajectory", "week23", "reviewer", "week6"], default="week1"
     )
     parser.add_argument("--output", type=Path, default=ROOT / "reports")
     parser.add_argument("--mode", choices=["single", "multi"], default="single")
@@ -185,6 +185,18 @@ def main():
         print(
             json.dumps(
                 {k: v for k, v in report.items() if k not in ("results", "per_class")},
+                ensure_ascii=False,
+                indent=2,
+            )
+        )
+        raise SystemExit(0 if all(g["met"] for g in report["gates"].values()) else 1)
+    if args.suite == "week6":
+        from evals.week6 import evaluate as evaluate_week6
+
+        report = asyncio.run(evaluate_week6(args.output))
+        print(
+            json.dumps(
+                {k: report[k] for k in ("suite", "gates", "reviewed_rate", "output_dir")},
                 ensure_ascii=False,
                 indent=2,
             )

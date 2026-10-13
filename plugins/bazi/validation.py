@@ -15,7 +15,8 @@ def validate_output(reading, state):
             reading.safety.note,
         ]
     )
-    bazi = state.get("bazi_result") or {}
+    daily = state.get("daily_result") or {}
+    bazi = state.get("bazi_result") or daily.get("bazi") or {}
     question = state.get("question", "")
     if bazi:
         if "日主" in question and bazi.get("day_master") and bazi["day_master"] not in text:
@@ -45,6 +46,7 @@ def validate_output(reading, state):
     gz.update(d["ganzhi"] for d in (bazi.get("dayun") or {}).get("sequence", []))
     for p in periods:
         gz.update(p["pillars"].values())
+    gz.update(segment["pillar"] for segment in (daily.get("day") or {}).get("segments", []))
     for value in re.findall(r"[甲乙丙丁戊己庚辛壬癸][子丑寅卯辰巳午未申酉戌亥]", text):
         if value not in gz:
             return "本次工具结果没有该干支，不能编造"

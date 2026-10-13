@@ -49,6 +49,32 @@ NAYIN = (
 
 
 def expected_keys(system):
+    if system == "name":
+        from plugins.name.wuge import ELEMENTS, GRIDS
+
+        groups = {
+            "shuli": map(str, range(1, 82)),
+            "sancai": (a + b + c for a in ELEMENTS for b in ELEMENTS for c in ELEMENTS),
+            "grid": GRIDS,
+            "element": ELEMENTS,
+            "convention": ["stroke_rule", "compound_surname", "ambiguous_form", "bazi_compare"],
+        }
+        return {(system, kind, str(key)) for kind, keys in groups.items() for key in keys}
+    if system == "dream":
+        from plugins.dream.symbols import SYMBOLS
+
+        keys = {(system, "symbol", symbol[0]) for symbol in SYMBOLS}
+        return keys | {
+            (system, "convention", key) for key in ("unmatched", "psyche_only", "no_symbol")
+        }
+    if system == "daily":
+        from plugins.name.wuge import ELEMENTS
+
+        keys = {(system, "day_element", element) for element in ELEMENTS}
+        return keys | {
+            (system, "convention", key)
+            for key in ("daily_seed", "no_exact_events", "unknown_time", "moment_only")
+        }
     if system == "astro":
         groups = {
             "planet": BODIES,

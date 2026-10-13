@@ -1,0 +1,7 @@
+system: dream
+version: 1
+composition: 解梦意象条目的theme_map给出倾向；所有信号只进入psyche，不参与时机与运势判断。匹配顺序为同义词表精确命中→包含匹配→BM25（字二元组）候选加Dice相似度阈值；向量检索兜底尚未启用，低于阈值记为未命中。
+horizon: psyche
+strength: 0.4
+match_threshold: 0.75
+max_symbols: 12

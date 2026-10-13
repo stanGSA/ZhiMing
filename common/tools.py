@@ -471,6 +471,9 @@ def common_tools(store, kb: KnowledgeBase, mode: str = "single", reviewer=None) 
         calculations = result.get("calculations_json") or {}
         session.state["calculations"] = calculations
         session.state.update(calculations)
+        if calculations.get("daily_result"):
+            # The daily card is a drawn card of this reading as well.
+            session.state["facts"].append(calculations["daily_result"]["card"]["name"])
         for key in ("chart_id", "bazi_id"):
             if result.get(key):
                 session.state[key] = result[key]
