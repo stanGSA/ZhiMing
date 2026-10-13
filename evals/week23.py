@@ -88,6 +88,14 @@ def output(runtime, case):
         summary = "暂倾向A，前提是核实成本与实际需求；这是离线集成回放。"
     if "下个月适合跳槽" in state["question"]:
         summary = "下个月有条件适合跳槽，前提是先核实岗位与书面录用；这是离线集成回放。"
+    advice = ["先核实客观条件。"]
+    for key, result in (state.get("calculations") or {}).items():
+        for item in result.get("ambiguities", []) if key.startswith("name_result:") else []:
+            options = "，".join(f"写{a['form']}为{a['strokes']}画" for a in item["alternatives"])
+            advice.append(
+                f"“{item['char']}”默认按{item['default']['form']}{item['default']['strokes']}画，"
+                f"{options}，请按证件写法确认。"
+            )
     risk = bool(HIGH_RISK.search(state["question"] + case["question"]))
     return dict(
         question_type=case["type"]
@@ -96,7 +104,7 @@ def output(runtime, case):
         systems_used=systems,
         summary=summary,
         evidence=evidence,
-        advice=["先核实客观条件。"],
+        advice=advice,
         confidence=dict(level="low", reason="知识为未人工审核草稿；离线回放不评估解释质量"),
         safety=dict(
             flag=risk, note="高风险问题需专业判断，不以符号代替就医或财务法律意见。" if risk else ""
@@ -170,7 +178,10 @@ async def route(runtime, case, profile, start="2026-11-01", end="2026-11-30"):
             continue
         elif name == "lookup_dream_symbols":
             plugin = runtime.registry.tools[name].handler.__self__
-            args = dict(symbols=plugin.matcher.scan(case["question"]) or [case["question"][:12]])
+            spans = plugin.matcher.spans(case["question"])
+            symbols = [dict(phrase=alias, symbol=key) for _, _, alias, key in spans]
+            fallback = case["question"][:12]
+            args = dict(symbols=symbols or [dict(phrase=fallback, symbol=fallback)])
         elif name == "daily_fortune":
             args = dict(date=requested_date(runtime.session), location_id=birth["location_id"])
         elif name == "submit_reading":

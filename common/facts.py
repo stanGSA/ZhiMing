@@ -25,3 +25,18 @@ def validate_calculation_facts(reading, state):
             if system not in temporal:
                 return "时间范围问题需要相应行运或流期计算，不能只用原局"
     return None
+
+
+def public_texts(reading) -> list[str]:
+    """Every text field of a reading that the user can see, timeline included."""
+    return [
+        reading.summary,
+        *[e.reading for e in reading.evidence],
+        *reading.advice,
+        *reading.resonances,
+        *[part for t in reading.tensions for part in (t.theme, *t.sides, t.how_to_read)],
+        *[part for t in reading.timeline for part in (t.period, t.note)],
+        *reading.followups,
+        reading.confidence.reason,
+        reading.safety.note,
+    ]

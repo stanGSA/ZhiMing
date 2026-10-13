@@ -1,29 +1,30 @@
 # 第六周验收报告：姓名、解梦与每日运势
 
-日期：2026-10-14（Asia/Shanghai）。基线为 main 的 `8a7d864`（合并 PR #4，第五周边界修复）。在分支 `claude/sharp-davinci-2edlt6` 上开发。
+日期：2026-10-14（Asia/Shanghai）。基线为 main 的 `8a7d864`（合并 PR #4，第五周边界修复）。在分支 `claude/sharp-davinci-2edlt6` 上开发。首版提交 `d2a244a`；之后按 PR #5 评审意见修复 8 项问题，见下文“PR #5 评审整改”。
 
 ## 结论
 
-- **计划中的两个关口离线通过。**
-  - 笔画全对：`name_strokes.yaml` 200 字的默认写法和康熙笔画 200/200 一致，37 个公认姓氏笔画 37/37 一致。
-  - 同日结果不变：同一用户同一天跨 10 个会话调用 `daily_fortune`，10 次结果逐字节相同（第 2 至 10 次读 `daily` 缓存）；同 seed 抽牌 100 次一致；不经缓存纯函数重算，结果与缓存相同。
+- **计划中的两个关口离线通过，口径如下。**
+  - 笔画全对：`name_strokes.yaml` 200 字的默认写法和康熙笔画 200/200 一致，37 个公认姓氏 37/37 一致。数据集和实现用的是同一条规则，所以这个结果证明实现与规则数据集一致；它不是独立字典的核对。19 个待定字和蕭、胜的备选笔画仍需对照康熙字典人工核对。
+  - 同日结果不变：同一用户同一天跨 10 个会话调用 `daily_fortune`，工具返回的计算数据 10 次逐字节相同（第 2 至 10 次读 `daily` 缓存）；同 seed 抽牌 100 次一致；不经缓存纯函数重算，结果与缓存相同。比较时去掉了 `cache_reused` 标记，**没有验证模型最终写出的文字逐字相同**。
 - **工程实现完成，离线验证通过。**
-  - 姓名五格插件：康熙笔画、五格与 81 数理、三才、复姓、写法歧义、八字五行对照。
-  - 解梦插件：355 条意象及其同义词，匹配顺序为同义词 → 包含 → BM25；信号只进入 psyche。
-  - 每日运势插件：在代码里组合占星、八字和塔罗，结果写入 `daily` 缓存。
+  - 姓名五格插件：康熙笔画、五格与 81 数理、三才、复姓（含“万俟”保留本字）、写法歧义、八字五行对照。
+  - 解梦插件：355 条意象及其同义词，匹配顺序为同义词 → 包含 → BM25；工具参数带用户原文片段；信号只进入 psyche。
+  - 每日运势插件：在代码里组合占星、八字和塔罗，结果写入 `daily` 缓存，目标日期保存在本记录状态中。
   - 多 Agent 新增姓名、解梦两位专家；每日运势由编排者直接调用。
   - 知识库 1171 条，6 个分区覆盖率都是 100%。
-  - 第六周数据集任务已处理：`name_strokes.yaml` 的 19 个歧义字已定稿，`dream_annotations.yaml` 已做结构审核（不是人工审核）。
-- **测试结果。**
-  - 全量 376 项测试中 364 项通过。其余 12 项都依赖 JPL DE440s 星历，本环境网络策略拦截了下载，与改动前基线在同一环境的结果相同（基线是 334 项通过，失败的也是这 12 项）。
-  - 第六周新增 30 项测试，全部通过。
-  - 变异检查：逐个改坏 20 处关键代码，每一处都会让测试失败。
-  - 标注路线回放从 50 题（30 题跳过）扩展到全部 80 题，80/80 通过；week1 流程回归 single 12/12、multi 12/12。
+  - 第六周数据集任务：`name_strokes.yaml` 的 19 个歧义字已确定代码中的处理方式，`dream_annotations.yaml` 已做结构审核。两者都**不是人工定稿**。
+- **测试结果（评审整改后）。**
+  - 全量 388 项测试中 376 项通过。其余 12 项都依赖 JPL DE440s 星历，本环境网络策略拦截了下载，与改动前基线在同一环境的结果相同。评审者在数据齐备的环境中，首版为 376/376 通过，首版的 Windows、Linux 两个平台 CI 也都通过；整改后的 CI 以本次推送后的 GitHub Actions 结果为准。
+  - 第六周测试 42 项（首版 30 项 + 评审回归 12 项），全部通过。
+  - 变异检查：逐个改坏 29 处关键代码（首版 20 处 + 整改 9 处），每一处都会让测试失败。
+  - 标注路线回放 80/80（第五周为 50 题，跳过 30）；week1 流程回归 single 12/12、multi 12/12。80/80 只说明按标注路线执行能走通，**不是模型自主选工具的 F1**。
 - **以下没有验证：**
   - 真实模型的解梦意象抽取（计划目标：准确率 ≥ 0.85，召回率 ≥ 0.8）。
-  - 姓名、解梦、每日运势题的真实工具选择和回答质量。
+  - 姓名、解梦、每日运势题的真实工具选择和回答质量，以及多轮脚本 mt-05、mt-10、mt-12。
   - 本环境没有 `.env` 和 API 密钥，没有发出任何模型请求。
-- **人工审核率仍为 0%。** 新增 587 条释义全部是自写草稿，`reviewed: false`，解读强制使用低置信度。
+- **发布门槛另算，尚未达到。** 新增 587 条释义和全库其余条目的人工审核率都是 0%，距离发布前 ≥ 95% 还有差距。这和上面的确定性测试通过是两回事。
+- **解梦向量兜底未实现，延期到第七周**，与参考文本 RAG 一起做，届时需要安装 embedding 模型。
 - 默认配置仍为 `mode: single`。
 
 ## 实施范围与计划对照
@@ -40,7 +41,7 @@
 | 300 条解梦意象，每条带同义词 | `plugins/dream/symbols.py` → `knowledge/sources/dream/entries.yaml`：355 条意象 + 3 条约定；89 个种子意象全部收录 | `test_dream_kb_covers_seed_vocabulary_and_excludes_probes` |
 | 同义词表 → BM25 → 向量检索；低于阈值记为未命中 | `plugins/dream/match.py`：同义词 → 包含 → FTS5 BM25（字二元组）+ Dice 阈值 0.75；**向量检索未启用** | `test_dream_matching_methods` |
 | 解梦只进入 psyche，不参与时机判断 | `knowledge/rules/dream.yaml`：`horizon: psyche` | `test_dream_tool_hits_misses_and_psyche_only`、`test_dream_signals_never_cancel_timing` |
-| 解梦无依据解读率为 0 | `plugins/dream/validation.py`：未命中的意象只能说明未收录；引号中的意象必须是本次命中的；不能说成预兆 | `test_dream_tool_hits_misses_and_psyche_only` |
+| 解梦无依据解读率为 0 | `plugins/dream/validation.py`：检查所有对外文字（含 timeline）。未命中的意象只能说明未收录；被解读的意象，带不带引号，都必须是本次命中的；不能说成预兆；工具参数须带用户原文片段 | `test_dream_tool_hits_misses_and_psyche_only`、`test_week6_review.py` |
 | 每日运势：月亮与快行星相位、流日干支与日主、每日一牌，不经 LLM | `plugins/daily/tools.py` 在代码里组合三个插件的计算器与释义 | `test_daily_reading_validates_card_pillar_and_aspects` |
 | seed = hash(user_id, 日期) | `daily_seed`：SHA256(`daily-sha256-v1`, 用户编号, 日期) 的前 8 字节，不用 Python 内建 `hash()` | `test_daily_seed_is_stable_and_date_specific` |
 | 同一用户同一天读 `daily` 缓存 | `Store.get_daily` / `save_daily`，主键 (user_id, date) | `test_daily_same_day_unchanged_across_sessions_and_cache`、`test_daily_pure_recompute_is_identical` |
@@ -78,18 +79,35 @@
 |---|---|
 | 笔画 `name_strokes.yaml` | 200/200（关口：全对） |
 | 37 个公认姓氏笔画 | 37/37 |
-| 五格公式手算样例 | 7/7 |
-| 同日运势跨会话一致 | 10 次调用 1 种结果；缓存复用 9/9；同 seed 抽牌 100 次一致 |
+| 五格公式手算样例 | 8/8（含“万俟明”） |
+| 同日运势跨会话一致（工具计算数据） | 10 次调用 1 种结果；缓存复用 9/9；同 seed 抽牌 100 次一致；未比较模型文字 |
 | 知识库覆盖 | 姓名 220/220、解梦 358/358、每日运势 9/9；总计 1171 条 |
 | 解梦种子意象 / 同义词示例 | 89/89；13/13 |
 | 词典外意象（14 个） | 13 个记为未命中。“扫码付款”按末尾的“付款”映射到“钱”，这正是该条标注的金标意象 |
 | 解梦**离线词典扫描基线**（非 LLM） | precision 0.796，recall 0.914，100 条中 69 条完全一致 |
 | 标注路线回放 | 80/80（第五周为 50/50，跳过 30） |
 | week1 流程回归 | single 12/12，multi 12/12 |
-| pytest | 376 项，364 通过；12 项依赖 DE440s（环境原因，与基线相同） |
-| 第六周测试 / 变异检查 | 30/30；20/20 被抓到 |
+| pytest | 388 项，376 通过；12 项依赖 DE440s（环境原因，与基线相同） |
+| 第六周测试 / 变异检查 | 42/42；29/29 被抓到 |
 
-**解梦基线的说明。** 扫描基线不经过模型，只把描述里出现的知识库意象和同义词按最长不重叠的方式找出来，用来验证词典覆盖和评估流水线，不能代表计划中“LLM 抽取”的指标。写同义词时能看到数据集文本，所以这个数字也不是留出集结果。主要误差来自扫描基线不理解语境，例如“光着脚”扫出“脚”，“在医院排队”除了金标的“医院”还扫出“排队”。
+**解梦基线的说明。** 扫描基线不经过模型，只把描述里出现的知识库意象和同义词按最长不重叠的方式找出来，用来验证词典覆盖和评估流水线，不能代表计划中“LLM 抽取”的指标。写同义词时能看到数据集文本，所以这个数字也不是留出集结果。建议另建一份没有参与词表编写的留出集，再测真实模型抽取。主要误差来自扫描基线不理解语境，例如“光着脚”扫出“脚”，“在医院排队”除了金标的“医院”还扫出“排队”。
+
+## PR #5 评审整改
+
+评审给出的 8 个反例在首版代码里都能通过校验，现在都会被拒绝。每项都有回归测试（`tests/test_week6_review.py`），并通过真实的 Guard → Registry → `submit_reading` 链路验证。
+
+| # | 问题 | 修复 | 回归测试 |
+|---|---|---|---|
+| 1 [P1] | 每日运势只读最后一条消息：把出生日期当成咨询日期；补充出生资料后丢失“明天”；用户写不存在的日期时抛出异常 | `requested_date` 逐条读取本次提问以来的所有用户消息，取最后一次明确提到的咨询日期。出生日期不算咨询日期：前后有“出生/生于/生日/生的”，或等于画像生日。只补出生资料的消息不改变日期。不存在的日期返回可恢复的校验错误，要求先向用户确认。成功调用后把日期存入本记录的 `daily_target_date` | `test_birth_date_in_question_is_not_the_consultation_date`、`test_birth_context_alone_marks_a_birth_date`、`test_target_date_survives_a_birth_data_answer`、`test_impossible_user_date_is_a_recoverable_failure` |
+| 2 [P2] | 解梦意象只要和用户描述共享一个字就算有来源（手机→飞机） | 工具参数改为 `{phrase, symbol}`。`phrase` 必须是用户描述的连续原文。`symbol` 必须由片段写出，或在短窗口内包含某个别名的全部字（“牙齿一颗一颗掉下来”→掉牙），或匹配片段本身；词典外的词须照抄原文。命中结果记录来源片段 | `test_symbol_needs_a_literal_phrase_and_controlled_mapping` |
+| 3 [P2] | 未命中的意象去掉引号就能解读（“蛇象征变化”） | 按最长别名匹配，找出每句里被解读的意象：“梦见X”、“X象征/代表/意味/说明……”、引号里的 X。被解读的意象必须是本次命中的 key（同义词按 key 计）。写明“未收录/不作解读”的句子是允许的说明 | `test_unquoted_unmatched_symbol_cannot_be_interpreted` |
+| 4 [P2] | 文本提取漏掉 timeline，姓名和解梦检查都能被绕过 | 新增 `common.facts.public_texts`，列出所有对外文字（含 `timeline.period` / `note`、张力、追问、置信度说明），姓名、解梦和塔罗的检查都改用它。只用解梦的回答不允许 timeline | `test_timeline_is_checked_and_dream_has_no_event_timeline`、`test_name_claims_in_timeline_are_checked` |
+| 5 [P2] | 每日一牌没有接入正逆位检查 | 塔罗检查统一收集普通抽牌和每日一牌。evidence 按 ref 核对方向；所有对外文字里“牌名+正位/逆位”的写法必须与抽到的方向一致。追问恢复记录后同样生效 | `test_daily_card_orientation_and_followup` |
+| 6 [P2] | 多个名字的五格、三才合成一个全集，可以互相串用；笔画把默认写法和备选写法的数值放进同一个集合 | 建立 `name_id → 计算结果` 映射。evidence 按 ref 绑定名字；正文的每个格数、三才、笔画陈述，绑定到前面最近写出的全名。有多个名字又没写明是哪个时直接打回。写出的繁体或异体字只允许它自己的笔画（“傑8画”被拒，“杰8画”可以） | `test_grid_and_sancai_claims_are_bound_to_their_name` |
+| 7 [P2] | 不提歧义字就能绕过写法提示；全文出现“确认”二字也算通过 | 只要计算结果里有未确认的写法就触发检查：必须有一句话同时写出该字（或其写法）和每种写法的笔画。专家报告和最终回答都检查 | `test_unconfirmed_form_must_be_explained_even_if_omitted` |
+| 8 [P2] | “万俟保留万”只写在说明里，没有实施 | 新增 `SURNAME_CONTEXT_FORMS`，在整个姓氏层面先应用字形例外再计算笔画。现在“万俟明”为天格 12、人格 17、地格 9、外格 4、总格 20；单姓“万”仍默认“萬”，并提示确认 | `test_wanqi_keeps_the_simple_form`；`evals --suite week6` 的五格样例增至 8/8 |
+
+整改中的一次失误也记录在这里。第一轮变异检查为 28/29：#1 的“出生上下文”规则在测试里被“等于画像生日”这条规则掩盖了。为此补了画像中还没有生日、且出生日期写在咨询日期之后的用例，复测为 29/29。
 
 ## 19 个待定稿字的处理
 
@@ -122,12 +140,12 @@
 
 第五周推迟到本周的 3 段多轮脚本（mt-05、mt-10 需要 `daily_fortune`，mt-12 需要解梦专家），所需工具和专家现在都已注册。这 3 段还没有用真实模型跑过。
 
-## 未完成事项
+## 未完成事项与延期
 
-- 用真实模型运行：解梦意象抽取（关口 ≥ 0.85 / ≥ 0.8）、姓名 / 解梦 / 每日运势轨迹题、多轮脚本 mt-05、mt-10、mt-12。
-- 新增 587 条释义的人工审核（发布标准 ≥ 95%），以及 19 个字对照康熙字典的人工抽查。
-- 解梦向量兜底（需要 embedding 模型）。
-- 远程 CI：本次新增 Unihan 下载并扩展了数据缓存路径，结果以 GitHub Actions 为准。
+- **真实模型评估（待办）**：解梦意象抽取（关口 ≥ 0.85 / ≥ 0.8，建议用留出集）、姓名 / 解梦 / 每日运势轨迹题的模型自主路由、多轮脚本 mt-05、mt-10、mt-12。
+- **人工审核（发布门槛）**：新增 587 条及全库释义的人工审核（≥ 95%），19 个字与蕭、胜备选笔画对照康熙字典核对，`dream_annotations.yaml` 的人工定稿。
+- **解梦向量兜底（延期到第七周）**：需要 embedding 模型，与参考文本 RAG 一起做。
+- **跨平台 CI**：评审整改推送后以 GitHub Actions 结果为准。
 
 ## 复现（离线）
 
@@ -142,5 +160,6 @@ uv run python -m evals.run --suite trajectory --output reports/week6
 uv run python -m evals.run --suite week1 --mode single --output reports/week6
 uv run python -m evals.run --suite week1 --mode multi --output reports/week6
 uv run python -m scripts.review_week6_datasets --output docs/verification/week6/datasets.json
+uv run pytest -q tests/test_week6.py tests/test_week6_review.py
 uv run python -m scripts.draft_week6   # 重新生成姓名、解梦、每日运势的释义草稿
 ```

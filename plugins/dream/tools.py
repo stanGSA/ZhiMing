@@ -10,14 +10,23 @@ from plugins.base import Signal
 from plugins.dream.match import DreamMatcher
 from plugins.dream.validation import validate_output
 
-STOP = set("的了着过在把被我他她它们梦见到里中一个很这那是有")
+
+class DreamSymbol(StrictInput):
+    phrase: str = Field(
+        min_length=1, max_length=40, description="用户梦境描述中逐字出现的连续原文片段"
+    )
+    symbol: str = Field(
+        min_length=1,
+        max_length=12,
+        description="由该片段规范化的意象，如片段“牙齿一颗一颗掉下来”→“掉牙”；词典外的词照抄原文",
+    )
 
 
 class DreamInput(StrictInput):
-    symbols: list[str] = Field(
+    symbols: list[DreamSymbol] = Field(
         min_length=1,
         max_length=12,
-        description='从用户梦境描述中抽出的意象短语，如["掉牙","被狗追"]；不加入用户没说的内容',
+        description="从梦境描述抽出的意象，每项带原文片段；不加入用户没说的内容",
     )
 
 
@@ -49,14 +58,16 @@ class DreamPlugin:
     def validate_output(self, reading, state):
         return validate_output(reading, state, self.matcher)
 
-    @staticmethod
-    def validate(args, session):
-        text = " ".join(session.user_messages[session.state.get("question_message_index", 0) :])
-        source = set(text) - STOP
-        for symbol in args.symbols:
-            # Normalised symbols (牙齿掉了 → 掉牙) may differ in wording, never in substance.
-            if not (set(symbol) - STOP) & source:
-                return f"意象“{symbol}”与用户描述没有共同内容，不能自行添加"
+    def validate(self, args, session):
+        messages = session.user_messages[session.state.get("question_message_index", 0) :]
+        for item in args.symbols:
+            if not any(item.phrase in message for message in messages):
+                return f"原文片段“{item.phrase}”须逐字来自用户的梦境描述"
+            if not self.matcher.supported(item.phrase, item.symbol):
+                return (
+                    f"意象“{item.symbol}”不是原文“{item.phrase}”的规范说法；"
+                    "已知意象须由原文写出或明显缩写，词典外的词须照抄原文"
+                )
         return None
 
     @staticmethod
@@ -98,14 +109,17 @@ class DreamPlugin:
         return signals
 
     def lookup(self, args, session):
-        matches = [self.matcher.match(symbol) for symbol in dict.fromkeys(args.symbols)]
         hits, misses = [], []
-        for match in matches:
+        for item in args.symbols:
+            match = {**self.matcher.match(item.symbol), "phrase": item.phrase}
             if match["key"] is None:
-                misses.append(match["query"])
+                if match["query"] not in misses:
+                    misses.append(match["query"])
             elif match["key"] not in [h["key"] for h in hits]:
                 hits.append(match)
-        payload = json.dumps([self.kb.version, [m["query"] for m in matches]], ensure_ascii=False)
+        payload = json.dumps(
+            [self.kb.version, [[i.phrase, i.symbol] for i in args.symbols]], ensure_ascii=False
+        )
         dream_id = "dr" + hashlib.sha256(payload.encode()).hexdigest()[:12]
         result = dict(
             dream_id=dream_id,
@@ -126,6 +140,7 @@ class DreamPlugin:
                     horizon="psyche",
                     timeframe=None,
                     matched_from=hit["query"],
+                    phrase=hit["phrase"],
                     meaning={
                         k: entry[k] for k in ("text", "keywords", "theme_map", "reviewed", "ref_id")
                     },

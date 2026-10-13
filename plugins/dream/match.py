@@ -91,12 +91,8 @@ class DreamMatcher:
                 )
         return dict(query=query, key=None, method="unmatched", score=best[0] if best else 0.0)
 
-    def scan(self, text: str) -> list[str]:
-        """Offline baseline extractor (no LLM): longest non-overlapping alias occurrences.
-
-        Used by the demo model and the offline evaluation; a real model extracts symbols
-        itself and passes them to lookup_dream_symbols.
-        """
+    def spans(self, text: str) -> list[tuple[int, int, str, str]]:
+        """Longest non-overlapping alias occurrences: (start, end, alias, key)."""
         taken = [False] * len(text)
         found = []
         for alias in sorted(self.aliases, key=len, reverse=True):
@@ -106,8 +102,35 @@ class DreamMatcher:
                 if not any(taken[i] for i in span):
                     for i in span:
                         taken[i] = True
-                    key = self.aliases[alias]
-                    if key not in found:
-                        found.append(key)
+                    found.append((start, start + len(alias), alias, self.aliases[alias]))
                 start = text.find(alias, start + 1)
-        return found
+        return sorted(found)
+
+    def scan(self, text: str) -> list[str]:
+        """Offline baseline extractor (no LLM): keys of the longest alias occurrences.
+
+        Used by the demo route and the offline evaluation; a real model extracts symbols
+        itself and passes them, with their source phrases, to lookup_dream_symbols.
+        """
+        return list(dict.fromkeys(key for _, _, _, key in self.spans(text)))
+
+    def supported(self, phrase: str, symbol: str) -> bool:
+        """Whether a symbol is a controlled normalisation of the user's own phrase.
+
+        A known symbol needs one of its aliases written in the phrase, or every character of
+        a multi-character alias inside a short window of it (牙齿一颗一颗掉下来 → 掉牙,
+        被一条大狗追 → 被追). An unknown symbol must be the user's literal words.
+        """
+        key = self.match(symbol)["key"]
+        if key is None:
+            return symbol in phrase
+        if key in self.scan(phrase) or self.match(phrase)["key"] == key:
+            return True
+        for alias, owner in self.aliases.items():
+            if owner != key or len(alias) < 2:
+                continue
+            width = len(alias) + 6
+            for i in range(len(phrase)):
+                if set(alias) <= set(phrase[i : i + width]):
+                    return True
+        return False

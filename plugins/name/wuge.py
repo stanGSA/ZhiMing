@@ -24,6 +24,11 @@ COMPOUND_SURNAMES = frozenset(
 )
 
 
+# Written forms that depend on the whole surname, not on the single character: 万 alone is
+# conventionally 萬 (15), but the compound surname 万俟 keeps 万 (3).
+SURNAME_CONTEXT_FORMS = {"万俟": {"万": "万"}}
+
+
 def element(number: int) -> str:
     return ELEMENTS[((number - 1) % 10) // 2]
 
@@ -61,10 +66,17 @@ def grids(surname: list[int], given: list[int]) -> dict[str, int]:
 def analyze(surname: str, given: str, forms: dict[str, str] | None = None) -> dict:
     """Deterministic analysis; characters without Kangxi data are returned, never guessed."""
     forms = forms or {}
+    context = SURNAME_CONTEXT_FORMS.get(surname, {})
     chars = []
     for role, text in (("surname", surname), ("given", given)):
         for char in text:
-            chars.append(char_strokes(char, role, forms.get(char)))
+            ruled = role == "surname" and char in context and char not in forms
+            result = char_strokes(char, role, context[char] if ruled else forms.get(char))
+            if ruled:
+                # A surname convention, not a user confirmation.
+                result["confirmed"] = False
+                result["rules"].insert(0, f"复姓“{surname}”保留“{context[char]}”")
+            chars.append(result)
     unknown = [c["char"] for c in chars if c["status"] != "ok"]
     if unknown:
         return dict(status="unknown_chars", unknown=unknown, chars=chars)

@@ -1,6 +1,5 @@
 {
   "date": "2026-10-14",
-  "base_commit": "8a7d864",
   "week6": {
     "gates": {
       "strokes_all_correct": {
@@ -59,8 +58,8 @@
       ]
     },
     "grids": {
-      "cases": 7,
-      "correct": 7
+      "cases": 8,
+      "correct": 8
     },
     "dream": {
       "method": "离线词典扫描基线（非LLM抽取）：最长不重叠匹配知识库意象与同义词",
@@ -96,7 +95,7 @@
         true,
         true
       ],
-      "card": "圣杯八",
+      "card": "权杖骑士",
       "day_pillar": "辛酉",
       "events": 5,
       "seed_repeats": 100,
@@ -167,5 +166,7 @@
     "offline_tool_f1": 1.0,
     "offline_specialist_f1": 1.0
   },
-  "scope": "离线确定性验收与demo模型流程回放；不代表真实模型的意象抽取、工具选择或解读质量。"
+  "scope": "离线确定性验收与demo模型流程回放；不代表真实模型的意象抽取、工具选择或解读质量。",
+  "note": "PR #5 评审整改后重跑（基于 d2a244a 加整改改动）",
+  "same_day_scope": "比较的是daily_fortune工具返回的计算数据（去掉cache_reused标记）；不比较模型最终自然语言是否逐字相同。"
 }

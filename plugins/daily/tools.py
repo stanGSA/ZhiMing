@@ -40,22 +40,60 @@ def daily_seed(user_id: str, day: str) -> int:
     return int.from_bytes(hashlib.sha256(payload.encode()).digest()[:8], "big")
 
 
+DATE = re.compile(
+    r"(\d{4})\s*[-年/.]\s*(\d{1,2})\s*[-月/.]\s*(\d{1,2})[日号]?|(?<![\d年])(\d{1,2})月(\d{1,2})[日号]"
+)
+RELATIVE = {"大后天": 3, "后天": 2, "明天": 1, "明日": 1, "今天": 0, "今日": 0, "昨天": -1}
+BIRTH_BEFORE = re.compile(r"出生|生于|生日|出世|生辰")
+BIRTH_AFTER = re.compile(r"\s*(?:\d{1,2}[:：点]\d{0,2}\S{0,3})?\s*(?:出生|生的|生人)")
+
+
+class InvalidDate(ValueError):
+    pass
+
+
+def date_mentions(text: str, anchor: Date | None, birth_date: str | None) -> list[str]:
+    """Consultation dates mentioned in one message, in order. Birth dates are not mentions:
+    a date next to 出生/生于/生日, or equal to the profile birth date, is birth evidence."""
+    found = []
+    for match in DATE.finditer(text):
+        before = text[max(0, match.start() - 8) : match.start()]
+        if BIRTH_BEFORE.search(before) or BIRTH_AFTER.match(text, match.end()):
+            continue
+        year, month, day, short_month, short_day = match.groups()
+        if year is None and anchor is None:
+            continue
+        try:
+            value = (
+                Date(int(year), int(month), int(day))
+                if year
+                else Date(anchor.year, int(short_month), int(short_day))
+            ).isoformat()
+        except ValueError as exc:
+            raise InvalidDate(match.group()) from exc
+        if value != birth_date:
+            found.append((match.start(), value))
+    if anchor is not None:
+        for match in re.finditer("|".join(sorted(RELATIVE, key=len, reverse=True)), text):
+            found.append((match.start(), (anchor + timedelta(RELATIVE[match.group()])).isoformat()))
+    return [value for _, value in sorted(found)]
+
+
 def requested_date(session) -> str | None:
-    """The date the user asked about: an explicit date, or today/tomorrow from the anchor."""
-    text = session.user_messages[-1] if session.user_messages else ""
+    """The day this reading asks about.
+
+    Every user message since the question counts, so a later answer that only supplies birth
+    data ("成都出生，08:30") keeps the date asked for; only a new explicit date changes it.
+    Without any mention the anchor day (today) applies. An impossible date raises InvalidDate.
+    """
     anchor = Date.fromisoformat(session.calendar_anchor) if session.calendar_anchor else None
-    explicit = re.search(r"(\d{4})[-年/.](\d{1,2})[-月/.](\d{1,2})", text)
-    if explicit:
-        return Date(*map(int, explicit.groups())).isoformat()
-    if anchor is None:
-        return None
-    short = re.search(r"(?<!\d)(\d{1,2})月(\d{1,2})[日号]", text)
-    if short:
-        return Date(anchor.year, int(short[1]), int(short[2])).isoformat()
-    for word, offset in (("后天", 2), ("明天", 1), ("明日", 1), ("昨天", -1)):
-        if word in text:
-            return (anchor + timedelta(days=offset)).isoformat()
-    return anchor.isoformat()
+    birth = str(session.profile.get("birth_local_dt") or "")[:10] or None
+    target = None
+    for text in session.user_messages[session.state.get("question_message_index", 0) :]:
+        mentions = date_mentions(text, anchor, birth)
+        if mentions:
+            target = mentions[-1]
+    return target or (anchor.isoformat() if anchor else None)
 
 
 class DailyPlugin:
@@ -88,7 +126,10 @@ class DailyPlugin:
             Date.fromisoformat(args.date)
         except ValueError:
             return "date须为YYYY-MM-DD"
-        wanted = requested_date(session)
+        try:
+            wanted = requested_date(session)
+        except InvalidDate as exc:
+            return f"用户给出的日期“{exc}”不存在，请先向用户确认咨询日期"
         if wanted and args.date != wanted:
             return f"日期须与用户所问一致：{wanted}"
         if (
@@ -201,6 +242,8 @@ class DailyPlugin:
         # A cached day keeps the knowledge edition it was computed with.
         state["kb_version"] = result["kb_version"]
         state["kb_lookup_version"] = result["kb_version"]
+        # The asked-for day belongs to the reading; later turns only change it explicitly.
+        state["daily_target_date"] = args.date
         state["daily_result"] = result
         state.setdefault("calculations", {})["daily_result"] = result
         return {k: v for k, v in result.items() if k != "signals"}

@@ -166,17 +166,15 @@ async def test_profile_name_two_names_and_validator(runtime):
     second = await invoke(runtime, "analyze_name", dict(surname="李", given="逸"))
     assert first.ok and second.ok and first.data["ambiguities"][0]["char"] == "杰"
     ref = first.data["interpretations"][1]["ref_id"]
-    assert check(runtime, reading("name", ref, "“杰”按12画计。")) == (
-        "“杰”有多种写法，须说明默认写法并提示确认"
-    )
-    good = "“杰”默认按繁体傑12画，写原字为8画，请按证件写法确认；人格26。"
-    assert check(runtime, reading("name", ref, good)) is None
-    # Grid numbers of either analysed name are facts; anything else is fabricated.
-    assert check(runtime, reading("name", ref, "李逸人格22，写法已确认。")) is None
-    assert "不符" in check(runtime, reading("name", ref, "人格23，写法待确认。"))
-    assert "不符" in check(runtime, reading("name", ref, "三才配置为木木木，写法待确认。"))
-    assert "喜用神" in check(runtime, reading("name", ref, "名字五行缺水，写法待确认。"))
-    assert "命运" in check(runtime, reading("name", ref, "这个名字注定成功，写法待确认。"))
+    explain = "“杰”默认傑12画，写原字8画，请按证件确认。"
+    assert "多种写法" in check(runtime, reading("name", ref, "“杰”按12画计。"))
+    assert check(runtime, reading("name", ref, explain + "赵杰人格26。")) is None
+    # Each claim is checked against the name it belongs to (see test_week6_review).
+    assert check(runtime, reading("name", ref, explain + "李逸人格22。")) is None
+    assert "不符" in check(runtime, reading("name", ref, explain + "赵杰人格23。"))
+    assert "不符" in check(runtime, reading("name", ref, explain + "赵杰三才配置为木木木。"))
+    assert "喜用神" in check(runtime, reading("name", ref, explain + "名字五行缺水。"))
+    assert "命运" in check(runtime, reading("name", ref, explain + "这个名字注定成功。"))
     signals = [s for s in runtime.session.state["signals"] if s["system"] == "name"]
     assert {s["horizon"] for s in signals} == {"trait"}
     assert max(s["strength"] for s in signals) <= 0.35  # below bazi/natal strengths
@@ -263,9 +261,21 @@ def test_dream_matching_methods(project):
 
 async def test_dream_tool_hits_misses_and_psyche_only(runtime):
     await ask(runtime, "梦见无人机掉在我家阳台，还被一条大狗追，是不是要出事了？")
-    invented = await invoke(runtime, "lookup_dream_symbols", dict(symbols=["考试"]))
-    assert "没有共同内容" in invented.error
-    result = await invoke(runtime, "lookup_dream_symbols", dict(symbols=["无人机", "大狗", "被追"]))
+    invented = await invoke(
+        runtime, "lookup_dream_symbols", dict(symbols=[dict(phrase="考试", symbol="考试")])
+    )
+    assert "逐字来自" in invented.error
+    result = await invoke(
+        runtime,
+        "lookup_dream_symbols",
+        dict(
+            symbols=[
+                dict(phrase="无人机", symbol="无人机"),
+                dict(phrase="一条大狗", symbol="大狗"),
+                dict(phrase="被一条大狗追", symbol="被追"),
+            ]
+        ),
+    )
     assert [h["key"] for h in result.data["hits"]] == ["狗", "被追"]
     assert result.data["misses"] == ["无人机"]
     dream = [s for s in runtime.session.state["signals"] if s["system"] == "dream"]
