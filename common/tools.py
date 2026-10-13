@@ -2,7 +2,14 @@ from __future__ import annotations
 
 import re
 
-from common.input_evidence import clock_in, gender_evidence, normalized_gender, supported_birth
+from common.input_evidence import (
+    clock_in,
+    gender_evidence,
+    normalized_gender,
+    solar_time_choice,
+    supported_birth,
+)
+from common.location import consultation_timezone_evidence
 from common.schemas import (
     AskInput,
     EmptyInput,
@@ -123,6 +130,20 @@ def common_tools(store, kb: KnowledgeBase) -> list[Tool]:
                     ZoneInfo(str(args.value))
                 except (ValueError, ZoneInfoNotFoundError):
                     return "请使用有效IANA时区"
+                return (
+                    None
+                    if consultation_timezone_evidence(
+                        args.evidence, session, session.profile.get("tz")
+                    )
+                    == args.value
+                    and consultation_timezone_evidence(
+                        [m for m in session.user_messages if args.evidence in m][-1],
+                        session,
+                        session.profile.get("tz"),
+                    )
+                    == args.value
+                    else "咨询时区须有当前居住地或按该地时间的明确原话，并先解析地点"
+                )
             resolved = any(
                 location.get(args.field) == args.value
                 for location in session.state.get("locations", {}).values()
@@ -147,6 +168,13 @@ def common_tools(store, kb: KnowledgeBase) -> list[Tool]:
         if args.field in ("time_known", "true_solar_time"):
             if type(args.value) is not bool:
                 return "该字段必须是布尔值"
+            if args.field == "true_solar_time":
+                if solar_time_choice(args.evidence) is not args.value:
+                    return "真太阳时开关须由肯定或否定的完整原话确认"
+                messages = [m for m in session.user_messages if args.evidence in m]
+                if solar_time_choice(messages[-1]) is not args.value:
+                    return "真太阳时开关与完整用户原话冲突或未明确"
+                return None
             confirmations = (
                 ("知道", "确定", "准确", "开启", "使用")
                 if args.value

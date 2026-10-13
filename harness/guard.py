@@ -61,6 +61,9 @@ class Guard:
             if error:
                 return None, ToolResult.failure("validation_failed", error), ""
         context = [session.state.get(field) for field in tool.cache_state_keys]
+        if tool.cache_user_input:
+            context.append(len(session.user_messages))
+            context.append(sorted(args.model_fields_set))
         profile_version = (
             None if call.name == "update_profile" else session.profile.get("version", 0)
         )

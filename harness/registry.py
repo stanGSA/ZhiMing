@@ -26,6 +26,7 @@ class Tool:
     terminal: bool = False
     exclusive_key: str | None = None
     cache_state_keys: tuple[str, ...] = ()
+    cache_user_input: bool = False
     validator: Callable[[BaseModel, Session], str | None] | None = None
     model_result: Callable[[dict], dict] | None = None
 
