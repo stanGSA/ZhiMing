@@ -9,7 +9,7 @@ analysed, whether or not the answer mentions the character.
 
 import re
 
-from common.facts import public_texts
+from common.facts import public_texts, rendered_texts
 
 GRID = re.compile(
     r"(天格|人格|地格|外格|总格)(?:数理|数)?\s*(?:为|是|=|：|:|得|共)?\s*(\d{1,3})(?!\d)"
@@ -92,16 +92,42 @@ def check_claims(text, bound, results):
     return None
 
 
+def ambiguity_prompt(result, ambiguity) -> str:
+    """A copyable, user-facing disclosure built from the calculated form/count pairs."""
+    default = ambiguity["default"]
+    alternatives = "、".join(f"{a['form']}{a['strokes']}画" for a in ambiguity["alternatives"])
+    return (
+        f"{result['full_name']}的“{ambiguity['char']}”默认按{default['form']}{default['strokes']}画，"
+        f"备选写法为{alternatives}，请按证件写法确认。"
+    )
+
+
 def ambiguity_explained(texts, ambiguity) -> bool:
-    """Some sentence names the character (or a form) and every candidate stroke count."""
+    """Require each written form with its own count and a still-pending confirmation."""
     forms = {ambiguity["char"], ambiguity["default"]["form"]}
     forms |= {a["form"] for a in ambiguity["alternatives"]}
-    counts = {ambiguity["default"]["strokes"]} | {a["strokes"] for a in ambiguity["alternatives"]}
+    required = {
+        (a["form"], a["strokes"]) for a in [ambiguity["default"], *ambiguity["alternatives"]]
+    }
     for text in texts:
         for sentence in re.split(r"[。；;！!？?\n]", text):
-            if any(f in sentence for f in forms) and all(
-                re.search(rf"(?<!\d){n}\s*画", sentence) for n in counts
-            ):
+            if not any(f in sentence for f in forms):
+                continue
+            pairs = {(char, int(count)) for char, count in STROKE.findall(sentence)}
+            # '写原字为8画' explicitly refers to this character, not an unrelated number.
+            original = re.findall(
+                r"(?:原字|本字|简体)(?:为|是|按|计|算|作)?\s*(\d{1,2})\s*画", sentence
+            )
+            pairs.update((ambiguity["char"], int(n)) for n in original)
+            default = ambiguity["default"]
+            default_named = re.search(
+                rf"默认(?:按|用|为|是)?(?:繁体|写法)?\s*[「“【《]?{re.escape(default['form'])}"
+                rf"[」”】》]?\s*(?:为|是|按|计)?\s*{default['strokes']}\s*画",
+                sentence,
+            )
+            pending = re.search(r"请.{0,12}确认|待.{0,6}确认|需要.{0,6}确认|须.{0,6}确认", sentence)
+            already = re.search(r"已(?:经)?确认|确认过|确认好了", sentence)
+            if required <= pairs and default_named and pending and not already:
                 return True
     return False
 
@@ -130,13 +156,14 @@ def validate_output(reading, state):
         return "姓名数理是民间约定，不能作命运断言"
     for result in results.values():
         for ambiguity in result["ambiguities"]:
-            if not ambiguity_explained(texts, ambiguity):
+            if not ambiguity_explained(rendered_texts(reading), ambiguity):
                 options = "/".join(
                     f"{o['form']}{o['strokes']}画"
                     for o in [ambiguity["default"], *ambiguity["alternatives"]]
                 )
                 return (
                     f"{result['full_name']}的“{ambiguity['char']}”有多种写法（{options}），"
-                    "须在同一句说明默认写法与备选笔画，并请用户按证件写法确认"
+                    "须在可见的摘要、依据或建议中说明各字形笔画并请用户确认。可使用："
+                    + ambiguity_prompt(result, ambiguity)
                 )
     return None

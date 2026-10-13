@@ -13,6 +13,16 @@ import json
 import re
 
 FILLER = re.compile(r"[的了着过在把被一个很好多大小些]")
+# Only these documented constructions may normalise non-contiguous words. Never rebuild
+# arbitrary nouns from a bag of characters (手机飞到手里 does not contain an aircraft).
+NORMALISATIONS = {
+    "掉牙": re.compile(
+        r"牙(?:齿)?(?:一颗(?:一颗)?|一粒(?:一粒)?|全都|全部|都|又|也|突然|慢慢|不停地|不断地|往下|了|的)*\s*(?:掉|脱落)"
+    ),
+    "被追": re.compile(
+        r"被(?:一[只条个人群]|大|小|陌生的|陌生|凶猛的|凶猛|人|狗|狼|老虎|狮子|怪物|坏人|警察|朋友|同学|追赶者)*追(?:赶)?"
+    ),
+}
 
 
 def bigrams(text: str) -> list[str]:
@@ -117,20 +127,14 @@ class DreamMatcher:
     def supported(self, phrase: str, symbol: str) -> bool:
         """Whether a symbol is a controlled normalisation of the user's own phrase.
 
-        A known symbol needs one of its aliases written in the phrase, or every character of
-        a multi-character alias inside a short window of it (牙齿一颗一颗掉下来 → 掉牙,
-        被一条大狗追 → 被追). An unknown symbol must be the user's literal words.
+        A known symbol needs a literal alias or an explicitly supported construction
+        (牙齿一颗一颗掉下来 → 掉牙, 被一条大狗追 → 被追). Fuzzy retrieval may still
+        match the literal supplied symbol, but cannot justify inventing a different one.
         """
         key = self.match(symbol)["key"]
         if key is None:
             return symbol in phrase
-        if key in self.scan(phrase) or self.match(phrase)["key"] == key:
+        if symbol in phrase or key in self.scan(phrase):
             return True
-        for alias, owner in self.aliases.items():
-            if owner != key or len(alias) < 2:
-                continue
-            width = len(alias) + 6
-            for i in range(len(phrase)):
-                if set(alias) <= set(phrase[i : i + width]):
-                    return True
-        return False
+        rule = NORMALISATIONS.get(key)
+        return bool(rule and rule.search(phrase))
