@@ -1,5 +1,5 @@
 """Regressions for the PR #2 review: retries, budget admission, deadlines, kept draws, traces
-and metric definitions. Every boundary below was reproduced before the fix."""
+and metric definitions. Each test fails when the fix it covers is reverted."""
 
 import asyncio
 import dataclasses
