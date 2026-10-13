@@ -1,0 +1,171 @@
+{
+  "date": "2026-10-14",
+  "base_commit": "8a7d864",
+  "week6": {
+    "gates": {
+      "strokes_all_correct": {
+        "met": true,
+        "value": "200/200",
+        "target": "200/200（计划关口：笔画全对）"
+      },
+      "daily_same_day_unchanged": {
+        "met": true,
+        "value": "10次调用1种结果；同seed抽牌100次一致=True",
+        "target": "100%一致（计划关口：同日结果不变）"
+      },
+      "kb_coverage": {
+        "met": true,
+        "value": {
+          "name": 220,
+          "dream": 358,
+          "daily": 9
+        },
+        "target": "姓名、解梦、每日运势分区覆盖率100%，解梦意象≥300"
+      },
+      "dream_seed_vocabulary": {
+        "met": true,
+        "value": "种子意象89/89，词典外意象未命中13/14，其余映射{'扫码付款': '钱'}均为该条标注认可的意象",
+        "target": "89个种子意象全部收录；词典外意象未命中，或映射到该条标注认可的意象"
+      }
+    },
+    "strokes": {
+      "items": 200,
+      "correct": 200,
+      "known_surnames": 37,
+      "known_correct": 37,
+      "review_items": 19,
+      "review_confirm": [
+        "肖",
+        "钟",
+        "万",
+        "丽",
+        "强",
+        "艳",
+        "杰",
+        "郁",
+        "胜"
+      ],
+      "review_fixed": [
+        "朱",
+        "胡",
+        "于",
+        "余",
+        "叶",
+        "苏",
+        "沈",
+        "姜",
+        "范",
+        "向"
+      ]
+    },
+    "grids": {
+      "cases": 7,
+      "correct": 7
+    },
+    "dream": {
+      "method": "离线词典扫描基线（非LLM抽取）：最长不重叠匹配知识库意象与同义词",
+      "items": 100,
+      "precision": 0.7959183673469388,
+      "recall": 0.9140625,
+      "exact_match": 69,
+      "symbols": 355,
+      "seed_keys": 89,
+      "seed_covered": 89,
+      "synonym_examples": 13,
+      "synonym_examples_hit": 13,
+      "oov_terms": 14,
+      "oov_unmatched": 13,
+      "oov_matched": {
+        "扫码付款": "钱"
+      }
+    },
+    "daily": {
+      "date": "2026-10-14",
+      "repeats": 10,
+      "identical": true,
+      "distinct_outputs": 1,
+      "cache_reused": [
+        false,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true
+      ],
+      "card": "圣杯八",
+      "day_pillar": "辛酉",
+      "events": 5,
+      "seed_repeats": 100,
+      "seed_identical": true
+    },
+    "reviewed_rate": {
+      "name": 0.0,
+      "dream": 0.0,
+      "daily": 0.0
+    },
+    "kb": {
+      "kb_version": "v1-7c1ca12f408903ef",
+      "entries": 1171,
+      "reviewed_rate": 0.0,
+      "partitions": {
+        "astro": {
+          "entries": 280,
+          "expected": 280,
+          "coverage": 1.0,
+          "reviewed_rate": 0.0
+        },
+        "bazi": {
+          "entries": 141,
+          "expected": 141,
+          "coverage": 1.0,
+          "reviewed_rate": 0.0
+        },
+        "daily": {
+          "entries": 9,
+          "expected": 9,
+          "coverage": 1.0,
+          "reviewed_rate": 0.0
+        },
+        "dream": {
+          "entries": 358,
+          "expected": 358,
+          "coverage": 1.0,
+          "reviewed_rate": 0.0
+        },
+        "name": {
+          "entries": 220,
+          "expected": 220,
+          "coverage": 1.0,
+          "reviewed_rate": 0.0
+        },
+        "tarot": {
+          "entries": 163,
+          "expected": 163,
+          "coverage": 1.0,
+          "reviewed_rate": 0.0
+        }
+      }
+    }
+  },
+  "trajectory_replay": {
+    "suite": "trajectory-week23",
+    "provider": "labelled-replay",
+    "cases": 80,
+    "passed": 80,
+    "failed": 0,
+    "skipped": 0,
+    "scope": "Expected routes executed through real guard, registry, deterministic calculators, storage and trace; NOT model-choice F1 or answer-quality evaluation. H_timing/H_decision/H_dream fixtures are newly computed synthetic histories. First-action asks tested without invented replies; Relative month ranges derive from the runtime calendar anchor; other unspecified ranges use the disclosed integration default.",
+    "dataset_status": "draft_needs_review"
+  },
+  "week1_regression": {
+    "single": "12/12",
+    "multi": "12/12",
+    "offline_tool_f1": 1.0,
+    "offline_specialist_f1": 1.0
+  },
+  "scope": "离线确定性验收与demo模型流程回放；不代表真实模型的意象抽取、工具选择或解读质量。"
+}

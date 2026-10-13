@@ -11,6 +11,7 @@ import yaml
 
 from knowledge.catalogues import expected_keys
 from knowledge.schema import Entry
+from plugins.dream.match import fts_tokens
 from plugins.tarot.catalogue import DECK, SPREADS
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -72,14 +73,17 @@ def build(
         for i in range(len(positions))
     }
     partitions = {e.system for e in entries}
-    for system in ("astro", "bazi"):
+    for system in ("astro", "bazi", "name", "dream", "daily"):
         if system in partitions:
             expected |= expected_keys(system)
             if system not in rules:
                 raise ValueError(f"缺少{system}组合规则")
+    symbols = sum(e.system == "dream" and e.kind == "symbol" for e in entries)
+    if "dream" in partitions and symbols < 300:
+        raise ValueError(f"解梦意象不足300条：{symbols}")
     missing = sorted(expected - keys)
     if missing:
-        raise ValueError(f"塔罗释义覆盖不完整：{missing}")
+        raise ValueError(f"释义覆盖不完整：{missing}")
     if "tarot" not in rules:
         raise ValueError("缺少塔罗规则")
     for spread, positions in SPREADS.items():
@@ -124,6 +128,7 @@ def build(
             CREATE TABLE rules(system TEXT PRIMARY KEY, rule_json TEXT NOT NULL);
             CREATE TABLE meta(key TEXT PRIMARY KEY,value TEXT NOT NULL);
             CREATE VIRTUAL TABLE entries_fts USING fts5(id UNINDEXED, keywords, text);
+            CREATE VIRTUAL TABLE dream_fts USING fts5(id UNINDEXED, alias UNINDEXED, tokens);
             """)
             for entry in entries:
                 db.execute(
@@ -139,6 +144,13 @@ def build(
                     "INSERT INTO entries_fts VALUES(?,?,?)",
                     (entry.id, " ".join(entry.keywords), entry.text),
                 )
+                if entry.system == "dream" and entry.kind == "symbol":
+                    # FTS5 does not segment Chinese: index character bigrams of every alias.
+                    for alias in [entry.key, *entry.synonyms]:
+                        db.execute(
+                            "INSERT INTO dream_fts VALUES(?,?,?)",
+                            (entry.id, alias, " ".join(fts_tokens(alias))),
+                        )
             db.executemany(
                 "INSERT INTO rules VALUES(?,?)", [(k, json.dumps(v)) for k, v in rules.items()]
             )

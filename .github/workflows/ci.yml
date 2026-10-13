@@ -1,7 +1,7 @@
 name: deterministic-tests
 on: [push, pull_request, workflow_dispatch]
 jobs:
-  weeks1-3:
+  deterministic:
     strategy:
       matrix:
         os: [ubuntu-latest, windows-latest]
@@ -20,6 +20,7 @@ jobs:
           path: |
             data/ephe
             data/geo
+            data/unihan
           key: deterministic-data-${{ hashFiles('scripts/data_manifest.yaml') }}
       - run: uv run python -m scripts.fetch_data
       - run: uv run python -m knowledge.build

@@ -243,9 +243,23 @@ def test_multi_mode_tool_tables(project):
             "compute_bazi",
             "compute_bazi_period",
             "draw_tarot",
+            "analyze_name",
+            "lookup_dream_symbols",
         }
+        # Week 6: daily fortune has no specialist; the orchestrator calls it directly.
+        assert "daily_fortune" in orchestrator
         specs = runtime.registry.tools["consult_specialist"].handler.__self__.specs
-        assert set(specs) == {"astro", "bazi", "tarot"}
+        assert set(specs) == {"astro", "bazi", "tarot", "name", "dream"}
+        assert set(specs["name"].registry.tools) == {
+            "analyze_name",
+            "lookup_meaning",
+            "submit_report",
+        }
+        assert set(specs["dream"].registry.tools) == {
+            "lookup_dream_symbols",
+            "lookup_meaning",
+            "submit_report",
+        }
         assert set(specs["tarot"].registry.tools) == {
             "draw_tarot",
             "lookup_meaning",

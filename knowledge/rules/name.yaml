@@ -1,0 +1,18 @@
+system: name
+version: 1
+composition: 五格数理条目给出倾向值，组合规则只决定每个格影响哪些主题；三才条目按天人、人地两段生克给出倾向。姓名只产出trait信号，强度上限低于八字与本命盘。笔画规则版本另记为kangxi-strokes-v1。
+horizon: trait
+# 天格来自姓氏，不随个人取名改变，按约定不单独产生倾向信号。
+grid_themes:
+  天格: []
+  人格: [self, career]
+  地格: [relationship]
+  外格: [relationship]
+  总格: [career, finance]
+strength:
+  人格: 0.35
+  地格: 0.25
+  外格: 0.2
+  总格: 0.3
+  sancai: 0.3
+max_strength: 0.35

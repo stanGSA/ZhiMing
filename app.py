@@ -31,6 +31,9 @@ from knowledge.kb import KnowledgeBase
 from memory.store import Store
 from plugins.astro import AstroPlugin
 from plugins.bazi import BaziPlugin
+from plugins.daily import DailyPlugin
+from plugins.dream import DreamPlugin
+from plugins.name import NamePlugin
 from plugins.tarot import TarotPlugin
 
 ROOT = Path(__file__).resolve().parent
@@ -265,7 +268,16 @@ def create_runtime(
         }
     )
     registry = Registry()
-    plugins = [TarotPlugin(kb), AstroPlugin(kb, store), BaziPlugin(kb, store)]
+    plugins = [
+        TarotPlugin(kb),
+        AstroPlugin(kb, store),
+        BaziPlugin(kb, store),
+        NamePlugin(kb, store),
+        DreamPlugin(kb, config["kb"].get("dream_match_threshold")),
+    ]
+    # Daily fortune is a deterministic composition the orchestrator calls directly; its facts
+    # are checked by the astro, bazi and tarot validators.
+    daily = DailyPlugin(kb, store)
     session.output_validators = {plugin.name: plugin.validate_output for plugin in plugins}
     tracer = Tracer(root / config["paths"]["runs"])
     reviewer = (
@@ -274,7 +286,7 @@ def create_runtime(
         else None
     )
     shared = common_tools(store, kb, mode, reviewer)
-    tools = [*shared, location_tool(Gazetteer())]
+    tools = [*shared, location_tool(Gazetteer()), *daily.tools]
     if mode == "single":
         tools.extend(tool for plugin in plugins for tool in plugin.tools)
     else:

@@ -33,6 +33,17 @@ TAROT_PROMPT = f"""你是知命的塔罗专家。
 每个记录只抽一次：调用一次draw_tarot即可，draw_tarot已返回牌面与精确释义，通常不必再查询。牌阵single=单张，three_card=过去/现在/未来，decision=现状/A/B；子问题给了spread就用它，否则二选一用decision，其余默认three_card。
 要点逐张引用牌面ref_id并结合子问题解释，正逆位必须与抽牌结果一致。二选一时answer写“更倾向A/B，前提是…”并说明另一选项的成本；牌面只提供反思线索，不预测结果。"""
 
+NAME_PROMPT = f"""你是知命的姓名五格专家。
+{SHARED_RULES}
+用analyze_name分析子问题里的名字：姓名必须来自用户原话或画像name，复姓（如欧阳）按复姓拆分；两个名字各调用一次。子问题JSON带bazi_id时可传入，只并列三才五行与原局五行计数。
+笔画按康熙字典繁体计，与现代简体笔画不同。工具返回ambiguities时，要点里说明默认写法与备选写法的笔画，请用户按证件写法确认；forms只在用户明确说明写法时填写。
+五格数理吉凶是民间约定、各家有分歧：answer写有条件的倾向，不作命运断言，不判喜用神，不建议改名或“补”某个五行。起名与合婚不在本期范围。"""
+
+DREAM_PROMPT = f"""你是知命的解梦专家。
+{SHARED_RULES}
+从原问题的梦境描述中抽出意象，规范为常见说法（如“牙齿一颗颗掉下来”→“掉牙”，“被大狗追”→“狗”“被追”），一次调用lookup_dream_symbols；不加入用户没说的内容。
+只解读hits里的意象，要点引用其ref_id；misses里的意象写进missing并说明词典未收录、不作解读。梦境只反映心理与情绪，不说预兆、预示或现实中会发生什么；涉及去世的亲人、葬礼、医院时语气温和，不暗示健康或生死。没有任何命中时如实说明，并在missing里请用户补充细节。"""
+
 CONTINUE_PROMPT = "本轮尚未完成。计算完成后请调用 submit_report 提交结构化报告，不要输出普通文本。"
 
 SPEC_CONFIG = {
@@ -71,6 +82,12 @@ SPEC_CONFIG = {
             "zishi_rule",
             "true_solar_time",
         ),
+    ),
+    "name": dict(
+        label="姓名", prompt=NAME_PROMPT, temporal=False, repeatable=True, profile_fields=("name",)
+    ),
+    "dream": dict(
+        label="解梦", prompt=DREAM_PROMPT, temporal=False, repeatable=True, profile_fields=()
     ),
     # One draw per reading: once tarot has a valid report it is reused, never redrawn.
     "tarot": dict(

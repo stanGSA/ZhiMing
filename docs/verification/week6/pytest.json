@@ -1,0 +1,29 @@
+{
+  "total": 376,
+  "passed": 364,
+  "failed_or_error": [
+    "tests.test_scripts::test_doctor_week1_required_checks",
+    "tests.test_week23_calculations::test_independent_skyfield_all_planets[chart-01]",
+    "tests.test_week23_calculations::test_independent_skyfield_all_planets[chart-02]",
+    "tests.test_week23_calculations::test_independent_skyfield_all_planets[chart-03]",
+    "tests.test_week23_calculations::test_independent_skyfield_all_planets[chart-04]",
+    "tests.test_week23_calculations::test_independent_skyfield_all_planets[chart-05]",
+    "tests.test_week23_calculations::test_independent_skyfield_all_planets[chart-06]",
+    "tests.test_week23_calculations::test_independent_skyfield_all_planets[chart-07]",
+    "tests.test_week23_calculations::test_independent_skyfield_all_planets[chart-08]",
+    "tests.test_week23_calculations::test_independent_skyfield_all_planets[chart-09]",
+    "tests.test_week23_calculations::test_independent_skyfield_all_planets[chart-10]",
+    "tests.test_week23_calculations::test_independent_skyfield_all_planets[chart-11]"
+  ],
+  "failure_cause": "全部依赖JPL DE440s（ssd.jpl.nasa.gov被本环境网络策略拦截，返回403）；与改动前基线 8a7d864 在同一环境的结果相同（334通过、同样12项）",
+  "week6_tests": {
+    "total": 30,
+    "passed": 30
+  },
+  "mutation_check": {
+    "mutations": 20,
+    "caught": 20,
+    "note": "逐个修改源代码后运行tests/test_week6.py，每个变异都使测试失败；修改已全部还原"
+  },
+  "ruff": "check 与 format --check 均通过"
+}

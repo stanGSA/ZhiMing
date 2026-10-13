@@ -121,7 +121,8 @@ def diagnose(root: Path = ROOT, data_root: Path | None = None) -> dict:
                 "name": path,
                 "ok": (root / path).exists(),
                 "required": False,
-                "detail": "ephe/geo为第二周数据；unihan/models属于后续范围，缺少不阻断当前验收",
+                "detail": "ephe/geo为第二周数据，unihan为第六周姓名笔画数据（三者由清单哈希强制核验）；"
+                "models（embedding）尚未使用，缺少不阻断验收",
             }
         )
     import yaml

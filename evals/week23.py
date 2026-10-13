@@ -4,6 +4,7 @@ This is a labelled integration replay, NOT an independent model-choice benchmark
 """
 
 import json
+import re
 import shutil
 import uuid
 from pathlib import Path
@@ -15,6 +16,8 @@ from common.validation import HIGH_RISK
 from harness.guard import Guard
 from harness.models import ToolCall
 from knowledge.build import build
+from plugins.daily.tools import requested_date
+from plugins.name.wuge import COMPOUND_SURNAMES
 from plugins.tarot.draw import draw_tarot
 
 SUPPORTED = {
@@ -26,7 +29,24 @@ SUPPORTED = {
     "lookup_meaning",
     "submit_reading",
     "ask_user",
+    # Week 6
+    "analyze_name",
+    "lookup_dream_symbols",
+    "daily_fortune",
 }
+QUOTED_NAME = re.compile(r"[“\"「]([\u4e00-\u9fff]{2,4})[”\"」]")
+
+
+def names_in(question, profile):
+    """Names the labelled route analyses: quoted names in the question, else the profile name."""
+    found = [n for n in QUOTED_NAME.findall(question) if len(n) >= 2]
+    if not found and profile.get("name"):
+        found = [profile["name"]]
+    split = []
+    for name in found:
+        surname = name[:2] if name[:2] in COMPOUND_SURNAMES else name[:1]
+        split.append(dict(surname=surname, given=name[len(surname) :]))
+    return split
 
 
 async def execute(runtime, name, arguments):
@@ -60,15 +80,19 @@ def output(runtime, case):
             )
         )
     summary = "有条件适合小步尝试，前提是核实现实条件；这是标注路线的离线集成回放。"
+    if "dream" in systems:
+        summary = "这个梦更多反映心理感受，不预示现实事件；这是标注路线的离线集成回放。"
     if case["id"] == "traj-048":
-        summary = "当前只能提供原局五行计数，不能判断姓名是否合适；姓名比较尚缺后续计算能力。"
+        summary = "暂不支持起名，可以分析你给出的候选名字；本次只提供原局五行计数。"
     if (state.get("tarot_result") or {}).get("spread") == "decision":
         summary = "暂倾向A，前提是核实成本与实际需求；这是离线集成回放。"
     if "下个月适合跳槽" in state["question"]:
         summary = "下个月有条件适合跳槽，前提是先核实岗位与书面录用；这是离线集成回放。"
     risk = bool(HIGH_RISK.search(state["question"] + case["question"]))
     return dict(
-        question_type=case["type"] if case["type"] in ("timing", "decision", "trait") else "tarot",
+        question_type=case["type"]
+        if case["type"] in ("timing", "decision", "trait", "name", "dream", "daily")
+        else "tarot",
         systems_used=systems,
         summary=summary,
         evidence=evidence,
@@ -92,6 +116,10 @@ async def route(runtime, case, profile, start="2026-11-01", end="2026-11-30"):
             runtime, "ask_user", dict(question="请补充/确认：" + "、".join(expected["ask_for"]))
         )
     names = list(expected["tools_single"])
+    if "analyze_name" in names and "compute_bazi" in names:
+        # Name beside bazi: the bazi_id must exist before analyze_name uses it.
+        names.remove("compute_bazi")
+        names.insert(0, "compute_bazi")
     if (
         names == ["submit_reading"]
         and not runtime.session.state.get("signals")
@@ -103,7 +131,7 @@ async def route(runtime, case, profile, start="2026-11-01", end="2026-11-30"):
         if not result.ok:
             return result
     birth = {}
-    if any(name in names for name in ("compute_natal_chart", "compute_bazi")):
+    if any(name in names for name in ("compute_natal_chart", "compute_bazi", "daily_fortune")):
         location = await execute(runtime, "resolve_location", dict(query=profile["place"]))
         if not location.ok or location.data.get("status") != "resolved":
             return location
@@ -131,6 +159,20 @@ async def route(runtime, case, profile, start="2026-11-01", end="2026-11-30"):
             entry_ref = signal["kb_ref"].split("@")[0]
             _, system, kind, key = entry_ref.split(":", 3)
             args = dict(system=system, kind=kind, key=key)
+        elif name == "analyze_name":
+            for person in names_in(case["question"], profile):
+                bazi_id = runtime.session.state.get("bazi_id")
+                result = await execute(
+                    runtime, name, {**person, **({"bazi_id": bazi_id} if bazi_id else {})}
+                )
+                if not result.ok or result.data.get("status") == "needs_input":
+                    return result
+            continue
+        elif name == "lookup_dream_symbols":
+            plugin = runtime.registry.tools[name].handler.__self__
+            args = dict(symbols=plugin.matcher.scan(case["question"]) or [case["question"][:12]])
+        elif name == "daily_fortune":
+            args = dict(date=requested_date(runtime.session), location_id=birth["location_id"])
         elif name == "submit_reading":
             args = output(runtime, case)
         else:
@@ -163,8 +205,6 @@ async def evaluate(output_dir: Path):
         reason = None
         if required - SUPPORTED:
             reason = "依赖尚未实施的工具：" + ", ".join(sorted(required - SUPPORTED))
-        if case.get("history") == "H_dream":
-            reason = "依赖第六周解梦历史"
         if reason:
             rows.append(dict(id=case["id"], status="skipped", reason=reason))
             continue
@@ -182,8 +222,12 @@ async def evaluate(output_dir: Path):
             if case.get("history"):
                 base = {
                     "id": "baseline",
-                    "type": "timing" if case["history"] == "H_timing" else "decision",
-                    "question": "基线合成记录：近期工作条件",
+                    "type": {"H_timing": "timing", "H_dream": "dream"}.get(
+                        case["history"], "decision"
+                    ),
+                    "question": "昨晚梦到掉牙"
+                    if case["history"] == "H_dream"
+                    else "基线合成记录：近期工作条件",
                     "expected": dict(
                         tools_single=[
                             "compute_natal_chart",
@@ -194,6 +238,8 @@ async def evaluate(output_dir: Path):
                             "submit_reading",
                         ]
                         if case["history"] == "H_timing"
+                        else ["lookup_dream_symbols", "submit_reading"]
+                        if case["history"] == "H_dream"
                         else ["draw_tarot", "submit_reading"],
                         tarot_spread="three_card" if case["history"] == "H_timing" else "decision",
                     ),
@@ -247,14 +293,14 @@ async def evaluate(output_dir: Path):
         failed=sum(r["status"] == "failed" for r in rows),
         skipped=sum(r["status"] == "skipped" for r in rows),
         results=rows,
-        scope="Expected routes executed through real guard, registry, deterministic calculators, storage and trace; NOT model-choice F1 or answer-quality evaluation. H_timing/H_decision fixtures are newly computed synthetic histories. First-action asks tested without invented replies; Relative month ranges derive from the runtime calendar anchor; other unspecified ranges use the disclosed integration default.",
+        scope="Expected routes executed through real guard, registry, deterministic calculators, storage and trace; NOT model-choice F1 or answer-quality evaluation. H_timing/H_decision/H_dream fixtures are newly computed synthetic histories. First-action asks tested without invented replies; Relative month ranges derive from the runtime calendar anchor; other unspecified ranges use the disclosed integration default.",
         dataset_status=fixture["status"],
     )
     (target / "trajectory.json").write_text(
         json.dumps(report, ensure_ascii=False, indent=2), encoding="utf-8"
     )
     (target / "trajectory.md").write_text(
-        "# 三体系标注路线集成回放\n\n"
+        "# 标注路线集成回放（六个体系）\n\n"
         + report["scope"]
         + "\n\n"
         + f"通过{report['passed']}，失败{report['failed']}，跳过{report['skipped']}。\n\n"

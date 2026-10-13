@@ -98,6 +98,23 @@ class Store:
         ).fetchone()
         return json.loads(row[0]) if row else None
 
+    def get_daily(self, user_id: str, day: str) -> dict | None:
+        row = self.db.execute(
+            "SELECT result_json, kb_version FROM daily WHERE user_id=? AND date=?", (user_id, day)
+        ).fetchone()
+        if not row:
+            return None
+        return {"result": json.loads(row["result_json"]), "kb_version": row["kb_version"]}
+
+    def save_daily(self, user_id: str, day: str, result: dict, kb_version: str) -> None:
+        # One row per (user, date): the same day always reads back the same result. A row is
+        # replaced only when the birth data it was computed from has changed.
+        with self.db:
+            self.db.execute(
+                "INSERT OR REPLACE INTO daily VALUES(?,?,?,?)",
+                (user_id, day, json.dumps(result, ensure_ascii=False), kb_version),
+            )
+
     def get_profile(self, user_id: str) -> dict:
         row = self.db.execute(
             "SELECT profile_json,version FROM profiles WHERE user_id=?", (user_id,)

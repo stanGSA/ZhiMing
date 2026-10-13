@@ -110,10 +110,14 @@ def public_parts(reading):
 
 
 def validate_output(reading, state):
-    natal = state.get("natal_result") or {}
+    daily = state.get("daily_result") or {}
+    natal = state.get("natal_result") or daily.get("natal") or {}
     positions = {p["body_zh"]: p for p in natal.get("planets", [])}
-    events = (state.get("transit_result") or {}).get("events", [])
-    interpretations = (state.get("transit_result") or {}).get("interpretations", [])
+    # Daily fortune events are exact transits too; validate them like compute_transits.
+    events = (state.get("transit_result") or {}).get("events", []) + daily.get("events", [])
+    interpretations = (state.get("transit_result") or {}).get("interpretations", []) + daily.get(
+        "interpretations", []
+    )
     event_refs = {}
     for item in interpretations:
         for event in events:

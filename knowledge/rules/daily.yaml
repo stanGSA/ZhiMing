@@ -1,0 +1,13 @@
+system: daily
+version: 1
+composition: 每日运势在代码中组合占星、八字与塔罗：当日月亮与快行星对本命的精确相位、流日干支与日主的十神关系、每日一牌。倾向值全部来自对应体系的知识条目，信号统一为moment。种子为SHA256(用户编号, 日期)的前8字节。
+horizon: moment
+transit_bodies: [Moon, Sun, Mercury, Venus, Mars]
+transit_orb: 1.0
+seed_algorithm: daily-sha256-v1
+strength:
+  moon_aspect: 0.3
+  fast_aspect: 0.35
+  day_ten_god: 0.35
+  day_relation: 0.25
+  daily_card: 0.4
