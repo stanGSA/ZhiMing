@@ -28,7 +28,7 @@ def validate_calculation_facts(reading, state):
 
 
 def public_texts(reading) -> list[str]:
-    """Every text field of a reading that the user can see, timeline included."""
+    """All authored text to validate, including metadata that is not always rendered."""
     return [
         reading.summary,
         *[e.reading for e in reading.evidence],
@@ -39,4 +39,19 @@ def public_texts(reading) -> list[str]:
         *reading.followups,
         reading.confidence.reason,
         reading.safety.note,
+    ]
+
+
+def rendered_texts(reading) -> list[str]:
+    """Texts actually displayed by render_reading; mandatory disclosures belong here.
+
+    Confidence.reason, followups, resonances and tensions remain structured metadata.
+    Checking them for false claims must not count as disclosing information to the user.
+    """
+    return [
+        reading.summary,
+        *[e.reading for e in reading.evidence],
+        *reading.advice,
+        *[part for t in reading.timeline for part in (t.period, t.note)],
+        *([reading.safety.note] if reading.safety.flag else []),
     ]

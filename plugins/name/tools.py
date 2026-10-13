@@ -8,7 +8,7 @@ from harness.registry import Tool
 from plugins.base import Signal
 from plugins.context import MeaningPlugin
 from plugins.name.strokes import UnihanMissing
-from plugins.name.validation import validate_output
+from plugins.name.validation import ambiguity_prompt, validate_output
 from plugins.name.wuge import COMPOUND_SURNAMES, ELEMENTS, GRIDS, analyze, shuli
 
 HAN = r"[㐀-䶿一-鿿豈-﫿]"
@@ -160,6 +160,9 @@ class NamePlugin(MeaningPlugin):
                 f"无法确定{chars}的康熙笔画，请确认这个字的写法（可提供繁体或常用异体）；不会猜测笔画。",
                 result["unknown"],
             ).result()
+        result["confirmation_prompts"] = [
+            ambiguity_prompt(result, item) for item in result["ambiguities"]
+        ]
         if args.bazi_id:
             chart = self.store.get_calculation("bazi", session.user_id, args.bazi_id)
             if not chart:

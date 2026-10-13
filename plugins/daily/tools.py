@@ -46,19 +46,44 @@ DATE = re.compile(
 RELATIVE = {"大后天": 3, "后天": 2, "明天": 1, "明日": 1, "今天": 0, "今日": 0, "昨天": -1}
 BIRTH_BEFORE = re.compile(r"出生|生于|生日|出世|生辰")
 BIRTH_AFTER = re.compile(r"\s*(?:\d{1,2}[:：点]\d{0,2}\S{0,3})?\s*(?:出生|生的|生人)")
+DATE_REQUEST = re.compile(r"运势|适合|适不适合|适宜|能否|能不能|怎么样|如何|好不好|呢")
+DATE_CHANGE = re.compile(r"(?:改成|改为|换成|更正为|调整到|看看|看|算算|算|按|日期是|日期为)\s*$")
+
+
+def consultation_mention(text: str, start: int, end: int, *, explicit: bool) -> bool:
+    """A date must describe the consultation, not when the user is speaking.
+
+    Bare dates are valid answers to a date question. Relative words need the same local
+    request context as dates; '我今天补充资料' is not a request for today's fortune.
+    """
+    before = re.split(r"[，,。；;！!？?\n]", text[:start])[-1]
+    after = re.split(r"[，,。；;！!？?\n]", text[end:])[0]
+    if re.search(r"(?:不要|不用|别|不必|无需)(?:改成|改为|换成|调整到|看|算)\s*$", before):
+        return False
+    bare = not before.strip(" 那是就") and not after.strip(" 呢吧的")
+    return bool(
+        bare
+        or DATE_CHANGE.search(before)
+        or DATE_REQUEST.search(after)
+        or (explicit and re.search(r"咨询|运势", before))
+    )
 
 
 class InvalidDate(ValueError):
     pass
 
 
-def date_mentions(text: str, anchor: Date | None, birth_date: str | None) -> list[str]:
+def date_mentions(
+    text: str, anchor: Date | None, birth_date: str | None
+) -> list[str | InvalidDate]:
     """Consultation dates mentioned in one message, in order. Birth dates are not mentions:
     a date next to 出生/生于/生日, or equal to the profile birth date, is birth evidence."""
     found = []
     for match in DATE.finditer(text):
         before = text[max(0, match.start() - 8) : match.start()]
         if BIRTH_BEFORE.search(before) or BIRTH_AFTER.match(text, match.end()):
+            continue
+        if not consultation_mention(text, match.start(), match.end(), explicit=True):
             continue
         year, month, day, short_month, short_day = match.groups()
         if year is None and anchor is None:
@@ -69,31 +94,47 @@ def date_mentions(text: str, anchor: Date | None, birth_date: str | None) -> lis
                 if year
                 else Date(anchor.year, int(short_month), int(short_day))
             ).isoformat()
-        except ValueError as exc:
-            raise InvalidDate(match.group()) from exc
+        except ValueError:
+            # Keep the candidate in order: a later correction in this very message wins.
+            value = InvalidDate(match.group())
         if value != birth_date:
             found.append((match.start(), value))
     if anchor is not None:
         for match in re.finditer("|".join(sorted(RELATIVE, key=len, reverse=True)), text):
-            found.append((match.start(), (anchor + timedelta(RELATIVE[match.group()])).isoformat()))
+            if consultation_mention(text, match.start(), match.end(), explicit=False):
+                found.append(
+                    (match.start(), (anchor + timedelta(RELATIVE[match.group()])).isoformat())
+                )
     return [value for _, value in sorted(found)]
 
 
 def requested_date(session) -> str | None:
     """The day this reading asks about.
 
-    Every user message since the question counts, so a later answer that only supplies birth
-    data ("成都出生，08:30") keeps the date asked for; only a new explicit date changes it.
-    Without any mention the anchor day (today) applies. An impossible date raises InvalidDate.
+    Consume new user evidence once and retain either a target or a pending invalid date.
+    Later corrections supersede that error; birth data and incidental time words do not.
     """
     anchor = Date.fromisoformat(session.calendar_anchor) if session.calendar_anchor else None
     birth = str(session.profile.get("birth_local_dt") or "")[:10] or None
-    target = None
-    for text in session.user_messages[session.state.get("question_message_index", 0) :]:
+    state = session.state
+    cursor = max(state.get("question_message_index", 0), state.get("daily_date_cursor", 0))
+    target = state.get("daily_target_date") or (state.get("daily_result") or {}).get("date")
+    error = state.get("daily_date_error")
+    for text in session.user_messages[cursor:]:
         mentions = date_mentions(text, anchor, birth)
         if mentions:
-            target = mentions[-1]
-    return target or (anchor.isoformat() if anchor else None)
+            candidate = mentions[-1]
+            if isinstance(candidate, InvalidDate):
+                error = str(candidate)
+            else:
+                target, error = candidate, None
+    target = target or (anchor.isoformat() if anchor else None)
+    state.update(daily_target_date=target, daily_date_cursor=len(session.user_messages))
+    if error:
+        state["daily_date_error"] = error
+        raise InvalidDate(error)
+    state.pop("daily_date_error", None)
+    return target
 
 
 class DailyPlugin:
