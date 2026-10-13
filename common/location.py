@@ -56,6 +56,75 @@ ADMIN_ALIASES = {
         "江苏省": "04",
     },
 }
+# GeoNames admin1 codes (not Chinese GB/T province codes).
+for _code, _short, _full in [
+    ("01", "安徽", "安徽省"),
+    ("02", "浙江", "浙江省"),
+    ("03", "江西", "江西省"),
+    ("05", "吉林", "吉林省"),
+    ("06", "青海", "青海省"),
+    ("07", "福建", "福建省"),
+    ("08", "黑龙江", "黑龙江省"),
+    ("09", "河南", "河南省"),
+    ("10", "河北", "河北省"),
+    ("11", "湖南", "湖南省"),
+    ("12", "湖北", "湖北省"),
+    ("13", "新疆", "新疆维吾尔自治区"),
+    ("14", "西藏", "西藏自治区"),
+    ("15", "甘肃", "甘肃省"),
+    ("16", "广西", "广西壮族自治区"),
+    ("18", "贵州", "贵州省"),
+    ("19", "辽宁", "辽宁省"),
+    ("20", "内蒙古", "内蒙古自治区"),
+    ("21", "宁夏", "宁夏回族自治区"),
+    ("24", "山西", "山西省"),
+    ("25", "山东", "山东省"),
+    ("26", "陕西", "陕西省"),
+    ("28", "天津", "天津市"),
+    ("29", "云南", "云南省"),
+    ("30", "广东", "广东省"),
+    ("31", "海南", "海南省"),
+    ("33", "重庆", "重庆市"),
+]:
+    ADMIN_ALIASES["CN"].update({_short: _code, _full: _code})
+
+
+def consultation_timezone_evidence(text, session, birth_tz=None):
+    """Only current residence/consultation statements bind a resolved city to a timezone."""
+    from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
+
+    zones = set()
+    for match in re.finditer(r"[A-Za-z_]+/[A-Za-z_+0-9/-]+", text):
+        zone = match[0]
+        if re.search(r"不(?:要|用|按|是|使用|采用)?\s*$", text[: match.start()]):
+            continue
+        try:
+            ZoneInfo(zone)
+            zones.add(zone)
+        except (ValueError, ZoneInfoNotFoundError):
+            pass
+    if any(
+        not re.search(r"(?:不(?:要)?(?:按|用|使用|采用)?|不是)\s*$", text[: m.start()])
+        for m in re.finditer("北京时间", text)
+    ):
+        zones.add("Asia/Shanghai")
+    if birth_tz and re.search(r"出生地时间|出生地当地|按当地", text):
+        zones.add(birth_tz)
+    for identity, location in session.state.get("locations", {}).items():
+        aliases = session.state.get("location_aliases", {}).get(identity, [])
+        for alias in {*aliases, location["name"]}:
+            if len(alias) < 2:
+                continue
+            name = re.escape(alias)
+            matches = re.finditer(
+                rf"(?:现在住在|目前住在|现在在|目前在|现居|现住|我住在)\s*{name}(?![A-Za-z])|"
+                rf"(?:按|使用|采用|咨询(?:时区|时间)?[是为：:]?)\s*{name}(?:的)?(?:当地)?时间",
+                text,
+                re.I,
+            )
+            if any(not re.search(r"不(?:要|是|再)?\s*$", text[: m.start()]) for m in matches):
+                zones.add(location["tz"])
+    return next(iter(zones)) if len(zones) == 1 else None
 
 
 def country_code(value):
@@ -170,8 +239,10 @@ class Gazetteer:
                 query, inline_country = remainder, code
                 break
         country = country_code(args.country) or inline_country
-        admin = ADMIN_ALIASES.get(country, {}).get(args.admin1, args.admin1)
         ids = self.index.get(normalize(query), set())
+        countries = {self.records[i]["country"] for i in ids}
+        inferred_country = country or (next(iter(countries)) if len(countries) == 1 else None)
+        admin = ADMIN_ALIASES.get(inferred_country, {}).get(args.admin1, args.admin1)
         if inline_country and country != inline_country:
             ids = set()
         matches = [
@@ -203,6 +274,9 @@ def location_tool(gazetteer: Gazetteer):
         if result["status"] == "resolved":
             location = result["location"]
             session.state.setdefault("locations", {})[location["location_id"]] = location
+            session.state.setdefault("location_aliases", {})[location["location_id"]] = sorted(
+                gazetteer.names[location["location_id"]] | {args.query}
+            )
         return result
 
     def validate(args, session):
@@ -246,8 +320,12 @@ def location_tool(gazetteer: Gazetteer):
             if not locations or any(m["country"] != country_code(args.country) for m in locations):
                 return "国家限制必须由用户明确提供，不能自行消歧"
         if args.admin1 and args.admin1 not in text:
-            admin = ADMIN_ALIASES.get(country_code(args.country), {}).get(args.admin1, args.admin1)
-            aliases = ADMIN_ALIASES.get(country_code(args.country), {})
+            countries = {c["country"] for c in original.get("candidates", [])}
+            country = country_code(args.country) or (unique or {}).get("country")
+            if not country and len(countries) == 1:
+                country = next(iter(countries))
+            aliases = ADMIN_ALIASES.get(country, {})
+            admin = aliases.get(args.admin1, args.admin1)
             if not any(alias in text and code == admin for alias, code in aliases.items()) and (
                 not unique or unique["admin1"] != admin
             ):

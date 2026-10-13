@@ -44,6 +44,7 @@ class AstroPlugin(MeaningPlugin):
                 roles=frozenset({"orchestrator", "astro"}),
                 dependency="active_reading_id",
                 validator=birth_provenance,
+                cache_user_input=True,
                 model_result=self.project,
             ),
             Tool(
@@ -56,6 +57,7 @@ class AstroPlugin(MeaningPlugin):
                 dependency="chart_id",
                 dependency_argument="chart_id",
                 validator=range_provenance,
+                cache_user_input=True,
                 model_result=self.project,
             ),
         ]

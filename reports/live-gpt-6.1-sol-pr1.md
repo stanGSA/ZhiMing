@@ -1147,6 +1147,6 @@ One fixed natural-language astrology question, ten independent synthetic users, 
 ## 范围与仍未验证事项
 
 - 该报告不替代独立人工20条校准；知识条目人工审核率仍为0%。
-- 原始对话、trace、数据库和完整JSON仅在本地忽略目录；此Markdown可脱敏归档，但不是远程原始证据附件。
+- 原始对话、trace、数据库和完整JSON仅在本地忽略目录；此脱敏Markdown已随v2纳入仓库；原始证据附件未上传。
 - 行运持续容许度窗口、八字权威万年历独立抽查及未实施周次不声明通过。
-- 新CI工作流已在本地验证下载/doctor/测试路径，但本次未提交或推送，因此新版本远程Ubuntu结果尚未验证。
+- 发布状态更新：v2（abb5c17）已推送；[Windows与Ubuntu CI均通过](https://github.com/stanGSA/ZhiMing/actions/runs/38379814078)。本报告原测试统计保持不变，不代表后续本地改动的远程CI结果。

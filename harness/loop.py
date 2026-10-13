@@ -106,7 +106,7 @@ async def run_turn(
                     )
                 tool = registry.tools[call.name]
                 if result.ok:
-                    if tool.idempotent:
+                    if tool.idempotent and result.data.get("status") != "needs_input":
                         session.cache[key] = result
                     if tool.exclusive_key:
                         session.state[tool.exclusive_key] = True

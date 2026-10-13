@@ -5,6 +5,7 @@ import re
 from pydantic import Field
 
 from common.input_evidence import question_range, reading_text, supported_birth
+from common.location import consultation_timezone_evidence
 from common.time_utils import NeedsInput, date_range
 from harness.models import StrictInput
 from plugins.base import Signal
@@ -124,24 +125,31 @@ def range_provenance(args, session):
 def period_timezone(args, session, chart):
     """Consultation timezone is separate from the birth clock timezone."""
     tz = args.tz or session.profile.get("consultation_tz") or session.state.get("timeframe_tz")
-    text = reading_text(session)
     birth_tz = chart.get("input", {}).get("tz")
+    confirmed = None
+    for text in session.user_messages[session.state.get("question_message_index", 0) :]:
+        evidence = consultation_timezone_evidence(text, session, birth_tz)
+        if evidence:
+            confirmed = evidence
+    if confirmed:
+        if args.tz and args.tz != confirmed:
+            raise NeedsInput(
+                "confirm_period_timezone", "日期区间时区与用户确认不一致，请使用：" + confirmed
+            )
+        return confirmed
     if not tz and birth_tz == "Asia/Shanghai":
         tz = birth_tz
     if not tz:
         raise NeedsInput(
             "confirm_period_timezone",
-            "请确认咨询日期区间使用的IANA时区，例如America/New_York或Asia/Shanghai；出生地不一定是当前所在地。",
+            "请确认咨询日期区间按哪个城市的时间，可以说“按洛杉矶时间”或“按北京时间”；请先解析该城市。出生地不一定是当前所在地。",
         )
     if args.tz and tz != session.profile.get("consultation_tz") and tz != "Asia/Shanghai":
-        if tz not in text and not (
-            tz == birth_tz and re.search(r"出生地时间|出生地当地|按当地", text)
-        ):
-            raise NeedsInput("confirm_period_timezone", "请确认日期区间使用的时区：" + tz)
+        raise NeedsInput("confirm_period_timezone", "请确认日期区间使用的时区：" + tz)
     if (
         args.tz == "Asia/Shanghai"
         and birth_tz != "Asia/Shanghai"
-        and not any(x in text for x in ("北京时间", "Asia/Shanghai"))
+        and session.profile.get("consultation_tz") != "Asia/Shanghai"
     ):
         raise NeedsInput("confirm_period_timezone", "海外资料请确认咨询区间是否使用北京时间。")
     return tz

@@ -45,7 +45,8 @@ def aspect_assertions(text):
         "六分": "sextile",
         "六合": "sextile",
     }
-    aspect = "|".join(aliases)
+    # “冲突” is ordinary prose, whereas “冲/对冲/冲相” assert an aspect.
+    aspect = "|".join(word + ("(?!突)" if word == "冲" else "") for word in aliases)
     names = {zh: key for key, zh in BODY_ZH.items()}
     patterns = [
         (
@@ -57,17 +58,22 @@ def aspect_assertions(text):
             True,
         ),
     ]
-    seen = set()
+    candidates = []
     for pattern, reversed_order in patterns:
         for match in re.finditer(pattern, text):
             left, relation, right = match.groups()
             if reversed_order:
                 relation, right = right, relation
-            for source in re.findall(body, left):
-                item = (match.start(), names[source], names[right], aliases[relation])
-                if item not in seen:
-                    seen.add(item)
-                    yield item
+            candidates.append((match.start(), match.end(), left, right, relation))
+    # Do not reinterpret the target of “木星合太阳” as the subject of
+    # “太阳与水星刑水星” in a coordinated sequence of independent relations.
+    end = -1
+    for start, stop, left, right, relation in sorted(candidates, key=lambda c: (c[0], -c[1])):
+        if start < end:
+            continue
+        end = stop
+        for source in re.findall(body, left):
+            yield start, names[source], names[right], aliases[relation]
 
 
 def preceding_event_date(text, position):
@@ -122,7 +128,10 @@ def validate_output(reading, state):
                 re.search(r"无法|不能|不使用|不解读|不确定|未知|不提供|不可用", sentence)
             )
             if natal and not natal.get("time_known") and not negative:
-                if re.search(r"上升|天顶|下降点|天底|(?:第)?[一二三四五六七八九十\d]+宫", sentence):
+                if re.search(
+                    r"上升(?!期|空间|趋势|通道|机会|幅度|潜力)|天顶|下降点|天底|(?:第)?[一二三四五六七八九十\d]+宫",
+                    sentence,
+                ):
                     return "出生时间未知，不能使用宫位或四轴解读"
             matches = list(re.finditer(BODY_PATTERN, sentence))
             for i, body in enumerate(matches):

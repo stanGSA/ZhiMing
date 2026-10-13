@@ -1,7 +1,9 @@
 from pathlib import Path
 from typing import Literal
 
-from common.input_evidence import gender_evidence, normalized_gender, reading_text
+from pydantic import Field
+
+from common.input_evidence import gender_evidence, normalized_gender, solar_time_choice
 from common.time_utils import NeedsInput
 from harness.models import StrictInput, ToolResult
 from harness.registry import Tool
@@ -18,9 +20,20 @@ from plugins.context import (
 
 
 class BaziInput(BirthInput):
+    birth_local: str | None = Field(
+        default=None,
+        description="用户提供的原始出生地当地钟表日期时间，或省略复用画像。不得先换算成北京时间、UTC或真太阳时再传入；内部计算器负责转换。",
+    )
+    tz: str | None = Field(
+        default=None,
+        description="原始出生钟表的IANA时区，通常由location_id取得；不是八字内部固定UTC+8口径，也不是咨询时区。",
+    )
     dayun_time_basis: Literal["civil", "physical"] = "civil"
     gender: Literal["male", "female"] | None = None
-    true_solar_time: bool = False
+    true_solar_time: bool = Field(
+        default=False,
+        description="用户确认用真太阳时则true；明确不用/关闭真太阳时即选择本工具的固定UTC+8口径，传false，无须再追问是否同意固定UTC+8。两者都传原始当地出生时间，由工具内部转换。",
+    )
     zishi_rule: Literal["next_day", "same_day"] = "next_day"
     calendar: Literal["solar", "lunar"] = "solar"
     lunar_date: str | None = None
@@ -55,6 +68,7 @@ class BaziPlugin(MeaningPlugin):
                 roles=frozenset({"orchestrator", "bazi"}),
                 dependency="active_reading_id",
                 validator=self.validate,
+                cache_user_input=True,
                 model_result=self.project,
             ),
             Tool(
@@ -67,6 +81,7 @@ class BaziPlugin(MeaningPlugin):
                 dependency="bazi_id",
                 dependency_argument="bazi_id",
                 validator=range_provenance,
+                cache_user_input=True,
                 model_result=self.project,
             ),
         ]
@@ -168,18 +183,25 @@ class BaziPlugin(MeaningPlugin):
                     inputs[setting] = session.profile[setting]
             if not inputs["gender"]:
                 inputs["gender"] = normalized_gender(session.profile.get("gender"))
-            if (
-                inputs["tz"] not in ("Asia/Shanghai", "Asia/Urumqi", "Etc/GMT-8")
-                and "true_solar_time" not in session.profile
-            ):
-                text = reading_text(session)
-                if not any(
-                    x in text for x in ("真太阳时", "固定UTC+8", "按北京时间", "不用真太阳")
-                ):
-                    raise NeedsInput(
-                        "confirm_bazi_clock",
-                        "海外出生请确认日时柱按真太阳时，还是固定UTC+8口径（不用真太阳时）；两者可能不同。",
+            choice = session.profile.get("true_solar_time")
+            for message in session.user_messages[session.state.get("question_message_index", 0) :]:
+                current = solar_time_choice(message)
+                if current is not None:
+                    choice = current
+            overseas = inputs["tz"] not in ("Asia/Shanghai", "Asia/Urumqi", "Etc/GMT-8")
+            if overseas and choice is None:
+                raise NeedsInput(
+                    "confirm_bazi_clock",
+                    "海外出生请确认日时柱按真太阳时，还是固定UTC+8口径（不用真太阳时）；两者可能不同。",
+                )
+            if choice is not None:
+                if "true_solar_time" in args.model_fields_set and args.true_solar_time != choice:
+                    return ToolResult.failure(
+                        "validation_failed", "真太阳时参数与用户确认的口径不一致"
                     )
+                inputs["true_solar_time"] = choice
+            elif args.true_solar_time:
+                raise NeedsInput("confirm_bazi_clock", "请确认是否使用真太阳时，不能自行开启。")
             result, cached = self.store.cached_calculation(
                 "bazi", session.user_id, inputs, lambda: compute_bazi(**inputs)
             )

@@ -330,6 +330,7 @@ async def evaluate(output, selected=None, judge=True, natural=False):
                                 content=json.dumps(
                                     dict(
                                         question=case["question"],
+                                        clarification=clarification,
                                         answer=outcome.text,
                                         structured=outcome.data.get("reading"),
                                         facts=facts,
