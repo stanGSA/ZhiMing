@@ -51,7 +51,7 @@ def render_reading(output: dict) -> str:
     return "\n".join(lines)
 
 
-def common_tools(store, kb: KnowledgeBase) -> list[Tool]:
+def common_tools(store, kb: KnowledgeBase, mode: str = "single") -> list[Tool]:
     def start_validator(args, session):
         current = session.user_messages[-1]
         if (
@@ -286,7 +286,7 @@ def common_tools(store, kb: KnowledgeBase) -> list[Tool]:
         if session.state.get("response_mode") == "followup":
             response_id = store.save_response(session, output)
         else:
-            store.save_reading(session, output)
+            store.save_reading(session, output, mode, session.state.get("specialist_reports"))
         session.state["complete"] = True
         session.state["output"] = output
         return {

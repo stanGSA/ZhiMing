@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 import shutil
+import time
 from dataclasses import dataclass
 from datetime import datetime
 from pathlib import Path
@@ -10,11 +11,14 @@ from zoneinfo import ZoneInfo
 import yaml
 from dotenv import load_dotenv
 
+from agents.consult import ConsultService
 from agents.demo import DemoModel
-from agents.orchestrator import SYSTEM_PROMPT
+from agents.orchestrator import MULTI_SYSTEM_PROMPT, SYSTEM_PROMPT
+from agents.specialists import build_specialists
 from common.location import Gazetteer, location_tool
 from common.safety import AMBIGUOUS_DISTRESS, CRISIS, SAFETY_PROMPT, support_text
 from common.tools import common_tools
+from harness.budget import Budget
 from harness.llm import AnthropicModel, OpenAIModel
 from harness.loop import run_turn
 from harness.models import TurnOutcome
@@ -41,6 +45,10 @@ class Runtime:
     max_steps: int
     token_budget: int
     safety_config: dict
+    mode: str = "single"
+    specialist_model: object | None = None
+    request_timeout_s: float | None = None
+    system_prompt: str = SYSTEM_PROMPT
 
     def compact_history(self) -> None:
         if self.session.state.get("complete"):
@@ -102,6 +110,14 @@ class Runtime:
             self.session.messages.append({"role": "assistant", "content": text})
             self.tracer.log(self.session, "crisis_support", safety_flag=True)
             return TurnOutcome(status="crisis_support", text=text, data={"safety": {"flag": True}})
+        # One budget per user request, shared by the orchestrator and every specialist. The
+        # wall-clock deadline guards multi-agent fan-out only; single mode keeps week 1-3 limits.
+        deadline = (
+            time.monotonic() + self.request_timeout_s
+            if self.mode == "multi" and self.request_timeout_s
+            else None
+        )
+        self.session.budget = Budget(self.token_budget, deadline=deadline)
         return await run_turn(
             self.session,
             message,
@@ -118,7 +134,7 @@ class Runtime:
         if directory.is_relative_to(self.tracer.root.resolve()) and directory.exists():
             shutil.rmtree(directory)
         self.session.profile = {"version": 0}
-        self.session.messages = [{"role": "system", "content": SYSTEM_PROMPT}]
+        self.session.messages = [{"role": "system", "content": self.system_prompt}]
         self.session.state.clear()
         self.session.cache.clear()
         self.session.user_messages.clear()
@@ -129,9 +145,29 @@ class Runtime:
         self.store.close()
 
     async def close_model(self) -> None:
-        close = getattr(self.model, "close", None)
-        if close is not None:
-            await close()
+        models = [self.model]
+        if self.specialist_model is not None and self.specialist_model is not self.model:
+            models.append(self.specialist_model)
+        for model in models:
+            close = getattr(model, "close", None)
+            if close is not None:
+                await close()
+
+
+def build_model(provider: str, model_name: str | None, config: dict, spread: str | None):
+    if provider == "demo":
+        return DemoModel(spread)
+    if provider in ("openai", "anthropic"):
+        if not model_name:
+            raise ValueError("真实模型接入必须通过 --model 或 config.yaml 指定模型名")
+        adapter = OpenAIModel if provider == "openai" else AnthropicModel
+        options = (
+            {"system_role": config["llm"].get("system_role", "system")}
+            if provider == "openai"
+            else {}
+        )
+        return adapter(model_name, config["llm"].get("timeout_s", 30), **options)
+    raise ValueError("provider 必须是 demo、openai 或 anthropic")
 
 
 def create_runtime(
@@ -142,43 +178,41 @@ def create_runtime(
     seed: int | None = None,
     spread: str | None = None,
     model=None,
+    mode: str | None = None,
+    specialist_model=None,
 ) -> Runtime:
     load_dotenv(root / ".env")
     config = yaml.safe_load((root / "config.yaml").read_text(encoding="utf-8"))
-    if config.get("mode") != "single" or config.get("reviewer", {}).get("enabled"):
-        raise ValueError("前三周仅支持 mode: single、reviewer.enabled: false")
+    mode = mode or config.get("mode", "single")
+    if mode not in ("single", "multi"):
+        raise ValueError("mode 必须是 single 或 multi")
+    if config.get("reviewer", {}).get("enabled"):
+        raise ValueError("第五周前审校尚未实现，reviewer.enabled 必须为 false")
     if seed is not None and not 0 <= seed < 2**64:
         raise ValueError("seed 必须是 0 到 2^64-1 之间的整数")
     if spread is not None and spread not in ("single", "three_card", "decision"):
         raise ValueError("不支持的牌阵")
     provider = provider or config["llm"]["provider"]
-    model_name = model_name or config["llm"].get("model")
+    models = config.get("models") or {}
+    model_name = model_name or models.get("orchestrator") or config["llm"].get("model")
+    specialist_name = model_name if not models.get("specialist") else models["specialist"]
+    injected = model is not None
     if model is None:
-        if provider == "demo":
-            model = DemoModel(spread)
-        elif provider in ("openai", "anthropic"):
-            if not model_name:
-                raise ValueError("真实模型接入必须通过 --model 或 config.yaml 指定模型名")
-            adapter = OpenAIModel if provider == "openai" else AnthropicModel
-            options = (
-                {"system_role": config["llm"].get("system_role", "system")}
-                if provider == "openai"
-                else {}
-            )
-            model = adapter(model_name, config["llm"].get("timeout_s", 30), **options)
+        model = build_model(provider, model_name, config, spread)
+    if mode == "multi" and specialist_model is None:
+        # An injected (scripted) or demo model also serves the specialists; it can route by
+        # the session's role and tool table.
+        if injected or provider == "demo" or specialist_name == model_name:
+            specialist_model = model
         else:
-            raise ValueError("provider 必须是 demo、openai 或 anthropic")
+            specialist_model = build_model(provider, specialist_name, config, spread)
     kb = KnowledgeBase(root / config["kb"]["path"])
     store = Store(root / config["paths"]["app_db"])
     session = Session(user_id=user_id, default_seed=seed, profile=store.get_profile(user_id))
     session.calendar_anchor = datetime.now(ZoneInfo("Asia/Shanghai")).date().isoformat()
     recent = store.recent_readings(user_id)
-    session.messages.append(
-        {
-            "role": "system",
-            "content": SYSTEM_PROMPT,
-        }
-    )
+    system_prompt = MULTI_SYSTEM_PROMPT if mode == "multi" else SYSTEM_PROMPT
+    session.messages.append({"role": "system", "content": system_prompt})
     session.messages.append(
         {
             "role": "system",
@@ -199,20 +233,30 @@ def create_runtime(
     registry = Registry()
     plugins = [TarotPlugin(kb), AstroPlugin(kb, store), BaziPlugin(kb, store)]
     session.output_validators = {plugin.name: plugin.validate_output for plugin in plugins}
-    for tool in [
-        *common_tools(store, kb),
-        location_tool(Gazetteer()),
-        *(tool for plugin in plugins for tool in plugin.tools),
-    ]:
+    tracer = Tracer(root / config["paths"]["runs"])
+    shared = common_tools(store, kb, mode)
+    tools = [*shared, location_tool(Gazetteer())]
+    if mode == "single":
+        tools.extend(tool for plugin in plugins for tool in plugin.tools)
+    else:
+        # Computation tools exist only in the specialists' own registries.
+        lookup = next(tool for tool in shared if tool.name == "lookup_meaning")
+        specialists = build_specialists(plugins, lookup)
+        tools.append(ConsultService(specialists, specialist_model, tracer, config["limits"]).tool())
+    for tool in tools:
         registry.register(tool)
     return Runtime(
         session,
         registry,
         model,
-        Tracer(root / config["paths"]["runs"]),
+        tracer,
         store,
         kb,
         config["limits"]["orchestrator_max_steps"],
         config["limits"]["request_token_budget"],
         config.get("safety", {}),
+        mode=mode,
+        specialist_model=specialist_model,
+        request_timeout_s=config["limits"].get("request_timeout_s"),
+        system_prompt=system_prompt,
     )

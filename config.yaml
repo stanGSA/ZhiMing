@@ -1,13 +1,21 @@
-mode: single
+mode: single                # single | multi；第4周关口通过前默认仍为 single
 llm:
   provider: openai
   model: gpt-6.1-sol
   timeout_s: 90
   system_role: developer
+models:
+  orchestrator: gpt-6.1-sol
+  specialist: gpt-6.1-sol
 limits:
   orchestrator_max_steps: 12
   request_token_budget: 180000
-  max_parallel_tools: 5
+  request_timeout_s: 300
+  specialist_max_steps: 6
+  specialist_token_budget: 40000
+  specialist_timeout_s: 120
+  orchestrator_reserve_tokens: 30000
+  max_parallel_specialists: 3
 reviewer:
   enabled: false
 safety:

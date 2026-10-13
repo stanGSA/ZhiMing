@@ -123,7 +123,9 @@ class Store:
             )
         return {**profile, "version": version}
 
-    def save_reading(self, session, output: dict) -> None:
+    def save_reading(
+        self, session, output: dict, mode: str = "single", reports: dict | None = None
+    ) -> None:
         state = session.state
         with self.db:
             self.db.execute(
@@ -141,13 +143,35 @@ class Store:
                     json.dumps(output, ensure_ascii=False),
                     state["kb_version"],
                     session.profile.get("version", 0),
-                    "single",
+                    mode,
                     datetime.now(UTC).isoformat(),
                     state.get("chart_id"),
                     state.get("bazi_id"),
                     json.dumps(state.get("calculations", {}), ensure_ascii=False),
                 ),
             )
+            # Signals already live in readings.signals_json; keep only their references here.
+            for system, report in (reports or {}).items():
+                stored = {k: v for k, v in report.items() if k != "signals"}
+                stored["signal_refs"] = sorted({s["ref_id"] for s in report.get("signals", [])})
+                self.db.execute(
+                    "INSERT OR REPLACE INTO specialist_reports VALUES(?,?,?,?,?)",
+                    (
+                        state["active_reading_id"],
+                        system,
+                        json.dumps(stored, ensure_ascii=False),
+                        report.get("latency_ms"),
+                        report.get("tokens"),
+                    ),
+                )
+
+    def specialist_reports(self, user_id: str, reading_id: str) -> dict:
+        rows = self.db.execute(
+            "SELECT s.system, s.report_json FROM specialist_reports s "
+            "JOIN readings r ON r.reading_id = s.reading_id WHERE r.user_id=? AND s.reading_id=?",
+            (user_id, reading_id),
+        ).fetchall()
+        return {row["system"]: json.loads(row["report_json"]) for row in rows}
 
     def get_reading(self, user_id: str, reading_id: str) -> dict | None:
         row = self.db.execute(

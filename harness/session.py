@@ -22,6 +22,44 @@ class Session:
     default_seed: int | None = None
     calendar_anchor: str | None = None
     output_validators: dict[str, Any] = field(default_factory=dict)
+    # Outer budget for the whole request; run_turn exposes its own as turn_budget.
+    budget: Any = None
+    turn_budget: Any = None
+    parent_call_id: str | None = None
+    model_calls: int = 0
+    continue_prompt: str = (
+        "本轮尚未完成。计算已完成则请使用 submit_reading 提交带有效引用的结果；"
+        "资料或地点需要确认则必须使用 ask_user 追问结束本轮。"
+    )
+
+    def spawn(
+        self,
+        role: str,
+        partition: str | None,
+        *,
+        messages: list[dict[str, Any]],
+        state: dict[str, Any],
+        profile: dict[str, Any],
+        parent_call_id: str | None,
+        budget: Any,
+        continue_prompt: str,
+    ) -> Session:
+        """Child session: own context, own state; the user's words are copied as evidence only."""
+        return Session(
+            user_id=self.user_id,
+            role=role,
+            partition=partition,
+            parent_id=self.id,
+            messages=messages,
+            profile=profile,
+            state=state,
+            user_messages=list(self.user_messages),
+            calendar_anchor=self.calendar_anchor,
+            output_validators=self.output_validators,
+            budget=budget,
+            parent_call_id=parent_call_id,
+            continue_prompt=continue_prompt,
+        )
 
     def append_user(self, text: str) -> None:
         self.user_messages.append(text)

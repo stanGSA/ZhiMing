@@ -61,17 +61,18 @@ SCREENSHOT_CASES = [
 ]
 
 
-async def run(suite, output):
+async def run(suite, output, mode="single"):
     names = [c["id"] for c in (CASES + NATURAL_CASES if suite == "baseline" else SCREENSHOT_CASES)]
     if suite == "screenshots":
         NATURAL_CASES.extend(SCREENSHOT_CASES)
         # Re-run original questions unchanged after the observed answer/reviewer failures.
         names.extend(["range_before_birth", "overseas_bazi"])
     started = time.perf_counter()
-    result = await evaluate(output, names, judge=True, natural=True)
+    result = await evaluate(output, names, judge=True, natural=True, mode=mode)
     latencies = sorted(r["latency_s"] for r in result["results"])
     result["latency_baseline"] = dict(
         suite=suite,
+        mode=mode,
         concurrency=1,
         cases=len(latencies),
         median_s=round(statistics.median(latencies), 3),
@@ -91,8 +92,9 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--suite", choices=["baseline", "screenshots"], default="baseline")
     parser.add_argument("--output", type=Path, default=ROOT / "reports/v2-followup/serial")
+    parser.add_argument("--mode", choices=["single", "multi"], default="single")
     args = parser.parse_args()
-    result = asyncio.run(run(args.suite, args.output))
+    result = asyncio.run(run(args.suite, args.output, args.mode))
     raise SystemExit(0 if result["failed"] == 0 else 1)
 
 

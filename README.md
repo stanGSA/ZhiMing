@@ -1,6 +1,6 @@
 # 知命 · 占卜 Agent Harness
 
-当前已接入前三周的塔罗、西方占星和八字，继续使用手写单 Agent。第二周与第三周的确定性计算关口已通过；真实回答质量、工程检查和发布前人工审核分别记录。
+当前已接入前三周的塔罗、西方占星和八字。第四周新增多 Agent 模式（编排者 + 占星、八字、塔罗三位专家并行），离线测试通过，**真实模型验收尚未进行**，因此默认仍为单 Agent（`mode: single`）。第二周与第三周的确定性计算关口已通过；真实回答质量、工程检查和发布前人工审核分别记录。见 [第四周验收](docs/week4-验收报告.md)。
 
 第二周：11/11 参考盘通过，最大黄经误差 **0.000110364°**；Skyfield/JPL 独立交叉验证最大差 **0.000000611°**。第三周：**50/50 边界用例、57 个规则或追问变体通过**。占星280条、八字141条、塔罗163条均为原创草稿，覆盖率100%，人工审核率0%。详见 [第二周验收](docs/week2-验收报告.md)、[第三周验收](docs/week3-验收报告.md) 与 [联合测试证据](docs/verification/week23/README.md)。第一周原报告和原始失败记录保留。
 
@@ -100,7 +100,30 @@ SQLite FTS5 已构建并检查可用；第一周精确查找不依赖分词或�
 
 抽牌直接返回版本固定的精确释义，新解读通常3轮模型调用，原牌追问2轮。完整信号仍保存到SQLite与trace，给模型传递精简工具结果；已完成轮次的工具JSON从后续对话上下文移除，跨会话从数据库恢复。稳定系统提示与工具结构保持前缀稳定，缓存是否命中以接口usage为准。
 
-第二周已接入本命盘和行运，第三周已接入八字。第四周接入专家并行；第五周交叉合并与审校；第六周姓名、解梦与每日运势；第七周完整评估。当前不把后续能力声明为已实现。
+第二周已接入本命盘和行运，第三周已接入八字，第四周已实现多 Agent 编排（真实模型验收待完成）。第五周交叉合并与审校；第六周姓名、解梦与每日运势（届时加入对应专家）；第七周完整评估。当前不把后续能力声明为已实现。
+
+## 第四周：多 Agent 模式
+
+`config.yaml` 的 `mode` 可选 `single` 或 `multi`，命令行用 `--mode` 覆盖：
+
+```powershell
+& .\.venv\Scripts\python.exe cli.py chat --mode multi
+& .\.venv\Scripts\python.exe cli.py draw --question 'A 公司还是 B 公司？' --spread decision --mode multi --provider demo
+```
+
+- **分工**：编排者负责读画像、解析地点、选择专家、合并追问和写最终回答，自己不能调用任何排盘或抽牌工具。占星、八字、塔罗专家各在隔离子会话中只用本插件工具和本分区释义，用 `submit_report` 返回结构化报告（answer、带 ref_id 的 points、missing、confidence）。信号由 harness 从计算结果附加，专家改不了。
+- **并行**：编排者在同一步发出的多个 `consult_specialist` 并发执行（上限 `max_parallel_specialists`），结果按调用顺序并入当前记录。readings 和 specialist_reports 只由编排者写入。
+- **约束**：
+  - 编排者写的子问题不算用户原话，出生资料仍按用户原话核验；
+  - 专家需要补充资料时由编排者统一追问，追问结果不缓存；
+  - 专家超时、异常或预算用尽时返回失败报告，最终回答不能把该体系列入 `systems_used`，必须在置信度说明里写明缺少哪个体系；
+  - 塔罗在同一记录内只抽一次；
+  - 追问原记录不再咨询专家。
+- **预算**：一次请求一个预算（`request_token_budget`；多 Agent 模式另有墙钟上限 `request_timeout_s`），编排者与专家共享；每位专家另有 `specialist_token_budget`、`specialist_timeout_s`、`specialist_max_steps`，`orchestrator_reserve_tokens` 给编排者保留收尾额度。当前数值是初值，需按真实运行重新标定。
+- **trace**：子会话写各自的 JSONL，带 `parent_session_id` 和 `parent_call_id`；父会话记录 `specialist_started/finished`。`python -m scripts.trace_tree --user <用户> --reading <记录>` 重建调用树并检查完整性。
+- **评估**：
+  - `python -m evals.run --suite week1 --mode multi` 是 demo 模型的离线流程回放；
+  - `python -m scripts.live_v2_review --suite baseline --mode multi` 用真实模型串行跑 20 题，结果附带专家越权、报告首次通过率和并发度指标。真实模型结果尚未产生。
 
 
 ## Week2 / Week3 用法与计算约定
@@ -116,7 +139,7 @@ SQLite FTS5 已构建并检查可用；第一周精确查找不依赖分词或�
 - 流期支持年/月/日；年最多3660天，月/日最多366天。按实际立春、节气与日界分段。日期结束日包含，带时刻的结束点为半开区间。十神与原局冲合刑害破、三合三会是符号关系，不等同于必然事件。
 - 占星信号按容许度与速度确定强度；组合释义及所有组件引用固定于知识版本。八字按十神、柱位、冲合规则产出信号。人工审核率0%，仍未达到发布前≥95%审核门槛。
 
-当前兼容服务的system角色请求返回400，经对照测试，配置`llm.system_role: developer`可正常工作。适配器保留指令优先级，默认仍支持system；不会自动降为user。请求模型固定`gpt-6.1-sol`，服务返回名称单独记录，不能证明底层模型身份。三体系单轮预算180000个返回usage token、最多12步，超限明确失败。
+当前兼容服务的system角色请求返回400，经对照测试，配置`llm.system_role: developer`可正常工作。适配器保留指令优先级，默认仍支持system；不会自动降为user。请求模型固定`gpt-6.1-sol`，服务返回名称单独记录，不能证明底层模型身份。三体系单轮预算180000个返回usage token、最多12步，超限明确失败；多 Agent 模式下该预算由编排者和专家共享。
 
 ## Week2 / Week3 可复现验收
 
