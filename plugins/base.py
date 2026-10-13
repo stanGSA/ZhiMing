@@ -1,5 +1,5 @@
 from pathlib import Path
-from typing import Protocol
+from typing import Protocol, runtime_checkable
 
 from pydantic import BaseModel, ConfigDict, Field
 
@@ -17,10 +17,12 @@ class Signal(BaseModel):
     timeframe: str | None = None
     keywords: tuple[str, ...] = ()
     kb_ref: str
+    kb_refs: tuple[str, ...] = ()
     rule_version: int
     reviewed: bool
 
 
+@runtime_checkable
 class DivinationPlugin(Protocol):
     name: str
     tools: list[Tool]

@@ -9,6 +9,7 @@ from pathlib import Path
 
 import yaml
 
+from knowledge.catalogues import expected_keys
 from knowledge.schema import Entry
 from plugins.tarot.catalogue import DECK, SPREADS
 
@@ -70,6 +71,12 @@ def build(
         for spread, positions in SPREADS.items()
         for i in range(len(positions))
     }
+    partitions = {e.system for e in entries}
+    for system in ("astro", "bazi"):
+        if system in partitions:
+            expected |= expected_keys(system)
+            if system not in rules:
+                raise ValueError(f"缺少{system}组合规则")
     missing = sorted(expected - keys)
     if missing:
         raise ValueError(f"塔罗释义覆盖不完整：{missing}")
@@ -90,6 +97,16 @@ def build(
         "reviewed_count": reviewed_count,
         "reviewed_rate": reviewed_count / len(entries),
         "missing": missing,
+        "partitions": {
+            system: {
+                "entries": sum(e.system == system for e in entries),
+                "expected": sum(key[0] == system for key in expected),
+                "coverage": 1.0,
+                "reviewed_rate": sum(e.reviewed for e in entries if e.system == system)
+                / sum(e.system == system for e in entries),
+            }
+            for system in sorted(partitions)
+        },
     }
     output.parent.mkdir(parents=True, exist_ok=True)
     archive = output.parent / "kb_versions" / f"{version}.sqlite"

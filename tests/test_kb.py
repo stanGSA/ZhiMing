@@ -22,7 +22,8 @@ def rebuild(project):
 def test_build_coverage_and_repeatability(project):
     first = rebuild(project)
     assert first == rebuild(project)
-    assert first["entries"] == 163
+    assert first["partitions"]["tarot"]["entries"] == 163
+    assert first["entries"] == sum(p["entries"] for p in first["partitions"].values())
     assert first["coverage"] == 1
     assert first["reviewed_rate"] == 0
 
@@ -91,6 +92,23 @@ def test_rule_change_changes_version(project):
     rules["position_strength"]["single"] = [0.2]
     path.write_text(yaml.safe_dump(rules), encoding="utf-8")
     assert rebuild(project)["kb_version"] != first["kb_version"]
+
+
+def test_rebuild_while_current_reader_is_open(project):
+    reader = KnowledgeBase(project / "data/kb.sqlite")
+    old = reader.lookup("tarot", "card", "the_fool:upright")
+    try:
+        edit_source(
+            project,
+            lambda entries: entries[0].update(
+                text="新版草稿内容用于检查在读版本不会被替换。", version=2
+            ),
+        )
+        newer = rebuild(project)
+        assert newer["kb_version"] != reader.version
+        assert reader.lookup("tarot", "card", "the_fool:upright") == old
+    finally:
+        reader.close()
 
 
 def test_coverage_report_on_disk(project):

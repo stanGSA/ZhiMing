@@ -3,12 +3,13 @@ import hashlib
 import httpx
 import pytest
 
+from app import ROOT
 from scripts.doctor import diagnose
 from scripts.fetch_data import fetch_asset
 
 
 def test_doctor_week1_required_checks(project):
-    report = diagnose(project)
+    report = diagnose(project, data_root=ROOT / "data")
     assert report["ok"]
     assert all(c["required"] is False for c in report["checks"] if c["name"].endswith("API_KEY"))
 

@@ -86,7 +86,12 @@ def common_tools(store, kb: KnowledgeBase) -> list[Tool]:
                 word in args.evidence for word in ("不知道", "不确定", "未知", "关闭", "不用")
             ):
                 return "布尔字段与用户否定表达冲突"
-            if not any(word in args.evidence for word in confirmations):
+            explicit_clock = (
+                args.field == "time_known"
+                and args.value is True
+                and bool(re.search(r"\d{1,2}:\d{2}", args.evidence))
+            )
+            if not explicit_clock and not any(word in args.evidence for word in confirmations):
                 return "布尔字段需要用户原话明确确认"
         if not isinstance(args.value, (str, bool)):
             return "第一周画像写入仅支持有直接原话依据的字符串或布尔值"
@@ -127,7 +132,8 @@ def common_tools(store, kb: KnowledgeBase) -> list[Tool]:
         if not result:
             return ToolResult.failure("missing_reading", "没有属于当前用户的占卜记录")
         # Older saved draws may predate inline meanings; use their pinned edition.
-        for card in result["tarot_json"]["cards"]:
+        tarot = result["tarot_json"] or {"cards": [], "seed": None}
+        for card in tarot["cards"]:
             if "meaning" not in card:
                 version_kb = (
                     kb
@@ -147,18 +153,26 @@ def common_tools(store, kb: KnowledgeBase) -> list[Tool]:
             active_reading_id=result["reading_id"],
             parent_reading_id=result["parent_reading_id"],
             question=result["question"],
-            seed=result["tarot_json"]["seed"],
+            seed=tarot["seed"],
             tarot_result=result["tarot_json"],
             signals=result["signals_json"],
-            facts=[c["name"] for c in result["tarot_json"]["cards"]],
+            facts=[c["name"] for c in tarot["cards"]],
             allowed_refs={s["ref_id"] for s in result["signals_json"]},
-            kb_refs={s["kb_ref"] for s in result["signals_json"]},
+            kb_refs={
+                ref for s in result["signals_json"] for ref in (s.get("kb_refs") or [s["kb_ref"]])
+            },
             kb_version=result["kb_version"],
             kb_lookup_version=result["kb_version"],
-            tarot_drawn=True,
+            tarot_drawn=bool(tarot["cards"]),
             complete=False,
             response_mode="followup",
         )
+        calculations = result.get("calculations_json") or {}
+        session.state["calculations"] = calculations
+        session.state.update(calculations)
+        for key in ("chart_id", "bazi_id"):
+            if result.get(key):
+                session.state[key] = result[key]
         return {"reading": result}
 
     def submit(args, session):
@@ -219,7 +233,18 @@ def common_tools(store, kb: KnowledgeBase) -> list[Tool]:
                 "reading": {
                     k: v
                     for k, v in data["reading"].items()
-                    if k in ("reading_id", "question", "tarot_json", "kb_version", "output_json")
+                    if k
+                    in (
+                        "reading_id",
+                        "question",
+                        "tarot_json",
+                        "kb_version",
+                        "output_json",
+                        "calculations_json",
+                        "signals_json",
+                        "chart_id",
+                        "bazi_id",
+                    )
                 }
             },
         ),

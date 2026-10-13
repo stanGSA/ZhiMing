@@ -1,0 +1,3813 @@
+[
+  {
+    "run_id": "20261012T204043-07e66c35",
+    "requested_model": "gpt-6.1-sol",
+    "cases": 14,
+    "passed": 4,
+    "failed": 10,
+    "model_calls": 73,
+    "review_calls": 14,
+    "input_tokens": 656684,
+    "output_tokens": 12831,
+    "scope": "Synthetic data; same requested model for agent/rubric judge, not independent identity or human review; final answers also require separate inspection.",
+    "source_sha256": "a80afc46e96d449805ee8e004d455df843be22f6443d1e4ab5843418787e4413",
+    "latency_total_s": 529.756,
+    "review_latency_total_s": 183.147,
+    "results": [
+      {
+        "id": "astro_trait",
+        "status": "ask_user",
+        "checks": {
+          "expected_status": false,
+          "expected_tools": false,
+          "zero_tool_errors": false,
+          "no_model_error": true,
+          "saved": false,
+          "systems": false,
+          "valid_refs": true
+        },
+        "engineering_pass": false,
+        "quality_pass": true,
+        "passed": false,
+        "tools": [
+          "ask_user",
+          "get_profile",
+          "resolve_location",
+          "start_reading",
+          "update_profile"
+        ],
+        "latency_s": 25.002,
+        "review_latency_s": 10.961,
+        "model_calls": 5,
+        "input_tokens": 35649,
+        "output_tokens": 603,
+        "cached_input_tokens": 19968,
+        "returned_models": [
+          "gpt-6.1-sol"
+        ],
+        "review_usage": {
+          "input_tokens": 4596,
+          "output_tokens": 242,
+          "requested_model": "gpt-6.1-sol",
+          "returned_model": "gpt-6.1-sol"
+        },
+        "tool_error_count": 1,
+        "quality_review": {
+          "direct_answer": true,
+          "time_consistent": true,
+          "supported_conclusion": true,
+          "no_fabricated_facts": true
+        }
+      },
+      {
+        "id": "astro_followup",
+        "status": "ask_user",
+        "checks": {
+          "expected_status": false,
+          "expected_tools": false,
+          "zero_tool_errors": false,
+          "no_model_error": true,
+          "saved": false,
+          "systems": false,
+          "valid_refs": true,
+          "no_recalculation": true,
+          "response_saved": false
+        },
+        "engineering_pass": false,
+        "quality_pass": true,
+        "passed": false,
+        "tools": [
+          "ask_user",
+          "get_profile"
+        ],
+        "latency_s": 14.819,
+        "review_latency_s": 10.276,
+        "model_calls": 3,
+        "input_tokens": 20876,
+        "output_tokens": 132,
+        "cached_input_tokens": 13568,
+        "returned_models": [
+          "gpt-6.1-sol"
+        ],
+        "review_usage": {
+          "input_tokens": 4614,
+          "output_tokens": 273,
+          "requested_model": "gpt-6.1-sol",
+          "returned_model": "gpt-6.1-sol"
+        },
+        "tool_error_count": 1,
+        "quality_review": {
+          "direct_answer": true,
+          "time_consistent": true,
+          "supported_conclusion": true,
+          "no_fabricated_facts": true
+        }
+      },
+      {
+        "id": "bazi_trait",
+        "status": "submit_reading",
+        "checks": {
+          "expected_status": true,
+          "expected_tools": true,
+          "zero_tool_errors": false,
+          "no_model_error": true,
+          "saved": true,
+          "systems": true,
+          "valid_refs": true
+        },
+        "engineering_pass": false,
+        "quality_pass": true,
+        "passed": false,
+        "tools": [
+          "compute_bazi",
+          "get_profile",
+          "resolve_location",
+          "start_reading",
+          "submit_reading"
+        ],
+        "latency_s": 42.131,
+        "review_latency_s": 10.56,
+        "model_calls": 7,
+        "input_tokens": 53179,
+        "output_tokens": 790,
+        "cached_input_tokens": 35200,
+        "returned_models": [
+          "gpt-6.1-sol"
+        ],
+        "review_usage": {
+          "input_tokens": 6920,
+          "output_tokens": 295,
+          "requested_model": "gpt-6.1-sol",
+          "returned_model": "gpt-6.1-sol"
+        },
+        "tool_error_count": 2,
+        "quality_review": {
+          "direct_answer": true,
+          "time_consistent": true,
+          "supported_conclusion": true,
+          "no_fabricated_facts": true
+        }
+      },
+      {
+        "id": "bazi_followup",
+        "status": "submit_reading",
+        "checks": {
+          "expected_status": true,
+          "expected_tools": true,
+          "zero_tool_errors": true,
+          "no_model_error": true,
+          "saved": true,
+          "systems": true,
+          "valid_refs": true,
+          "no_recalculation": true,
+          "response_saved": true
+        },
+        "engineering_pass": true,
+        "quality_pass": true,
+        "passed": true,
+        "tools": [
+          "get_profile",
+          "read_reading",
+          "submit_reading"
+        ],
+        "latency_s": 32.173,
+        "review_latency_s": 17.019,
+        "model_calls": 3,
+        "input_tokens": 26649,
+        "output_tokens": 777,
+        "cached_input_tokens": 6912,
+        "returned_models": [
+          "gpt-6.1-sol"
+        ],
+        "review_usage": {
+          "input_tokens": 7369,
+          "output_tokens": 322,
+          "requested_model": "gpt-6.1-sol",
+          "returned_model": "gpt-6.1-sol"
+        },
+        "tool_error_count": 0,
+        "quality_review": {
+          "direct_answer": true,
+          "time_consistent": true,
+          "supported_conclusion": true,
+          "no_fabricated_facts": true
+        }
+      },
+      {
+        "id": "astro_timing",
+        "status": "ask_user",
+        "checks": {
+          "expected_status": false,
+          "expected_tools": false,
+          "zero_tool_errors": true,
+          "no_model_error": true,
+          "saved": false,
+          "systems": false,
+          "valid_refs": true
+        },
+        "engineering_pass": false,
+        "quality_pass": false,
+        "passed": false,
+        "tools": [
+          "ask_user",
+          "get_profile",
+          "resolve_location",
+          "start_reading"
+        ],
+        "latency_s": 32.777,
+        "review_latency_s": 22.449,
+        "model_calls": 4,
+        "input_tokens": 28391,
+        "output_tokens": 264,
+        "cached_input_tokens": 13568,
+        "returned_models": [
+          "gpt-6.1-sol"
+        ],
+        "review_usage": {
+          "input_tokens": 4644,
+          "output_tokens": 532,
+          "requested_model": "gpt-6.1-sol",
+          "returned_model": "gpt-6.1-sol"
+        },
+        "tool_error_count": 0,
+        "quality_review": {
+          "direct_answer": false,
+          "time_consistent": true,
+          "supported_conclusion": false,
+          "no_fabricated_facts": true
+        }
+      },
+      {
+        "id": "bazi_timing",
+        "status": "limit_reached",
+        "checks": {
+          "expected_status": false,
+          "expected_tools": false,
+          "zero_tool_errors": false,
+          "no_model_error": false,
+          "saved": false,
+          "systems": false,
+          "valid_refs": true
+        },
+        "engineering_pass": false,
+        "quality_pass": false,
+        "passed": false,
+        "tools": [
+          "compute_bazi",
+          "compute_bazi_period",
+          "get_profile",
+          "resolve_location",
+          "start_reading"
+        ],
+        "latency_s": 93.079,
+        "review_latency_s": 11.225,
+        "model_calls": 8,
+        "input_tokens": 68039,
+        "output_tokens": 2109,
+        "cached_input_tokens": 34944,
+        "returned_models": [
+          "gpt-6.1-sol"
+        ],
+        "review_usage": {
+          "input_tokens": 6157,
+          "output_tokens": 309,
+          "requested_model": "gpt-6.1-sol",
+          "returned_model": "gpt-6.1-sol"
+        },
+        "tool_error_count": 2,
+        "quality_review": {
+          "direct_answer": false,
+          "time_consistent": false,
+          "supported_conclusion": false,
+          "no_fabricated_facts": false
+        }
+      },
+      {
+        "id": "three_system_timing",
+        "status": "limit_reached",
+        "checks": {
+          "expected_status": false,
+          "expected_tools": false,
+          "zero_tool_errors": false,
+          "no_model_error": false,
+          "saved": false,
+          "systems": false,
+          "valid_refs": true
+        },
+        "engineering_pass": false,
+        "quality_pass": false,
+        "passed": false,
+        "tools": [
+          "compute_bazi",
+          "compute_natal_chart",
+          "compute_transits",
+          "draw_tarot",
+          "get_profile",
+          "resolve_location",
+          "start_reading"
+        ],
+        "latency_s": 40.443,
+        "review_latency_s": 13.914,
+        "model_calls": 7,
+        "input_tokens": 74615,
+        "output_tokens": 613,
+        "cached_input_tokens": 41984,
+        "returned_models": [
+          "gpt-6.1-sol"
+        ],
+        "review_usage": {
+          "input_tokens": 8058,
+          "output_tokens": 272,
+          "requested_model": "gpt-6.1-sol",
+          "returned_model": "gpt-6.1-sol"
+        },
+        "tool_error_count": 2,
+        "quality_review": {
+          "direct_answer": false,
+          "time_consistent": false,
+          "supported_conclusion": false,
+          "no_fabricated_facts": true
+        }
+      },
+      {
+        "id": "unknown_time",
+        "status": "limit_reached",
+        "checks": {
+          "expected_status": false,
+          "expected_tools": false,
+          "zero_tool_errors": false,
+          "no_model_error": false,
+          "saved": false,
+          "systems": false,
+          "valid_refs": true,
+          "null_axes": true,
+          "no_hour": true,
+          "no_dayun": true
+        },
+        "engineering_pass": false,
+        "quality_pass": false,
+        "passed": false,
+        "tools": [
+          "compute_bazi",
+          "compute_natal_chart",
+          "get_profile",
+          "resolve_location",
+          "start_reading"
+        ],
+        "latency_s": 53.589,
+        "review_latency_s": 10.11,
+        "model_calls": 7,
+        "input_tokens": 61798,
+        "output_tokens": 1215,
+        "cached_input_tokens": 46720,
+        "returned_models": [
+          "gpt-6.1-sol"
+        ],
+        "review_usage": {
+          "input_tokens": 6679,
+          "output_tokens": 258,
+          "requested_model": "gpt-6.1-sol",
+          "returned_model": "gpt-6.1-sol"
+        },
+        "tool_error_count": 2,
+        "quality_review": {
+          "direct_answer": false,
+          "time_consistent": true,
+          "supported_conclusion": false,
+          "no_fabricated_facts": false
+        }
+      },
+      {
+        "id": "missing_birth",
+        "status": "ask_user",
+        "checks": {
+          "expected_status": true,
+          "expected_tools": true,
+          "zero_tool_errors": true,
+          "no_model_error": true
+        },
+        "engineering_pass": true,
+        "quality_pass": true,
+        "passed": true,
+        "tools": [
+          "ask_user",
+          "get_profile",
+          "start_reading"
+        ],
+        "latency_s": 15.776,
+        "review_latency_s": 11.636,
+        "model_calls": 3,
+        "input_tokens": 20768,
+        "output_tokens": 195,
+        "cached_input_tokens": 6656,
+        "returned_models": [
+          "gpt-6.1-sol"
+        ],
+        "review_usage": {
+          "input_tokens": 4639,
+          "output_tokens": 225,
+          "requested_model": "gpt-6.1-sol",
+          "returned_model": "gpt-6.1-sol"
+        },
+        "tool_error_count": 0,
+        "quality_review": {
+          "direct_answer": true,
+          "time_consistent": true,
+          "supported_conclusion": true,
+          "no_fabricated_facts": true
+        }
+      },
+      {
+        "id": "ambiguous_place",
+        "status": "ask_user",
+        "checks": {
+          "expected_status": true,
+          "expected_tools": true,
+          "zero_tool_errors": true,
+          "no_model_error": true
+        },
+        "engineering_pass": true,
+        "quality_pass": true,
+        "passed": true,
+        "tools": [
+          "ask_user",
+          "get_profile",
+          "resolve_location",
+          "start_reading"
+        ],
+        "latency_s": 20.467,
+        "review_latency_s": 8.315,
+        "model_calls": 4,
+        "input_tokens": 28513,
+        "output_tokens": 274,
+        "cached_input_tokens": 13440,
+        "returned_models": [
+          "gpt-6.1-sol"
+        ],
+        "review_usage": {
+          "input_tokens": 4690,
+          "output_tokens": 184,
+          "requested_model": "gpt-6.1-sol",
+          "returned_model": "gpt-6.1-sol"
+        },
+        "tool_error_count": 0,
+        "quality_review": {
+          "direct_answer": true,
+          "time_consistent": true,
+          "supported_conclusion": true,
+          "no_fabricated_facts": true
+        }
+      },
+      {
+        "id": "dst_gap",
+        "status": "ask_user",
+        "checks": {
+          "expected_status": true,
+          "expected_tools": true,
+          "zero_tool_errors": false,
+          "no_model_error": true
+        },
+        "engineering_pass": false,
+        "quality_pass": true,
+        "passed": false,
+        "tools": [
+          "ask_user",
+          "compute_bazi",
+          "get_profile",
+          "resolve_location",
+          "start_reading"
+        ],
+        "latency_s": 39.009,
+        "review_latency_s": 13.811,
+        "model_calls": 7,
+        "input_tokens": 50115,
+        "output_tokens": 410,
+        "cached_input_tokens": 27904,
+        "returned_models": [
+          "gpt-6.1-sol"
+        ],
+        "review_usage": {
+          "input_tokens": 4653,
+          "output_tokens": 337,
+          "requested_model": "gpt-6.1-sol",
+          "returned_model": "gpt-6.1-sol"
+        },
+        "tool_error_count": 2,
+        "quality_review": {
+          "direct_answer": true,
+          "time_consistent": true,
+          "supported_conclusion": true,
+          "no_fabricated_facts": true
+        }
+      },
+      {
+        "id": "dst_fold",
+        "status": "ask_user",
+        "checks": {
+          "expected_status": true,
+          "expected_tools": true,
+          "zero_tool_errors": false,
+          "no_model_error": true
+        },
+        "engineering_pass": false,
+        "quality_pass": true,
+        "passed": false,
+        "tools": [
+          "ask_user",
+          "compute_natal_chart",
+          "get_profile",
+          "resolve_location",
+          "start_reading"
+        ],
+        "latency_s": 62.871,
+        "review_latency_s": 18.806,
+        "model_calls": 6,
+        "input_tokens": 42812,
+        "output_tokens": 320,
+        "cached_input_tokens": 27520,
+        "returned_models": [
+          "gpt-6.1-sol"
+        ],
+        "review_usage": {
+          "input_tokens": 4663,
+          "output_tokens": 350,
+          "requested_model": "gpt-6.1-sol",
+          "returned_model": "gpt-6.1-sol"
+        },
+        "tool_error_count": 1,
+        "quality_review": {
+          "direct_answer": true,
+          "time_consistent": true,
+          "supported_conclusion": true,
+          "no_fabricated_facts": true
+        }
+      },
+      {
+        "id": "lunar_confirm",
+        "status": "ask_user",
+        "checks": {
+          "expected_status": true,
+          "expected_tools": true,
+          "zero_tool_errors": true,
+          "no_model_error": true
+        },
+        "engineering_pass": true,
+        "quality_pass": true,
+        "passed": true,
+        "tools": [
+          "ask_user",
+          "get_profile",
+          "start_reading"
+        ],
+        "latency_s": 14.92,
+        "review_latency_s": 11.182,
+        "model_calls": 3,
+        "input_tokens": 20869,
+        "output_tokens": 198,
+        "cached_input_tokens": 13440,
+        "returned_models": [
+          "gpt-6.1-sol"
+        ],
+        "review_usage": {
+          "input_tokens": 4635,
+          "output_tokens": 249,
+          "requested_model": "gpt-6.1-sol",
+          "returned_model": "gpt-6.1-sol"
+        },
+        "tool_error_count": 0,
+        "quality_review": {
+          "direct_answer": true,
+          "time_consistent": true,
+          "supported_conclusion": true,
+          "no_fabricated_facts": true
+        }
+      },
+      {
+        "id": "investment_new",
+        "status": "submit_reading",
+        "checks": {
+          "expected_status": true,
+          "expected_tools": true,
+          "zero_tool_errors": false,
+          "no_model_error": true,
+          "saved": true,
+          "systems": true,
+          "valid_refs": true,
+          "safety_flag": true
+        },
+        "engineering_pass": false,
+        "quality_pass": true,
+        "passed": false,
+        "tools": [
+          "compute_bazi",
+          "get_profile",
+          "resolve_location",
+          "start_reading",
+          "submit_reading"
+        ],
+        "latency_s": 42.7,
+        "review_latency_s": 12.883,
+        "model_calls": 6,
+        "input_tokens": 45206,
+        "output_tokens": 738,
+        "cached_input_tokens": 34560,
+        "returned_models": [
+          "gpt-6.1-sol"
+        ],
+        "review_usage": {
+          "input_tokens": 6888,
+          "output_tokens": 345,
+          "requested_model": "gpt-6.1-sol",
+          "returned_model": "gpt-6.1-sol"
+        },
+        "tool_error_count": 1,
+        "quality_review": {
+          "direct_answer": true,
+          "time_consistent": true,
+          "supported_conclusion": true,
+          "no_fabricated_facts": true
+        }
+      }
+    ]
+  },
+  {
+    "run_id": "20261012T204834-f305a5bf",
+    "requested_model": "gpt-6.1-sol",
+    "cases": 6,
+    "passed": 1,
+    "failed": 5,
+    "model_calls": 30,
+    "review_calls": 6,
+    "input_tokens": 288702,
+    "output_tokens": 8643,
+    "scope": "Synthetic data; same requested model for agent/rubric judge, not independent identity or human review; final answers also require separate inspection.",
+    "source_sha256": "da33404c606cebc4a87b14fa55f80482291435480ec3facd7686a53104a2e9cd",
+    "latency_total_s": 287.476,
+    "review_latency_total_s": 77.197,
+    "results": [
+      {
+        "id": "astro_trait",
+        "status": "text",
+        "checks": {
+          "expected_status": false,
+          "expected_tools": false,
+          "zero_tool_errors": true,
+          "no_model_error": true,
+          "saved": false,
+          "systems": false,
+          "valid_refs": true
+        },
+        "engineering_pass": false,
+        "quality_pass": true,
+        "passed": false,
+        "tools": [
+          "get_profile",
+          "resolve_location",
+          "start_reading"
+        ],
+        "latency_s": 17.332,
+        "review_latency_s": 10.44,
+        "model_calls": 4,
+        "input_tokens": 28115,
+        "output_tokens": 264,
+        "cached_input_tokens": 26624,
+        "returned_models": [
+          "gpt-6.1-sol"
+        ],
+        "review_usage": {
+          "input_tokens": 4598,
+          "output_tokens": 216,
+          "requested_model": "gpt-6.1-sol",
+          "returned_model": "gpt-6.1-sol"
+        },
+        "tool_error_count": 0,
+        "quality_review": {
+          "direct_answer": true,
+          "time_consistent": true,
+          "supported_conclusion": true,
+          "no_fabricated_facts": true
+        }
+      },
+      {
+        "id": "astro_followup",
+        "status": "ask_user",
+        "checks": {
+          "expected_status": false,
+          "expected_tools": false,
+          "zero_tool_errors": false,
+          "no_model_error": true,
+          "saved": false,
+          "systems": false,
+          "valid_refs": true,
+          "no_recalculation": true,
+          "response_saved": false
+        },
+        "engineering_pass": false,
+        "quality_pass": true,
+        "passed": false,
+        "tools": [
+          "ask_user",
+          "get_profile"
+        ],
+        "latency_s": 20.471,
+        "review_latency_s": 13.177,
+        "model_calls": 3,
+        "input_tokens": 20744,
+        "output_tokens": 129,
+        "cached_input_tokens": 6784,
+        "returned_models": [
+          "gpt-6.1-sol"
+        ],
+        "review_usage": {
+          "input_tokens": 4603,
+          "output_tokens": 222,
+          "requested_model": "gpt-6.1-sol",
+          "returned_model": "gpt-6.1-sol"
+        },
+        "tool_error_count": 1,
+        "quality_review": {
+          "direct_answer": true,
+          "time_consistent": true,
+          "supported_conclusion": true,
+          "no_fabricated_facts": true
+        }
+      },
+      {
+        "id": "bazi_trait",
+        "status": "submit_reading",
+        "checks": {
+          "expected_status": true,
+          "expected_tools": true,
+          "zero_tool_errors": false,
+          "no_model_error": true,
+          "saved": true,
+          "systems": true,
+          "valid_refs": true
+        },
+        "engineering_pass": false,
+        "quality_pass": false,
+        "passed": false,
+        "tools": [
+          "compute_bazi",
+          "get_profile",
+          "resolve_location",
+          "start_reading",
+          "submit_reading"
+        ],
+        "latency_s": 45.293,
+        "review_latency_s": 12.703,
+        "model_calls": 6,
+        "input_tokens": 44137,
+        "output_tokens": 780,
+        "cached_input_tokens": 41728,
+        "returned_models": [
+          "gpt-6.1-sol"
+        ],
+        "review_usage": {
+          "input_tokens": 6738,
+          "output_tokens": 367,
+          "requested_model": "gpt-6.1-sol",
+          "returned_model": "gpt-6.1-sol"
+        },
+        "tool_error_count": 1,
+        "quality_review": {
+          "direct_answer": false,
+          "time_consistent": true,
+          "supported_conclusion": true,
+          "no_fabricated_facts": true
+        }
+      },
+      {
+        "id": "bazi_followup",
+        "status": "submit_reading",
+        "checks": {
+          "expected_status": true,
+          "expected_tools": true,
+          "zero_tool_errors": true,
+          "no_model_error": true,
+          "saved": true,
+          "systems": true,
+          "valid_refs": true,
+          "no_recalculation": true,
+          "response_saved": true
+        },
+        "engineering_pass": true,
+        "quality_pass": true,
+        "passed": true,
+        "tools": [
+          "get_profile",
+          "read_reading",
+          "submit_reading"
+        ],
+        "latency_s": 28.01,
+        "review_latency_s": 16.233,
+        "model_calls": 3,
+        "input_tokens": 26675,
+        "output_tokens": 821,
+        "cached_input_tokens": 6656,
+        "returned_models": [
+          "gpt-6.1-sol"
+        ],
+        "review_usage": {
+          "input_tokens": 7016,
+          "output_tokens": 357,
+          "requested_model": "gpt-6.1-sol",
+          "returned_model": "gpt-6.1-sol"
+        },
+        "tool_error_count": 0,
+        "quality_review": {
+          "direct_answer": true,
+          "time_consistent": true,
+          "supported_conclusion": true,
+          "no_fabricated_facts": true
+        }
+      },
+      {
+        "id": "bazi_timing",
+        "status": "submit_reading",
+        "checks": {
+          "expected_status": true,
+          "expected_tools": true,
+          "zero_tool_errors": false,
+          "no_model_error": true,
+          "saved": true,
+          "systems": true,
+          "valid_refs": true
+        },
+        "engineering_pass": false,
+        "quality_pass": true,
+        "passed": false,
+        "tools": [
+          "compute_bazi",
+          "compute_bazi_period",
+          "get_profile",
+          "resolve_location",
+          "start_reading",
+          "submit_reading"
+        ],
+        "latency_s": 86.999,
+        "review_latency_s": 15.227,
+        "model_calls": 7,
+        "input_tokens": 56534,
+        "output_tokens": 1995,
+        "cached_input_tokens": 40960,
+        "returned_models": [
+          "gpt-6.1-sol"
+        ],
+        "review_usage": {
+          "input_tokens": 11979,
+          "output_tokens": 375,
+          "requested_model": "gpt-6.1-sol",
+          "returned_model": "gpt-6.1-sol"
+        },
+        "tool_error_count": 1,
+        "quality_review": {
+          "direct_answer": true,
+          "time_consistent": true,
+          "supported_conclusion": true,
+          "no_fabricated_facts": true
+        }
+      },
+      {
+        "id": "three_system_timing",
+        "status": "limit_reached",
+        "checks": {
+          "expected_status": false,
+          "expected_tools": false,
+          "zero_tool_errors": false,
+          "no_model_error": false,
+          "saved": false,
+          "systems": false,
+          "valid_refs": true
+        },
+        "engineering_pass": false,
+        "quality_pass": false,
+        "passed": false,
+        "tools": [
+          "compute_bazi",
+          "compute_bazi_period",
+          "compute_natal_chart",
+          "compute_transits",
+          "draw_tarot",
+          "get_profile",
+          "resolve_location",
+          "start_reading"
+        ],
+        "latency_s": 89.371,
+        "review_latency_s": 9.417,
+        "model_calls": 7,
+        "input_tokens": 68747,
+        "output_tokens": 2865,
+        "cached_input_tokens": 41344,
+        "returned_models": [
+          "gpt-6.1-sol"
+        ],
+        "review_usage": {
+          "input_tokens": 8816,
+          "output_tokens": 252,
+          "requested_model": "gpt-6.1-sol",
+          "returned_model": "gpt-6.1-sol"
+        },
+        "tool_error_count": 1,
+        "quality_review": {
+          "direct_answer": false,
+          "time_consistent": false,
+          "supported_conclusion": false,
+          "no_fabricated_facts": true
+        }
+      }
+    ]
+  },
+  {
+    "run_id": "20261012T205128-2004ef17",
+    "requested_model": "gpt-6.1-sol",
+    "cases": 2,
+    "passed": 0,
+    "failed": 2,
+    "model_calls": 9,
+    "review_calls": 2,
+    "input_tokens": 73103,
+    "output_tokens": 1200,
+    "scope": "Synthetic data; same requested model for agent/rubric judge, not independent identity or human review; final answers also require separate inspection.",
+    "source_sha256": "4d6ffd39dc2f8e8a848ea1793b029aff9b876c7b3c29c8080df055ac12b63aca",
+    "latency_total_s": 97.153,
+    "review_latency_total_s": 19.559,
+    "results": [
+      {
+        "id": "astro_trait",
+        "status": "ask_user",
+        "checks": {
+          "expected_status": false,
+          "expected_tools": false,
+          "zero_tool_errors": false,
+          "no_model_error": true,
+          "saved": false,
+          "systems": false,
+          "valid_refs": true
+        },
+        "engineering_pass": false,
+        "quality_pass": true,
+        "passed": false,
+        "tools": [
+          "ask_user",
+          "get_profile",
+          "resolve_location",
+          "start_reading"
+        ],
+        "latency_s": 26.108,
+        "review_latency_s": 10.534,
+        "model_calls": 6,
+        "input_tokens": 43156,
+        "output_tokens": 601,
+        "cached_input_tokens": 39936,
+        "returned_models": [
+          "gpt-6.1-sol"
+        ],
+        "review_usage": {
+          "input_tokens": 4597,
+          "output_tokens": 240,
+          "requested_model": "gpt-6.1-sol",
+          "returned_model": "gpt-6.1-sol"
+        },
+        "tool_error_count": 1,
+        "quality_review": {
+          "direct_answer": true,
+          "time_consistent": true,
+          "supported_conclusion": true,
+          "no_fabricated_facts": true
+        }
+      },
+      {
+        "id": "astro_followup",
+        "status": "ask_user",
+        "checks": {
+          "expected_status": false,
+          "expected_tools": false,
+          "zero_tool_errors": false,
+          "no_model_error": true,
+          "saved": false,
+          "systems": false,
+          "valid_refs": true,
+          "no_recalculation": true,
+          "response_saved": false
+        },
+        "engineering_pass": false,
+        "quality_pass": true,
+        "passed": false,
+        "tools": [
+          "ask_user",
+          "get_profile"
+        ],
+        "latency_s": 71.045,
+        "review_latency_s": 9.025,
+        "model_calls": 3,
+        "input_tokens": 20740,
+        "output_tokens": 134,
+        "cached_input_tokens": 19968,
+        "returned_models": [
+          "gpt-6.1-sol"
+        ],
+        "review_usage": {
+          "input_tokens": 4610,
+          "output_tokens": 225,
+          "requested_model": "gpt-6.1-sol",
+          "returned_model": "gpt-6.1-sol"
+        },
+        "tool_error_count": 1,
+        "quality_review": {
+          "direct_answer": true,
+          "time_consistent": true,
+          "supported_conclusion": true,
+          "no_fabricated_facts": true
+        }
+      }
+    ]
+  },
+  {
+    "run_id": "20261012T205421-0f78f41a",
+    "requested_model": "gpt-6.1-sol",
+    "cases": 4,
+    "passed": 3,
+    "failed": 1,
+    "model_calls": 16,
+    "review_calls": 4,
+    "input_tokens": 171733,
+    "output_tokens": 4755,
+    "scope": "Synthetic data; same requested model for agent/rubric judge, not independent identity or human review; final answers also require separate inspection.",
+    "source_sha256": "a7b5f9e12e1e5ddadd6097e89c4742ffadca0a2c8f7fb4b4cd0c77a5da1a9854",
+    "latency_total_s": 166.841,
+    "review_latency_total_s": 61.727,
+    "results": [
+      {
+        "id": "astro_trait",
+        "status": "submit_reading",
+        "checks": {
+          "expected_status": true,
+          "expected_tools": true,
+          "zero_tool_errors": true,
+          "no_model_error": true,
+          "saved": true,
+          "systems": true,
+          "valid_refs": true
+        },
+        "engineering_pass": true,
+        "quality_pass": false,
+        "passed": false,
+        "tools": [
+          "compute_natal_chart",
+          "get_profile",
+          "resolve_location",
+          "start_reading",
+          "submit_reading"
+        ],
+        "latency_s": 67.59,
+        "review_latency_s": 22.763,
+        "model_calls": 5,
+        "input_tokens": 39944,
+        "output_tokens": 1117,
+        "cached_input_tokens": 20864,
+        "returned_models": [
+          "gpt-6.1-sol"
+        ],
+        "review_usage": {
+          "input_tokens": 9112,
+          "output_tokens": 489,
+          "requested_model": "gpt-6.1-sol",
+          "returned_model": "gpt-6.1-sol"
+        },
+        "tool_error_count": 0,
+        "quality_review": {
+          "direct_answer": true,
+          "time_consistent": true,
+          "supported_conclusion": false,
+          "no_fabricated_facts": true
+        }
+      },
+      {
+        "id": "astro_followup",
+        "status": "submit_reading",
+        "checks": {
+          "expected_status": true,
+          "expected_tools": true,
+          "zero_tool_errors": true,
+          "no_model_error": true,
+          "saved": true,
+          "systems": true,
+          "valid_refs": true,
+          "no_recalculation": true,
+          "response_saved": true
+        },
+        "engineering_pass": true,
+        "quality_pass": true,
+        "passed": true,
+        "tools": [
+          "get_profile",
+          "read_reading",
+          "submit_reading"
+        ],
+        "latency_s": 24.923,
+        "review_latency_s": 12.844,
+        "model_calls": 3,
+        "input_tokens": 36755,
+        "output_tokens": 521,
+        "cached_input_tokens": 13952,
+        "returned_models": [
+          "gpt-6.1-sol"
+        ],
+        "review_usage": {
+          "input_tokens": 7351,
+          "output_tokens": 322,
+          "requested_model": "gpt-6.1-sol",
+          "returned_model": "gpt-6.1-sol"
+        },
+        "tool_error_count": 0,
+        "quality_review": {
+          "direct_answer": true,
+          "time_consistent": true,
+          "supported_conclusion": true,
+          "no_fabricated_facts": true
+        }
+      },
+      {
+        "id": "bazi_trait",
+        "status": "submit_reading",
+        "checks": {
+          "expected_status": true,
+          "expected_tools": true,
+          "zero_tool_errors": true,
+          "no_model_error": true,
+          "saved": true,
+          "systems": true,
+          "valid_refs": true
+        },
+        "engineering_pass": true,
+        "quality_pass": true,
+        "passed": true,
+        "tools": [
+          "compute_bazi",
+          "get_profile",
+          "resolve_location",
+          "start_reading",
+          "submit_reading"
+        ],
+        "latency_s": 41.215,
+        "review_latency_s": 9.66,
+        "model_calls": 5,
+        "input_tokens": 37208,
+        "output_tokens": 891,
+        "cached_input_tokens": 20992,
+        "returned_models": [
+          "gpt-6.1-sol"
+        ],
+        "review_usage": {
+          "input_tokens": 7031,
+          "output_tokens": 270,
+          "requested_model": "gpt-6.1-sol",
+          "returned_model": "gpt-6.1-sol"
+        },
+        "tool_error_count": 0,
+        "quality_review": {
+          "direct_answer": true,
+          "time_consistent": true,
+          "supported_conclusion": true,
+          "no_fabricated_facts": true
+        }
+      },
+      {
+        "id": "bazi_followup",
+        "status": "submit_reading",
+        "checks": {
+          "expected_status": true,
+          "expected_tools": true,
+          "zero_tool_errors": true,
+          "no_model_error": true,
+          "saved": true,
+          "systems": true,
+          "valid_refs": true,
+          "no_recalculation": true,
+          "response_saved": true
+        },
+        "engineering_pass": true,
+        "quality_pass": true,
+        "passed": true,
+        "tools": [
+          "get_profile",
+          "read_reading",
+          "submit_reading"
+        ],
+        "latency_s": 33.113,
+        "review_latency_s": 16.46,
+        "model_calls": 3,
+        "input_tokens": 27153,
+        "output_tokens": 724,
+        "cached_input_tokens": 6912,
+        "returned_models": [
+          "gpt-6.1-sol"
+        ],
+        "review_usage": {
+          "input_tokens": 7179,
+          "output_tokens": 421,
+          "requested_model": "gpt-6.1-sol",
+          "returned_model": "gpt-6.1-sol"
+        },
+        "tool_error_count": 0,
+        "quality_review": {
+          "direct_answer": true,
+          "time_consistent": true,
+          "supported_conclusion": true,
+          "no_fabricated_facts": true
+        }
+      }
+    ]
+  },
+  {
+    "run_id": "20261012T205814-d3ce2619",
+    "requested_model": "gpt-6.1-sol",
+    "cases": 14,
+    "passed": 10,
+    "failed": 4,
+    "model_calls": 64,
+    "model_request_attempts": 64,
+    "review_calls": 14,
+    "input_tokens": 655867,
+    "output_tokens": 19367,
+    "scope": "Synthetic data; same requested model for agent/rubric judge, not independent identity or human review; final answers also require separate inspection.",
+    "source_sha256": "4761b11a13d95c7f2b1a59a23c99dc169d1ab83af564ae62d1bf7ad92e8e21a8",
+    "latency_total_s": 725.334,
+    "review_latency_total_s": 172.723,
+    "results": [
+      {
+        "id": "astro_trait",
+        "status": "submit_reading",
+        "checks": {
+          "expected_status": true,
+          "expected_tools": true,
+          "zero_tool_errors": true,
+          "no_model_error": true,
+          "saved": true,
+          "systems": true,
+          "valid_refs": true
+        },
+        "engineering_pass": true,
+        "quality_pass": false,
+        "passed": false,
+        "tools": [
+          "compute_natal_chart",
+          "get_profile",
+          "resolve_location",
+          "start_reading",
+          "submit_reading"
+        ],
+        "latency_s": 75.264,
+        "review_latency_s": 9.894,
+        "model_calls": 5,
+        "model_request_attempts": 5,
+        "input_tokens": 41832,
+        "output_tokens": 1197,
+        "cached_input_tokens": 20352,
+        "returned_models": [
+          "gpt-6.1-sol"
+        ],
+        "review_usage": {
+          "input_tokens": 10746,
+          "output_tokens": 582,
+          "requested_model": "gpt-6.1-sol",
+          "returned_model": "gpt-6.1-sol"
+        },
+        "tool_error_count": 0,
+        "quality_review": {
+          "direct_answer": true,
+          "time_consistent": true,
+          "supported_conclusion": false,
+          "no_fabricated_facts": true
+        }
+      },
+      {
+        "id": "astro_followup",
+        "status": "submit_reading",
+        "checks": {
+          "expected_status": true,
+          "expected_tools": true,
+          "zero_tool_errors": true,
+          "no_model_error": true,
+          "saved": true,
+          "systems": true,
+          "valid_refs": true,
+          "no_recalculation": true,
+          "response_saved": true
+        },
+        "engineering_pass": true,
+        "quality_pass": true,
+        "passed": true,
+        "tools": [
+          "get_profile",
+          "read_reading",
+          "submit_reading"
+        ],
+        "latency_s": 29.202,
+        "review_latency_s": 15.791,
+        "model_calls": 3,
+        "model_request_attempts": 3,
+        "input_tokens": 48129,
+        "output_tokens": 657,
+        "cached_input_tokens": 6912,
+        "returned_models": [
+          "gpt-6.1-sol"
+        ],
+        "review_usage": {
+          "input_tokens": 7930,
+          "output_tokens": 460,
+          "requested_model": "gpt-6.1-sol",
+          "returned_model": "gpt-6.1-sol"
+        },
+        "tool_error_count": 0,
+        "quality_review": {
+          "direct_answer": true,
+          "time_consistent": true,
+          "supported_conclusion": true,
+          "no_fabricated_facts": true
+        }
+      },
+      {
+        "id": "bazi_trait",
+        "status": "submit_reading",
+        "checks": {
+          "expected_status": true,
+          "expected_tools": true,
+          "zero_tool_errors": true,
+          "no_model_error": true,
+          "saved": true,
+          "systems": true,
+          "valid_refs": true
+        },
+        "engineering_pass": true,
+        "quality_pass": true,
+        "passed": true,
+        "tools": [
+          "compute_bazi",
+          "get_profile",
+          "resolve_location",
+          "start_reading",
+          "submit_reading"
+        ],
+        "latency_s": 37.437,
+        "review_latency_s": 13.132,
+        "model_calls": 5,
+        "model_request_attempts": 5,
+        "input_tokens": 37161,
+        "output_tokens": 850,
+        "cached_input_tokens": 27648,
+        "returned_models": [
+          "gpt-6.1-sol"
+        ],
+        "review_usage": {
+          "input_tokens": 7017,
+          "output_tokens": 304,
+          "requested_model": "gpt-6.1-sol",
+          "returned_model": "gpt-6.1-sol"
+        },
+        "tool_error_count": 0,
+        "quality_review": {
+          "direct_answer": true,
+          "time_consistent": true,
+          "supported_conclusion": true,
+          "no_fabricated_facts": true
+        }
+      },
+      {
+        "id": "bazi_followup",
+        "status": "submit_reading",
+        "checks": {
+          "expected_status": true,
+          "expected_tools": true,
+          "zero_tool_errors": true,
+          "no_model_error": true,
+          "saved": true,
+          "systems": true,
+          "valid_refs": true,
+          "no_recalculation": true,
+          "response_saved": true
+        },
+        "engineering_pass": true,
+        "quality_pass": false,
+        "passed": false,
+        "tools": [
+          "get_profile",
+          "read_reading",
+          "submit_reading"
+        ],
+        "latency_s": 31.761,
+        "review_latency_s": 14.282,
+        "model_calls": 3,
+        "model_request_attempts": 3,
+        "input_tokens": 27949,
+        "output_tokens": 617,
+        "cached_input_tokens": 6912,
+        "returned_models": [
+          "gpt-6.1-sol"
+        ],
+        "review_usage": {
+          "input_tokens": 6834,
+          "output_tokens": 338,
+          "requested_model": "gpt-6.1-sol",
+          "returned_model": "gpt-6.1-sol"
+        },
+        "tool_error_count": 0,
+        "quality_review": {
+          "direct_answer": true,
+          "time_consistent": true,
+          "supported_conclusion": false,
+          "no_fabricated_facts": true
+        }
+      },
+      {
+        "id": "astro_timing",
+        "status": "limit_reached",
+        "checks": {
+          "expected_status": false,
+          "expected_tools": false,
+          "zero_tool_errors": true,
+          "no_model_error": false,
+          "saved": false,
+          "systems": false,
+          "valid_refs": true
+        },
+        "engineering_pass": false,
+        "quality_pass": false,
+        "passed": false,
+        "tools": [
+          "compute_natal_chart",
+          "compute_transits",
+          "get_profile",
+          "resolve_location",
+          "start_reading"
+        ],
+        "latency_s": 129.272,
+        "review_latency_s": 9.401,
+        "model_calls": 6,
+        "model_request_attempts": 6,
+        "input_tokens": 59977,
+        "output_tokens": 2633,
+        "cached_input_tokens": 20992,
+        "returned_models": [
+          "gpt-6.1-sol"
+        ],
+        "review_usage": {
+          "input_tokens": 6416,
+          "output_tokens": 268,
+          "requested_model": "gpt-6.1-sol",
+          "returned_model": "gpt-6.1-sol"
+        },
+        "tool_error_count": 0,
+        "quality_review": {
+          "direct_answer": false,
+          "time_consistent": false,
+          "supported_conclusion": false,
+          "no_fabricated_facts": false
+        }
+      },
+      {
+        "id": "bazi_timing",
+        "status": "submit_reading",
+        "checks": {
+          "expected_status": true,
+          "expected_tools": true,
+          "zero_tool_errors": true,
+          "no_model_error": true,
+          "saved": true,
+          "systems": true,
+          "valid_refs": true
+        },
+        "engineering_pass": true,
+        "quality_pass": true,
+        "passed": true,
+        "tools": [
+          "compute_bazi",
+          "compute_bazi_period",
+          "get_profile",
+          "resolve_location",
+          "start_reading",
+          "submit_reading"
+        ],
+        "latency_s": 70.79,
+        "review_latency_s": 14.556,
+        "model_calls": 6,
+        "model_request_attempts": 6,
+        "input_tokens": 49498,
+        "output_tokens": 2134,
+        "cached_input_tokens": 28160,
+        "returned_models": [
+          "gpt-6.1-sol"
+        ],
+        "review_usage": {
+          "input_tokens": 12675,
+          "output_tokens": 401,
+          "requested_model": "gpt-6.1-sol",
+          "returned_model": "gpt-6.1-sol"
+        },
+        "tool_error_count": 0,
+        "quality_review": {
+          "direct_answer": true,
+          "time_consistent": true,
+          "supported_conclusion": true,
+          "no_fabricated_facts": true
+        }
+      },
+      {
+        "id": "three_system_timing",
+        "status": "limit_reached",
+        "checks": {
+          "expected_status": false,
+          "expected_tools": false,
+          "zero_tool_errors": true,
+          "no_model_error": false,
+          "saved": false,
+          "systems": false,
+          "valid_refs": true
+        },
+        "engineering_pass": false,
+        "quality_pass": false,
+        "passed": false,
+        "tools": [
+          "compute_bazi",
+          "compute_bazi_period",
+          "compute_natal_chart",
+          "compute_transits",
+          "draw_tarot",
+          "get_profile",
+          "resolve_location",
+          "start_reading"
+        ],
+        "latency_s": 81.512,
+        "review_latency_s": 11.503,
+        "model_calls": 6,
+        "model_request_attempts": 6,
+        "input_tokens": 68027,
+        "output_tokens": 2693,
+        "cached_input_tokens": 29696,
+        "returned_models": [
+          "gpt-6.1-sol"
+        ],
+        "review_usage": {
+          "input_tokens": 8787,
+          "output_tokens": 331,
+          "requested_model": "gpt-6.1-sol",
+          "returned_model": "gpt-6.1-sol"
+        },
+        "tool_error_count": 0,
+        "quality_review": {
+          "direct_answer": false,
+          "time_consistent": false,
+          "supported_conclusion": false,
+          "no_fabricated_facts": true
+        }
+      },
+      {
+        "id": "unknown_time",
+        "status": "submit_reading",
+        "checks": {
+          "expected_status": true,
+          "expected_tools": true,
+          "zero_tool_errors": true,
+          "no_model_error": true,
+          "saved": true,
+          "systems": true,
+          "valid_refs": true,
+          "null_axes": true,
+          "no_hour": true,
+          "no_dayun": true
+        },
+        "engineering_pass": true,
+        "quality_pass": true,
+        "passed": true,
+        "tools": [
+          "compute_bazi",
+          "compute_natal_chart",
+          "get_profile",
+          "resolve_location",
+          "start_reading",
+          "submit_reading"
+        ],
+        "latency_s": 83.31,
+        "review_latency_s": 12.58,
+        "model_calls": 5,
+        "model_request_attempts": 5,
+        "input_tokens": 41622,
+        "output_tokens": 1466,
+        "cached_input_tokens": 34048,
+        "returned_models": [
+          "gpt-6.1-sol"
+        ],
+        "review_usage": {
+          "input_tokens": 10670,
+          "output_tokens": 437,
+          "requested_model": "gpt-6.1-sol",
+          "returned_model": "gpt-6.1-sol"
+        },
+        "tool_error_count": 0,
+        "quality_review": {
+          "direct_answer": true,
+          "time_consistent": true,
+          "supported_conclusion": true,
+          "no_fabricated_facts": true
+        }
+      },
+      {
+        "id": "missing_birth",
+        "status": "ask_user",
+        "checks": {
+          "expected_status": true,
+          "expected_tools": true,
+          "zero_tool_errors": true,
+          "no_model_error": true
+        },
+        "engineering_pass": true,
+        "quality_pass": true,
+        "passed": true,
+        "tools": [
+          "ask_user",
+          "get_profile",
+          "start_reading"
+        ],
+        "latency_s": 24.385,
+        "review_latency_s": 9.006,
+        "model_calls": 3,
+        "model_request_attempts": 3,
+        "input_tokens": 21071,
+        "output_tokens": 161,
+        "cached_input_tokens": 13568,
+        "returned_models": [
+          "gpt-6.1-sol"
+        ],
+        "review_usage": {
+          "input_tokens": 4612,
+          "output_tokens": 210,
+          "requested_model": "gpt-6.1-sol",
+          "returned_model": "gpt-6.1-sol"
+        },
+        "tool_error_count": 0,
+        "quality_review": {
+          "direct_answer": true,
+          "time_consistent": true,
+          "supported_conclusion": true,
+          "no_fabricated_facts": true
+        }
+      },
+      {
+        "id": "ambiguous_place",
+        "status": "ask_user",
+        "checks": {
+          "expected_status": true,
+          "expected_tools": true,
+          "zero_tool_errors": true,
+          "no_model_error": true
+        },
+        "engineering_pass": true,
+        "quality_pass": true,
+        "passed": true,
+        "tools": [
+          "ask_user",
+          "get_profile",
+          "resolve_location",
+          "start_reading"
+        ],
+        "latency_s": 23.33,
+        "review_latency_s": 12.298,
+        "model_calls": 4,
+        "model_request_attempts": 4,
+        "input_tokens": 28897,
+        "output_tokens": 240,
+        "cached_input_tokens": 20480,
+        "returned_models": [
+          "gpt-6.1-sol"
+        ],
+        "review_usage": {
+          "input_tokens": 4668,
+          "output_tokens": 242,
+          "requested_model": "gpt-6.1-sol",
+          "returned_model": "gpt-6.1-sol"
+        },
+        "tool_error_count": 0,
+        "quality_review": {
+          "direct_answer": true,
+          "time_consistent": true,
+          "supported_conclusion": true,
+          "no_fabricated_facts": true
+        }
+      },
+      {
+        "id": "dst_gap",
+        "status": "ask_user",
+        "checks": {
+          "expected_status": true,
+          "expected_tools": true,
+          "zero_tool_errors": true,
+          "no_model_error": true
+        },
+        "engineering_pass": true,
+        "quality_pass": true,
+        "passed": true,
+        "tools": [
+          "ask_user",
+          "compute_bazi",
+          "get_profile",
+          "resolve_location",
+          "start_reading"
+        ],
+        "latency_s": 30.055,
+        "review_latency_s": 9.808,
+        "model_calls": 5,
+        "model_request_attempts": 5,
+        "input_tokens": 35900,
+        "output_tokens": 320,
+        "cached_input_tokens": 20864,
+        "returned_models": [
+          "gpt-6.1-sol"
+        ],
+        "review_usage": {
+          "input_tokens": 4652,
+          "output_tokens": 519,
+          "requested_model": "gpt-6.1-sol",
+          "returned_model": "gpt-6.1-sol"
+        },
+        "tool_error_count": 0,
+        "quality_review": {
+          "direct_answer": true,
+          "time_consistent": true,
+          "supported_conclusion": true,
+          "no_fabricated_facts": true
+        }
+      },
+      {
+        "id": "dst_fold",
+        "status": "ask_user",
+        "checks": {
+          "expected_status": true,
+          "expected_tools": true,
+          "zero_tool_errors": true,
+          "no_model_error": true
+        },
+        "engineering_pass": true,
+        "quality_pass": true,
+        "passed": true,
+        "tools": [
+          "ask_user",
+          "compute_natal_chart",
+          "get_profile",
+          "resolve_location",
+          "start_reading"
+        ],
+        "latency_s": 49.208,
+        "review_latency_s": 12.148,
+        "model_calls": 5,
+        "model_request_attempts": 5,
+        "input_tokens": 36051,
+        "output_tokens": 305,
+        "cached_input_tokens": 13696,
+        "returned_models": [
+          "gpt-6.1-sol"
+        ],
+        "review_usage": {
+          "input_tokens": 4664,
+          "output_tokens": 321,
+          "requested_model": "gpt-6.1-sol",
+          "returned_model": "gpt-6.1-sol"
+        },
+        "tool_error_count": 0,
+        "quality_review": {
+          "direct_answer": true,
+          "time_consistent": true,
+          "supported_conclusion": true,
+          "no_fabricated_facts": true
+        }
+      },
+      {
+        "id": "lunar_confirm",
+        "status": "ask_user",
+        "checks": {
+          "expected_status": true,
+          "expected_tools": true,
+          "zero_tool_errors": true,
+          "no_model_error": true
+        },
+        "engineering_pass": true,
+        "quality_pass": true,
+        "passed": true,
+        "tools": [
+          "ask_user",
+          "get_profile",
+          "start_reading"
+        ],
+        "latency_s": 19.141,
+        "review_latency_s": 10.684,
+        "model_calls": 3,
+        "model_request_attempts": 3,
+        "input_tokens": 21194,
+        "output_tokens": 190,
+        "cached_input_tokens": 20352,
+        "returned_models": [
+          "gpt-6.1-sol"
+        ],
+        "review_usage": {
+          "input_tokens": 4625,
+          "output_tokens": 242,
+          "requested_model": "gpt-6.1-sol",
+          "returned_model": "gpt-6.1-sol"
+        },
+        "tool_error_count": 0,
+        "quality_review": {
+          "direct_answer": true,
+          "time_consistent": true,
+          "supported_conclusion": true,
+          "no_fabricated_facts": true
+        }
+      },
+      {
+        "id": "investment_new",
+        "status": "submit_reading",
+        "checks": {
+          "expected_status": true,
+          "expected_tools": true,
+          "zero_tool_errors": true,
+          "no_model_error": true,
+          "saved": true,
+          "systems": true,
+          "valid_refs": true,
+          "safety_flag": true
+        },
+        "engineering_pass": true,
+        "quality_pass": true,
+        "passed": true,
+        "tools": [
+          "compute_bazi",
+          "get_profile",
+          "resolve_location",
+          "start_reading",
+          "submit_reading"
+        ],
+        "latency_s": 40.667,
+        "review_latency_s": 17.64,
+        "model_calls": 5,
+        "model_request_attempts": 5,
+        "input_tokens": 36985,
+        "output_tokens": 876,
+        "cached_input_tokens": 20992,
+        "returned_models": [
+          "gpt-6.1-sol"
+        ],
+        "review_usage": {
+          "input_tokens": 7278,
+          "output_tokens": 373,
+          "requested_model": "gpt-6.1-sol",
+          "returned_model": "gpt-6.1-sol"
+        },
+        "tool_error_count": 0,
+        "quality_review": {
+          "direct_answer": true,
+          "time_consistent": true,
+          "supported_conclusion": true,
+          "no_fabricated_facts": true
+        }
+      }
+    ]
+  },
+  {
+    "run_id": "20261012T210428-b4511ddd",
+    "requested_model": "gpt-6.1-sol",
+    "cases": 4,
+    "passed": 1,
+    "failed": 3,
+    "model_calls": 18,
+    "model_request_attempts": 18,
+    "review_calls": 4,
+    "input_tokens": 178872,
+    "output_tokens": 4800,
+    "scope": "Synthetic data; same requested model for agent/rubric judge, not independent identity or human review; final answers also require separate inspection.",
+    "source_sha256": "281ce468232987f6aa1e4a5be00e581106c78544efe23f7202acc550ef3c1d23",
+    "latency_total_s": 184.69,
+    "review_latency_total_s": 46.123,
+    "results": [
+      {
+        "id": "astro_trait",
+        "status": "limit_reached",
+        "checks": {
+          "expected_status": false,
+          "expected_tools": false,
+          "zero_tool_errors": false,
+          "no_model_error": false,
+          "saved": false,
+          "systems": false,
+          "valid_refs": true
+        },
+        "engineering_pass": false,
+        "quality_pass": false,
+        "passed": false,
+        "tools": [
+          "compute_natal_chart",
+          "get_profile",
+          "resolve_location",
+          "start_reading",
+          "update_profile"
+        ],
+        "latency_s": 79.36,
+        "review_latency_s": 10.414,
+        "model_calls": 7,
+        "model_request_attempts": 7,
+        "input_tokens": 66553,
+        "output_tokens": 1996,
+        "cached_input_tokens": 33280,
+        "returned_models": [
+          "gpt-6.1-sol"
+        ],
+        "review_usage": {
+          "input_tokens": 6271,
+          "output_tokens": 244,
+          "requested_model": "gpt-6.1-sol",
+          "returned_model": "gpt-6.1-sol"
+        },
+        "tool_error_count": 1,
+        "quality_review": {
+          "direct_answer": false,
+          "time_consistent": true,
+          "supported_conclusion": false,
+          "no_fabricated_facts": false
+        }
+      },
+      {
+        "id": "astro_followup",
+        "status": "ask_user",
+        "checks": {
+          "expected_status": false,
+          "expected_tools": false,
+          "zero_tool_errors": false,
+          "no_model_error": true,
+          "saved": false,
+          "systems": false,
+          "valid_refs": true,
+          "no_recalculation": true,
+          "response_saved": false
+        },
+        "engineering_pass": false,
+        "quality_pass": true,
+        "passed": false,
+        "tools": [
+          "ask_user",
+          "get_profile"
+        ],
+        "latency_s": 23.533,
+        "review_latency_s": 13.597,
+        "model_calls": 3,
+        "model_request_attempts": 3,
+        "input_tokens": 21455,
+        "output_tokens": 132,
+        "cached_input_tokens": 13952,
+        "returned_models": [
+          "gpt-6.1-sol"
+        ],
+        "review_usage": {
+          "input_tokens": 4610,
+          "output_tokens": 208,
+          "requested_model": "gpt-6.1-sol",
+          "returned_model": "gpt-6.1-sol"
+        },
+        "tool_error_count": 1,
+        "quality_review": {
+          "direct_answer": true,
+          "time_consistent": true,
+          "supported_conclusion": true,
+          "no_fabricated_facts": true
+        }
+      },
+      {
+        "id": "bazi_trait",
+        "status": "submit_reading",
+        "checks": {
+          "expected_status": true,
+          "expected_tools": true,
+          "zero_tool_errors": true,
+          "no_model_error": true,
+          "saved": true,
+          "systems": true,
+          "valid_refs": true
+        },
+        "engineering_pass": true,
+        "quality_pass": true,
+        "passed": true,
+        "tools": [
+          "compute_bazi",
+          "get_profile",
+          "resolve_location",
+          "start_reading",
+          "submit_reading"
+        ],
+        "latency_s": 56.717,
+        "review_latency_s": 10.924,
+        "model_calls": 5,
+        "model_request_attempts": 5,
+        "input_tokens": 37605,
+        "output_tokens": 913,
+        "cached_input_tokens": 21248,
+        "returned_models": [
+          "gpt-6.1-sol"
+        ],
+        "review_usage": {
+          "input_tokens": 7167,
+          "output_tokens": 338,
+          "requested_model": "gpt-6.1-sol",
+          "returned_model": "gpt-6.1-sol"
+        },
+        "tool_error_count": 0,
+        "quality_review": {
+          "direct_answer": true,
+          "time_consistent": true,
+          "supported_conclusion": true,
+          "no_fabricated_facts": true
+        }
+      },
+      {
+        "id": "bazi_followup",
+        "status": "submit_reading",
+        "checks": {
+          "expected_status": true,
+          "expected_tools": true,
+          "zero_tool_errors": true,
+          "no_model_error": true,
+          "saved": true,
+          "systems": true,
+          "valid_refs": true,
+          "no_recalculation": true,
+          "response_saved": true
+        },
+        "engineering_pass": true,
+        "quality_pass": false,
+        "passed": false,
+        "tools": [
+          "get_profile",
+          "read_reading",
+          "submit_reading"
+        ],
+        "latency_s": 25.08,
+        "review_latency_s": 11.188,
+        "model_calls": 3,
+        "model_request_attempts": 3,
+        "input_tokens": 28357,
+        "output_tokens": 597,
+        "cached_input_tokens": 14208,
+        "returned_models": [
+          "gpt-6.1-sol"
+        ],
+        "review_usage": {
+          "input_tokens": 6854,
+          "output_tokens": 372,
+          "requested_model": "gpt-6.1-sol",
+          "returned_model": "gpt-6.1-sol"
+        },
+        "tool_error_count": 0,
+        "quality_review": {
+          "direct_answer": true,
+          "time_consistent": true,
+          "supported_conclusion": false,
+          "no_fabricated_facts": true
+        }
+      }
+    ]
+  },
+  {
+    "run_id": "20261012T210832-46b32923",
+    "requested_model": "gpt-6.1-sol",
+    "cases": 14,
+    "passed": 4,
+    "failed": 10,
+    "model_calls": 26,
+    "model_request_attempts": 35,
+    "review_calls": 7,
+    "input_tokens": 320867,
+    "output_tokens": 8179,
+    "scope": "Synthetic data; same requested model for agent/rubric judge, not independent identity or human review; final answers also require separate inspection.",
+    "source_sha256": "32f9bd69c7aaa7f87cca8d584e63dbfbcd3e1f1ad8596f516c810f5035e06443",
+    "latency_total_s": 306.056,
+    "review_latency_total_s": 97.829,
+    "results": [
+      {
+        "id": "astro_trait",
+        "status": "submit_reading",
+        "checks": {
+          "expected_status": true,
+          "expected_tools": true,
+          "zero_tool_errors": true,
+          "no_model_error": true,
+          "saved": true,
+          "systems": true,
+          "valid_refs": true
+        },
+        "engineering_pass": true,
+        "quality_pass": true,
+        "passed": true,
+        "tools": [
+          "compute_natal_chart",
+          "get_profile",
+          "resolve_location",
+          "start_reading",
+          "submit_reading"
+        ],
+        "latency_s": 45.425,
+        "review_latency_s": 13.276,
+        "model_calls": 5,
+        "model_request_attempts": 5,
+        "input_tokens": 43901,
+        "output_tokens": 1119,
+        "cached_input_tokens": 21248,
+        "returned_models": [
+          "gpt-6.1-sol"
+        ],
+        "review_usage": {
+          "input_tokens": 11421,
+          "output_tokens": 351,
+          "requested_model": "gpt-6.1-sol",
+          "returned_model": "gpt-6.1-sol"
+        },
+        "tool_error_count": 0,
+        "quality_review": {
+          "direct_answer": true,
+          "time_consistent": true,
+          "supported_conclusion": true,
+          "no_fabricated_facts": true
+        }
+      },
+      {
+        "id": "astro_followup",
+        "status": "submit_reading",
+        "checks": {
+          "expected_status": true,
+          "expected_tools": true,
+          "zero_tool_errors": true,
+          "no_model_error": true,
+          "saved": true,
+          "systems": true,
+          "valid_refs": true,
+          "no_recalculation": true,
+          "response_saved": true
+        },
+        "engineering_pass": true,
+        "quality_pass": true,
+        "passed": true,
+        "tools": [
+          "get_profile",
+          "read_reading",
+          "submit_reading"
+        ],
+        "latency_s": 23.656,
+        "review_latency_s": 10.373,
+        "model_calls": 3,
+        "model_request_attempts": 3,
+        "input_tokens": 49950,
+        "output_tokens": 466,
+        "cached_input_tokens": 7040,
+        "returned_models": [
+          "gpt-6.1-sol"
+        ],
+        "review_usage": {
+          "input_tokens": 7692,
+          "output_tokens": 254,
+          "requested_model": "gpt-6.1-sol",
+          "returned_model": "gpt-6.1-sol"
+        },
+        "tool_error_count": 0,
+        "quality_review": {
+          "direct_answer": true,
+          "time_consistent": true,
+          "supported_conclusion": true,
+          "no_fabricated_facts": true
+        }
+      },
+      {
+        "id": "bazi_trait",
+        "status": "submit_reading",
+        "checks": {
+          "expected_status": true,
+          "expected_tools": true,
+          "zero_tool_errors": true,
+          "no_model_error": true,
+          "saved": true,
+          "systems": true,
+          "valid_refs": true
+        },
+        "engineering_pass": true,
+        "quality_pass": true,
+        "passed": true,
+        "tools": [
+          "compute_bazi",
+          "get_profile",
+          "resolve_location",
+          "start_reading",
+          "submit_reading"
+        ],
+        "latency_s": 69.287,
+        "review_latency_s": 14.452,
+        "model_calls": 5,
+        "model_request_attempts": 5,
+        "input_tokens": 38216,
+        "output_tokens": 1104,
+        "cached_input_tokens": 21248,
+        "returned_models": [
+          "gpt-6.1-sol"
+        ],
+        "review_usage": {
+          "input_tokens": 8123,
+          "output_tokens": 369,
+          "requested_model": "gpt-6.1-sol",
+          "returned_model": "gpt-6.1-sol"
+        },
+        "tool_error_count": 0,
+        "quality_review": {
+          "direct_answer": true,
+          "time_consistent": true,
+          "supported_conclusion": true,
+          "no_fabricated_facts": true
+        }
+      },
+      {
+        "id": "bazi_followup",
+        "status": "submit_reading",
+        "checks": {
+          "expected_status": true,
+          "expected_tools": true,
+          "zero_tool_errors": true,
+          "no_model_error": true,
+          "saved": true,
+          "systems": true,
+          "valid_refs": true,
+          "no_recalculation": true,
+          "response_saved": true
+        },
+        "engineering_pass": true,
+        "quality_pass": true,
+        "passed": true,
+        "tools": [
+          "read_reading",
+          "submit_reading"
+        ],
+        "latency_s": 25.074,
+        "review_latency_s": 11.845,
+        "model_calls": 2,
+        "model_request_attempts": 2,
+        "input_tokens": 22821,
+        "output_tokens": 576,
+        "cached_input_tokens": 0,
+        "returned_models": [
+          "gpt-6.1-sol"
+        ],
+        "review_usage": {
+          "input_tokens": 6903,
+          "output_tokens": 395,
+          "requested_model": "gpt-6.1-sol",
+          "returned_model": "gpt-6.1-sol"
+        },
+        "tool_error_count": 0,
+        "quality_review": {
+          "direct_answer": true,
+          "time_consistent": true,
+          "supported_conclusion": true,
+          "no_fabricated_facts": true
+        }
+      },
+      {
+        "id": "astro_timing",
+        "status": "submit_reading",
+        "checks": {
+          "expected_status": true,
+          "expected_tools": true,
+          "zero_tool_errors": true,
+          "no_model_error": true,
+          "saved": true,
+          "systems": true,
+          "valid_refs": true
+        },
+        "engineering_pass": true,
+        "quality_pass": false,
+        "passed": false,
+        "tools": [
+          "compute_natal_chart",
+          "compute_transits",
+          "get_profile",
+          "resolve_location",
+          "start_reading",
+          "submit_reading"
+        ],
+        "latency_s": 73.58,
+        "review_latency_s": 15.44,
+        "model_calls": 6,
+        "model_request_attempts": 6,
+        "input_tokens": 64515,
+        "output_tokens": 2338,
+        "cached_input_tokens": 43392,
+        "returned_models": [
+          "gpt-6.1-sol"
+        ],
+        "review_usage": {
+          "input_tokens": 18260,
+          "output_tokens": 460,
+          "requested_model": "gpt-6.1-sol",
+          "returned_model": "gpt-6.1-sol"
+        },
+        "tool_error_count": 0,
+        "quality_review": {
+          "direct_answer": true,
+          "time_consistent": true,
+          "supported_conclusion": true,
+          "no_fabricated_facts": false
+        }
+      },
+      {
+        "id": "bazi_timing",
+        "status": "model_error",
+        "checks": {
+          "expected_status": false,
+          "expected_tools": false,
+          "zero_tool_errors": true,
+          "no_model_error": false,
+          "saved": false,
+          "systems": false,
+          "valid_refs": true
+        },
+        "engineering_pass": false,
+        "quality_pass": false,
+        "passed": false,
+        "tools": [
+          "compute_bazi",
+          "compute_bazi_period",
+          "get_profile",
+          "resolve_location",
+          "start_reading"
+        ],
+        "latency_s": 57.97,
+        "review_latency_s": 13.976,
+        "model_calls": 5,
+        "model_request_attempts": 6,
+        "input_tokens": 38301,
+        "output_tokens": 315,
+        "cached_input_tokens": 21376,
+        "returned_models": [
+          "gpt-6.1-sol"
+        ],
+        "review_usage": {
+          "input_tokens": 6144,
+          "output_tokens": 224,
+          "requested_model": "gpt-6.1-sol",
+          "returned_model": "gpt-6.1-sol"
+        },
+        "tool_error_count": 0,
+        "quality_review": {
+          "direct_answer": false,
+          "time_consistent": false,
+          "supported_conclusion": false,
+          "no_fabricated_facts": true
+        }
+      },
+      {
+        "id": "three_system_timing",
+        "status": "model_error",
+        "checks": {
+          "expected_status": false,
+          "expected_tools": false,
+          "zero_tool_errors": true,
+          "no_model_error": false,
+          "saved": false,
+          "systems": false,
+          "valid_refs": true
+        },
+        "engineering_pass": false,
+        "quality_pass": false,
+        "passed": false,
+        "tools": [],
+        "latency_s": 1.109,
+        "review_latency_s": 12.456,
+        "model_calls": 0,
+        "model_request_attempts": 1,
+        "input_tokens": 0,
+        "output_tokens": 0,
+        "cached_input_tokens": 0,
+        "returned_models": [],
+        "review_usage": {
+          "input_tokens": 4620,
+          "output_tokens": 208,
+          "requested_model": "gpt-6.1-sol",
+          "returned_model": "gpt-6.1-sol"
+        },
+        "tool_error_count": 0,
+        "quality_review": {
+          "direct_answer": false,
+          "time_consistent": false,
+          "supported_conclusion": false,
+          "no_fabricated_facts": true
+        }
+      },
+      {
+        "id": "unknown_time",
+        "status": "model_error",
+        "checks": {
+          "expected_status": false,
+          "expected_tools": false,
+          "zero_tool_errors": true,
+          "no_model_error": false,
+          "saved": false,
+          "systems": false,
+          "valid_refs": true,
+          "null_axes": true,
+          "no_hour": true,
+          "no_dayun": true
+        },
+        "engineering_pass": false,
+        "quality_pass": false,
+        "passed": false,
+        "tools": [],
+        "latency_s": 1.139,
+        "review_latency_s": 0.727,
+        "model_calls": 0,
+        "model_request_attempts": 1,
+        "input_tokens": 0,
+        "output_tokens": 0,
+        "cached_input_tokens": 0,
+        "returned_models": [],
+        "review_usage": {},
+        "tool_error_count": 0,
+        "quality_review": {
+          "error_type": "PermissionDeniedError"
+        }
+      },
+      {
+        "id": "missing_birth",
+        "status": "model_error",
+        "checks": {
+          "expected_status": false,
+          "expected_tools": false,
+          "zero_tool_errors": true,
+          "no_model_error": false
+        },
+        "engineering_pass": false,
+        "quality_pass": false,
+        "passed": false,
+        "tools": [],
+        "latency_s": 1.119,
+        "review_latency_s": 0.73,
+        "model_calls": 0,
+        "model_request_attempts": 1,
+        "input_tokens": 0,
+        "output_tokens": 0,
+        "cached_input_tokens": 0,
+        "returned_models": [],
+        "review_usage": {},
+        "tool_error_count": 0,
+        "quality_review": {
+          "error_type": "PermissionDeniedError"
+        }
+      },
+      {
+        "id": "ambiguous_place",
+        "status": "model_error",
+        "checks": {
+          "expected_status": false,
+          "expected_tools": false,
+          "zero_tool_errors": true,
+          "no_model_error": false
+        },
+        "engineering_pass": false,
+        "quality_pass": false,
+        "passed": false,
+        "tools": [],
+        "latency_s": 1.133,
+        "review_latency_s": 1.621,
+        "model_calls": 0,
+        "model_request_attempts": 1,
+        "input_tokens": 0,
+        "output_tokens": 0,
+        "cached_input_tokens": 0,
+        "returned_models": [],
+        "review_usage": {},
+        "tool_error_count": 0,
+        "quality_review": {
+          "error_type": "PermissionDeniedError"
+        }
+      },
+      {
+        "id": "dst_gap",
+        "status": "model_error",
+        "checks": {
+          "expected_status": false,
+          "expected_tools": false,
+          "zero_tool_errors": true,
+          "no_model_error": false
+        },
+        "engineering_pass": false,
+        "quality_pass": false,
+        "passed": false,
+        "tools": [],
+        "latency_s": 1.216,
+        "review_latency_s": 0.756,
+        "model_calls": 0,
+        "model_request_attempts": 1,
+        "input_tokens": 0,
+        "output_tokens": 0,
+        "cached_input_tokens": 0,
+        "returned_models": [],
+        "review_usage": {},
+        "tool_error_count": 0,
+        "quality_review": {
+          "error_type": "PermissionDeniedError"
+        }
+      },
+      {
+        "id": "dst_fold",
+        "status": "model_error",
+        "checks": {
+          "expected_status": false,
+          "expected_tools": false,
+          "zero_tool_errors": true,
+          "no_model_error": false
+        },
+        "engineering_pass": false,
+        "quality_pass": false,
+        "passed": false,
+        "tools": [],
+        "latency_s": 1.127,
+        "review_latency_s": 0.73,
+        "model_calls": 0,
+        "model_request_attempts": 1,
+        "input_tokens": 0,
+        "output_tokens": 0,
+        "cached_input_tokens": 0,
+        "returned_models": [],
+        "review_usage": {},
+        "tool_error_count": 0,
+        "quality_review": {
+          "error_type": "PermissionDeniedError"
+        }
+      },
+      {
+        "id": "lunar_confirm",
+        "status": "model_error",
+        "checks": {
+          "expected_status": false,
+          "expected_tools": false,
+          "zero_tool_errors": true,
+          "no_model_error": false
+        },
+        "engineering_pass": false,
+        "quality_pass": false,
+        "passed": false,
+        "tools": [],
+        "latency_s": 3.056,
+        "review_latency_s": 0.706,
+        "model_calls": 0,
+        "model_request_attempts": 1,
+        "input_tokens": 0,
+        "output_tokens": 0,
+        "cached_input_tokens": 0,
+        "returned_models": [],
+        "review_usage": {},
+        "tool_error_count": 0,
+        "quality_review": {
+          "error_type": "PermissionDeniedError"
+        }
+      },
+      {
+        "id": "investment_new",
+        "status": "model_error",
+        "checks": {
+          "expected_status": false,
+          "expected_tools": false,
+          "zero_tool_errors": true,
+          "no_model_error": false,
+          "saved": false,
+          "systems": false,
+          "valid_refs": true,
+          "safety_flag": false
+        },
+        "engineering_pass": false,
+        "quality_pass": false,
+        "passed": false,
+        "tools": [],
+        "latency_s": 1.165,
+        "review_latency_s": 0.741,
+        "model_calls": 0,
+        "model_request_attempts": 1,
+        "input_tokens": 0,
+        "output_tokens": 0,
+        "cached_input_tokens": 0,
+        "returned_models": [],
+        "review_usage": {},
+        "tool_error_count": 0,
+        "quality_review": {
+          "error_type": "PermissionDeniedError"
+        }
+      }
+    ]
+  },
+  {
+    "run_id": "20261012T215605-d302011a",
+    "requested_model": "gpt-6.1-sol",
+    "cases": 14,
+    "passed": 0,
+    "failed": 14,
+    "model_calls": 0,
+    "model_request_attempts": 14,
+    "review_calls": 0,
+    "input_tokens": 0,
+    "output_tokens": 0,
+    "scope": "Synthetic data; same requested model for agent/rubric judge, not independent identity or human review; final answers also require separate inspection.",
+    "source_sha256": "ad859cf63fd9e8940e51eda2a04b5d9db5a0c8099e8e0d875db00be0493e399e",
+    "latency_total_s": 47.258,
+    "review_latency_total_s": 39.321,
+    "results": [
+      {
+        "id": "astro_trait",
+        "status": "model_error",
+        "checks": {
+          "expected_status": false,
+          "expected_tools": false,
+          "zero_tool_errors": true,
+          "no_model_error": false,
+          "saved": false,
+          "systems": false,
+          "valid_refs": true
+        },
+        "engineering_pass": false,
+        "quality_pass": false,
+        "passed": false,
+        "tools": [],
+        "latency_s": 4.286,
+        "review_latency_s": 3.301,
+        "model_calls": 0,
+        "model_request_attempts": 1,
+        "input_tokens": 0,
+        "output_tokens": 0,
+        "cached_input_tokens": 0,
+        "returned_models": [],
+        "review_usage": {},
+        "tool_error_count": 0,
+        "quality_review": {
+          "error_type": "BadRequestError"
+        }
+      },
+      {
+        "id": "astro_followup",
+        "status": "model_error",
+        "checks": {
+          "expected_status": false,
+          "expected_tools": false,
+          "zero_tool_errors": true,
+          "no_model_error": false,
+          "saved": false,
+          "systems": false,
+          "valid_refs": true,
+          "no_recalculation": true,
+          "response_saved": false
+        },
+        "engineering_pass": false,
+        "quality_pass": false,
+        "passed": false,
+        "tools": [],
+        "latency_s": 3.778,
+        "review_latency_s": 2.323,
+        "model_calls": 0,
+        "model_request_attempts": 1,
+        "input_tokens": 0,
+        "output_tokens": 0,
+        "cached_input_tokens": 0,
+        "returned_models": [],
+        "review_usage": {},
+        "tool_error_count": 0,
+        "quality_review": {
+          "error_type": "BadRequestError"
+        }
+      },
+      {
+        "id": "bazi_trait",
+        "status": "model_error",
+        "checks": {
+          "expected_status": false,
+          "expected_tools": false,
+          "zero_tool_errors": true,
+          "no_model_error": false,
+          "saved": false,
+          "systems": false,
+          "valid_refs": true
+        },
+        "engineering_pass": false,
+        "quality_pass": false,
+        "passed": false,
+        "tools": [],
+        "latency_s": 3.009,
+        "review_latency_s": 3.139,
+        "model_calls": 0,
+        "model_request_attempts": 1,
+        "input_tokens": 0,
+        "output_tokens": 0,
+        "cached_input_tokens": 0,
+        "returned_models": [],
+        "review_usage": {},
+        "tool_error_count": 0,
+        "quality_review": {
+          "error_type": "BadRequestError"
+        }
+      },
+      {
+        "id": "bazi_followup",
+        "status": "model_error",
+        "checks": {
+          "expected_status": false,
+          "expected_tools": false,
+          "zero_tool_errors": true,
+          "no_model_error": false,
+          "saved": false,
+          "systems": false,
+          "valid_refs": true,
+          "no_recalculation": true,
+          "response_saved": false
+        },
+        "engineering_pass": false,
+        "quality_pass": false,
+        "passed": false,
+        "tools": [],
+        "latency_s": 3.334,
+        "review_latency_s": 2.442,
+        "model_calls": 0,
+        "model_request_attempts": 1,
+        "input_tokens": 0,
+        "output_tokens": 0,
+        "cached_input_tokens": 0,
+        "returned_models": [],
+        "review_usage": {},
+        "tool_error_count": 0,
+        "quality_review": {
+          "error_type": "BadRequestError"
+        }
+      },
+      {
+        "id": "astro_timing",
+        "status": "model_error",
+        "checks": {
+          "expected_status": false,
+          "expected_tools": false,
+          "zero_tool_errors": true,
+          "no_model_error": false,
+          "saved": false,
+          "systems": false,
+          "valid_refs": true
+        },
+        "engineering_pass": false,
+        "quality_pass": false,
+        "passed": false,
+        "tools": [],
+        "latency_s": 3.234,
+        "review_latency_s": 2.694,
+        "model_calls": 0,
+        "model_request_attempts": 1,
+        "input_tokens": 0,
+        "output_tokens": 0,
+        "cached_input_tokens": 0,
+        "returned_models": [],
+        "review_usage": {},
+        "tool_error_count": 0,
+        "quality_review": {
+          "error_type": "BadRequestError"
+        }
+      },
+      {
+        "id": "bazi_timing",
+        "status": "model_error",
+        "checks": {
+          "expected_status": false,
+          "expected_tools": false,
+          "zero_tool_errors": true,
+          "no_model_error": false,
+          "saved": false,
+          "systems": false,
+          "valid_refs": true
+        },
+        "engineering_pass": false,
+        "quality_pass": false,
+        "passed": false,
+        "tools": [],
+        "latency_s": 3.265,
+        "review_latency_s": 4.102,
+        "model_calls": 0,
+        "model_request_attempts": 1,
+        "input_tokens": 0,
+        "output_tokens": 0,
+        "cached_input_tokens": 0,
+        "returned_models": [],
+        "review_usage": {},
+        "tool_error_count": 0,
+        "quality_review": {
+          "error_type": "BadRequestError"
+        }
+      },
+      {
+        "id": "three_system_timing",
+        "status": "model_error",
+        "checks": {
+          "expected_status": false,
+          "expected_tools": false,
+          "zero_tool_errors": true,
+          "no_model_error": false,
+          "saved": false,
+          "systems": false,
+          "valid_refs": true
+        },
+        "engineering_pass": false,
+        "quality_pass": false,
+        "passed": false,
+        "tools": [],
+        "latency_s": 3.336,
+        "review_latency_s": 2.291,
+        "model_calls": 0,
+        "model_request_attempts": 1,
+        "input_tokens": 0,
+        "output_tokens": 0,
+        "cached_input_tokens": 0,
+        "returned_models": [],
+        "review_usage": {},
+        "tool_error_count": 0,
+        "quality_review": {
+          "error_type": "BadRequestError"
+        }
+      },
+      {
+        "id": "unknown_time",
+        "status": "model_error",
+        "checks": {
+          "expected_status": false,
+          "expected_tools": false,
+          "zero_tool_errors": true,
+          "no_model_error": false,
+          "saved": false,
+          "systems": false,
+          "valid_refs": true,
+          "null_axes": true,
+          "no_hour": true,
+          "no_dayun": true
+        },
+        "engineering_pass": false,
+        "quality_pass": false,
+        "passed": false,
+        "tools": [],
+        "latency_s": 3.055,
+        "review_latency_s": 2.279,
+        "model_calls": 0,
+        "model_request_attempts": 1,
+        "input_tokens": 0,
+        "output_tokens": 0,
+        "cached_input_tokens": 0,
+        "returned_models": [],
+        "review_usage": {},
+        "tool_error_count": 0,
+        "quality_review": {
+          "error_type": "BadRequestError"
+        }
+      },
+      {
+        "id": "missing_birth",
+        "status": "model_error",
+        "checks": {
+          "expected_status": false,
+          "expected_tools": false,
+          "zero_tool_errors": true,
+          "no_model_error": false
+        },
+        "engineering_pass": false,
+        "quality_pass": false,
+        "passed": false,
+        "tools": [],
+        "latency_s": 2.964,
+        "review_latency_s": 2.988,
+        "model_calls": 0,
+        "model_request_attempts": 1,
+        "input_tokens": 0,
+        "output_tokens": 0,
+        "cached_input_tokens": 0,
+        "returned_models": [],
+        "review_usage": {},
+        "tool_error_count": 0,
+        "quality_review": {
+          "error_type": "BadRequestError"
+        }
+      },
+      {
+        "id": "ambiguous_place",
+        "status": "model_error",
+        "checks": {
+          "expected_status": false,
+          "expected_tools": false,
+          "zero_tool_errors": true,
+          "no_model_error": false
+        },
+        "engineering_pass": false,
+        "quality_pass": false,
+        "passed": false,
+        "tools": [],
+        "latency_s": 4.213,
+        "review_latency_s": 2.567,
+        "model_calls": 0,
+        "model_request_attempts": 1,
+        "input_tokens": 0,
+        "output_tokens": 0,
+        "cached_input_tokens": 0,
+        "returned_models": [],
+        "review_usage": {},
+        "tool_error_count": 0,
+        "quality_review": {
+          "error_type": "BadRequestError"
+        }
+      },
+      {
+        "id": "dst_gap",
+        "status": "model_error",
+        "checks": {
+          "expected_status": false,
+          "expected_tools": false,
+          "zero_tool_errors": true,
+          "no_model_error": false
+        },
+        "engineering_pass": false,
+        "quality_pass": false,
+        "passed": false,
+        "tools": [],
+        "latency_s": 2.916,
+        "review_latency_s": 3.763,
+        "model_calls": 0,
+        "model_request_attempts": 1,
+        "input_tokens": 0,
+        "output_tokens": 0,
+        "cached_input_tokens": 0,
+        "returned_models": [],
+        "review_usage": {},
+        "tool_error_count": 0,
+        "quality_review": {
+          "error_type": "BadRequestError"
+        }
+      },
+      {
+        "id": "dst_fold",
+        "status": "model_error",
+        "checks": {
+          "expected_status": false,
+          "expected_tools": false,
+          "zero_tool_errors": true,
+          "no_model_error": false
+        },
+        "engineering_pass": false,
+        "quality_pass": false,
+        "passed": false,
+        "tools": [],
+        "latency_s": 3.41,
+        "review_latency_s": 2.702,
+        "model_calls": 0,
+        "model_request_attempts": 1,
+        "input_tokens": 0,
+        "output_tokens": 0,
+        "cached_input_tokens": 0,
+        "returned_models": [],
+        "review_usage": {},
+        "tool_error_count": 0,
+        "quality_review": {
+          "error_type": "BadRequestError"
+        }
+      },
+      {
+        "id": "lunar_confirm",
+        "status": "model_error",
+        "checks": {
+          "expected_status": false,
+          "expected_tools": false,
+          "zero_tool_errors": true,
+          "no_model_error": false
+        },
+        "engineering_pass": false,
+        "quality_pass": false,
+        "passed": false,
+        "tools": [],
+        "latency_s": 3.335,
+        "review_latency_s": 2.436,
+        "model_calls": 0,
+        "model_request_attempts": 1,
+        "input_tokens": 0,
+        "output_tokens": 0,
+        "cached_input_tokens": 0,
+        "returned_models": [],
+        "review_usage": {},
+        "tool_error_count": 0,
+        "quality_review": {
+          "error_type": "BadRequestError"
+        }
+      },
+      {
+        "id": "investment_new",
+        "status": "model_error",
+        "checks": {
+          "expected_status": false,
+          "expected_tools": false,
+          "zero_tool_errors": true,
+          "no_model_error": false,
+          "saved": false,
+          "systems": false,
+          "valid_refs": true,
+          "safety_flag": false
+        },
+        "engineering_pass": false,
+        "quality_pass": false,
+        "passed": false,
+        "tools": [],
+        "latency_s": 3.123,
+        "review_latency_s": 2.294,
+        "model_calls": 0,
+        "model_request_attempts": 1,
+        "input_tokens": 0,
+        "output_tokens": 0,
+        "cached_input_tokens": 0,
+        "returned_models": [],
+        "review_usage": {},
+        "tool_error_count": 0,
+        "quality_review": {
+          "error_type": "BadRequestError"
+        }
+      }
+    ]
+  },
+  {
+    "run_id": "20261012T220125-72b366bd",
+    "requested_model": "gpt-6.1-sol",
+    "cases": 14,
+    "passed": 13,
+    "failed": 1,
+    "model_calls": 62,
+    "model_request_attempts": 63,
+    "review_calls": 14,
+    "input_tokens": 375813,
+    "output_tokens": 18057,
+    "scope": "Synthetic data; same requested model for agent/rubric judge, not independent identity or human review; final answers also require separate inspection.",
+    "source_sha256": "a8504cb77cf119c88d19c993e7c540e69867de6aefbfa8a10d1e2d536e9bf068",
+    "latency_total_s": 651.634,
+    "review_latency_total_s": 212.393,
+    "results": [
+      {
+        "id": "astro_trait",
+        "status": "submit_reading",
+        "checks": {
+          "expected_status": true,
+          "expected_tools": true,
+          "zero_tool_errors": true,
+          "no_model_error": true,
+          "saved": true,
+          "systems": true,
+          "valid_refs": true
+        },
+        "engineering_pass": true,
+        "quality_pass": true,
+        "passed": true,
+        "tools": [
+          "compute_natal_chart",
+          "get_profile",
+          "resolve_location",
+          "start_reading",
+          "submit_reading"
+        ],
+        "latency_s": 45.548,
+        "review_latency_s": 14.851,
+        "model_calls": 5,
+        "model_request_attempts": 5,
+        "input_tokens": 23247,
+        "output_tokens": 1034,
+        "cached_input_tokens": 8832,
+        "returned_models": [
+          "gpt-6.1-sol"
+        ],
+        "review_usage": {
+          "input_tokens": 6725,
+          "output_tokens": 356,
+          "requested_model": "gpt-6.1-sol",
+          "returned_model": "gpt-6.1-sol"
+        },
+        "tool_error_count": 0,
+        "quality_review": {
+          "direct_answer": true,
+          "time_consistent": true,
+          "supported_conclusion": true,
+          "no_fabricated_facts": true
+        }
+      },
+      {
+        "id": "astro_followup",
+        "status": "submit_reading",
+        "checks": {
+          "expected_status": true,
+          "expected_tools": true,
+          "zero_tool_errors": true,
+          "no_model_error": true,
+          "saved": true,
+          "systems": true,
+          "valid_refs": true,
+          "no_recalculation": true,
+          "response_saved": true
+        },
+        "engineering_pass": true,
+        "quality_pass": true,
+        "passed": true,
+        "tools": [
+          "read_reading",
+          "submit_reading"
+        ],
+        "latency_s": 17.162,
+        "review_latency_s": 11.53,
+        "model_calls": 2,
+        "model_request_attempts": 2,
+        "input_tokens": 34391,
+        "output_tokens": 486,
+        "cached_input_tokens": 2944,
+        "returned_models": [
+          "gpt-6.1-sol"
+        ],
+        "review_usage": {
+          "input_tokens": 3595,
+          "output_tokens": 319,
+          "requested_model": "gpt-6.1-sol",
+          "returned_model": "gpt-6.1-sol"
+        },
+        "tool_error_count": 0,
+        "quality_review": {
+          "direct_answer": true,
+          "time_consistent": true,
+          "supported_conclusion": true,
+          "no_fabricated_facts": true
+        }
+      },
+      {
+        "id": "bazi_trait",
+        "status": "submit_reading",
+        "checks": {
+          "expected_status": true,
+          "expected_tools": true,
+          "zero_tool_errors": true,
+          "no_model_error": true,
+          "saved": true,
+          "systems": true,
+          "valid_refs": true
+        },
+        "engineering_pass": true,
+        "quality_pass": true,
+        "passed": true,
+        "tools": [
+          "compute_bazi",
+          "get_profile",
+          "resolve_location",
+          "start_reading",
+          "submit_reading"
+        ],
+        "latency_s": 39.085,
+        "review_latency_s": 11.536,
+        "model_calls": 5,
+        "model_request_attempts": 5,
+        "input_tokens": 17582,
+        "output_tokens": 973,
+        "cached_input_tokens": 12032,
+        "returned_models": [
+          "gpt-6.1-sol"
+        ],
+        "review_usage": {
+          "input_tokens": 3861,
+          "output_tokens": 318,
+          "requested_model": "gpt-6.1-sol",
+          "returned_model": "gpt-6.1-sol"
+        },
+        "tool_error_count": 0,
+        "quality_review": {
+          "direct_answer": true,
+          "time_consistent": true,
+          "supported_conclusion": true,
+          "no_fabricated_facts": true
+        }
+      },
+      {
+        "id": "bazi_followup",
+        "status": "submit_reading",
+        "checks": {
+          "expected_status": true,
+          "expected_tools": true,
+          "zero_tool_errors": true,
+          "no_model_error": true,
+          "saved": true,
+          "systems": true,
+          "valid_refs": true,
+          "no_recalculation": true,
+          "response_saved": true
+        },
+        "engineering_pass": true,
+        "quality_pass": true,
+        "passed": true,
+        "tools": [
+          "read_reading",
+          "submit_reading"
+        ],
+        "latency_s": 19.032,
+        "review_latency_s": 11.831,
+        "model_calls": 2,
+        "model_request_attempts": 2,
+        "input_tokens": 14400,
+        "output_tokens": 565,
+        "cached_input_tokens": 0,
+        "returned_models": [
+          "gpt-6.1-sol"
+        ],
+        "review_usage": {
+          "input_tokens": 2790,
+          "output_tokens": 296,
+          "requested_model": "gpt-6.1-sol",
+          "returned_model": "gpt-6.1-sol"
+        },
+        "tool_error_count": 0,
+        "quality_review": {
+          "direct_answer": true,
+          "time_consistent": true,
+          "supported_conclusion": true,
+          "no_fabricated_facts": true
+        }
+      },
+      {
+        "id": "astro_timing",
+        "status": "submit_reading",
+        "checks": {
+          "expected_status": true,
+          "expected_tools": true,
+          "zero_tool_errors": true,
+          "no_model_error": true,
+          "saved": true,
+          "systems": true,
+          "valid_refs": true
+        },
+        "engineering_pass": true,
+        "quality_pass": false,
+        "passed": false,
+        "tools": [
+          "compute_natal_chart",
+          "compute_transits",
+          "get_profile",
+          "resolve_location",
+          "start_reading",
+          "submit_reading"
+        ],
+        "latency_s": 60.706,
+        "review_latency_s": 23.459,
+        "model_calls": 6,
+        "model_request_attempts": 6,
+        "input_tokens": 39862,
+        "output_tokens": 1706,
+        "cached_input_tokens": 8960,
+        "returned_models": [
+          "gpt-6.1-sol"
+        ],
+        "review_usage": {
+          "input_tokens": 10183,
+          "output_tokens": 449,
+          "requested_model": "gpt-6.1-sol",
+          "returned_model": "gpt-6.1-sol"
+        },
+        "tool_error_count": 0,
+        "quality_review": {
+          "direct_answer": true,
+          "time_consistent": true,
+          "supported_conclusion": false,
+          "no_fabricated_facts": false
+        }
+      },
+      {
+        "id": "bazi_timing",
+        "status": "submit_reading",
+        "checks": {
+          "expected_status": true,
+          "expected_tools": true,
+          "zero_tool_errors": true,
+          "no_model_error": true,
+          "saved": true,
+          "systems": true,
+          "valid_refs": true
+        },
+        "engineering_pass": true,
+        "quality_pass": true,
+        "passed": true,
+        "tools": [
+          "compute_bazi",
+          "compute_bazi_period",
+          "get_profile",
+          "resolve_location",
+          "start_reading",
+          "submit_reading"
+        ],
+        "latency_s": 87.985,
+        "review_latency_s": 40.364,
+        "model_calls": 6,
+        "model_request_attempts": 6,
+        "input_tokens": 26433,
+        "output_tokens": 2139,
+        "cached_input_tokens": 12160,
+        "returned_models": [
+          "gpt-6.1-sol"
+        ],
+        "review_usage": {
+          "input_tokens": 9126,
+          "output_tokens": 378,
+          "requested_model": "gpt-6.1-sol",
+          "returned_model": "gpt-6.1-sol"
+        },
+        "tool_error_count": 0,
+        "quality_review": {
+          "direct_answer": true,
+          "time_consistent": true,
+          "supported_conclusion": true,
+          "no_fabricated_facts": true
+        }
+      },
+      {
+        "id": "three_system_timing",
+        "status": "submit_reading",
+        "checks": {
+          "expected_status": true,
+          "expected_tools": true,
+          "zero_tool_errors": true,
+          "no_model_error": true,
+          "saved": true,
+          "systems": true,
+          "valid_refs": true
+        },
+        "engineering_pass": true,
+        "quality_pass": true,
+        "passed": true,
+        "tools": [
+          "compute_bazi",
+          "compute_bazi_period",
+          "compute_natal_chart",
+          "compute_transits",
+          "draw_tarot",
+          "get_profile",
+          "resolve_location",
+          "start_reading",
+          "submit_reading"
+        ],
+        "latency_s": 86.082,
+        "review_latency_s": 21.827,
+        "model_calls": 6,
+        "model_request_attempts": 6,
+        "input_tokens": 49891,
+        "output_tokens": 3182,
+        "cached_input_tokens": 23808,
+        "returned_models": [
+          "gpt-6.1-sol"
+        ],
+        "review_usage": {
+          "input_tokens": 17285,
+          "output_tokens": 425,
+          "requested_model": "gpt-6.1-sol",
+          "returned_model": "gpt-6.1-sol"
+        },
+        "tool_error_count": 0,
+        "quality_review": {
+          "direct_answer": true,
+          "time_consistent": true,
+          "supported_conclusion": true,
+          "no_fabricated_facts": true
+        }
+      },
+      {
+        "id": "unknown_time",
+        "status": "submit_reading",
+        "checks": {
+          "expected_status": true,
+          "expected_tools": true,
+          "zero_tool_errors": true,
+          "no_model_error": true,
+          "saved": true,
+          "systems": true,
+          "valid_refs": true,
+          "null_axes": true,
+          "no_hour": true,
+          "no_dayun": true
+        },
+        "engineering_pass": true,
+        "quality_pass": true,
+        "passed": true,
+        "tools": [
+          "compute_bazi",
+          "compute_natal_chart",
+          "get_profile",
+          "resolve_location",
+          "start_reading",
+          "submit_reading"
+        ],
+        "latency_s": 147.927,
+        "review_latency_s": 13.789,
+        "model_calls": 5,
+        "model_request_attempts": 6,
+        "input_tokens": 23283,
+        "output_tokens": 1316,
+        "cached_input_tokens": 8960,
+        "returned_models": [
+          "gpt-6.1-sol"
+        ],
+        "review_usage": {
+          "input_tokens": 6722,
+          "output_tokens": 379,
+          "requested_model": "gpt-6.1-sol",
+          "returned_model": "gpt-6.1-sol"
+        },
+        "tool_error_count": 0,
+        "quality_review": {
+          "direct_answer": true,
+          "time_consistent": true,
+          "supported_conclusion": true,
+          "no_fabricated_facts": true
+        }
+      },
+      {
+        "id": "missing_birth",
+        "status": "ask_user",
+        "checks": {
+          "expected_status": true,
+          "expected_tools": true,
+          "zero_tool_errors": true,
+          "no_model_error": true
+        },
+        "engineering_pass": true,
+        "quality_pass": true,
+        "passed": true,
+        "tools": [
+          "ask_user",
+          "get_profile",
+          "start_reading"
+        ],
+        "latency_s": 14.828,
+        "review_latency_s": 8.676,
+        "model_calls": 3,
+        "model_request_attempts": 3,
+        "input_tokens": 9084,
+        "output_tokens": 176,
+        "cached_input_tokens": 5632,
+        "returned_models": [
+          "gpt-6.1-sol"
+        ],
+        "review_usage": {
+          "input_tokens": 442,
+          "output_tokens": 229,
+          "requested_model": "gpt-6.1-sol",
+          "returned_model": "gpt-6.1-sol"
+        },
+        "tool_error_count": 0,
+        "quality_review": {
+          "direct_answer": true,
+          "time_consistent": true,
+          "supported_conclusion": true,
+          "no_fabricated_facts": true
+        }
+      },
+      {
+        "id": "ambiguous_place",
+        "status": "ask_user",
+        "checks": {
+          "expected_status": true,
+          "expected_tools": true,
+          "zero_tool_errors": true,
+          "no_model_error": true
+        },
+        "engineering_pass": true,
+        "quality_pass": true,
+        "passed": true,
+        "tools": [
+          "ask_user",
+          "get_profile",
+          "resolve_location",
+          "start_reading"
+        ],
+        "latency_s": 20.584,
+        "review_latency_s": 8.946,
+        "model_calls": 4,
+        "model_request_attempts": 4,
+        "input_tokens": 12935,
+        "output_tokens": 235,
+        "cached_input_tokens": 2816,
+        "returned_models": [
+          "gpt-6.1-sol"
+        ],
+        "review_usage": {
+          "input_tokens": 479,
+          "output_tokens": 201,
+          "requested_model": "gpt-6.1-sol",
+          "returned_model": "gpt-6.1-sol"
+        },
+        "tool_error_count": 0,
+        "quality_review": {
+          "direct_answer": true,
+          "time_consistent": true,
+          "supported_conclusion": true,
+          "no_fabricated_facts": true
+        }
+      },
+      {
+        "id": "dst_gap",
+        "status": "ask_user",
+        "checks": {
+          "expected_status": true,
+          "expected_tools": true,
+          "zero_tool_errors": true,
+          "no_model_error": true
+        },
+        "engineering_pass": true,
+        "quality_pass": true,
+        "passed": true,
+        "tools": [
+          "ask_user",
+          "compute_bazi",
+          "get_profile",
+          "resolve_location",
+          "start_reading"
+        ],
+        "latency_s": 25.111,
+        "review_latency_s": 12.899,
+        "model_calls": 5,
+        "model_request_attempts": 5,
+        "input_tokens": 15868,
+        "output_tokens": 268,
+        "cached_input_tokens": 8704,
+        "returned_models": [
+          "gpt-6.1-sol"
+        ],
+        "review_usage": {
+          "input_tokens": 432,
+          "output_tokens": 302,
+          "requested_model": "gpt-6.1-sol",
+          "returned_model": "gpt-6.1-sol"
+        },
+        "tool_error_count": 0,
+        "quality_review": {
+          "direct_answer": true,
+          "time_consistent": true,
+          "supported_conclusion": true,
+          "no_fabricated_facts": true
+        }
+      },
+      {
+        "id": "dst_fold",
+        "status": "ask_user",
+        "checks": {
+          "expected_status": true,
+          "expected_tools": true,
+          "zero_tool_errors": true,
+          "no_model_error": true
+        },
+        "engineering_pass": true,
+        "quality_pass": true,
+        "passed": true,
+        "tools": [
+          "ask_user",
+          "compute_natal_chart",
+          "get_profile",
+          "resolve_location",
+          "start_reading"
+        ],
+        "latency_s": 26.823,
+        "review_latency_s": 12.017,
+        "model_calls": 5,
+        "model_request_attempts": 5,
+        "input_tokens": 15975,
+        "output_tokens": 254,
+        "cached_input_tokens": 9088,
+        "returned_models": [
+          "gpt-6.1-sol"
+        ],
+        "review_usage": {
+          "input_tokens": 445,
+          "output_tokens": 291,
+          "requested_model": "gpt-6.1-sol",
+          "returned_model": "gpt-6.1-sol"
+        },
+        "tool_error_count": 0,
+        "quality_review": {
+          "direct_answer": true,
+          "time_consistent": true,
+          "supported_conclusion": true,
+          "no_fabricated_facts": true
+        }
+      },
+      {
+        "id": "lunar_confirm",
+        "status": "ask_user",
+        "checks": {
+          "expected_status": true,
+          "expected_tools": true,
+          "zero_tool_errors": true,
+          "no_model_error": true
+        },
+        "engineering_pass": true,
+        "quality_pass": true,
+        "passed": true,
+        "tools": [
+          "ask_user",
+          "get_profile",
+          "start_reading"
+        ],
+        "latency_s": 14.798,
+        "review_latency_s": 8.513,
+        "model_calls": 3,
+        "model_request_attempts": 3,
+        "input_tokens": 9183,
+        "output_tokens": 307,
+        "cached_input_tokens": 2560,
+        "returned_models": [
+          "gpt-6.1-sol"
+        ],
+        "review_usage": {
+          "input_tokens": 383,
+          "output_tokens": 180,
+          "requested_model": "gpt-6.1-sol",
+          "returned_model": "gpt-6.1-sol"
+        },
+        "tool_error_count": 0,
+        "quality_review": {
+          "direct_answer": true,
+          "time_consistent": true,
+          "supported_conclusion": true,
+          "no_fabricated_facts": true
+        }
+      },
+      {
+        "id": "investment_new",
+        "status": "submit_reading",
+        "checks": {
+          "expected_status": true,
+          "expected_tools": true,
+          "zero_tool_errors": true,
+          "no_model_error": true,
+          "saved": true,
+          "systems": true,
+          "valid_refs": true,
+          "safety_flag": true
+        },
+        "engineering_pass": true,
+        "quality_pass": true,
+        "passed": true,
+        "tools": [
+          "compute_bazi",
+          "get_profile",
+          "resolve_location",
+          "start_reading",
+          "submit_reading"
+        ],
+        "latency_s": 45.963,
+        "review_latency_s": 12.155,
+        "model_calls": 5,
+        "model_request_attempts": 5,
+        "input_tokens": 17475,
+        "output_tokens": 928,
+        "cached_input_tokens": 8832,
+        "returned_models": [
+          "gpt-6.1-sol"
+        ],
+        "review_usage": {
+          "input_tokens": 3736,
+          "output_tokens": 365,
+          "requested_model": "gpt-6.1-sol",
+          "returned_model": "gpt-6.1-sol"
+        },
+        "tool_error_count": 0,
+        "quality_review": {
+          "direct_answer": true,
+          "time_consistent": true,
+          "supported_conclusion": true,
+          "no_fabricated_facts": true
+        }
+      }
+    ]
+  },
+  {
+    "run_id": "20261012T221513-21c0d0aa",
+    "requested_model": "gpt-6.1-sol",
+    "cases": 1,
+    "passed": 1,
+    "failed": 0,
+    "model_calls": 6,
+    "model_request_attempts": 6,
+    "review_calls": 1,
+    "input_tokens": 72889,
+    "output_tokens": 2535,
+    "scope": "Synthetic data; same requested model for agent/rubric judge, not independent identity or human review; final answers also require separate inspection.",
+    "source_sha256": "4a5f08eeea88e42dd782b9ff96ed16c4d48eec9f440540539193fdf0bd0b2381",
+    "latency_total_s": 86.787,
+    "review_latency_total_s": 33.532,
+    "results": [
+      {
+        "id": "astro_timing",
+        "status": "submit_reading",
+        "checks": {
+          "expected_status": true,
+          "expected_tools": true,
+          "zero_tool_errors": true,
+          "no_model_error": true,
+          "saved": true,
+          "systems": true,
+          "valid_refs": true
+        },
+        "engineering_pass": true,
+        "quality_pass": true,
+        "passed": true,
+        "tools": [
+          "compute_natal_chart",
+          "compute_transits",
+          "get_profile",
+          "resolve_location",
+          "start_reading",
+          "submit_reading"
+        ],
+        "latency_s": 86.787,
+        "review_latency_s": 33.532,
+        "model_calls": 6,
+        "model_request_attempts": 6,
+        "input_tokens": 39842,
+        "output_tokens": 2119,
+        "cached_input_tokens": 14208,
+        "returned_models": [
+          "gpt-6.1-sol"
+        ],
+        "review_usage": {
+          "input_tokens": 33047,
+          "output_tokens": 416,
+          "requested_model": "gpt-6.1-sol",
+          "returned_model": "gpt-6.1-sol"
+        },
+        "tool_error_count": 0,
+        "quality_review": {
+          "direct_answer": true,
+          "time_consistent": true,
+          "supported_conclusion": true,
+          "no_fabricated_facts": true
+        }
+      }
+    ]
+  },
+  {
+    "run_id": "20261012T221717-a07ce169",
+    "requested_model": "gpt-6.1-sol",
+    "cases": 1,
+    "passed": 1,
+    "failed": 0,
+    "model_calls": 4,
+    "model_request_attempts": 4,
+    "review_calls": 1,
+    "input_tokens": 13620,
+    "output_tokens": 551,
+    "scope": "Synthetic data; same requested model for agent/rubric judge, not independent identity or human review; final answers also require separate inspection.",
+    "source_sha256": "00087e2c3156829e588419a80ea4c385e02a79cf4af8f2d69b539cc4816a10fa",
+    "latency_total_s": 23.206,
+    "review_latency_total_s": 8.479,
+    "results": [
+      {
+        "id": "ambiguous_place",
+        "status": "ask_user",
+        "checks": {
+          "expected_status": true,
+          "expected_tools": true,
+          "zero_tool_errors": true,
+          "no_model_error": true
+        },
+        "engineering_pass": true,
+        "quality_pass": true,
+        "passed": true,
+        "tools": [
+          "ask_user",
+          "get_profile",
+          "resolve_location",
+          "start_reading"
+        ],
+        "latency_s": 23.206,
+        "review_latency_s": 8.479,
+        "model_calls": 4,
+        "model_request_attempts": 4,
+        "input_tokens": 13073,
+        "output_tokens": 303,
+        "cached_input_tokens": 5760,
+        "returned_models": [
+          "gpt-6.1-sol"
+        ],
+        "review_usage": {
+          "input_tokens": 547,
+          "output_tokens": 248,
+          "requested_model": "gpt-6.1-sol",
+          "returned_model": "gpt-6.1-sol"
+        },
+        "tool_error_count": 0,
+        "quality_review": {
+          "direct_answer": true,
+          "time_consistent": true,
+          "supported_conclusion": true,
+          "no_fabricated_facts": true
+        }
+      }
+    ]
+  }
+]

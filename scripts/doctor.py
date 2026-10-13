@@ -1,11 +1,13 @@
 from __future__ import annotations
 
 import argparse
+import hashlib
 import importlib.util
 import json
 import os
 import sqlite3
 import sys
+from importlib.metadata import version
 from pathlib import Path
 from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 
@@ -14,7 +16,7 @@ from dotenv import load_dotenv
 ROOT = Path(__file__).resolve().parents[1]
 
 
-def diagnose(root: Path = ROOT) -> dict:
+def diagnose(root: Path = ROOT, data_root: Path | None = None) -> dict:
     load_dotenv(root / ".env")
     checks = [
         {
@@ -50,14 +52,14 @@ def diagnose(root: Path = ROOT) -> dict:
             "name": "iana_timezone",
             "ok": timezone_ok,
             "required": True,
-            "detail": "系统IANA数据或tzdata；后续排盘需要",
+            "detail": "系统IANA数据或锁定tzdata；出生时间通过历史规则解析",
         }
     )
     checks.append(
         {
             "name": "swisseph",
             "ok": importlib.util.find_spec("swisseph") is not None,
-            "required": False,
+            "required": True,
             "detail": "第二周星盘插件依赖",
         }
     )
@@ -87,7 +89,16 @@ def diagnose(root: Path = ROOT) -> dict:
                 "required": True,
             }
         )
-    for package in ("pydantic", "yaml", "httpx", "typer", "openai", "anthropic"):
+    for package in (
+        "pydantic",
+        "yaml",
+        "httpx",
+        "typer",
+        "openai",
+        "anthropic",
+        "skyfield",
+        "lunar_python",
+    ):
         checks.append(
             {
                 "name": package,
@@ -110,9 +121,28 @@ def diagnose(root: Path = ROOT) -> dict:
                 "name": path,
                 "ok": (root / path).exists(),
                 "required": False,
-                "detail": "后续周需要，第一周不安装",
+                "detail": "ephe/geo为第二周数据；unihan/models属于后续范围，缺少不阻断当前验收",
             }
         )
+    import yaml
+
+    manifest = yaml.safe_load((ROOT / "scripts/data_manifest.yaml").read_text(encoding="utf-8"))
+    for asset in manifest["assets"]:
+        file = (data_root or root / "data") / asset["path"]
+        checksum = None
+        if file.is_file():
+            with file.open("rb") as stream:
+                checksum = hashlib.file_digest(stream, "sha256").hexdigest()
+        checks.append(
+            dict(
+                name="data:" + asset["path"],
+                ok=checksum == asset["sha256"],
+                required=True,
+                version=asset["version"],
+                license=asset["license"],
+            )
+        )
+    checks.append(dict(name="tzdata_version", ok=True, required=True, version=version("tzdata")))
     return {"ok": all(c["ok"] for c in checks if c["required"]), "checks": checks}
 
 

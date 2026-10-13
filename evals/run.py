@@ -123,10 +123,15 @@ async def evaluate(output: Path) -> dict:
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--suite", choices=["week1"], default="week1")
+    parser.add_argument("--suite", choices=["week1", "trajectory", "week23"], default="week1")
     parser.add_argument("--output", type=Path, default=ROOT / "reports")
     args = parser.parse_args()
-    report = asyncio.run(evaluate(args.output))
+    if args.suite == "week1":
+        report = asyncio.run(evaluate(args.output))
+    else:
+        from evals.week23 import evaluate as evaluate_week23
+
+        report = asyncio.run(evaluate_week23(args.output))
     print(
         json.dumps(
             {k: v for k, v in report.items() if k not in ("results", "coverage")},
@@ -134,7 +139,9 @@ def main():
             indent=2,
         )
     )
-    raise SystemExit(0 if report["passed"] == report["cases"] and report["seed_vector_pass"] else 1)
+    raise SystemExit(
+        0 if report["passed"] == report["cases"] and report.get("seed_vector_pass", True) else 1
+    )
 
 
 if __name__ == "__main__":

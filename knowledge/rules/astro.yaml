@@ -1,0 +1,14 @@
+system: astro
+version: 3
+context_weight: 0.25
+composition: 主条目与行星性质、星座、宫位的组成条目按1:0.25权重合成，所有组成ref_id固定于本版；本命与行运使用不同horizon/timeframe，禁止从LLM生成倾向值。
+aspect_strength:
+  formula: min(1, floor + orb_weight * max(0, 1-orb/limit) + speed_weight/(1+abs(speed_deg_per_day)))
+  floor: 0.2
+  orb_weight: 0.5
+  speed_weight: 0.3
+strength:
+  planet_sign: 0.6
+  planet_house: 0.5
+  aspect: 0.5
+  transit: 0.0

@@ -6,7 +6,8 @@ import pytest
 from harness.llm import AnthropicModel, OpenAIModel, anthropic_messages
 
 
-async def test_openai_sdk_protocol_with_mock_http(monkeypatch):
+@pytest.mark.parametrize("system_role", ["system", "developer"])
+async def test_openai_sdk_protocol_with_mock_http(monkeypatch, system_role):
     from openai import AsyncOpenAI
 
     monkeypatch.setenv("OPENAI_API_KEY", "test-placeholder")
@@ -47,7 +48,7 @@ async def test_openai_sdk_protocol_with_mock_http(monkeypatch):
             },
         )
 
-    adapter = OpenAIModel("test-model")
+    adapter = OpenAIModel("test-model", system_role=system_role)
     await adapter.client.close()
     adapter.client = AsyncOpenAI(
         api_key="test-placeholder",
@@ -55,7 +56,10 @@ async def test_openai_sdk_protocol_with_mock_http(monkeypatch):
         http_client=httpx.AsyncClient(transport=httpx.MockTransport(respond)),
     )
     try:
-        result = await adapter.chat([{"role": "user", "content": "test"}], [])
+        messages = [{"role": "system", "content": "policy"}, {"role": "user", "content": "test"}]
+        result = await adapter.chat(messages, [])
+        assert received[0]["messages"][0] == {"role": system_role, "content": "policy"}
+        assert messages[0]["role"] == "system"
         assert result.tool_calls[0].name == "get_profile"
         assert result.input_tokens == 9 and result.output_tokens == 3
         assert result.model == "test-model"

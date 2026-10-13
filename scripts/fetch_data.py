@@ -45,17 +45,26 @@ def fetch_asset(asset: dict, root: Path, client: httpx.Client) -> dict:
 
 
 def main():
-    parser = argparse.ArgumentParser(description="下载并核验数据；第一周清单为空，无需外部数据")
+    parser = argparse.ArgumentParser(description="下载并核验Week2/3星历与离线地名数据")
     parser.add_argument("--manifest", type=Path, default=ROOT / "scripts/data_manifest.yaml")
     args = parser.parse_args()
     manifest = yaml.safe_load(args.manifest.read_text(encoding="utf-8"))
     if manifest.get("schema_version") != 1:
         raise ValueError("不支持的数据清单版本")
+    for asset in manifest["assets"]:
+        if any(
+            not asset.get(field)
+            for field in ("source", "license", "version", "sha256", "url", "path")
+        ):
+            raise ValueError("数据缺少来源/许可/版本/哈希")
     with httpx.Client(timeout=30, follow_redirects=True) as client:
         report = [fetch_asset(asset, ROOT / "data", client) for asset in manifest["assets"]]
     print(
         json.dumps(
-            {"assets": report, "note": "第一周塔罗不依赖星历、地名、Unihan 或 embedding。"},
+            {
+                "assets": report,
+                "note": "只下载本次需要的Swiss/JPL/GeoNames；tzdata由依赖锁定，lunar-python内置历法。",
+            },
             ensure_ascii=False,
             indent=2,
         )

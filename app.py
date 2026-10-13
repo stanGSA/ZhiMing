@@ -3,13 +3,16 @@ from __future__ import annotations
 import json
 import shutil
 from dataclasses import dataclass
+from datetime import datetime
 from pathlib import Path
+from zoneinfo import ZoneInfo
 
 import yaml
 from dotenv import load_dotenv
 
 from agents.demo import DemoModel
 from agents.orchestrator import SYSTEM_PROMPT
+from common.location import Gazetteer, location_tool
 from common.safety import AMBIGUOUS_DISTRESS, CRISIS, SAFETY_PROMPT, support_text
 from common.tools import common_tools
 from harness.llm import AnthropicModel, OpenAIModel
@@ -20,6 +23,8 @@ from harness.session import Session
 from harness.trace import Tracer
 from knowledge.kb import KnowledgeBase
 from memory.store import Store
+from plugins.astro import AstroPlugin
+from plugins.bazi import BaziPlugin
 from plugins.tarot import TarotPlugin
 
 ROOT = Path(__file__).resolve().parent
@@ -141,7 +146,7 @@ def create_runtime(
     load_dotenv(root / ".env")
     config = yaml.safe_load((root / "config.yaml").read_text(encoding="utf-8"))
     if config.get("mode") != "single" or config.get("reviewer", {}).get("enabled"):
-        raise ValueError("第一周仅支持 mode: single、reviewer.enabled: false")
+        raise ValueError("前三周仅支持 mode: single、reviewer.enabled: false")
     if seed is not None and not 0 <= seed < 2**64:
         raise ValueError("seed 必须是 0 到 2^64-1 之间的整数")
     if spread is not None and spread not in ("single", "three_card", "decision"):
@@ -155,7 +160,12 @@ def create_runtime(
             if not model_name:
                 raise ValueError("真实模型接入必须通过 --model 或 config.yaml 指定模型名")
             adapter = OpenAIModel if provider == "openai" else AnthropicModel
-            model = adapter(model_name, config["llm"].get("timeout_s", 30))
+            options = (
+                {"system_role": config["llm"].get("system_role", "system")}
+                if provider == "openai"
+                else {}
+            )
+            model = adapter(model_name, config["llm"].get("timeout_s", 30), **options)
         else:
             raise ValueError("provider 必须是 demo、openai 或 anthropic")
     kb = KnowledgeBase(root / config["kb"]["path"])
@@ -171,6 +181,14 @@ def create_runtime(
     session.messages.append(
         {
             "role": "system",
+            "content": "本轮日历基准（Asia/Shanghai）："
+            + datetime.now(ZoneInfo("Asia/Shanghai")).date().isoformat()
+            + "；按用户指定日期范围优先，不猜系统月份。",
+        }
+    )
+    session.messages.append(
+        {
+            "role": "system",
             "content": "画像与最近记录："
             + json.dumps(
                 {"profile": session.profile, "recent_readings": recent}, ensure_ascii=False
@@ -178,7 +196,12 @@ def create_runtime(
         }
     )
     registry = Registry()
-    for tool in [*common_tools(store, kb), *TarotPlugin(kb).tools]:
+    plugins = [TarotPlugin(kb), AstroPlugin(kb, store), BaziPlugin(kb, store)]
+    for tool in [
+        *common_tools(store, kb),
+        location_tool(Gazetteer()),
+        *(tool for plugin in plugins for tool in plugin.tools),
+    ]:
         registry.register(tool)
     return Runtime(
         session,

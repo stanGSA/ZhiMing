@@ -7,6 +7,7 @@ from pathlib import Path
 
 class KnowledgeBase:
     def __init__(self, path: Path, version: str | None = None):
+        canonical_path = path
         if version:
             # Versions are identifiers, never user-controlled filesystem paths.
             if (
@@ -15,10 +16,25 @@ class KnowledgeBase:
                 or any(c not in "0123456789abcdef" for c in version[3:])
             ):
                 raise ValueError("Invalid knowledge version")
-            path = path.parent / "kb_versions" / f"{version}.sqlite"
+            folder = (
+                path.parent if path.parent.name == "kb_versions" else path.parent / "kb_versions"
+            )
+            path = folder / f"{version}.sqlite"
         if not path.is_file():
             raise FileNotFoundError("知识库不存在，请先运行 python -m knowledge.build")
-        self.path = path
+        self.path = canonical_path
+        if version is None:
+            # Hold immutable editions, not the replaceable current pointer.
+            probe = sqlite3.connect(path.resolve().as_uri() + "?mode=ro", uri=True)
+            try:
+                edition = probe.execute("SELECT value FROM meta WHERE key='kb_version'").fetchone()[
+                    0
+                ]
+            finally:
+                probe.close()
+            archive = path.parent / "kb_versions" / f"{edition}.sqlite"
+            if archive.is_file():
+                path = archive
         self.db = sqlite3.connect(path.resolve().as_uri() + "?mode=ro", uri=True)
         self.version = self.db.execute("SELECT value FROM meta WHERE key='kb_version'").fetchone()[
             0

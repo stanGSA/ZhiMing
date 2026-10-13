@@ -1,5 +1,6 @@
 import re
 
+from common.facts import validate_calculation_facts
 from common.safety import CRISIS as CRISIS  # Backwards-compatible public import.
 from plugins.tarot.catalogue import DECK
 
@@ -8,10 +9,13 @@ HIGH_RISK = re.compile(r"疾病|癌|诊断|停药|治疗|健康|投资|股票|�
 
 def validate_reading(reading, session) -> str | None:
     state = session.state
-    if not state.get("tarot_result"):
+    if not state.get("tarot_result") and not state.get("calculations"):
         return "必须先调用确定性计算工具"
-    if reading.systems_used != ["tarot"]:
-        return "第一周只提供塔罗；不能声称使用了未调用的体系"
+    actual_systems = {s["system"] for s in state["signals"]}
+    if set(reading.systems_used) != actual_systems or len(reading.systems_used) != len(
+        actual_systems
+    ):
+        return "systems_used 必须恰好等于本次调用的体系，不能声称使用未调用的体系"
     refs = state["allowed_refs"]
     if any(item.ref_id not in refs for item in reading.evidence):
         return "evidence 引用必须来自本次工具生成的信号"
@@ -31,7 +35,10 @@ def validate_reading(reading, session) -> str | None:
         return "正文不能包含内部状态、审核或存储错误信息"
     if re.search(r"仅供参考|仅供娱乐|仅供.*反思", public_text):
         return "免责声明由应用统一添加，正文不要重复"
-    if state.get("response_mode") != "followup" and state["tarot_result"]["spread"] == "decision":
+    if (
+        state.get("response_mode") != "followup"
+        and (state.get("tarot_result") or {}).get("spread") == "decision"
+    ):
         if not re.search(
             r"(?:倾向|优先|更支持|建议选择|先核实)\s*[AB]", reading.summary.split("。")[0]
         ):
@@ -54,8 +61,10 @@ def validate_reading(reading, session) -> str | None:
             explicit or (name.startswith(("权杖", "圣杯", "宝剑", "星币")) and name in text)
         ) and name not in actual:
             return f"正文提到未抽出的牌：{name}"
-    cards_by_ref = {c["ref_id"]: c for c in state["tarot_result"]["cards"]}
+    cards_by_ref = {c["ref_id"]: c for c in (state.get("tarot_result") or {}).get("cards", [])}
     for evidence in reading.evidence:
+        if evidence.ref_id not in cards_by_ref:
+            continue
         card = cards_by_ref[evidence.ref_id]
         orientation = "逆位" if card["reversed"] else "正位"
         opposite = "正位" if card["reversed"] else "逆位"
@@ -64,13 +73,9 @@ def validate_reading(reading, session) -> str | None:
             or f"{card['name']}】{opposite}" in evidence.reading
         ):
             return f"牌面方向错误，应为{orientation}"
-    if re.search(r"[甲乙丙丁戊己庚辛壬癸][子丑寅卯辰巳午未申酉戌亥]", text):
-        return "本次没有八字工具结果，不能编造干支"
-    if re.search(
-        r"(?:太阳|月亮|水星|金星|火星|木星|土星|上升)(?:落在|位于|在|落入).{0,3}(?:白羊|金牛|双子|巨蟹|狮子|处女|天秤|天蝎|射手|摩羯|水瓶|双鱼)",
-        text,
-    ):
-        return "本次没有占星工具结果，不能编造星体位置"
+    error = validate_calculation_facts(reading, state)
+    if error:
+        return error
     if (
         any(not signal["reviewed"] for signal in state["signals"])
         and reading.confidence.level != "low"

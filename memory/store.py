@@ -43,6 +43,57 @@ class Store:
           input_hash TEXT NOT NULL,result_json TEXT NOT NULL);
         PRAGMA user_version=2;
         """)
+        columns = {row[1] for row in self.db.execute("PRAGMA table_info(readings)")}
+        with self.db:
+            for name, definition in (
+                ("chart_id", "TEXT"),
+                ("bazi_id", "TEXT"),
+                ("calculations_json", "TEXT NOT NULL DEFAULT '{}'"),
+            ):
+                if name not in columns:
+                    self.db.execute(f"ALTER TABLE readings ADD COLUMN {name} {definition}")
+            self.db.execute("PRAGMA user_version=3")
+
+    def cached_calculation(self, system, user_id, inputs, calculate):
+        import hashlib
+        import uuid
+
+        table, id_field = (
+            ("charts", "chart_id") if system == "astro" else ("bazi_charts", "bazi_id")
+        )
+        # Data hashes and implementation revision invalidate stale computation caches.
+        manifest = Path(__file__).resolve().parents[1] / "scripts/data_manifest.yaml"
+        implementation = Path(__file__).resolve().parents[1] / f"plugins/{system}/calculator.py"
+        key = hashlib.sha256(
+            (
+                "week23-calc-v1:"
+                + hashlib.sha256(implementation.read_bytes()).hexdigest()
+                + manifest.read_text(encoding="utf-8")
+                + json.dumps(inputs, sort_keys=True, ensure_ascii=False)
+            ).encode()
+        ).hexdigest()
+        row = self.db.execute(
+            f"SELECT result_json FROM {table} WHERE user_id=? AND input_hash=?", (user_id, key)
+        ).fetchone()
+        if row:
+            return json.loads(row[0]), True
+        result = calculate()
+        result[id_field] = uuid.uuid4().hex
+        with self.db:
+            self.db.execute(
+                f"INSERT INTO {table} VALUES(?,?,?,?)",
+                (result[id_field], user_id, key, json.dumps(result, ensure_ascii=False)),
+            )
+        return result, False
+
+    def get_calculation(self, system, user_id, identity):
+        table, id_field = (
+            ("charts", "chart_id") if system == "astro" else ("bazi_charts", "bazi_id")
+        )
+        row = self.db.execute(
+            f"SELECT result_json FROM {table} WHERE user_id=? AND {id_field}=?", (user_id, identity)
+        ).fetchone()
+        return json.loads(row[0]) if row else None
 
     def get_profile(self, user_id: str) -> dict:
         row = self.db.execute(
@@ -76,7 +127,7 @@ class Store:
         state = session.state
         with self.db:
             self.db.execute(
-                "INSERT INTO readings VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
+                "INSERT INTO readings(reading_id,user_id,session_id,parent_reading_id,question,question_type,systems_used,tarot_json,signals_json,output_json,kb_version,profile_version,mode,created_at,chart_id,bazi_id,calculations_json) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
                 (
                     state["active_reading_id"],
                     session.user_id,
@@ -92,6 +143,9 @@ class Store:
                     session.profile.get("version", 0),
                     "single",
                     datetime.now(UTC).isoformat(),
+                    state.get("chart_id"),
+                    state.get("bazi_id"),
+                    json.dumps(state.get("calculations", {}), ensure_ascii=False),
                 ),
             )
 
@@ -102,7 +156,13 @@ class Store:
         if not row:
             return None
         result = dict(row)
-        for field in ("systems_used", "tarot_json", "signals_json", "output_json"):
+        for field in (
+            "systems_used",
+            "tarot_json",
+            "signals_json",
+            "output_json",
+            "calculations_json",
+        ):
             result[field] = json.loads(result[field]) if result[field] else None
         return result
 

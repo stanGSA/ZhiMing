@@ -3,9 +3,10 @@ llm:
   provider: openai
   model: gpt-6.1-sol
   timeout_s: 90
+  system_role: developer
 limits:
   orchestrator_max_steps: 12
-  request_token_budget: 60000
+  request_token_budget: 180000
   max_parallel_tools: 5
 reviewer:
   enabled: false

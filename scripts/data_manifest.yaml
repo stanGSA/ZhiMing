@@ -1,3 +1,30 @@
 schema_version: 1
-# 第一周塔罗不需要外部数据。后续加入真实 URL 和经核实的 SHA256，禁止猜测哈希。
-assets: []
+assets:
+- url: https://raw.githubusercontent.com/aloistr/swisseph/aacf962d19d79f8bc921dbcdaacf306d85be1917/ephe/sepl_18.se1
+  path: ephe/sepl_18.se1
+  source: Swiss Ephemeris / Astrodienst
+  license: AGPL-3.0 / commercial
+  version: aacf962d19d79f8bc921dbcdaacf306d85be1917
+  sha256: ca1393ceab3a44fbc895887cf789c68819ae6a1cbc9b22225872dbe4ccd99a66
+  retrieved_at: '2026-10-12T20:22:02.659029+00:00'
+- url: https://raw.githubusercontent.com/aloistr/swisseph/aacf962d19d79f8bc921dbcdaacf306d85be1917/ephe/semo_18.se1
+  path: ephe/semo_18.se1
+  source: Swiss Ephemeris / Astrodienst
+  license: AGPL-3.0 / commercial
+  version: aacf962d19d79f8bc921dbcdaacf306d85be1917
+  sha256: 1ca07bd67c24374d77226180c20a4f9996cba013697894810518e7eb582ca4f7
+  retrieved_at: '2026-10-12T20:22:03.339120+00:00'
+- url: https://ssd.jpl.nasa.gov/ftp/eph/planets/bsp/de440s.bsp
+  path: ephe/de440s.bsp
+  source: NASA/JPL DE440 (1849–2150)
+  license: US government public data
+  version: DE440s
+  sha256: c1c7feeab882263fc493a9d5a5b2ddd71b54826cdf65d8d17a76126b260a49f2
+  retrieved_at: '2026-10-12T20:22:07.838749+00:00'
+- url: https://download.geonames.org/export/dump/cities15000.zip
+  path: geo/cities15000.zip
+  source: GeoNames cities15000 incl. alternate names and IANA timezone
+  license: CC BY 4.0
+  version: snapshot-2026-10-12
+  sha256: 8c2390a973087b9f42671a01c401ccbbc4d1346fe1d0371c15d1090b21d2d725
+  retrieved_at: '2026-10-12T20:22:10.305650+00:00'

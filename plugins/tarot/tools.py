@@ -88,8 +88,8 @@ class TarotPlugin:
             }
             session.state["kb_refs"].add(entry["ref_id"])
         session.state["tarot_result"] = result
-        session.state["signals"] = [signal.model_dump(mode="json") for signal in signals]
-        session.state["allowed_refs"] = {s.ref_id for s in signals}
-        session.state["facts"] = [c["name"] for c in result["cards"]]
+        session.state["signals"].extend(signal.model_dump(mode="json") for signal in signals)
+        session.state["allowed_refs"].update(s.ref_id for s in signals)
+        session.state["facts"].extend(c["name"] for c in result["cards"])
         session.state["kb_version"] = self.kb.version
         return {**result, "signals": session.state["signals"]}

@@ -24,12 +24,16 @@ def _transient(exc: BaseException) -> bool:
 
 
 class OpenAIModel:
-    def __init__(self, model: str, timeout: float = 30):
+    def __init__(self, model: str, timeout: float = 30, system_role: str = "system"):
         from openai import AsyncOpenAI
 
         if not os.getenv("OPENAI_API_KEY"):
             raise ValueError("未设置 OPENAI_API_KEY")
         self.model = model
+        if system_role not in ("system", "developer"):
+            raise ValueError("system_role must preserve privileged instructions")
+        self.system_role = system_role
+        self.request_attempts = 0
         self.client = AsyncOpenAI(
             api_key=os.environ["OPENAI_API_KEY"],
             base_url=os.getenv("OPENAI_BASE_URL") or None,
@@ -47,8 +51,14 @@ class OpenAIModel:
         reraise=True,
     )
     async def chat(self, messages, tools) -> ModelResponse:
+        self.request_attempts += 1
         result = await self.client.chat.completions.create(
-            model=self.model, messages=messages, tools=tools or None
+            model=self.model,
+            messages=[
+                {**message, "role": self.system_role} if message["role"] == "system" else message
+                for message in messages
+            ],
+            tools=tools or None,
         )
         message = result.choices[0].message
         calls = []
@@ -117,6 +127,7 @@ class AnthropicModel:
         if not os.getenv("ANTHROPIC_API_KEY"):
             raise ValueError("未设置 ANTHROPIC_API_KEY")
         self.model = model
+        self.request_attempts = 0
         self.client = AsyncAnthropic(
             api_key=os.environ["ANTHROPIC_API_KEY"], timeout=timeout, max_retries=0
         )
@@ -131,6 +142,7 @@ class AnthropicModel:
         reraise=True,
     )
     async def chat(self, messages, tools) -> ModelResponse:
+        self.request_attempts += 1
         system, converted = anthropic_messages(messages)
         result = await self.client.messages.create(
             model=self.model,

@@ -50,12 +50,12 @@ async def run_turn(
         if turn_tokens > token_budget:
             break  # Do not execute side effects from an over-budget response.
         if not response.tool_calls:
-            if session.state.get("tarot_result") and not session.state.get("complete"):
+            if session.state.get("active_reading_id") and not session.state.get("complete"):
                 session.messages.append({"role": "assistant", "content": response.text})
                 session.messages.append(
                     {
                         "role": "user",
-                        "content": "计算已完成，请使用 submit_reading 提交带有效引用的结果。",
+                        "content": "本轮尚未完成。计算已完成则请使用 submit_reading 提交带有效引用的结果；资料或地点需要确认则必须使用 ask_user 追问结束本轮。",
                     }
                 )
                 continue
