@@ -16,12 +16,12 @@ from __future__ import annotations
 
 import hashlib
 import json
-from datetime import date, datetime, time, timedelta
+from datetime import UTC, date, datetime, time, timedelta
 from zoneinfo import ZoneInfo
 
 DEFAULT_RULE = {
     "system": "merge",
-    "version": 2,
+    "version": 3,
     "direction_threshold": 0.05,
     "tension_strength": 0.4,
     "resonance_strength": 0.3,
@@ -163,7 +163,8 @@ def fold(pieces: list[dict], applied: dict, rule: dict, tz: str) -> tuple[list[d
     def duration(piece):
         if piece["start"] is None:
             return 1.0
-        return (piece["end"] - piece["start"]).total_seconds()
+        # Same-ZoneInfo subtraction uses wall-clock time, losing DST's 23/25-hour days.
+        return (piece["end"].astimezone(UTC) - piece["start"].astimezone(UTC)).total_seconds()
 
     total = sum(duration(p) for p in pieces)
     folded = []
@@ -409,7 +410,8 @@ def undisclosed(merged: dict, reading) -> list[dict]:
                 for system in tension["systems"]
             ):
                 continue
-            if dates and not any(d in text + entry.how_to_read for d in dates):
+            visible_text = " ".join((entry.theme, text, entry.how_to_read))
+            if dates and not any(d in visible_text for d in dates):
                 continue
             disclosed = True
         if not disclosed:

@@ -29,10 +29,11 @@ from signals.merge import fingerprint, merge_signals, model_view, undisclosed
 
 SYSTEM_NAMES = {"astro": r"占星|星盘|星座", "bazi": r"八字|命理|四柱", "tarot": r"塔罗|牌"}
 PREFER = r"更信|更相信|更看重|侧重|偏好|以.{0,4}为主|多看|优先"
-DISCOUNT = r"不太信|不怎么信|不信|少看|淡化|不看重|参考就好|不是"
+DISCOUNT = r"不太信|不怎么信|不信|少看|淡化|不看重|参考就好"
 NEGATED_PREFER = (
     r"(?:不|没有|并不|并没有|别|不是)(?:很|太)?(?:更信|更相信|更看重|偏好|侧重|优先|多看)"
 )
+NEGATED_DISCOUNT = rf"(?:不是|并非|并不|不|没有|别|不要)(?:很|太)?(?:{DISCOUNT})"
 CLAUSE = re.compile(r"[，,。；;！!？?、\n]|而且|而是|而|但是|但|可是|不过|然而")
 # What an ask_user question may not ask again once the profile holds it, unless a tool asked
 # for it in this turn (needs_input) or the user is correcting it.
@@ -79,7 +80,7 @@ def known_fields(profile: dict) -> set[str]:
 
 def stance(clause: str) -> int | None:
     """+1 prefer, -1 discount, None when the clause states no clear preference."""
-    if re.search(NEGATED_PREFER, clause):
+    if re.search(NEGATED_PREFER, clause) or re.search(NEGATED_DISCOUNT, clause):
         return None
     if re.search(DISCOUNT, clause):
         return -1
@@ -98,6 +99,16 @@ def weights_validator(value, evidence: str) -> str | None:
     if not isinstance(value, dict) or not value:
         return "体系权重须为 {体系: 权重} 对象"
     clauses = [c for c in CLAUSE.split(evidence) if c.strip()]
+    stances_by_clause = [stance(c) for c in clauses]
+    # "更信八字而不是占星" is an explicit comparison; a bare "不是" elsewhere
+    # (e.g. "八字不是唯一依据") is not evidence of distrust.
+    for index, clause in enumerate(clauses):
+        if index and stances_by_clause[index - 1] == 1:
+            for names in SYSTEM_NAMES.values():
+                if re.fullmatch(rf"\s*不是(?:{names})\s*", clause) and not re.search(
+                    names, clauses[index - 1]
+                ):
+                    stances_by_clause[index] = -1
     for system, weight in value.items():
         if system not in SYSTEM_NAMES:
             return f"未知体系：{system}"
@@ -106,8 +117,8 @@ def weights_validator(value, evidence: str) -> str | None:
         if weight == 1:
             continue
         own = [
-            c
-            for c in clauses
+            index
+            for index, c in enumerate(clauses)
             if re.search(SYSTEM_NAMES[system], c)
             and not any(re.search(SYSTEM_NAMES[o], c) for o in SYSTEM_NAMES if o != system)
         ]
@@ -115,7 +126,7 @@ def weights_validator(value, evidence: str) -> str | None:
             if any(re.search(SYSTEM_NAMES[system], c) for c in clauses):
                 return "一句话同时提到多个体系时无法判断偏好，请分别说明对每个体系的看法"
             return "调整权重的体系必须在用户原话中出现"
-        stances = {stance(c) for c in own} - {None}
+        stances = {stances_by_clause[index] for index in own} - {None}
         if len(stances) != 1:
             return f"原话对{system}没有明确且一致的偏好（注意否定说法）"
         wanted = stances.pop()
