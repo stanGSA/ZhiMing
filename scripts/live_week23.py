@@ -18,7 +18,7 @@ from harness.llm import OpenAIModel
 from knowledge.build import build
 from plugins.astro.tools import AstroPlugin
 from scripts.live_test import records
-from scripts.trace_tree import build_tree, specialist_metrics
+from scripts.trace_tree import build_tree, reviewer_metrics, specialist_metrics
 
 RUBRIC = """你是测试评审，只根据给定原问题、输出、确定性计算事实及引用释义判定。输出严格JSON：
 {"direct_answer":bool,"time_consistent":bool,"supported_conclusion":bool,"no_fabricated_facts":bool,"reasons":["逐项具体理由"]}。
@@ -219,6 +219,27 @@ def aggregate_metrics(rows):
             (m["max_concurrent_specialists"] for m in metrics), default=0
         ),
         trace_tree_complete=all(r["checks"].get("trace_tree_complete", True) for r in rows),
+    )
+
+
+def aggregate_reviews(rows):
+    """Week 5 reviewer agent over all cases: revise rate (plan <= 15%) and filtered requests."""
+    metrics = [r["reviewer_agent"] for r in rows if r.get("reviewer_agent")]
+    reviewed = sum(m["readings_reviewed"] for m in metrics)
+    revised = sum(m["readings_revised"] for m in metrics)
+    verdicts = {}
+    for m in metrics:
+        for verdict, count in m["verdicts"].items():
+            verdicts[verdict] = verdicts.get(verdict, 0) + count
+    return dict(
+        reviews=sum(m["reviews"] for m in metrics),
+        verdicts=verdicts,
+        readings_reviewed=reviewed,
+        readings_revised=revised,
+        revise_rate=revised / reviewed if reviewed else None,
+        dropped_notes=sum(m["dropped_notes"] for m in metrics),
+        rejected_reviews=sum(m["rejected_reviews"] for m in metrics),
+        reviewer_tokens=sum(m["reviewer_tokens"] for m in metrics),
     )
 
 
@@ -447,6 +468,8 @@ async def evaluate(output, selected=None, judge=True, natural=False, mode="singl
                 if review_model
                 else 0,
                 multi_agent=specialist_metrics(events) if mode == "multi" else None,
+                # Week 5 lenient reviewer agent (not the rubric judge above).
+                reviewer_agent=reviewer_metrics(events) if mode == "multi" else None,
                 answer=outcome.text,
                 structured=outcome.data.get("reading"),
                 calculated_facts=facts,
@@ -492,6 +515,7 @@ async def evaluate(output, selected=None, judge=True, natural=False, mode="singl
         passed=sum(r["passed"] for r in rows),
         failed=sum(not r["passed"] for r in rows),
         multi_agent=aggregate_metrics(rows) if mode == "multi" else None,
+        reviewer_agent=aggregate_reviews(rows) if mode == "multi" else None,
         results=rows,
         model_calls=sum(r["model_calls"] for r in rows),
         model_request_attempts=sum(r["model_request_attempts"] for r in rows),

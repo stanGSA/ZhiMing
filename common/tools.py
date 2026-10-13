@@ -1,7 +1,9 @@
 from __future__ import annotations
 
+import json
 import re
 
+from agents.reviewer import packet_from_reading, revise_message
 from common.input_evidence import (
     clock_in,
     gender_evidence,
@@ -23,6 +25,105 @@ from common.validation import validate_reading
 from harness.models import ToolResult
 from harness.registry import Tool
 from knowledge.kb import KnowledgeBase
+from signals.merge import fingerprint, merge_signals, model_view, undisclosed
+
+SYSTEM_NAMES = {"astro": r"占星|星盘|星座", "bazi": r"八字|命理|四柱", "tarot": r"塔罗|牌"}
+PREFER = r"更信|更相信|更看重|侧重|偏好|以.{0,4}为主|多看|优先"
+DISCOUNT = r"不太信|不怎么信|不信|少看|淡化|不看重|参考就好|不是"
+NEGATED_PREFER = (
+    r"(?:不|没有|并不|并没有|别|不是)(?:很|太)?(?:更信|更相信|更看重|偏好|侧重|优先|多看)"
+)
+CLAUSE = re.compile(r"[，,。；;！!？?、\n]|而且|而是|而|但是|但|可是|不过|然而")
+# What an ask_user question may not ask again once the profile holds it, unless a tool asked
+# for it in this turn (needs_input) or the user is correcting it.
+REASK = {
+    "gender": r"性别|男(?:性|生)?还是女|女(?:性|生)?还是男",
+    "birth_date": r"出生(?:日期|年月日)|生日|哪年|几月几日",
+    "birth_place": r"出生地|在哪(?:里|儿)?出生|出生(?:的)?城市",
+}
+CORRECTION = re.compile(r"记错|更正|改一下|改成|不对|搞错|纠正|重新确认")
+
+
+def pending_input(session) -> bool:
+    """A tool or specialist in this turn asked for user input (so a clarifying ask is legit)."""
+    last_user = max((i for i, m in enumerate(session.messages) if m["role"] == "user"), default=-1)
+    for message in session.messages[last_user + 1 :]:
+        if message["role"] != "tool":
+            continue
+        try:
+            payload = json.loads(message["content"])
+        except (TypeError, ValueError):
+            continue
+        data = payload.get("data") or {}
+        report = data.get("report") or {}
+        if (
+            data.get("status") == "needs_input"
+            or data.get("candidates")
+            or report.get("status") == "needs_input"
+            or payload.get("code") == "missing_profile"
+        ):
+            return True
+    return False
+
+
+def known_fields(profile: dict) -> set[str]:
+    known = set()
+    if profile.get("gender"):
+        known.add("gender")
+    if profile.get("birth_local_dt"):
+        known.add("birth_date")
+    if profile.get("birth_place") or profile.get("location_id"):
+        known.add("birth_place")
+    return known
+
+
+def stance(clause: str) -> int | None:
+    """+1 prefer, -1 discount, None when the clause states no clear preference."""
+    if re.search(NEGATED_PREFER, clause):
+        return None
+    if re.search(DISCOUNT, clause):
+        return -1
+    if re.search(PREFER, clause):
+        return 1
+    return None
+
+
+def weights_validator(value, evidence: str) -> str | None:
+    """Every changed weight must follow the user's own stance on that very system.
+
+    The evidence is split into clauses; a system's stance comes only from clauses that name
+    that system and no other, so "我更信八字，不太信占星" supports bazi > 1 and astro < 1 but
+    never the reverse, and a negated preference ("不更信八字") supports nothing.
+    """
+    if not isinstance(value, dict) or not value:
+        return "体系权重须为 {体系: 权重} 对象"
+    clauses = [c for c in CLAUSE.split(evidence) if c.strip()]
+    for system, weight in value.items():
+        if system not in SYSTEM_NAMES:
+            return f"未知体系：{system}"
+        if type(weight) not in (int, float) or not 0.5 <= weight <= 2:
+            return "体系权重须在0.5到2之间"
+        if weight == 1:
+            continue
+        own = [
+            c
+            for c in clauses
+            if re.search(SYSTEM_NAMES[system], c)
+            and not any(re.search(SYSTEM_NAMES[o], c) for o in SYSTEM_NAMES if o != system)
+        ]
+        if not own:
+            if any(re.search(SYSTEM_NAMES[system], c) for c in clauses):
+                return "一句话同时提到多个体系时无法判断偏好，请分别说明对每个体系的看法"
+            return "调整权重的体系必须在用户原话中出现"
+        stances = {stance(c) for c in own} - {None}
+        if len(stances) != 1:
+            return f"原话对{system}没有明确且一致的偏好（注意否定说法）"
+        wanted = stances.pop()
+        if weight > 1 and wanted != 1:
+            return "提高权重须有针对该体系的“更信/更看重”原话"
+        if weight < 1 and wanted != -1:
+            return "降低权重须有针对该体系的“不太信/少看”原话"
+    return None
 
 
 def render_reading(output: dict) -> str:
@@ -51,7 +152,7 @@ def render_reading(output: dict) -> str:
     return "\n".join(lines)
 
 
-def common_tools(store, kb: KnowledgeBase, mode: str = "single") -> list[Tool]:
+def common_tools(store, kb: KnowledgeBase, mode: str = "single", reviewer=None) -> list[Tool]:
     def start_validator(args, session):
         current = session.user_messages[-1]
         if (
@@ -63,7 +164,15 @@ def common_tools(store, kb: KnowledgeBase, mode: str = "single") -> list[Tool]:
         return None
 
     def start(args, session):
+        previous = None
+        if args.parent_reading_id:
+            previous = store.get_reading(session.user_id, args.parent_reading_id)
+            if previous is None:
+                return ToolResult.failure("missing_reading", "关联的记录不属于当前用户")
         reading_id = session.start_reading(args.question)
+        if previous:
+            # Cross-session revisit or correction: link explicitly, keep the old reading as is.
+            session.state["parent_reading_id"] = previous["reading_id"]
         request = session.user_messages[-1]
         spread = (
             "decision"
@@ -75,7 +184,58 @@ def common_tools(store, kb: KnowledgeBase, mode: str = "single") -> list[Tool]:
             else None
         )
         session.state["requested_spread"] = spread
-        return {"reading_id": reading_id, "question": args.question, "requested_spread": spread}
+        result = {"reading_id": reading_id, "question": args.question, "requested_spread": spread}
+        if previous:
+            result["previous_reading"] = previous_view(previous)
+        return result
+
+    def previous_view(row) -> dict:
+        merged = row.get("merge_json") or {}
+        output = row["output_json"]
+        return dict(
+            reading_id=row["reading_id"],
+            question=row["question"],
+            created_at=row["created_at"],
+            summary=output.get("summary"),
+            systems_used=row["systems_used"],
+            timeline=output.get("timeline", []),
+            tensions=output.get("tensions", []),
+            timeframe=(row.get("calculations_json") or {}).get("timeframe"),
+            merge=model_view(merged) if "tensions" in merged else None,
+        )
+
+    def merged_for(session) -> dict:
+        """The cross-system table for the current signals and weights (cached per state)."""
+        state = session.state
+        signals = state.get("signals", [])
+        weights = session.profile.get("system_weights") or {}
+        tz = state.get("timeframe_tz") or session.profile.get("consultation_tz") or "Asia/Shanghai"
+        key = json.dumps([fingerprint(signals), weights, tz], sort_keys=True)
+        if state.get("merge_key") == key and state.get("merge"):
+            return state["merge"]
+        try:
+            rule = kb.rules("merge")
+        except ValueError:
+            rule = None  # A knowledge edition built before week 5: fall back to defaults.
+        state["merge"] = merge_signals(signals, rule, weights, tz)
+        state["merge_key"] = key
+        return state["merge"]
+
+    def merge_tool(args, session):
+        state = session.state
+        if state.get("response_mode") == "followup":
+            # A follow-up explains what the reading said: never recompute with today's weights
+            # or rules. A new evaluation is a new reading linked to the old one.
+            snapshot = state.get("merge_snapshot")
+            if not snapshot:
+                return ToolResult.failure(
+                    "missing_snapshot",
+                    "该历史记录没有保存合并表；需要重新评估请开新记录并关联旧记录",
+                )
+            return {"merge": model_view(snapshot), "snapshot": True}
+        if not state.get("signals"):
+            return ToolResult.failure("missing_signals", "本记录还没有任何体系的信号")
+        return {"merge": model_view(merged_for(session))}
 
     def get_profile(args, session):
         session.profile = store.get_profile(session.user_id)
@@ -122,6 +282,8 @@ def common_tools(store, kb: KnowledgeBase, mode: str = "single") -> list[Tool]:
                 if supported_birth(args.value, args.evidence, len(str(args.value)) > 10)
                 else "出生日期时刻须由原话规范化得到"
             )
+        if args.field == "system_weights":
+            return weights_validator(args.value, args.evidence)
         if args.field in ("lat", "lon", "location_id", "tz", "consultation_tz"):
             if args.field == "consultation_tz":
                 from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
@@ -222,7 +384,23 @@ def common_tools(store, kb: KnowledgeBase, mode: str = "single") -> list[Tool]:
         return {"entry": entry}
 
     def ask_validator(args, session):
-        return "每轮最多追问一次" if session.state.get("asked_this_turn") else None
+        if session.state.get("asked_this_turn"):
+            return "每轮最多追问一次"
+        if pending_input(session) or CORRECTION.search(" ".join(session.user_messages[-1:])):
+            return None
+        known = known_fields(session.profile)
+        repeated = [
+            field
+            for field, pattern in REASK.items()
+            if field in known and re.search(pattern, args.question)
+        ]
+        if repeated:
+            return (
+                "画像已有这些资料，不要重复追问："
+                + "、".join(repeated)
+                + "；直接使用画像，用户主动更正时再更新"
+            )
+        return None
 
     def ask(args, session):
         session.state["asked_this_turn"] = True
@@ -285,26 +463,87 @@ def common_tools(store, kb: KnowledgeBase, mode: str = "single") -> list[Tool]:
         for key in ("chart_id", "bazi_id"):
             if result.get(key):
                 session.state[key] = result[key]
+        # A follow-up explains the saved cross-system table, never a recomputed one: the full
+        # snapshot is pinned to the session for merge_signals and the disclosure check.
+        stored = result.get("merge_json") or {}
+        if "tensions" in stored:
+            session.state["merge_snapshot"] = stored
+        result["merge"] = model_view(stored) if "tensions" in stored else None
         return {"reading": result}
 
-    def submit(args, session):
+    def validate_submit(args, session):
+        error = validate_reading(args, session)
+        if error or mode != "multi":
+            return error
+        state = session.state
+        if state.get("response_mode") == "followup":
+            # A follow-up may answer a narrow question, but it may not drop or contradict the
+            # saved reading's disagreements: its tensions must still cover the snapshot.
+            table = state.get("merge_snapshot")
+            where = "原记录的张力不能在追问中丢失，须保留在tensions中："
+        else:
+            table = merged_for(session)
+            where = (
+                "信号表中的张力未披露，须写进tensions（theme、两边体系各自怎么说、how_to_read）："
+            )
+        missing = undisclosed(table, args) if table else []
+        if missing:
+            return where + "；".join(describe(t) for t in missing)
+        return None
+
+    def describe(tension) -> str:
+        windows = [w["window"] for w in tension["windows"] if w["window"]]
+        when = f"，日期：{'、'.join(windows[:5])}" if windows else ""
+        return f"{tension['id']}（{tension['theme_label']}{when}：{' / '.join(tension['side_texts'])}）"
+
+    def user_question(session) -> str:
+        index = session.state.get("question_message_index", 0)
+        messages = session.user_messages
+        return messages[index] if 0 <= index < len(messages) else session.state["question"]
+
+    async def submit(args, session):
         output = args.model_dump(mode="json")
+        state = session.state
         response_id = None
-        if session.state.get("response_mode") == "followup":
+        review = None
+        if state.get("response_mode") == "followup":
             response_id = store.save_response(session, output)
         else:
-            store.save_reading(session, output, mode, session.state.get("specialist_reports"))
-        session.state["complete"] = True
-        session.state["output"] = output
+            merged = merged_for(session) if state.get("signals") else None
+            notes = state.setdefault("review_notes", [])
+            revisions = sum(note["verdict"] == "revise" for note in notes)
+            # The reviewer runs automatically and cannot be skipped; after max_rounds revise
+            # verdicts the next code-validated draft is released without another review.
+            if reviewer is not None and revisions < reviewer.max_rounds:
+                packet = packet_from_reading(output, user_question(session), merged)
+                review = await reviewer.review(session, packet, len(notes) + 1)
+                notes.append(review)
+                if review["verdict"] == "revise":
+                    return ToolResult.failure(
+                        "review_revise", revise_message(review, reviewer.max_rounds)
+                    )
+            store.save_reading(
+                session,
+                output,
+                mode,
+                state.get("specialist_reports"),
+                merge=merged,
+                reviews=notes,
+            )
+        state["complete"] = True
+        state["output"] = output
         return {
             "text": render_reading(output),
-            "reading_id": session.state["active_reading_id"],
+            "reading_id": state["active_reading_id"],
             "response_id": response_id,
             "reading": output,
+            "review": None
+            if review is None
+            else {k: review[k] for k in ("round", "verdict", "notes", "status")},
         }
 
     all_roles = frozenset({"orchestrator", "tarot", "astro", "bazi", "name", "dream"})
-    return [
+    tools = [
         Tool(
             "start_reading",
             "新问题开始新记录。追问原牌面时不要调用。",
@@ -355,6 +594,7 @@ def common_tools(store, kb: KnowledgeBase, mode: str = "single") -> list[Tool]:
                         "calculations_json",
                         "chart_id",
                         "bazi_id",
+                        "merge",
                     )
                 }
             },
@@ -375,6 +615,19 @@ def common_tools(store, kb: KnowledgeBase, mode: str = "single") -> list[Tool]:
             submit,
             terminal=True,
             dependency="active_reading_id",
-            validator=validate_reading,
+            validator=validate_submit,
         ),
     ]
+    if mode == "multi":
+        tools.append(
+            Tool(
+                "merge_signals",
+                "合并本记录各体系信号，返回代码计算的共振与张力（主题、时间窗口、两边说法、ref_id）。"
+                "两个及以上体系有报告后、submit_reading之前调用；张力必须逐条写进tensions。",
+                EmptyInput,
+                merge_tool,
+                dependency="active_reading_id",
+                idempotent=False,
+            )
+        )
+    return tools

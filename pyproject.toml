@@ -33,7 +33,7 @@ requires = ["hatchling>=1.27,<2"]
 build-backend = "hatchling.build"
 
 [tool.hatch.build.targets.wheel]
-packages = ["harness", "agents", "common", "plugins", "knowledge", "memory", "evals", "scripts"]
+packages = ["harness", "agents", "common", "plugins", "knowledge", "memory", "signals", "evals", "scripts"]
 
 [tool.hatch.build.targets.wheel.force-include]
 "app.py" = "app.py"

@@ -15,6 +15,7 @@ from dotenv import load_dotenv
 from agents.consult import ConsultService
 from agents.demo import DemoModel
 from agents.orchestrator import MULTI_SYSTEM_PROMPT, SYSTEM_PROMPT
+from agents.reviewer import ReviewerService
 from agents.specialists import build_specialists
 from common.location import Gazetteer, location_tool
 from common.safety import AMBIGUOUS_DISTRESS, CRISIS, SAFETY_PROMPT, support_text
@@ -50,6 +51,7 @@ class Runtime:
     specialist_model: object | None = None
     request_timeout_s: float | None = None
     system_prompt: str = SYSTEM_PROMPT
+    reviewer_model: object | None = None
 
     def compact_history(self) -> None:
         if self.session.state.get("complete"):
@@ -158,8 +160,9 @@ class Runtime:
 
     async def close_model(self) -> None:
         models = [self.model]
-        if self.specialist_model is not None and self.specialist_model is not self.model:
-            models.append(self.specialist_model)
+        for extra in (self.specialist_model, self.reviewer_model):
+            if extra is not None and all(extra is not m for m in models):
+                models.append(extra)
         for model in models:
             close = getattr(model, "close", None)
             if close is not None:
@@ -192,14 +195,25 @@ def create_runtime(
     model=None,
     mode: str | None = None,
     specialist_model=None,
+    reviewer_model=None,
+    strictness: str | None = None,
 ) -> Runtime:
     load_dotenv(root / ".env")
     config = yaml.safe_load((root / "config.yaml").read_text(encoding="utf-8"))
     mode = mode or config.get("mode", "single")
     if mode not in ("single", "multi"):
         raise ValueError("mode 必须是 single 或 multi")
-    if config.get("reviewer", {}).get("enabled"):
-        raise ValueError("第五周前审校尚未实现，reviewer.enabled 必须为 false")
+    review_config = dict(config.get("reviewer") or {})
+    if strictness is not None:
+        review_config["strictness"] = strictness
+    if review_config.get("strictness", "lenient") not in ("lenient", "strict", "off"):
+        raise ValueError("reviewer.strictness 必须是 lenient、strict 或 off")
+    # The reviewer belongs to multi-agent mode; single mode stays the week 1-3 baseline.
+    reviewing = (
+        mode == "multi"
+        and bool(review_config.get("enabled"))
+        and review_config.get("strictness", "lenient") != "off"
+    )
     if seed is not None and not 0 <= seed < 2**64:
         raise ValueError("seed 必须是 0 到 2^64-1 之间的整数")
     if spread is not None and spread not in ("single", "three_card", "decision"):
@@ -208,6 +222,7 @@ def create_runtime(
     models = config.get("models") or {}
     model_name = model_name or models.get("orchestrator") or config["llm"].get("model")
     specialist_name = model_name if not models.get("specialist") else models["specialist"]
+    reviewer_name = models.get("reviewer") or specialist_name
     injected = model is not None
     if model is None:
         model = build_model(provider, model_name, config, spread)
@@ -218,6 +233,13 @@ def create_runtime(
             specialist_model = model
         else:
             specialist_model = build_model(provider, specialist_name, config, spread)
+    if reviewing and reviewer_model is None:
+        if injected or provider == "demo" or reviewer_name == model_name:
+            reviewer_model = model
+        elif reviewer_name == specialist_name:
+            reviewer_model = specialist_model
+        else:
+            reviewer_model = build_model(provider, reviewer_name, config, spread)
     kb = KnowledgeBase(root / config["kb"]["path"])
     store = Store(root / config["paths"]["app_db"])
     session = Session(user_id=user_id, default_seed=seed, profile=store.get_profile(user_id))
@@ -246,7 +268,12 @@ def create_runtime(
     plugins = [TarotPlugin(kb), AstroPlugin(kb, store), BaziPlugin(kb, store)]
     session.output_validators = {plugin.name: plugin.validate_output for plugin in plugins}
     tracer = Tracer(root / config["paths"]["runs"])
-    shared = common_tools(store, kb, mode)
+    reviewer = (
+        ReviewerService(reviewer_model, tracer, review_config, config["limits"])
+        if reviewing
+        else None
+    )
+    shared = common_tools(store, kb, mode, reviewer)
     tools = [*shared, location_tool(Gazetteer())]
     if mode == "single":
         tools.extend(tool for plugin in plugins for tool in plugin.tools)
@@ -271,4 +298,5 @@ def create_runtime(
         specialist_model=specialist_model,
         request_timeout_s=config["limits"].get("request_timeout_s"),
         system_prompt=system_prompt,
+        reviewer_model=reviewer_model if reviewing else None,
     )

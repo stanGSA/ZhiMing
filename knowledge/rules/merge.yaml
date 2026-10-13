@@ -1,0 +1,25 @@
+system: merge
+version: 2
+composition: v2：同一主题按各体系方向分条，相邻窗口数值按时长聚合。跨体系合并：先按horizon分组再按主题合并，不同horizon互不抵消；timing信号按实际日期区间求交集后再比较。各体系先在本组内按strength加权求平均倾向，再判断共振与张力。阈值是首版初值，真实数据后再标定。
+# |平均倾向| 低于此值视为中性，不参与方向判断（知识库倾向值多为 ±0.1~0.2，合成后约 ±0.08~0.13）
+direction_threshold: 0.05
+# 张力：两体系方向相反，且两边本组内最强的同向信号强度都不低于此值
+tension_strength: 0.4
+# 共振：至少两个体系同向，且各自同向信号强度不低于此值
+resonance_strength: 0.3
+# 用户偏好权重只影响合并后的综合倾向，不影响张力与共振判定；超出区间的值会被截断
+weight_bounds: [0.5, 2.0]
+# 每个体系在一条张力/共振里最多引用的信号数
+max_refs_per_side: 3
+theme_labels:
+  career: 事业
+  relationship: 感情关系
+  self: 自我状态
+  finance: 财务
+system_labels:
+  astro: 占星
+  bazi: 八字
+  tarot: 塔罗
+  name: 姓名
+  dream: 解梦
+  daily: 每日运势

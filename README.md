@@ -1,6 +1,6 @@
 # 知命 · 占卜 Agent Harness
 
-当前已接入前三周的塔罗、西方占星和八字。第四周新增多 Agent 模式（编排者 + 占星、八字、塔罗三位专家并行），离线测试通过，**真实模型验收尚未进行**，因此默认仍为单 Agent（`mode: single`）。第二周与第三周的确定性计算关口已通过；真实回答质量、工程检查和发布前人工审核分别记录。见 [第四周验收](docs/week4-验收报告.md)。
+当前已接入前三周的塔罗、西方占星和八字。第四周新增多 Agent 模式（编排者 + 占星、八字、塔罗三位专家并行）。第五周新增跨体系信号合并与张力检测、宽松审校 agent 和画像复用，离线测试通过。第四、五周都**还没有用真实模型验收**，因此默认仍为单 Agent（`mode: single`）。第二周与第三周的确定性计算关口已通过；真实回答质量、工程检查和发布前人工审核分别记录。见 [第四周验收](docs/week4-验收报告.md)、[第五周验收](docs/week5-验收报告.md)。
 
 第二周：11/11 参考盘通过，最大黄经误差 **0.000110364°**；Skyfield/JPL 独立交叉验证最大差 **0.000000611°**。第三周：**50/50 边界用例、57 个规则或追问变体通过**。占星280条、八字141条、塔罗163条均为原创草稿，覆盖率100%，人工审核率0%。详见 [第二周验收](docs/week2-验收报告.md)、[第三周验收](docs/week3-验收报告.md) 与 [联合测试证据](docs/verification/week23/README.md)。第一周原报告和原始失败记录保留。
 
@@ -66,10 +66,11 @@ flowchart LR
 - `knowledge/sources/tarot/cards.yaml`：78 张牌 × 正逆位 = 156 条，加 7 条牌位说明，共 163 条自写草稿。
 - `knowledge/sources/astro/entries.yaml`：280条占星草稿；`knowledge/sources/bazi/entries.yaml`：141条八字草稿。两个体系规则独立版本化，组合组件引用随历史记录保存。
 - `knowledge/rules/tarot.yaml`：信号时间属性与牌位强度规则。倾向值来自条目的 `theme_map`，信号由代码产生。
+- `knowledge/rules/merge.yaml`：跨体系合并的阈值（方向阈值、张力与共振强度、权重区间），和其它规则一样计入知识库版本。
 - `python -m knowledge.build`：检查 schema、id、key、同义词唯一性、许可、数值范围与完整覆盖；构建只读 SQLite 和覆盖率报告。
 - `data/kb_versions/<版本>.sqlite`：保留不可变条目与规则快照。版本摘要同时包含源文件与规则内容；旧 reading 的查询使用旧快照。
 - **人工审核率当前为 0%。** `reviewed` 没有冒充人工审核，解读强制使用低置信度。达到计划中的发布标准（≥95%）需要逐条人工审核。
-- `data/app.db`：画像与历史版本、readings、reading_responses、daily，以及后续专家、审校和排盘缓存的表结构。当前启用画像、三体系reading与追问回答，以及chart_id/bazi_id缓存；自动迁移至schema版本3，旧行与知识版本保留。
+- `data/app.db`：画像与历史版本、readings、reading_responses、daily，以及后续专家、审校和排盘缓存的表结构。当前启用画像、三体系reading与追问回答、专家报告、审校意见（review_notes）和chart_id/bazi_id缓存；readings 另存保存时的跨体系合并表（merge_json）。自动迁移至schema版本4，旧行与知识版本保留。
 - `runs/<用户摘要>/<会话>.jsonl`：工具参数、结果、错误、时间和 token 使用量；模型异常只记录异常类别，避免 SDK 错误文本泄露凭据。
 - `evals/cases/` 和 `evals/generators/` 从用户提供的评估数据集复制，保留原稿状态，不改参考答案。
 
@@ -82,8 +83,8 @@ SQLite FTS5 已构建并检查可用；第一周精确查找不依赖分词或�
 & .\.venv\Scripts\python.exe -m scripts.doctor --api
 & .\.venv\Scripts\python.exe -m pytest -q --junitxml=reports/week1-tests.xml
 & .\.venv\Scripts\python.exe -m evals.run --suite week1
-& .\.venv\Scripts\ruff.exe check harness agents common plugins knowledge memory scripts tests evals app.py cli.py
-& .\.venv\Scripts\ruff.exe format --check harness agents common plugins knowledge memory scripts tests evals app.py cli.py
+& .\.venv\Scripts\ruff.exe check harness agents common plugins knowledge memory signals scripts tests evals app.py cli.py
+& .\.venv\Scripts\ruff.exe format --check harness agents common plugins knowledge memory signals scripts tests evals app.py cli.py
 ```
 
 测试覆盖确定性抽牌、完整释义、知识库历史版本、权限与分区、依赖、画像证据、重复调用、输出引用和事实检查、预算、异常、追问、用户隔离、删除数据，以及两家 SDK 的 HTTP 协议。
@@ -100,7 +101,7 @@ SQLite FTS5 已构建并检查可用；第一周精确查找不依赖分词或�
 
 抽牌直接返回版本固定的精确释义，新解读通常3轮模型调用，原牌追问2轮。完整信号仍保存到SQLite与trace，给模型传递精简工具结果；已完成轮次的工具JSON从后续对话上下文移除，跨会话从数据库恢复。稳定系统提示与工具结构保持前缀稳定，缓存是否命中以接口usage为准。
 
-第二周已接入本命盘和行运，第三周已接入八字，第四周已实现多 Agent 编排（真实模型验收待完成）。第五周交叉合并与审校；第六周姓名、解梦与每日运势（届时加入对应专家）；第七周完整评估。当前不把后续能力声明为已实现。
+第二周已接入本命盘和行运，第三周已接入八字，第四周已实现多 Agent 编排，第五周已实现交叉合并与审校（第四、五周的真实模型验收都待完成）。第六周姓名、解梦与每日运势（届时加入对应专家）；第七周完整评估。当前不把后续能力声明为已实现。
 
 ## 第四周：多 Agent 模式
 
@@ -129,6 +130,40 @@ SQLite FTS5 已构建并检查可用；第一周精确查找不依赖分词或�
   - `python -m evals.run --suite week1 --mode multi` 是 demo 模型的离线流程回放；
   - `python -m scripts.live_v2_review --suite baseline --mode multi` 用真实模型串行跑 20 题，结果附带专家越权、报告合规率（≥98% 关口口径）、首次通过率、修正后通过率、实际并发度、排队时间和调用树完整性。指标口径见 [第四周验收](docs/week4-验收报告.md)。真实模型结果尚未产生。
 
+
+## 第五周：交叉解读与审校
+
+- **信号合并（`signals/merge.py`）**：
+  - 先按 horizon 分组，再按主题合并；不同 horizon 不互相抵消。
+  - 每个体系在组内按 strength 加权求平均倾向；`theme_map` 里的 0 表示“无方向”，不参与平均。
+  - 两体系方向相反、且两边同向信号强度都 ≥ `tension_strength` 时记为张力；至少两个体系同向记为共振。
+  - timing 信号按实际时刻区间求交集再比较：节气流月在节气当刻换月，行运按当天，不按“11 月”这类标签对齐。
+  - 同一主题、同一组方向是一条张力（编号如 `tension:timing:career:astro+/bazi-`），下面列出所有窗口；方向反过来的日期是另一条。
+  - 相邻窗口合并时，数值按时长加权，每段原值保留在 `segments`。
+  - 画像里的 `system_weights`（如 `{"bazi": 1.5}`）只改变综合倾向，不改变是否存在张力。
+  - 权重必须有原话支持：原话按分句判断，每个体系只看提到它的分句，否定说法（“不更信八字”）不支持任何调整。
+- **张力披露（多 Agent 模式，代码检查）**：
+  - 编排者用 `merge_signals` 查看合并表。
+  - `submit_reading` 时，表里每条张力都必须写进 `tensions`：主题对得上，两边体系都要提到，还要有 `how_to_read`。同一主题在不同日期方向相反时，还要写出各自的日期。缺了直接打回，并列出未披露的张力和日期。
+  - 合并表随 reading 存入 `merge_json`。追问时 `read_reading` 把它固定为会话快照，`merge_signals` 只返回快照，不按当前权重或规则重算；追问回答也不能丢掉原记录的张力。
+  - 单 Agent 模式只保存合并表、不强制披露，作为对照基线。
+- **宽松审校（`agents/reviewer.py`，只在多 Agent 模式）**：
+  - **自动运行**：`submit_reading` 通过代码校验后，自动交给隔离子会话里的审校，编排者无法跳过。
+  - **输入**：审校只看用户原问题、草稿和代码算出的张力/共振表。
+  - **结论**：三档，即 `pass`、`pass_with_notes`（不触发重写）、`revise`。`revise` 只能以答非所问、隐瞒张力或安全越界为理由，并须逐字引用草稿原句。
+  - **轮次上限**：最多一轮 `revise`，编排者改一次后直接发出。
+  - **代码兜底**：要求加免责声明或“措辞更谨慎”的 `revise` 会被拒绝，这类 notes 被丢弃并计数。审校不能要求删掉对问题的回答；没有张力时不能以隐瞒张力打回。
+  - **失败放行**：审校超时、出错或预算不足时放行，记为 `unavailable`。
+  - **记录**：审校意见写入 `review_notes`，trace 中是 reading 下的子会话。
+  - **配置**：`reviewer.strictness` 可设为 `lenient`、`strict` 或 `off`（对照实验用）；`models.reviewer` 可换更小的模型。
+  - **追问**：追问不重新审校。
+- **画像复用**：
+  - 画像已有性别、出生日期或出生地时，`ask_user` 不能再问这些。例外是本轮有工具要求补充资料，或用户正在更正。
+  - 跨会话回访用 `start_reading(parent_reading_id=...)` 关联本用户的旧记录，并返回旧结论、时间范围和张力，供对比。
+- **评估**：
+  - `python -m evals.run --suite reviewer --provider openai` 用 `reviewer_drafts.yaml` 45 份草稿测漏拦率（≤10%）和过度干预率（≤5%）。
+  - `--provider demo` 是离线关键词基线，只验证流水线，不是关口结果。
+  - 多 Agent 真实模型运行的结果附带审校打回率等指标（`scripts.trace_tree.reviewer_metrics`）。
 
 ## Week2 / Week3 用法与计算约定
 
@@ -159,8 +194,8 @@ $env:PYTHONUTF8 = '1'
 & .\.venv\Scripts\python.exe -m evals.run --suite trajectory --output reports/week23/offline
 & .\.venv\Scripts\python.exe -m scripts.live_test --model gpt-6.1-sol --output reports/week23/week1-live
 & .\.venv\Scripts\python.exe -m scripts.live_week23
-& .\.venv\Scripts\ruff.exe check harness agents common plugins knowledge memory scripts tests evals app.py cli.py
-& .\.venv\Scripts\ruff.exe format --check harness agents common plugins knowledge memory scripts tests evals app.py cli.py
+& .\.venv\Scripts\ruff.exe check harness agents common plugins knowledge memory signals scripts tests evals app.py cli.py
+& .\.venv\Scripts\ruff.exe format --check harness agents common plugins knowledge memory signals scripts tests evals app.py cli.py
 & .\.bootstrap\Scripts\uv.exe build --out-dir reports/week23/dist
 & .\.venv\Scripts\python.exe -m scripts.archive_week23
 ```

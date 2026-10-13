@@ -86,6 +86,19 @@ def first_points(results, systems):
     ]
 
 
+def disclose(merge):
+    """Tensions written exactly as the code-computed table states them."""
+    return [
+        dict(
+            theme=t["theme"],
+            sides=t["sides"],
+            how_to_read="两边体系看法不同，需结合现实条件同时看待。"
+            + (f"（日期：{'、'.join(t['windows'])}）" if t.get("windows") else ""),
+        )
+        for t in merge["tensions"]
+    ]
+
+
 def astro_specialist(barrier=None):
     async def handler(messages):
         b = brief(messages)
@@ -201,12 +214,13 @@ def tarot_specialist(barrier=None, before_draw=None):
     return handler
 
 
-def make(project, model, user="multi-user", **limits):
-    if limits:
-        path = project / "config.yaml"
-        config = yaml.safe_load(path.read_text(encoding="utf-8"))
-        config["limits"].update(limits)
-        path.write_text(yaml.safe_dump(config, allow_unicode=True), encoding="utf-8")
+def make(project, model, user="multi-user", reviewer=False, **limits):
+    """Week 4 orchestration tests run without the week 5 reviewer unless asked for."""
+    path = project / "config.yaml"
+    config = yaml.safe_load(path.read_text(encoding="utf-8"))
+    config["limits"].update(limits)
+    config["reviewer"]["enabled"] = reviewer
+    path.write_text(yaml.safe_dump(config, allow_unicode=True), encoding="utf-8")
     return create_runtime(root=project, user_id=user, mode="multi", model=model, seed=42)
 
 
@@ -286,8 +300,13 @@ async def test_parallel_consult_merges_persists_and_traces(project):
                     spread="three_card",
                 ),
             )
+        if len(done) == 5:
+            # Week 5: with several systems the cross-system table is read before writing.
+            return respond(call("merge_signals"))
         systems = ["astro", "bazi", "tarot"]
-        return respond(call("submit_reading", **reading(first_points(done[2:], systems), systems)))
+        payload = reading(first_points(done[2:5], systems), systems)
+        payload["tensions"] = disclose(done[5]["data"]["merge"])
+        return respond(call("submit_reading", **payload))
 
     model = RoleModel(
         orchestrator=orchestrator,
@@ -586,17 +605,16 @@ async def test_needs_input_is_asked_once_and_never_cached(project):
                     "consult_specialist", system="bazi", sub_question="性格", location_id=location
                 ),
             )
-        return respond(
-            call(
-                "submit_reading",
-                **reading(
-                    first_points(done[1:], ["astro", "bazi"]),
-                    ["astro", "bazi"],
-                    question_type="trait",
-                    summary="更适合先尝试结构清楚的工作方式，再用实际反馈验证。",
-                ),
-            )
+        if len(done) == 3:
+            return respond(call("merge_signals"))
+        payload = reading(
+            first_points(done[1:3], ["astro", "bazi"]),
+            ["astro", "bazi"],
+            question_type="trait",
+            summary="更适合先尝试结构清楚的工作方式，再用实际反馈验证。",
         )
+        payload["tensions"] = disclose(done[3]["data"]["merge"])
+        return respond(call("submit_reading", **payload))
 
     model = RoleModel(orchestrator=orchestrator, astro=astro_specialist(), bazi=bazi_specialist())
     runtime = make(project, model)

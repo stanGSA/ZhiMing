@@ -61,6 +61,9 @@ async def evaluate(output: Path, mode: str = "single") -> dict:
                     "read_reading",
                     "consult_specialist",
                     "submit_report",
+                    # Week 5 orchestration tools: the reviewer's verdict and the merge view.
+                    "submit_review",
+                    "merge_signals",
                 }
                 consulted = {
                     row["call"]["arguments"]["system"]
@@ -157,10 +160,36 @@ async def evaluate(output: Path, mode: str = "single") -> dict:
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--suite", choices=["week1", "trajectory", "week23"], default="week1")
+    parser.add_argument(
+        "--suite", choices=["week1", "trajectory", "week23", "reviewer"], default="week1"
+    )
     parser.add_argument("--output", type=Path, default=ROOT / "reports")
     parser.add_argument("--mode", choices=["single", "multi"], default="single")
+    parser.add_argument(
+        "--provider",
+        choices=["demo", "openai", "anthropic"],
+        default="demo",
+        help="仅 reviewer：demo 为离线关键词基线",
+    )
+    parser.add_argument("--model", help="仅 reviewer：审校模型名，默认 config.models.reviewer")
+    parser.add_argument(
+        "--strictness", choices=["lenient", "strict"], default="lenient", help="仅 reviewer"
+    )
     args = parser.parse_args()
+    if args.suite == "reviewer":
+        from evals.reviewer import evaluate as evaluate_reviewer
+
+        report = asyncio.run(
+            evaluate_reviewer(args.output, args.provider, args.model, args.strictness)
+        )
+        print(
+            json.dumps(
+                {k: v for k, v in report.items() if k not in ("results", "per_class")},
+                ensure_ascii=False,
+                indent=2,
+            )
+        )
+        raise SystemExit(0 if all(g["met"] for g in report["gates"].values()) else 1)
     if args.suite == "week1":
         report = asyncio.run(evaluate(args.output, args.mode))
     elif args.mode == "multi":

@@ -66,6 +66,24 @@ def build_tree(records: list[dict], reading_id: str) -> dict:
         }
         missing = consult_calls - {e["call_id"] for e in queued.values()}
         problems.extend(f"{node['session_id']}: 咨询调用 {c} 没有子会话" for c in sorted(missing))
+        reviews = {
+            e["child_session_id"]: e for e in node["events"] if e["event"] == "review_started"
+        }
+        reviewed = {
+            e["child_session_id"] for e in node["events"] if e["event"] == "review_finished"
+        }
+        for child_id, event in reviews.items():
+            child = sessions.get(child_id)
+            if child is None:
+                problems.append(f"{node['session_id']}: 审校子会话 {child_id} 没有 trace")
+            else:
+                if child["parent_call_id"] != event["call_id"]:
+                    problems.append(f"{child_id}: parent_call_id 与提交调用不一致")
+                names = {e["event"] for e in child["events"]}
+                if not {"session_started", "session_finished"} <= names:
+                    problems.append(f"{child_id}: 审校子会话缺少开始或结束事件")
+            if child_id not in reviewed:
+                problems.append(f"{child_id}: 缺少 review_finished")
     roots = []
     for node in sessions.values():
         parent = sessions.get(node["parent_session_id"])
@@ -146,6 +164,37 @@ def specialist_metrics(records: list[dict]) -> dict:
         queue_ms=[e.get("queue_ms", 0) for e in finished.values()],
         specialist_latency_ms=[e["latency_ms"] for e in finished.values()],
         specialist_tokens=sum(e["tokens"] for e in finished.values()),
+    )
+
+
+def reviewer_metrics(records: list[dict]) -> dict:
+    """Reviewer metrics from traces (plan: revise rate <= 15%).
+
+    - reviews: finished reviewer sessions; verdicts counts pass / pass_with_notes / revise /
+      unavailable (reviewer failed and the code-validated draft was released).
+    - readings_reviewed: distinct readings with at least one review; revise_rate is readings
+      with a revise verdict over readings_reviewed.
+    - dropped_notes: lenient-mode notes asking for disclaimers or softer wording, dropped in
+      code; rejected_reviews: submit_review attempts refused by the code checks (e.g. a revise
+      for a forbidden reason or with a quote not in the draft).
+    """
+    finished = [e for e in records if e["event"] == "review_finished"]
+    verdicts = Counter(e["verdict"] for e in finished if e.get("status") != "cancelled")
+    readings = {e["reading_id"] for e in finished}
+    revised = {e["reading_id"] for e in finished if e["verdict"] == "revise"}
+    submits = [
+        e for e in records if e["event"] == "tool_result" and e["call"]["name"] == "submit_review"
+    ]
+    return dict(
+        reviews=len(finished),
+        verdicts=dict(verdicts),
+        readings_reviewed=len(readings),
+        readings_revised=len(revised),
+        revise_rate=len(revised) / len(readings) if readings else None,
+        dropped_notes=sum(e.get("dropped_notes") or 0 for e in finished),
+        rejected_reviews=sum(not e["result"]["ok"] for e in submits),
+        reviewer_tokens=sum(e.get("tokens") or 0 for e in finished),
+        reviewer_latency_ms=[e.get("latency_ms") for e in finished],
     )
 
 
