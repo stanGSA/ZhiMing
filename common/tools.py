@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import re
 
+from common.input_evidence import clock_in, gender_evidence, normalized_gender, supported_birth
 from common.schemas import (
     AskInput,
     EmptyInput,
@@ -22,6 +23,14 @@ def render_reading(output: dict) -> str:
     lines.extend(f"- {item['reading']}" for item in output["evidence"])
     if output["advice"]:
         lines.extend(["", "可以考虑：", *[f"- {item}" for item in output["advice"]]])
+    if output.get("timeline"):
+        lines.extend(
+            [
+                "",
+                "时间安排：",
+                *[f"- {item['period']}：{item['note']}" for item in output["timeline"]],
+            ]
+        )
     lines.extend(
         [
             "",
@@ -68,6 +77,67 @@ def common_tools(store, kb: KnowledgeBase) -> list[Tool]:
     def profile_validator(args, session):
         if not any(args.evidence in message for message in session.user_messages):
             return "evidence 必须是用户原话的连续子串"
+        if args.field in ("zishi_rule", "calendar_input"):
+            terms = {
+                "next_day": r"23(?:点|:00).*换日|子初换日|next_day",
+                "same_day": r"(?:0点|0:00|零点).*换日|子正换日|same_day",
+                "solar": r"公历|阳历|solar",
+                "lunar": r"农历|阴历|lunar",
+            }
+            allowed = {"next_day", "same_day"} if args.field == "zishi_rule" else {"solar", "lunar"}
+            return (
+                None
+                if isinstance(args.value, str)
+                and args.value in allowed
+                and re.search(terms[args.value], args.evidence)
+                else "历法与子时规则须有原话明确支持"
+            )
+        if args.field == "prefs_json" and isinstance(args.value, dict):
+            if args.value == {"birth_data_is_synthetic": True} and re.search(
+                r"合成资料|合成测试|虚构资料", args.evidence
+            ):
+                return None
+            import json
+
+            try:
+                return None if json.loads(args.evidence) == args.value else "偏好JSON须与原话一致"
+            except (ValueError, TypeError):
+                return "偏好JSON须由原话提供；合成资料只支持birth_data_is_synthetic=true标记"
+        if args.field == "gender":
+            return (
+                None
+                if normalized_gender(args.value) in gender_evidence(args.evidence)
+                else "性别规范值必须由原话明确支持"
+            )
+        if args.field == "birth_local_dt":
+            return (
+                None
+                if supported_birth(args.value, args.evidence, len(str(args.value)) > 10)
+                else "出生日期时刻须由原话规范化得到"
+            )
+        if args.field in ("lat", "lon", "location_id", "tz", "consultation_tz"):
+            if args.field == "consultation_tz":
+                from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
+
+                try:
+                    ZoneInfo(str(args.value))
+                except (ValueError, ZoneInfoNotFoundError):
+                    return "请使用有效IANA时区"
+            resolved = any(
+                location.get(args.field) == args.value
+                for location in session.state.get("locations", {}).values()
+            )
+            explicit = str(args.value) in args.evidence
+            if not (resolved or explicit):
+                return "地理字段须来自已确认地点或原话"
+            if args.field in ("lat", "lon") and (
+                type(args.value) not in (int, float)
+                or not -(90 if args.field == "lat" else 180)
+                < args.value
+                <= (90 if args.field == "lat" else 180)
+            ):
+                return "经纬度无效"
+            return None
         if isinstance(args.value, str) and args.value not in args.evidence:
             return "字段值必须在 evidence 原话中，不允许臆测"
         if args.field == "name" and (
@@ -89,7 +159,7 @@ def common_tools(store, kb: KnowledgeBase) -> list[Tool]:
             explicit_clock = (
                 args.field == "time_known"
                 and args.value is True
-                and bool(re.search(r"\d{1,2}:\d{2}", args.evidence))
+                and clock_in(args.evidence) is not None
             )
             if not explicit_clock and not any(word in args.evidence for word in confirmations):
                 return "布尔字段需要用户原话明确确认"
@@ -98,9 +168,16 @@ def common_tools(store, kb: KnowledgeBase) -> list[Tool]:
         return None
 
     def update_profile(args, session):
-        session.profile = store.update_profile(
-            session.user_id, args.field, args.value, args.evidence
-        )
+        value = normalized_gender(args.value) if args.field == "gender" else args.value
+        if args.field == "birth_local_dt":
+            from datetime import datetime
+
+            value = (
+                datetime.fromisoformat(value).isoformat(sep=" ", timespec="minutes")
+                if len(value) > 10
+                else value
+            )
+        session.profile = store.update_profile(session.user_id, args.field, value, args.evidence)
         return {"profile": session.profile}
 
     def lookup(args, session):
@@ -241,7 +318,6 @@ def common_tools(store, kb: KnowledgeBase) -> list[Tool]:
                         "kb_version",
                         "output_json",
                         "calculations_json",
-                        "signals_json",
                         "chart_id",
                         "bazi_id",
                     )

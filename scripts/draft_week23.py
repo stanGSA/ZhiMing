@@ -92,7 +92,7 @@ def draft(system, kind, key):
             text = f"第{key}宫用于讨论{HOUSE_TEXT[int(key) - 1]}；宫位依赖可靠出生时刻。"
         elif kind == "planet_sign":
             planet, sign = key.split(":")
-            text = f"{BODY_ZH[planet]}落{SIGN_ZH[SIGNS.index(sign)]}，可将{PLANET_THEMES[planet]}与{SIGN_TEXT[sign]}一起反思；不由单一落座决定性格或成败。"
+            text = f"{BODY_ZH[planet]}落{SIGN_ZH[SIGNS.index(sign)]}，关注{PLANET_THEMES[planet]}。可尝试：{SIGN_TEXT[sign]}。单一落座不决定性格或成败。"
             text += (
                 f"可把{WORK_EXAMPLES[planet]}作为小任务探索方向，并用真实成果与反馈决定职业选择。"
             )
@@ -156,12 +156,12 @@ def draft(system, kind, key):
         key=key,
         synonyms=[],
         keywords=[key],
-        theme_map=dict(self=valence, career=valence),
+        theme_map=dict(self=valence, career=valence, relationship=0.0, finance=0.0),
         text=text,
         source=source,
         license="本项目自写",
         reviewed=False,
-        version=2,
+        version=3,
     )
 
 

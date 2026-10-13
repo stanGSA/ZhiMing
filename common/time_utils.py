@@ -44,8 +44,21 @@ def local_instant(local: str, tz: str, fold: int | None = None) -> datetime:
 
 def date_range(start: str, end: str, tz: str, max_days: int = 366):
     """Date inputs include the end day; datetime inputs use [start, end)."""
-    a = local_instant(start, tz)
-    b = local_instant(end, tz)
+
+    def instant(value):
+        try:
+            parsed = datetime.fromisoformat(value)
+            zone = ZoneInfo(tz)
+        except (ValueError, ZoneInfoNotFoundError) as exc:
+            raise NeedsInput("invalid_datetime", "请确认日期范围和IANA时区。") from exc
+        if parsed.tzinfo is None:
+            return local_instant(value, tz)
+        if parsed.astimezone(zone).replace(tzinfo=None) != parsed.replace(tzinfo=None):
+            raise NeedsInput("offset_timezone_mismatch", "日期偏移与指定IANA时区的历史规则不一致。")
+        return parsed.astimezone(UTC)
+
+    a = instant(start)
+    b = instant(end)
     if len(end) == 10:
         b = local_instant((datetime.fromisoformat(end) + timedelta(days=1)).isoformat(), tz)
     if not a < b or (b - a).total_seconds() > max_days * 86400:

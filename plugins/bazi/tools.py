@@ -1,15 +1,18 @@
 from pathlib import Path
 from typing import Literal
 
+from common.input_evidence import gender_evidence, normalized_gender, reading_text
 from common.time_utils import NeedsInput
 from harness.models import StrictInput, ToolResult
 from harness.registry import Tool
 from plugins.bazi.calculator import bazi_period, compute_bazi
+from plugins.bazi.validation import validate_output
 from plugins.context import (
     BirthInput,
     MeaningPlugin,
     birth_provenance,
     birth_values,
+    period_timezone,
     range_provenance,
 )
 
@@ -31,10 +34,12 @@ class PeriodInput(StrictInput):
     start: str
     end: str
     granularity: Literal["year", "month", "day"] = "month"
-    tz: str = "Asia/Shanghai"
+    tz: str | None = None
 
 
 class BaziPlugin(MeaningPlugin):
+    validate_output = staticmethod(validate_output)
+
     name = kb_partition = "bazi"
     eval_dir = Path(__file__).parent / "evals"
 
@@ -111,11 +116,8 @@ class BaziPlugin(MeaningPlugin):
             return "物理时刻起运口径须有用户确认"
         if (
             args.gender
-            and args.gender != session.profile.get("gender")
-            and not any(
-                x in text
-                for x in ({"male": ("男", "male"), "female": ("女", "female")}[args.gender])
-            )
+            and args.gender != normalized_gender(session.profile.get("gender"))
+            and args.gender not in gender_evidence(text)
         ):
             return "性别必须来自用户原话或画像；未知不排大运"
         if (
@@ -165,7 +167,19 @@ class BaziPlugin(MeaningPlugin):
                 if setting not in args.model_fields_set and setting in session.profile:
                     inputs[setting] = session.profile[setting]
             if not inputs["gender"]:
-                inputs["gender"] = session.profile.get("gender")
+                inputs["gender"] = normalized_gender(session.profile.get("gender"))
+            if (
+                inputs["tz"] not in ("Asia/Shanghai", "Asia/Urumqi", "Etc/GMT-8")
+                and "true_solar_time" not in session.profile
+            ):
+                text = reading_text(session)
+                if not any(
+                    x in text for x in ("真太阳时", "固定UTC+8", "按北京时间", "不用真太阳")
+                ):
+                    raise NeedsInput(
+                        "confirm_bazi_clock",
+                        "海外出生请确认日时柱按真太阳时，还是固定UTC+8口径（不用真太阳时）；两者可能不同。",
+                    )
             result, cached = self.store.cached_calculation(
                 "bazi", session.user_id, inputs, lambda: compute_bazi(**inputs)
             )
@@ -174,14 +188,14 @@ class BaziPlugin(MeaningPlugin):
         session.state["bazi_id"] = result["bazi_id"]
         atoms = []
         atoms.append(
-            (f"day_master:{result['day_master']}", "convention", "day_master", "long_term", None)
+            (f"day_master:{result['day_master']}", "convention", "day_master", "trait", None)
         )
         atoms.append(
             (
                 f"zishi:{result['input']['zishi_rule']}",
                 "convention",
                 f"zishi_{result['input']['zishi_rule']}",
-                "long_term",
+                "trait",
                 None,
             )
         )
@@ -191,29 +205,27 @@ class BaziPlugin(MeaningPlugin):
                     f"dayun:{result['dayun']['start_solar']}:{result['dayun']['sequence'][0]['ganzhi']}",
                     "convention",
                     "dayun",
-                    "long_term",
+                    "trait",
                     None,
                 )
             )
         if result.get("alternatives"):
-            atoms.append(
-                ("unknown_time_candidates", "convention", "unknown_time", "long_term", None)
-            )
+            atoms.append(("unknown_time_candidates", "convention", "unknown_time", "trait", None))
             for i, candidate in enumerate(result["alternatives"]):
                 for pillar, gz in candidate.items():
-                    atoms.append((f"candidate{i}:{pillar}:{gz}", "stem", gz[0], "long_term", None))
+                    atoms.append((f"candidate{i}:{pillar}:{gz}", "stem", gz[0], "trait", None))
         for pillar, gz in result["pillars"].items():
             if gz:
                 atoms.extend(
                     [
-                        (f"{pillar}:{gz}:gan", "stem", gz[0], "long_term", None),
-                        (f"{pillar}:{gz}:zhi", "branch", gz[1], "long_term", None),
+                        (f"{pillar}:{gz}:gan", "stem", gz[0], "trait", None),
+                        (f"{pillar}:{gz}:zhi", "branch", gz[1], "trait", None),
                     ]
                 )
                 if pillar != "day":
                     god = result["ten_gods_stems"][pillar]
                     atoms.append(
-                        (f"{pillar}:{gz}:{god}", "god_pillar", f"{god}:{pillar}", "long_term", None)
+                        (f"{pillar}:{gz}:{god}", "god_pillar", f"{god}:{pillar}", "trait", None)
                     )
         result = self.attach(result, atoms, session, "bazi_result")
         result["cache_reused"] = cached
@@ -224,7 +236,9 @@ class BaziPlugin(MeaningPlugin):
         if not chart:
             return ToolResult.failure("ownership_denied", "bazi_id不属于当前用户")
         try:
-            result = bazi_period(chart, args.start, args.end, args.granularity, args.tz)
+            result = bazi_period(
+                chart, args.start, args.end, args.granularity, period_timezone(args, session, chart)
+            )
         except NeedsInput as exc:
             return exc.result()
         atoms = []
@@ -236,7 +250,7 @@ class BaziPlugin(MeaningPlugin):
                         f"period:{p['start_utc']}:{pillar}:{gz}:{god}",
                         "ten_god",
                         god,
-                        "short_term",
+                        "timing",
                         f"{p['start_utc']}/{p['end_utc']}",
                     )
                 )
@@ -247,9 +261,10 @@ class BaziPlugin(MeaningPlugin):
                             f"period:{p['start_utc']}:{pillar}:{gz}:{kind}:{relation.get('natal_pillar', relation.get('branches'))}",
                             "relation",
                             kind,
-                            "short_term",
+                            "timing",
                             f"{p['start_utc']}/{p['end_utc']}",
                         )
                     )
         session.state["timeframe"] = (args.start, args.end)
+        session.state["timeframe_tz"] = result["tz"]
         return self.attach(result, atoms, session, "bazi_period_result")

@@ -8,6 +8,7 @@ from harness.registry import Tool
 from knowledge.kb import KnowledgeBase
 from plugins.base import Signal
 from plugins.tarot.draw import draw_tarot
+from plugins.tarot.validation import validate_output
 
 
 class DrawInput(StrictInput):
@@ -16,6 +17,8 @@ class DrawInput(StrictInput):
 
 
 class TarotPlugin:
+    validate_output = staticmethod(validate_output)
+
     name = "tarot"
     required_profile = set()
     themes = {"career", "relationship", "self", "finance"}

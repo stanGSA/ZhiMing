@@ -9,6 +9,8 @@ class ToolCall(BaseModel):
     id: str
     name: str
     arguments: dict[str, Any] = Field(default_factory=dict)
+    raw_arguments: str | None = None
+    argument_error: bool = False
 
 
 class ToolResult(BaseModel):
@@ -30,6 +32,7 @@ class ModelResponse(BaseModel):
     input_tokens: int = 0
     output_tokens: int = 0
     cached_input_tokens: int | None = None
+    usage_available: bool = True
 
 
 class TurnOutcome(BaseModel):
