@@ -1,0 +1,41 @@
+from common.location import Gazetteer, LocationInput, location_tool
+from common.regions import region_data, region_options, selected_region
+from harness.session import Session
+
+
+def test_county_resolves_from_user_evidence_without_substituting_city():
+    gazetteer = Gazetteer()
+    args = LocationInput(query="临泉县", country="CN", admin1="安徽省", candidate_id="1803361")
+    session = Session(user_id="region-test")
+    session.append_user("出生地为中国 · 安徽省 · 阜阳市 · 临泉县，地点编号1803361")
+    tool = location_tool(gazetteer)
+    assert tool.validator(args, session) is None
+    result = tool.handler(args, session)
+    assert result["status"] == "resolved"
+    assert result["location"]["name"] == "临泉县"
+    assert result["location"]["lon"] == 115.32038
+    assert result["location"]["tz"] == "Asia/Shanghai"
+    assert (
+        gazetteer.resolve(LocationInput(query="中国 · 安徽省 · 阜阳市 · 临泉县"))["location"]
+        == result["location"]
+    )
+
+
+def test_hierarchy_integrity_and_foreign_city_scope():
+    data = region_data()
+    nodes = data["nodes"]
+    assert len(region_options("CN")) == 31
+    assert sum(n["level"] == "district" for n in nodes.values()) >= 2900
+    for node in nodes.values():
+        if node["parent"] is not None:
+            assert node["parent"] in nodes
+            assert node["parent"] != node["id"]
+        if location := node.get("location"):
+            assert -90 < location["lat"] < 90
+            assert -180 <= location["lon"] <= 180
+            assert location["tz"]
+    new_york = selected_region("5128581")
+    assert new_york["country"] == "US"
+    assert new_york["tz"] == "America/New_York"
+    assert region_options("5128581") == []
+    assert data["metadata"]["license"] == "CC BY 4.0"

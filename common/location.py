@@ -229,6 +229,29 @@ class Gazetteer:
         for name in ("纽约市", "紐約市", "New York City"):
             self.index.setdefault(normalize(name), set()).add("5128581")
             self.names["5128581"].add(name)
+        if self.path == ROOT / "data/geo/geonamescache-3.0.2.whl":
+            # Extend the city-only snapshot with real county coordinates and full paths.
+            # Keep existing city aliases stable; an explicit administrative name/path
+            # or ID identifies the finer location without substituting a nearby city.
+            from common.regions import region_data
+
+            for node in region_data()["nodes"].values():
+                location = node.get("location")
+                if not location or location["country"] != "CN":
+                    continue
+                identity = location["location_id"]
+                self.records.setdefault(identity, location)
+                aliases = {*node.get("aliases", []), node["path"], node["path"].replace(" · ", "")}
+                for alias in aliases:
+                    key = normalize(alias)
+                    if (
+                        key not in self.index
+                        or (node["level"] == "district" and alias == node["name"])
+                        or alias == node["path"]
+                    ):
+                        self.index.setdefault(key, set()).add(identity)
+                        self.names.setdefault(identity, set()).add(alias)
+                self.names.setdefault(identity, set()).add(node["name"])
 
     def resolve(self, args: LocationInput):
         self.load()

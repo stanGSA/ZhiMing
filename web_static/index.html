@@ -1,0 +1,444 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#263e36" />
+    <meta
+      name="description"
+      content="知命 · 以东方智慧与星象线索，陪你梳理当下，探寻自己的方向。"
+    />
+    <title>知命 · 观天时，明己心</title>
+    <link rel="icon" href="/static/mark.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="/static/style.css" />
+    <link rel="stylesheet" href="/static/themes.css" />
+    <script src="/static/themes.js" defer></script>
+    <script src="/static/app.js" defer></script>
+  </head>
+  <body data-theme="auto">
+    <svg
+      class="icon-defs"
+      aria-hidden="true"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <defs>
+        <symbol id="i-compass" viewBox="0 0 24 24">
+          <circle cx="12" cy="12" r="9" />
+          <path d="m15.5 8.5-2 5-5 2 2-5zM12 1v3m0 16v3M1 12h3m16 0h3" />
+        </symbol>
+        <symbol id="i-spark" viewBox="0 0 24 24">
+          <path d="m12 3 2.5 6.5L21 12l-6.5 2.5L12 21l-2.5-6.5L3 12l6.5-2.5z" />
+        </symbol>
+        <symbol id="i-chat" viewBox="0 0 24 24">
+          <path d="M20 11a8 8 0 0 1-8 8H5l-3 3V11a9 9 0 0 1 18 0Z" />
+          <path d="M7 10h8m-8 4h5" />
+        </symbol>
+        <symbol id="i-card" viewBox="0 0 24 24">
+          <rect x="6" y="3" width="12" height="18" rx="2" />
+          <path d="m12 8 3 4-3 4-3-4zM3 6v12m18-12v12" />
+        </symbol>
+        <symbol id="i-grid" viewBox="0 0 24 24">
+          <path d="M4 4h6v6H4zm10 0h6v6h-6zM4 14h6v6H4zm10 0h6v6h-6z" />
+        </symbol>
+        <symbol id="i-clock" viewBox="0 0 24 24">
+          <circle cx="12" cy="12" r="9" />
+          <path d="M12 7v5l3 2" />
+        </symbol>
+        <symbol id="i-arrow" viewBox="0 0 24 24">
+          <path d="M5 12h14m-5-5 5 5-5 5" />
+        </symbol>
+        <symbol id="i-leaf" viewBox="0 0 24 24">
+          <path d="M19 4C7 2 2 10 7 16s14 0 12-12ZM5 21 15 9" />
+        </symbol>
+        <symbol id="i-plus" viewBox="0 0 24 24">
+          <path d="M12 5v14M5 12h14" />
+        </symbol>
+        <symbol id="i-chevron" viewBox="0 0 24 24">
+          <path d="m9 5 7 7-7 7" />
+        </symbol>
+        <symbol id="i-trash" viewBox="0 0 24 24">
+          <path d="M4 6h16M9 6V3h6v3M6 6l1 15h10l1-15M10 10v7m4-7v7" />
+        </symbol>
+      </defs>
+    </svg>
+
+    <aside class="sidebar" id="sidebar">
+      <a class="brand" href="/" aria-label="知命首页"
+        ><span class="brand-seal">知<br />命</span
+        ><span><b>知命</b><small>ZHIMING</small></span></a
+      >
+      <div class="sidebar-motto">知其然 · 顺其时 · 修其身</div>
+      <button class="new-chat" id="new-chat">
+        <svg><use href="#i-plus" /></svg>开启新的问道<span>↗</span>
+      </button>
+      <div class="nav-label">探 索</div>
+      <nav class="main-nav" aria-label="咨询方式">
+        <button class="nav-item active" data-system="auto" aria-pressed="true">
+          <svg><use href="#i-chat" /></svg>问道<span class="nav-sub"
+            >综合解读</span
+          >
+        </button>
+        <button class="nav-item" data-system="bazi" aria-pressed="false">
+          <svg><use href="#i-grid" /></svg>八字命理
+        </button>
+        <button class="nav-item" data-system="astro" aria-pressed="false">
+          <svg><use href="#i-compass" /></svg>星象观察
+        </button>
+        <button class="nav-item" data-system="tarot" aria-pressed="false">
+          <svg><use href="#i-card" /></svg>塔罗问心
+        </button>
+      </nav>
+      <div class="history-heading">
+        <span class="nav-label">问 道 足 迹</span
+        ><svg><use href="#i-clock" /></svg>
+      </div>
+      <div id="history" class="history">
+        <p class="history-empty">每一次发问，<br />都是认识自己的开始。</p>
+      </div>
+      <div class="sidebar-bottom">
+        <div class="sidebar-quote">
+          致虚极，守静笃。<span>——《道德经》</span>
+        </div>
+        <button id="forget" class="forget">
+          <svg><use href="#i-trash" /></svg>清除我的记录
+        </button>
+        <div class="local-user">
+          <span class="user-avatar">访</span
+          ><span>此间来客<small>本机私人会话</small></span
+          ><span class="online-dot"></span>
+        </div>
+      </div>
+    </aside>
+
+    <div class="workspace">
+      <header class="topbar">
+        <div class="breadcrumb">
+          <button id="menu-toggle" aria-label="展开导航" aria-expanded="false">
+            ☰</button
+          ><span>知命</span><span class="slash">/</span
+          ><strong id="page-title">问道</strong>
+        </div>
+        <div class="header-right">
+          <span class="season">顺时而行，自有回响</span
+          ><span class="status-badge" id="connection"><i></i>正在连接</span>
+        </div>
+      </header>
+      <main class="page">
+        <section class="hero" aria-labelledby="hero-title">
+          <div class="hero-copy">
+            <div class="eyebrow">
+              <span></span><b id="theme-eyebrow">一 问 一 念 · 皆 有 回 响</b>
+            </div>
+            <h1 id="hero-title">
+              观天时，<span>明己心。</span
+              ><span class="small-seal">道法<br />自然</span>
+            </h1>
+            <p id="theme-description">
+              借古老智慧，照见当下。在变化之中，找到自己的从容。
+            </p>
+          </div>
+          <div class="hero-orbit" aria-hidden="true">
+            <div class="orbit-ring outer"></div>
+            <div class="orbit-ring middle"></div>
+            <span class="orbit-label north">乾</span
+            ><span class="orbit-label south">坤</span
+            ><span class="orbit-label east">离</span
+            ><span class="orbit-label west">坎</span>
+            <div class="taiji"></div>
+          </div>
+          <div class="mountains" aria-hidden="true"></div>
+          <div class="theme-art" id="theme-art" aria-hidden="true"></div>
+        </section>
+
+        <section
+          class="theme-stage"
+          id="theme-stage"
+          hidden
+          aria-label="当前咨询方式"
+        >
+          <div>
+            <span class="stage-kicker" id="stage-kicker"></span>
+            <h2 id="stage-title"></h2>
+            <p id="stage-description"></p>
+          </div>
+          <div id="stage-visual"></div>
+        </section>
+
+        <div class="content-grid">
+          <section class="chat-panel" aria-label="问道聊天">
+            <div class="panel-heading">
+              <div>
+                <span class="heading-mark">◈</span>
+                <h2 id="chat-title">与知命对话</h2>
+                <span class="muted heading-note">心有所问，便从这里开始</span>
+              </div>
+              <span class="quiet-label"><i></i>静候你的心声</span>
+            </div>
+            <div
+              class="messages"
+              id="messages"
+              role="log"
+              aria-live="polite"
+              aria-relevant="additions"
+            >
+              <div class="welcome" id="welcome">
+                <div class="assistant-mark">知</div>
+                <div class="welcome-content">
+                  <div class="speaker">知命 <span>你的问道伙伴</span></div>
+                  <h3>你好，有缘相见。</h3>
+                  <p>
+                    命理如一面镜，照见可能，也照见自己。<br />无论是人生的岔路，还是此刻的小小困惑，都可以在这里聊聊。
+                  </p>
+                  <p class="welcome-muted">
+                    你可以直接提问，或从下面的一念开始。
+                  </p>
+                  <div class="suggestions">
+                    <button
+                      data-question="最近在考虑职业方向，如何看清当下、找到适合自己的下一步？"
+                    >
+                      <svg><use href="#i-leaf" /></svg
+                      ><span
+                        ><b>事业与方向</b
+                        ><small>在进退之间，找到自己的节奏</small></span
+                      ><span class="suggestion-arrow">↗</span>
+                    </button>
+                    <button
+                      data-question="我想用塔罗梳理一下当前的感情状态，有哪些值得留意的地方？"
+                    >
+                      <svg><use href="#i-spark" /></svg
+                      ><span
+                        ><b>感情与关系</b
+                        ><small>看见彼此，也更懂自己的心</small></span
+                      ><span class="suggestion-arrow">↗</span>
+                    </button>
+                    <button
+                      data-question="我想用八字了解自己的性格特点与优势，需要提供哪些出生信息？"
+                    >
+                      <svg><use href="#i-grid" /></svg
+                      ><span
+                        ><b>认识自己</b
+                        ><small>了解禀赋，发现更多可能</small></span
+                      ><span class="suggestion-arrow">↗</span>
+                    </button>
+                    <button
+                      data-question="请抽一张塔罗牌，为我今天的自我反思提供一个线索。"
+                    >
+                      <svg><use href="#i-card" /></svg
+                      ><span
+                        ><b>今日一问</b
+                        ><small>留一点时间，与当下的自己相处</small></span
+                      ><span class="suggestion-arrow">↗</span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="composer-wrap">
+              <div class="context-strip">
+                <span id="method-label">◈ 综合解读</span
+                ><span id="birth-context">出生信息选填 · 塔罗可直接开始</span>
+              </div>
+              <form id="chat-form">
+                <label class="sr-only" for="message">你的问题</label
+                ><textarea
+                  id="message"
+                  placeholder="写下你的困惑，让思绪慢慢展开……"
+                  maxlength="4000"
+                  rows="2"
+                  required
+                ></textarea>
+                <div class="composer-bottom">
+                  <span id="input-hint">Enter 发送 · Shift + Enter 换行</span
+                  ><button id="send" type="submit">
+                    发送<svg><use href="#i-arrow" /></svg>
+                  </button>
+                </div>
+              </form>
+              <p class="gentle-note">
+                命有万象，路在脚下。解读仅供参考与自我反思。
+              </p>
+            </div>
+          </section>
+
+          <aside class="detail-column">
+            <section class="birth-panel">
+              <div class="section-heading">
+                <div>
+                  <svg><use href="#i-grid" /></svg>
+                  <h2>你的生辰</h2>
+                </div>
+                <span class="tag">选填</span>
+              </div>
+              <p class="section-description">
+                以出生的时空为起点，了解独一无二的你。
+              </p>
+              <form id="birth-form">
+                <label for="birth-date">出生日期 <span>公历</span></label
+                ><input id="birth-date" type="date" min="1850-01-01" />
+                <div class="birth-time-heading">
+                  <label for="birth-time">出生时间</label
+                  ><label class="checkbox-label"
+                    ><input id="unknown-time" type="checkbox" />时辰不详</label
+                  >
+                </div>
+                <input
+                  id="birth-time"
+                  type="time"
+                  aria-describedby="time-help"
+                /><span id="time-help" class="sr-only"
+                  >不知道出生时间可以勾选时辰不详，不会假设时刻。</span
+                >
+                <fieldset class="location-picker">
+                  <legend>出生地点</legend>
+                  <div class="location-grid">
+                    <label
+                      >国家 / 地区<select
+                        id="birth-country"
+                        aria-label="出生国家或地区"
+                      >
+                        <option value="">正在加载…</option>
+                      </select></label
+                    >
+                    <label
+                      >省 / 州<select
+                        id="birth-province"
+                        aria-label="出生省份或州"
+                        disabled
+                      >
+                        <option value="">请先选择国家</option>
+                      </select></label
+                    >
+                    <label
+                      >城市<select
+                        id="birth-city"
+                        aria-label="出生城市"
+                        disabled
+                      >
+                        <option value="">请先选择省份</option>
+                      </select></label
+                    >
+                    <label
+                      >县 / 区<select
+                        id="birth-district"
+                        aria-label="出生县或区"
+                        disabled
+                      >
+                        <option value="">请先选择城市</option>
+                      </select></label
+                    >
+                  </div>
+                  <p
+                    id="location-feedback"
+                    class="location-feedback"
+                    role="status"
+                  >
+                    逐级选择，自动匹配出生地经纬度与时区。
+                  </p>
+                </fieldset>
+                <div class="clock-settings" id="clock-settings" hidden>
+                  <label for="birth-clock">出生钟表时间制</label
+                  ><select id="birth-clock">
+                    <option value="">请选择时间制</option>
+                    <option value="Asia/Shanghai">北京时间（UTC+8）</option>
+                    <option value="Asia/Urumqi">新疆时间（UTC+6）</option>
+                  </select>
+                </div>
+                <div class="gender-row">
+                  <label for="birth-gender"
+                    >性别 <span>用于八字大运</span></label
+                  ><select id="birth-gender">
+                    <option value="">暂不填写</option>
+                    <option value="female">女</option>
+                    <option value="male">男</option>
+                  </select>
+                </div>
+                <details class="chart-settings" id="chart-settings">
+                  <summary>八字排盘口径</summary>
+                  <label for="solar-time">日时柱时间口径</label
+                  ><select id="solar-time">
+                    <option value="false">不用真太阳时（固定 UTC+8）</option>
+                    <option value="true">出生地真太阳时</option></select
+                  ><label for="zishi-rule">子时换日</label
+                  ><select id="zishi-rule">
+                    <option value="next_day">子初换日 · 23:00</option>
+                    <option value="same_day">子正换日 · 00:00</option>
+                  </select>
+                  <p>按所选口径计算；农历生日请先换算为公历。</p>
+                </details>
+                <button type="submit" class="save-birth">
+                  确认出生信息<svg><use href="#i-chevron" /></svg>
+                </button>
+                <p id="birth-feedback" class="birth-help" role="status">
+                  确认后，将随下一条问题一起发送。
+                </p>
+              </form>
+            </section>
+
+            <section
+              class="chart-panel"
+              id="chart-panel"
+              hidden
+              aria-label="确定性排盘结果"
+            >
+              <div class="section-heading">
+                <div>
+                  <svg><use href="#i-grid" /></svg>
+                  <h2 id="chart-title">生辰命盘</h2>
+                </div>
+                <span class="tag">历法计算</span>
+              </div>
+              <div id="chart-content"></div>
+            </section>
+
+            <section
+              class="reading-panel"
+              id="reading-panel"
+              aria-label="解读结果"
+            >
+              <div class="section-heading">
+                <div>
+                  <svg><use href="#i-spark" /></svg>
+                  <h2>此间解读</h2>
+                </div>
+                <button class="text-button" id="copy-reading" hidden>
+                  复制
+                </button>
+              </div>
+              <div id="reading-content">
+                <div class="reading-empty">
+                  <div class="empty-orbit"><span>☯</span></div>
+                  <h3>一念起，万象生</h3>
+                  <p>发起对话后，你的解读与行动建议<br />将在这里慢慢展开。</p>
+                </div>
+                <div class="reading-footer">
+                  <span>观照自我</span><b>·</b><span>顺势而为</span>
+                </div>
+              </div>
+            </section>
+          </aside>
+        </div>
+        <footer class="page-footer">
+          <span>知 命 <b>·</b> 知己，而后行</span
+          ><label class="mode-control" for="provider"
+            >体验模式<select id="provider">
+              <option value="configured">真实模型</option>
+              <option value="demo">离线排盘与塔罗演示</option>
+            </select></label
+          >
+        </footer>
+      </main>
+    </div>
+    <div id="toast" role="status" hidden></div>
+    <dialog id="confirm-dialog">
+      <form method="dialog">
+        <span class="dialog-symbol">◈</span>
+        <h2>清除这段问道足迹？</h2>
+        <p>将删除当前浏览器会话的出生画像、解读记录和对话。此操作无法撤回。</p>
+        <div>
+          <button value="cancel">保留记录</button
+          ><button value="confirm" class="danger">确认清除</button>
+        </div>
+      </form>
+    </dialog>
+  </body>
+</html>

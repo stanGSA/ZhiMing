@@ -9,7 +9,7 @@ if (-not (Test-Path -LiteralPath $uvExecutable)) {
     & '.\.bootstrap\Scripts\python.exe' -m pip install 'uv==0.13.0'
     if ($LASTEXITCODE -ne 0) { throw 'Failed to install uv' }
 }
-& $uvExecutable sync --locked --extra llm
+& $uvExecutable sync --locked --extra llm --extra web
 if ($LASTEXITCODE -ne 0) { throw 'Failed to synchronize project environment' }
 & '.\.venv\Scripts\python.exe' -m knowledge.build
 if ($LASTEXITCODE -ne 0) { throw 'Failed to build knowledge base' }
