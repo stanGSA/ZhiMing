@@ -1,9 +1,13 @@
 # 新旧版本回复对照
 
 - old-single：provider=openai，model=gpt-6.1-sol，日历基准=2026-10-15，seed=42
+  代码版本=9eccedbce15e5138c4dcf863d5df66c685cd6eb8，dirty=False，版本读取错误=无记录
 - new-single：provider=openai，model=gpt-6.1-sol，日历基准=2026-10-15，seed=42
+  代码版本=545eb01342681c39564ccb8cec841424f6a4b6c4，dirty=False，版本读取错误=无记录
 - old-multi：provider=openai，model=gpt-6.1-sol，日历基准=2026-10-15，seed=42
+  代码版本=9eccedbce15e5138c4dcf863d5df66c685cd6eb8，dirty=False，版本读取错误=无记录
 - new-multi：provider=openai，model=gpt-6.1-sol，日历基准=2026-10-15，seed=42
+  代码版本=545eb01342681c39564ccb8cec841424f6a4b6c4，dirty=False，版本读取错误=无记录
 
 | 指标 | old（single） | new（single） | old（multi） | new（multi） |
 |---|---|---|---|---|
@@ -14,12 +18,13 @@
 | avg_evidence_share | 0.564 | 0.111 | 0.524 | 0.098 |
 | layered_turns | 0 | 9 | 0 | 8 |
 | rejections | 3 | 2 | 3 | 1 |
-| fact_rejections | 1 | 0 | 0 | 1 |
-| expression_rejections | 0 | 1 | 1 | 0 |
+| fact_rejections | 2 | 1 | 1 | 1 |
+| expression_rejections | 0 | 1 | 0 | 0 |
 | safety_rejections | 0 | 0 | 0 | 0 |
 | schema_rejections | 0 | 0 | 0 | 0 |
 | review_rejections | 0 | 0 | 0 | 0 |
-| other_rejections | 2 | 1 | 2 | 0 |
+| disclosure_rejections | 0 | 0 | 1 | 0 |
+| other_rejections | 1 | 0 | 1 | 0 |
 | unclassified_legacy_rejections | 0 | 0 | 0 | 0 |
 | resubmitted_turns | 2 | 1 | 2 | 0 |
 | review_revise | 0 | 0 | 0 | 0 |
@@ -76,3 +81,5 @@
 详见 [合并后修复报告](../../pr7-合并后校验修复.md)。`submitted` 只表示成功提交结构化结果，不代表完整满足用户要求：新旧 multi 的 combined-timing 均只完成八字部分。依据占比来自结构化正文与 evidence 文本长度，不是屏幕占比；事实拒绝次数只计 submit_reading/submit_report 校验，不包括预算、网络和所有计算工具错误。
 
 每个子目录的 results.json 保存固定合成资料、完整最终回复、结构化输出、工具与指标。原始 trace 和运行时数据留在本机 reports 目录，不随文档提交。可用 compare_layers.py report 对四个子目录重新生成指标。
+
+PR #8 截图评审后，此表用当前分类器对原始 code/error 重新分类。results.json 中的 category 保留采集时值；模型回复、调用状态与字数未改，也未重新调用模型。

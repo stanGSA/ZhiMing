@@ -176,6 +176,9 @@ def validate_output(reading, state):
         assertions = list(aspect_assertions(text))
         for position, source, target, aspect in assertions:
             when = preceding_event_date(text, position)
+            clause = re.split(r"[，,。；;！!？?\n]", text[position:])[0]
+            if influence_onset(clause):
+                when = None
             kind = relation_kind(text, position)
             is_transit = kind != "本命" and bool(cited or temporal or when or "行运" in text)
             if not is_transit:
@@ -207,8 +210,23 @@ def validate_output(reading, state):
 
 # A date-only sentence speaks about the event under discussion when it names the aspect itself.
 EVENT_DATE_CONTEXT = re.compile(
-    r"相位|行运|精确|容许度|发生(?:在|于)|出现在|日期(?:为|是)|时间(?:为|是)"
+    r"相位|行运|精确|容许度|发生(?:在|于)|出现在|日期(?:为|是)|时间(?:为|是)|"
+    r"达到高峰|达到峰值|达到顶峰|达峰"
 )
+EXACT_DATE_CONTEXT = re.compile(
+    r"精确|发生(?:在|于)|日期(?:为|是)|时间(?:为|是)|达到高峰|达到峰值|达到顶峰|达峰"
+)
+
+
+def influence_onset(text):
+    """An influence beginning is not a claim about the calculated exact event date.
+
+    This does not verify a duration/window; the aspect itself is still checked. An
+    explicit exact/peak-date claim takes precedence over influence wording.
+    """
+    return not EXACT_DATE_CONTEXT.search(text) and bool(
+        re.search(r"影响(?:在)?(?:开始|逐渐)(?:显现|显露|增强|出现)", DATE.sub("", text))
+    )
 
 
 def trailing_event_date(text, assertions):
@@ -221,6 +239,8 @@ def trailing_event_date(text, assertions):
         return None
     last = max(position for position, *_ in assertions)
     tail = text[last:]
+    if influence_onset(tail):
+        return None
     if not EVENT_DATE_CONTEXT.search(tail):
         return None
     return preceding_event_date(tail, len(tail))
@@ -342,7 +362,7 @@ def check_section(title, body, refs, event_refs, events, natal):
                         if cited
                         else "行运星、本命星与相位须匹配同一计算事件"
                     )
-                if any(not on_date(found, when) for when in dates):
+                if not influence_onset(clause) and any(not on_date(found, when) for when in dates):
                     return "行运日期与所述相位不符，不能编造或混用UTC与当地日期"
                 current, current_kind = found, "行运"
             if assertions:
@@ -357,9 +377,13 @@ def check_section(title, body, refs, event_refs, events, natal):
                 else:
                     pending_dates = []
                     bound = current or (cited if current_kind != "本命" else [])
-                    if bound and (
-                        EVENT_DATE_CONTEXT.search(clause)
-                        or (date_only(clause) and index + 1 == len(clauses))
+                    if (
+                        bound
+                        and not influence_onset(clause)
+                        and (
+                            EVENT_DATE_CONTEXT.search(clause)
+                            or (date_only(clause) and index + 1 == len(clauses))
+                        )
                     ):
                         if any(not on_date(bound, when) for when in dates):
                             return "行运日期与引用事件不符"

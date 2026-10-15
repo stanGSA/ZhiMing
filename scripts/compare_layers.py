@@ -190,7 +190,7 @@ def visible_chars(output: dict) -> dict:
     )
 
 
-REJECTION_CATEGORIES = ("fact", "expression", "safety", "schema", "review", "other")
+REJECTION_CATEGORIES = ("fact", "expression", "safety", "schema", "review", "disclosure", "other")
 
 
 def rejection_category(result) -> str:
@@ -208,7 +208,15 @@ def rejection_category(result) -> str:
         return "other"
     if re.search(r"劝阻就医|安全说明|健康、投资|危机|停药", message):
         return "safety"
-    if re.search(r"确定性说法|免责声明|内部状态|审核|confidence|summary第一句|二选一", message):
+    if re.search(r"(?:专家|体系).*未完成.*(?:须|必须)说明|缺少.*体系.*原因", message):
+        return "disclosure"
+    if re.search(
+        r"时间范围问题需要相应行运或流期计算|必须先调用确定性计算工具|systems_used", message
+    ):
+        return "fact"
+    if re.search(
+        r"确定性说法|免责声明|内部状态|审核|confidence.level|summary第一句|二选一", message
+    ):
         return "expression"
     if re.search(
         r"相位|干支|柱位|落座|宫位|四轴|行运日期|容许度|牌面|未抽出的牌|ref_ids?|笔画|三才|格.*不符",
@@ -216,6 +224,25 @@ def rejection_category(result) -> str:
     ):
         return "fact"
     return "other"
+
+
+def repository_metadata(root: Path) -> dict:
+    """Archives and machines without Git can still run the comparison.
+
+    Unknown dirtiness is null, never false: lack of metadata is not a clean checkout.
+    """
+    try:
+        revision = subprocess.check_output(
+            ["git", "-C", str(root), "rev-parse", "HEAD"], text=True, stderr=subprocess.DEVNULL
+        ).strip()
+        dirty = bool(
+            subprocess.check_output(
+                ["git", "-C", str(root), "status", "--porcelain"], stderr=subprocess.DEVNULL
+            )
+        )
+    except (OSError, subprocess.CalledProcessError) as exc:
+        return dict(revision=None, dirty=None, revision_error=type(exc).__name__)
+    return dict(revision=revision, dirty=dirty, revision_error=None)
 
 
 def turn_row(scenario, index, question, outcome, events, runtime, latency) -> dict:
@@ -273,10 +300,7 @@ async def run(args) -> Path:
         share_data(root, Path(args.data_from).resolve())
     create_runtime, build = load_code(root)
     work = workdir(root, out, build, args.provider, args.model, args.mode)
-    revision = subprocess.check_output(
-        ["git", "-C", str(root), "rev-parse", "HEAD"], text=True
-    ).strip()
-    dirty = bool(subprocess.check_output(["git", "-C", str(root), "status", "--porcelain"]))
+    metadata = repository_metadata(root)
     rows = []
     for scenario in SCENARIOS:
         runtime = create_runtime(
@@ -323,8 +347,7 @@ async def run(args) -> Path:
                             model=args.model,
                             anchor=ANCHOR,
                             seed=SEED,
-                            revision=revision,
-                            dirty=dirty,
+                            **metadata,
                             rows=rows,
                         ),
                         ensure_ascii=False,
@@ -347,6 +370,13 @@ async def run(args) -> Path:
 def summarize(rows) -> dict:
     done = [r for r in rows if r["status"] == "submit_reading"]
     count = len(done) or 1
+    # Reclassify saved diagnostics with today's rules without rewriting historical
+    # replies or their collection-time categories. Category-only legacy data stays usable.
+    categories = [
+        rejection_category(detail) if "code" in detail else detail.get("category", "other")
+        for row in rows
+        for detail in row.get("rejection_details", [])
+    ]
     return dict(
         turns=len(rows),
         submitted=len(done),
@@ -356,11 +386,7 @@ def summarize(rows) -> dict:
         layered_turns=sum(r["sections"] >= 2 for r in done),
         rejections=sum(len(r["submit_rejections"]) + len(r["report_rejections"]) for r in rows),
         **{
-            f"{category}_rejections": sum(
-                detail["category"] == category
-                for row in rows
-                for detail in row.get("rejection_details", [])
-            )
+            f"{category}_rejections": categories.count(category)
             for category in REJECTION_CATEGORIES
         },
         unclassified_legacy_rejections=sum(
@@ -392,6 +418,10 @@ def report(paths) -> str:
         lines.append(
             f"- {r['label']}-{r['mode']}：provider={r.get('provider')}，model={r.get('model')}，"
             f"日历基准={r.get('anchor')}，seed={r.get('seed')}"
+        )
+        lines.append(
+            f"  代码版本={r.get('revision') or '未知'}，dirty={r.get('dirty')}，"
+            f"版本读取错误={r.get('revision_error') or '无记录'}"
         )
     lines.append("")
     lines.append("| 指标 | " + " | ".join(f"{r['label']}（{r['mode']}）" for r in runs) + " |")
