@@ -89,3 +89,54 @@ def test_compare_layers_metrics_and_report(tmp_path):
     assert summarize(rows)["followup_recompute"] == 1
     text = report([tmp_path / "old", tmp_path / "new"])
     assert "| layered_turns | 0 | 2 |" in text and "bazi-month-2 | new-single" in text
+
+
+@pytest.mark.parametrize(
+    "code,message,category",
+    [
+        ("review_revise", "审校要求补充现实条件", "review"),
+        ("invalid_arguments", "参数不符合 schema：sections", "schema"),
+        ("validation_failed", "行运日期与所述相位不符", "fact"),
+        ("validation_failed", "不能使用一定会这类确定性说法", "expression"),
+        ("validation_failed", "不能劝阻就医", "safety"),
+        ("validation_failed", "尚未分类的校验提示", "other"),
+        ("missing_dependency", "需要本次有效的chart_id", "other"),
+    ],
+)
+def test_rejection_categories_do_not_count_every_retry_as_a_fact_error(code, message, category):
+    from scripts.compare_layers import rejection_category
+
+    assert rejection_category({"code": code, "error": message}) == category
+
+
+def test_compare_counts_preserve_review_and_fact_errors_separately():
+    from types import SimpleNamespace
+
+    from scripts.compare_layers import summarize, turn_row
+
+    events = [
+        dict(
+            event="tool_result",
+            session_id="orchestrator",
+            call={"name": "submit_reading"},
+            result=dict(ok=False, code=code, error=message),
+        )
+        for code, message in (
+            ("review_revise", "审校要求补充现实条件"),
+            ("validation_failed", "行运日期与所述相位不符"),
+        )
+    ]
+    row = turn_row(
+        {"id": "fixture", "kind": "占星"},
+        1,
+        "测试",
+        SimpleNamespace(data={}, text="", status="limit_reached"),
+        events,
+        SimpleNamespace(session=SimpleNamespace(id="orchestrator")),
+        0,
+    )
+    summary = summarize([row])
+    assert summary["rejections"] == 2
+    assert summary["fact_rejections"] == 1
+    assert summary["review_rejections"] == 1
+    assert row["rejection_details"][0]["code"] == "review_revise"
