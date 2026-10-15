@@ -4,6 +4,7 @@ import asyncio
 
 import pytest
 
+from common.validation import report_matches_profile
 from harness.guard import Guard
 from scripts.trace_tree import build_tree
 from tests.test_multi_agent import (
@@ -12,6 +13,7 @@ from tests.test_multi_agent import (
     RoleModel,
     brief,
     call,
+    disclose,
     events,
     make,
     reading,
@@ -29,6 +31,62 @@ async def invoke(runtime, name, **arguments):
     result = await runtime.registry.run(name, args, runtime.session)
     tool = runtime.registry.tools[name]
     return tool.commit(result, runtime.session) if result.ok and tool.commit else result
+
+
+@pytest.mark.parametrize(
+    "report,profile,expected",
+    [
+        ({"profile_version": 1}, {"version": 1}, True),
+        ({"profile_version": 1}, {"version": 2}, False),
+        ({"profile_dependencies": {}}, {"version": 2, "name": "小明"}, True),
+        ({"profile_dependencies": {"time_known": None}}, {"time_known": True}, False),
+        ({"profile_dependencies": {"time_known": True}}, {}, False),
+    ],
+)
+def test_profile_snapshot_checks_missing_fields_and_legacy_reports(report, profile, expected):
+    assert report_matches_profile(report, profile) is expected
+
+
+async def test_unrelated_profile_edit_preserves_report_when_retry_fails(project):
+    fail = False
+    handler = expert("bazi")
+
+    async def bazi(messages):
+        if fail:
+            raise RuntimeError("synthetic retry failure")
+        return await handler(messages)
+
+    runtime = make(project, RoleModel(bazi=bazi))
+    try:
+        session = runtime.session
+        session.append_user(BIRTH + "我叫小明，用八字看看工作方式。")
+        session.start_reading("用八字看看工作方式")
+        assert (
+            await invoke(
+                runtime,
+                "update_profile",
+                field="birth_local_dt",
+                value="1993-08-17 23:20",
+                evidence="1993年8月17日晚上11点20分",
+            )
+        ).ok
+        location = (await invoke(runtime, "resolve_location", query="北京")).data["location"]
+        args = dict(system="bazi", sub_question="工作方式", location_id=location["location_id"])
+        first = await invoke(runtime, "consult_specialist", **args)
+        assert first.data["report"]["status"] == "ok"
+        old_refs = set(session.state["allowed_refs"])
+        updated = await invoke(
+            runtime, "update_profile", field="name", value="小明", evidence="我叫小明"
+        )
+        assert updated.ok
+        fail = True
+        retry = await invoke(runtime, "consult_specialist", **args)
+        assert retry.data["report"]["status"] == "failed"
+        assert retry.data["report"]["retained_previous"]
+        assert session.state["specialist_reports"]["bazi"] == first.data["report"]
+        assert session.state["allowed_refs"] == old_refs
+    finally:
+        runtime.close()
 
 
 def expert(system):
@@ -86,21 +144,30 @@ async def test_profile_edit_blocks_stale_submission_until_all_reports_refreshed(
             )
             assert result.ok and result.data["report"]["status"] == "ok"
 
-        def payload():
+        async def payload():
             evidence = [
                 {"ref_id": r["points"][0]["ref_id"], "reading": r["points"][0]["text"]}
                 for r in session.state["specialist_reports"].values()
             ]
-            return reading(
+            output = reading(
                 evidence, ["bazi", "astro"], question_type="trait", summary="先明确职责。"
             )
+            table = (await invoke(runtime, "merge_signals")).data["merge"]
+            output["tensions"] = disclose(table)
+            output["sections"] = [
+                {"title": "工作方式", "body": e["reading"], "ref_ids": [e["ref_id"]]}
+                for e in evidence
+            ]
+            return output
 
         await consult("bazi")
         await consult("astro")
         old_refs = set(session.state["allowed_refs"])
         # Unrelated profile edits must not invalidate either specialist's birth calculation.
         await invoke(runtime, "update_profile", field="name", value="小明", evidence="我叫小明")
-        _, error, _ = Guard(runtime.registry).check(call("submit_reading", **payload()), session)
+        _, error, _ = Guard(runtime.registry).check(
+            call("submit_reading", **await payload()), session
+        )
         assert error is None
 
         session.append_user("更正：我是1993年8月17日晚上10点20分出生的。")
@@ -113,7 +180,7 @@ async def test_profile_edit_blocks_stale_submission_until_all_reports_refreshed(
         )
         if partial_reconsult:
             await consult("bazi")
-        rejected = await invoke(runtime, "submit_reading", **payload())
+        rejected = await invoke(runtime, "submit_reading", **await payload())
         assert not rejected.ok and rejected.code == "validation_failed"
         assert "画像" in rejected.error and "重新咨询" in rejected.error
         reading_id = session.state["active_reading_id"]
@@ -123,7 +190,7 @@ async def test_profile_edit_blocks_stale_submission_until_all_reports_refreshed(
             await consult("bazi")
         await consult("astro")
         assert not old_refs & session.state["allowed_refs"]
-        output = payload()
+        output = await payload()
         assert (await invoke(runtime, "submit_reading", **output)).ok
         stored = runtime.store.specialist_reports(session.user_id, reading_id)
         assert all(

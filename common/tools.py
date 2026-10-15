@@ -137,11 +137,37 @@ def weights_validator(value, evidence: str) -> str | None:
     return None
 
 
+NUMERALS = "一二三四五六"
+
+
+def evidence_count_line(output: dict) -> str:
+    return (
+        f"解读依据：共 {len(output['evidence'])} 条计算事实"
+        "（网页解读面板可展开查看；命令行输入 /evidence 查看）"
+    )
+
+
+def render_evidence(output: dict) -> str:
+    return "\n".join(f"- {item['reading']}" for item in output["evidence"])
+
+
 def render_reading(output: dict) -> str:
-    lines = [output["summary"], "", "依据："]
-    lines.extend(f"- {item['reading']}" for item in output["evidence"])
+    """Plain text for the CLI and the chat bubble: verdict, layered analysis, then actions.
+
+    The evidence appendix of a layered reading is shown only as a count; the full items stay
+    in the saved record (web panel, /evidence). Readings saved before sections existed keep
+    their original layout, evidence first.
+    """
+    sections = output.get("sections") or []
+    lines = [output["summary"]]
+    for index, section in enumerate(sections):
+        lines.extend(["", f"{NUMERALS[index]}、{section['title']}", section["body"]])
+    if not sections:
+        lines.extend(["", "依据："])
+        lines.extend(f"- {item['reading']}" for item in output["evidence"])
     if output["advice"]:
-        lines.extend(["", "可以考虑：", *[f"- {item}" for item in output["advice"]]])
+        title = "行动建议：" if sections else "可以考虑："
+        lines.extend(["", title, *[f"- {item}" for item in output["advice"]]])
     if output.get("timeline"):
         lines.extend(
             [
@@ -150,6 +176,23 @@ def render_reading(output: dict) -> str:
                 *[f"- {item['period']}：{item['note']}" for item in output["timeline"]],
             ]
         )
+    if output.get("resonances"):
+        lines.extend(["", "彼此呼应：", *[f"- {item}" for item in output["resonances"]]])
+    if output.get("tensions"):
+        lines.extend(
+            [
+                "",
+                "不同视角：",
+                *[
+                    f"- {item['theme']}：{'；'.join(item['sides'])}。{item['how_to_read']}"
+                    for item in output["tensions"]
+                ],
+            ]
+        )
+    if output.get("closing"):
+        lines.extend(["", output["closing"]])
+    if sections:
+        lines.extend(["", evidence_count_line(output)])
     lines.extend(
         [
             "",
@@ -554,6 +597,8 @@ def common_tools(store, kb: KnowledgeBase, mode: str = "single", reviewer=None) 
             "review": None
             if review is None
             else {k: review[k] for k in ("round", "verdict", "notes", "status")},
+            # Style and completeness findings recorded instead of rejected (kept in the trace).
+            "warnings": list(state.get("output_warnings") or []),
         }
 
     all_roles = frozenset({"orchestrator", "tarot", "astro", "bazi", "name", "dream"})
@@ -624,7 +669,8 @@ def common_tools(store, kb: KnowledgeBase, mode: str = "single", reviewer=None) 
         ),
         Tool(
             "submit_reading",
-            "提交新解读或保存原牌追问；summary先直接回答，引用来自当前牌面。",
+            "提交完整解读或保存原牌追问：summary定调并直接回答，sections分层推演，advice行动建议，"
+            "closing收尾，evidence为所引用计算事实的附录。",
             Reading,
             submit,
             terminal=True,

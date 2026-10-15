@@ -555,9 +555,14 @@ async def test_failed_specialist_is_isolated_and_disclosed(project):
         orchestrator_results = [
             e for e in results_of(runtime, "orchestrator") if e["call"]["name"] == "submit_reading"
         ]
-        assert [e["result"]["ok"] for e in orchestrator_results] == [False, False, True]
-        assert "systems_used" in orchestrator_results[0]["result"]["error"]
-        assert "西方占星" in orchestrator_results[1]["result"]["error"]
+        # The failed system is dropped and disclosed by code instead of a rejection round.
+        assert [e["result"]["ok"] for e in orchestrator_results] == [True]
+        output = outcome.data["reading"]
+        assert output["systems_used"] == ["tarot"]
+        assert "西方占星" in output["confidence"]["reason"]
+        assert "专家模型调用失败" in output["confidence"]["reason"]
+        stored = runtime.store.get_reading(runtime.session.user_id, outcome.data["reading_id"])
+        assert stored["output_json"]["systems_used"] == ["tarot"]
         saved = runtime.store.specialist_reports(
             runtime.session.user_id, runtime.session.state["active_reading_id"]
         )

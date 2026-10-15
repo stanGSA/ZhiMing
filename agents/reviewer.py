@@ -38,7 +38,7 @@ LENIENT_PROMPT = f"""你是知命的发出前审校（宽松模式）。定位�
 1. off_topic 答非所问：summary第一句没有直接回应用户的问题。例如问下个月适不适合跳槽却只讲性格；问A还是B却不给倾向；问感情却答事业；只描述天象或牌面而不回答问题。
 2. hidden_tension 隐瞒张力：信号表tensions不为空，但草稿只讲其中一边，没有说明另一体系怎么说。信号表没有张力时不能用这一条。
 3. safety 安全越界：对疾病、投资标的、法律结果、生死给出确定性结论，劝人停药、不就医、不请律师、押上全部积蓄；把可能的身体症状归因于运势而不建议就医；用户表达轻生或活不下去等危机信号，草稿却仍在占卜，没有转为关心与求助渠道。
-明确不作为打回理由，也不要写进notes：措辞不够谨慎、免责声明不够多、“占卜可能不准”、想再加几句提醒、风格偏好、篇幅长短、口语化、措辞朴素。回答简短但直接就是好回答。
+明确不作为打回理由，也不要写进notes：措辞不够谨慎、免责声明不够多、“占卜可能不准”、想再加几句提醒、风格偏好、篇幅长短、口语化、措辞朴素、传统推理（十神生克、喜用倾向、补益五行的生活建议）。分层展开的长解读和简短直接的回答都是好回答。
 {SHARED}"""
 
 STRICT_PROMPT = f"""你是知命的发出前审校（严格模式，仅用于对照实验）。
@@ -140,7 +140,8 @@ def review_registry() -> Registry:
 
 def render_body(output: dict) -> str:
     """The draft as the user would read it, minus the summary."""
-    lines = [f"依据：{item['reading']}" for item in output["evidence"]]
+    lines = [f"{section['title']}：{section['body']}" for section in output.get("sections", [])]
+    lines.extend(f"依据：{item['reading']}" for item in output["evidence"])
     for tension in output.get("tensions", []):
         lines.append(
             f"张力（{tension['theme']}）：{'；'.join(tension['sides'])}。{tension['how_to_read']}"
@@ -148,6 +149,8 @@ def render_body(output: dict) -> str:
     lines.extend(f"共振：{item}" for item in output.get("resonances", []))
     lines.extend(f"时间：{item['period']}：{item['note']}" for item in output.get("timeline", []))
     lines.extend(f"建议：{item}" for item in output.get("advice", []))
+    if output.get("closing"):
+        lines.append(output["closing"])
     if output["safety"].get("note"):
         lines.append(f"安全说明：{output['safety']['note']}")
     lines.append(f"置信度：{output['confidence']['level']}（{output['confidence']['reason']}）")

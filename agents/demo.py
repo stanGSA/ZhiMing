@@ -115,13 +115,21 @@ class DemoModel:
             }
             for card in draw["cards"]
         ]
+        sections = [
+            {
+                "title": f"{card['label']}：【{card['name']}】{'逆位' if card['reversed'] else '正位'}",
+                "body": card_body(card, entries[card["meaning_key"]]),
+                "ref_ids": [card["ref_id"]],
+            }
+            for card in draw["cards"]
+        ]
         return call(
             "submit_reading",
-            self.submission(question, evidence, draw["spread"], decision_choice(draw)),
+            self.submission(question, evidence, draw["spread"], decision_choice(draw), sections),
         )
 
     @staticmethod
-    def submission(question, evidence, spread, choice) -> dict:
+    def submission(question, evidence, spread, choice, sections=None) -> dict:
         safety = bool(HIGH_RISK.search(question))
         if safety:
             summary = "这个问题需要现实信息和专业判断，塔罗只能帮助梳理感受，不能据此作出医疗、投资或法律决定。"
@@ -139,6 +147,7 @@ class DemoModel:
             else "tarot",
             "systems_used": ["tarot"],
             "summary": summary,
+            "sections": sections or [],
             "evidence": evidence,
             "resonances": [],
             "tensions": [],
@@ -147,6 +156,7 @@ class DemoModel:
                 "列出当前选择的实际成本与可验证条件。",
                 "先执行一个可撤回的小步骤，再观察反馈。",
             ],
+            "closing": "离线演示按规则把牌面整理成分层结构，真实模型会结合你的处境展开推演。",
             "confidence": {
                 "level": "low",
                 "reason": "释义为未人工审核的自写草稿；本次使用离线演示模型。",
@@ -185,9 +195,20 @@ class DemoModel:
             return ModelResponse(text="离线演示：塔罗专家没有返回有效报告。")
         evidence = [{"ref_id": p["ref_id"], "reading": p["text"]} for p in report["points"]]
         choice = re.search(r"倾向([AB])", report["answer"])
+        sections = (
+            [
+                {
+                    "title": "牌阵推演",
+                    "body": report["analysis"],
+                    "ref_ids": [p["ref_id"] for p in report["points"]],
+                }
+            ]
+            if report.get("analysis")
+            else []
+        )
         return call(
             "submit_reading",
-            self.submission(question, evidence, spread, choice[1] if choice else "A"),
+            self.submission(question, evidence, spread, choice[1] if choice else "A", sections),
         )
 
     def specialist(self, messages, results, call) -> ModelResponse:
@@ -217,10 +238,16 @@ class DemoModel:
             answer = f"牌面更倾向{choice}，前提是先核实{choice}的实际条件；这是离线规则演示。"
         else:
             answer = "牌面提示先梳理现状，再小步尝试；这是离线规则演示。"
+        analysis = "\n".join(
+            f"{card['label']}【{card['name']}】{'逆位' if card['reversed'] else '正位'}："
+            f"关键词{'、'.join(card['meaning']['keywords'][:3])}。"
+            for card in draw["cards"]
+        )
         return call(
             "submit_report",
             {
                 "answer": answer,
+                "analysis": analysis,
                 "points": points,
                 "missing": [],
                 "confidence": {
@@ -229,6 +256,15 @@ class DemoModel:
                 },
             },
         )
+
+
+def card_body(card, meaning) -> str:
+    keywords = "、".join(meaning["keywords"][:3])
+    return (
+        f"关键词：{keywords}。\n"
+        f"放在“{card['label']}”这个位置，它提示你留意与{meaning['keywords'][0]}有关的处境，"
+        "先看清现实条件，再决定用力的方向。"
+    )
 
 
 def decision_choice(draw) -> str | None:

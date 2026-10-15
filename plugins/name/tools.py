@@ -175,7 +175,7 @@ class NamePlugin(MeaningPlugin):
                 sancai_element_count=counts,
                 bazi_wuxing_count=chart.get("wuxing_count"),
                 day_master=chart.get("day_master"),
-                note="只并列三才五行与原局天干地支五行计数；不判喜用神，不建议据此改名或补五行",
+                note="并列三才五行与原局天干地支五行计数；五行计数不是旺衰权重，补益五行属传统推断，须说明依据",
             )
         atoms = [
             (

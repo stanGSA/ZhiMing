@@ -113,9 +113,11 @@ async def test_three_systems_restore_cache_ownership_forget(project):
         assert followup.ok
         assert later.store.get_response(later.session.user_id, followup.data["response_id"])
         assert later.store.get_reading(later.session.user_id, rid)["output_json"] == output | {
+            "sections": [],
             "resonances": [],
             "tensions": [],
             "timeline": [],
+            "closing": "",
             "followups": [],
         }
         # Persistent cache reuse in a new reading and a new session.
@@ -170,10 +172,12 @@ async def test_unknown_time_and_hallucinations(runtime):
         "太阳天蝎第1宫。",
         "时柱是甲子。",
         "你的年柱是甲子。",
-        "喜用神是木。",
     ):
         bad = Reading.model_validate({**base, "summary": text})
         assert validate_reading(bad, runtime.session), text
+    # 喜用神 is a traditional inference the reading may argue for; it is not a computed fact.
+    inferred = Reading.model_validate({**base, "summary": "喜用神倾向于木，可多接触绿色。"})
+    assert validate_reading(inferred, runtime.session) is None
     wrong = copy.deepcopy(base)
     wrong["evidence"][0]["ref_id"] = "kb:forged"
     assert not (await invoke(runtime, "submit_reading", wrong)).ok
@@ -209,9 +213,15 @@ async def test_compound_refs_and_required_bazi_answers(runtime):
     assert set(item["meaning"]["component_refs"]) <= runtime.session.state["kb_refs"]
     assert (await invoke(runtime, "compute_bazi", {**birth, "gender": "male"})).ok
     runtime.session.state["question"] = "请说明日主、起运日期和首步大运"
-    assert not (await invoke(runtime, "submit_reading", draft(runtime))).ok
+    # Omitting an asked-for fact is recorded as a warning; a wrong 干支 is still rejected.
+    assert validate_reading(Reading.model_validate(draft(runtime)), runtime.session) is None
+    warnings = " ".join(runtime.session.state["output_warnings"])
+    assert all(word in warnings for word in ("日主", "起运日期", "首步大运"))
+    wrong = Reading.model_validate(draft(runtime, "首步大运甲子。"))
+    assert validate_reading(wrong, runtime.session)
     answer = "日主辛金，1996-12-27起运，首步大运己未。"
-    assert (await invoke(runtime, "submit_reading", draft(runtime, answer))).ok
+    accepted = await invoke(runtime, "submit_reading", draft(runtime, answer))
+    assert accepted.ok and accepted.data["warnings"] == []
 
 
 @pytest.mark.asyncio

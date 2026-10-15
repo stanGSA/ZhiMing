@@ -157,7 +157,8 @@ class AnthropicModel:
             model=self.model,
             system=system,
             messages=converted,
-            max_tokens=4096,
+            # A layered reading is submitted as one tool call; leave room for it.
+            max_tokens=8192,
             tools=[
                 {
                     "name": t["function"]["name"],
