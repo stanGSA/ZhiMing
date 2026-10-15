@@ -11,6 +11,10 @@ from common.output_policy import (
 from common.safety import CRISIS as CRISIS  # Backwards-compatible public import.
 
 HIGH_RISK = re.compile(r"疾病|癌|诊断|停药|治疗|健康|投资|股票|基金|借贷|法律|诉讼|判刑|死亡|寿命")
+# Questions that ask whether or when to act; only these call for "适合/暂不适合" as an answer.
+SUITABILITY = re.compile(
+    r"是否|适合|适宜|适不适|要不要|该不该|能不能|可不可以|可以.{0,12}[吗么]|什么时候|何时|时机"
+)
 
 
 def report_matches_profile(report: dict, profile: dict) -> bool:
@@ -48,10 +52,17 @@ def validate_reading(reading, session) -> str | None:
     if re.search(r"仅供参考|仅供娱乐|仅供.*反思", public_text):
         return "免责声明由应用统一添加，正文不要重复"
     first = reading.summary.split("。")[0]
-    if (
-        state.get("response_mode") != "followup"
-        and (state.get("tarot_result") or {}).get("spread") == "decision"
-    ):
+    decision = (state.get("tarot_result") or {}).get("spread") == "decision"
+    if state.get("response_mode") != "followup":
+        # Recorded only: a verdict hedged in its first sentence reads as no answer at all.
+        if "前提" in first:
+            warn(state, "summary第一句宜先表态，前提放到第二句")
+        asked = (
+            state["question"] + " " + (session.user_messages[-1] if session.user_messages else "")
+        )
+        if "有条件适合" in first and not decision and not SUITABILITY.search(asked):
+            warn(state, "非时机问题的第一句宜直接回答所问，不套用“有条件适合”")
+    if state.get("response_mode") != "followup" and decision:
         if not re.search(r"(?:倾向|优先|更支持|建议选择|先核实)\s*[AB]", first):
             warn(state, "二选一summary第一句宜明确A/B倾向并写现实条件")
         if not re.search(r"前提|条件|如果|若|先核实|待.*确认", reading.summary):

@@ -94,9 +94,11 @@ class Section(StrictInput):
 class Reading(StrictInput):
     question_type: Literal["timing", "decision", "trait", "tarot", "daily", "name", "dream"]
     systems_used: list[str] = Field(min_length=1)
-    summary: str = Field(min_length=1, max_length=200, description="定调：第一句直接回答问题")
+    summary: str = Field(
+        min_length=1, max_length=200, description="先表态：第一句直接回答所问，前提放在第二句"
+    )
     sections: list[Section] = Field(
-        default_factory=list, max_length=6, description="分层分析正文，通常2-5层"
+        default_factory=list, max_length=6, description="分层分析正文，通常2-3层，每层约150-250字"
     )
     evidence: list[Evidence] = Field(min_length=1)
     resonances: list[str] = Field(default_factory=list)

@@ -367,6 +367,17 @@ async def run(args) -> Path:
     return out
 
 
+# Directness, read from saved rows so earlier results.json files can be re-reported: a first
+# sentence opening on a condition, boundary notes explained to the user, a chart-basis layer.
+HEDGE = re.compile(r"有条件|前提")
+CAVEAT = re.compile(r"不能当作|不能当成|不能用来|不能据此|不能扩展|不代表|不意味着|并不表示")
+BASIS = re.compile(r"基准|口径")
+
+
+def first_sentence(output: dict) -> str:
+    return re.split(r"[。！？!?]", output.get("summary") or "")[0]
+
+
 def summarize(rows) -> dict:
     done = [r for r in rows if r["status"] == "submit_reading"]
     count = len(done) or 1
@@ -384,6 +395,11 @@ def summarize(rows) -> dict:
         avg_analysis_chars=round(sum(r["analysis_chars"] for r in done) / count),
         avg_evidence_share=round(sum(r["evidence_share"] or 0 for r in done) / count, 3),
         layered_turns=sum(r["sections"] >= 2 for r in done),
+        hedged_first=sum(bool(HEDGE.search(first_sentence(r.get("output") or {}))) for r in done),
+        avg_caveats=round(sum(len(CAVEAT.findall(r.get("text") or "")) for r in done) / count, 1),
+        basis_sections=sum(
+            any(BASIS.search(title) for title in r.get("section_titles") or []) for r in done
+        ),
         rejections=sum(len(r["submit_rejections"]) + len(r["report_rejections"]) for r in rows),
         **{
             f"{category}_rejections": categories.count(category)
@@ -402,7 +418,8 @@ def summarize(rows) -> dict:
 
 
 CHECKLIST = (
-    "- [ ] 先定调：第一句直接回答，并概括整体气象\n"
+    "- [ ] 先表态：第一句直接回答所问，前提放在第二句；再概括整体气象\n"
+    "- [ ] 正文不向用户逐条解释写作边界；没问到时不单独写排盘基准\n"
     "- [ ] 分层推演：每层讲清作用关系 → 挑战／机遇 → 应对，而不是把依据拆成几个标题\n"
     "- [ ] 行动建议具体可执行\n"
     "- [ ] 使用了用户明确提供的背景，未编造个人信息\n"

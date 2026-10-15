@@ -141,6 +141,29 @@ async def test_timing_first_sentence_is_a_warning(runtime):
     assert any("时机问题" in w for w in runtime.session.state["output_warnings"])
 
 
+async def test_hedged_first_sentence_is_a_warning(runtime):
+    # A non-timing question answered with the timing template, premise first: recorded only.
+    out = await runtime.turn("近期状态怎么样？")
+    assert out.status == "submit_reading"
+    draft = copy.deepcopy(out.data["reading"])
+    draft["summary"] = "近期有条件适合推进，前提是先核实条件。"
+    assert validate_reading(Reading.model_validate(draft), runtime.session) is None
+    warnings = " ".join(runtime.session.state["output_warnings"])
+    assert "前提放到第二句" in warnings and "不套用“有条件适合”" in warnings
+    draft["summary"] = "近期整体偏压力，主要落在工作节奏上。前提是先核实条件。"
+    assert validate_reading(Reading.model_validate(draft), runtime.session) is None
+    assert runtime.session.state["output_warnings"] == []
+
+
+async def test_conditional_verdict_fits_a_suitability_question(runtime):
+    out = await runtime.turn("下个月适合跳槽吗？")
+    assert out.status == "submit_reading"
+    draft = copy.deepcopy(out.data["reading"])
+    draft["summary"] = "下个月有条件适合跳槽。前提是先拿到书面录用。"
+    assert validate_reading(Reading.model_validate(draft), runtime.session) is None
+    assert runtime.session.state["output_warnings"] == []
+
+
 async def test_followup_high_risk_is_checked(runtime):
     out = await runtime.turn("近期状态")
     runtime.session.append_user("第二张牌是不是说我可以停药？")

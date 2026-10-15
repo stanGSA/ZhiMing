@@ -140,3 +140,38 @@ def test_compare_counts_preserve_review_and_fact_errors_separately():
     assert summary["fact_rejections"] == 1
     assert summary["review_rejections"] == 1
     assert row["rejection_details"][0]["code"] == "review_revise"
+
+
+def test_compare_counts_hedged_verdicts_caveats_and_basis_layers():
+    from scripts.compare_layers import summarize
+
+    def row(summary, text, titles):
+        return dict(
+            status="submit_reading",
+            reply_chars=len(text),
+            analysis_chars=0,
+            evidence_share=None,
+            sections=len(titles),
+            section_titles=titles,
+            submit_rejections=[],
+            report_rejections=[],
+            submit_attempts=1,
+            reviews=[],
+            recomputed=[],
+            turn=1,
+            output=dict(summary=summary),
+            text=text,
+        )
+
+    rows = [
+        row(
+            "这个月有条件适合攻坚，前提是缩小范围。",
+            "这个时刻不能当作现实事件时间；这张牌不能用来判定结果。",
+            ["排盘基准：壬水日主", "核心碰撞：辰戌相冲"],
+        ),
+        row("这个月整体偏压力。前提是缩小范围。", "主要落在项目节奏上。", ["核心碰撞"]),
+    ]
+    summary = summarize(rows)
+    assert summary["hedged_first"] == 1  # a premise after the first sentence is fine
+    assert summary["avg_caveats"] == 1.0
+    assert summary["basis_sections"] == 1
