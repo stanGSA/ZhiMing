@@ -18,9 +18,6 @@ STROKE = re.compile(
     r"[「“\"《【]?([㐀-鿿])[」”\"》】]?(?:字)?\s*(?:按|为|是|计|算|作|有|共)?\s*(?:康熙)?(?:笔画)?\s*(\d{1,2})\s*画"
 )
 SANCAI = re.compile(r"三才(?:配置|组合|五行)?\s*(?:为|是|：|:)?\s*[「“【]?([木火土金水]{3})")
-USEFUL_GOD = re.compile(
-    r"喜用神(?:是|为)|(?:需要|应该|应当|建议|宜|要)(?:补|增加|加强)[木火土金水]|五行缺[木火土金水]"
-)
 FATALISM = re.compile(
     r"(?:注定|一定会|必然|必定)(?:会)?(?:失败|不幸|短命|破财|离婚|成功|富贵|发财)"
 )
@@ -150,8 +147,6 @@ def validate_output(reading, state):
         error = check_claims(text, bound, results)
         if error:
             return error
-    if USEFUL_GOD.search(joined):
-        return "MVP不判喜用神，不能据五行建议改名或补五行"
     if FATALISM.search(joined):
         return "姓名数理是民间约定，不能作命运断言"
     for result in results.values():

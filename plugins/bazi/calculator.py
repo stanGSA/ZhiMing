@@ -281,7 +281,7 @@ def compute_bazi(
             dayun_time_basis=dayun_time_basis,
             dayun_time_explanation="civil沿用参考集getYun1修正钟表日期对节气的折算；physical用物理出生时刻转固定UTC+8。真太阳时跨节气须先确认physical，不静默改顺逆。",
             wuxing="天干与地支主五行简单计数，非旺衰权重",
-            useful_god="MVP不判喜用神",
+            useful_god="程序不计算喜用神；解读可据月令与五行分布推断喜用倾向，须说明依据",
         ),
         "input": dict(
             birth_local=birth_local,

@@ -2,6 +2,7 @@
 
 import re
 
+from common.facts import section_texts
 from common.input_evidence import chinese_number
 from plugins.astro.calculator import BODY_ZH, SIGN_ZH
 
@@ -98,8 +99,10 @@ def preceding_event_date(text, position):
 def public_parts(reading):
     return [
         reading.summary,
+        *section_texts(reading),
         *[e.reading for e in reading.evidence],
         *reading.advice,
+        reading.closing,
         *reading.resonances,
         *[t.how_to_read for t in reading.tensions],
         *[side for t in reading.tensions for side in t.sides],
@@ -163,6 +166,13 @@ def validate_output(reading, state):
     claims = [(e.reading, event_refs.get(e.ref_id), False) for e in reading.evidence]
     claims += [(t.note, None, True) for t in reading.timeline]
     claims += [(reading.summary, None, False)]
+    # A section mixes natal and transit statements; bind each sentence on its own.
+    claims += [
+        (sentence, None, False)
+        for text in section_texts(reading) + [reading.closing]
+        for sentence in re.split(r"[。；;！!？?\n]", text)
+        if sentence.strip()
+    ]
     for original, cited, temporal in claims:
         text = normalize_positions(original)
         matching = [cited] if cited else []

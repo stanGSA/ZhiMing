@@ -118,21 +118,27 @@ async def test_reject_internal_errors_and_repeated_disclaimer(runtime):
         assert validate_reading(Reading.model_validate(draft), runtime.session)
 
 
-async def test_decision_requires_direction_and_conditions(runtime):
+async def test_decision_direction_and_conditions_are_warnings(runtime):
+    # First-sentence wording is a style check: recorded, never a rejection round.
     out = await runtime.turn("A工作还是B工作？")
     assert out.status == "submit_reading"
     draft = copy.deepcopy(out.data["reading"])
-    for summary in ("没有明确优胜项，请自己决定。", "更倾向A。"):
+    for summary, warning in (
+        ("没有明确优胜项，请自己决定。", "A/B倾向"),
+        ("更倾向A。", "现实条件"),
+    ):
         draft["summary"] = summary
-        assert validate_reading(Reading.model_validate(draft), runtime.session)
+        assert validate_reading(Reading.model_validate(draft), runtime.session) is None
+        assert any(warning in w for w in runtime.session.state["output_warnings"])
 
 
-async def test_timing_requires_answer_in_first_sentence(runtime):
+async def test_timing_first_sentence_is_a_warning(runtime):
     out = await runtime.turn("下个月适合跳槽吗？")
     assert out.status == "submit_reading"
     draft = copy.deepcopy(out.data["reading"])
     draft["summary"] = "先梳理现状，做好准备。"
-    assert validate_reading(Reading.model_validate(draft), runtime.session)
+    assert validate_reading(Reading.model_validate(draft), runtime.session) is None
+    assert any("时机问题" in w for w in runtime.session.state["output_warnings"])
 
 
 async def test_followup_high_risk_is_checked(runtime):

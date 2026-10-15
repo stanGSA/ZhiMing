@@ -31,8 +31,10 @@ def public_texts(reading) -> list[str]:
     """All authored text to validate, including metadata that is not always rendered."""
     return [
         reading.summary,
+        *section_texts(reading),
         *[e.reading for e in reading.evidence],
         *reading.advice,
+        reading.closing,
         *reading.resonances,
         *[part for t in reading.tensions for part in (t.theme, *t.sides, t.how_to_read)],
         *[part for t in reading.timeline for part in (t.period, t.note)],
@@ -45,13 +47,22 @@ def public_texts(reading) -> list[str]:
 def rendered_texts(reading) -> list[str]:
     """Texts actually displayed by render_reading; mandatory disclosures belong here.
 
-    Confidence.reason, followups, resonances and tensions remain structured metadata.
-    Checking them for false claims must not count as disclosing information to the user.
+    Confidence.reason and followups remain structured metadata. Checking them for false
+    claims must not count as disclosing information to the user.
     """
     return [
         reading.summary,
-        *[e.reading for e in reading.evidence],
+        *section_texts(reading),
         *reading.advice,
         *[part for t in reading.timeline for part in (t.period, t.note)],
+        *reading.resonances,
+        *[part for t in reading.tensions for part in (t.theme, *t.sides, t.how_to_read)],
+        reading.closing,
+        *[e.reading for e in reading.evidence],
         *([reading.safety.note] if reading.safety.flag else []),
     ]
+
+
+def section_texts(reading) -> list[str]:
+    """Titles and bodies of the layered analysis (absent on readings saved before it)."""
+    return [part for s in getattr(reading, "sections", []) for part in (s.title, s.body)]

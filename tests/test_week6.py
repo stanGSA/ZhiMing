@@ -173,7 +173,8 @@ async def test_profile_name_two_names_and_validator(runtime):
     assert check(runtime, reading("name", ref, explain + "李逸人格22。")) is None
     assert "不符" in check(runtime, reading("name", ref, explain + "赵杰人格23。"))
     assert "不符" in check(runtime, reading("name", ref, explain + "赵杰三才配置为木木木。"))
-    assert "喜用神" in check(runtime, reading("name", ref, explain + "名字五行缺水。"))
+    # Five-element advice is allowed as a traditional inference; fatalism is not.
+    assert check(runtime, reading("name", ref, explain + "名字五行缺水，可倾向补水。")) is None
     assert "命运" in check(runtime, reading("name", ref, explain + "这个名字注定成功。"))
     signals = [s for s in runtime.session.state["signals"] if s["system"] == "name"]
     assert {s["horizon"] for s in signals} == {"trait"}

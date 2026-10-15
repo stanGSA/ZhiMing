@@ -195,6 +195,12 @@ function renderReading(reading) {
     }
     content.append(cards);
   }
+  (output.sections || []).forEach((section, index) => {
+    content.append(
+      node("h3", "reading-subheading", `${index + 1}. ${section.title}`),
+      node("p", "reading-section", section.body),
+    );
+  });
   addList(content, "可行之事", output.advice);
   addList(
     content,
@@ -209,6 +215,7 @@ function renderReading(reading) {
       (item) => `${item.theme}：${item.sides.join("；")}。${item.how_to_read}`,
     ),
   );
+  if (output.closing) content.append(node("p", "reading-section", output.closing));
   if (output.evidence?.length) {
     const details = node("details", "reading-details");
     details.append(node("summary", "", "查看解读依据"));
@@ -512,12 +519,18 @@ $("#confirm-dialog").addEventListener("close", async () => {
 $("#copy-reading").addEventListener("click", async () => {
   if (!currentReading) return;
   const output = currentReading.output;
+  const sections = output.sections || [];
   const text = [
     "知命 · 此间解读",
     output.summary,
-    ...output.evidence.map((item) => item.reading),
+    ...sections.map((item, index) => `${index + 1}. ${item.title}\n${item.body}`),
+    ...(sections.length ? [] : output.evidence.map((item) => item.reading)),
     "可以考虑：",
     ...output.advice,
+    ...(output.closing ? [output.closing] : []),
+    ...(sections.length
+      ? ["解读依据：", ...output.evidence.map((item) => item.reading)]
+      : []),
     "仅供参考与自我反思。",
   ].join("\n\n");
   try {

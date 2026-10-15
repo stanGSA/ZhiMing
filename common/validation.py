@@ -1,15 +1,18 @@
 import re
 
 from common.facts import validate_calculation_facts
+from common.output_policy import authored_texts, certainty_error, normalize_reading, warn
 from common.safety import CRISIS as CRISIS  # Backwards-compatible public import.
 
 HIGH_RISK = re.compile(r"疾病|癌|诊断|停药|治疗|健康|投资|股票|基金|借贷|法律|诉讼|判刑|死亡|寿命")
 
 
 def validate_reading(reading, session) -> str | None:
+    """Hard checks on facts and safety; wording is repaired first, style is only recorded."""
     state = session.state
     if not state.get("tarot_result") and not state.get("calculations"):
         return "必须先调用确定性计算工具"
+    normalize_reading(reading, state)
     actual_systems = {s["system"] for s in state["signals"]}
     if set(reading.systems_used) != actual_systems or len(reading.systems_used) != len(
         actual_systems
@@ -18,15 +21,11 @@ def validate_reading(reading, session) -> str | None:
     refs = state["allowed_refs"]
     if any(item.ref_id not in refs for item in reading.evidence):
         return "evidence 引用必须来自本次工具生成的信号"
+    if any(ref not in refs for section in reading.sections for ref in section.ref_ids):
+        return "sections 的 ref_ids 必须来自本次工具生成的信号"
     text = reading.model_dump_json()
-    public_text = " ".join(
-        [
-            reading.summary,
-            *[e.reading for e in reading.evidence],
-            *reading.advice,
-            reading.safety.note,
-        ]
-    )
+    public_text = " ".join(authored_texts(reading))
+    # Normalization already removed such sentences; whatever is left is a field made only of them.
     if re.search(
         r"active_reading_id|missing_dependency|submit_reading|存储错误|保存失败|未能保存|知识库|未人工审核",
         public_text,
@@ -34,34 +33,19 @@ def validate_reading(reading, session) -> str | None:
         return "正文不能包含内部状态、审核或存储错误信息"
     if re.search(r"仅供参考|仅供娱乐|仅供.*反思", public_text):
         return "免责声明由应用统一添加，正文不要重复"
+    first = reading.summary.split("。")[0]
     if (
         state.get("response_mode") != "followup"
         and (state.get("tarot_result") or {}).get("spread") == "decision"
     ):
-        if not re.search(
-            r"(?:倾向|优先|更支持|建议选择|先核实)\s*[AB]", reading.summary.split("。")[0]
-        ):
-            return "二选一summary第一句须明确A/B倾向并写现实条件"
+        if not re.search(r"(?:倾向|优先|更支持|建议选择|先核实)\s*[AB]", first):
+            warn(state, "二选一summary第一句宜明确A/B倾向并写现实条件")
         if not re.search(r"前提|条件|如果|若|先核实|待.*确认", reading.summary):
-            return "二选一须说明暂定建议的现实条件"
+            warn(state, "二选一宜说明暂定建议的现实条件")
     if state.get("response_mode") != "followup" and reading.question_type == "timing":
         if re.search(r"是否|适合|适宜|什么时候|何时|时机", state["question"]):
-            if not re.search(
-                r"适合|适宜|可以|不宜|暂缓|建议(?:开始|启动|等待|推迟)",
-                reading.summary.split("。")[0],
-            ):
-                return "时机问题summary第一句须直接回答行动倾向并说明现实前提"
-    # Failure isolation: an unavailable specialist may be skipped, never silently. A
-    # follow-up answers from the stored reading, whose disclosure was made when it was saved.
-    for system, report in (state.get("specialist_reports") or {}).items():
-        if report["status"] == "ok" or state.get("response_mode") == "followup":
-            continue
-        if system in reading.systems_used:
-            return f"{report['label']}专家没有有效报告，systems_used不能包含{system}"
-        if report["label"] not in reading.confidence.reason and system not in (
-            reading.confidence.reason
-        ):
-            return f"{report['label']}专家未完成，confidence.reason须说明缺少该体系及原因"
+            if not re.search(r"适合|适宜|可以|不宜|暂缓|建议(?:开始|启动|等待|推迟)", first):
+                warn(state, "时机问题summary第一句宜直接回答行动倾向并说明现实前提")
     for validator in session.output_validators.values():
         error = validator(reading, state)
         if error:
@@ -69,11 +53,9 @@ def validate_reading(reading, session) -> str | None:
     error = validate_calculation_facts(reading, state)
     if error:
         return error
-    if (
-        any(not signal["reviewed"] for signal in state["signals"])
-        and reading.confidence.level != "low"
-    ):
-        return "释义尚未人工审核，confidence 必须为 low 并解释原因"
+    error = certainty_error(authored_texts(reading))
+    if error:
+        return error
     current_question = session.user_messages[-1] if session.user_messages else ""
     if HIGH_RISK.search(state["question"] + current_question):
         if not reading.safety.flag or not reading.safety.note:

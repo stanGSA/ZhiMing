@@ -44,6 +44,8 @@ def project(data: dict) -> dict:
     """The orchestrator sees the structured report, never raw tool output or signals."""
     report = data["report"]
     visible = {k: report[k] for k in VISIBLE}
+    if report.get("analysis"):
+        visible["analysis"] = report["analysis"]
     if report["status"] == "needs_input":
         visible["needs_input"] = report["needs_input"]
     if report["status"] == "failed":
