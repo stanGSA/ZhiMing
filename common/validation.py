@@ -13,6 +13,14 @@ from common.safety import CRISIS as CRISIS  # Backwards-compatible public import
 HIGH_RISK = re.compile(r"疾病|癌|诊断|停药|治疗|健康|投资|股票|基金|借贷|法律|诉讼|判刑|死亡|寿命")
 
 
+def report_matches_profile(report: dict, profile: dict) -> bool:
+    """Compare the fields the expert actually depends on; older reports use their version."""
+    dependencies = report.get("profile_dependencies")
+    if dependencies is None:
+        return report.get("profile_version", 0) == profile.get("version", 0)
+    return all(profile.get(field) == value for field, value in dependencies.items())
+
+
 def validate_reading(reading, session) -> str | None:
     """Hard checks on facts and safety; wording is repaired first, style is only recorded."""
     state = session.state
@@ -52,6 +60,12 @@ def validate_reading(reading, session) -> str | None:
         if re.search(r"是否|适合|适宜|什么时候|何时|时机", state["question"]):
             if not re.search(r"适合|适宜|可以|不宜|暂缓|建议(?:开始|启动|等待|推迟)", first):
                 warn(state, "时机问题summary第一句宜直接回答行动倾向并说明现实前提")
+    # Fresh readings must use reports calculated with the current dependent profile
+    # fields. Historical follow-ups deliberately retain their saved facts.
+    if state.get("response_mode") != "followup":
+        for report in (state.get("specialist_reports") or {}).values():
+            if report["status"] == "ok" and not report_matches_profile(report, session.profile):
+                return f"{report['label']}所需画像已更正，须重新咨询该专家后再提交"
     for validator in session.output_validators.values():
         error = validator(reading, state)
         if error:
