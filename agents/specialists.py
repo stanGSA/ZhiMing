@@ -4,7 +4,7 @@ import re
 from dataclasses import dataclass
 
 from agents.schemas import ReportInput
-from common.output_policy import certainty_error, normalize_report
+from common.output_policy import care_error, certainty_error, normalize_report
 from common.schemas import Evidence, Reading, Safety, Section
 from harness.registry import Registry, Tool
 
@@ -122,7 +122,12 @@ def as_reading(report: ReportInput, system: str) -> Reading:
         question_type="trait",
         systems_used=[system],
         summary=report.answer,
-        sections=[Section.model_construct(title="推演", body=report.analysis, ref_ids=[])]
+        # The analysis discusses the facts its points cite, so it is bound to those refs.
+        sections=[
+            Section.model_construct(
+                title="推演", body=report.analysis, ref_ids=[p.ref_id for p in report.points]
+            )
+        ]
         if report.analysis
         else [],
         evidence=[Evidence.model_construct(ref_id=p.ref_id, reading=p.text) for p in report.points],
@@ -160,7 +165,8 @@ def validate_report(args: ReportInput, session) -> str | None:
     if state.get("timeframe_required") and SPEC_CONFIG[session.role]["temporal"]:
         if not any(s["horizon"] == "timing" for s in own):
             return "子问题指定了时间范围，须计算本体系行运或流期，不能只用原局"
-    return certainty_error([args.answer, args.analysis, *(p.text for p in args.points)])
+    texts = [args.answer, args.analysis, *(p.text for p in args.points)]
+    return certainty_error(texts) or care_error(texts)
 
 
 def submit_report(args: ReportInput, session) -> dict:

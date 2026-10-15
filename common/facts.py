@@ -47,8 +47,10 @@ def public_texts(reading) -> list[str]:
 def rendered_texts(reading) -> list[str]:
     """Texts actually displayed by render_reading; mandatory disclosures belong here.
 
-    Confidence.reason and followups remain structured metadata. Checking them for false
-    claims must not count as disclosing information to the user.
+    Confidence.reason and followups remain structured metadata. A layered reading shows only
+    the number of its evidence items (the web panel folds them), so its evidence is not
+    counted as shown; a reading without sections still lists its evidence in full.
+    Checking any of these for false claims must not count as disclosing them to the user.
     """
     return [
         reading.summary,
@@ -57,8 +59,8 @@ def rendered_texts(reading) -> list[str]:
         *[part for t in reading.timeline for part in (t.period, t.note)],
         *reading.resonances,
         *[part for t in reading.tensions for part in (t.theme, *t.sides, t.how_to_read)],
-        reading.closing,
-        *[e.reading for e in reading.evidence],
+        getattr(reading, "closing", ""),
+        *([] if section_texts(reading) else [e.reading for e in reading.evidence]),
         *([reading.safety.note] if reading.safety.flag else []),
     ]
 

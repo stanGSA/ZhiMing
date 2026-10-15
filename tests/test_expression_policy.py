@@ -63,12 +63,12 @@ def test_render_puts_layers_first_and_evidence_last():
         "二、能量压制：财生七杀",
         "行动建议：",
         "扛过去之后",
-        "解读依据：",
-        "【月亮】逆位",
+        "解读依据：共 1 条",
         "仅供参考与自我反思。",
     ]
     positions = [text.index(part) for part in order]
     assert positions == sorted(positions)
+    assert "【月亮】逆位" not in text  # the appendix is counted, not listed
 
 
 def test_render_keeps_layout_of_readings_saved_before_sections():

@@ -158,7 +158,7 @@ def validate_output(reading, state):
                 )
                 return (
                     f"{result['full_name']}的“{ambiguity['char']}”有多种写法（{options}），"
-                    "须在可见的摘要、依据或建议中说明各字形笔画并请用户确认。可使用："
+                    "须在用户可见的摘要、分析或建议中说明各字形笔画并请用户确认。可使用："
                     + ambiguity_prompt(result, ambiguity)
                 )
     return None

@@ -1,7 +1,13 @@
 import re
 
 from common.facts import validate_calculation_facts
-from common.output_policy import authored_texts, certainty_error, normalize_reading, warn
+from common.output_policy import (
+    authored_texts,
+    care_error,
+    certainty_error,
+    normalize_reading,
+    warn,
+)
 from common.safety import CRISIS as CRISIS  # Backwards-compatible public import.
 
 HIGH_RISK = re.compile(r"疾病|癌|诊断|停药|治疗|健康|投资|股票|基金|借贷|法律|诉讼|判刑|死亡|寿命")
@@ -53,7 +59,7 @@ def validate_reading(reading, session) -> str | None:
     error = validate_calculation_facts(reading, state)
     if error:
         return error
-    error = certainty_error(authored_texts(reading))
+    error = certainty_error(authored_texts(reading)) or care_error(authored_texts(reading))
     if error:
         return error
     current_question = session.user_messages[-1] if session.user_messages else ""

@@ -77,12 +77,11 @@ def aspect_assertions(text):
             yield start, names[source], names[right], aliases[relation]
 
 
-def preceding_event_date(text, position):
-    pattern = r"(\d{4})[-年/.](\d{1,2})[-月/.](\d{1,2})日?|(?<!\d)(\d{1,2})月(\d{1,2})日"
-    dates = list(re.finditer(pattern, text[:position]))
-    if not dates:
-        return None
-    match = dates[-1]
+DATE = re.compile(r"(\d{4})[-年/.](\d{1,2})[-月/.](\d{1,2})日?|(?<!\d)(\d{1,2})月(\d{1,2})日")
+
+
+def date_value(text, match, limit):
+    """(MM-DD or YYYY-MM-DD, written as UTC) for one date match; labels end at ``limit``."""
     year, month, day, short_month, short_day = match.groups()
     value = (
         f"{int(year):04d}-{int(month):02d}-{int(day):02d}"
@@ -90,10 +89,15 @@ def preceding_event_date(text, position):
         else f"{int(short_month):02d}-{int(short_day):02d}"
     )
     before = text[max(0, match.start() - 18) : match.start()]
-    after = text[match.end() : min(position, match.end() + 12)]
+    after = text[match.end() : min(limit, match.end() + 12)]
     labels = re.findall(r"UTC|当地|北京时间", before)
     utc = (labels[-1] == "UTC" if labels else False) or bool(re.match(r"\s*[（(]?UTC", after))
     return value, utc
+
+
+def preceding_event_date(text, position):
+    dates = list(DATE.finditer(text[:position]))
+    return date_value(text, dates[-1], position) if dates else None
 
 
 def public_parts(reading):
@@ -166,49 +170,157 @@ def validate_output(reading, state):
     claims = [(e.reading, event_refs.get(e.ref_id), False) for e in reading.evidence]
     claims += [(t.note, None, True) for t in reading.timeline]
     claims += [(reading.summary, None, False)]
-    # A section mixes natal and transit statements; bind each sentence on its own.
-    claims += [
-        (sentence, None, False)
-        for text in section_texts(reading) + [reading.closing]
-        for sentence in re.split(r"[。；;！!？?\n]", text)
-        if sentence.strip()
-    ]
     for original, cited, temporal in claims:
         text = normalize_positions(original)
         matching = [cited] if cited else []
-        for position, source, target, aspect in aspect_assertions(text):
+        assertions = list(aspect_assertions(text))
+        for position, source, target, aspect in assertions:
             when = preceding_event_date(text, position)
             is_transit = bool(cited or temporal or when or "行运" in text)
             if not is_transit:
-                if not any(
-                    {a["a"], a["b"]} == {source, target} and a["type"] == aspect
-                    for a in natal.get("aspects", [])
-                ):
+                if not natal_aspect(natal, source, target, aspect):
                     return "本命行星相位与本次计算不符"
                 continue
-            matching = [
-                e
-                for e in ([cited] if cited else events)
-                if e["transit_body"] == source
-                and e["natal_body"] == target
-                and e["aspect"] == aspect
-            ]
+            matching = same_event([cited] if cited else events, source, target, aspect)
             if not matching:
                 return "行运星、本命星与相位须匹配同一计算事件"
-            if when:
-                day, utc = when
-                key = "exact_utc" if utc else "exact_date"
-                if not any(e[key][:10].endswith(day) for e in matching):
-                    return "行运日期与所述相位不符，不能编造或混用UTC与当地日期"
-        if cited and not list(aspect_assertions(text)):
+            if when and not on_date(matching, when):
+                return "行运日期与所述相位不符，不能编造或混用UTC与当地日期"
+        if cited and not assertions:
             when = preceding_event_date(text, len(text))
-            if when and not cited["exact_utc" if when[1] else "exact_date"][:10].endswith(when[0]):
+            if when and not on_date([cited], when):
                 return "行运日期与引用事件不符"
-        for orb in re.findall(r"(?:容许度|残差)\s*(?:为|是|约|:|：)?\s*(\d+(?:\.\d+)?)", text):
-            if matching and not any(
-                abs(float(orb) - e["orb_deg"]) <= 0.01
-                or abs(float(orb) - e["allowed_orb_deg"]) <= 0.01
-                for e in matching
-            ):
-                return "行运容许度与本次计算不符"
+        when = trailing_event_date(text, assertions)
+        if when and matching and not on_date(matching, when):
+            return "行运日期与所述相位不符，不能编造或混用UTC与当地日期"
+        error = orb_error(text, matching)
+        if error:
+            return error
+    for title, body, refs in section_parts(reading):
+        error = check_section(title, body, refs, event_refs, events, natal)
+        if error:
+            return error
+    return None
+
+
+# A date-only sentence speaks about the event under discussion when it names the aspect itself.
+EVENT_DATE_CONTEXT = re.compile(r"相位|行运|精确|容许度")
+
+
+def trailing_event_date(text, assertions):
+    """A date written after the last relation of a sentence about that relation.
+
+    "木星拱太阳，精确日期是11月12日" dates the relation before it. Only a date that names the
+    aspect itself (相位/行运/精确/容许度) is bound, so "…，10月8日寒露后换月" is not.
+    """
+    if not assertions:
+        return None
+    last = max(position for position, *_ in assertions)
+    tail = text[last:]
+    if not EVENT_DATE_CONTEXT.search(tail):
+        return None
+    return preceding_event_date(tail, len(tail))
+
+
+def natal_aspect(natal, source, target, aspect) -> bool:
+    return any(
+        {a["a"], a["b"]} == {source, target} and a["type"] == aspect
+        for a in natal.get("aspects", [])
+    )
+
+
+def same_event(events, source, target, aspect):
+    return [
+        e
+        for e in events
+        if e["transit_body"] == source and e["natal_body"] == target and e["aspect"] == aspect
+    ]
+
+
+def on_date(events, when) -> bool:
+    day, utc = when
+    key = "exact_utc" if utc else "exact_date"
+    return any(e[key][:10].endswith(day) for e in events)
+
+
+def orb_error(text, matching):
+    for orb in re.findall(r"(?:容许度|残差)\s*(?:为|是|约|:|：)?\s*(\d+(?:\.\d+)?)", text):
+        if matching and not any(
+            abs(float(orb) - e["orb_deg"]) <= 0.01 or abs(float(orb) - e["allowed_orb_deg"]) <= 0.01
+            for e in matching
+        ):
+            return "行运容许度与本次计算不符"
+    return None
+
+
+def section_parts(reading):
+    """(title, body, ref_ids) for each analysis layer; the closing is a layer without refs."""
+    parts = [(s.title, s.body, list(s.ref_ids)) for s in getattr(reading, "sections", [])]
+    if getattr(reading, "closing", ""):
+        parts.append(("", reading.closing, []))
+    return parts
+
+
+def bound_dates(clause, assertions):
+    """Pair each relation of one clause with the dates written for it.
+
+    A date before a relation (back to the previous relation) dates it, and dates after the
+    last relation date the last one: "11月5日木星拱太阳" and "木星拱太阳在11月5日精确" both
+    bind 11月5日 to the relation. Clauses are checked separately, so in "木星拱太阳在11月5日
+    精确，土星刑月亮在11月20日精确" each date stays with its own relation.
+    """
+    dates = [(m.start(), date_value(clause, m, len(clause))) for m in DATE.finditer(clause)]
+    starts = sorted({item[0] for item in assertions})
+    for item in assertions:
+        index = starts.index(item[0])
+        low = starts[index - 1] if index else -1
+        last = index + 1 == len(starts)
+        yield item, [when for at, when in dates if low < at < item[0] or (last and at > item[0])]
+
+
+def check_section(title, body, refs, event_refs, events, natal):
+    """Check one analysis layer against the transit events it cites, clause by clause.
+
+    The layer's ref_ids bind its relations the way an evidence ref binds one item: a relation
+    must match one of the cited events, and its dates and orb must be that event's. A title
+    such as “行运木星拱本命太阳” sets the transit context for the body. A clause that only
+    dates “这一相位” (相位/行运/精确/容许度) is checked against the relation matched last.
+    """
+    cited = [event_refs[ref] for ref in refs if ref in event_refs]
+    transit_layer = bool(cited) or "行运" in title
+    pool = cited or events
+    current = []
+    sentences = [title, *re.split(r"[。；;！!？?\n]", body)]
+    for sentence in (normalize_positions(s) for s in sentences if s.strip()):
+        said_transit = "行运" in sentence
+        for clause in (c for c in re.split(r"[，,：:]", sentence) if c.strip()):
+            assertions = list(aspect_assertions(clause))
+            for (_, source, target, aspect), dates in bound_dates(clause, assertions):
+                explicit = bool(dates or said_transit)
+                natal_ok = natal_aspect(natal, source, target, aspect)
+                if not (explicit or transit_layer):
+                    if not natal_ok:
+                        return "本命行星相位与本次计算不符"
+                    continue
+                found = same_event(pool, source, target, aspect)
+                if not found:
+                    # A natal relation may sit in a transit layer when the sentence does not
+                    # say it is a transit.
+                    if natal_ok and not explicit:
+                        continue
+                    return (
+                        "段落中的行运相位须匹配本段ref_ids引用的计算事件"
+                        if cited
+                        else "行运星、本命星与相位须匹配同一计算事件"
+                    )
+                if any(not on_date(found, when) for when in dates):
+                    return "行运日期与所述相位不符，不能编造或混用UTC与当地日期"
+                current = found
+            if not assertions and (current or cited) and EVENT_DATE_CONTEXT.search(clause):
+                for match in DATE.finditer(clause):
+                    if not on_date(current or cited, date_value(clause, match, len(clause))):
+                        return "行运日期与引用事件不符"
+            error = orb_error(clause, current or cited)
+            if error:
+                return error
     return None

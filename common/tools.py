@@ -140,10 +140,23 @@ def weights_validator(value, evidence: str) -> str | None:
 NUMERALS = "一二三四五六"
 
 
-def render_reading(output: dict) -> str:
-    """Plain text for the CLI and the chat bubble: verdict, layered analysis, then evidence.
+def evidence_count_line(output: dict) -> str:
+    return (
+        f"解读依据：共 {len(output['evidence'])} 条计算事实"
+        "（网页解读面板可展开查看；命令行输入 /evidence 查看）"
+    )
 
-    Readings saved before sections existed keep their original layout (evidence first).
+
+def render_evidence(output: dict) -> str:
+    return "\n".join(f"- {item['reading']}" for item in output["evidence"])
+
+
+def render_reading(output: dict) -> str:
+    """Plain text for the CLI and the chat bubble: verdict, layered analysis, then actions.
+
+    The evidence appendix of a layered reading is shown only as a count; the full items stay
+    in the saved record (web panel, /evidence). Readings saved before sections existed keep
+    their original layout, evidence first.
     """
     sections = output.get("sections") or []
     lines = [output["summary"]]
@@ -179,8 +192,7 @@ def render_reading(output: dict) -> str:
     if output.get("closing"):
         lines.extend(["", output["closing"]])
     if sections:
-        lines.extend(["", "解读依据："])
-        lines.extend(f"- {item['reading']}" for item in output["evidence"])
+        lines.extend(["", evidence_count_line(output)])
     lines.extend(
         [
             "",
