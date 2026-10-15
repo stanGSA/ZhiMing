@@ -37,7 +37,12 @@ DIRECT_NEGATION = re.compile(
 )
 NEGATED_FRAME = re.compile(
     r"(?:不|并不|并非|未|没有|不能|无法|没人能|没有人能|谁也不能)"
-    r"(?:代表|意味着?|等于|说明|表示|保证|确定|断定|预示)|(?:别|不要)以为"
+    r"(?:代表|意味着?|等于|说明|表示|保证|确定|断定|预示|说|认为|觉得)|(?:别|不要)(?:以为|认为|觉得)"
+)
+NEGATED_SUBJECT = re.compile(
+    r"(?:并非|绝非|并不是|不是)(?:说|指)?"
+    r"(?:你们|我们|他们|她们|你|您|我|他|她|结果|事件|这件事)?"
+    r"(?:就|也|都|会|能|将|真的|最终|近期|这个月|下个月|以后|未来)*$"
 )
 CLAUSE_START = re.compile(r".*[，,。；;：:！!？?\n]")
 
@@ -51,7 +56,9 @@ CARE_ACTION = re.compile(
     r"专业医疗|医疗帮助|医疗机构"
 )
 DISCOURAGE = re.compile(
-    r"(?:无需|无须|不用|不必|没必要|不需要|用不着|别|不要|免得|省得|避免)(?:再|去|特意|专门)?$"
+    r"(?:无需|无须|不用|不必|没必要|不需要|用不着|不建议|不推荐|不应当?|不应该|"
+    r"不能|不可|不得|别|不要|免得|省得|避免)"
+    r"(?:再|去|特意|专门|马上|立即|及时|尽快|主动|直接|考虑|寻求|接受|进行)*$"
 )
 ADVISE = re.compile(r"请|应当|应该|应|建议|及时|尽快|务必|最好|宜|需要|如有|若有|如果|一旦|记得")
 HEALTH_NOTE = "如有身体不适，请及时就医，以医生的诊断为准。"
@@ -110,11 +117,25 @@ def certainty_claim(texts) -> str | None:
     """The first certainty word that no negation in its clause governs."""
     for text in texts:
         for match in CERTAINTY.finditer(text or ""):
-            before = clause_before(text, match.start())
-            if DIRECT_NEGATION.search(before) or NEGATED_FRAME.search(before):
+            before = clause_before(text, match.start(), 40)
+            if negates_claim(before):
                 continue
             return match.group()
     return None
+
+
+def negates_claim(before: str) -> bool:
+    """Only a governing negation cancels a claim, never an unrelated negative character.
+
+    A subject may intervene in “并非你一定会…”. A contrast starts a new assertion even
+    without a comma (“不代表过去不好但你一定会…”).
+    """
+    before = re.split(r"但是|然而|不过|反而|而是|但", before)[-1].strip()
+    return bool(
+        DIRECT_NEGATION.search(before)
+        or NEGATED_SUBJECT.search(before)
+        or NEGATED_FRAME.search(before)
+    )
 
 
 def certainty_error(texts) -> str | None:
@@ -161,9 +182,14 @@ def care_advice(texts) -> tuple[bool, str | None]:
     advised, discouraged = False, None
     for text in texts:
         for match in CARE_ACTION.finditer(text or ""):
-            before = clause_before(text, match.start(), 12)
-            if DISCOURAGE.search(before):
-                discouraged = discouraged or (before[-4:] + match.group())
+            before = clause_before(text, match.start(), 40)
+            negative = DISCOURAGE.search(before)
+            if negative:
+                # “不要以为不必就医” negates the discouragement; “不建议就医” does not.
+                if negates_claim(before[: negative.start()]):
+                    advised = True
+                else:
+                    discouraged = discouraged or (negative.group() + match.group())
             elif ADVISE.search(before):
                 advised = True
     return advised, discouraged

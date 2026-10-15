@@ -22,7 +22,9 @@ from __future__ import annotations
 import argparse
 import asyncio
 import json
+import re
 import shutil
+import subprocess
 import sys
 import time
 from pathlib import Path
@@ -188,6 +190,34 @@ def visible_chars(output: dict) -> dict:
     )
 
 
+REJECTION_CATEGORIES = ("fact", "expression", "safety", "schema", "review", "other")
+
+
+def rejection_category(result) -> str:
+    """Keep reviewer retries and schema/policy errors out of factual-error counts.
+
+    Legacy validators return prose rather than typed fact errors. Classify only known
+    diagnostics; retain unrecognized failures as 'other' together with their original code.
+    """
+    code, message = result.get("code"), result.get("error") or ""
+    if code == "review_revise":
+        return "review"
+    if code == "invalid_arguments":
+        return "schema"
+    if code != "validation_failed":
+        return "other"
+    if re.search(r"劝阻就医|安全说明|健康、投资|危机|停药", message):
+        return "safety"
+    if re.search(r"确定性说法|免责声明|内部状态|审核|confidence|summary第一句|二选一", message):
+        return "expression"
+    if re.search(
+        r"相位|干支|柱位|落座|宫位|四轴|行运日期|容许度|牌面|未抽出的牌|ref_ids?|笔画|三才|格.*不符",
+        message,
+    ):
+        return "fact"
+    return "other"
+
+
 def turn_row(scenario, index, question, outcome, events, runtime, latency) -> dict:
     own = runtime.session.id
     calls = [r for r in events if r["event"] == "tool_result"]
@@ -207,6 +237,16 @@ def turn_row(scenario, index, question, outcome, events, runtime, latency) -> di
         submit_attempts=len(submits),
         submit_rejections=[r["result"].get("error") for r in submits if not r["result"]["ok"]],
         report_rejections=[r["result"].get("error") for r in reports if not r["result"]["ok"]],
+        rejection_details=[
+            dict(
+                tool=r["call"]["name"],
+                code=r["result"].get("code"),
+                category=rejection_category(r["result"]),
+                error=r["result"].get("error"),
+            )
+            for r in submits + reports
+            if not r["result"]["ok"]
+        ],
         reviews=[
             dict(verdict=r.get("verdict"), issues=r.get("issues"), notes=r.get("notes"))
             for r in events
@@ -218,6 +258,7 @@ def turn_row(scenario, index, question, outcome, events, runtime, latency) -> di
         model_calls=len(usage),
         input_tokens=sum(r.get("input_tokens") or 0 for r in usage),
         output_tokens=sum(r.get("output_tokens") or 0 for r in usage),
+        returned_models=sorted({r["returned_model"] for r in usage if r.get("returned_model")}),
         errors=[r["event"] for r in events if r["event"] in ("model_error", "limit_reached")],
         text=outcome.text,
         output=output,
@@ -232,6 +273,10 @@ async def run(args) -> Path:
         share_data(root, Path(args.data_from).resolve())
     create_runtime, build = load_code(root)
     work = workdir(root, out, build, args.provider, args.model, args.mode)
+    revision = subprocess.check_output(
+        ["git", "-C", str(root), "rev-parse", "HEAD"], text=True
+    ).strip()
+    dirty = bool(subprocess.check_output(["git", "-C", str(root), "status", "--porcelain"]))
     rows = []
     for scenario in SCENARIOS:
         runtime = create_runtime(
@@ -278,6 +323,8 @@ async def run(args) -> Path:
                             model=args.model,
                             anchor=ANCHOR,
                             seed=SEED,
+                            revision=revision,
+                            dirty=dirty,
                             rows=rows,
                         ),
                         ensure_ascii=False,
@@ -290,7 +337,10 @@ async def run(args) -> Path:
             trace_dir = runtime.tracer.user_dir(runtime.session.user_id)
             if trace_dir.exists():
                 shutil.copytree(trace_dir, out / "traces" / scenario["id"], dirs_exist_ok=True)
-            runtime.close()
+            try:
+                await runtime.close_model()
+            finally:
+                runtime.close()
     return out
 
 
@@ -305,6 +355,19 @@ def summarize(rows) -> dict:
         avg_evidence_share=round(sum(r["evidence_share"] or 0 for r in done) / count, 3),
         layered_turns=sum(r["sections"] >= 2 for r in done),
         rejections=sum(len(r["submit_rejections"]) + len(r["report_rejections"]) for r in rows),
+        **{
+            f"{category}_rejections": sum(
+                detail["category"] == category
+                for row in rows
+                for detail in row.get("rejection_details", [])
+            )
+            for category in REJECTION_CATEGORIES
+        },
+        unclassified_legacy_rejections=sum(
+            len(r["submit_rejections"]) + len(r["report_rejections"])
+            for r in rows
+            if "rejection_details" not in r
+        ),
         resubmitted_turns=sum(r["submit_attempts"] > 1 for r in rows),
         review_revise=sum(any(v["verdict"] == "revise" for v in r["reviews"]) for r in rows),
         followup_recompute=sum(bool(r["recomputed"]) for r in rows if r["turn"] > 1),

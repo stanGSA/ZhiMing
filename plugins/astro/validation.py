@@ -176,10 +176,12 @@ def validate_output(reading, state):
         assertions = list(aspect_assertions(text))
         for position, source, target, aspect in assertions:
             when = preceding_event_date(text, position)
-            is_transit = bool(cited or temporal or when or "行运" in text)
+            kind = relation_kind(text, position)
+            is_transit = kind != "本命" and bool(cited or temporal or when or "行运" in text)
             if not is_transit:
                 if not natal_aspect(natal, source, target, aspect):
                     return "本命行星相位与本次计算不符"
+                matching = []
                 continue
             matching = same_event([cited] if cited else events, source, target, aspect)
             if not matching:
@@ -204,7 +206,9 @@ def validate_output(reading, state):
 
 
 # A date-only sentence speaks about the event under discussion when it names the aspect itself.
-EVENT_DATE_CONTEXT = re.compile(r"相位|行运|精确|容许度")
+EVENT_DATE_CONTEXT = re.compile(
+    r"相位|行运|精确|容许度|发生(?:在|于)|出现在|日期(?:为|是)|时间(?:为|是)"
+)
 
 
 def trailing_event_date(text, assertions):
@@ -278,6 +282,22 @@ def bound_dates(clause, assertions):
         yield item, [when for at, when in dates if low < at < item[0] or (last and at > item[0])]
 
 
+def relation_kind(text, position):
+    """An explicit marker on the source planet overrides the paragraph's default.
+
+    The target's “本命” in “行运木星拱本命太阳” does not make it a natal relation.
+    """
+    match = re.search(r"(本命|行运)(?:盘)?(?:中的?|的)?\s*[：:]?\s*$", text[:position])
+    return match[1] if match else None
+
+
+def date_only(clause):
+    """A date introduction, not a calendar explanation or an action scheduled by the user."""
+    return bool(DATE.search(clause)) and not re.sub(
+        r"UTC|当地|北京时间|[\s在于（()）]", "", DATE.sub("", clause)
+    )
+
+
 def check_section(title, body, refs, event_refs, events, natal):
     """Check one analysis layer against the transit events it cites, clause by clause.
 
@@ -290,23 +310,32 @@ def check_section(title, body, refs, event_refs, events, natal):
     transit_layer = bool(cited) or "行运" in title
     pool = cited or events
     current = []
+    current_kind = None
     sentences = [title, *re.split(r"[。；;！!？?\n]", body)]
     for sentence in (normalize_positions(s) for s in sentences if s.strip()):
-        said_transit = "行运" in sentence
-        for clause in (c for c in re.split(r"[，,：:]", sentence) if c.strip()):
+        pending_dates = []
+        # Keep colons (time stamps and labels) within their clause. Commas can separate
+        # a date introduction from its relation, so carry that date to the next clause.
+        clauses = [c for c in re.split(r"[，,]", sentence) if c.strip()]
+        for index, clause in enumerate(clauses):
             assertions = list(aspect_assertions(clause))
-            for (_, source, target, aspect), dates in bound_dates(clause, assertions):
-                explicit = bool(dates or said_transit)
+            for (position, source, target, aspect), dates in bound_dates(clause, assertions):
+                if position == assertions[0][0]:
+                    dates = pending_dates + dates
+                kind = relation_kind(clause, position)
+                explicit = bool(dates or kind == "行运")
                 natal_ok = natal_aspect(natal, source, target, aspect)
-                if not (explicit or transit_layer):
+                if kind == "本命" or not (explicit or transit_layer):
                     if not natal_ok:
                         return "本命行星相位与本次计算不符"
+                    current, current_kind = [], "本命"
                     continue
                 found = same_event(pool, source, target, aspect)
                 if not found:
                     # A natal relation may sit in a transit layer when the sentence does not
                     # say it is a transit.
                     if natal_ok and not explicit:
+                        current, current_kind = [], "本命"
                         continue
                     return (
                         "段落中的行运相位须匹配本段ref_ids引用的计算事件"
@@ -315,12 +344,27 @@ def check_section(title, body, refs, event_refs, events, natal):
                     )
                 if any(not on_date(found, when) for when in dates):
                     return "行运日期与所述相位不符，不能编造或混用UTC与当地日期"
-                current = found
-            if not assertions and (current or cited) and EVENT_DATE_CONTEXT.search(clause):
-                for match in DATE.finditer(clause):
-                    if not on_date(current or cited, date_value(clause, match, len(clause))):
-                        return "行运日期与引用事件不符"
-            error = orb_error(clause, current or cited)
+                current, current_kind = found, "行运"
+            if assertions:
+                pending_dates = []
+            else:
+                dates = [date_value(clause, m, len(clause)) for m in DATE.finditer(clause)]
+                next_has_relation = index + 1 < len(clauses) and bool(
+                    list(aspect_assertions(clauses[index + 1]))
+                )
+                if date_only(clause) and next_has_relation:
+                    pending_dates = dates
+                else:
+                    pending_dates = []
+                    bound = current or (cited if current_kind != "本命" else [])
+                    if bound and (
+                        EVENT_DATE_CONTEXT.search(clause)
+                        or (date_only(clause) and index + 1 == len(clauses))
+                    ):
+                        if any(not on_date(bound, when) for when in dates):
+                            return "行运日期与引用事件不符"
+            bound = current or (cited if current_kind != "本命" else [])
+            error = orb_error(clause, bound)
             if error:
                 return error
     return None
