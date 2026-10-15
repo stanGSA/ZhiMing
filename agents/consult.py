@@ -3,12 +3,14 @@
 import asyncio
 import json
 import time
+from copy import deepcopy
 from types import SimpleNamespace
 
 from pydantic import ValidationError
 
 from agents.schemas import ConsultInput, SpecialistReport
 from agents.specialists import CONTINUE_PROMPT, SpecialistSpec
+from common.validation import report_matches_profile
 from harness.loop import CURRENT_CALL_ID, run_turn
 from harness.models import ToolResult, TurnOutcome
 from harness.registry import Tool
@@ -141,6 +143,36 @@ class ConsultService:
         self.timeout = limits.get("specialist_timeout_s", 120)
         self.reserve = limits.get("orchestrator_reserve_tokens", 30000)
         self.semaphore = asyncio.Semaphore(limits.get("max_parallel_specialists", 3))
+
+    def preserve_facts(self, spec: SpecialistSpec, child, parent: dict) -> None:
+        """Checkpoint non-repeatable facts independently of reports and batch commit.
+
+        A completed draw must survive cancellation of its report or a sibling consultation.
+        Retried reports may create no new tool messages, so retain their previous projection.
+        """
+        if spec.repeatable:
+            return
+        own = [s for s in child.state["signals"] if s["system"] == spec.system]
+        if not own:
+            return
+        facts = parent.setdefault("specialist_facts", {})
+        results = {r["tool"]: r for r in facts.get(spec.system, {}).get("results", [])}
+        results.update({r["tool"]: r for r in computed_results(child, spec)})
+        facts[spec.system] = deepcopy(
+            dict(
+                signals=own,
+                allowed_refs=set(child.state["allowed_refs"]),
+                kb_refs=set(child.state["kb_refs"]),
+                facts=list(child.state["facts"]),
+                calculations=dict(child.state.get("calculations", {})),
+                values={
+                    k: child.state[k]
+                    for k in SINGLE_VALUE_KEYS
+                    if child.state.get(k) is not None and k not in ("timeframe", "timeframe_tz")
+                },
+                results=list(results.values()),
+            )
+        )
 
     def tool(self) -> Tool:
         names = "、".join(f"{s.system}（{s.label}）" for s in self.specs.values())
@@ -305,6 +337,7 @@ class ConsultService:
             tokens=child.total_tokens,
             model_calls=child.model_calls,
             profile_version=child.profile.get("version", 0),
+            profile_dependencies={field: child.profile.get(field) for field in spec.profile_fields},
         )
         if outcome.status == "submit_report":
             own = [s for s in child.state["signals"] if s["system"] == spec.system]
@@ -362,6 +395,12 @@ class ConsultService:
         inflight.add(args.system)
         child = self.spawn(spec, args, session)
         brief = self.brief(spec, args, session)
+
+        def on_result(call, result):
+            if result.ok:
+                self.preserve_facts(spec, child, state)
+            return stop_on_needs_input(call, result)
+
         # The child's trace exists from the start, so a timeout before its first model
         # response still leaves a complete call tree.
         self.tracer.log(child, "session_started", system=spec.system)
@@ -396,7 +435,7 @@ class ConsultService:
                             self.token_budget,
                             as_evidence=False,
                             admission=True,
-                            on_tool_result=stop_on_needs_input,
+                            on_tool_result=on_result,
                         ),
                         self.timeout,
                     )
@@ -421,6 +460,9 @@ class ConsultService:
             )
             raise
         finally:
+            # Also cover cancellation before a result is returned to the parent, and a
+            # completed sibling whose batch is cancelled before its ordered commit.
+            self.preserve_facts(spec, child, state)
             inflight.discard(args.system)
         now = time.perf_counter()
         report = self.report(
@@ -437,28 +479,10 @@ class ConsultService:
             tokens=report.tokens,
             model_calls=report.model_calls,
         )
-        kept = None
-        if not spec.repeatable and report.status != "ok":
-            own = [s for s in child.state["signals"] if s["system"] == spec.system]
-            if own:
-                kept = dict(
-                    signals=own,
-                    allowed_refs=set(child.state["allowed_refs"]),
-                    kb_refs=set(child.state["kb_refs"]),
-                    facts=list(child.state["facts"]),
-                    calculations=dict(child.state.get("calculations", {})),
-                    values={
-                        k: child.state[k]
-                        for k in SINGLE_VALUE_KEYS
-                        if child.state.get(k) is not None and k not in ("timeframe", "timeframe_tz")
-                    },
-                    results=computed_results(child, spec),
-                )
         return ToolResult(
             data={
                 "report": report.model_dump(mode="json"),
                 "_child_state": child.state if report.status == "ok" else None,
-                "_kept_facts": kept,
                 "_cache_key": key,
             }
         )
@@ -473,7 +497,6 @@ class ConsultService:
         state = session.state
         data = dict(result.data)
         child_state = data.pop("_child_state", None)
-        kept = data.pop("_kept_facts", None)
         key = data.pop("_cache_key", None)
         report = data["report"]
         system = report["system"]
@@ -497,14 +520,11 @@ class ConsultService:
                 reports[system] = report
                 data["report"] = report
                 return result.model_copy(update={"data": data})
-        if kept:
-            state.setdefault("specialist_facts", {})[system] = kept
         previous = reports.get(system)
-        current_version = session.profile.get("version", 0)
         if (
             previous
             and previous["status"] == "ok"
-            and previous.get("profile_version", 0) == current_version
+            and report_matches_profile(previous, session.profile)
         ):
             data["report"] = {**report, "retained_previous": True}
         else:

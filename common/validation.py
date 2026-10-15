@@ -6,6 +6,14 @@ from common.safety import CRISIS as CRISIS  # Backwards-compatible public import
 HIGH_RISK = re.compile(r"疾病|癌|诊断|停药|治疗|健康|投资|股票|基金|借贷|法律|诉讼|判刑|死亡|寿命")
 
 
+def report_matches_profile(report: dict, profile: dict) -> bool:
+    """Compare the fields the expert actually depends on; older reports use their version."""
+    dependencies = report.get("profile_dependencies")
+    if dependencies is None:
+        return report.get("profile_version", 0) == profile.get("version", 0)
+    return all(profile.get(field) == value for field, value in dependencies.items())
+
+
 def validate_reading(reading, session) -> str | None:
     state = session.state
     if not state.get("tarot_result") and not state.get("calculations"):
@@ -54,7 +62,11 @@ def validate_reading(reading, session) -> str | None:
     # Failure isolation: an unavailable specialist may be skipped, never silently. A
     # follow-up answers from the stored reading, whose disclosure was made when it was saved.
     for system, report in (state.get("specialist_reports") or {}).items():
-        if report["status"] == "ok" or state.get("response_mode") == "followup":
+        if state.get("response_mode") == "followup":
+            continue
+        if report["status"] == "ok":
+            if not report_matches_profile(report, session.profile):
+                return f"{report['label']}所需画像已更正，须重新咨询该专家后再提交"
             continue
         if system in reading.systems_used:
             return f"{report['label']}专家没有有效报告，systems_used不能包含{system}"

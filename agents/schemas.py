@@ -56,7 +56,9 @@ class SpecialistReport(BaseModel):
     queue_ms: float = 0.0
     tokens: int
     model_calls: int
-    # Profile version the specialist saw; a later profile change makes the result stale.
+    # Snapshots are populated by the service, never written by the model. The version is a
+    # conservative fallback for older reports without field-level dependencies.
     profile_version: int = 0
+    profile_dependencies: dict[str, Any] | None = None
     # Set when a retry failed but this system's earlier valid report was kept.
     retained_previous: bool = False
