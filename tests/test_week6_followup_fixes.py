@@ -125,7 +125,7 @@ async def name_draft(runtime):
     )
 
 
-@pytest.mark.parametrize("hidden", ["confidence", "safety", "followups", "resonances"])
+@pytest.mark.parametrize("hidden", ["confidence", "safety", "followups"])
 async def test_name_disclosure_must_be_in_rendered_text(runtime, hidden):
     value = await name_draft(runtime)
     if hidden == "confidence":
@@ -141,6 +141,17 @@ async def test_name_disclosure_must_be_in_rendered_text(runtime, hidden):
     assert accepted.ok and EXPLAIN in accepted.data["text"]
     stored = runtime.store.get_reading(runtime.session.user_id, accepted.data["reading_id"])
     assert EXPLAIN in render_reading(stored["output_json"])
+
+
+@pytest.mark.parametrize("shown", ["resonances", "sections"])
+async def test_name_disclosure_in_rendered_analysis_is_accepted(runtime, shown):
+    value = await name_draft(runtime)
+    if shown == "sections":
+        value[shown] = [{"title": "笔画写法", "body": EXPLAIN, "ref_ids": []}]
+    else:
+        value[shown] = [EXPLAIN]
+    accepted = await invoke(runtime, "submit_reading", value)
+    assert accepted.ok and EXPLAIN in accepted.data["text"]
 
 
 @pytest.mark.parametrize(

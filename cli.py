@@ -9,6 +9,7 @@ import typer
 from rich.console import Console
 
 from app import ROOT, create_runtime
+from common.tools import render_evidence
 
 cli = typer.Typer(help="知命：第一周塔罗 Agent 原型。支持真实模型及 demo 离线演示。")
 console = Console()
@@ -69,7 +70,7 @@ def chat(
     seed: int | None = None,
     mode: Annotated[str | None, typer.Option(help="single 或 multi；默认读取 config.yaml")] = None,
 ):
-    """多轮对话；支持 /profile、/new、/redraw、/forget、/quit。"""
+    """多轮对话；支持 /profile、/evidence、/new、/redraw、/forget、/quit。"""
     try:
         runtime = create_runtime(
             user_id=user, provider=provider, model_name=model, seed=seed, mode=mode
@@ -93,6 +94,13 @@ def chat(
             if text == "/profile":
                 console.print(
                     json.dumps(runtime.store.get_profile(user), ensure_ascii=False), markup=False
+                )
+                continue
+            if text == "/evidence":
+                output = runtime.session.state.get("output")
+                console.print(
+                    render_evidence(output) if output else "当前还没有已提交的解读。",
+                    markup=False,
                 )
                 continue
             if text == "/forget":

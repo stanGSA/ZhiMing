@@ -61,7 +61,7 @@ class BaziPlugin(MeaningPlugin):
         self.tools = [
             Tool(
                 "compute_bazi",
-                "排八字三/四柱、十神五行藏干纳音大运。缺时辰仅三柱、缺性别不排大运；农历须确认及闰月明确，MVP不判喜用神。needs_input须ask_user。",
+                "排八字三/四柱、十神五行藏干纳音大运。缺时辰仅三柱、缺性别不排大运；农历须确认及闰月明确；程序不计算喜用神。needs_input须ask_user。",
                 BaziInput,
                 self.compute,
                 partition="bazi",

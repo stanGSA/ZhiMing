@@ -106,9 +106,7 @@ async def test_cannot_restart_unfinished_draw_without_user_request(runtime):
         "undrawn_card",
         "fake_bazi",
         "fake_astro",
-        "confidence",
         "orientation",
-        "unsupported_system",
     ],
 )
 async def test_output_validation_rejects_fabrications(runtime, mutation):
@@ -122,13 +120,22 @@ async def test_output_validation_rejects_fabrications(runtime, mutation):
         draft["summary"] = "日柱甲子，适合行动。"
     elif mutation == "fake_astro":
         draft["summary"] = "太阳在白羊座，适合行动。"
-    elif mutation == "confidence":
-        draft["confidence"]["level"] = "high"
-    elif mutation == "orientation":
-        draft["evidence"][0]["reading"] = "【月亮】正位。"
     else:
-        draft["systems_used"] = ["bazi", "tarot"]
+        draft["evidence"][0]["reading"] = "【月亮】正位。"
     assert validate_reading(Reading.model_validate(draft), runtime.session)
+
+
+async def test_output_metadata_is_corrected_from_the_session(runtime):
+    # Confidence and systems_used come from what was computed; code fixes them in place.
+    outcome = await runtime.turn("看看近期状态")
+    draft = copy.deepcopy(outcome.data["reading"])
+    draft["confidence"] = {"level": "high", "reason": ""}
+    draft["systems_used"] = ["bazi", "tarot"]
+    reading = Reading.model_validate(draft)
+    assert validate_reading(reading, runtime.session) is None
+    assert reading.systems_used == ["tarot"]
+    assert reading.confidence.level == "low"
+    assert "审核" in reading.confidence.reason
 
 
 async def test_guard_rejection_can_be_repaired(runtime):

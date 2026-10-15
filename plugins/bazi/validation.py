@@ -1,12 +1,24 @@
+"""Bazi output checks: every 干支 and pillar must come from this reading's calculations.
+
+Whether the answer repeats a computed fact the question asked for (日主, 起运日期, 首步大运) is
+recorded as a warning, not a rejection. 喜用神 and 补五行 advice are allowed as traditional
+inference; the prompts ask for them to be argued from the computed chart.
+"""
+
 import re
+
+from common.facts import section_texts
+from common.output_policy import warn
 
 
 def validate_output(reading, state):
     text = " ".join(
         [
             reading.summary,
+            *section_texts(reading),
             *[e.reading for e in reading.evidence],
             *reading.advice,
+            reading.closing,
             *[t.period + " " + t.note for t in reading.timeline],
             *reading.resonances,
             *[t.how_to_read for t in reading.tensions],
@@ -20,7 +32,7 @@ def validate_output(reading, state):
     question = state.get("question", "")
     if bazi:
         if "日主" in question and bazi.get("day_master") and bazi["day_master"] not in text:
-            return "原问题要求说明日主，最终回答不能遗漏"
+            warn(state, "原问题要求说明日主，回答中没有写出")
         dayun = bazi.get("dayun")
         if state.get("response_mode") != "followup" and re.search(
             r"起运日期|起运时间|什么时候.*(?:起运|走大运)|何时.*(?:起运|走大运)", question
@@ -29,16 +41,16 @@ def validate_output(reading, state):
                 date = dayun["start_solar"]
                 year, month, day = map(int, date.split("-"))
                 if date not in text and f"{year}年{month}月{day}日" not in text:
-                    return "原问题要求起运日期，须准确说明计算出的日期"
+                    warn(state, "原问题要求起运日期，回答中没有写出计算出的日期")
             elif not re.search(r"未提供|未知|无法|不能|不排", text):
-                return "无法排大运时须明确原因"
+                warn(state, "无法排大运时宜说明原因")
         if (
             state.get("response_mode") != "followup"
             and re.search(r"首步大运|首运|第一步大运", question)
             and dayun
             and dayun["sequence"][0]["ganzhi"] not in text
         ):
-            return "原问题要求首步大运，最终回答不能遗漏"
+            warn(state, "原问题要求首步大运，回答中没有写出")
     periods = (state.get("bazi_period_result") or {}).get("periods", [])
     gz = set(g for g in bazi.get("pillars", {}).values() if g)
     for candidate in bazi.get("alternatives", []):
@@ -70,8 +82,4 @@ def validate_output(reading, state):
         and re.search(r"时柱(?:是|为|：|:|\s*[甲乙丙丁戊己庚辛壬癸])", text)
     ):
         return "出生时辰未知，禁止编造时柱"
-    if bazi and re.search(
-        r"(?:喜用神|用神)(?:是|为|：|:)|(?:喜|忌)[木火土金水].{0,5}(?:补|佩戴|颜色)", text
-    ):
-        return "MVP不下喜用神结论"
     return None

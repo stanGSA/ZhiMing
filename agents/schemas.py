@@ -34,7 +34,12 @@ class ReportPoint(StrictInput):
 class ReportInput(StrictInput):
     """What a specialist may write; signals are attached by the harness afterwards."""
 
-    answer: str = Field(min_length=1, max_length=120)
+    answer: str = Field(min_length=1, max_length=300)
+    analysis: str = Field(
+        default="",
+        max_length=1500,
+        description="本体系内的推演：各计算事实之间的作用关系、挑战与机遇、应对",
+    )
     points: list[ReportPoint] = Field(min_length=1, max_length=12)
     missing: list[str] = Field(default_factory=list)
     confidence: Confidence
@@ -45,6 +50,7 @@ class SpecialistReport(BaseModel):
     label: str
     status: Literal["ok", "needs_input", "failed"]
     answer: str = ""
+    analysis: str = ""
     points: list[ReportPoint] = Field(default_factory=list)
     missing: list[str] = Field(default_factory=list)
     confidence: Confidence | None = None
