@@ -38,6 +38,26 @@ PR #5 合并后的日期恢复、解梦来源与输出检查、姓名歧义可�
 
 网页接口与行政区测试（全部离线）：`& .\.venv\Scripts\python.exe -m pytest tests/test_web.py tests/test_regions.py -q`。
 
+### 给朋友临时体验
+
+安装 [Cloudflare Tunnel 客户端](https://developers.cloudflare.com/cloudflare-one/connections/connect-networks/downloads/)，将 `cloudflared` 加入 PATH，或在 Windows 下将官方程序保存为 `.bootstrap/cloudflared.exe`。已有本地环境和知识库后运行：
+
+```powershell
+& .\.venv\Scripts\python.exe -X utf8 -m scripts.share_web
+```
+
+程序在本机 `8766` 端口启动独立的体验服务，申请随机 HTTPS 地址。链接、用户名 `friend` 和随机访问口令保存在本地 `reports/web-share/invitation.txt`，将这些信息发给朋友即可。浏览器会提示输入用户名和口令；页面、静态资源和 API 均需要验证。口令不放进网址或 Git，默认本机 `8765` 启动方式不变。没有新增调用次数或费用限额，真实解读使用分享者配置的模型和额度，原有会话容量与模型执行预算仍然有效。
+
+电脑需要保持开机联网、避免休眠；隧道重启会生成新链接和口令。此方式用于临时体验，公网连通性取决于双方网络及隧道服务，启动提示后应从外网实际测试。出生资料与聊天记录保存在分享者电脑上，真实解读会发送相关内容到所配置的模型服务。当前没有账号和跨设备同步，重启后不会自动恢复旧浏览器身份。
+
+在运行窗口按 Ctrl+C，或在另一个终端执行下面的命令，可同时关闭体验服务和隧道：
+
+```powershell
+& .\.venv\Scripts\python.exe -X utf8 -m scripts.share_web --stop
+```
+
+运行日志位于 `reports/web-share/`，目录已被 Git 忽略。分享相关离线测试：`& .\.venv\Scripts\python.exe -m pytest tests/test_web.py tests/test_web_share.py tests/test_regions.py -q`。
+
 ### 命令行与首次安装
 
 在项目目录运行一次：

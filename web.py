@@ -3,6 +3,8 @@
 from __future__ import annotations
 
 import asyncio
+import base64
+import binascii
 import logging
 import secrets
 import time
@@ -12,6 +14,7 @@ from datetime import date as CalendarDate
 from datetime import datetime
 from pathlib import Path
 from typing import Literal
+from urllib.parse import urlsplit
 from zoneinfo import ZoneInfo
 
 from fastapi import FastAPI, HTTPException, Request, Response
@@ -167,7 +170,35 @@ class BrowserSession:
     touched: float = field(default_factory=time.monotonic)
 
 
-def create_web_app(root: Path = ROOT, runtime_factory=create_runtime) -> FastAPI:
+def create_web_app(
+    root: Path = ROOT,
+    runtime_factory=create_runtime,
+    *,
+    public_origin: str | None = None,
+    share_password: str | None = None,
+) -> FastAPI:
+    """Keep local access as the default; sharing requires an exact HTTPS origin and password."""
+    if (public_origin is None) != (share_password is None):
+        raise ValueError("分享模式必须同时配置 HTTPS 地址和访问口令")
+    allowed_hosts = ["127.0.0.1", "localhost", "testserver"]
+    if public_origin is not None:
+        public_origin = public_origin.rstrip("/")
+        parsed = urlsplit(public_origin)
+        if (
+            parsed.scheme != "https"
+            or not parsed.hostname
+            or parsed.username is not None
+            or parsed.password is not None
+            or parsed.path
+            or parsed.query
+            or parsed.fragment
+            or parsed.port not in (None, 443)
+            or "*" in parsed.netloc
+            or len(share_password or "") < 16
+        ):
+            raise ValueError("分享地址必须为 HTTPS 域名，访问口令至少 16 个字符")
+        allowed_hosts.append(parsed.hostname)
+    share_credentials = f"friend:{share_password}".encode() if share_password else None
     sessions: dict[str, BrowserSession] = {}
 
     async def close(session):
@@ -195,15 +226,31 @@ def create_web_app(root: Path = ROOT, runtime_factory=create_runtime) -> FastAPI
         sessions.clear()
 
     app = FastAPI(title="知命", lifespan=lifespan, docs_url=None, redoc_url=None)
-    app.add_middleware(
-        TrustedHostMiddleware, allowed_hosts=["127.0.0.1", "localhost", "testserver"]
-    )
+    app.add_middleware(TrustedHostMiddleware, allowed_hosts=allowed_hosts)
 
     @app.middleware("http")
     async def local_requests(request: Request, call_next):
+        if share_credentials is not None:
+            scheme, _, token = request.headers.get("authorization", "").partition(" ")
+            try:
+                credentials = base64.b64decode(token, validate=True)
+            except (ValueError, binascii.Error):
+                credentials = b""
+            if scheme.lower() != "basic" or not secrets.compare_digest(
+                credentials, share_credentials
+            ):
+                return JSONResponse(
+                    {"detail": "请输入朋友体验的用户名和访问口令"},
+                    status_code=401,
+                    headers={
+                        "WWW-Authenticate": 'Basic realm="ZhiMing Friends", charset="UTF-8"',
+                        "Cache-Control": "no-store",
+                    },
+                )
         if request.method not in ("GET", "HEAD", "OPTIONS"):
             origin = request.headers.get("origin")
-            if origin and origin != str(request.base_url).rstrip("/"):
+            expected_origin = public_origin or str(request.base_url).rstrip("/")
+            if origin and origin != expected_origin:
                 return JSONResponse({"detail": "请从知命页面发起请求"}, status_code=403)
             if request.headers.get("x-zhiming-client") != "web":
                 return JSONResponse({"detail": "请求来源无效"}, status_code=403)
@@ -263,7 +310,14 @@ def create_web_app(root: Path = ROOT, runtime_factory=create_runtime) -> FastAPI
             user_id = "web-" + secrets.token_hex(16)
             session = BrowserSession(user_id, build(user_id, provider), provider)
             sessions[key] = session
-            response.set_cookie(COOKIE, key, httponly=True, samesite="strict", max_age=MAX_IDLE)
+            response.set_cookie(
+                COOKIE,
+                key,
+                httponly=True,
+                secure=public_origin is not None,
+                samesite="strict",
+                max_age=MAX_IDLE,
+            )
         session.touched = time.monotonic()
         return state(session)
 
@@ -455,5 +509,18 @@ if __name__ == "__main__":
 
     parser = argparse.ArgumentParser(description="知命 · 本地网页版")
     parser.add_argument("--port", type=int, default=8765)
+    parser.add_argument("--public-origin", help="朋友体验的 HTTPS 地址（不含路径）")
+    parser.add_argument("--share-password-file", type=Path, help="本地访问口令文件")
     args = parser.parse_args()
-    uvicorn.run(create_web_app(), host="127.0.0.1", port=args.port)
+    password = (
+        args.share_password_file.read_text(encoding="utf-8").strip()
+        if args.share_password_file
+        else None
+    )
+    uvicorn.run(
+        create_web_app(public_origin=args.public_origin, share_password=password),
+        host="127.0.0.1",
+        port=args.port,
+        proxy_headers=True,
+        forwarded_allow_ips="127.0.0.1",
+    )
