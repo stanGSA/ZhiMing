@@ -119,6 +119,8 @@ async def run_turn(
             output_tokens=response.output_tokens if response.usage_available else None,
             usage_available=response.usage_available,
             cached_input_tokens=response.cached_input_tokens,
+            reasoning_tokens=response.reasoning_tokens,
+            finish_reason=response.finish_reason,
             requested_model=getattr(model, "model", None),
             returned_model=response.model,
             tool_names=[c.name for c in response.tool_calls],
@@ -133,32 +135,20 @@ async def run_turn(
             return timed_out(step)  # A response that arrives after the deadline is not acted on.
         if budget.overdrawn():
             break  # Do not execute side effects from an over-budget response.
+        if response.finish_reason == "length":
+            tracer.log(session, "output_truncated", step=step)
+            return TurnOutcome(
+                status="output_truncated",
+                text="模型输出达到单次上限，尚未形成完整结果；请缩小问题范围或调整输出上限。",
+            )
         if not response.tool_calls:
             if session.state.get("active_reading_id") and not session.state.get("complete"):
-                session.messages.append({"role": "assistant", "content": response.text})
+                session.messages.append(response.assistant_message())
                 session.messages.append({"role": "user", "content": session.continue_prompt})
                 continue
-            session.messages.append({"role": "assistant", "content": response.text})
+            session.messages.append(response.assistant_message())
             return TurnOutcome(status="text", text=response.text)
-        session.messages.append(
-            {
-                "role": "assistant",
-                "content": response.text or None,
-                "tool_calls": [
-                    {
-                        "id": c.id,
-                        "type": "function",
-                        "function": {
-                            "name": c.name,
-                            "arguments": c.raw_arguments
-                            if c.argument_error
-                            else json.dumps(c.arguments, ensure_ascii=False),
-                        },
-                    }
-                    for c in response.tool_calls
-                ],
-            }
-        )
+        session.messages.append(response.assistant_message())
         terminal = None
         calls = response.tool_calls
         answered = 0

@@ -1,13 +1,22 @@
 mode: single                # single | multi；第4周关口通过前默认仍为 single
 llm:
-  provider: openai
-  model: gpt-6.1-sol
+  provider: deepseek
+  model: deepseek-flash
   timeout_s: 90
-  system_role: developer
+  system_role: system
+  deepseek:
+    thinking: disabled
 models:
-  orchestrator: gpt-6.1-sol
-  specialist: gpt-6.1-sol
-  reviewer: gpt-6.1-sol           # 可换更小的模型；未设置时沿用 specialist
+  orchestrator: deepseek-flash
+  specialist: deepseek-flash
+  reviewer: deepseek-flash
+model_options:
+  orchestrator:
+    max_tokens: 8192
+  specialist:
+    max_tokens: 4096
+  reviewer:
+    max_tokens: 2048
 limits:
   orchestrator_max_steps: 12
   request_token_budget: 180000

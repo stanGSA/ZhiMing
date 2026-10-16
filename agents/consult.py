@@ -21,6 +21,7 @@ FAILURES = {
     "limit_reached": "专家达到步数或预算上限，未提交有效报告",
     "model_error": "专家模型调用失败",
     "usage_unavailable": "模型服务未返回用量",
+    "output_truncated": "专家输出达到单次上限，未提交完整报告",
     "error": "专家执行异常",
     "text": "专家未提交结构化报告",
 }

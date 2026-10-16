@@ -97,6 +97,8 @@ class Runtime:
                     input_tokens=result.input_tokens,
                     output_tokens=result.output_tokens,
                     cached_input_tokens=result.cached_input_tokens,
+                    reasoning_tokens=result.reasoning_tokens,
+                    finish_reason=result.finish_reason,
                     requested_model=getattr(self.model, "model", None),
                     returned_model=result.model,
                     tool_names=[],
@@ -172,20 +174,30 @@ class Runtime:
                 await close()
 
 
-def build_model(provider: str, model_name: str | None, config: dict, spread: str | None):
+def build_model(
+    provider: str,
+    model_name: str | None,
+    config: dict,
+    spread: str | None,
+    role: str = "orchestrator",
+):
     if provider == "demo":
         return DemoModel(spread)
-    if provider in ("openai", "anthropic"):
+    if provider in ("openai", "deepseek", "anthropic"):
         if not model_name:
             raise ValueError("真实模型接入必须通过 --model 或 config.yaml 指定模型名")
-        adapter = OpenAIModel if provider == "openai" else AnthropicModel
+        adapter = AnthropicModel if provider == "anthropic" else OpenAIModel
         options = (
             {"system_role": config["llm"].get("system_role", "system")}
-            if provider == "openai"
+            if provider in ("openai", "deepseek")
             else {}
         )
+        if provider == "deepseek":
+            settings = dict(config["llm"].get("deepseek") or {})
+            settings.update((config.get("model_options") or {}).get(role) or {})
+            options.update(provider=provider, **settings)
         return adapter(model_name, config["llm"].get("timeout_s", 30), **options)
-    raise ValueError("provider 必须是 demo、openai 或 anthropic")
+    raise ValueError("provider 必须是 demo、deepseek、openai 或 anthropic")
 
 
 def create_runtime(
@@ -232,17 +244,15 @@ def create_runtime(
     if mode == "multi" and specialist_model is None:
         # An injected (scripted) or demo model also serves the specialists; it can route by
         # the session's role and tool table.
-        if injected or provider == "demo" or specialist_name == model_name:
+        if injected or provider == "demo":
             specialist_model = model
         else:
-            specialist_model = build_model(provider, specialist_name, config, spread)
+            specialist_model = build_model(provider, specialist_name, config, spread, "specialist")
     if reviewing and reviewer_model is None:
-        if injected or provider == "demo" or reviewer_name == model_name:
+        if injected or provider == "demo":
             reviewer_model = model
-        elif reviewer_name == specialist_name:
-            reviewer_model = specialist_model
         else:
-            reviewer_model = build_model(provider, reviewer_name, config, spread)
+            reviewer_model = build_model(provider, reviewer_name, config, spread, "reviewer")
     kb = KnowledgeBase(root / config["kb"]["path"])
     store = Store(root / config["paths"]["app_db"])
     session = Session(user_id=user_id, default_seed=seed, profile=store.get_profile(user_id))

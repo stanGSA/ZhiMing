@@ -33,6 +33,32 @@ class ModelResponse(BaseModel):
     output_tokens: int = 0
     cached_input_tokens: int | None = None
     usage_available: bool = True
+    reasoning_content: str | None = None
+    reasoning_tokens: int | None = None
+    finish_reason: str | None = None
+
+    def assistant_message(self) -> dict[str, Any]:
+        """Preserve provider reasoning on every model message, including text-only turns."""
+        import json
+
+        message: dict[str, Any] = {"role": "assistant", "content": self.text or None}
+        if self.reasoning_content is not None:
+            message["reasoning_content"] = self.reasoning_content
+        if self.tool_calls:
+            message["tool_calls"] = [
+                {
+                    "id": c.id,
+                    "type": "function",
+                    "function": {
+                        "name": c.name,
+                        "arguments": c.raw_arguments
+                        if c.argument_error
+                        else json.dumps(c.arguments, ensure_ascii=False),
+                    },
+                }
+                for c in self.tool_calls
+            ]
+        return message
 
 
 class TurnOutcome(BaseModel):

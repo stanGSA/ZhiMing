@@ -167,7 +167,7 @@ def main():
     parser.add_argument("--mode", choices=["single", "multi"], default="single")
     parser.add_argument(
         "--provider",
-        choices=["demo", "openai", "anthropic"],
+        choices=["demo", "deepseek", "openai", "anthropic"],
         default="demo",
         help="仅 reviewer：demo 为离线关键词基线",
     )

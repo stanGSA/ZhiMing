@@ -13,8 +13,7 @@ from pathlib import Path
 import yaml
 from dotenv import load_dotenv
 
-from app import ROOT, create_runtime
-from harness.llm import OpenAIModel
+from app import ROOT, build_model, create_runtime
 from knowledge.build import build
 from plugins.astro.tools import AstroPlugin
 from scripts.live_test import records
@@ -299,18 +298,24 @@ async def evaluate(output, selected=None, judge=True, natural=False, mode="singl
     ]
     runtimes = {}
     rows = []
+    config = yaml.safe_load((ROOT / "config.yaml").read_text(encoding="utf-8"))
+    model_name = config["models"]["orchestrator"]
     review_model = None
     if judge:
-        config = yaml.safe_load((ROOT / "config.yaml").read_text(encoding="utf-8"))
-        review_model = OpenAIModel("gpt-6.1-sol", 90, config["llm"].get("system_role", "system"))
+        review_model = build_model(
+            config["llm"]["provider"],
+            config["models"].get("reviewer") or model_name,
+            config,
+            None,
+            "reviewer",
+        )
     try:
         for case in cases:
             user_id = f"week23-{output.name}-{case.get('parent', case['id'])}"
             runtime = create_runtime(
                 root=workspace,
                 user_id=user_id,
-                provider="openai",
-                model_name="gpt-6.1-sol",
+                model_name=model_name,
                 mode=mode,
             )
             runtimes[case["id"]] = runtime
@@ -418,7 +423,7 @@ async def evaluate(output, selected=None, judge=True, natural=False, mode="singl
                         input_tokens=reply.input_tokens,
                         output_tokens=reply.output_tokens,
                         usage_available=reply.usage_available,
-                        requested_model="gpt-6.1-sol",
+                        requested_model=review_model.model,
                         returned_model=reply.model,
                     )
                 except Exception as exc:
@@ -507,7 +512,7 @@ async def evaluate(output, selected=None, judge=True, natural=False, mode="singl
     report = dict(
         run_id=output.name,
         mode=mode,
-        requested_model="gpt-6.1-sol",
+        requested_model=model_name,
         source_fingerprint=hashlib.sha256(
             json.dumps(source_hashes, sort_keys=True).encode()
         ).hexdigest(),

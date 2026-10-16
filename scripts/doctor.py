@@ -106,7 +106,7 @@ def diagnose(root: Path = ROOT, data_root: Path | None = None) -> dict:
                 "required": package not in ("openai", "anthropic"),
             }
         )
-    for key in ("OPENAI_API_KEY", "ANTHROPIC_API_KEY"):
+    for key in ("DEEPSEEK_API_KEY", "OPENAI_API_KEY", "ANTHROPIC_API_KEY"):
         checks.append(
             {
                 "name": key,
@@ -152,12 +152,20 @@ def probe_api(root: Path = ROOT) -> dict:
     import yaml
 
     load_dotenv(root / ".env")
-    model = yaml.safe_load((root / "config.yaml").read_text(encoding="utf-8"))["llm"]["model"]
-    key = os.getenv("OPENAI_API_KEY")
+    config = yaml.safe_load((root / "config.yaml").read_text(encoding="utf-8"))
+    model = (config.get("models") or {}).get("orchestrator") or config["llm"]["model"]
+    provider = config["llm"].get("provider", "openai")
+    if provider not in ("deepseek", "openai"):
+        return {"ok": False, "supported": False, "provider": provider}
+    key = os.getenv("DEEPSEEK_API_KEY" if provider == "deepseek" else "OPENAI_API_KEY")
     if not key:
         return {"ok": False, "configured": False}
     try:
-        base = os.getenv("OPENAI_BASE_URL", "https://api.openai.com/v1").rstrip("/")
+        base = (
+            (os.getenv("DEEPSEEK_BASE_URL") or "https://api.deepseek.com")
+            if provider == "deepseek"
+            else (os.getenv("OPENAI_BASE_URL") or "https://api.openai.com/v1")
+        ).rstrip("/")
         with httpx.Client(timeout=20) as client:
             response = client.get(base + "/models", headers={"Authorization": "Bearer " + key})
             available = response.status_code == 200 and any(

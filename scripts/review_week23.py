@@ -10,8 +10,7 @@ from pathlib import Path
 import yaml
 from dotenv import load_dotenv
 
-from app import ROOT
-from harness.llm import OpenAIModel
+from app import ROOT, build_model
 from plugins.astro.tools import AstroPlugin
 from scripts.live_week23 import RUBRIC
 
@@ -24,7 +23,9 @@ async def review(run, cases):
     data = json.loads(source.read_text(encoding="utf-8"))
     rows = data["results"] if isinstance(data, dict) else data
     config = yaml.safe_load((ROOT / "config.yaml").read_text(encoding="utf-8"))
-    model = OpenAIModel("gpt-6.1-sol", 90, config["llm"].get("system_role", "system"))
+    model = build_model(
+        config["llm"]["provider"], config["models"]["reviewer"], config, None, "reviewer"
+    )
     output = run / ("evidence-rereview-" + uuid.uuid4().hex[:8] + ".json")
     reviews = []
     try:
@@ -74,7 +75,7 @@ async def review(run, cases):
                 original_run=run.name,
                 original_quality_pass=row["quality_pass"],
                 review=verdict,
-                requested_model="gpt-6.1-sol",
+                requested_model=model.model,
                 returned_model=result.model,
                 input_tokens=result.input_tokens,
                 output_tokens=result.output_tokens,
