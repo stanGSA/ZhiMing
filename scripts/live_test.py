@@ -33,7 +33,9 @@ def records(runtime) -> list[dict]:
     )
 
 
-async def evaluate(model_name: str, output: Path) -> dict:
+async def evaluate(model_name: str | None, output: Path) -> dict:
+    config = yaml.safe_load((ROOT / "config.yaml").read_text(encoding="utf-8"))
+    model_name = model_name or config["models"]["orchestrator"]
     run_id = uuid.uuid4().hex[:12]
     output = output / run_id
     output.mkdir(parents=True, exist_ok=True)
@@ -41,7 +43,7 @@ async def evaluate(model_name: str, output: Path) -> dict:
 
     def new_runtime(suffix, user_id=None):
         runtime = create_runtime(
-            user_id=user_id or f"live-{run_id}-{suffix}", provider="openai", model_name=model_name
+            user_id=user_id or f"live-{run_id}-{suffix}", model_name=model_name
         )
         runtimes.append(runtime)
         return runtime
@@ -412,7 +414,7 @@ def main():
     parser = argparse.ArgumentParser(
         description="真实API严格测试，会产生模型用量；每次保留完整结果"
     )
-    parser.add_argument("--model", default="gpt-6.1-sol")
+    parser.add_argument("--model", default=None)
     parser.add_argument("--output", type=Path, default=ROOT / "reports/review-fix")
     args = parser.parse_args()
     report = asyncio.run(evaluate(args.model, args.output))

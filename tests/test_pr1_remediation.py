@@ -175,7 +175,7 @@ def test_prefixed_natal_positions_and_multiple_timeline_events():
 
 
 @pytest.mark.asyncio
-async def test_adapter_marks_invalid_json_and_missing_usage():
+async def test_adapter_marks_invalid_json_and_missing_usage(monkeypatch):
     from harness.llm import OpenAIModel
 
     async def respond(**kwargs):
@@ -184,20 +184,22 @@ async def test_adapter_marks_invalid_json_and_missing_usage():
             usage=None,
             choices=[
                 NS(
+                    finish_reason="tool_calls",
                     message=NS(
                         content=None,
                         tool_calls=[NS(id="bad", function=NS(name="get_profile", arguments="{"))],
-                    )
+                    ),
                 )
             ],
         )
 
-    adapter = object.__new__(OpenAIModel)
-    adapter.model = "synthetic"
-    adapter.system_role = "system"
-    adapter.request_attempts = 0
-    adapter.client = NS(chat=NS(completions=NS(create=respond)))
-    result = await adapter.chat([], [])
+    monkeypatch.setenv("OPENAI_API_KEY", "test-placeholder")
+    adapter = OpenAIModel("synthetic")
+    monkeypatch.setattr(adapter.client.chat.completions, "create", respond)
+    try:
+        result = await adapter.chat([], [])
+    finally:
+        await adapter.close()
     assert result.tool_calls[0].argument_error
     assert result.usage_available is False
 

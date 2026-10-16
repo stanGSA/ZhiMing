@@ -134,7 +134,7 @@ def reviewer_model(provider: str, name: str | None, config: dict, root: Path = R
     ``.env`` itself (create_runtime does the same); exported variables still take precedence.
     """
     load_dotenv(root / ".env")
-    return build_model(provider, None if provider == "demo" else name, config, None)
+    return build_model(provider, None if provider == "demo" else name, config, None, "reviewer")
 
 
 async def evaluate(

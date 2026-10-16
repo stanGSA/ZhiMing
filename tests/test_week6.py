@@ -389,7 +389,16 @@ async def test_daily_profile_change_recomputes(project):
         runtime.close()
 
 
-async def test_daily_reading_validates_card_pillar_and_aspects(runtime):
+@pytest.mark.parametrize(
+    "anchor,expected_pillars",
+    [
+        ("2026-10-15", {"壬戌", "癸亥"}),
+        ("2026-10-16", {"癸亥", "甲子"}),
+        ("2026-10-17", {"甲子", "乙丑"}),
+    ],
+)
+async def test_daily_reading_validates_card_pillar_and_aspects(runtime, anchor, expected_pillars):
+    runtime.session.calendar_anchor = anchor
     with_birth(runtime)
     result = await daily(runtime, "今天适合签合同吗？")
     state = runtime.session.state
@@ -403,7 +412,18 @@ async def test_daily_reading_validates_card_pillar_and_aspects(runtime):
     assert "未抽出" in check(
         runtime, reading("daily", card["ref_id"], f"今天抽到【{other}】正位。")
     )
-    fake = "甲子" if day["pillar"] != "甲子" else "乙丑"
+    # The 23:00 day boundary permits two pillars in one civil day. A different
+    # noon pillar alone does not make a fabricated fact (e.g. 甲子 on Oct 16).
+    segment_pillars = {segment["pillar"] for segment in day["segments"]}
+    assert segment_pillars == expected_pillars
+    for pillar in segment_pillars:
+        assert check(runtime, reading("daily", card["ref_id"], f"当天分段流日{pillar}。")) is None
+    known_pillars = segment_pillars | set(result.data["bazi"]["pillars"].values())
+    fake = next(
+        pillar
+        for pillar in ("甲子", "乙丑", "丙寅", "丁卯", "戊辰", "己巳", "庚午")
+        if pillar not in known_pillars
+    )
     assert "干支" in check(runtime, reading("daily", card["ref_id"], f"今天流日{fake}。"))
     computed = {(e["transit_body"], e["natal_body"], e["aspect"]) for e in result.data["events"]}
     for e in result.data["events"]:

@@ -24,19 +24,50 @@ def _transient(exc: BaseException) -> bool:
 
 
 class OpenAIModel:
-    def __init__(self, model: str, timeout: float = 30, system_role: str = "system"):
+    def __init__(
+        self,
+        model: str,
+        timeout: float = 30,
+        system_role: str = "system",
+        *,
+        provider: str = "openai",
+        thinking: str = "disabled",
+        reasoning_effort: str | None = None,
+        max_tokens: int | None = None,
+    ):
         from openai import AsyncOpenAI
 
-        if not os.getenv("OPENAI_API_KEY"):
-            raise ValueError("未设置 OPENAI_API_KEY")
+        key_name = "DEEPSEEK_API_KEY" if provider == "deepseek" else "OPENAI_API_KEY"
+        if not os.getenv(key_name):
+            raise ValueError(f"未设置 {key_name}")
+        self.provider = provider
+        self.request_options = {}
+        if provider == "deepseek":
+            if system_role != "system":
+                raise ValueError("DeepSeek requires system_role: system")
+            if thinking not in ("disabled", "enabled"):
+                raise ValueError("thinking must be disabled or enabled")
+            if reasoning_effort not in (None, "low", "high", "max"):
+                raise ValueError("unsupported DeepSeek reasoning_effort")
+            if thinking == "disabled" and reasoning_effort is not None:
+                raise ValueError("reasoning_effort requires enabled thinking")
+            self.request_options["extra_body"] = {"thinking": {"type": thinking}}
+            if reasoning_effort is not None:
+                self.request_options["reasoning_effort"] = reasoning_effort
+        if max_tokens is not None:
+            if isinstance(max_tokens, bool) or not isinstance(max_tokens, int) or max_tokens <= 0:
+                raise ValueError("max_tokens must be a positive integer")
+            self.request_options["max_tokens"] = max_tokens
         self.model = model
         if system_role not in ("system", "developer"):
             raise ValueError("system_role must preserve privileged instructions")
         self.system_role = system_role
         self.request_attempts = 0
         self.client = AsyncOpenAI(
-            api_key=os.environ["OPENAI_API_KEY"],
-            base_url=os.getenv("OPENAI_BASE_URL") or None,
+            api_key=os.environ[key_name],
+            base_url=(os.getenv("DEEPSEEK_BASE_URL") or "https://api.deepseek.com")
+            if provider == "deepseek"
+            else (os.getenv("OPENAI_BASE_URL") or None),
             timeout=timeout,
             max_retries=0,
         )
@@ -52,13 +83,21 @@ class OpenAIModel:
     )
     async def chat(self, messages, tools) -> ModelResponse:
         self.request_attempts += 1
+        request_messages = []
+        for original in messages:
+            message = dict(original)
+            if message["role"] == "system":
+                message["role"] = self.system_role
+            if self.provider == "deepseek" and message["role"] == "assistant":
+                # Locally rendered terminal replies have no reasoning. Model-generated
+                # reasoning is retained by ModelResponse.assistant_message, verbatim.
+                message.setdefault("reasoning_content", "")
+            request_messages.append(message)
         result = await self.client.chat.completions.create(
             model=self.model,
-            messages=[
-                {**message, "role": self.system_role} if message["role"] == "system" else message
-                for message in messages
-            ],
+            messages=request_messages,
             tools=tools or None,
+            **self.request_options,
         )
         message = result.choices[0].message
         calls = []
@@ -79,12 +118,24 @@ class OpenAIModel:
         return ModelResponse(
             text=message.content or "",
             model=result.model,
+            reasoning_content=getattr(message, "reasoning_content", None),
+            finish_reason=result.choices[0].finish_reason,
+            reasoning_tokens=getattr(
+                getattr(result.usage, "completion_tokens_details", None), "reasoning_tokens", None
+            ),
             usage_available=usage is not None,
             tool_calls=calls,
             input_tokens=usage.prompt_tokens if usage else 0,
             output_tokens=usage.completion_tokens if usage else 0,
-            cached_input_tokens=getattr(
-                getattr(usage, "prompt_tokens_details", None), "cached_tokens", None
+            cached_input_tokens=(
+                cached
+                if (
+                    cached := getattr(
+                        getattr(usage, "prompt_tokens_details", None), "cached_tokens", None
+                    )
+                )
+                is not None
+                else getattr(usage, "prompt_cache_hit_tokens", None)
             ),
         )
 

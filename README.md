@@ -14,7 +14,7 @@ PR #5 合并后的日期恢复、解梦来源与输出检查、姓名歧义可�
 
 [项目计划](docs/占卜Agent项目计划书.md) · [评估数据集说明](evals/README.md) · [脱敏验收材料](docs/verification/README.md)
 
-当前配置为 OpenAI 兼容接口、模型 `gpt-6.1-sol`，连接凭据保存在本地 `.env`。使用 `--provider demo` 可以切换到离线规则演示。离线测试数字不能代表真实模型的工具选择或解读质量。
+当前配置使用 DeepSeek 官方 OpenAI 兼容接口、模型 `deepseek-flash`，显式关闭思考模式。凭据保存在本地 `.env` 的 `DEEPSEEK_API_KEY`，地址为 `https://api.deepseek.com`；不读取旧的 `OPENAI_API_KEY`。使用 `--provider demo` 可以切换到离线规则演示。离线测试数字不能代表真实模型的工具选择或解读质量。
 
 ## 快速开始（Windows PowerShell）
 
@@ -85,14 +85,14 @@ Linux / 已安装 uv 的环境：`uv sync --locked --extra llm`，然后 `uv run
 
 ## 接入真实模型
 
-复制 `.env.example` 为 `.env`，填入所选服务的密钥；兼容服务可以设置 `OPENAI_BASE_URL`。模型名由用户明确配置，项目不猜测默认型号。
+复制 `.env.example` 为 `.env`，填写 `DEEPSEEK_API_KEY`，即可使用当前 Flash 配置。其他 OpenAI 兼容服务需设置 `OPENAI_API_KEY`、`OPENAI_BASE_URL` 并选择对应 provider；Anthropic 使用 `ANTHROPIC_API_KEY`。
 
 ```powershell
-& .\.venv\Scripts\python.exe cli.py chat --provider openai --model <你的模型名>
+& .\.venv\Scripts\python.exe cli.py chat --provider deepseek --model deepseek-flash
 & .\.venv\Scripts\python.exe cli.py chat --provider anthropic --model <你的模型名>
 ```
 
-适配器统一 tool calling、消息历史与 token 统计，针对瞬态连接、限流和服务器错误最多尝试三次；当前单次超时90秒，可在config.yaml调整。SDK HTTP 协议有本地 MockTransport 测试；显式运行 `python -m scripts.live_test --model gpt-6.1-sol` 执行17个严格场景，每次结果保存在 reports/review-fix/独立run_id，保留失败记录。任何工具错误使场景失败，并核对实际入库、种子与引用；同样记录接口返回的cached_tokens，缺失记为未知。自动化 pytest 强制离线，不会调用付费模型。
+适配器统一 tool calling、消息历史与 token 统计，针对瞬态连接、限流和服务器错误最多尝试三次；当前单次超时90秒，可在config.yaml调整。SDK HTTP 协议有本地 MockTransport 测试；显式运行 `python -m scripts.live_test --model deepseek-flash` 执行17个严格场景，每次结果保存在 reports/review-fix/独立run_id，保留失败记录。任何工具错误使场景失败，并核对实际入库、种子与引用；同样记录接口返回的cached_tokens，缺失记为未知。自动化 pytest 强制离线，不会调用付费模型。
 
 ## 运行路径与约束
 
@@ -213,7 +213,7 @@ SQLite FTS5 已构建并检查可用；第一周精确查找不依赖分词或�
   - 画像已有性别、出生日期或出生地时，`ask_user` 不能再问这些。例外是本轮有工具要求补充资料，或用户正在更正。
   - 跨会话回访用 `start_reading(parent_reading_id=...)` 关联本用户的旧记录，并返回旧结论、时间范围和张力，供对比。
 - **评估**：
-  - `python -m evals.run --suite reviewer --provider openai` 用 `reviewer_drafts.yaml` 45 份草稿测漏拦率（≤10%）和过度干预率（≤5%）。
+  - `python -m evals.run --suite reviewer --provider deepseek` 用 `reviewer_drafts.yaml` 45 份草稿测漏拦率（≤10%）和过度干预率（≤5%）。
   - `--provider demo` 是离线关键词基线，只验证流水线，不是关口结果。
   - 多 Agent 真实模型运行的结果附带审校打回率等指标（`scripts.trace_tree.reviewer_metrics`）。
 
@@ -255,7 +255,7 @@ SQLite FTS5 已构建并检查可用；第一周精确查找不依赖分词或�
 - 流期支持年/月/日；年最多3660天，月/日最多366天。按实际立春、节气与日界分段。日期结束日包含，带时刻的结束点为半开区间。十神与原局冲合刑害破、三合三会是符号关系，不等同于必然事件。
 - 占星信号按容许度与速度确定强度；组合释义及所有组件引用固定于知识版本。八字按十神、柱位、冲合规则产出信号。人工审核率0%，仍未达到发布前≥95%审核门槛。
 
-当前兼容服务的system角色请求返回400，经对照测试，配置`llm.system_role: developer`可正常工作。适配器保留指令优先级，默认仍支持system；不会自动降为user。请求模型固定`gpt-6.1-sol`，服务返回名称单独记录，不能证明底层模型身份。三体系单轮预算180000个返回usage token、最多12步，超限明确失败；多 Agent 模式下该预算由编排者和专家共享。
+当前 DeepSeek 使用 `llm.system_role: system`，三个角色均为 `deepseek-flash` 非思考模式，单次输出上限分别为8192、4096、2048 token。`model_options` 按角色覆盖 `llm.deepseek` 设置，角色使用独立客户端。适配器保留各轮 `reasoning_content`，trace只记录思考用量和结束原因；输出截断时停止，不执行不完整工具调用。可运行 `python -m scripts.check_model` 核对当前配置。服务返回名称单独记录，不能证明底层模型身份。三体系单轮预算180000个返回usage token、最多12步，超限明确失败；多 Agent 模式下该预算由编排者和专家共享。
 
 ## Week2 / Week3 可复现验收
 

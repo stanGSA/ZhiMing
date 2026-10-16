@@ -90,7 +90,7 @@ async def disclosure_boundaries(output):
     ]
     merged = merge_signals(signals)
     config = yaml.safe_load((ROOT / "config.yaml").read_text(encoding="utf-8"))
-    model = build_model("openai", config["models"]["orchestrator"], config, None)
+    model = build_model(config["llm"]["provider"], config["models"]["orchestrator"], config, None)
     rows = []
     try:
         for field in ("theme", "sides", "how_to_read"):
@@ -172,7 +172,11 @@ async def run(args):
         reviewer.score = checkpoint
         try:
             report = await reviewer.evaluate(
-                args.output, provider="openai", strictness=args.strictness
+                args.output,
+                provider=yaml.safe_load((ROOT / "config.yaml").read_text(encoding="utf-8"))["llm"][
+                    "provider"
+                ],
+                strictness=args.strictness,
             )
         finally:
             reviewer.score = original_score

@@ -167,6 +167,7 @@ async def test_archive_comparison_still_writes_results(project, monkeypatch, fai
             mode="single",
             provider="demo",
             model=None,
+            orchestrator_thinking=None,
         )
     )
     data = json.loads((out / "results.json").read_text(encoding="utf-8"))

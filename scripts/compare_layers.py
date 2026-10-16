@@ -121,7 +121,9 @@ def share_data(root: Path, source: Path) -> None:
             shutil.copytree(origin, target)
 
 
-def workdir(root: Path, out: Path, build, provider, model, mode) -> Path:
+def workdir(
+    root: Path, out: Path, build, provider, model, mode, orchestrator_thinking=None
+) -> Path:
     import yaml
 
     work = out / "work"
@@ -130,10 +132,17 @@ def workdir(root: Path, out: Path, build, provider, model, mode) -> Path:
     work.mkdir(parents=True)
     config = yaml.safe_load((root / "config.yaml").read_text(encoding="utf-8"))
     config["mode"] = mode
-    config["llm"]["provider"] = provider
+    if provider:
+        config["llm"]["provider"] = provider
     if model:
         config["llm"]["model"] = model
         config["models"] = dict.fromkeys(config.get("models") or {}, model)
+    if orchestrator_thinking is not None:
+        if config["llm"]["provider"] != "deepseek":
+            raise ValueError("--orchestrator-thinking requires DeepSeek")
+        options = config.setdefault("model_options", {}).setdefault("orchestrator", {})
+        options["thinking"] = "enabled" if orchestrator_thinking == "low" else "disabled"
+        options["reasoning_effort"] = "low" if orchestrator_thinking == "low" else None
     (work / "config.yaml").write_text(yaml.safe_dump(config, allow_unicode=True), encoding="utf-8")
     shutil.copytree(root / "knowledge/sources", work / "sources")
     shutil.copytree(root / "knowledge/rules", work / "rules")
@@ -285,8 +294,15 @@ def turn_row(scenario, index, question, outcome, events, runtime, latency) -> di
         model_calls=len(usage),
         input_tokens=sum(r.get("input_tokens") or 0 for r in usage),
         output_tokens=sum(r.get("output_tokens") or 0 for r in usage),
+        reasoning_tokens=sum(r.get("reasoning_tokens") or 0 for r in usage),
+        finish_reasons=[r.get("finish_reason") for r in usage],
         returned_models=sorted({r["returned_model"] for r in usage if r.get("returned_model")}),
-        errors=[r["event"] for r in events if r["event"] in ("model_error", "limit_reached")],
+        errors=[
+            r["event"]
+            for r in events
+            if r["event"]
+            in ("model_error", "limit_reached", "timeout", "output_truncated", "usage_unavailable")
+        ],
         text=outcome.text,
         output=output,
     )
@@ -299,13 +315,13 @@ async def run(args) -> Path:
     if args.data_from:
         share_data(root, Path(args.data_from).resolve())
     create_runtime, build = load_code(root)
-    work = workdir(root, out, build, args.provider, args.model, args.mode)
+    work = workdir(
+        root, out, build, args.provider, args.model, args.mode, args.orchestrator_thinking
+    )
     metadata = repository_metadata(root)
     rows = []
     for scenario in SCENARIOS:
-        runtime = create_runtime(
-            root=work, user_id=f"compare-{args.label}-{scenario['id']}", seed=SEED
-        )
+        runtime = create_runtime(root=work, user_id=f"compare-fixed-{scenario['id']}", seed=SEED)
         pin_calendar(runtime)
         try:
             for index, question in enumerate(scenario["turns"], 1):
@@ -343,8 +359,10 @@ async def run(args) -> Path:
                         dict(
                             label=args.label,
                             mode=args.mode,
-                            provider=args.provider,
-                            model=args.model,
+                            provider=args.provider or getattr(runtime.model, "provider", None),
+                            model=getattr(runtime.model, "model", args.model),
+                            user_id_scheme="compare-fixed-{scenario}",
+                            orchestrator_thinking=args.orchestrator_thinking,
                             anchor=ANCHOR,
                             seed=SEED,
                             **metadata,
@@ -477,8 +495,9 @@ def main():
     runner.add_argument("--root", default=".", help="要测试的代码检出目录")
     runner.add_argument("--label", required=True, help="如 old / new")
     runner.add_argument("--mode", choices=("single", "multi"), default="single")
-    runner.add_argument("--provider", default="openai")
+    runner.add_argument("--provider", default=None, help="默认沿用config.yaml")
     runner.add_argument("--model", default=None, help="固定模型名；不填沿用该检出的config.yaml")
+    runner.add_argument("--orchestrator-thinking", choices=("disabled", "low"), default=None)
     runner.add_argument("--out", default="reports/compare")
     runner.add_argument(
         "--data-from",

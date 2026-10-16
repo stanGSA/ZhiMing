@@ -34,7 +34,7 @@ async def run():
     expected = {name for group in GROUPS for name in group}
     complete = {r["id"] for r in rows} == expected and len(rows) == len(expected)
     report = dict(
-        requested_model="gpt-6.1-sol",
+        requested_model=results[0]["requested_model"],
         source_fingerprints=fingerprints,
         same_source_version=len(fingerprints) == 1,
         complete=complete,
