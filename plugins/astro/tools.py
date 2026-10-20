@@ -7,6 +7,7 @@ from harness.models import StrictInput, ToolResult
 from harness.registry import Tool
 from plugins.astro.calculator import ASPECTS, SIGN_ZH, SIGNS, natal_chart, transits
 from plugins.astro.validation import validate_output
+from plugins.base import meaning_view
 from plugins.context import (
     BirthInput,
     MeaningPlugin,
@@ -140,7 +141,7 @@ class AstroPlugin(MeaningPlugin):
                 kind=i["kind"],
                 key=i["key"],
                 timeframe=i["timeframe"],
-                meaning=dict(text=i["meaning"]["text"], reviewed=i["meaning"]["reviewed"]),
+                meaning=meaning_view(i["meaning"]),
             )
             for i in data.get("interpretations", [])
             if i["kind"] in ("planet_sign", "aspect")

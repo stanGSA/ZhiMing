@@ -7,6 +7,7 @@ from common.input_evidence import gender_evidence, normalized_gender, solar_time
 from common.time_utils import NeedsInput
 from harness.models import StrictInput, ToolResult
 from harness.registry import Tool
+from plugins.base import meaning_view
 from plugins.bazi.calculator import bazi_period, compute_bazi
 from plugins.bazi.validation import validate_output
 from plugins.context import (
@@ -102,7 +103,7 @@ class BaziPlugin(MeaningPlugin):
                 kind=i["kind"],
                 key=i["key"],
                 timeframe=i["timeframe"],
-                meaning=dict(text=i["meaning"]["text"], reviewed=i["meaning"]["reviewed"]),
+                meaning=meaning_view(i["meaning"]),
             )
             for i in data.get("interpretations", [])
             if i["kind"] not in ("stem", "branch") or ":day:" in i["fact"]
@@ -114,7 +115,7 @@ class BaziPlugin(MeaningPlugin):
                 dict(
                     ref_id=i["ref_id"],
                     fact=i["fact"],
-                    meaning=dict(text=i["meaning"]["text"], reviewed=i["meaning"]["reviewed"]),
+                    meaning=meaning_view(i["meaning"]),
                 )
             ]
         return result

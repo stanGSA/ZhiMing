@@ -145,6 +145,8 @@ async def evaluate(output: Path, mode: str = "single") -> dict:
         ),
         f"- 塔罗条目覆盖：{coverage['coverage']:.0%}（156 牌面状态 + 7 牌位）",
         f"- 人工审核率：{coverage['reviewed_rate']:.0%}",
+        "- 释义审核状态（草稿/模型交叉审核/人工审核）："
+        + "/".join(str(n) for n in coverage["review_status"]["counts"].values()),
         f"- 固定 seed 测试向量：{'通过' if vector_ok else '失败'}",
         "",
         "| 用例 | 结果 | 牌阵 | F1 |",

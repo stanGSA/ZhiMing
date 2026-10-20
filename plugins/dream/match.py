@@ -12,6 +12,8 @@ from __future__ import annotations
 import json
 import re
 
+from knowledge.review import normalize_entry
+
 FILLER = re.compile(r"[的了着过在把被一个很好多大小些]")
 # Only these documented constructions may normalise non-contiguous words. Never rebuild
 # arbitrary nouns from a bag of characters (手机飞到手里 does not contain an aircraft).
@@ -60,7 +62,7 @@ class DreamMatcher:
         self.entries = {}
         self.aliases = {}
         for (raw,) in rows:
-            entry = json.loads(raw)
+            entry = normalize_entry(json.loads(raw))
             entry["ref_id"] = f"{entry['id']}@{version}"
             self.entries[entry["key"]] = entry
             for alias in (entry["key"], *entry["synonyms"]):

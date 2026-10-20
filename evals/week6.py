@@ -244,6 +244,9 @@ async def evaluate(output: Path) -> dict:
         daily=daily,
         gates=gates,
         reviewed_rate={s: partitions[s]["reviewed_rate"] for s in ("name", "dream", "daily")},
+        review_status={
+            s: partitions[s]["review_status"]["counts"] for s in ("name", "dream", "daily")
+        },
     )
     (target / "week6-eval.json").write_text(
         json.dumps(report, ensure_ascii=False, indent=2), encoding="utf-8"
@@ -273,6 +276,7 @@ async def evaluate(output: Path) -> dict:
         f"- 每日运势：{daily['date']}，流日{daily['day_pillar']}，每日一牌{daily['card']}，"
         f"当日精确相位{daily['events']}个；缓存复用 {sum(daily['cache_reused'])}/{daily['repeats'] - 1}",
         f"- 人工审核率：{report['reviewed_rate']}",
+        f"- 释义审核状态（模型交叉审核不计入人工审核率）：{report['review_status']}",
     ]
     (target / "week6-eval.md").write_text("\n".join(lines) + "\n", encoding="utf-8")
     report["output_dir"] = str(target)

@@ -147,7 +147,9 @@ def workdir(
     (work / "config.yaml").write_text(yaml.safe_dump(config, allow_unicode=True), encoding="utf-8")
     shutil.copytree(root / "knowledge/sources", work / "sources")
     shutil.copytree(root / "knowledge/rules", work / "rules")
-    build(work / "sources", work / "data/kb.sqlite", work / "rules")
+    if (root / "knowledge/reviews").is_dir():
+        shutil.copytree(root / "knowledge/reviews", work / "reviews")
+    build(work / "sources", work / "data/kb.sqlite", work / "rules", work / "reviews")
     return work
 
 

@@ -125,9 +125,9 @@ flowchart LR
 - `knowledge/sources/astro/entries.yaml`：280条占星草稿；`knowledge/sources/bazi/entries.yaml`：141条八字草稿。两个体系规则独立版本化，组合组件引用随历史记录保存。
 - `knowledge/rules/tarot.yaml`：信号时间属性与牌位强度规则。倾向值来自条目的 `theme_map`，信号由代码产生。
 - `knowledge/rules/merge.yaml`：跨体系合并的阈值（方向阈值、张力与共振强度、权重区间），和其它规则一样计入知识库版本。
-- `python -m knowledge.build`：检查 schema、id、key、同义词唯一性、许可、数值范围与完整覆盖；构建只读 SQLite 和覆盖率报告。
-- `data/kb_versions/<版本>.sqlite`：保留不可变条目与规则快照。版本摘要同时包含源文件与规则内容；旧 reading 的查询使用旧快照。
-- **人工审核率当前为 0%。** `reviewed` 没有冒充人工审核，解读强制使用低置信度。达到计划中的发布标准（≥95%）需要逐条人工审核。
+- `python -m knowledge.build`：检查 schema、id、key、同义词唯一性、许可、数值范围与完整覆盖；构建只读 SQLite 和覆盖率报告（按体系统计三级审核状态）。确定性说法（排除“不代表事件必然发生”等否定式免责声明）和塔罗正逆位同号等代码检查结果写入 `data/kb.checks.json`，作为待审队列，不使构建失败。
+- `data/kb_versions/<版本>.sqlite`：保留不可变条目与规则快照。版本摘要同时包含源文件、规则与审核账本（`knowledge/reviews/`）；旧 reading 的查询使用旧快照，旧快照与旧记录里没有审核级别的条目和信号按 `reviewed` 读作草稿。
+- **审核状态分三级：`draft`（草稿）、`model_reviewed`（经模型交叉审核，未经人工审核）、`human_reviewed`（人工审核）。** `reviewed` 只表示人工审核，任何代码与脚本都不写它；模型交叉审核记在 `knowledge/reviews/<体系>.yaml` 账本里，按条目内容哈希绑定，内容一改即回到草稿。解读的置信度按用到的最低级别设上限：草稿为 low，说明“释义未经审核”；经模型交叉审核最高 medium（阶段1待确认），说明“释义经模型交叉审核，未经人工审核”；人工审核不设上限。**当前 1171 条全部是草稿，人工审核率 0%，模型交叉审核率 0%，解读仍强制低置信度。** 知识库关口按《项目完善计划书》4.8 的模型交叉审核指标验收（`scripts/model_review_kb.py`），尚未运行真实审核。
 - `data/app.db`：画像与历史版本、readings、reading_responses、daily，以及后续专家、审校和排盘缓存的表结构。当前启用画像、三体系reading与追问回答、专家报告、审校意见（review_notes）和chart_id/bazi_id缓存；readings 另存保存时的跨体系合并表（merge_json）。自动迁移至schema版本4，旧行与知识版本保留。
 - `runs/<用户摘要>/<会话>.jsonl`：工具参数、结果、错误、时间和 token 使用量；模型异常只记录异常类别，避免 SDK 错误文本泄露凭据。
 - `evals/cases/` 和 `evals/generators/` 从用户提供的评估数据集复制，保留原稿状态，不改参考答案。

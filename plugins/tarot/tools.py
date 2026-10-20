@@ -6,7 +6,7 @@ from pydantic import Field
 from harness.models import StrictInput
 from harness.registry import Tool
 from knowledge.kb import KnowledgeBase
-from plugins.base import Signal
+from plugins.base import MEANING_FIELDS, Signal
 from plugins.tarot.draw import draw_tarot
 from plugins.tarot.validation import validate_output
 
@@ -71,7 +71,7 @@ class TarotPlugin:
                             keywords=tuple(entry["keywords"]),
                             kb_ref=entry["ref_id"],
                             rule_version=rule["version"],
-                            reviewed=entry["reviewed"],
+                            review_status=entry["review_status"],
                         )
                     )
         return signals
@@ -86,9 +86,7 @@ class TarotPlugin:
             card["meaning_key"] = f"{card['card_id']}:{orientation}"
             card["ref_id"] = f"tarot:{result['reading_id']}:pos{card['pos']}:{card['meaning_key']}"
             entry = self.kb.lookup("tarot", "card", card["meaning_key"])
-            card["meaning"] = {
-                k: entry[k] for k in ("text", "keywords", "theme_map", "reviewed", "ref_id")
-            }
+            card["meaning"] = {k: entry[k] for k in MEANING_FIELDS}
             session.state["kb_refs"].add(entry["ref_id"])
         session.state["tarot_result"] = result
         session.state["signals"].extend(signal.model_dump(mode="json") for signal in signals)

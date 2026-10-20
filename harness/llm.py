@@ -2,8 +2,9 @@ from __future__ import annotations
 
 import json
 import os
-from typing import Any, Protocol
+from typing import Any, Literal, Protocol
 
+from pydantic import BaseModel, ConfigDict, Field
 from tenacity import retry, retry_if_exception, stop_after_attempt, wait_random_exponential
 
 from harness.models import ModelResponse, ToolCall
@@ -34,10 +35,16 @@ class OpenAIModel:
         thinking: str = "disabled",
         reasoning_effort: str | None = None,
         max_tokens: int | None = None,
+        api_key_env: str | None = None,
+        base_url: str | None = None,
+        temperature: float | None = None,
+        http_client=None,
     ):
         from openai import AsyncOpenAI
 
-        key_name = "DEEPSEEK_API_KEY" if provider == "deepseek" else "OPENAI_API_KEY"
+        key_name = api_key_env or (
+            "DEEPSEEK_API_KEY" if provider == "deepseek" else "OPENAI_API_KEY"
+        )
         if not os.getenv(key_name):
             raise ValueError(f"未设置 {key_name}")
         self.provider = provider
@@ -58,6 +65,8 @@ class OpenAIModel:
             if isinstance(max_tokens, bool) or not isinstance(max_tokens, int) or max_tokens <= 0:
                 raise ValueError("max_tokens must be a positive integer")
             self.request_options["max_tokens"] = max_tokens
+        if temperature is not None:
+            self.request_options["temperature"] = temperature
         self.model = model
         if system_role not in ("system", "developer"):
             raise ValueError("system_role must preserve privileged instructions")
@@ -65,11 +74,15 @@ class OpenAIModel:
         self.request_attempts = 0
         self.client = AsyncOpenAI(
             api_key=os.environ[key_name],
-            base_url=(os.getenv("DEEPSEEK_BASE_URL") or "https://api.deepseek.com")
-            if provider == "deepseek"
-            else (os.getenv("OPENAI_BASE_URL") or None),
+            base_url=base_url
+            or (
+                (os.getenv("DEEPSEEK_BASE_URL") or "https://api.deepseek.com")
+                if provider == "deepseek"
+                else (os.getenv("OPENAI_BASE_URL") or None)
+            ),
             timeout=timeout,
             max_retries=0,
+            **({"http_client": http_client} if http_client is not None else {}),
         )
 
     async def close(self) -> None:
@@ -181,15 +194,31 @@ def anthropic_messages(messages: list[dict[str, Any]]) -> tuple[str, list[dict[s
 
 
 class AnthropicModel:
-    def __init__(self, model: str, timeout: float = 30):
+    def __init__(
+        self,
+        model: str,
+        timeout: float = 30,
+        *,
+        api_key_env: str = "ANTHROPIC_API_KEY",
+        base_url: str | None = None,
+        max_tokens: int = 8192,
+        temperature: float | None = None,
+        http_client=None,
+    ):
         from anthropic import AsyncAnthropic
 
-        if not os.getenv("ANTHROPIC_API_KEY"):
-            raise ValueError("未设置 ANTHROPIC_API_KEY")
+        if not os.getenv(api_key_env):
+            raise ValueError(f"未设置 {api_key_env}")
         self.model = model
+        self.max_tokens = max_tokens
+        self.request_options = {} if temperature is None else {"temperature": temperature}
         self.request_attempts = 0
         self.client = AsyncAnthropic(
-            api_key=os.environ["ANTHROPIC_API_KEY"], timeout=timeout, max_retries=0
+            api_key=os.environ[api_key_env],
+            timeout=timeout,
+            max_retries=0,
+            **({"base_url": base_url} if base_url else {}),
+            **({"http_client": http_client} if http_client is not None else {}),
         )
 
     async def close(self) -> None:
@@ -204,20 +233,22 @@ class AnthropicModel:
     async def chat(self, messages, tools) -> ModelResponse:
         self.request_attempts += 1
         system, converted = anthropic_messages(messages)
+        tool_specs = [
+            {
+                "name": t["function"]["name"],
+                "description": t["function"]["description"],
+                "input_schema": t["function"]["parameters"],
+            }
+            for t in tools
+        ]
         result = await self.client.messages.create(
             model=self.model,
             system=system,
             messages=converted,
             # A layered reading is submitted as one tool call; leave room for it.
-            max_tokens=8192,
-            tools=[
-                {
-                    "name": t["function"]["name"],
-                    "description": t["function"]["description"],
-                    "input_schema": t["function"]["parameters"],
-                }
-                for t in tools
-            ],
+            max_tokens=self.max_tokens,
+            **({"tools": tool_specs} if tool_specs else {}),
+            **self.request_options,
         )
         text = "".join(block.text for block in result.content if block.type == "text")
         calls = [
@@ -232,3 +263,42 @@ class AnthropicModel:
             input_tokens=result.usage.input_tokens,
             output_tokens=result.usage.output_tokens,
         )
+
+
+class RoleModelSpec(BaseModel):
+    """One model role outside the runtime (a knowledge reviewer, later a rubric judge).
+
+    The vendor is recorded with every result; the key is read from ``api_key_env`` and never
+    stored. ``api`` selects the wire protocol, so any OpenAI-compatible service works.
+    """
+
+    model_config = ConfigDict(extra="forbid")
+    vendor: str = Field(min_length=1)
+    api: Literal["openai", "anthropic"]
+    model: str = Field(min_length=1)
+    api_key_env: str = Field(pattern=r"^[A-Z][A-Z0-9_]*$")
+    base_url: str | None = None
+    temperature: float | None = Field(default=None, ge=0, le=2)
+    max_tokens: int = Field(default=4096, gt=0)
+
+
+def role_model(spec: RoleModelSpec, timeout: float = 120, http_client=None) -> ChatModel:
+    if spec.api == "anthropic":
+        return AnthropicModel(
+            spec.model,
+            timeout,
+            api_key_env=spec.api_key_env,
+            base_url=spec.base_url,
+            max_tokens=spec.max_tokens,
+            temperature=spec.temperature,
+            http_client=http_client,
+        )
+    return OpenAIModel(
+        spec.model,
+        timeout,
+        max_tokens=spec.max_tokens,
+        api_key_env=spec.api_key_env,
+        base_url=spec.base_url,
+        temperature=spec.temperature,
+        http_client=http_client,
+    )

@@ -4,6 +4,8 @@ import json
 import sqlite3
 from pathlib import Path
 
+from knowledge.review import normalize_entry
+
 
 class KnowledgeBase:
     def __init__(self, path: Path, version: str | None = None):
@@ -53,7 +55,8 @@ class KnowledgeBase:
             ).fetchone()
         if not row:
             return None
-        entry = json.loads(row[0])
+        # Editions built before the three review levels carry ``reviewed`` only.
+        entry = normalize_entry(json.loads(row[0]))
         entry["ref_id"] = f"{entry['id']}@{self.version}"
         return entry
 

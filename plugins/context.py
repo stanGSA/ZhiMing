@@ -8,7 +8,8 @@ from common.input_evidence import question_range, reading_text, supported_birth
 from common.location import consultation_timezone_evidence
 from common.time_utils import NeedsInput, date_range
 from harness.models import StrictInput
-from plugins.base import Signal
+from knowledge.review import lowest
+from plugins.base import MEANING_FIELDS, Signal
 
 
 class BirthInput(StrictInput):
@@ -184,7 +185,7 @@ class MeaningPlugin:
                     raise ValueError(f"Missing compound entry: {component_kind}/{component_key}")
                 if component["ref_id"] not in {c["ref_id"] for c in components}:
                     components.append(component)
-            meaning = {k: entry[k] for k in ("text", "keywords", "theme_map", "reviewed", "ref_id")}
+            meaning = {k: entry[k] for k in MEANING_FIELDS}
             weights = [1.0] + [self.kb.rules(self.name).get("context_weight", 0.25)] * (
                 len(components) - 1
             )
@@ -198,6 +199,7 @@ class MeaningPlugin:
                 for theme in {t for c in components for t in c["theme_map"]}
             }
             meaning["reviewed"] = all(c["reviewed"] for c in components)
+            meaning["review_status"] = lowest(c["review_status"] for c in components)
             meaning["component_refs"] = [c["ref_id"] for c in components]
             result["interpretations"].append(
                 dict(
@@ -250,7 +252,7 @@ class MeaningPlugin:
                             kb_ref=entry["ref_id"],
                             kb_refs=tuple(entry.get("component_refs", [entry["ref_id"]])),
                             rule_version=rule["version"],
-                            reviewed=entry["reviewed"],
+                            review_status=entry["review_status"],
                         )
                     )
         return signals

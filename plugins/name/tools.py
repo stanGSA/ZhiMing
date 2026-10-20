@@ -5,7 +5,7 @@ from pydantic import Field
 from common.time_utils import NeedsInput
 from harness.models import StrictInput, ToolResult
 from harness.registry import Tool
-from plugins.base import Signal
+from plugins.base import Signal, meaning_view
 from plugins.context import MeaningPlugin
 from plugins.name.strokes import UnihanMissing
 from plugins.name.validation import ambiguity_prompt, validate_output
@@ -98,7 +98,7 @@ class NamePlugin(MeaningPlugin):
             dict(
                 ref_id=i["ref_id"],
                 fact=i["fact"],
-                meaning=dict(text=i["meaning"]["text"], reviewed=i["meaning"]["reviewed"]),
+                meaning=meaning_view(i["meaning"]),
             )
             for i in data["interpretations"]
         ]
@@ -141,7 +141,7 @@ class NamePlugin(MeaningPlugin):
                             kb_ref=entry["ref_id"],
                             kb_refs=tuple(item["meaning"]["component_refs"]),
                             rule_version=rule["version"],
-                            reviewed=item["meaning"]["reviewed"],
+                            review_status=item["meaning"]["review_status"],
                         )
                     )
         return signals

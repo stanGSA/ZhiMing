@@ -26,6 +26,7 @@ from harness.models import ToolResult
 from harness.registry import Tool
 from harness.session import valid_timezone
 from knowledge.kb import KnowledgeBase
+from plugins.base import MEANING_FIELDS
 from signals.merge import fingerprint, merge_signals, model_view, undisclosed
 
 SYSTEM_NAMES = {"astro": r"占星|星盘|星座", "bazi": r"八字|命理|四柱", "tarot": r"塔罗|牌"}
@@ -435,7 +436,8 @@ def common_tools(store, kb: KnowledgeBase, mode: str = "single", reviewer=None) 
         if entry is None:
             return ToolResult.failure("missing_entry", "缺条目：精确 key 或同义词未命中")
         session.state.setdefault("kb_refs", set()).add(entry["ref_id"])
-        return {"entry": entry}
+        # The model sees the review level, not who reviewed it.
+        return {"entry": {k: v for k, v in entry.items() if k != "model_review"}}
 
     def ask_validator(args, session):
         if session.state.get("asked_this_turn"):
@@ -479,9 +481,7 @@ def common_tools(store, kb: KnowledgeBase, mode: str = "single", reviewer=None) 
                 )
                 try:
                     entry = version_kb.lookup("tarot", "card", card["meaning_key"])
-                    card["meaning"] = {
-                        k: entry[k] for k in ("text", "keywords", "theme_map", "reviewed", "ref_id")
-                    }
+                    card["meaning"] = {k: entry[k] for k in MEANING_FIELDS}
                 finally:
                     if version_kb is not kb:
                         version_kb.close()

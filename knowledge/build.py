@@ -9,31 +9,58 @@ from pathlib import Path
 
 import yaml
 
+from knowledge import checks
 from knowledge.catalogues import expected_keys
-from knowledge.schema import Entry
+from knowledge.review import LEVELS, load_ledgers, resolve
+from knowledge.schema import Entry, SourceEntry
 from plugins.dream.match import fts_tokens
 from plugins.tarot.catalogue import DECK, SPREADS
 
 ROOT = Path(__file__).resolve().parents[1]
+# Built entries carry derived review fields; editions built without them get another version.
+ENTRY_SCHEMA = b"entry-schema:2"
+DERIVED = {"review_status", "model_review"}
 
 
 def build(
-    source_dir: Path | None = None, output: Path | None = None, rules_dir: Path | None = None
+    source_dir: Path | None = None,
+    output: Path | None = None,
+    rules_dir: Path | None = None,
+    reviews_dir: Path | None = None,
 ) -> dict:
     source_dir = source_dir or ROOT / "knowledge/sources"
     output = output or ROOT / "data/kb.sqlite"
     rules_dir = rules_dir or ROOT / "knowledge/rules"
+    # Approvals are bound to content hashes, so a ledger never applies to edited entries.
+    reviews_dir = reviews_dir or ROOT / "knowledge/reviews"
     entries = []
-    digest = hashlib.sha256()
+    digest = hashlib.sha256(ENTRY_SCHEMA)
     files = sorted(source_dir.rglob("*.yaml"))
     if not files:
         raise ValueError("知识库源文件为空")
+    approvals = load_ledgers(reviews_dir)
+    ledger_states = {"current": 0, "stale": 0}
     for path in files:
         raw = path.read_bytes()
         digest.update(path.relative_to(source_dir).as_posix().encode())
         digest.update(raw.replace(b"\r\n", b"\n"))
         content = yaml.safe_load(raw)
-        entries.extend(Entry.model_validate(e) for e in content["entries"])
+        for source in content["entries"]:
+            if DERIVED & set(source):
+                raise ValueError(f"审核状态只来自审核账本，源文件不能填写：{source.get('id')}")
+            authored = SourceEntry.model_validate(source).model_dump()
+            status, model_review, state = resolve(authored, approvals)
+            if state != "none":
+                ledger_states[state] += 1
+            entries.append(
+                Entry.model_validate(
+                    {**authored, "review_status": status, "model_review": model_review}
+                )
+            )
+    # Approvals take part in the version: a reading pins the review state it was given.
+    for path in sorted(reviews_dir.glob("*.yaml")) if reviews_dir.is_dir() else []:
+        digest.update(b"reviews/" + path.name.encode())
+        digest.update(path.read_bytes().replace(b"\r\n", b"\n"))
     rules = {}
     for path in sorted(rules_dir.glob("*.yaml")):
         digest.update(path.name.encode())
@@ -91,7 +118,17 @@ def build(
         if len(strengths) != len(positions) or any(not 0 <= v <= 1 for v in strengths):
             raise ValueError("牌位强度规则不完整或超界")
     version = f"v1-{digest.hexdigest()[:16]}"
+    # Human review only; model cross-review is reported separately under review_status.
     reviewed_count = sum(e.reviewed for e in entries)
+    found = checks.findings([e.model_dump() for e in entries])
+
+    def levels(members):
+        counts = {level: sum(e.review_status == level for e in members) for level in LEVELS}
+        return dict(
+            counts=counts,
+            rates={level: round(n / len(members), 4) for level, n in counts.items()},
+        )
+
     report = {
         "kb_version": version,
         "entries": len(entries),
@@ -100,6 +137,9 @@ def build(
         "coverage": 1.0,
         "reviewed_count": reviewed_count,
         "reviewed_rate": reviewed_count / len(entries),
+        "review_status": levels(entries),
+        "review_ledger": dict(ledger_states, orphan=len(set(approvals) - {e.id for e in entries})),
+        "checks": checks.summary(found),
         "missing": missing,
         "partitions": {
             system: {
@@ -108,6 +148,7 @@ def build(
                 "coverage": 1.0,
                 "reviewed_rate": sum(e.reviewed for e in entries if e.system == system)
                 / sum(e.system == system for e in entries),
+                "review_status": levels([e for e in entries if e.system == system]),
             }
             for system in sorted(partitions)
         },
@@ -165,6 +206,11 @@ def build(
     current_temp.replace(output)
     output.with_suffix(".coverage.json").write_text(
         json.dumps(report, ensure_ascii=False, indent=2), encoding="utf-8"
+    )
+    # Findings are a revision queue for reviewers, not build errors.
+    output.with_suffix(".checks.json").write_text(
+        json.dumps(dict(kb_version=version, findings=found), ensure_ascii=False, indent=2),
+        encoding="utf-8",
     )
     return report
 

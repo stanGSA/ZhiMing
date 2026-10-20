@@ -44,6 +44,17 @@ safety:
   psychological_contacts:
     CN: [中国大陆全国统一心理援助热线12356（各地服务时间可能不同）]
     US: [美国988自杀与危机生命线（拨打或发短信988）]
+kb_review:                    # 知识库模型交叉审核（scripts.model_review_kb）；不是人工审核
+  timeout_s: 120
+  # 两家审核方须为不同厂商，且都不能与运行时模型（llm.provider）同一厂商；修改方不能与审核方同厂商。
+  # 待项目负责人确认厂商与模型后填写，例如：
+  # reviewer_a: {vendor: <厂商>, api: openai, model: <模型名>, api_key_env: <密钥环境变量名>,
+  #              base_url: <兼容接口地址>, input_per_mtok: <每百万输入token单价>, output_per_mtok: <单价>, currency: USD}
+  # api 为 openai（任何兼容 OpenAI 的接口）或 anthropic。密钥只从环境变量读取，不写入任何文件。
+  roles:
+    reviewer_a: null
+    reviewer_b: null
+    reviser: null
 kb:
   path: data/kb.sqlite
   dream_match_threshold: 0.75   # 解梦意象BM25候选的相似度阈值；首次评估后再调
