@@ -305,6 +305,32 @@ async def test_quality_review_receives_uncited_timeline_events(runtime):
 
 
 @pytest.mark.asyncio
+async def test_quality_review_projects_daily_events_with_daily_schema(runtime):
+    from types import SimpleNamespace
+
+    from plugins.daily.tools import DailyPlugin
+    from scripts.live_week23 import grounded_payload
+    from tests.test_week6 import ask, with_birth
+
+    with_birth(runtime)
+    await ask(runtime, "看看2026-10-20的每日运势。")
+    result = await invoke(runtime, "daily_fortune", {"date": "2026-10-20"})
+    assert result.ok, result.error
+    assert result.data["events"]
+    assert any("timeframe" not in i for i in result.data["interpretations"])
+    first_ref = result.data["interpretations"][0]["ref_id"]
+    outcome = SimpleNamespace(data={"reading": {"evidence": [{"ref_id": first_ref}]}})
+    facts = grounded_payload(runtime, outcome)["daily_result"]
+    assert facts["events"] == result.data["events"]
+    assert facts["event_count"] == len(result.data["events"])
+    assert len(facts["cited_interpretations"]) == 1
+    assert (
+        facts["model_available_interpretations"]
+        == DailyPlugin.project(result.data)["interpretations"]
+    )
+
+
+@pytest.mark.asyncio
 async def test_country_alone_cannot_select_same_country_city(runtime):
     runtime.session.append_user("出生地美国Springfield，具体州还不知道。")
     await invoke(runtime, "start_reading", dict(question="工作方向"))

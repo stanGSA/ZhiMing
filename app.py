@@ -4,10 +4,10 @@ import asyncio
 import json
 import shutil
 import time
+from collections.abc import Callable
 from dataclasses import dataclass
-from datetime import datetime
+from datetime import UTC, datetime
 from pathlib import Path
-from zoneinfo import ZoneInfo
 
 import yaml
 from dotenv import load_dotenv
@@ -18,7 +18,14 @@ from agents.orchestrator import MULTI_SYSTEM_PROMPT, SYSTEM_PROMPT
 from agents.reviewer import ReviewerService
 from agents.specialists import build_specialists
 from common.location import Gazetteer, location_tool
-from common.safety import AMBIGUOUS_DISTRESS, CRISIS, SAFETY_PROMPT, support_text
+from common.safety import (
+    AMBIGUOUS_DISTRESS,
+    CRISIS,
+    SAFETY_PROMPT,
+    confirms_safety,
+    contact_region,
+    support_text,
+)
 from common.tools import common_tools
 from harness.budget import Budget
 from harness.llm import AnthropicModel, OpenAIModel
@@ -55,6 +62,7 @@ class Runtime:
     request_timeout_s: float | None = None
     system_prompt: str = SYSTEM_PROMPT
     reviewer_model: object | None = None
+    clock: Callable[[], datetime] = lambda: datetime.now(UTC)
 
     def compact_history(self) -> None:
         if self.session.state.get("complete"):
@@ -68,10 +76,18 @@ class Runtime:
             ]
             self.session.messages = stable + conversation[-6:]
 
-    async def turn(self, message: str) -> TurnOutcome:
-        self.compact_history()
+    async def safety_response(
+        self, message: str, profile: dict | None = None
+    ) -> TurnOutcome | None:
+        if self.session.safety_pending and confirms_safety(message):
+            self.session.safety_pending = False
+            self.session.append_user(message)
+            text = "谢谢你确认此刻安全。如果危险或自伤想法再次出现，请及时联系紧急服务或信任的人。你可以继续聊刚才的感受，也可以在下一条消息提出想讨论的问题。"
+            self.session.messages.append({"role": "assistant", "content": text})
+            self.tracer.log(self.session, "safety_confirmed", safety_flag=True)
+            return TurnOutcome(status="crisis_support", text=text, data={"safety": {"flag": True}})
         crisis = bool(CRISIS.search(message))
-        if not crisis and AMBIGUOUS_DISTRESS.search(message):
+        if not crisis and not self.session.safety_pending and AMBIGUOUS_DISTRESS.search(message):
             try:
                 result = await self.model.chat(
                     [
@@ -112,12 +128,24 @@ class Runtime:
                     self.session, "safety_classifier_error", error_type=type(exc).__name__
                 )
                 crisis = True  # Pause and check safety when classification is unavailable.
-        if crisis:
+        if crisis or self.session.safety_pending:
+            self.session.safety_pending = True
             self.session.append_user(message)
-            text = support_text(self.safety_config, self.safety_config.get("region"))
+            region = contact_region(self.safety_config, {**self.session.profile, **(profile or {})})
+            text = support_text(self.safety_config, region)
             self.session.messages.append({"role": "assistant", "content": text})
             self.tracer.log(self.session, "crisis_support", safety_flag=True)
             return TurnOutcome(status="crisis_support", text=text, data={"safety": {"flag": True}})
+        return None
+
+    async def turn(self, message: str, *, safety_checked: bool = False) -> TurnOutcome:
+        """safety_checked: the caller already ran safety_response on the user's own words."""
+        self.compact_history()
+        # Safety first: nothing about the calendar or profile may delay a crisis response.
+        safety = None if safety_checked else await self.safety_response(message)
+        if safety is not None:
+            return safety
+        self.session.refresh_calendar(self.clock())
         # One budget per user request, shared by the orchestrator and every specialist. The
         # wall-clock deadline guards multi-agent fan-out only; single mode keeps week 1-3 limits.
         deadline = (
@@ -212,6 +240,7 @@ def create_runtime(
     specialist_model=None,
     reviewer_model=None,
     strictness: str | None = None,
+    clock: Callable[[], datetime] | None = None,
 ) -> Runtime:
     load_dotenv(root / ".env")
     config = yaml.safe_load((root / "config.yaml").read_text(encoding="utf-8"))
@@ -256,18 +285,11 @@ def create_runtime(
     kb = KnowledgeBase(root / config["kb"]["path"])
     store = Store(root / config["paths"]["app_db"])
     session = Session(user_id=user_id, default_seed=seed, profile=store.get_profile(user_id))
-    session.calendar_anchor = datetime.now(ZoneInfo("Asia/Shanghai")).date().isoformat()
     recent = store.recent_readings(user_id)
     system_prompt = MULTI_SYSTEM_PROMPT if mode == "multi" else SYSTEM_PROMPT
     session.messages.append({"role": "system", "content": system_prompt})
-    session.messages.append(
-        {
-            "role": "system",
-            "content": "本轮日历基准（Asia/Shanghai）："
-            + datetime.now(ZoneInfo("Asia/Shanghai")).date().isoformat()
-            + "；按用户指定日期范围优先，不猜系统月份。",
-        }
-    )
+    clock = clock or (lambda: datetime.now(UTC))
+    session.refresh_calendar(clock())
     session.messages.append(
         {
             "role": "system",
@@ -321,4 +343,5 @@ def create_runtime(
         request_timeout_s=config["limits"].get("request_timeout_s"),
         system_prompt=system_prompt,
         reviewer_model=reviewer_model if reviewing else None,
+        clock=clock,
     )

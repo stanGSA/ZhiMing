@@ -1,0 +1,3291 @@
+{
+  "date": "2026-10-20",
+  "platform": "Windows",
+  "python": "3.11",
+  "runs": [
+    {
+      "command": ".venv/Scripts/python.exe -X utf8 -m pytest -q --junitxml=reports/stage0/pytest.xml",
+      "tests": 637,
+      "passed": 637,
+      "raw_sha256": "91a37265686a3aaa5dc974457b7030005256e872e37a09fe176a1954232c8b37",
+      "results": [
+        {
+          "name": "tests.test_adapters.test_openai_sdk_protocol_with_mock_http[system]",
+          "status": "passed",
+          "time_s": 1.76
+        },
+        {
+          "name": "tests.test_adapters.test_openai_sdk_protocol_with_mock_http[developer]",
+          "status": "passed",
+          "time_s": 0.059
+        },
+        {
+          "name": "tests.test_adapters.test_anthropic_sdk_protocol_with_mock_http",
+          "status": "passed",
+          "time_s": 2.845
+        },
+        {
+          "name": "tests.test_adapters.test_anthropic_parallel_tool_messages_are_grouped",
+          "status": "passed",
+          "time_s": 0.001
+        },
+        {
+          "name": "tests.test_adapters.test_missing_key_fails_early[OpenAIModel-OPENAI_API_KEY]",
+          "status": "passed",
+          "time_s": 0.001
+        },
+        {
+          "name": "tests.test_adapters.test_missing_key_fails_early[AnthropicModel-ANTHROPIC_API_KEY]",
+          "status": "passed",
+          "time_s": 0.001
+        },
+        {
+          "name": "tests.test_deepseek.test_deepseek_wire_protocol_and_reasoning_replay[disabled-None]",
+          "status": "passed",
+          "time_s": 0.055
+        },
+        {
+          "name": "tests.test_deepseek.test_deepseek_wire_protocol_and_reasoning_replay[enabled-low]",
+          "status": "passed",
+          "time_s": 0.05
+        },
+        {
+          "name": "tests.test_deepseek.test_loop_replays_tool_and_text_reasoning_across_turns",
+          "status": "passed",
+          "time_s": 0.027
+        },
+        {
+          "name": "tests.test_deepseek.test_truncation_does_not_execute_partial_tool_call",
+          "status": "passed",
+          "time_s": 0.024
+        },
+        {
+          "name": "tests.test_deepseek.test_runtime_keeps_role_options_separate",
+          "status": "passed",
+          "time_s": 1.651
+        },
+        {
+          "name": "tests.test_deepseek.test_openai_does_not_receive_deepseek_options",
+          "status": "passed",
+          "time_s": 0.05
+        },
+        {
+          "name": "tests.test_deepseek.test_deepseek_never_falls_back_to_old_key",
+          "status": "passed",
+          "time_s": 0.001
+        },
+        {
+          "name": "tests.test_deepseek.test_invalid_deepseek_config_fails_before_request[options0]",
+          "status": "passed",
+          "time_s": 0.001
+        },
+        {
+          "name": "tests.test_deepseek.test_invalid_deepseek_config_fails_before_request[options1]",
+          "status": "passed",
+          "time_s": 0.002
+        },
+        {
+          "name": "tests.test_deepseek.test_invalid_deepseek_config_fails_before_request[options2]",
+          "status": "passed",
+          "time_s": 0.001
+        },
+        {
+          "name": "tests.test_deepseek.test_invalid_deepseek_config_fails_before_request[options3]",
+          "status": "passed",
+          "time_s": 0.001
+        },
+        {
+          "name": "tests.test_expression_policy.test_render_puts_layers_first_and_evidence_last",
+          "status": "passed",
+          "time_s": 0.001
+        },
+        {
+          "name": "tests.test_expression_policy.test_render_keeps_layout_of_readings_saved_before_sections",
+          "status": "passed",
+          "time_s": 0.001
+        },
+        {
+          "name": "tests.test_expression_policy.test_sections_are_saved_and_rendered",
+          "status": "passed",
+          "time_s": 1.563
+        },
+        {
+          "name": "tests.test_expression_policy.test_disclaimer_and_internal_sentences_are_removed_not_rejected",
+          "status": "passed",
+          "time_s": 1.609
+        },
+        {
+          "name": "tests.test_expression_policy.test_html_line_breaks_become_line_breaks",
+          "status": "passed",
+          "time_s": 1.561
+        },
+        {
+          "name": "tests.test_expression_policy.test_line_breaks_cover_visible_metadata_without_removing_audit_notes",
+          "status": "passed",
+          "time_s": 1.49
+        },
+        {
+          "name": "tests.test_expression_policy.test_jargon_in_verdict_titles_and_advice_is_a_warning",
+          "status": "passed",
+          "time_s": 1.579
+        },
+        {
+          "name": "tests.test_expression_policy.test_jargon_the_user_asked_about_may_be_named",
+          "status": "passed",
+          "time_s": 1.52
+        },
+        {
+          "name": "tests.test_expression_policy.test_requested_result_does_not_exempt_unrelated_jargon",
+          "status": "passed",
+          "time_s": 1.583
+        },
+        {
+          "name": "tests.test_expression_policy.test_field_made_only_of_a_disclaimer_is_still_rejected",
+          "status": "passed",
+          "time_s": 1.607
+        },
+        {
+          "name": "tests.test_expression_policy.test_certainty_words[\\u8fd9\\u4e2a\\u6708\\u4e00\\u5b9a\\u4f1a\\u5347\\u804c\\u3002-\\u4e00\\u5b9a\\u4f1a]",
+          "status": "passed",
+          "time_s": 0.001
+        },
+        {
+          "name": "tests.test_expression_policy.test_certainty_words[\\u65e0\\u8bba\\u5982\\u4f55\\u90fd\\u4e00\\u5b9a\\u4f1a\\u987a\\u5229\\u3002-\\u4e00\\u5b9a\\u4f1a]",
+          "status": "passed",
+          "time_s": 0.001
+        },
+        {
+          "name": "tests.test_expression_policy.test_certainty_words[\\u4f60\\u6ce8\\u5b9a\\u8981\\u7ecf\\u5386\\u8fd9\\u4e00\\u5173\\u3002-\\u6ce8\\u5b9a]",
+          "status": "passed",
+          "time_s": 0.001
+        },
+        {
+          "name": "tests.test_expression_policy.test_certainty_words[\\u8fd9\\u4e0d\\u4ee3\\u8868\\u4e8b\\u4ef6\\u5fc5\\u7136\\u53d1\\u751f\\u3002-None]",
+          "status": "passed",
+          "time_s": 0.001
+        },
+        {
+          "name": "tests.test_expression_policy.test_certainty_words[\\u7ed3\\u679c\\u4e0d\\u4e00\\u5b9a\\u4f1a\\u5982\\u613f\\uff0c\\u4f46\\u5bb9\\u6613\\u9047\\u5230\\u8f6c\\u673a\\u3002-None]",
+          "status": "passed",
+          "time_s": 0.001
+        },
+        {
+          "name": "tests.test_expression_policy.test_certainty_words[\\u5e76\\u975e\\u6ce8\\u5b9a\\u5982\\u6b64\\uff0c\\u503e\\u5411\\u4e8e\\u5148\\u96be\\u540e\\u6613\\u3002-None]",
+          "status": "passed",
+          "time_s": 0.001
+        },
+        {
+          "name": "tests.test_expression_policy.test_certainty_words[\\u4e00\\u5b9a\\u8981\\u4fdd\\u8bc1\\u7761\\u7720\\u3002-None]",
+          "status": "passed",
+          "time_s": 0.001
+        },
+        {
+          "name": "tests.test_expression_policy.test_certainty_claim_in_section_is_rejected",
+          "status": "passed",
+          "time_s": 1.615
+        },
+        {
+          "name": "tests.test_expression_policy.test_health_remark_gets_a_see_a_doctor_note",
+          "status": "passed",
+          "time_s": 1.553
+        },
+        {
+          "name": "tests.test_expression_policy.test_five_element_advice_is_allowed",
+          "status": "passed",
+          "time_s": 1.637
+        },
+        {
+          "name": "tests.test_expression_policy.test_fact_checks_cover_sections[\\u65e5\\u67f1\\u7532\\u5b50\\uff0c\\u8fd9\\u4e2a\\u6708\\u538b\\u529b\\u5927\\u3002]",
+          "status": "passed",
+          "time_s": 1.471
+        },
+        {
+          "name": "tests.test_expression_policy.test_fact_checks_cover_sections[\\u592a\\u9633\\u5728\\u767d\\u7f8a\\u5ea7\\uff0c\\u884c\\u52a8\\u529b\\u5f3a\\u3002]",
+          "status": "passed",
+          "time_s": 1.476
+        },
+        {
+          "name": "tests.test_expression_policy.test_fact_checks_cover_sections[\\u62bd\\u5230\\u4e86\\u3010\\u611a\\u4eba\\u3011\\u6b63\\u4f4d\\u3002]",
+          "status": "passed",
+          "time_s": 1.536
+        },
+        {
+          "name": "tests.test_expression_policy.test_section_refs_must_come_from_this_reading",
+          "status": "passed",
+          "time_s": 1.528
+        },
+        {
+          "name": "tests.test_expression_policy.test_specialist_report_is_repaired_and_carries_analysis",
+          "status": "passed",
+          "time_s": 0.001
+        },
+        {
+          "name": "tests.test_expression_policy.test_reviewer_sees_the_sections",
+          "status": "passed",
+          "time_s": 0.001
+        },
+        {
+          "name": "tests.test_expression_policy.test_demo_multi_agent_builds_sections_from_specialist_analysis",
+          "status": "passed",
+          "time_s": 1.601
+        },
+        {
+          "name": "tests.test_harness.test_guard_errors_are_results[not_registered-args0-unknown_tool]",
+          "status": "passed",
+          "time_s": 1.582
+        },
+        {
+          "name": "tests.test_harness.test_guard_errors_are_results[draw_tarot-args1-invalid_arguments]",
+          "status": "passed",
+          "time_s": 1.75
+        },
+        {
+          "name": "tests.test_harness.test_guard_errors_are_results[draw_tarot-args2-invalid_arguments]",
+          "status": "passed",
+          "time_s": 1.72
+        },
+        {
+          "name": "tests.test_harness.test_guard_errors_are_results[draw_tarot-args3-missing_dependency]",
+          "status": "passed",
+          "time_s": 1.476
+        },
+        {
+          "name": "tests.test_harness.test_same_draw_cached_changed_draw_blocked",
+          "status": "passed",
+          "time_s": 1.615
+        },
+        {
+          "name": "tests.test_harness.test_permissions_checked_even_on_cache_hit",
+          "status": "passed",
+          "time_s": 1.48
+        },
+        {
+          "name": "tests.test_harness.test_expert_kb_partition",
+          "status": "passed",
+          "time_s": 1.353
+        },
+        {
+          "name": "tests.test_harness.test_profile_requirements_and_dependency_ownership",
+          "status": "passed",
+          "time_s": 1.661
+        },
+        {
+          "name": "tests.test_harness.test_profile_evidence_and_cache",
+          "status": "passed",
+          "time_s": 1.606
+        },
+        {
+          "name": "tests.test_harness.test_model_error_is_sanitized",
+          "status": "passed",
+          "time_s": 1.532
+        },
+        {
+          "name": "tests.test_harness.test_limits_do_not_return_unvalidated_reading",
+          "status": "passed",
+          "time_s": 1.691
+        },
+        {
+          "name": "tests.test_harness.test_token_limit_before_side_effect",
+          "status": "passed",
+          "time_s": 1.505
+        },
+        {
+          "name": "tests.test_harness.test_terminal_batch_has_all_tool_responses",
+          "status": "passed",
+          "time_s": 1.603
+        },
+        {
+          "name": "tests.test_harness.test_harness_does_not_import_application_layers",
+          "status": "passed",
+          "time_s": 0.005
+        },
+        {
+          "name": "tests.test_kb.test_build_coverage_and_repeatability",
+          "status": "passed",
+          "time_s": 3.954
+        },
+        {
+          "name": "tests.test_kb.test_exact_alias_and_no_fuzzy_lookup",
+          "status": "passed",
+          "time_s": 1.582
+        },
+        {
+          "name": "tests.test_kb.test_build_rejects_invalid_sources[duplicate]",
+          "status": "passed",
+          "time_s": 2.949
+        },
+        {
+          "name": "tests.test_kb.test_build_rejects_invalid_sources[missing]",
+          "status": "passed",
+          "time_s": 2.952
+        },
+        {
+          "name": "tests.test_kb.test_build_rejects_invalid_sources[license]",
+          "status": "passed",
+          "time_s": 2.862
+        },
+        {
+          "name": "tests.test_kb.test_build_rejects_invalid_sources[valence]",
+          "status": "passed",
+          "time_s": 2.831
+        },
+        {
+          "name": "tests.test_kb.test_build_rejects_invalid_sources[wrong_id]",
+          "status": "passed",
+          "time_s": 3.088
+        },
+        {
+          "name": "tests.test_kb.test_build_rejects_invalid_sources[duplicate_alias]",
+          "status": "passed",
+          "time_s": 2.64
+        },
+        {
+          "name": "tests.test_kb.test_old_edition_survives_rebuild",
+          "status": "passed",
+          "time_s": 3.92
+        },
+        {
+          "name": "tests.test_kb.test_rule_change_changes_version",
+          "status": "passed",
+          "time_s": 3.729
+        },
+        {
+          "name": "tests.test_kb.test_rebuild_while_current_reader_is_open",
+          "status": "passed",
+          "time_s": 2.55
+        },
+        {
+          "name": "tests.test_kb.test_coverage_report_on_disk",
+          "status": "passed",
+          "time_s": 1.425
+        },
+        {
+          "name": "tests.test_kb.test_line_endings_do_not_change_version",
+          "status": "passed",
+          "time_s": 4.608
+        },
+        {
+          "name": "tests.test_multi_agent.test_multi_mode_tool_tables",
+          "status": "passed",
+          "time_s": 1.424
+        },
+        {
+          "name": "tests.test_multi_agent.test_parallel_consult_merges_persists_and_traces",
+          "status": "passed",
+          "time_s": 18.74
+        },
+        {
+          "name": "tests.test_multi_agent.test_brief_is_context_not_user_evidence",
+          "status": "passed",
+          "time_s": 1.49
+        },
+        {
+          "name": "tests.test_multi_agent.test_run_turn_brief_does_not_enter_evidence",
+          "status": "passed",
+          "time_s": 1.433
+        },
+        {
+          "name": "tests.test_multi_agent.test_specialist_cannot_cross_tools_or_partitions",
+          "status": "passed",
+          "time_s": 1.662
+        },
+        {
+          "name": "tests.test_multi_agent.test_report_must_cite_own_computed_refs",
+          "status": "passed",
+          "time_s": 1.555
+        },
+        {
+          "name": "tests.test_multi_agent.test_failed_specialist_is_isolated_and_disclosed",
+          "status": "passed",
+          "time_s": 1.56
+        },
+        {
+          "name": "tests.test_multi_agent.test_specialist_timeout_is_a_failed_report",
+          "status": "passed",
+          "time_s": 1.78
+        },
+        {
+          "name": "tests.test_multi_agent.test_needs_input_is_asked_once_and_never_cached",
+          "status": "passed",
+          "time_s": 3.117
+        },
+        {
+          "name": "tests.test_multi_agent.test_same_step_conflicts_are_rejected",
+          "status": "passed",
+          "time_s": 1.599
+        },
+        {
+          "name": "tests.test_multi_agent.test_tarot_is_drawn_once_per_reading",
+          "status": "passed",
+          "time_s": 2.087
+        },
+        {
+          "name": "tests.test_multi_agent.test_followup_does_not_consult_specialists",
+          "status": "passed",
+          "time_s": 1.832
+        },
+        {
+          "name": "tests.test_multi_agent.test_demo_model_runs_multi_mode_end_to_end",
+          "status": "passed",
+          "time_s": 1.971
+        },
+        {
+          "name": "tests.test_multi_agent.test_budget_propagates_reserve_and_deadline",
+          "status": "passed",
+          "time_s": 0.001
+        },
+        {
+          "name": "tests.test_multi_agent.test_config_modes_and_reviewer_guard[single]",
+          "status": "passed",
+          "time_s": 1.56
+        },
+        {
+          "name": "tests.test_multi_agent.test_config_modes_and_reviewer_guard[multi]",
+          "status": "passed",
+          "time_s": 1.669
+        },
+        {
+          "name": "tests.test_multi_agent.test_single_mode_has_no_wall_clock_deadline",
+          "status": "passed",
+          "time_s": 1.702
+        },
+        {
+          "name": "tests.test_multi_agent_review.test_failed_retry_keeps_earlier_valid_report",
+          "status": "passed",
+          "time_s": 3.284
+        },
+        {
+          "name": "tests.test_multi_agent_review.test_profile_correction_revokes_then_replaces_atomically",
+          "status": "passed",
+          "time_s": 2.79
+        },
+        {
+          "name": "tests.test_multi_agent_review.test_read_reading_restores_that_readings_specialist_state",
+          "status": "passed",
+          "time_s": 1.525
+        },
+        {
+          "name": "tests.test_multi_agent_review.test_concurrent_specialists_cannot_spend_orchestrator_reserve",
+          "status": "passed",
+          "time_s": 1.792
+        },
+        {
+          "name": "tests.test_multi_agent_review.test_request_deadline_stops_a_waiting_orchestrator",
+          "status": "passed",
+          "time_s": 1.619
+        },
+        {
+          "name": "tests.test_multi_agent_review.test_request_deadline_bounds_tool_execution",
+          "status": "passed",
+          "time_s": 1.965
+        },
+        {
+          "name": "tests.test_multi_agent_review.test_request_deadline_bounds_running_specialists",
+          "status": "passed",
+          "time_s": 1.753
+        },
+        {
+          "name": "tests.test_multi_agent_review.test_response_after_deadline_runs_no_tools",
+          "status": "passed",
+          "time_s": 2.086
+        },
+        {
+          "name": "tests.test_multi_agent_review.test_draw_survives_a_failed_report_and_spread_stays_fixed",
+          "status": "passed",
+          "time_s": 1.386
+        },
+        {
+          "name": "tests.test_multi_agent_review.test_timeout_before_first_response_keeps_the_call_tree",
+          "status": "passed",
+          "time_s": 1.851
+        },
+        {
+          "name": "tests.test_multi_agent_review.test_queueing_is_not_counted_as_concurrency",
+          "status": "passed",
+          "time_s": 1.917
+        },
+        {
+          "name": "tests.test_multi_agent_review.test_first_pass_rate_uses_each_consults_first_submission",
+          "status": "passed",
+          "time_s": 1.443
+        },
+        {
+          "name": "tests.test_multi_agent_review.test_single_mode_keeps_week1_3_budget_semantics",
+          "status": "passed",
+          "time_s": 1.361
+        },
+        {
+          "name": "tests.test_multi_agent_review.test_cancelled_request_closes_queued_and_running_specialists",
+          "status": "passed",
+          "time_s": 1.89
+        },
+        {
+          "name": "tests.test_pr1_remediation.test_new_reading_range_scope",
+          "status": "passed",
+          "time_s": 0.001
+        },
+        {
+          "name": "tests.test_pr1_remediation.test_inclusive_dates_equal_half_open_clock_range",
+          "status": "passed",
+          "time_s": 0.003
+        },
+        {
+          "name": "tests.test_pr1_remediation.test_country_city_compound_query",
+          "status": "passed",
+          "time_s": 1.113
+        },
+        {
+          "name": "tests.test_pr1_remediation.test_gender_evidence_does_not_confuse_female_with_male",
+          "status": "passed",
+          "time_s": 0.001
+        },
+        {
+          "name": "tests.test_pr1_remediation.test_birth_month_is_not_a_timing_request",
+          "status": "passed",
+          "time_s": 0.001
+        },
+        {
+          "name": "tests.test_pr1_remediation.test_profile_datetime_equivalence_without_new_evidence",
+          "status": "passed",
+          "time_s": 0.001
+        },
+        {
+          "name": "tests.test_pr1_remediation.test_chinese_clock_profile_evidence",
+          "status": "passed",
+          "time_s": 1.301
+        },
+        {
+          "name": "tests.test_pr1_remediation.test_profile_calendar_conventions_and_synthetic_tag",
+          "status": "passed",
+          "time_s": 1.424
+        },
+        {
+          "name": "tests.test_pr1_remediation.test_bazi_dayun_date_is_not_a_transit_date",
+          "status": "passed",
+          "time_s": 0.001
+        },
+        {
+          "name": "tests.test_pr1_remediation.test_prefixed_natal_positions_and_multiple_timeline_events",
+          "status": "passed",
+          "time_s": 0.002
+        },
+        {
+          "name": "tests.test_pr1_remediation.test_adapter_marks_invalid_json_and_missing_usage",
+          "status": "passed",
+          "time_s": 0.038
+        },
+        {
+          "name": "tests.test_pr1_remediation.test_transit_entity_mismatch[2026-11-11\\u884c\\u8fd0\\u571f\\u661f\\u62f1\\u672c\\u547d\\u592a\\u9633]",
+          "status": "passed",
+          "time_s": 0.001
+        },
+        {
+          "name": "tests.test_pr1_remediation.test_transit_entity_mismatch[2026\\u5e7411\\u670811\\u65e5\\u884c\\u8fd0\\u571f\\u661f\\u62f1\\u672c\\u547d\\u592a\\u9633]",
+          "status": "passed",
+          "time_s": 0.001
+        },
+        {
+          "name": "tests.test_pr1_remediation.test_transit_entity_mismatch[2026-11-10\\u884c\\u8fd0\\u571f\\u661f\\u5211\\u672c\\u547d\\u592a\\u9633]",
+          "status": "passed",
+          "time_s": 0.001
+        },
+        {
+          "name": "tests.test_pr1_remediation.test_transit_entity_mismatch[2026-11-10\\u884c\\u8fd0\\u571f\\u661f\\u62f1\\u672c\\u547d\\u6708\\u4eae]",
+          "status": "passed",
+          "time_s": 0.001
+        },
+        {
+          "name": "tests.test_pr1_remediation.test_transit_entity_mismatch[2026-11-10\\u884c\\u8fd0\\u571f\\u661f\\u62f1\\u672c\\u547d\\u592a\\u9633\\uff0c\\u5bb9\\u8bb8\\u5ea67\\u5ea6]",
+          "status": "passed",
+          "time_s": 0.001
+        },
+        {
+          "name": "tests.test_pr1_remediation.test_signal_legacy_compatibility_and_enum",
+          "status": "passed",
+          "time_s": 0.001
+        },
+        {
+          "name": "tests.test_pr1_remediation.test_ephemeris_never_changes_cwd",
+          "status": "passed",
+          "time_s": 0.034
+        },
+        {
+          "name": "tests.test_pr1_remediation.test_overseas_clock_and_period_timezone_need_confirmation",
+          "status": "passed",
+          "time_s": 2.97
+        },
+        {
+          "name": "tests.test_pr1_remediation.test_usage_missing_stops_before_tools",
+          "status": "passed",
+          "time_s": 1.562
+        },
+        {
+          "name": "tests.test_pr1_remediation.test_malformed_tool_json_can_recover",
+          "status": "passed",
+          "time_s": 1.556
+        },
+        {
+          "name": "tests.test_pr1_remediation.test_chinese_birth[1993\\u5e748\\u670817\\u65e523:20\\u51fa\\u751f]",
+          "status": "passed",
+          "time_s": 0.001
+        },
+        {
+          "name": "tests.test_pr1_remediation.test_chinese_birth[1993\\u5e748\\u670817\\u65e5\\u665a\\u4e0a11\\u70b920\\u5206\\u51fa\\u751f]",
+          "status": "passed",
+          "time_s": 0.001
+        },
+        {
+          "name": "tests.test_pr1_remediation.test_range_ignores_birth_and_checks_chinese_month",
+          "status": "passed",
+          "time_s": 0.001
+        },
+        {
+          "name": "tests.test_pr1_remediation.test_profile_normalization_cross_session",
+          "status": "passed",
+          "time_s": 2.741
+        },
+        {
+          "name": "tests.test_pr1_remediation.test_wrong_house_rejected[{body}{sign}\\u3001\\u7b2c{wrong}\\u5bab]",
+          "status": "passed",
+          "time_s": 2.795
+        },
+        {
+          "name": "tests.test_pr1_remediation.test_wrong_house_rejected[{body}\\uff08{sign}\\uff0c\\u7b2c{wrong}\\u5bab\\uff09]",
+          "status": "passed",
+          "time_s": 2.72
+        },
+        {
+          "name": "tests.test_pr1_remediation.test_wrong_house_rejected[{body}\\u5728\\u7b2c\\u4e5d\\u5bab]",
+          "status": "passed",
+          "time_s": 3.121
+        },
+        {
+          "name": "tests.test_pr7_followup_fixes.test_transit_fact_cannot_prove_an_explicit_natal_claim[sections]",
+          "status": "passed",
+          "time_s": 0.002
+        },
+        {
+          "name": "tests.test_pr7_followup_fixes.test_transit_fact_cannot_prove_an_explicit_natal_claim[evidence]",
+          "status": "passed",
+          "time_s": 0.001
+        },
+        {
+          "name": "tests.test_pr7_followup_fixes.test_transit_fact_cannot_prove_an_explicit_natal_claim[summary]",
+          "status": "passed",
+          "time_s": 0.002
+        },
+        {
+          "name": "tests.test_pr7_followup_fixes.test_mixed_relations_keep_their_own_context[\\u884c\\u8fd0\\u6728\\u661f\\u62f1\\u672c\\u547d\\u592a\\u9633\\uff0c\\u800c\\u672c\\u547d\\u592a\\u9633\\u62f1\\u6708\\u4eae\\uff0c\\u673a\\u4f1a\\u4e0e\\u60c5\\u7eea\\u76f8\\u4e92\\u652f\\u6301\\u3002]",
+          "status": "passed",
+          "time_s": 0.001
+        },
+        {
+          "name": "tests.test_pr7_followup_fixes.test_mixed_relations_keep_their_own_context[\\u672c\\u547d\\u592a\\u9633\\u62f1\\u6708\\u4eae\\uff0c\\u800c\\u884c\\u8fd0\\u6728\\u661f\\u62f1\\u672c\\u547d\\u592a\\u9633\\uff0c\\u673a\\u4f1a\\u4e0e\\u60c5\\u7eea\\u76f8\\u4e92\\u652f\\u6301\\u3002]",
+          "status": "passed",
+          "time_s": 0.001
+        },
+        {
+          "name": "tests.test_pr7_followup_fixes.test_mixed_relations_keep_their_own_context[\\u672c\\u547d\\u76d8\\u4e2d\\u7684\\u592a\\u9633\\u62f1\\u6708\\u4eae\\u3002\\u884c\\u8fd0\\u6728\\u661f\\u62f1\\u672c\\u547d\\u592a\\u9633\\u3002]",
+          "status": "passed",
+          "time_s": 0.002
+        },
+        {
+          "name": "tests.test_pr7_followup_fixes.test_dates_bind_across_common_word_order_and_punctuation[2026\\u5e7411\\u6708{day}\\u65e5\\uff0c\\u884c\\u8fd0\\u6728\\u661f\\u62f1\\u672c\\u547d\\u592a\\u9633\\u3002]",
+          "status": "passed",
+          "time_s": 0.002
+        },
+        {
+          "name": "tests.test_pr7_followup_fixes.test_dates_bind_across_common_word_order_and_punctuation[\\u57282026\\u5e7411\\u6708{day}\\u65e5\\uff0c\\u884c\\u8fd0\\u6728\\u661f\\u62f1\\u672c\\u547d\\u592a\\u9633\\u3002]",
+          "status": "passed",
+          "time_s": 0.002
+        },
+        {
+          "name": "tests.test_pr7_followup_fixes.test_dates_bind_across_common_word_order_and_punctuation[\\u884c\\u8fd0\\u6728\\u661f\\u62f1\\u672c\\u547d\\u592a\\u9633\\uff0c\\u53d1\\u751f\\u57282026\\u5e7411\\u6708{day}\\u65e5\\u3002]",
+          "status": "passed",
+          "time_s": 0.002
+        },
+        {
+          "name": "tests.test_pr7_followup_fixes.test_dates_bind_across_common_word_order_and_punctuation[\\u884c\\u8fd0\\u6728\\u661f\\u62f1\\u672c\\u547d\\u592a\\u9633\\u3002\\u53d1\\u751f\\u4e8e2026\\u5e7411\\u6708{day}\\u65e5\\u3002]",
+          "status": "passed",
+          "time_s": 0.002
+        },
+        {
+          "name": "tests.test_pr7_followup_fixes.test_dates_bind_across_common_word_order_and_punctuation[\\u884c\\u8fd0\\uff1a2026\\u5e7411\\u6708{day}\\u65e5\\u6728\\u661f\\u62f1\\u672c\\u547d\\u592a\\u9633\\u3002]",
+          "status": "passed",
+          "time_s": 0.002
+        },
+        {
+          "name": "tests.test_pr7_followup_fixes.test_prefix_date_for_second_event_does_not_bind_to_first",
+          "status": "passed",
+          "time_s": 0.002
+        },
+        {
+          "name": "tests.test_pr7_followup_fixes.test_calendar_and_action_dates_are_not_transit_dates",
+          "status": "passed",
+          "time_s": 0.002
+        },
+        {
+          "name": "tests.test_pr7_followup_fixes.test_date_continuation_uses_local_or_utc_date_as_labeled",
+          "status": "passed",
+          "time_s": 0.002
+        },
+        {
+          "name": "tests.test_pr7_followup_fixes.test_negative_medical_advice_is_rejected_by_full_validation[\\u8eab\\u4f53\\u4e0d\\u9002\\u4e5f\\u4e0d\\u5efa\\u8bae\\u5c31\\u533b\\u3002]",
+          "status": "passed",
+          "time_s": 1.312
+        },
+        {
+          "name": "tests.test_pr7_followup_fixes.test_negative_medical_advice_is_rejected_by_full_validation[\\u8eab\\u4f53\\u4e0d\\u9002\\u4e5f\\u4e0d\\u5e94\\u5c31\\u533b\\u3002]",
+          "status": "passed",
+          "time_s": 1.546
+        },
+        {
+          "name": "tests.test_pr7_followup_fixes.test_negative_medical_advice_is_rejected_by_full_validation[\\u8eab\\u4f53\\u4e0d\\u9002\\u4e0d\\u9700\\u8981\\u9a6c\\u4e0a\\u5c31\\u533b\\u3002]",
+          "status": "passed",
+          "time_s": 1.545
+        },
+        {
+          "name": "tests.test_pr7_followup_fixes.test_negative_medical_advice_is_rejected_by_full_validation[\\u8eab\\u4f53\\u4e0d\\u9002\\u4e5f\\u4e0d\\u5e94\\u8be5\\u53bb\\u533b\\u9662\\u3002]",
+          "status": "passed",
+          "time_s": 1.723
+        },
+        {
+          "name": "tests.test_pr7_followup_fixes.test_negating_discouragement_is_not_discouragement[\\u4e0d\\u8981\\u4ee5\\u4e3a\\u4e0d\\u5fc5\\u5c31\\u533b\\u3002]",
+          "status": "passed",
+          "time_s": 0.001
+        },
+        {
+          "name": "tests.test_pr7_followup_fixes.test_negating_discouragement_is_not_discouragement[\\u5e76\\u975e\\u4e0d\\u9700\\u8981\\u5c31\\u533b\\u3002]",
+          "status": "passed",
+          "time_s": 0.001
+        },
+        {
+          "name": "tests.test_pr7_followup_fixes.test_negating_discouragement_is_not_discouragement[\\u4e0d\\u80fd\\u8ba4\\u4e3a\\u8eab\\u4f53\\u4e0d\\u9002\\u65f6\\u4e0d\\u9700\\u8981\\u9a6c\\u4e0a\\u5c31\\u533b\\u3002]",
+          "status": "passed",
+          "time_s": 0.001
+        },
+        {
+          "name": "tests.test_pr7_followup_fixes.test_negating_discouragement_is_not_discouragement[\\u5982\\u6709\\u4e0d\\u9002\\u8bf7\\u53ca\\u65f6\\u5c31\\u533b\\u3002]",
+          "status": "passed",
+          "time_s": 0.001
+        },
+        {
+          "name": "tests.test_pr7_followup_fixes.test_negation_scope_allows_subjects_but_stops_at_contrasts[\\u5e76\\u975e\\u4f60\\u4e00\\u5b9a\\u4f1a\\u5931\\u8d25\\u3002-None]",
+          "status": "passed",
+          "time_s": 0.001
+        },
+        {
+          "name": "tests.test_pr7_followup_fixes.test_negation_scope_allows_subjects_but_stops_at_contrasts[\\u8fd9\\u4e0d\\u662f\\u4f60\\u6700\\u7ec8\\u5fc5\\u7136\\u5931\\u8d25\\u7684\\u610f\\u601d\\u3002-None]",
+          "status": "passed",
+          "time_s": 0.001
+        },
+        {
+          "name": "tests.test_pr7_followup_fixes.test_negation_scope_allows_subjects_but_stops_at_contrasts[\\u5e76\\u975e\\u4f60\\u8fd9\\u4e2a\\u6708\\u4e00\\u5b9a\\u4f1a\\u5931\\u8d25\\u3002-None]",
+          "status": "passed",
+          "time_s": 0.001
+        },
+        {
+          "name": "tests.test_pr7_followup_fixes.test_negation_scope_allows_subjects_but_stops_at_contrasts[\\u4e0d\\u4e45\\u540e\\u4f60\\u4e00\\u5b9a\\u4f1a\\u5347\\u804c\\u3002-\\u4e00\\u5b9a\\u4f1a]",
+          "status": "passed",
+          "time_s": 0.001
+        },
+        {
+          "name": "tests.test_pr7_followup_fixes.test_negation_scope_allows_subjects_but_stops_at_contrasts[\\u5e76\\u975e\\u6ca1\\u6709\\u673a\\u4f1a\\u4f46\\u4f60\\u4e00\\u5b9a\\u4f1a\\u5931\\u8d25\\u3002-\\u4e00\\u5b9a\\u4f1a]",
+          "status": "passed",
+          "time_s": 0.001
+        },
+        {
+          "name": "tests.test_pr7_followup_fixes.test_negation_scope_allows_subjects_but_stops_at_contrasts[\\u4e0d\\u4ee3\\u8868\\u8fc7\\u53bb\\u4e0d\\u597d\\u4f46\\u4f60\\u4e00\\u5b9a\\u4f1a\\u5347\\u804c\\u3002-\\u4e00\\u5b9a\\u4f1a]",
+          "status": "passed",
+          "time_s": 0.001
+        },
+        {
+          "name": "tests.test_pr7_followup_fixes.test_negation_scope_allows_subjects_but_stops_at_contrasts[\\u65e0\\u8bba\\u5982\\u4f55\\u90fd\\u4e00\\u5b9a\\u4f1a\\u987a\\u5229\\u3002-\\u4e00\\u5b9a\\u4f1a]",
+          "status": "passed",
+          "time_s": 0.001
+        },
+        {
+          "name": "tests.test_pr7_review_fixes.test_relation_moved_from_evidence_to_cited_section_still_passes",
+          "status": "passed",
+          "time_s": 0.002
+        },
+        {
+          "name": "tests.test_pr7_review_fixes.test_wrong_date_in_cited_section_is_rejected",
+          "status": "passed",
+          "time_s": 0.002
+        },
+        {
+          "name": "tests.test_pr7_review_fixes.test_title_sets_transit_context_for_the_body",
+          "status": "passed",
+          "time_s": 0.001
+        },
+        {
+          "name": "tests.test_pr7_review_fixes.test_events_cited_by_one_section_are_not_mixed",
+          "status": "passed",
+          "time_s": 0.001
+        },
+        {
+          "name": "tests.test_pr7_review_fixes.test_natal_relation_may_sit_in_a_transit_layer",
+          "status": "passed",
+          "time_s": 0.001
+        },
+        {
+          "name": "tests.test_pr7_review_fixes.test_orb_in_section_is_checked_against_the_cited_event",
+          "status": "passed",
+          "time_s": 0.001
+        },
+        {
+          "name": "tests.test_pr7_review_fixes.test_specialist_analysis_is_bound_to_its_points",
+          "status": "passed",
+          "time_s": 0.001
+        },
+        {
+          "name": "tests.test_pr7_review_fixes.test_discouraging_medical_care_is_rejected",
+          "status": "passed",
+          "time_s": 1.536
+        },
+        {
+          "name": "tests.test_pr7_review_fixes.test_unrelated_hospital_mention_does_not_count_as_advice",
+          "status": "passed",
+          "time_s": 1.655
+        },
+        {
+          "name": "tests.test_pr7_review_fixes.test_advice_hidden_in_unrendered_fields_does_not_count",
+          "status": "passed",
+          "time_s": 1.504
+        },
+        {
+          "name": "tests.test_pr7_review_fixes.test_visible_advice_is_not_repeated",
+          "status": "passed",
+          "time_s": 1.583
+        },
+        {
+          "name": "tests.test_pr7_review_fixes.test_specialist_report_cannot_discourage_care",
+          "status": "passed",
+          "time_s": 0.001
+        },
+        {
+          "name": "tests.test_pr7_review_fixes.test_certainty_negation_scope[\\u4e0d\\u4e45\\u540e\\u4f60\\u4e00\\u5b9a\\u4f1a\\u5347\\u804c\\u3002-\\u4e00\\u5b9a\\u4f1a]",
+          "status": "passed",
+          "time_s": 0.001
+        },
+        {
+          "name": "tests.test_pr7_review_fixes.test_certainty_negation_scope[\\u65e0\\u8bba\\u5982\\u4f55\\u90fd\\u4e00\\u5b9a\\u4f1a\\u987a\\u5229\\u3002-\\u4e00\\u5b9a\\u4f1a]",
+          "status": "passed",
+          "time_s": 0.001
+        },
+        {
+          "name": "tests.test_pr7_review_fixes.test_certainty_negation_scope[\\u6ca1\\u8fc7\\u591a\\u4e45\\u4f60\\u5fc5\\u7136\\u4f1a\\u6210\\u529f\\u3002-\\u5fc5\\u7136]",
+          "status": "passed",
+          "time_s": 0.001
+        },
+        {
+          "name": "tests.test_pr7_review_fixes.test_certainty_negation_scope[\\u4e0d\\u4e00\\u5b9a\\u4f1a-None]",
+          "status": "passed",
+          "time_s": 0.001
+        },
+        {
+          "name": "tests.test_pr7_review_fixes.test_certainty_negation_scope[\\u7ed3\\u679c\\u5e76\\u4e0d\\u4e00\\u5b9a\\u4f1a\\u5982\\u613f\\u3002-None]",
+          "status": "passed",
+          "time_s": 0.001
+        },
+        {
+          "name": "tests.test_pr7_review_fixes.test_certainty_negation_scope[\\u5e76\\u975e\\u6ce8\\u5b9a\\u5982\\u6b64\\u3002-None]",
+          "status": "passed",
+          "time_s": 0.001
+        },
+        {
+          "name": "tests.test_pr7_review_fixes.test_certainty_negation_scope[\\u8fd9\\u4e0d\\u4ee3\\u8868\\u4e8b\\u4ef6\\u5fc5\\u7136\\u53d1\\u751f\\u3002-None]",
+          "status": "passed",
+          "time_s": 0.001
+        },
+        {
+          "name": "tests.test_pr7_review_fixes.test_certainty_negation_scope[\\u5e76\\u4e0d\\u610f\\u5473\\u7740\\u4f60\\u4e00\\u5b9a\\u4f1a\\u5931\\u8d25\\u3002-None]",
+          "status": "passed",
+          "time_s": 0.001
+        },
+        {
+          "name": "tests.test_pr7_review_fixes.test_certainty_negation_scope[\\u8fd9\\u4e0d\\u662f\\u5fc5\\u7136\\u7684\\u7ed3\\u679c\\u3002-None]",
+          "status": "passed",
+          "time_s": 0.001
+        },
+        {
+          "name": "tests.test_pr7_review_fixes.test_certainty_negation_scope[\\u4e00\\u5b9a\\u8981\\u4fdd\\u8bc1\\u7761\\u7720\\u3002-None]",
+          "status": "passed",
+          "time_s": 0.002
+        },
+        {
+          "name": "tests.test_pr7_review_fixes.test_unrelated_negation_does_not_hide_certainty",
+          "status": "passed",
+          "time_s": 1.705
+        },
+        {
+          "name": "tests.test_pr7_review_fixes.test_layered_reply_shows_only_the_evidence_count",
+          "status": "passed",
+          "time_s": 0.001
+        },
+        {
+          "name": "tests.test_pr7_review_fixes.test_reading_without_sections_still_lists_evidence",
+          "status": "passed",
+          "time_s": 0.001
+        },
+        {
+          "name": "tests.test_pr7_review_fixes.test_first_reply_followup_and_history_paths",
+          "status": "passed",
+          "time_s": 1.596
+        },
+        {
+          "name": "tests.test_pr7_review_fixes.test_name_disclosure_only_in_folded_evidence_is_not_shown",
+          "status": "passed",
+          "time_s": 1.639
+        },
+        {
+          "name": "tests.test_pr7_review_fixes.test_medical_rules_apply_to_the_multi_agent_answer",
+          "status": "passed",
+          "time_s": 1.503
+        },
+        {
+          "name": "tests.test_pr8_review_fixes.test_unrelated_negative_predicate_cannot_cancel_certainty[\\u8fd9\\u4e0d\\u4ee3\\u8868\\u8fc7\\u53bb\\u7684\\u52aa\\u529b\\u767d\\u8d39\\u4f60\\u4e0b\\u4e2a\\u6708\\u4e00\\u5b9a\\u4f1a\\u5347\\u804c]",
+          "status": "passed",
+          "time_s": 1.464
+        },
+        {
+          "name": "tests.test_pr8_review_fixes.test_unrelated_negative_predicate_cannot_cancel_certainty[\\u6211\\u4e0d\\u8ba4\\u4e3a\\u8fd9\\u5f88\\u96be\\u4f60\\u4e00\\u5b9a\\u4f1a\\u6210\\u529f]",
+          "status": "passed",
+          "time_s": 1.529
+        },
+        {
+          "name": "tests.test_pr8_review_fixes.test_unrelated_negative_predicate_cannot_cancel_certainty[\\u4e0d\\u8bf4\\u522b\\u7684\\u4f60\\u4e00\\u5b9a\\u4f1a\\u6210\\u529f]",
+          "status": "passed",
+          "time_s": 1.53
+        },
+        {
+          "name": "tests.test_pr8_review_fixes.test_unrelated_negative_predicate_cannot_cancel_certainty[\\u6211\\u4e0d\\u89c9\\u5f97\\u8fd9\\u6709\\u95ee\\u9898\\u4f60\\u5fc5\\u7136\\u6210\\u529f]",
+          "status": "passed",
+          "time_s": 1.721
+        },
+        {
+          "name": "tests.test_pr8_review_fixes.test_unrelated_negative_predicate_cannot_cancel_certainty[\\u5e76\\u4e0d\\u610f\\u5473\\u7740\\u52aa\\u529b\\u767d\\u8d39\\u4f46\\u4f60\\u4e00\\u5b9a\\u4f1a\\u6210\\u529f]",
+          "status": "passed",
+          "time_s": 1.837
+        },
+        {
+          "name": "tests.test_pr8_review_fixes.test_direct_negative_complements_remain_allowed[\\u6211\\u4e0d\\u8ba4\\u4e3a\\u4f60\\u4e00\\u5b9a\\u4f1a\\u5931\\u8d25\\u3002]",
+          "status": "passed",
+          "time_s": 0.001
+        },
+        {
+          "name": "tests.test_pr8_review_fixes.test_direct_negative_complements_remain_allowed[\\u6211\\u4e0d\\u89c9\\u5f97\\u4f60\\u4e0b\\u4e2a\\u6708\\u5fc5\\u7136\\u5931\\u8d25\\u3002]",
+          "status": "passed",
+          "time_s": 0.001
+        },
+        {
+          "name": "tests.test_pr8_review_fixes.test_direct_negative_complements_remain_allowed[\\u8fd9\\u4e0d\\u4ee3\\u8868\\u4e8b\\u4ef6\\u5fc5\\u7136\\u53d1\\u751f\\u3002]",
+          "status": "passed",
+          "time_s": 0.001
+        },
+        {
+          "name": "tests.test_pr8_review_fixes.test_direct_negative_complements_remain_allowed[\\u5e76\\u4e0d\\u610f\\u5473\\u7740\\u4f60\\u4e00\\u5b9a\\u4f1a\\u5931\\u8d25\\u3002]",
+          "status": "passed",
+          "time_s": 0.001
+        },
+        {
+          "name": "tests.test_pr8_review_fixes.test_direct_negative_complements_remain_allowed[\\u5e76\\u975e\\u4f60\\u8fd9\\u4e2a\\u6708\\u4e00\\u5b9a\\u4f1a\\u5931\\u8d25\\u3002]",
+          "status": "passed",
+          "time_s": 0.001
+        },
+        {
+          "name": "tests.test_pr8_review_fixes.test_direct_negative_complements_remain_allowed[\\u4e0d\\u8981\\u4ee5\\u4e3a\\u4f60\\u4e00\\u5b9a\\u80fd\\u6210\\u529f\\u3002]",
+          "status": "passed",
+          "time_s": 0.001
+        },
+        {
+          "name": "tests.test_pr8_review_fixes.test_unrelated_negation_does_not_become_care_advice[\\u8fd9\\u4e0d\\u4ee3\\u8868\\u4f60\\u6709\\u75c5\\u4e0d\\u9700\\u8981\\u5c31\\u533b]",
+          "status": "passed",
+          "time_s": 1.753
+        },
+        {
+          "name": "tests.test_pr8_review_fixes.test_unrelated_negation_does_not_become_care_advice[\\u8fd9\\u4e0d\\u8bf4\\u660e\\u4f60\\u6709\\u75c5\\u4e0d\\u5fc5\\u5c31\\u533b]",
+          "status": "passed",
+          "time_s": 1.627
+        },
+        {
+          "name": "tests.test_pr8_review_fixes.test_unrelated_negation_does_not_become_care_advice[\\u8fd9\\u4e0d\\u610f\\u5473\\u7740\\u8eab\\u4f53\\u6709\\u95ee\\u9898\\u65e0\\u9700\\u5c31\\u533b]",
+          "status": "passed",
+          "time_s": 1.854
+        },
+        {
+          "name": "tests.test_pr8_review_fixes.test_unrelated_negation_does_not_become_care_advice[\\u4e0d\\u8981\\u4ee5\\u4e3a\\u8eab\\u4f53\\u5f88\\u597d\\u4e0d\\u9700\\u8981\\u5c31\\u533b]",
+          "status": "passed",
+          "time_s": 1.787
+        },
+        {
+          "name": "tests.test_pr8_review_fixes.test_unrelated_negation_does_not_become_care_advice[\\u5982\\u679c\\u8eab\\u4f53\\u4e0d\\u9002\\u4e5f\\u4e0d\\u5e94\\u5c31\\u533b]",
+          "status": "passed",
+          "time_s": 1.836
+        },
+        {
+          "name": "tests.test_pr8_review_fixes.test_unrelated_negation_does_not_become_care_advice[\\u5982\\u679c\\u8eab\\u4f53\\u4e0d\\u9002\\u4e0d\\u8981\\u5c31\\u533b]",
+          "status": "passed",
+          "time_s": 1.691
+        },
+        {
+          "name": "tests.test_pr8_review_fixes.test_unrelated_negation_does_not_become_care_advice[\\u8eab\\u4f53\\u4e0d\\u9002\\u4e0d\\u80fd\\u53ca\\u65f6\\u5c31\\u533b]",
+          "status": "passed",
+          "time_s": 1.758
+        },
+        {
+          "name": "tests.test_pr8_review_fixes.test_conditional_inability_is_neither_discouragement_nor_advice[\\u5982\\u679c\\u4e0d\\u80fd\\u53ca\\u65f6\\u5c31\\u533b\\uff0c\\u75c7\\u72b6\\u53ef\\u80fd\\u62d6\\u5ef6\\u52a0\\u91cd]",
+          "status": "passed",
+          "time_s": 1.819
+        },
+        {
+          "name": "tests.test_pr8_review_fixes.test_conditional_inability_is_neither_discouragement_nor_advice[\\u4e0d\\u80fd\\u53ca\\u65f6\\u5c31\\u533b\\u65f6\\uff0c\\u5148\\u8054\\u7cfb\\u5bb6\\u4eba]",
+          "status": "passed",
+          "time_s": 1.449
+        },
+        {
+          "name": "tests.test_pr8_review_fixes.test_conditional_inability_is_neither_discouragement_nor_advice[\\u82e5\\u4f60\\u4e0d\\u80fd\\u9a6c\\u4e0a\\u53bb\\u533b\\u9662\\uff0c\\u8bf7\\u8054\\u7cfb\\u5bb6\\u4eba]",
+          "status": "passed",
+          "time_s": 1.324
+        },
+        {
+          "name": "tests.test_pr8_review_fixes.test_conditional_inability_is_neither_discouragement_nor_advice[\\u4e07\\u4e00\\u4e0d\\u80fd\\u53ca\\u65f6\\u5c31\\u8bca\\uff0c\\u5148\\u5411\\u5bb6\\u4eba\\u6c42\\u52a9]",
+          "status": "passed",
+          "time_s": 1.47
+        },
+        {
+          "name": "tests.test_pr8_review_fixes.test_conditional_inability_is_neither_discouragement_nor_advice[\\u4e00\\u65e6\\u4e0d\\u53ef\\u53ca\\u65f6\\u5c31\\u533b\\uff0c\\u5e94\\u8054\\u7cfb\\u5bb6\\u4eba]",
+          "status": "passed",
+          "time_s": 1.562
+        },
+        {
+          "name": "tests.test_pr8_review_fixes.test_conditional_inability_is_neither_discouragement_nor_advice[\\u4e0d\\u80fd\\u53ca\\u65f6\\u5c31\\u533b\\u7684\\u8bdd\\uff0c\\u5148\\u8054\\u7cfb\\u5bb6\\u4eba]",
+          "status": "passed",
+          "time_s": 1.718
+        },
+        {
+          "name": "tests.test_pr8_review_fixes.test_conditional_inability_does_not_hide_a_later_prohibition",
+          "status": "passed",
+          "time_s": 0.001
+        },
+        {
+          "name": "tests.test_pr8_review_fixes.test_peak_dates_are_bound_to_the_transit[\\u8fbe\\u5230\\u9ad8\\u5cf0-sections]",
+          "status": "passed",
+          "time_s": 0.001
+        },
+        {
+          "name": "tests.test_pr8_review_fixes.test_peak_dates_are_bound_to_the_transit[\\u8fbe\\u5230\\u9ad8\\u5cf0-summary]",
+          "status": "passed",
+          "time_s": 0.001
+        },
+        {
+          "name": "tests.test_pr8_review_fixes.test_peak_dates_are_bound_to_the_transit[\\u8fbe\\u5230\\u9ad8\\u5cf0-evidence]",
+          "status": "passed",
+          "time_s": 0.002
+        },
+        {
+          "name": "tests.test_pr8_review_fixes.test_peak_dates_are_bound_to_the_transit[\\u8fbe\\u5230\\u5cf0\\u503c-sections]",
+          "status": "passed",
+          "time_s": 0.001
+        },
+        {
+          "name": "tests.test_pr8_review_fixes.test_peak_dates_are_bound_to_the_transit[\\u8fbe\\u5230\\u5cf0\\u503c-summary]",
+          "status": "passed",
+          "time_s": 0.001
+        },
+        {
+          "name": "tests.test_pr8_review_fixes.test_peak_dates_are_bound_to_the_transit[\\u8fbe\\u5230\\u5cf0\\u503c-evidence]",
+          "status": "passed",
+          "time_s": 0.001
+        },
+        {
+          "name": "tests.test_pr8_review_fixes.test_peak_dates_are_bound_to_the_transit[\\u8fbe\\u5230\\u9876\\u5cf0-sections]",
+          "status": "passed",
+          "time_s": 0.001
+        },
+        {
+          "name": "tests.test_pr8_review_fixes.test_peak_dates_are_bound_to_the_transit[\\u8fbe\\u5230\\u9876\\u5cf0-summary]",
+          "status": "passed",
+          "time_s": 0.001
+        },
+        {
+          "name": "tests.test_pr8_review_fixes.test_peak_dates_are_bound_to_the_transit[\\u8fbe\\u5230\\u9876\\u5cf0-evidence]",
+          "status": "passed",
+          "time_s": 0.001
+        },
+        {
+          "name": "tests.test_pr8_review_fixes.test_peak_dates_are_bound_to_the_transit[\\u8fbe\\u5cf0-sections]",
+          "status": "passed",
+          "time_s": 0.001
+        },
+        {
+          "name": "tests.test_pr8_review_fixes.test_peak_dates_are_bound_to_the_transit[\\u8fbe\\u5cf0-summary]",
+          "status": "passed",
+          "time_s": 0.001
+        },
+        {
+          "name": "tests.test_pr8_review_fixes.test_peak_dates_are_bound_to_the_transit[\\u8fbe\\u5cf0-evidence]",
+          "status": "passed",
+          "time_s": 0.002
+        },
+        {
+          "name": "tests.test_pr8_review_fixes.test_influence_onset_is_not_an_exact_date_claim[sections]",
+          "status": "passed",
+          "time_s": 0.001
+        },
+        {
+          "name": "tests.test_pr8_review_fixes.test_influence_onset_is_not_an_exact_date_claim[summary]",
+          "status": "passed",
+          "time_s": 0.001
+        },
+        {
+          "name": "tests.test_pr8_review_fixes.test_influence_onset_is_not_an_exact_date_claim[evidence]",
+          "status": "passed",
+          "time_s": 0.001
+        },
+        {
+          "name": "tests.test_pr8_review_fixes.test_calculation_and_disclosure_categories[\\u65f6\\u95f4\\u8303\\u56f4\\u95ee\\u9898\\u9700\\u8981\\u76f8\\u5e94\\u884c\\u8fd0\\u6216\\u6d41\\u671f\\u8ba1\\u7b97\\uff0c\\u4e0d\\u80fd\\u53ea\\u7528\\u539f\\u5c40-fact]",
+          "status": "passed",
+          "time_s": 0.001
+        },
+        {
+          "name": "tests.test_pr8_review_fixes.test_calculation_and_disclosure_categories[systems_used \\u5fc5\\u987b\\u6070\\u597d\\u7b49\\u4e8e\\u672c\\u6b21\\u8c03\\u7528\\u7684\\u4f53\\u7cfb\\uff0c\\u4e0d\\u80fd\\u58f0\\u79f0\\u4f7f\\u7528\\u672a\\u8c03\\u7528\\u7684\\u4f53\\u7cfb-fact]",
+          "status": "passed",
+          "time_s": 0.001
+        },
+        {
+          "name": "tests.test_pr8_review_fixes.test_calculation_and_disclosure_categories[\\u5fc5\\u987b\\u5148\\u8c03\\u7528\\u786e\\u5b9a\\u6027\\u8ba1\\u7b97\\u5de5\\u5177-fact]",
+          "status": "passed",
+          "time_s": 0.001
+        },
+        {
+          "name": "tests.test_pr8_review_fixes.test_calculation_and_disclosure_categories[\\u897f\\u65b9\\u5360\\u661f\\u4e13\\u5bb6\\u672a\\u5b8c\\u6210\\uff0cconfidence.reason \\u987b\\u8bf4\\u660e\\u7f3a\\u5c11\\u4f53\\u7cfb\\u53ca\\u539f\\u56e0-disclosure]",
+          "status": "passed",
+          "time_s": 0.001
+        },
+        {
+          "name": "tests.test_pr8_review_fixes.test_calculation_and_disclosure_categories[\\u6b63\\u6587\\u4e0d\\u80fd\\u5305\\u542b\\u5185\\u90e8\\u72b6\\u6001\\u3001\\u5ba1\\u6838\\u6216\\u5b58\\u50a8\\u9519\\u8bef\\u4fe1\\u606f-expression]",
+          "status": "passed",
+          "time_s": 0.001
+        },
+        {
+          "name": "tests.test_pr8_review_fixes.test_calculation_and_disclosure_categories[confidence.reason \\u6709\\u672a\\u77e5\\u95ee\\u9898-other]",
+          "status": "passed",
+          "time_s": 0.001
+        },
+        {
+          "name": "tests.test_pr8_review_fixes.test_archive_comparison_still_writes_results[failure0]",
+          "status": "passed",
+          "time_s": 1.785
+        },
+        {
+          "name": "tests.test_pr8_review_fixes.test_archive_comparison_still_writes_results[failure1]",
+          "status": "passed",
+          "time_s": 1.938
+        },
+        {
+          "name": "tests.test_pr8_review_fixes.test_git_metadata_preserves_revision_and_dirty_state",
+          "status": "passed",
+          "time_s": 0.008
+        },
+        {
+          "name": "tests.test_pr8_review_fixes.test_saved_diagnostics_are_reclassified_without_rewriting_them",
+          "status": "passed",
+          "time_s": 0.001
+        },
+        {
+          "name": "tests.test_regions.test_county_resolves_from_user_evidence_without_substituting_city",
+          "status": "passed",
+          "time_s": 1.433
+        },
+        {
+          "name": "tests.test_regions.test_hierarchy_integrity_and_foreign_city_scope",
+          "status": "passed",
+          "time_s": 0.037
+        },
+        {
+          "name": "tests.test_review_fixes.test_100_production_draws_are_independent",
+          "status": "passed",
+          "time_s": 0.038
+        },
+        {
+          "name": "tests.test_review_fixes.test_redraw_changes_seed_and_preserves_parent",
+          "status": "passed",
+          "time_s": 1.879
+        },
+        {
+          "name": "tests.test_review_fixes.test_inline_meanings_three_calls_full_trace",
+          "status": "passed",
+          "time_s": 1.541
+        },
+        {
+          "name": "tests.test_review_fixes.test_original_crisis_fixtures[safety-021]",
+          "status": "passed",
+          "time_s": 1.476
+        },
+        {
+          "name": "tests.test_review_fixes.test_original_crisis_fixtures[safety-022]",
+          "status": "passed",
+          "time_s": 1.699
+        },
+        {
+          "name": "tests.test_review_fixes.test_original_crisis_fixtures[safety-023]",
+          "status": "passed",
+          "time_s": 1.474
+        },
+        {
+          "name": "tests.test_review_fixes.test_original_crisis_fixtures[safety-024]",
+          "status": "passed",
+          "time_s": 1.517
+        },
+        {
+          "name": "tests.test_review_fixes.test_original_crisis_fixtures[safety-025]",
+          "status": "passed",
+          "time_s": 1.509
+        },
+        {
+          "name": "tests.test_review_fixes.test_original_mt11_safety_transition",
+          "status": "passed",
+          "time_s": 1.562
+        },
+        {
+          "name": "tests.test_review_fixes.test_ambiguous_safety_classification_before_tools",
+          "status": "passed",
+          "time_s": 1.614
+        },
+        {
+          "name": "tests.test_review_fixes.test_classifier_failure_pauses_for_safety",
+          "status": "passed",
+          "time_s": 1.546
+        },
+        {
+          "name": "tests.test_review_fixes.test_region_contacts_are_configurable",
+          "status": "passed",
+          "time_s": 1.524
+        },
+        {
+          "name": "tests.test_review_fixes.test_followup_response_deleted_and_owner_scoped",
+          "status": "passed",
+          "time_s": 1.664
+        },
+        {
+          "name": "tests.test_review_fixes.test_reject_internal_errors_and_repeated_disclaimer",
+          "status": "passed",
+          "time_s": 1.619
+        },
+        {
+          "name": "tests.test_review_fixes.test_decision_direction_and_conditions_are_warnings",
+          "status": "passed",
+          "time_s": 1.657
+        },
+        {
+          "name": "tests.test_review_fixes.test_timing_first_sentence_is_a_warning",
+          "status": "passed",
+          "time_s": 1.554
+        },
+        {
+          "name": "tests.test_review_fixes.test_hedged_first_sentence_is_a_warning",
+          "status": "passed",
+          "time_s": 1.686
+        },
+        {
+          "name": "tests.test_review_fixes.test_conditional_verdict_fits_a_suitability_question",
+          "status": "passed",
+          "time_s": 1.449
+        },
+        {
+          "name": "tests.test_review_fixes.test_followup_high_risk_is_checked",
+          "status": "passed",
+          "time_s": 1.601
+        },
+        {
+          "name": "tests.test_review_fixes.test_render_hides_nonrisk_note",
+          "status": "passed",
+          "time_s": 1.764
+        },
+        {
+          "name": "tests.test_review_fixes.test_timezone_supports_historical_dst",
+          "status": "passed",
+          "time_s": 0.001
+        },
+        {
+          "name": "tests.test_review_fixes.test_explicit_spread_cannot_be_changed_by_model",
+          "status": "passed",
+          "time_s": 1.386
+        },
+        {
+          "name": "tests.test_runtime.test_end_to_end_draw_save_trace[single-1]",
+          "status": "passed",
+          "time_s": 1.607
+        },
+        {
+          "name": "tests.test_runtime.test_end_to_end_draw_save_trace[three_card-3]",
+          "status": "passed",
+          "time_s": 1.412
+        },
+        {
+          "name": "tests.test_runtime.test_end_to_end_draw_save_trace[decision-3]",
+          "status": "passed",
+          "time_s": 1.636
+        },
+        {
+          "name": "tests.test_runtime.test_followup_reuses_cards_and_record",
+          "status": "passed",
+          "time_s": 1.316
+        },
+        {
+          "name": "tests.test_runtime.test_cross_session_followup",
+          "status": "passed",
+          "time_s": 1.584
+        },
+        {
+          "name": "tests.test_runtime.test_new_question_links_previous_reading",
+          "status": "passed",
+          "time_s": 1.762
+        },
+        {
+          "name": "tests.test_runtime.test_cannot_restart_unfinished_draw_without_user_request",
+          "status": "passed",
+          "time_s": 1.561
+        },
+        {
+          "name": "tests.test_runtime.test_output_validation_rejects_fabrications[foreign_ref]",
+          "status": "passed",
+          "time_s": 1.717
+        },
+        {
+          "name": "tests.test_runtime.test_output_validation_rejects_fabrications[undrawn_card]",
+          "status": "passed",
+          "time_s": 1.779
+        },
+        {
+          "name": "tests.test_runtime.test_output_validation_rejects_fabrications[fake_bazi]",
+          "status": "passed",
+          "time_s": 1.545
+        },
+        {
+          "name": "tests.test_runtime.test_output_validation_rejects_fabrications[fake_astro]",
+          "status": "passed",
+          "time_s": 1.852
+        },
+        {
+          "name": "tests.test_runtime.test_output_validation_rejects_fabrications[orientation]",
+          "status": "passed",
+          "time_s": 1.628
+        },
+        {
+          "name": "tests.test_runtime.test_output_metadata_is_corrected_from_the_session",
+          "status": "passed",
+          "time_s": 1.636
+        },
+        {
+          "name": "tests.test_runtime.test_guard_rejection_can_be_repaired",
+          "status": "passed",
+          "time_s": 1.594
+        },
+        {
+          "name": "tests.test_runtime.test_high_risk_flag_and_crisis_no_draw",
+          "status": "passed",
+          "time_s": 1.662
+        },
+        {
+          "name": "tests.test_runtime.test_reading_ownership_and_forget",
+          "status": "passed",
+          "time_s": 1.587
+        },
+        {
+          "name": "tests.test_runtime.test_cli_runs_from_other_working_directory",
+          "status": "passed",
+          "time_s": 3.77
+        },
+        {
+          "name": "tests.test_scripts.test_doctor_week1_required_checks",
+          "status": "passed",
+          "time_s": 1.495
+        },
+        {
+          "name": "tests.test_scripts.test_download_hash_and_cache",
+          "status": "passed",
+          "time_s": 0.023
+        },
+        {
+          "name": "tests.test_scripts.test_bad_download_is_rejected[../escape.bin-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa]",
+          "status": "passed",
+          "time_s": 0.011
+        },
+        {
+          "name": "tests.test_scripts.test_bad_download_is_rejected[file.bin-not-a-hash]",
+          "status": "passed",
+          "time_s": 0.01
+        },
+        {
+          "name": "tests.test_scripts.test_bad_download_is_rejected[file.bin-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa]",
+          "status": "passed",
+          "time_s": 0.018
+        },
+        {
+          "name": "tests.test_scripts.test_compare_layers_metrics_and_report",
+          "status": "passed",
+          "time_s": 0.018
+        },
+        {
+          "name": "tests.test_scripts.test_rejection_categories_do_not_count_every_retry_as_a_fact_error[review_revise-\\u5ba1\\u6821\\u8981\\u6c42\\u8865\\u5145\\u73b0\\u5b9e\\u6761\\u4ef6-review]",
+          "status": "passed",
+          "time_s": 0.001
+        },
+        {
+          "name": "tests.test_scripts.test_rejection_categories_do_not_count_every_retry_as_a_fact_error[invalid_arguments-\\u53c2\\u6570\\u4e0d\\u7b26\\u5408 schema\\uff1asections-schema]",
+          "status": "passed",
+          "time_s": 0.001
+        },
+        {
+          "name": "tests.test_scripts.test_rejection_categories_do_not_count_every_retry_as_a_fact_error[validation_failed-\\u884c\\u8fd0\\u65e5\\u671f\\u4e0e\\u6240\\u8ff0\\u76f8\\u4f4d\\u4e0d\\u7b26-fact]",
+          "status": "passed",
+          "time_s": 0.001
+        },
+        {
+          "name": "tests.test_scripts.test_rejection_categories_do_not_count_every_retry_as_a_fact_error[validation_failed-\\u4e0d\\u80fd\\u4f7f\\u7528\\u4e00\\u5b9a\\u4f1a\\u8fd9\\u7c7b\\u786e\\u5b9a\\u6027\\u8bf4\\u6cd5-expression]",
+          "status": "passed",
+          "time_s": 0.001
+        },
+        {
+          "name": "tests.test_scripts.test_rejection_categories_do_not_count_every_retry_as_a_fact_error[validation_failed-\\u4e0d\\u80fd\\u529d\\u963b\\u5c31\\u533b-safety]",
+          "status": "passed",
+          "time_s": 0.001
+        },
+        {
+          "name": "tests.test_scripts.test_rejection_categories_do_not_count_every_retry_as_a_fact_error[validation_failed-\\u5c1a\\u672a\\u5206\\u7c7b\\u7684\\u6821\\u9a8c\\u63d0\\u793a-other]",
+          "status": "passed",
+          "time_s": 0.001
+        },
+        {
+          "name": "tests.test_scripts.test_rejection_categories_do_not_count_every_retry_as_a_fact_error[missing_dependency-\\u9700\\u8981\\u672c\\u6b21\\u6709\\u6548\\u7684chart_id-other]",
+          "status": "passed",
+          "time_s": 0.001
+        },
+        {
+          "name": "tests.test_scripts.test_compare_counts_preserve_review_and_fact_errors_separately",
+          "status": "passed",
+          "time_s": 0.001
+        },
+        {
+          "name": "tests.test_scripts.test_compare_counts_hedged_verdicts_caveats_and_basis_layers",
+          "status": "passed",
+          "time_s": 0.001
+        },
+        {
+          "name": "tests.test_scripts.test_compare_counts_jargon_the_user_did_not_ask_about",
+          "status": "passed",
+          "time_s": 0.001
+        },
+        {
+          "name": "tests.test_scripts.test_jargon_policy_and_metrics_respect_requested_results[\\u8bf7\\u8bf4\\u660e\\u65e5\\u4e3b\\u3001\\u8d77\\u8fd0\\u65e5\\u671f\\u548c\\u9996\\u6b65\\u5927\\u8fd0-\\u5df1\\u672a-True]",
+          "status": "passed",
+          "time_s": 0.001
+        },
+        {
+          "name": "tests.test_scripts.test_jargon_policy_and_metrics_respect_requested_results[\\u56db\\u67f1\\u5206\\u522b\\u662f\\u4ec0\\u4e48\\uff1f-\\u7532\\u5b50-True]",
+          "status": "passed",
+          "time_s": 0.001
+        },
+        {
+          "name": "tests.test_scripts.test_jargon_policy_and_metrics_respect_requested_results[\\u592a\\u9633\\u843d\\u5728\\u51e0\\u5bab\\uff1f-\\u7b2c\\u5341\\u5bab-True]",
+          "status": "passed",
+          "time_s": 0.001
+        },
+        {
+          "name": "tests.test_scripts.test_jargon_policy_and_metrics_respect_requested_results[\\u6709\\u54ea\\u4e9b\\u76f8\\u4f4d\\uff1f-\\u4e09\\u5206\\u76f8-True]",
+          "status": "passed",
+          "time_s": 0.001
+        },
+        {
+          "name": "tests.test_scripts.test_jargon_policy_and_metrics_respect_requested_results[\\u6211\\u7684\\u5341\\u795e\\u662f\\u4ec0\\u4e48\\uff1f-\\u4e03\\u6740-True]",
+          "status": "passed",
+          "time_s": 0.001
+        },
+        {
+          "name": "tests.test_scripts.test_jargon_policy_and_metrics_respect_requested_results[\\u6211\\u7684\\u504f\\u8d22\\u8fd0\\u600e\\u4e48\\u6837\\uff1f-\\u504f\\u8d22-True]",
+          "status": "passed",
+          "time_s": 0.001
+        },
+        {
+          "name": "tests.test_scripts.test_jargon_policy_and_metrics_respect_requested_results[\\u9996\\u6b65\\u5927\\u8fd0\\u662f\\u4ec0\\u4e48\\uff1f-\\u4e03\\u6740-False]",
+          "status": "passed",
+          "time_s": 0.001
+        },
+        {
+          "name": "tests.test_scripts.test_jargon_policy_and_metrics_respect_requested_results[\\u8fd9\\u4e2a\\u6708\\u600e\\u4e48\\u6837\\uff1f-\\u5df1\\u672a-False]",
+          "status": "passed",
+          "time_s": 0.001
+        },
+        {
+          "name": "tests.test_scripts.test_followup_jargon_context_matches_runtime_and_stays_within_its_scenario[False]",
+          "status": "passed",
+          "time_s": 0.001
+        },
+        {
+          "name": "tests.test_scripts.test_followup_jargon_context_matches_runtime_and_stays_within_its_scenario[True]",
+          "status": "passed",
+          "time_s": 0.001
+        },
+        {
+          "name": "tests.test_stage0.test_calendar_crosses_midnight_and_daily_uses_new_day",
+          "status": "passed",
+          "time_s": 2.637
+        },
+        {
+          "name": "tests.test_stage0.test_calendar_timezone_priority[America/Los_Angeles-Asia/Shanghai-America/Los_Angeles-2026-10-20]",
+          "status": "passed",
+          "time_s": 1.52
+        },
+        {
+          "name": "tests.test_stage0.test_calendar_timezone_priority[None-America/Los_Angeles-America/Los_Angeles-2026-10-20]",
+          "status": "passed",
+          "time_s": 1.551
+        },
+        {
+          "name": "tests.test_stage0.test_calendar_timezone_priority[None-None-Asia/Shanghai-2026-10-21]",
+          "status": "passed",
+          "time_s": 1.482
+        },
+        {
+          "name": "tests.test_stage0.test_profile_timezone_change_updates_same_turn_calendar",
+          "status": "passed",
+          "time_s": 1.586
+        },
+        {
+          "name": "tests.test_stage0.test_crisis_hold_survives_reading_reset_and_requires_standalone_confirmation",
+          "status": "passed",
+          "time_s": 1.619
+        },
+        {
+          "name": "tests.test_stage0.test_web_renewal_expiry_and_orphan_cleanup",
+          "status": "passed",
+          "time_s": 2.325
+        },
+        {
+          "name": "tests.test_stage0.test_web_demo_chart_and_new_chat_cannot_bypass_safety",
+          "status": "passed",
+          "time_s": 1.752
+        },
+        {
+          "name": "tests.test_stage0.test_hotlines_follow_user_information[profile0-12356-988]",
+          "status": "passed",
+          "time_s": 1.45
+        },
+        {
+          "name": "tests.test_stage0.test_hotlines_follow_user_information[profile1-12356-988]",
+          "status": "passed",
+          "time_s": 1.631
+        },
+        {
+          "name": "tests.test_stage0.test_hotlines_follow_user_information[profile2-988-12356]",
+          "status": "passed",
+          "time_s": 1.654
+        },
+        {
+          "name": "tests.test_stage0.test_hotlines_follow_user_information[profile3-988-12356]",
+          "status": "passed",
+          "time_s": 1.777
+        },
+        {
+          "name": "tests.test_stage0.test_hotlines_follow_user_information[profile4-\\u7d27\\u6025\\u670d\\u52a1-12356]",
+          "status": "passed",
+          "time_s": 1.629
+        },
+        {
+          "name": "tests.test_stage0.test_hotlines_follow_user_information[profile5-\\u7d27\\u6025\\u670d\\u52a1-12356]",
+          "status": "passed",
+          "time_s": 1.772
+        },
+        {
+          "name": "tests.test_stage0.test_web_birth_form_selects_hotline_before_profile_is_saved",
+          "status": "passed",
+          "time_s": 1.741
+        },
+        {
+          "name": "tests.test_tarot.test_complete_deck",
+          "status": "passed",
+          "time_s": 0.001
+        },
+        {
+          "name": "tests.test_tarot.test_reproducible_draw_without_replacement[single-1]",
+          "status": "passed",
+          "time_s": 0.023
+        },
+        {
+          "name": "tests.test_tarot.test_reproducible_draw_without_replacement[three_card-3]",
+          "status": "passed",
+          "time_s": 0.032
+        },
+        {
+          "name": "tests.test_tarot.test_reproducible_draw_without_replacement[decision-3]",
+          "status": "passed",
+          "time_s": 0.04
+        },
+        {
+          "name": "tests.test_tarot.test_cross_process_reproducibility",
+          "status": "passed",
+          "time_s": 0.695
+        },
+        {
+          "name": "tests.test_tarot.test_seed_changes_and_both_orientations",
+          "status": "passed",
+          "time_s": 0.033
+        },
+        {
+          "name": "tests.test_tarot.test_invalid_inputs[unknown-0]",
+          "status": "passed",
+          "time_s": 0.001
+        },
+        {
+          "name": "tests.test_tarot.test_invalid_inputs[single--1]",
+          "status": "passed",
+          "time_s": 0.001
+        },
+        {
+          "name": "tests.test_tarot.test_invalid_inputs[single-18446744073709551616]",
+          "status": "passed",
+          "time_s": 0.001
+        },
+        {
+          "name": "tests.test_tarot.test_every_possible_card_state_and_position_has_meaning",
+          "status": "passed",
+          "time_s": 1.519
+        },
+        {
+          "name": "tests.test_tarot.test_signals_come_from_kb_and_are_immutable",
+          "status": "passed",
+          "time_s": 1.539
+        },
+        {
+          "name": "tests.test_v2_followup.test_clock_precision[\\u4e0b\\u53483\\u70b9\\u4e00\\u523b-15:15]",
+          "status": "passed",
+          "time_s": 0.002
+        },
+        {
+          "name": "tests.test_v2_followup.test_clock_precision[\\u665a\\u4e0a12\\u70b9-00:00]",
+          "status": "passed",
+          "time_s": 0.001
+        },
+        {
+          "name": "tests.test_v2_followup.test_clock_precision[8\\u70b9\\u591a-None]",
+          "status": "passed",
+          "time_s": 0.001
+        },
+        {
+          "name": "tests.test_v2_followup.test_clock_precision[\\u5927\\u7ea68\\u70b9-None]",
+          "status": "passed",
+          "time_s": 0.001
+        },
+        {
+          "name": "tests.test_v2_followup.test_clock_precision[\\u516b\\u70b9\\u5de6\\u53f3-None]",
+          "status": "passed",
+          "time_s": 0.001
+        },
+        {
+          "name": "tests.test_v2_followup.test_clock_precision[\\u4e0b\\u5348\\u4e09\\u70b9\\u4e09\\u523b-15:45]",
+          "status": "passed",
+          "time_s": 0.001
+        },
+        {
+          "name": "tests.test_v2_followup.test_clock_precision[\\u665a\\u4e0a11\\u70b920\\u5206-23:20]",
+          "status": "passed",
+          "time_s": 0.001
+        },
+        {
+          "name": "tests.test_v2_followup.test_clock_precision[\\u4e2d\\u534812\\u70b9-12:00]",
+          "status": "passed",
+          "time_s": 0.001
+        },
+        {
+          "name": "tests.test_v2_followup.test_clock_precision[15:01-15:01]",
+          "status": "passed",
+          "time_s": 0.001
+        },
+        {
+          "name": "tests.test_v2_followup.test_month_after_next[2026-10-13-expected0]",
+          "status": "passed",
+          "time_s": 0.001
+        },
+        {
+          "name": "tests.test_v2_followup.test_month_after_next[2026-12-13-expected1]",
+          "status": "passed",
+          "time_s": 0.001
+        },
+        {
+          "name": "tests.test_v2_followup.test_clock_convention_negation[\\u4e0d\\u6309\\u771f\\u592a\\u9633\\u65f6-False]",
+          "status": "passed",
+          "time_s": 0.001
+        },
+        {
+          "name": "tests.test_v2_followup.test_clock_convention_negation[\\u4e0d\\u8981\\u7528\\u771f\\u592a\\u9633\\u65f6-False]",
+          "status": "passed",
+          "time_s": 0.001
+        },
+        {
+          "name": "tests.test_v2_followup.test_clock_convention_negation[\\u6309\\u771f\\u592a\\u9633\\u65f6\\uff0c\\u65e5\\u4e3b\\u662f\\u4ec0\\u4e48\\uff1f-True]",
+          "status": "passed",
+          "time_s": 0.001
+        },
+        {
+          "name": "tests.test_v2_followup.test_clock_convention_negation[\\u4e0d\\u7528\\u771f\\u592a\\u9633\\u65f6\\u8fd8\\u662f\\u4f7f\\u7528\\u771f\\u592a\\u9633\\u65f6\\uff1f-None]",
+          "status": "passed",
+          "time_s": 0.001
+        },
+        {
+          "name": "tests.test_v2_followup.test_clock_convention_negation[\\u4e0d\\u662f\\u4e0d\\u7528\\u771f\\u592a\\u9633\\u65f6-None]",
+          "status": "passed",
+          "time_s": 0.001
+        },
+        {
+          "name": "tests.test_v2_followup.test_changsha_province[CN-\\u6e56\\u5357]",
+          "status": "passed",
+          "time_s": 1.548
+        },
+        {
+          "name": "tests.test_v2_followup.test_changsha_province[CN-\\u6e56\\u5357\\u7701]",
+          "status": "passed",
+          "time_s": 1.47
+        },
+        {
+          "name": "tests.test_v2_followup.test_changsha_province[None-\\u6e56\\u5357]",
+          "status": "passed",
+          "time_s": 1.169
+        },
+        {
+          "name": "tests.test_v2_followup.test_changsha_province[None-\\u6e56\\u5357\\u7701]",
+          "status": "passed",
+          "time_s": 1.188
+        },
+        {
+          "name": "tests.test_v2_followup.test_ordinary_words_are_not_axis_or_aspect_claims[\\u4e8b\\u4e1a\\u5904\\u4e8e\\u4e0a\\u5347\\u671f]",
+          "status": "passed",
+          "time_s": 0.002
+        },
+        {
+          "name": "tests.test_v2_followup.test_ordinary_words_are_not_axis_or_aspect_claims[\\u6536\\u5165\\u6709\\u4e0a\\u5347\\u7a7a\\u95f4]",
+          "status": "passed",
+          "time_s": 0.001
+        },
+        {
+          "name": "tests.test_v2_followup.test_ordinary_words_are_not_axis_or_aspect_claims[\\u91d1\\u661f\\u4e0e\\u706b\\u661f\\u51b2\\u7a81]",
+          "status": "passed",
+          "time_s": 0.001
+        },
+        {
+          "name": "tests.test_v2_followup.test_actual_unavailable_facts_still_rejected[\\u4e0a\\u5347\\u5728\\u767d\\u7f8a\\u5ea7]",
+          "status": "passed",
+          "time_s": 0.001
+        },
+        {
+          "name": "tests.test_v2_followup.test_actual_unavailable_facts_still_rejected[\\u4e0a\\u5347\\u70b9\\u4ee3\\u8868\\u5916\\u5728\\u8868\\u8fbe]",
+          "status": "passed",
+          "time_s": 0.001
+        },
+        {
+          "name": "tests.test_v2_followup.test_actual_unavailable_facts_still_rejected[\\u592a\\u9633\\u5728\\u7b2c\\u4e5d\\u5bab]",
+          "status": "passed",
+          "time_s": 0.001
+        },
+        {
+          "name": "tests.test_v2_followup.test_actual_unavailable_facts_still_rejected[\\u91d1\\u661f\\u4e0e\\u706b\\u661f\\u5bf9\\u51b2]",
+          "status": "passed",
+          "time_s": 0.001
+        },
+        {
+          "name": "tests.test_v2_followup.test_independent_aspects_do_not_overlap[\\u6728\\u661f\\u5408\\u592a\\u9633\\u4e0e\\u6c34\\u661f\\u5211\\u6c34\\u661f-expected0]",
+          "status": "passed",
+          "time_s": 0.001
+        },
+        {
+          "name": "tests.test_v2_followup.test_independent_aspects_do_not_overlap[\\u592a\\u9633\\u4e0e\\u6c34\\u661f\\u5211\\u571f\\u661f-expected1]",
+          "status": "passed",
+          "time_s": 0.001
+        },
+        {
+          "name": "tests.test_v2_followup.test_independent_aspects_do_not_overlap[\\u592a\\u9633\\u4e0e\\u6c34\\u661f\\u5f62\\u6210\\u5bf9\\u51b2-expected2]",
+          "status": "passed",
+          "time_s": 0.001
+        },
+        {
+          "name": "tests.test_v2_followup.test_overseas_choice_matches_effective_parameter[\\u4e0d\\u7528\\u771f\\u592a\\u9633\\u65f6\\uff0c\\u6309\\u56fa\\u5b9aUTC+8-True]",
+          "status": "passed",
+          "time_s": 2.986
+        },
+        {
+          "name": "tests.test_v2_followup.test_overseas_choice_matches_effective_parameter[\\u4f7f\\u7528\\u771f\\u592a\\u9633\\u65f6-False]",
+          "status": "passed",
+          "time_s": 2.966
+        },
+        {
+          "name": "tests.test_v2_followup.test_solar_choice_profile_and_current_override",
+          "status": "passed",
+          "time_s": 3.123
+        },
+        {
+          "name": "tests.test_v2_followup.test_needs_input_not_replayed_after_answer",
+          "status": "passed",
+          "time_s": 2.907
+        },
+        {
+          "name": "tests.test_v2_followup.test_period_clarification_same_arguments",
+          "status": "passed",
+          "time_s": 2.993
+        },
+        {
+          "name": "tests.test_v2_followup.test_natural_consultation_timezone_and_profile[\\u6211\\u73b0\\u5728\\u4f4f\\u5728\\u6d1b\\u6749\\u77f6]",
+          "status": "passed",
+          "time_s": 2.84
+        },
+        {
+          "name": "tests.test_v2_followup.test_natural_consultation_timezone_and_profile[\\u6309\\u6d1b\\u6749\\u77f6\\u65f6\\u95f4]",
+          "status": "passed",
+          "time_s": 2.761
+        },
+        {
+          "name": "tests.test_v2_followup.test_birthplace_alone_does_not_confirm_consultation_timezone",
+          "status": "passed",
+          "time_s": 3.095
+        },
+        {
+          "name": "tests.test_v2_followup.test_negated_timezone_evidence_cannot_be_trimmed",
+          "status": "passed",
+          "time_s": 2.678
+        },
+        {
+          "name": "tests.test_v2_followup.test_province_reply_can_select_candidate",
+          "status": "passed",
+          "time_s": 2.836
+        },
+        {
+          "name": "tests.test_v2_followup.test_timezone_inferred_and_reused_in_new_session",
+          "status": "passed",
+          "time_s": 2.85
+        },
+        {
+          "name": "tests.test_web.test_page_and_chat_followup",
+          "status": "passed",
+          "time_s": 1.917
+        },
+        {
+          "name": "tests.test_web.test_new_chat_history_isolation_and_forget",
+          "status": "passed",
+          "time_s": 2.147
+        },
+        {
+          "name": "tests.test_web.test_birth_is_passed_as_user_evidence",
+          "status": "passed",
+          "time_s": 1.929
+        },
+        {
+          "name": "tests.test_web.test_validation_and_local_origin",
+          "status": "passed",
+          "time_s": 1.885
+        },
+        {
+          "name": "tests.test_web.test_demo_without_birth_requests_data_instead_of_inventing_a_chart",
+          "status": "passed",
+          "time_s": 1.852
+        },
+        {
+          "name": "tests.test_web.test_parallel_mutations_rejected_and_error_recovers",
+          "status": "passed",
+          "time_s": 1.908
+        },
+        {
+          "name": "tests.test_web.test_birth_evidence_does_not_invent_time",
+          "status": "passed",
+          "time_s": 0.001
+        },
+        {
+          "name": "tests.test_web.test_offline_bootstrap_without_configured_model",
+          "status": "passed",
+          "time_s": 1.773
+        },
+        {
+          "name": "tests.test_web.test_region_cascade_and_deterministic_birth_chart",
+          "status": "passed",
+          "time_s": 1.906
+        },
+        {
+          "name": "tests.test_web.test_offline_bazi_chat_and_tarot_spread",
+          "status": "passed",
+          "time_s": 1.859
+        },
+        {
+          "name": "tests.test_web.test_xinjiang_clock_not_assumed",
+          "status": "passed",
+          "time_s": 1.665
+        },
+        {
+          "name": "tests.test_web_share.test_sharing_requires_exact_https_origin_and_strong_password[settings0]",
+          "status": "passed",
+          "time_s": 0.001
+        },
+        {
+          "name": "tests.test_web_share.test_sharing_requires_exact_https_origin_and_strong_password[settings1]",
+          "status": "passed",
+          "time_s": 0.001
+        },
+        {
+          "name": "tests.test_web_share.test_sharing_requires_exact_https_origin_and_strong_password[settings2]",
+          "status": "passed",
+          "time_s": 0.001
+        },
+        {
+          "name": "tests.test_web_share.test_sharing_requires_exact_https_origin_and_strong_password[settings3]",
+          "status": "passed",
+          "time_s": 0.001
+        },
+        {
+          "name": "tests.test_web_share.test_sharing_requires_exact_https_origin_and_strong_password[settings4]",
+          "status": "passed",
+          "time_s": 0.001
+        },
+        {
+          "name": "tests.test_web_share.test_sharing_requires_exact_https_origin_and_strong_password[settings5]",
+          "status": "passed",
+          "time_s": 0.001
+        },
+        {
+          "name": "tests.test_web_share.test_sharing_requires_exact_https_origin_and_strong_password[settings6]",
+          "status": "passed",
+          "time_s": 0.001
+        },
+        {
+          "name": "tests.test_web_share.test_sharing_requires_exact_https_origin_and_strong_password[settings7]",
+          "status": "passed",
+          "time_s": 0.001
+        },
+        {
+          "name": "tests.test_web_share.test_all_shared_routes_require_credentials_before_creating_runtime",
+          "status": "passed",
+          "time_s": 0.036
+        },
+        {
+          "name": "tests.test_web_share.test_shared_chat_secure_cookie_origins_and_separate_browsers",
+          "status": "passed",
+          "time_s": 1.85
+        },
+        {
+          "name": "tests.test_week23_calculations.test_all_reference_charts[chart-01]",
+          "status": "passed",
+          "time_s": 0.037
+        },
+        {
+          "name": "tests.test_week23_calculations.test_all_reference_charts[chart-02]",
+          "status": "passed",
+          "time_s": 0.025
+        },
+        {
+          "name": "tests.test_week23_calculations.test_all_reference_charts[chart-03]",
+          "status": "passed",
+          "time_s": 0.023
+        },
+        {
+          "name": "tests.test_week23_calculations.test_all_reference_charts[chart-04]",
+          "status": "passed",
+          "time_s": 0.025
+        },
+        {
+          "name": "tests.test_week23_calculations.test_all_reference_charts[chart-05]",
+          "status": "passed",
+          "time_s": 0.027
+        },
+        {
+          "name": "tests.test_week23_calculations.test_all_reference_charts[chart-06]",
+          "status": "passed",
+          "time_s": 0.02
+        },
+        {
+          "name": "tests.test_week23_calculations.test_all_reference_charts[chart-07]",
+          "status": "passed",
+          "time_s": 0.035
+        },
+        {
+          "name": "tests.test_week23_calculations.test_all_reference_charts[chart-08]",
+          "status": "passed",
+          "time_s": 0.038
+        },
+        {
+          "name": "tests.test_week23_calculations.test_all_reference_charts[chart-09]",
+          "status": "passed",
+          "time_s": 0.045
+        },
+        {
+          "name": "tests.test_week23_calculations.test_all_reference_charts[chart-10]",
+          "status": "passed",
+          "time_s": 0.035
+        },
+        {
+          "name": "tests.test_week23_calculations.test_all_reference_charts[chart-11]",
+          "status": "passed",
+          "time_s": 0.032
+        },
+        {
+          "name": "tests.test_week23_calculations.test_independent_skyfield_all_planets[chart-01]",
+          "status": "passed",
+          "time_s": 0.079
+        },
+        {
+          "name": "tests.test_week23_calculations.test_independent_skyfield_all_planets[chart-02]",
+          "status": "passed",
+          "time_s": 0.047
+        },
+        {
+          "name": "tests.test_week23_calculations.test_independent_skyfield_all_planets[chart-03]",
+          "status": "passed",
+          "time_s": 0.033
+        },
+        {
+          "name": "tests.test_week23_calculations.test_independent_skyfield_all_planets[chart-04]",
+          "status": "passed",
+          "time_s": 0.036
+        },
+        {
+          "name": "tests.test_week23_calculations.test_independent_skyfield_all_planets[chart-05]",
+          "status": "passed",
+          "time_s": 0.037
+        },
+        {
+          "name": "tests.test_week23_calculations.test_independent_skyfield_all_planets[chart-06]",
+          "status": "passed",
+          "time_s": 0.047
+        },
+        {
+          "name": "tests.test_week23_calculations.test_independent_skyfield_all_planets[chart-07]",
+          "status": "passed",
+          "time_s": 0.044
+        },
+        {
+          "name": "tests.test_week23_calculations.test_independent_skyfield_all_planets[chart-08]",
+          "status": "passed",
+          "time_s": 0.041
+        },
+        {
+          "name": "tests.test_week23_calculations.test_independent_skyfield_all_planets[chart-09]",
+          "status": "passed",
+          "time_s": 0.035
+        },
+        {
+          "name": "tests.test_week23_calculations.test_independent_skyfield_all_planets[chart-10]",
+          "status": "passed",
+          "time_s": 0.043
+        },
+        {
+          "name": "tests.test_week23_calculations.test_independent_skyfield_all_planets[chart-11]",
+          "status": "passed",
+          "time_s": 0.041
+        },
+        {
+          "name": "tests.test_week23_calculations.test_all_bazi_boundaries[bazi-01]",
+          "status": "passed",
+          "time_s": 0.004
+        },
+        {
+          "name": "tests.test_week23_calculations.test_all_bazi_boundaries[bazi-02]",
+          "status": "passed",
+          "time_s": 0.001
+        },
+        {
+          "name": "tests.test_week23_calculations.test_all_bazi_boundaries[bazi-03]",
+          "status": "passed",
+          "time_s": 0.023
+        },
+        {
+          "name": "tests.test_week23_calculations.test_all_bazi_boundaries[bazi-04]",
+          "status": "passed",
+          "time_s": 0.024
+        },
+        {
+          "name": "tests.test_week23_calculations.test_all_bazi_boundaries[bazi-05]",
+          "status": "passed",
+          "time_s": 0.028
+        },
+        {
+          "name": "tests.test_week23_calculations.test_all_bazi_boundaries[bazi-06]",
+          "status": "passed",
+          "time_s": 0.023
+        },
+        {
+          "name": "tests.test_week23_calculations.test_all_bazi_boundaries[bazi-07]",
+          "status": "passed",
+          "time_s": 0.022
+        },
+        {
+          "name": "tests.test_week23_calculations.test_all_bazi_boundaries[bazi-08]",
+          "status": "passed",
+          "time_s": 0.023
+        },
+        {
+          "name": "tests.test_week23_calculations.test_all_bazi_boundaries[bazi-09]",
+          "status": "passed",
+          "time_s": 0.007
+        },
+        {
+          "name": "tests.test_week23_calculations.test_all_bazi_boundaries[bazi-10]",
+          "status": "passed",
+          "time_s": 0.002
+        },
+        {
+          "name": "tests.test_week23_calculations.test_all_bazi_boundaries[bazi-11]",
+          "status": "passed",
+          "time_s": 0.004
+        },
+        {
+          "name": "tests.test_week23_calculations.test_all_bazi_boundaries[bazi-12]",
+          "status": "passed",
+          "time_s": 0.002
+        },
+        {
+          "name": "tests.test_week23_calculations.test_all_bazi_boundaries[bazi-13]",
+          "status": "passed",
+          "time_s": 0.006
+        },
+        {
+          "name": "tests.test_week23_calculations.test_all_bazi_boundaries[bazi-14]",
+          "status": "passed",
+          "time_s": 0.002
+        },
+        {
+          "name": "tests.test_week23_calculations.test_all_bazi_boundaries[bazi-15]",
+          "status": "passed",
+          "time_s": 0.004
+        },
+        {
+          "name": "tests.test_week23_calculations.test_all_bazi_boundaries[bazi-16]",
+          "status": "passed",
+          "time_s": 0.001
+        },
+        {
+          "name": "tests.test_week23_calculations.test_all_bazi_boundaries[bazi-17]",
+          "status": "passed",
+          "time_s": 0.007
+        },
+        {
+          "name": "tests.test_week23_calculations.test_all_bazi_boundaries[bazi-18]",
+          "status": "passed",
+          "time_s": 0.002
+        },
+        {
+          "name": "tests.test_week23_calculations.test_all_bazi_boundaries[bazi-19]",
+          "status": "passed",
+          "time_s": 0.007
+        },
+        {
+          "name": "tests.test_week23_calculations.test_all_bazi_boundaries[bazi-20]",
+          "status": "passed",
+          "time_s": 0.003
+        },
+        {
+          "name": "tests.test_week23_calculations.test_all_bazi_boundaries[bazi-21]",
+          "status": "passed",
+          "time_s": 0.006
+        },
+        {
+          "name": "tests.test_week23_calculations.test_all_bazi_boundaries[bazi-22]",
+          "status": "passed",
+          "time_s": 0.003
+        },
+        {
+          "name": "tests.test_week23_calculations.test_all_bazi_boundaries[bazi-23]",
+          "status": "passed",
+          "time_s": 0.007
+        },
+        {
+          "name": "tests.test_week23_calculations.test_all_bazi_boundaries[bazi-24]",
+          "status": "passed",
+          "time_s": 0.004
+        },
+        {
+          "name": "tests.test_week23_calculations.test_all_bazi_boundaries[bazi-25]",
+          "status": "passed",
+          "time_s": 0.004
+        },
+        {
+          "name": "tests.test_week23_calculations.test_all_bazi_boundaries[bazi-26]",
+          "status": "passed",
+          "time_s": 0.004
+        },
+        {
+          "name": "tests.test_week23_calculations.test_all_bazi_boundaries[bazi-27]",
+          "status": "passed",
+          "time_s": 0.005
+        },
+        {
+          "name": "tests.test_week23_calculations.test_all_bazi_boundaries[bazi-28]",
+          "status": "passed",
+          "time_s": 0.005
+        },
+        {
+          "name": "tests.test_week23_calculations.test_all_bazi_boundaries[bazi-29]",
+          "status": "passed",
+          "time_s": 0.006
+        },
+        {
+          "name": "tests.test_week23_calculations.test_all_bazi_boundaries[bazi-30]",
+          "status": "passed",
+          "time_s": 0.005
+        },
+        {
+          "name": "tests.test_week23_calculations.test_all_bazi_boundaries[bazi-31]",
+          "status": "passed",
+          "time_s": 0.006
+        },
+        {
+          "name": "tests.test_week23_calculations.test_all_bazi_boundaries[bazi-32]",
+          "status": "passed",
+          "time_s": 0.005
+        },
+        {
+          "name": "tests.test_week23_calculations.test_all_bazi_boundaries[bazi-33]",
+          "status": "passed",
+          "time_s": 0.007
+        },
+        {
+          "name": "tests.test_week23_calculations.test_all_bazi_boundaries[bazi-34]",
+          "status": "passed",
+          "time_s": 0.023
+        },
+        {
+          "name": "tests.test_week23_calculations.test_all_bazi_boundaries[bazi-35]",
+          "status": "passed",
+          "time_s": 0.005
+        },
+        {
+          "name": "tests.test_week23_calculations.test_all_bazi_boundaries[bazi-36]",
+          "status": "passed",
+          "time_s": 0.006
+        },
+        {
+          "name": "tests.test_week23_calculations.test_all_bazi_boundaries[bazi-37]",
+          "status": "passed",
+          "time_s": 0.007
+        },
+        {
+          "name": "tests.test_week23_calculations.test_all_bazi_boundaries[bazi-38]",
+          "status": "passed",
+          "time_s": 0.006
+        },
+        {
+          "name": "tests.test_week23_calculations.test_all_bazi_boundaries[bazi-39]",
+          "status": "passed",
+          "time_s": 0.001
+        },
+        {
+          "name": "tests.test_week23_calculations.test_all_bazi_boundaries[bazi-40]",
+          "status": "passed",
+          "time_s": 0.001
+        },
+        {
+          "name": "tests.test_week23_calculations.test_all_bazi_boundaries[bazi-41]",
+          "status": "passed",
+          "time_s": 0.008
+        },
+        {
+          "name": "tests.test_week23_calculations.test_all_bazi_boundaries[bazi-42]",
+          "status": "passed",
+          "time_s": 0.002
+        },
+        {
+          "name": "tests.test_week23_calculations.test_all_bazi_boundaries[bazi-43]",
+          "status": "passed",
+          "time_s": 0.004
+        },
+        {
+          "name": "tests.test_week23_calculations.test_all_bazi_boundaries[bazi-44]",
+          "status": "passed",
+          "time_s": 0.006
+        },
+        {
+          "name": "tests.test_week23_calculations.test_all_bazi_boundaries[bazi-45]",
+          "status": "passed",
+          "time_s": 0.005
+        },
+        {
+          "name": "tests.test_week23_calculations.test_all_bazi_boundaries[bazi-46]",
+          "status": "passed",
+          "time_s": 0.005
+        },
+        {
+          "name": "tests.test_week23_calculations.test_all_bazi_boundaries[bazi-47]",
+          "status": "passed",
+          "time_s": 0.004
+        },
+        {
+          "name": "tests.test_week23_calculations.test_all_bazi_boundaries[bazi-48]",
+          "status": "passed",
+          "time_s": 0.025
+        },
+        {
+          "name": "tests.test_week23_calculations.test_all_bazi_boundaries[bazi-49]",
+          "status": "passed",
+          "time_s": 0.025
+        },
+        {
+          "name": "tests.test_week23_calculations.test_all_bazi_boundaries[bazi-50]",
+          "status": "passed",
+          "time_s": 0.022
+        },
+        {
+          "name": "tests.test_week23_calculations.test_gap_fold[1986-05-04 02:30-Asia/Shanghai-nonexistent_local_time]",
+          "status": "passed",
+          "time_s": 0.001
+        },
+        {
+          "name": "tests.test_week23_calculations.test_gap_fold[1986-09-14 01:30-Asia/Shanghai-ambiguous_local_time]",
+          "status": "passed",
+          "time_s": 0.001
+        },
+        {
+          "name": "tests.test_week23_calculations.test_gap_fold[2024-03-10 02:30-America/New_York-nonexistent_local_time]",
+          "status": "passed",
+          "time_s": 0.001
+        },
+        {
+          "name": "tests.test_week23_calculations.test_gap_fold[2024-11-03 01:30-America/New_York-ambiguous_local_time]",
+          "status": "passed",
+          "time_s": 0.001
+        },
+        {
+          "name": "tests.test_week23_calculations.test_fold_candidates_and_historical_dst",
+          "status": "passed",
+          "time_s": 0.001
+        },
+        {
+          "name": "tests.test_week23_calculations.test_location_aliases_ambiguity",
+          "status": "passed",
+          "time_s": 1.419
+        },
+        {
+          "name": "tests.test_week23_calculations.test_missing_time_gender_lunar_confirmation",
+          "status": "passed",
+          "time_s": 0.007
+        },
+        {
+          "name": "tests.test_week23_calculations.test_transits_roots_retrograde_and_range",
+          "status": "passed",
+          "time_s": 1.805
+        },
+        {
+          "name": "tests.test_week23_calculations.test_period_boundaries_and_relationships[year]",
+          "status": "passed",
+          "time_s": 0.052
+        },
+        {
+          "name": "tests.test_week23_calculations.test_period_boundaries_and_relationships[month]",
+          "status": "passed",
+          "time_s": 0.039
+        },
+        {
+          "name": "tests.test_week23_calculations.test_period_boundaries_and_relationships[day]",
+          "status": "passed",
+          "time_s": 0.07
+        },
+        {
+          "name": "tests.test_week23_calculations.test_true_solar_never_moves_physical_term",
+          "status": "passed",
+          "time_s": 0.028
+        },
+        {
+          "name": "tests.test_week23_calculations.test_dayun_uses_physical_terms_when_solar_clock_crosses_lichun",
+          "status": "passed",
+          "time_s": 0.054
+        },
+        {
+          "name": "tests.test_week23_calculations.test_ten_year_transit_range",
+          "status": "passed",
+          "time_s": 36.77
+        },
+        {
+          "name": "tests.test_week23_integration.test_three_systems_restore_cache_ownership_forget",
+          "status": "passed",
+          "time_s": 3.645
+        },
+        {
+          "name": "tests.test_week23_integration.test_astro_only_bazi_only_followup_no_tarot",
+          "status": "passed",
+          "time_s": 3.399
+        },
+        {
+          "name": "tests.test_week23_integration.test_unknown_time_and_hallucinations",
+          "status": "passed",
+          "time_s": 2.415
+        },
+        {
+          "name": "tests.test_week23_integration.test_xinjiang_clock_confirmation_and_explicit_override[\\u5317\\u4eac\\u65f6\\u95f4-Asia/Shanghai-2000-01-01T02:00:00+00:00]",
+          "status": "passed",
+          "time_s": 2.478
+        },
+        {
+          "name": "tests.test_week23_integration.test_xinjiang_clock_confirmation_and_explicit_override[\\u65b0\\u7586\\u65f6\\u95f4-Asia/Urumqi-2000-01-01T04:00:00+00:00]",
+          "status": "passed",
+          "time_s": 2.316
+        },
+        {
+          "name": "tests.test_week23_integration.test_compound_refs_and_required_bazi_answers",
+          "status": "passed",
+          "time_s": 2.47
+        },
+        {
+          "name": "tests.test_week23_integration.test_lunar_leap_cannot_be_invented",
+          "status": "passed",
+          "time_s": 2.456
+        },
+        {
+          "name": "tests.test_week23_integration.test_three_plugins_implement_protocol",
+          "status": "passed",
+          "time_s": 1.347
+        },
+        {
+          "name": "tests.test_week23_integration.test_profile_conventions_and_aspect_strength",
+          "status": "passed",
+          "time_s": 2.618
+        },
+        {
+          "name": "tests.test_week23_integration.test_quality_review_receives_uncited_timeline_events",
+          "status": "passed",
+          "time_s": 3.481
+        },
+        {
+          "name": "tests.test_week23_integration.test_country_alone_cannot_select_same_country_city",
+          "status": "passed",
+          "time_s": 2.681
+        },
+        {
+          "name": "tests.test_week23_integration.test_birth_provenance_permissions_and_dependencies",
+          "status": "passed",
+          "time_s": 2.48
+        },
+        {
+          "name": "tests.test_week23_integration.test_range_consistency_and_timing_requires_calculation",
+          "status": "passed",
+          "time_s": 2.882
+        },
+        {
+          "name": "tests.test_week23_integration.test_new_calculations_cannot_bypass_submit",
+          "status": "passed",
+          "time_s": 1.224
+        },
+        {
+          "name": "tests.test_week23_integration.test_v2_migration_preserves_rows",
+          "status": "passed",
+          "time_s": 0.062
+        },
+        {
+          "name": "tests.test_week4_state_recovery.test_profile_snapshot_checks_missing_fields_and_legacy_reports[report0-profile0-True]",
+          "status": "passed",
+          "time_s": 0.001
+        },
+        {
+          "name": "tests.test_week4_state_recovery.test_profile_snapshot_checks_missing_fields_and_legacy_reports[report1-profile1-False]",
+          "status": "passed",
+          "time_s": 0.001
+        },
+        {
+          "name": "tests.test_week4_state_recovery.test_profile_snapshot_checks_missing_fields_and_legacy_reports[report2-profile2-True]",
+          "status": "passed",
+          "time_s": 0.001
+        },
+        {
+          "name": "tests.test_week4_state_recovery.test_profile_snapshot_checks_missing_fields_and_legacy_reports[report3-profile3-False]",
+          "status": "passed",
+          "time_s": 0.001
+        },
+        {
+          "name": "tests.test_week4_state_recovery.test_profile_snapshot_checks_missing_fields_and_legacy_reports[report4-profile4-False]",
+          "status": "passed",
+          "time_s": 0.001
+        },
+        {
+          "name": "tests.test_week4_state_recovery.test_unrelated_profile_edit_preserves_report_when_retry_fails",
+          "status": "passed",
+          "time_s": 2.399
+        },
+        {
+          "name": "tests.test_week4_state_recovery.test_profile_edit_blocks_stale_submission_until_all_reports_refreshed[False]",
+          "status": "passed",
+          "time_s": 2.568
+        },
+        {
+          "name": "tests.test_week4_state_recovery.test_profile_edit_blocks_stale_submission_until_all_reports_refreshed[True]",
+          "status": "passed",
+          "time_s": 2.337
+        },
+        {
+          "name": "tests.test_week4_state_recovery.test_draw_survives_cancelled_request_and_completed_sibling[False-cancel]",
+          "status": "passed",
+          "time_s": 1.44
+        },
+        {
+          "name": "tests.test_week4_state_recovery.test_draw_survives_cancelled_request_and_completed_sibling[False-timeout]",
+          "status": "passed",
+          "time_s": 2.022
+        },
+        {
+          "name": "tests.test_week4_state_recovery.test_draw_survives_cancelled_request_and_completed_sibling[True-cancel]",
+          "status": "passed",
+          "time_s": 1.485
+        },
+        {
+          "name": "tests.test_week4_state_recovery.test_draw_survives_cancelled_request_and_completed_sibling[True-timeout]",
+          "status": "passed",
+          "time_s": 1.885
+        },
+        {
+          "name": "tests.test_week4_state_recovery.test_three_report_attempts_keep_the_original_calculation_snapshot",
+          "status": "passed",
+          "time_s": 1.378
+        },
+        {
+          "name": "tests.test_week5.test_tension_resonance_and_horizon_separation",
+          "status": "passed",
+          "time_s": 0.001
+        },
+        {
+          "name": "tests.test_week5.test_weak_side_is_not_a_tension_and_zero_does_not_dilute",
+          "status": "passed",
+          "time_s": 0.001
+        },
+        {
+          "name": "tests.test_week5.test_timing_signals_align_by_real_intervals",
+          "status": "passed",
+          "time_s": 0.001
+        },
+        {
+          "name": "tests.test_week5.test_weights_change_combined_valence_not_tensions",
+          "status": "passed",
+          "time_s": 0.001
+        },
+        {
+          "name": "tests.test_week5.test_disclosure_needs_theme_and_both_systems",
+          "status": "passed",
+          "time_s": 0.001
+        },
+        {
+          "name": "tests.test_week5.test_hidden_tension_is_blocked_and_merge_is_saved",
+          "status": "passed",
+          "time_s": 2.886
+        },
+        {
+          "name": "tests.test_week5.test_single_mode_saves_merge_but_keeps_week1_3_rules",
+          "status": "passed",
+          "time_s": 2.465
+        },
+        {
+          "name": "tests.test_week5.test_reviewer_runs_on_every_new_reading_and_is_traced",
+          "status": "passed",
+          "time_s": 1.359
+        },
+        {
+          "name": "tests.test_week5.test_revise_is_one_round_then_released",
+          "status": "passed",
+          "time_s": 1.519
+        },
+        {
+          "name": "tests.test_week5.test_unavailable_reviewer_fails_open",
+          "status": "passed",
+          "time_s": 1.384
+        },
+        {
+          "name": "tests.test_week5.test_followup_uses_saved_merge_and_is_not_reviewed",
+          "status": "passed",
+          "time_s": 2.756
+        },
+        {
+          "name": "tests.test_week5.test_lenient_review_checks[revise-issues0-notes0-\\u81f3\\u5c11]",
+          "status": "passed",
+          "time_s": 0.002
+        },
+        {
+          "name": "tests.test_week5.test_lenient_review_checks[pass-issues1-notes1-pass_with_notes]",
+          "status": "passed",
+          "time_s": 0.001
+        },
+        {
+          "name": "tests.test_week5.test_lenient_review_checks[pass_with_notes-issues2-notes2-notes]",
+          "status": "passed",
+          "time_s": 0.001
+        },
+        {
+          "name": "tests.test_week5.test_lenient_review_checks[revise-issues3-notes3-\\u5bbd\\u677e\\u6a21\\u5f0f]",
+          "status": "passed",
+          "time_s": 0.002
+        },
+        {
+          "name": "tests.test_week5.test_lenient_review_checks[revise-issues4-notes4-\\u4e0d\\u662f\\u6253\\u56de\\u7406\\u7531]",
+          "status": "passed",
+          "time_s": 0.002
+        },
+        {
+          "name": "tests.test_week5.test_lenient_review_checks[revise-issues5-notes5-quote]",
+          "status": "passed",
+          "time_s": 0.002
+        },
+        {
+          "name": "tests.test_week5.test_lenient_review_checks[revise-issues6-notes6-\\u6ca1\\u6709\\u5f20\\u529b]",
+          "status": "passed",
+          "time_s": 0.002
+        },
+        {
+          "name": "tests.test_week5.test_lenient_review_checks[revise-issues7-notes7-\\u4e0d\\u80fd\\u8981\\u6c42\\u5220\\u6389]",
+          "status": "passed",
+          "time_s": 0.001
+        },
+        {
+          "name": "tests.test_week5.test_lenient_review_checks[revise-issues8-notes8-None]",
+          "status": "passed",
+          "time_s": 0.001
+        },
+        {
+          "name": "tests.test_week5.test_strict_mode_allows_caution_and_lenient_drops_forbidden_notes",
+          "status": "passed",
+          "time_s": 0.001
+        },
+        {
+          "name": "tests.test_week5.test_strictness_config",
+          "status": "passed",
+          "time_s": 1.309
+        },
+        {
+          "name": "tests.test_week5.test_demo_multi_runs_rule_reviewer",
+          "status": "passed",
+          "time_s": 1.367
+        },
+        {
+          "name": "tests.test_week5.test_rule_baseline_reasons",
+          "status": "passed",
+          "time_s": 0.001
+        },
+        {
+          "name": "tests.test_week5.test_reviewer_suite_runs_offline",
+          "status": "passed",
+          "time_s": 1.48
+        },
+        {
+          "name": "tests.test_week5.test_ask_user_does_not_repeat_known_profile",
+          "status": "passed",
+          "time_s": 1.182
+        },
+        {
+          "name": "tests.test_week5.test_system_weights_need_explicit_preference",
+          "status": "passed",
+          "time_s": 1.182
+        },
+        {
+          "name": "tests.test_week5.test_start_reading_links_an_owned_previous_reading",
+          "status": "passed",
+          "time_s": 1.406
+        },
+        {
+          "name": "tests.test_week5.test_store_migration_adds_merge_column",
+          "status": "passed",
+          "time_s": 1.131
+        },
+        {
+          "name": "tests.test_week5.test_reviewer_budget_shares_the_request",
+          "status": "passed",
+          "time_s": 1.371
+        },
+        {
+          "name": "tests.test_week5.test_trace_tree_requires_finished_reviews",
+          "status": "passed",
+          "time_s": 0.001
+        },
+        {
+          "name": "tests.test_week5.test_week1_offline_replay_counts_only_computation_tools",
+          "status": "passed",
+          "time_s": 2.721
+        },
+        {
+          "name": "tests.test_week5.test_reversed_windows_keep_their_own_directions",
+          "status": "passed",
+          "time_s": 0.001
+        },
+        {
+          "name": "tests.test_week5.test_reversed_windows_need_their_dates_disclosed",
+          "status": "passed",
+          "time_s": 0.001
+        },
+        {
+          "name": "tests.test_week5.test_folded_windows_aggregate_numbers_by_duration",
+          "status": "passed",
+          "time_s": 0.001
+        },
+        {
+          "name": "tests.test_week5.test_reviewer_eval_loads_dotenv_without_network",
+          "status": "passed",
+          "time_s": 0.036
+        },
+        {
+          "name": "tests.test_week5.test_weights_bind_each_system_to_its_own_clause[\\u6211\\u66f4\\u4fe1\\u516b\\u5b57\\uff0c\\u4e0d\\u592a\\u4fe1\\u5360\\u661f-value0-True]",
+          "status": "passed",
+          "time_s": 0.001
+        },
+        {
+          "name": "tests.test_week5.test_weights_bind_each_system_to_its_own_clause[\\u6211\\u66f4\\u4fe1\\u516b\\u5b57\\uff0c\\u4e0d\\u592a\\u4fe1\\u5360\\u661f-value1-False]",
+          "status": "passed",
+          "time_s": 0.001
+        },
+        {
+          "name": "tests.test_week5.test_weights_bind_each_system_to_its_own_clause[\\u6211\\u66f4\\u4fe1\\u516b\\u5b57\\uff0c\\u4e0d\\u592a\\u4fe1\\u5360\\u661f-value2-False]",
+          "status": "passed",
+          "time_s": 0.001
+        },
+        {
+          "name": "tests.test_week5.test_weights_bind_each_system_to_its_own_clause[\\u6211\\u4e0d\\u66f4\\u4fe1\\u516b\\u5b57-value3-False]",
+          "status": "passed",
+          "time_s": 0.001
+        },
+        {
+          "name": "tests.test_week5.test_weights_bind_each_system_to_its_own_clause[\\u6211\\u5e76\\u4e0d\\u662f\\u66f4\\u770b\\u91cd\\u516b\\u5b57-value4-False]",
+          "status": "passed",
+          "time_s": 0.001
+        },
+        {
+          "name": "tests.test_week5.test_weights_bind_each_system_to_its_own_clause[\\u6211\\u66f4\\u4fe1\\u516b\\u5b57\\u800c\\u4e0d\\u662f\\u5360\\u661f-value5-True]",
+          "status": "passed",
+          "time_s": 0.001
+        },
+        {
+          "name": "tests.test_week5.test_weights_bind_each_system_to_its_own_clause[\\u6bd4\\u8d77\\u5360\\u661f\\u6211\\u66f4\\u4fe1\\u516b\\u5b57-value6-False]",
+          "status": "passed",
+          "time_s": 0.001
+        },
+        {
+          "name": "tests.test_week5.test_weights_bind_each_system_to_its_own_clause[\\u516b\\u5b57\\u6211\\u66f4\\u4fe1\\uff0c\\u5360\\u661f\\u4e5f\\u66f4\\u4fe1-value7-True]",
+          "status": "passed",
+          "time_s": 0.001
+        },
+        {
+          "name": "tests.test_week5.test_weights_bind_each_system_to_its_own_clause[\\u5360\\u661f\\u53c2\\u8003\\u5c31\\u597d-value8-True]",
+          "status": "passed",
+          "time_s": 0.001
+        },
+        {
+          "name": "tests.test_week5.test_weights_bind_each_system_to_its_own_clause[\\u5360\\u661f\\u53c2\\u8003\\u5c31\\u597d-value9-False]",
+          "status": "passed",
+          "time_s": 0.001
+        },
+        {
+          "name": "tests.test_week5.test_reversed_dates_end_to_end",
+          "status": "passed",
+          "time_s": 2.72
+        },
+        {
+          "name": "tests.test_week5_boundaries.test_ambiguous_negation_cannot_persist_discount[\\u6211\\u4e0d\\u662f\\u4e0d\\u4fe1\\u516b\\u5b57]",
+          "status": "passed",
+          "time_s": 1.137
+        },
+        {
+          "name": "tests.test_week5_boundaries.test_ambiguous_negation_cannot_persist_discount[\\u6211\\u5e76\\u4e0d\\u662f\\u4e0d\\u592a\\u4fe1\\u516b\\u5b57]",
+          "status": "passed",
+          "time_s": 1.704
+        },
+        {
+          "name": "tests.test_week5_boundaries.test_ambiguous_negation_cannot_persist_discount[\\u6211\\u5e76\\u975e\\u4e0d\\u770b\\u91cd\\u516b\\u5b57]",
+          "status": "passed",
+          "time_s": 1.339
+        },
+        {
+          "name": "tests.test_week5_boundaries.test_ambiguous_negation_cannot_persist_discount[\\u516b\\u5b57\\u4e0d\\u662f\\u552f\\u4e00\\u4f9d\\u636e]",
+          "status": "passed",
+          "time_s": 1.445
+        },
+        {
+          "name": "tests.test_week5_boundaries.test_unrelated_negation_does_not_cancel_explicit_preference",
+          "status": "passed",
+          "time_s": 1.251
+        },
+        {
+          "name": "tests.test_week5_boundaries.test_disclosure_date_in_any_visible_tension_field[theme]",
+          "status": "passed",
+          "time_s": 0.002
+        },
+        {
+          "name": "tests.test_week5_boundaries.test_disclosure_date_in_any_visible_tension_field[sides]",
+          "status": "passed",
+          "time_s": 0.002
+        },
+        {
+          "name": "tests.test_week5_boundaries.test_disclosure_date_in_any_visible_tension_field[how_to_read]",
+          "status": "passed",
+          "time_s": 0.002
+        },
+        {
+          "name": "tests.test_week5_boundaries.test_fold_uses_elapsed_hours_across_dst[2026-03-08-2026-03-09-2026-03-01T00:00:00+00:00/2026-03-15T00:00:00+00:00-23]",
+          "status": "passed",
+          "time_s": 0.002
+        },
+        {
+          "name": "tests.test_week5_boundaries.test_fold_uses_elapsed_hours_across_dst[2026-11-01-2026-11-02-2026-10-08T00:00:00+00:00/2026-11-07T00:00:00+00:00-25]",
+          "status": "passed",
+          "time_s": 0.002
+        },
+        {
+          "name": "tests.test_week5_boundaries.test_fold_uses_elapsed_hours_across_dst[2026-11-02-2026-11-03-2026-10-08T00:00:00+00:00/2026-11-07T00:00:00+00:00-24]",
+          "status": "passed",
+          "time_s": 0.002
+        },
+        {
+          "name": "tests.test_week6.test_all_200_dataset_strokes_and_default_forms",
+          "status": "passed",
+          "time_s": 0.004
+        },
+        {
+          "name": "tests.test_week6.test_nineteen_review_characters_are_finalised",
+          "status": "passed",
+          "time_s": 0.001
+        },
+        {
+          "name": "tests.test_week6.test_radical_restoration_and_numerals",
+          "status": "passed",
+          "time_s": 0.001
+        },
+        {
+          "name": "tests.test_week6.test_unknown_character_is_never_guessed",
+          "status": "passed",
+          "time_s": 0.001
+        },
+        {
+          "name": "tests.test_week6.test_missing_unihan_is_explicit",
+          "status": "passed",
+          "time_s": 0.006
+        },
+        {
+          "name": "tests.test_week6.test_five_grids_single_and_compound_surnames[\\u5f20-\\u4e09-expected0]",
+          "status": "passed",
+          "time_s": 0.002
+        },
+        {
+          "name": "tests.test_week6.test_five_grids_single_and_compound_surnames[\\u738b-\\u601d\\u8fdc-expected1]",
+          "status": "passed",
+          "time_s": 0.001
+        },
+        {
+          "name": "tests.test_week6.test_five_grids_single_and_compound_surnames[\\u6b27\\u9633-\\u5b50\\u6db5-expected2]",
+          "status": "passed",
+          "time_s": 0.002
+        },
+        {
+          "name": "tests.test_week6.test_five_grids_single_and_compound_surnames[\\u6b27\\u9633-\\u4fee-expected3]",
+          "status": "passed",
+          "time_s": 0.001
+        },
+        {
+          "name": "tests.test_week6.test_grid_formula_numbers_and_relations",
+          "status": "passed",
+          "time_s": 0.001
+        },
+        {
+          "name": "tests.test_week6.test_analyze_name_provenance_and_compound_split",
+          "status": "passed",
+          "time_s": 1.4
+        },
+        {
+          "name": "tests.test_week6.test_profile_name_two_names_and_validator",
+          "status": "passed",
+          "time_s": 1.536
+        },
+        {
+          "name": "tests.test_week6.test_confirmed_written_form_changes_strokes",
+          "status": "passed",
+          "time_s": 1.319
+        },
+        {
+          "name": "tests.test_week6.test_name_bazi_comparison_uses_reading_bazi_only",
+          "status": "passed",
+          "time_s": 2.811
+        },
+        {
+          "name": "tests.test_week6.test_unknown_char_asks_user",
+          "status": "passed",
+          "time_s": 1.319
+        },
+        {
+          "name": "tests.test_week6.test_dream_kb_covers_seed_vocabulary_and_excludes_probes",
+          "status": "passed",
+          "time_s": 1.466
+        },
+        {
+          "name": "tests.test_week6.test_dream_matching_methods",
+          "status": "passed",
+          "time_s": 1.421
+        },
+        {
+          "name": "tests.test_week6.test_dream_tool_hits_misses_and_psyche_only",
+          "status": "passed",
+          "time_s": 1.611
+        },
+        {
+          "name": "tests.test_week6.test_dream_signals_never_cancel_timing",
+          "status": "passed",
+          "time_s": 0.001
+        },
+        {
+          "name": "tests.test_week6.test_daily_needs_birth_data",
+          "status": "passed",
+          "time_s": 1.469
+        },
+        {
+          "name": "tests.test_week6.test_daily_same_day_unchanged_across_sessions_and_cache",
+          "status": "passed",
+          "time_s": 2.997
+        },
+        {
+          "name": "tests.test_week6.test_daily_pure_recompute_is_identical",
+          "status": "passed",
+          "time_s": 2.397
+        },
+        {
+          "name": "tests.test_week6.test_daily_seed_is_stable_and_date_specific",
+          "status": "passed",
+          "time_s": 0.001
+        },
+        {
+          "name": "tests.test_week6.test_daily_date_must_match_the_question",
+          "status": "passed",
+          "time_s": 2.265
+        },
+        {
+          "name": "tests.test_week6.test_daily_profile_change_recomputes",
+          "status": "passed",
+          "time_s": 2.439
+        },
+        {
+          "name": "tests.test_week6.test_daily_reading_validates_card_pillar_and_aspects[2026-10-15-expected_pillars0]",
+          "status": "passed",
+          "time_s": 2.005
+        },
+        {
+          "name": "tests.test_week6.test_daily_reading_validates_card_pillar_and_aspects[2026-10-16-expected_pillars1]",
+          "status": "passed",
+          "time_s": 1.974
+        },
+        {
+          "name": "tests.test_week6.test_daily_reading_validates_card_pillar_and_aspects[2026-10-17-expected_pillars2]",
+          "status": "passed",
+          "time_s": 2.075
+        },
+        {
+          "name": "tests.test_week6.test_daily_saved_reading_followup_keeps_card_and_forget_clears",
+          "status": "passed",
+          "time_s": 1.754
+        },
+        {
+          "name": "tests.test_week6.test_kb_partitions_and_rules",
+          "status": "passed",
+          "time_s": 1.294
+        },
+        {
+          "name": "tests.test_week6.test_missing_name_entry_fails_build",
+          "status": "passed",
+          "time_s": 2.879
+        },
+        {
+          "name": "tests.test_week6.test_name_specialist_inherits_reading_bazi",
+          "status": "passed",
+          "time_s": 1.412
+        },
+        {
+          "name": "tests.test_week6_followup_fixes.test_invalid_daily_date_can_be_corrected_in_same_reading[\\u521a\\u624d\\u5199\\u9519\\u4e86\\uff0c\\u6539\\u62102026-02-28\\u3002]",
+          "status": "passed",
+          "time_s": 2.052
+        },
+        {
+          "name": "tests.test_week6_followup_fixes.test_invalid_daily_date_can_be_corrected_in_same_reading[2026-02-28]",
+          "status": "passed",
+          "time_s": 2.175
+        },
+        {
+          "name": "tests.test_week6_followup_fixes.test_latest_date_correction_wins_even_in_one_message",
+          "status": "passed",
+          "time_s": 2.005
+        },
+        {
+          "name": "tests.test_week6_followup_fixes.test_incidental_today_keeps_daily_target_and_explicit_change_updates_it",
+          "status": "passed",
+          "time_s": 1.75
+        },
+        {
+          "name": "tests.test_week6_followup_fixes.test_literal_phrase_does_not_justify_reassembled_noun[\\u624b\\u673a\\u98db\\u5230\\u6211\\u624b\\u91cc-\\u98de\\u673a]",
+          "status": "passed",
+          "time_s": 1.425
+        },
+        {
+          "name": "tests.test_week6_followup_fixes.test_literal_phrase_does_not_justify_reassembled_noun[\\u624b\\u673a\\u98de\\u5230\\u6211\\u624b\\u91cc-\\u98de\\u673a]",
+          "status": "passed",
+          "time_s": 1.32
+        },
+        {
+          "name": "tests.test_week6_followup_fixes.test_literal_phrase_does_not_justify_reassembled_noun[\\u706b\\u70e7\\u5230\\u8f66\\u65c1\\u8fb9-\\u706b\\u8f66]",
+          "status": "passed",
+          "time_s": 1.444
+        },
+        {
+          "name": "tests.test_week6_followup_fixes.test_controlled_dream_normalisations_still_work[\\u7259\\u9f7f\\u4e00\\u9897\\u4e00\\u9897\\u6389\\u4e0b\\u6765-\\u6389\\u7259]",
+          "status": "passed",
+          "time_s": 1.238
+        },
+        {
+          "name": "tests.test_week6_followup_fixes.test_controlled_dream_normalisations_still_work[\\u88ab\\u4e00\\u6761\\u5927\\u72d7\\u8ffd-\\u88ab\\u8ffd]",
+          "status": "passed",
+          "time_s": 1.444
+        },
+        {
+          "name": "tests.test_week6_followup_fixes.test_controlled_dream_normalisations_still_work[\\u4e00\\u6761\\u5927\\u72d7-\\u72d7]",
+          "status": "passed",
+          "time_s": 1.405
+        },
+        {
+          "name": "tests.test_week6_followup_fixes.test_unmatched_notice_does_not_exempt_another_symbol[\\u65e0\\u4eba\\u673a\\u672a\\u6536\\u5f55\\uff0c\\u4f46\\u86c7\\u8c61\\u5f81\\u53d8\\u5316\\u3002]",
+          "status": "passed",
+          "time_s": 1.606
+        },
+        {
+          "name": "tests.test_week6_followup_fixes.test_unmatched_notice_does_not_exempt_another_symbol[\\u65e0\\u4eba\\u673a\\u672a\\u6536\\u5f55\\u4f46\\u86c7\\u8c61\\u5f81\\u53d8\\u5316\\u3002]",
+          "status": "passed",
+          "time_s": 1.452
+        },
+        {
+          "name": "tests.test_week6_followup_fixes.test_unmatched_notice_does_not_exempt_another_symbol[\\u86c7\\u8c61\\u5f81\\u53d8\\u5316\\uff0c\\u65e0\\u4eba\\u673a\\u672a\\u6536\\u5f55\\u3002]",
+          "status": "passed",
+          "time_s": 1.704
+        },
+        {
+          "name": "tests.test_week6_followup_fixes.test_unmatched_notice_does_not_exempt_another_symbol[\\u86c7\\u7684\\u51fa\\u73b0\\u8c61\\u5f81\\u53d8\\u5316\\u3002]",
+          "status": "passed",
+          "time_s": 1.338
+        },
+        {
+          "name": "tests.test_week6_followup_fixes.test_unmatched_notice_does_not_exempt_another_symbol[\\u86c7\\u8fd9\\u4e2a\\u5f62\\u8c61\\u901a\\u5e38\\u4ee3\\u8868\\u53d8\\u5316\\u3002]",
+          "status": "passed",
+          "time_s": 1.493
+        },
+        {
+          "name": "tests.test_week6_followup_fixes.test_unmatched_notice_does_not_exempt_another_symbol[\\u300c\\u5927\\u86c7\\u300d\\u4ee3\\u8868\\u53d8\\u5316\\uff0c\\u65e0\\u4eba\\u673a\\u672a\\u6536\\u5f55\\u3002]",
+          "status": "passed",
+          "time_s": 1.631
+        },
+        {
+          "name": "tests.test_week6_followup_fixes.test_scoped_abstention_and_grounded_interpretation_are_allowed[\\u65e0\\u4eba\\u673a\\u672a\\u6536\\u5f55\\uff0c\\u4e0d\\u4f5c\\u89e3\\u8bfb\\uff1b\\u72d7\\u4ee3\\u8868\\u966a\\u4f34\\u3002]",
+          "status": "passed",
+          "time_s": 1.324
+        },
+        {
+          "name": "tests.test_week6_followup_fixes.test_scoped_abstention_and_grounded_interpretation_are_allowed[\\u86c7\\u8fd9\\u6b21\\u4e0d\\u5728\\u63cf\\u8ff0\\u91cc\\uff0c\\u4e0d\\u4f5c\\u89e3\\u8bfb\\uff1b\\u72d7\\u4ee3\\u8868\\u966a\\u4f34\\u3002]",
+          "status": "passed",
+          "time_s": 1.625
+        },
+        {
+          "name": "tests.test_week6_followup_fixes.test_name_disclosure_must_be_in_rendered_text[confidence]",
+          "status": "passed",
+          "time_s": 1.404
+        },
+        {
+          "name": "tests.test_week6_followup_fixes.test_name_disclosure_must_be_in_rendered_text[safety]",
+          "status": "passed",
+          "time_s": 1.588
+        },
+        {
+          "name": "tests.test_week6_followup_fixes.test_name_disclosure_must_be_in_rendered_text[followups]",
+          "status": "passed",
+          "time_s": 1.344
+        },
+        {
+          "name": "tests.test_week6_followup_fixes.test_name_disclosure_in_rendered_analysis_is_accepted[resonances]",
+          "status": "passed",
+          "time_s": 1.596
+        },
+        {
+          "name": "tests.test_week6_followup_fixes.test_name_disclosure_in_rendered_analysis_is_accepted[sections]",
+          "status": "passed",
+          "time_s": 1.369
+        },
+        {
+          "name": "tests.test_week6_followup_fixes.test_name_disclosure_binds_forms_counts_and_pending_confirmation[\\u6770\\u7684\\u7b14\\u753b\\u5df2\\u7ecf\\u786e\\u8ba4\\uff0c\\u738b12\\u753b\\uff0c\\u674e8\\u753b\\u3002]",
+          "status": "passed",
+          "time_s": 1.609
+        },
+        {
+          "name": "tests.test_week6_followup_fixes.test_name_disclosure_binds_forms_counts_and_pending_confirmation[\\u6770\\u9ed8\\u8ba4\\u509112\\u753b\\uff0c\\u738b8\\u753b\\uff0c\\u8bf7\\u786e\\u8ba4\\u3002]",
+          "status": "passed",
+          "time_s": 1.574
+        },
+        {
+          "name": "tests.test_week6_followup_fixes.test_name_disclosure_binds_forms_counts_and_pending_confirmation[\\u6770\\u9ed8\\u8ba4\\u509112\\u753b\\uff0c\\u539f\\u5b57\\u67708\\u753b\\uff0c\\u5199\\u6cd5\\u5df2\\u7ecf\\u786e\\u8ba4\\u3002]",
+          "status": "passed",
+          "time_s": 1.548
+        },
+        {
+          "name": "tests.test_week6_followup_fixes.test_name_disclosure_binds_forms_counts_and_pending_confirmation[\\u6770\\u9ed8\\u8ba4\\u6309\\u67708\\u753b\\uff0c\\u5907\\u9009\\u509112\\u753b\\uff0c\\u8bf7\\u786e\\u8ba4\\u3002]",
+          "status": "passed",
+          "time_s": 1.681
+        },
+        {
+          "name": "tests.test_week6_followup_fixes.test_confirmed_name_form_no_longer_requires_disclosure",
+          "status": "passed",
+          "time_s": 1.399
+        },
+        {
+          "name": "tests.test_week6_followup_fixes.test_calculated_confirmation_prompt_is_visible_after_submission",
+          "status": "passed",
+          "time_s": 1.73
+        },
+        {
+          "name": "tests.test_week6_review.test_birth_date_in_question_is_not_the_consultation_date",
+          "status": "passed",
+          "time_s": 2.259
+        },
+        {
+          "name": "tests.test_week6_review.test_birth_context_alone_marks_a_birth_date",
+          "status": "passed",
+          "time_s": 0.001
+        },
+        {
+          "name": "tests.test_week6_review.test_target_date_survives_a_birth_data_answer",
+          "status": "passed",
+          "time_s": 1.964
+        },
+        {
+          "name": "tests.test_week6_review.test_impossible_user_date_is_a_recoverable_failure",
+          "status": "passed",
+          "time_s": 1.589
+        },
+        {
+          "name": "tests.test_week6_review.test_symbol_needs_a_literal_phrase_and_controlled_mapping",
+          "status": "passed",
+          "time_s": 1.453
+        },
+        {
+          "name": "tests.test_week6_review.test_unquoted_unmatched_symbol_cannot_be_interpreted",
+          "status": "passed",
+          "time_s": 1.45
+        },
+        {
+          "name": "tests.test_week6_review.test_timeline_is_checked_and_dream_has_no_event_timeline",
+          "status": "passed",
+          "time_s": 1.59
+        },
+        {
+          "name": "tests.test_week6_review.test_name_claims_in_timeline_are_checked",
+          "status": "passed",
+          "time_s": 1.64
+        },
+        {
+          "name": "tests.test_week6_review.test_daily_card_orientation_and_followup",
+          "status": "passed",
+          "time_s": 2.002
+        },
+        {
+          "name": "tests.test_week6_review.test_grid_and_sancai_claims_are_bound_to_their_name",
+          "status": "passed",
+          "time_s": 1.504
+        },
+        {
+          "name": "tests.test_week6_review.test_unconfirmed_form_must_be_explained_even_if_omitted",
+          "status": "passed",
+          "time_s": 1.456
+        },
+        {
+          "name": "tests.test_week6_review.test_wanqi_keeps_the_simple_form",
+          "status": "passed",
+          "time_s": 0.003
+        }
+      ]
+    },
+    {
+      "command": ".venv/Scripts/python.exe -X utf8 -m pytest tests/test_stage0.py -q --junitxml=reports/stage0/stage0-pytest.xml",
+      "tests": 16,
+      "passed": 16,
+      "raw_sha256": "25f1602e3599fe5fa9e194ec7b9ba12d1b5b4eefd01c940b369de8432c40b075",
+      "results": [
+        {
+          "name": "tests.test_stage0.test_calendar_crosses_midnight_and_daily_uses_new_day",
+          "status": "passed",
+          "time_s": 2.46
+        },
+        {
+          "name": "tests.test_stage0.test_calendar_timezone_priority[America/Los_Angeles-Asia/Shanghai-America/Los_Angeles-2026-10-20]",
+          "status": "passed",
+          "time_s": 1.349
+        },
+        {
+          "name": "tests.test_stage0.test_calendar_timezone_priority[None-America/Los_Angeles-America/Los_Angeles-2026-10-20]",
+          "status": "passed",
+          "time_s": 1.484
+        },
+        {
+          "name": "tests.test_stage0.test_calendar_timezone_priority[None-None-Asia/Shanghai-2026-10-21]",
+          "status": "passed",
+          "time_s": 1.285
+        },
+        {
+          "name": "tests.test_stage0.test_profile_timezone_change_updates_same_turn_calendar",
+          "status": "passed",
+          "time_s": 1.324
+        },
+        {
+          "name": "tests.test_stage0.test_overseas_daily_uses_local_date_and_birth_timezone",
+          "status": "passed",
+          "time_s": 2.598
+        },
+        {
+          "name": "tests.test_stage0.test_crisis_hold_survives_reading_reset_and_requires_standalone_confirmation",
+          "status": "passed",
+          "time_s": 1.628
+        },
+        {
+          "name": "tests.test_stage0.test_web_renewal_expiry_and_orphan_cleanup",
+          "status": "passed",
+          "time_s": 1.871
+        },
+        {
+          "name": "tests.test_stage0.test_web_demo_chart_and_new_chat_cannot_bypass_safety",
+          "status": "passed",
+          "time_s": 1.585
+        },
+        {
+          "name": "tests.test_stage0.test_hotlines_follow_user_information[profile0-12356-988]",
+          "status": "passed",
+          "time_s": 1.489
+        },
+        {
+          "name": "tests.test_stage0.test_hotlines_follow_user_information[profile1-12356-988]",
+          "status": "passed",
+          "time_s": 1.517
+        },
+        {
+          "name": "tests.test_stage0.test_hotlines_follow_user_information[profile2-988-12356]",
+          "status": "passed",
+          "time_s": 1.519
+        },
+        {
+          "name": "tests.test_stage0.test_hotlines_follow_user_information[profile3-988-12356]",
+          "status": "passed",
+          "time_s": 1.273
+        },
+        {
+          "name": "tests.test_stage0.test_hotlines_follow_user_information[profile4-\\u7d27\\u6025\\u670d\\u52a1-12356]",
+          "status": "passed",
+          "time_s": 1.414
+        },
+        {
+          "name": "tests.test_stage0.test_hotlines_follow_user_information[profile5-\\u7d27\\u6025\\u670d\\u52a1-12356]",
+          "status": "passed",
+          "time_s": 1.412
+        },
+        {
+          "name": "tests.test_stage0.test_web_birth_form_selects_hotline_before_profile_is_saved",
+          "status": "passed",
+          "time_s": 1.648
+        }
+      ]
+    }
+  ],
+  "unique_tests": 638,
+  "unique_passed": 638,
+  "note": "专项最终增加1条海外实际每日运势测试，其余15条已被全量测试收集。未用缺数据跳过替代验收，本机已具备JPL DE440s。"
+}

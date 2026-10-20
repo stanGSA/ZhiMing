@@ -16,6 +16,7 @@ from dotenv import load_dotenv
 from app import ROOT, build_model, create_runtime
 from knowledge.build import build
 from plugins.astro.tools import AstroPlugin
+from plugins.daily.tools import DailyPlugin
 from scripts.live_test import records
 from scripts.trace_tree import build_tree, reviewer_metrics, specialist_metrics
 
@@ -263,7 +264,8 @@ def grounded_payload(runtime, outcome):
             facts[key]["event_projection"] = (
                 "Complete computed events; includes uncited timeline nodes."
             )
-            facts[key]["model_available_interpretations"] = AstroPlugin.project(result)[
+            projector = DailyPlugin if key == "daily_result" else AstroPlugin
+            facts[key]["model_available_interpretations"] = projector.project(result)[
                 "interpretations"
             ]
     tarot = runtime.session.state.get("tarot_result")

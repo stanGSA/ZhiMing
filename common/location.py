@@ -101,7 +101,7 @@ def consultation_timezone_evidence(text, session, birth_tz=None):
         try:
             ZoneInfo(zone)
             zones.add(zone)
-        except (ValueError, ZoneInfoNotFoundError):
+        except (ValueError, OSError, ZoneInfoNotFoundError):  # e.g. a region directory name
             pass
     if any(
         not re.search(r"(?:不(?:要)?(?:按|用|使用|采用)?|不是)\s*$", text[: m.start()])

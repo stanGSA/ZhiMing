@@ -7,6 +7,7 @@ import base64
 import binascii
 import logging
 import secrets
+import shutil
 import time
 from contextlib import asynccontextmanager
 from dataclasses import dataclass, field
@@ -17,6 +18,7 @@ from typing import Literal
 from urllib.parse import urlsplit
 from zoneinfo import ZoneInfo
 
+import yaml
 from fastapi import FastAPI, HTTPException, Request, Response
 from fastapi.responses import FileResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
@@ -26,6 +28,8 @@ from starlette.middleware.trustedhost import TrustedHostMiddleware
 from app import ROOT, Runtime, create_runtime
 from common.regions import region_options, selected_region
 from common.time_utils import NeedsInput
+from harness.trace import Tracer
+from memory.store import Store
 from plugins.astro.calculator import natal_chart
 from plugins.bazi.calculator import compute_bazi
 
@@ -200,6 +204,43 @@ def create_web_app(
         allowed_hosts.append(parsed.hostname)
     share_credentials = f"friend:{share_password}".encode() if share_password else None
     sessions: dict[str, BrowserSession] = {}
+    cleanup_lock = asyncio.Lock()
+    config = yaml.safe_load((root / "config.yaml").read_text(encoding="utf-8"))
+
+    async def purge_expired(adopt: bool = False):
+        async with cleanup_lock:
+            store = Store(root / config["paths"]["app_db"])
+            try:
+                now = time.time()
+                if adopt:
+                    # Pre-lease records exist only before the first start of this version.
+                    store.adopt_web_identities(now + MAX_IDLE)
+                for user_id in store.expired_web_identities(now):
+                    active = [(k, s) for k, s in sessions.items() if s.user_id == user_id]
+                    if any(s.lock.locked() for _, s in active):
+                        continue
+                    try:
+                        for key, session in active:
+                            sessions.pop(key, None)
+                            await close(session)
+                        # Trace first: forget() also drops the deadline row, so any failure
+                        # before it leaves the identity listed and the next pass retries.
+                        tracer = Tracer(root / config["paths"]["runs"])
+                        directory = tracer.user_dir(user_id).resolve()
+                        if directory.is_relative_to(tracer.root.resolve()) and directory.exists():
+                            shutil.rmtree(directory)
+                        store.forget(user_id)
+                    except Exception:
+                        logger.exception("Could not remove an expired browser identity")
+            finally:
+                store.close()
+
+    async def purge_safely():
+        try:
+            await purge_expired()
+        except Exception:
+            # A cleanup fault must not take down serving or the periodic reaper.
+            logger.exception("Expired browser data cleanup failed")
 
     async def close(session):
         try:
@@ -210,13 +251,11 @@ def create_web_app(
     async def reap():
         while True:
             await asyncio.sleep(60)
-            for key, session in list(sessions.items()):
-                if not session.lock.locked() and time.monotonic() - session.touched > MAX_IDLE:
-                    sessions.pop(key, None)
-                    await close(session)
+            await purge_safely()
 
     @asynccontextmanager
     async def lifespan(_app):
+        await purge_expired(adopt=True)
         cleanup = asyncio.create_task(reap())
         yield
         cleanup.cancel()
@@ -254,7 +293,20 @@ def create_web_app(
                 return JSONResponse({"detail": "请从知命页面发起请求"}, status_code=403)
             if request.headers.get("x-zhiming-client") != "web":
                 return JSONResponse({"detail": "请求来源无效"}, status_code=403)
+        await purge_safely()
         response = await call_next(request)
+        key = request.cookies.get(COOKIE, "")
+        session = sessions.get(key)
+        if session is not None:
+            touch(session)
+            response.set_cookie(
+                COOKIE,
+                key,
+                httponly=True,
+                secure=public_origin is not None,
+                samesite="strict",
+                max_age=MAX_IDLE,
+            )
         response.headers["X-Content-Type-Options"] = "nosniff"
         response.headers["Referrer-Policy"] = "same-origin"
         response.headers["Content-Security-Policy"] = (
@@ -274,11 +326,15 @@ def create_web_app(
             logger.exception("Could not start browser runtime")
             raise HTTPException(503, "服务暂时无法启动，请检查本地模型配置与知识库。") from exc
 
+    def touch(session):
+        session.touched = time.monotonic()
+        session.runtime.store.touch_web_identity(session.user_id, time.time() + MAX_IDLE)
+
     def get_session(request: Request):
         session = sessions.get(request.cookies.get(COOKIE, ""))
         if session is None:
             raise HTTPException(401, "会话已过期，请刷新页面重新开始。")
-        session.touched = time.monotonic()
+        touch(session)
         return session
 
     def available(session):
@@ -318,7 +374,7 @@ def create_web_app(
                 samesite="strict",
                 max_age=MAX_IDLE,
             )
-        session.touched = time.monotonic()
+        touch(session)
         return state(session)
 
     @app.post("/api/chat")
@@ -326,6 +382,24 @@ def create_web_app(
         session = get_session(request)
         available(session)
         async with session.lock:
+            # The direct/demo chart path also passes safety before any computation.
+            safety_profile = {}
+            if body.birth.location_id:
+                safety_profile["tz"] = selected_region(body.birth.location_id)["tz"]
+            safety = await session.runtime.safety_response(body.message, safety_profile)
+            if safety is not None:
+                session.messages.extend(
+                    [
+                        {"role": "user", "text": body.message, "system": body.system},
+                        {
+                            "role": "assistant",
+                            "text": safety.text,
+                            "status": safety.status,
+                            "system": body.system,
+                        },
+                    ]
+                )
+                return {**state(session), "busy": False}
             chart_question = None
             if body.system in ("bazi", "astro"):
                 try:
@@ -396,7 +470,9 @@ def create_web_app(
                 )
                 return {**state(session), "busy": False}
             try:
-                outcome = await asyncio.wait_for(session.runtime.turn(message), timeout=360)
+                outcome = await asyncio.wait_for(
+                    session.runtime.turn(message, safety_checked=True), timeout=360
+                )
                 session.last_birth = evidence
             except TimeoutError:
                 outcome = None
@@ -435,6 +511,7 @@ def create_web_app(
         available(session)
         async with session.lock:
             replacement = build(session.user_id, body.provider)
+            replacement.session.safety_pending = session.runtime.session.safety_pending
             await close(session)
             session.runtime = replacement
             session.provider = body.provider
@@ -486,6 +563,12 @@ def create_web_app(
         session = get_session(request)
         available(session)
         async with session.lock:
+            if session.runtime.session.safety_pending:
+                return {
+                    "chart": None,
+                    "question": "请先在对话中确认此刻安全，再继续排盘。",
+                    "code": "safety_confirmation_required",
+                }
             session.birth = body.birth
             session.chart = None
             try:

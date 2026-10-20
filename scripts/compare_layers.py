@@ -27,6 +27,7 @@ import shutil
 import subprocess
 import sys
 import time
+from datetime import datetime
 from pathlib import Path
 
 ANCHOR = "2026-10-15"
@@ -151,6 +152,12 @@ def workdir(
 
 
 def pin_calendar(runtime) -> None:
+    if hasattr(runtime.session, "refresh_calendar"):
+        # Versions that re-read the clock every turn: pin the clock, not just this anchor.
+        instant = datetime.fromisoformat(f"{ANCHOR}T12:00+08:00")
+        runtime.clock = lambda: instant
+        runtime.session.refresh_calendar(instant)
+        return
     runtime.session.calendar_anchor = ANCHOR
     for message in runtime.session.messages:
         if message["role"] == "system" and message["content"].startswith("本轮日历基准"):

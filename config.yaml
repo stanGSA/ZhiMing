@@ -34,10 +34,16 @@ reviewer:
   strictness: lenient         # lenient | strict | off（对照实验用）
   max_rounds: 1
 safety:
-  region: null
+  region: null               # 按咨询时区→出生时区选择地区；均未填写时不猜地区
+  # 官方来源与核实日期：2026-10-20；详见 docs/verification/stage0/hotlines.md
+  # 国家卫健委通知：https://www.gov.cn/zhengce/zhengceku/202412/content_6994470.htm
+  # 美国988官方：https://988lifeline.org/get-help/what-to-expect/
   emergency_contacts:
     CN: [中国大陆急救120, 中国大陆报警110]
     US: [美国紧急服务911]
+  psychological_contacts:
+    CN: [中国大陆全国统一心理援助热线12356（各地服务时间可能不同）]
+    US: [美国988自杀与危机生命线（拨打或发短信988）]
 kb:
   path: data/kb.sqlite
   dream_match_threshold: 0.75   # 解梦意象BM25候选的相似度阈值；首次评估后再调

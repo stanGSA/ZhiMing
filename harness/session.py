@@ -3,7 +3,28 @@ from __future__ import annotations
 import secrets
 import uuid
 from dataclasses import dataclass, field
+from datetime import datetime
 from typing import Any
+from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
+
+DEFAULT_CALENDAR_TZ = "Asia/Shanghai"
+
+
+def valid_timezone(name: Any) -> bool:
+    if not isinstance(name, str) or not name:
+        return False
+    try:
+        ZoneInfo(name)
+    except (ValueError, OSError, ZoneInfoNotFoundError):
+        return False
+    return True
+
+
+def profile_timezone(profile: dict[str, Any]) -> str | None:
+    """Consultation timezone first, then birth timezone; invalid stored values are skipped."""
+    return next(
+        (profile[f] for f in ("consultation_tz", "tz") if valid_timezone(profile.get(f))), None
+    )
 
 
 @dataclass
@@ -21,6 +42,9 @@ class Session:
     user_messages: list[str] = field(default_factory=list)
     default_seed: int | None = None
     calendar_anchor: str | None = None
+    calendar_timezone: str = DEFAULT_CALENDAR_TZ
+    calendar_instant: datetime | None = None
+    safety_pending: bool = False
     output_validators: dict[str, Any] = field(default_factory=dict)
     # Outer budget for the whole request; run_turn exposes its own as turn_budget.
     budget: Any = None
@@ -55,10 +79,37 @@ class Session:
             state=state,
             user_messages=list(self.user_messages),
             calendar_anchor=self.calendar_anchor,
+            calendar_timezone=self.calendar_timezone,
+            calendar_instant=self.calendar_instant,
             output_validators=self.output_validators,
             budget=budget,
             parent_call_id=parent_call_id,
             continue_prompt=continue_prompt,
+        )
+
+    def refresh_calendar(self, instant: datetime | None = None) -> None:
+        instant = instant or self.calendar_instant
+        if instant is None:
+            return
+        if instant.tzinfo is None or instant.utcoffset() is None:
+            raise ValueError("Calendar clock must return a timezone-aware datetime")
+        timezone = profile_timezone(self.profile) or DEFAULT_CALENDAR_TZ
+        self.calendar_anchor = instant.astimezone(ZoneInfo(timezone)).date().isoformat()
+        self.calendar_timezone = timezone
+        self.calendar_instant = instant
+        prefix = "本轮日历基准（"
+        self.messages[:] = [
+            m
+            for m in self.messages
+            if not (m["role"] == "system" and m.get("content", "").startswith(prefix))
+        ]
+        self.messages.insert(
+            1,
+            {
+                "role": "system",
+                "content": f"{prefix}{timezone}）：{self.calendar_anchor}；"
+                "按用户指定日期范围优先，不猜系统月份。",
+            },
         )
 
     def append_user(self, text: str) -> None:
