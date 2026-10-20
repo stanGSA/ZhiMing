@@ -83,7 +83,8 @@ class Section(StrictInput):
     title: str = Field(
         min_length=1,
         max_length=60,
-        description="本层标题，用白话说对用户意味着什么，如“压力偏大，但能逼出成果”；不放干支、十神",
+        description="本层标题，用白话说对用户意味着什么，如“压力偏大，但能逼出成果”；"
+        "用户明确询问专业结果时可写必要的名称或计算值并解释",
     )
     body: str = Field(
         min_length=1,
@@ -102,7 +103,8 @@ class Reading(StrictInput):
     summary: str = Field(
         min_length=1,
         max_length=200,
-        description="先表态：第一句用白话直接回答所问，不用术语，前提放在第二句",
+        description="先表态：第一句用白话直接回答所问，前提放在第二句；"
+        "用户明确询问专业结果时可写必要的名称或计算值并解释",
     )
     sections: list[Section] = Field(
         default_factory=list, max_length=6, description="分层分析正文，通常2-3层，每层约150-250字"

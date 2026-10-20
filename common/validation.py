@@ -26,6 +26,21 @@ JARGON = re.compile(
 )
 
 
+def requested_jargon(term: str, asked: str) -> bool:
+    """An explicitly requested result may name a value the user does not yet know."""
+    if term in asked:
+        return True
+    if re.fullmatch(r"[甲乙丙丁戊己庚辛壬癸][子丑寅卯辰巳午未申酉戌亥]", term):
+        return bool(re.search(r"干支|四柱|[年月日时]柱|大运|首运", asked))
+    if re.fullmatch(r"第[一二三四五六七八九十\d]{1,2}宫", term):
+        return bool(re.search(r"宫位|[几哪]个?宫", asked))
+    if term.endswith("相") and "相位" in asked:
+        return True
+    return "十神" in asked and term in (
+        "七杀|偏官|正官|正财|偏财|正印|偏印|枭神|印星|财星|官星|食神|伤官|食伤|劫财"
+    ).split("|")
+
+
 def report_matches_profile(report: dict, profile: dict) -> bool:
     """Compare the fields the expert actually depends on; older reports use their version."""
     dependencies = report.get("profile_dependencies")
@@ -81,7 +96,11 @@ def validate_reading(reading, session) -> str | None:
     # Recorded only: the verdict, layer titles and actions are read first and must not need
     # training to understand. A term the user asked about may be named.
     lead = [reading.summary, *[s.title for s in reading.sections], *reading.advice, reading.closing]
-    terms = list(dict.fromkeys(t for text in lead for t in JARGON.findall(text) if t not in asked))
+    terms = list(
+        dict.fromkeys(
+            t for text in lead for t in JARGON.findall(text) if not requested_jargon(t, asked)
+        )
+    )
     if terms:
         warn(
             state,

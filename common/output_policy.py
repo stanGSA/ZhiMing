@@ -87,11 +87,16 @@ def warn(state: dict, message: str) -> None:
         warnings.append(message)
 
 
+def normalize_breaks(text: str) -> str:
+    """Normalize plain-text line breaks without removing metadata or changing identifiers."""
+    return BREAK_TAG.sub("\n", text)
+
+
 def clean(text: str) -> str:
     """Drop sentences carrying a disclaimer or internal state; keep the rest verbatim."""
     if not text:
         return text
-    text = BREAK_TAG.sub("\n", text)
+    text = normalize_breaks(text)
     kept = [
         piece
         for piece in SENTENCE.findall(text)
@@ -175,12 +180,15 @@ def clean_reading(reading) -> None:
     reading.closing = clean(reading.closing)
     reading.resonances = clean_list(reading.resonances)
     for tension in reading.tensions:
+        tension.theme = normalize_breaks(tension.theme)
         tension.how_to_read = clean(tension.how_to_read)
         tension.sides = [clean(side) for side in tension.sides]
     for item in reading.timeline:
+        item.period = normalize_breaks(item.period)
         item.note = clean(item.note)
     reading.followups = clean_list(reading.followups)
     reading.safety.note = clean(reading.safety.note)
+    reading.confidence.reason = normalize_breaks(reading.confidence.reason)
 
 
 def mark_unreviewed(confidence, signals) -> None:
@@ -287,4 +295,5 @@ def normalize_report(report, signals) -> None:
     for point in report.points:
         point.text = clean(point.text)
     report.missing = clean_list(report.missing)
+    report.confidence.reason = normalize_breaks(report.confidence.reason)
     mark_unreviewed(report.confidence, signals)

@@ -212,3 +212,65 @@ def test_compare_counts_jargon_the_user_did_not_ask_about():
     summary = summarize(rows)
     assert summary["avg_lead_jargon"] == 1.5  # 丁酉、七杀、偏财, then nothing the user did not ask
     assert summary["avg_jargon"] == 1.5  # 丁酉、七杀 in the first reply, 偏财 in the second
+
+
+@pytest.mark.parametrize(
+    "asked,term,expected",
+    [
+        ("请说明日主、起运日期和首步大运", "己未", True),
+        ("四柱分别是什么？", "甲子", True),
+        ("太阳落在几宫？", "第十宫", True),
+        ("有哪些相位？", "三分相", True),
+        ("我的十神是什么？", "七杀", True),
+        ("我的偏财运怎么样？", "偏财", True),
+        ("首步大运是什么？", "七杀", False),
+        ("这个月怎么样？", "己未", False),
+    ],
+)
+def test_jargon_policy_and_metrics_respect_requested_results(asked, term, expected):
+    from common.validation import requested_jargon as runtime_policy
+    from scripts.compare_layers import lead_jargon
+
+    assert runtime_policy(term, asked) is expected
+    row = dict(question=asked, output=dict(summary=term))
+    assert lead_jargon(row) == (0 if expected else 1)
+
+
+@pytest.mark.parametrize("legacy", [False, True])
+def test_followup_jargon_context_matches_runtime_and_stays_within_its_scenario(legacy):
+    from types import SimpleNamespace
+
+    from scripts.compare_layers import summarize, turn_row
+
+    def row(scenario, turn, question, original, advice):
+        result = turn_row(
+            dict(id=scenario, kind="塔罗"),
+            turn,
+            question,
+            SimpleNamespace(
+                data=dict(reading=dict(advice=[advice])), text=advice, status="submit_reading"
+            ),
+            [],
+            SimpleNamespace(
+                session=SimpleNamespace(
+                    id="synthetic",
+                    state=dict(question=original),
+                    user_messages=[original, question],
+                )
+            ),
+            0,
+        )
+        if legacy:
+            result.pop("question_context")
+        else:
+            assert result["question_context"] == original + " " + question
+        return result
+
+    rows = [
+        row("asked", 1, "看看我的偏财运", "看看我的偏财运", "偏财运：先核实条件。"),
+        row("asked", 2, "具体建议呢？", "看看我的偏财运", "偏财运：先核实条件。"),
+        row("unrelated", 1, "近期怎么样？", "近期怎么样？", "偏财运：先核实条件。"),
+    ]
+    summary = summarize(rows)
+    assert summary["avg_lead_jargon"] == 0.3  # Only the unrelated scenario is warned.
+    assert summary["inferred_jargon_context_turns"] == (3 if legacy else 0)
