@@ -98,6 +98,80 @@ async def test_disclaimer_and_internal_sentences_are_removed_not_rejected(runtim
     assert reading.advice == ["先核实条件。"]
 
 
+async def test_html_line_breaks_become_line_breaks(runtime):
+    draft = await tarot_draft(runtime)
+    draft["sections"][0]["body"] = (
+        "过去的模糊正在澄清。<br>潜在挑战：节奏被打乱。<BR/>潜在机遇：看清重点。"
+    )
+    error, reading = check(runtime, draft)
+    assert error is None
+    assert (
+        reading.sections[0].body
+        == "过去的模糊正在澄清。\n潜在挑战：节奏被打乱。\n潜在机遇：看清重点。"
+    )
+    assert "<br" not in render_reading(reading.model_dump(mode="json")).lower()
+
+
+async def test_line_breaks_cover_visible_metadata_without_removing_audit_notes(runtime):
+    draft = await tarot_draft(runtime)
+    draft["timeline"] = [{"period": "近期<br>下周", "note": "先整理目标。<br/>再确认安排。"}]
+    draft["tensions"] = [
+        {"theme": "工作<BR />安排", "sides": ["先梳理。", "再推进。"], "how_to_read": "分开安排。"}
+    ]
+    reason = "释义为未经人工审核的草稿。<br>保留来源说明。"
+    draft["confidence"]["reason"] = reason
+    error, reading = check(runtime, draft)
+    assert error is None
+    assert reading.timeline[0].period == "近期\n下周"
+    assert reading.tensions[0].theme == "工作\n安排"
+    assert reading.confidence.reason == reason.replace("<br>", "\n")
+    assert "<br" not in reading.model_dump_json().lower()
+    assert "<br" not in render_reading(reading.model_dump(mode="json")).lower()
+
+    report = ReportInput.model_validate(
+        dict(
+            answer="先梳理。<br>再推进。",
+            points=[{"ref_id": draft["evidence"][0]["ref_id"], "text": "先核实条件。"}],
+            confidence=draft["confidence"],
+        )
+    )
+    normalize_report(report, [{"reviewed": False}])
+    assert report.answer == "先梳理。\n再推进。"
+    assert report.confidence.reason == reason.replace("<br>", "\n")
+
+
+async def test_jargon_in_verdict_titles_and_advice_is_a_warning(runtime):
+    draft = await tarot_draft(runtime)
+    draft["sections"][0]["title"] = "能量压制：财生七杀"
+    draft["advice"] = ["偏财运：多留意外部机会。"]
+    error, _ = check(runtime, draft)
+    assert error is None  # recorded, never a rejection round
+    assert any("七杀、偏财" in w for w in runtime.session.state["output_warnings"])
+    # Plain titles and advice pass; a term explained in the body is fine.
+    draft["sections"][0]["title"] = "压力偏大，但能逼出成果"
+    draft["sections"][0]["body"] = "偏财（额外的机会和外部资源）在这段时间更活跃。"
+    draft["advice"] = ["多留意外部机会，但先确认自己接得住。"]
+    assert check(runtime, draft)[0] is None
+    assert not any("白话" in w for w in runtime.session.state["output_warnings"])
+
+
+async def test_jargon_the_user_asked_about_may_be_named(runtime):
+    outcome = await runtime.turn("用塔罗看看我近期的偏财运")
+    assert outcome.status == "submit_reading"
+    draft = copy.deepcopy(outcome.data["reading"])
+    draft["advice"] = ["偏财运：多留意外部机会。"]
+    assert check(runtime, draft)[0] is None
+    assert not any("白话" in w for w in runtime.session.state["output_warnings"])
+
+
+async def test_requested_result_does_not_exempt_unrelated_jargon(runtime):
+    draft = await tarot_draft(runtime)
+    runtime.session.state["question"] = "首步大运是什么？"
+    draft["sections"][0]["title"] = "能量压制：七杀"
+    assert check(runtime, draft)[0] is None
+    assert any("七杀" in w and "白话" in w for w in runtime.session.state["output_warnings"])
+
+
 async def test_field_made_only_of_a_disclaimer_is_still_rejected(runtime):
     draft = await tarot_draft(runtime)
     draft["summary"] = "此结果仅供参考"

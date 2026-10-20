@@ -5,6 +5,7 @@ and ref_ids. Wording is no longer policed by rejection where code can repair it,
 rejection teaches the model to write less:
 
 * disclaimers and internal words are removed (the app adds one disclaimer itself);
+* HTML line breaks (``<br>``) become real line breaks;
 * ``confidence`` and ``systems_used`` are filled in from what this session actually computed;
 * a skipped specialist is disclosed in ``confidence.reason``;
 * a remark about the body gets a visible "see a doctor if unwell" note.
@@ -26,6 +27,8 @@ INTERNAL = re.compile(
     r"存储错误|保存失败|未能保存|未经?人工审核"
 )
 KB_WORD = re.compile(r"知识库(?:的|中的|里的)?(?:释义|条目|解释)?")
+# Replies are plain text; a model writing HTML line breaks would show them literally.
+BREAK_TAG = re.compile(r"<br\s*/?>", re.IGNORECASE)
 SENTENCE = re.compile(r"[^。！？!?\n]*(?:[。！？!?]+|\n|$)")
 
 CERTAINTY = re.compile(r"一定会|一定能|一定是|必然|必定|注定|肯定会|绝对会|百分之百|毫无疑问|铁定")
@@ -84,10 +87,16 @@ def warn(state: dict, message: str) -> None:
         warnings.append(message)
 
 
+def normalize_breaks(text: str) -> str:
+    """Normalize plain-text line breaks without removing metadata or changing identifiers."""
+    return BREAK_TAG.sub("\n", text)
+
+
 def clean(text: str) -> str:
     """Drop sentences carrying a disclaimer or internal state; keep the rest verbatim."""
     if not text:
         return text
+    text = normalize_breaks(text)
     kept = [
         piece
         for piece in SENTENCE.findall(text)
@@ -171,12 +180,15 @@ def clean_reading(reading) -> None:
     reading.closing = clean(reading.closing)
     reading.resonances = clean_list(reading.resonances)
     for tension in reading.tensions:
+        tension.theme = normalize_breaks(tension.theme)
         tension.how_to_read = clean(tension.how_to_read)
         tension.sides = [clean(side) for side in tension.sides]
     for item in reading.timeline:
+        item.period = normalize_breaks(item.period)
         item.note = clean(item.note)
     reading.followups = clean_list(reading.followups)
     reading.safety.note = clean(reading.safety.note)
+    reading.confidence.reason = normalize_breaks(reading.confidence.reason)
 
 
 def mark_unreviewed(confidence, signals) -> None:
@@ -283,4 +295,5 @@ def normalize_report(report, signals) -> None:
     for point in report.points:
         point.text = clean(point.text)
     report.missing = clean_list(report.missing)
+    report.confidence.reason = normalize_breaks(report.confidence.reason)
     mark_unreviewed(report.confidence, signals)

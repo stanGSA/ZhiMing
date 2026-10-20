@@ -15,6 +15,30 @@ HIGH_RISK = re.compile(r"疾病|癌|诊断|停药|治疗|健康|投资|股票|�
 SUITABILITY = re.compile(
     r"是否|适合|适宜|适不适|要不要|该不该|能不能|可不可以|可以.{0,12}[吗么]|什么时候|何时|时机"
 )
+# Terms a reader without training cannot parse: 十神, 干支 pillars, branch clashes, aspects and
+# house numbers. “自己未来” is not the pillar 己未, nor “节日主题” the 日主.
+JARGON = re.compile(
+    r"七杀|偏官|正官|正财|偏财|正印|偏印|枭神|印星|财星|官星|食神|伤官|食伤|劫财|十神|"
+    r"日主(?![题要持角动导])|喜用神?|用神|"
+    r"(?<!自)[甲乙丙丁戊己庚辛壬癸][子丑寅卯辰巳午未申酉戌亥]|"
+    r"[子丑寅卯辰巳午未申酉戌亥]{2}相?[冲合刑害破]|"
+    r"(?:对分|四分|三分|六分|刑|拱)相|第[一二三四五六七八九十\d]{1,2}宫"
+)
+
+
+def requested_jargon(term: str, asked: str) -> bool:
+    """An explicitly requested result may name a value the user does not yet know."""
+    if term in asked:
+        return True
+    if re.fullmatch(r"[甲乙丙丁戊己庚辛壬癸][子丑寅卯辰巳午未申酉戌亥]", term):
+        return bool(re.search(r"干支|四柱|[年月日时]柱|大运|首运", asked))
+    if re.fullmatch(r"第[一二三四五六七八九十\d]{1,2}宫", term):
+        return bool(re.search(r"宫位|[几哪]个?宫", asked))
+    if term.endswith("相") and "相位" in asked:
+        return True
+    return "十神" in asked and term in (
+        "七杀|偏官|正官|正财|偏财|正印|偏印|枭神|印星|财星|官星|食神|伤官|食伤|劫财"
+    ).split("|")
 
 
 def report_matches_profile(report: dict, profile: dict) -> bool:
@@ -53,13 +77,11 @@ def validate_reading(reading, session) -> str | None:
         return "免责声明由应用统一添加，正文不要重复"
     first = reading.summary.split("。")[0]
     decision = (state.get("tarot_result") or {}).get("spread") == "decision"
+    asked = state["question"] + " " + (session.user_messages[-1] if session.user_messages else "")
     if state.get("response_mode") != "followup":
         # Recorded only: a verdict hedged in its first sentence reads as no answer at all.
         if "前提" in first:
             warn(state, "summary第一句宜先表态，前提放到第二句")
-        asked = (
-            state["question"] + " " + (session.user_messages[-1] if session.user_messages else "")
-        )
         if "有条件适合" in first and not decision and not SUITABILITY.search(asked):
             warn(state, "非时机问题的第一句宜直接回答所问，不套用“有条件适合”")
     if state.get("response_mode") != "followup" and decision:
@@ -71,6 +93,20 @@ def validate_reading(reading, session) -> str | None:
         if re.search(r"是否|适合|适宜|什么时候|何时|时机", state["question"]):
             if not re.search(r"适合|适宜|可以|不宜|暂缓|建议(?:开始|启动|等待|推迟)", first):
                 warn(state, "时机问题summary第一句宜直接回答行动倾向并说明现实前提")
+    # Recorded only: the verdict, layer titles and actions are read first and must not need
+    # training to understand. A term the user asked about may be named.
+    lead = [reading.summary, *[s.title for s in reading.sections], *reading.advice, reading.closing]
+    terms = list(
+        dict.fromkeys(
+            t for text in lead for t in JARGON.findall(text) if not requested_jargon(t, asked)
+        )
+    )
+    if terms:
+        warn(
+            state,
+            f"summary、小标题、advice和closing宜用白话，术语（{'、'.join(terms[:5])}）"
+            "放进正文并附白话解释",
+        )
     # Fresh readings must use reports calculated with the current dependent profile
     # fields. Historical follow-ups deliberately retain their saved facts.
     if state.get("response_mode") != "followup":

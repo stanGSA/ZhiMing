@@ -266,6 +266,11 @@ def turn_row(scenario, index, question, outcome, events, runtime, latency) -> di
         kind=scenario["kind"],
         turn=index,
         question=question,
+        question_context=(
+            (getattr(runtime.session, "state", {}).get("question") or question)
+            + " "
+            + (getattr(runtime.session, "user_messages", []) or [question])[-1]
+        ),
         status=outcome.status,
         latency_s=round(latency, 2),
         reply_chars=len(outcome.text),
@@ -390,15 +395,68 @@ async def run(args) -> Path:
 HEDGE = re.compile(r"有条件|前提")
 CAVEAT = re.compile(r"不能当作|不能当成|不能用来|不能据此|不能扩展|不代表|不意味着|并不表示")
 BASIS = re.compile(r"基准|口径")
+# Plain language: terms a reader without training cannot parse. Same list as
+# common.validation.JARGON, copied so that old checkouts can still be reported.
+JARGON = re.compile(
+    r"七杀|偏官|正官|正财|偏财|正印|偏印|枭神|印星|财星|官星|食神|伤官|食伤|劫财|十神|"
+    r"日主(?![题要持角动导])|喜用神?|用神|"
+    r"(?<!自)[甲乙丙丁戊己庚辛壬癸][子丑寅卯辰巳午未申酉戌亥]|"
+    r"[子丑寅卯辰巳午未申酉戌亥]{2}相?[冲合刑害破]|"
+    r"(?:对分|四分|三分|六分|刑|拱)相|第[一二三四五六七八九十\d]{1,2}宫"
+)
 
 
 def first_sentence(output: dict) -> str:
     return re.split(r"[。！？!?]", output.get("summary") or "")[0]
 
 
+# Kept self-contained like JARGON: importing common here would cache the wrong checkout
+# before run --root imports that checkout's app. Keep in sync with common.validation.
+def requested_jargon(term: str, asked: str) -> bool:
+    """An explicitly requested result may name a value the user does not yet know."""
+    if term in asked:
+        return True
+    if re.fullmatch(r"[甲乙丙丁戊己庚辛壬癸][子丑寅卯辰巳午未申酉戌亥]", term):
+        return bool(re.search(r"干支|四柱|[年月日时]柱|大运|首运", asked))
+    if re.fullmatch(r"第[一二三四五六七八九十\d]{1,2}宫", term):
+        return bool(re.search(r"宫位|[几哪]个?宫", asked))
+    if term.endswith("相") and "相位" in asked:
+        return True
+    return "十神" in asked and term in (
+        "七杀|偏官|正官|正财|偏财|正印|偏印|枭神|印星|财星|官星|食神|伤官|食伤|劫财"
+    ).split("|")
+
+
+def lead_jargon(row: dict, asked: str | None = None) -> int:
+    """Terms in the verdict, layer titles, advice and closing that the user did not ask about."""
+    output = row.get("output") or {}
+    lead = [
+        output.get("summary") or "",
+        *(row.get("section_titles") or []),
+        *(output.get("advice") or []),
+        output.get("closing") or "",
+    ]
+    if asked is None:
+        asked = row.get("question_context", row.get("question")) or ""
+    return sum(not requested_jargon(t, asked) for text in lead for t in JARGON.findall(text))
+
+
 def summarize(rows) -> dict:
     done = [r for r in rows if r["status"] == "submit_reading"]
     count = len(done) or 1
+    # New runs save the exact runtime context. For legacy runs, infer it from the
+    # same scenario's earlier questions; never join unrelated or unnamed scenarios.
+    questions = {}
+    lead_counts = []
+    for row in sorted(rows, key=lambda r: r.get("turn", 1)):
+        scenario = row.get("scenario")
+        previous = questions.setdefault(scenario, []) if scenario is not None else []
+        previous.append(row.get("question") or "")
+        asked = row.get("question_context")
+        if asked is None:
+            asked = "\n".join(previous)
+        if row["status"] == "submit_reading":
+            lead_counts.append(lead_jargon(row, asked))
     # Reclassify saved diagnostics with today's rules without rewriting historical
     # replies or their collection-time categories. Category-only legacy data stays usable.
     categories = [
@@ -418,6 +476,9 @@ def summarize(rows) -> dict:
         basis_sections=sum(
             any(BASIS.search(title) for title in r.get("section_titles") or []) for r in done
         ),
+        avg_jargon=round(sum(len(JARGON.findall(r.get("text") or "")) for r in done) / count, 1),
+        avg_lead_jargon=round(sum(lead_counts) / count, 1),
+        inferred_jargon_context_turns=sum(r.get("question_context") is None for r in done),
         rejections=sum(len(r["submit_rejections"]) + len(r["report_rejections"]) for r in rows),
         **{
             f"{category}_rejections": categories.count(category)
@@ -437,6 +498,7 @@ def summarize(rows) -> dict:
 
 CHECKLIST = (
     "- [ ] 先表态：第一句直接回答所问，前提放在第二句；再概括整体气象\n"
+    "- [ ] 说白话：不懂命理也能看懂结论、小标题和建议；正文术语附白话解释，不讲推算方法\n"
     "- [ ] 正文不向用户逐条解释写作边界；没问到时不单独写排盘基准\n"
     "- [ ] 分层推演：每层讲清作用关系 → 挑战／机遇 → 应对，而不是把依据拆成几个标题\n"
     "- [ ] 行动建议具体可执行\n"
@@ -459,6 +521,11 @@ def report(paths) -> str:
             f"版本读取错误={r.get('revision_error') or '无记录'}"
         )
     lines.append("")
+    lines += [
+        "术语指标优先使用运行时保存的提问语境；旧结果缺少该字段时，按同一场景的历史问题推断。"
+        "inferred_jargon_context_turns 为使用推断语境的成功回答数。",
+        "",
+    ]
     lines.append("| 指标 | " + " | ".join(f"{r['label']}（{r['mode']}）" for r in runs) + " |")
     lines.append("|---|" + "---|" * len(runs))
     sums = [summarize(r["rows"]) for r in runs]

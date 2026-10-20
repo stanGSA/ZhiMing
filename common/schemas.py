@@ -80,11 +80,17 @@ class Timeline(StrictInput):
 
 
 class Section(StrictInput):
-    title: str = Field(min_length=1, max_length=60, description="本层标题，如“核心碰撞：辰戌相冲”")
+    title: str = Field(
+        min_length=1,
+        max_length=60,
+        description="本层标题，用白话说对用户意味着什么，如“压力偏大，但能逼出成果”；"
+        "用户明确询问专业结果时可写必要的名称或计算值并解释",
+    )
     body: str = Field(
         min_length=1,
         max_length=1200,
-        description="本层分析正文：作用关系、挑战与机遇、怎么应对；可分行写要点",
+        description="本层正文：先用白话说结论和生活中的表现，再交代依据、挑战与机遇、怎么应对；"
+        "术语附白话解释；分行直接换行，不用HTML标签",
     )
     ref_ids: list[str] = Field(
         default_factory=list, description="本段依据的计算事实ref_id，挂在段落上，不必逐句绑定"
@@ -95,7 +101,10 @@ class Reading(StrictInput):
     question_type: Literal["timing", "decision", "trait", "tarot", "daily", "name", "dream"]
     systems_used: list[str] = Field(min_length=1)
     summary: str = Field(
-        min_length=1, max_length=200, description="先表态：第一句直接回答所问，前提放在第二句"
+        min_length=1,
+        max_length=200,
+        description="先表态：第一句用白话直接回答所问，前提放在第二句；"
+        "用户明确询问专业结果时可写必要的名称或计算值并解释",
     )
     sections: list[Section] = Field(
         default_factory=list, max_length=6, description="分层分析正文，通常2-3层，每层约150-250字"
