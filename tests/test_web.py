@@ -1,6 +1,7 @@
 """Browser API integration against the real, offline Agent and a temporary database."""
 
 import asyncio
+from datetime import UTC, datetime
 
 import httpx
 import pytest
@@ -8,6 +9,8 @@ import pytest
 pytest.importorskip("fastapi")
 
 from app import create_runtime
+from harness.models import ModelResponse, ToolCall
+from tests.test_week6 import with_birth
 from web import BirthInfo, create_web_app
 
 HEADERS = {"X-Zhiming-Client": "web", "Origin": "http://testserver"}
@@ -274,3 +277,47 @@ async def test_xinjiang_clock_not_assumed(browser):
     birth["clock_tz"] = "Asia/Shanghai"
     response = (await client.post("/api/chart", json={"system": "bazi", "birth": birth})).json()
     assert response["chart"]["result"]["pillars"]["time"] == "乙巳"
+
+
+@pytest.mark.parametrize("change_timezone", [False, True])
+async def test_daily_birth_form_keeps_consultation_timezone(
+    browser, scripted_model, change_timezone
+):
+    client, _, runtimes = browser
+    await client.get("/api/session")
+    runtime = runtimes[-1]
+    with_birth(runtime, consultation_tz="America/Los_Angeles")
+    runtime.clock = lambda: datetime(2026, 10, 20, 16, 1, tzinfo=UTC)
+    zone = "America/New_York" if change_timezone else "America/Los_Angeles"
+    question = "本次咨询按America/New_York时间看今天运势" if change_timezone else "看看今天运势"
+
+    def response(name, **arguments):
+        return ModelResponse(tool_calls=[ToolCall(id=name, name=name, arguments=arguments)])
+
+    responses = [response("start_reading", question=question)]
+    if change_timezone:
+        responses.append(
+            response("update_profile", field="consultation_tz", value=zone, evidence=question)
+        )
+    responses.extend(
+        [
+            response("daily_fortune", date="2026-10-20"),
+            response("ask_user", question="还有想了解的方面吗？"),
+        ]
+    )
+    runtime.model = scripted_model(responses)
+    result = await client.post(
+        "/api/chat",
+        json={
+            "message": question,
+            "birth": {"date": "1996-05-10", "time": "08:30", "location_id": "1803361"},
+        },
+    )
+    assert result.status_code == 200
+    assert "出生钟表时区为Asia/Shanghai" in runtime.session.user_messages[-1]
+    daily = runtime.session.state.get("daily_result")
+    assert daily is not None, result.json()
+    assert daily["tz"] == zone and daily["date"] == "2026-10-20"
+    assert runtime.session.calendar_timezone == zone
+    profile = runtime.store.get_profile(runtime.session.user_id)
+    assert profile["tz"] == "Asia/Shanghai" and profile["consultation_tz"] == zone
