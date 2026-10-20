@@ -5,6 +5,7 @@ and ref_ids. Wording is no longer policed by rejection where code can repair it,
 rejection teaches the model to write less:
 
 * disclaimers and internal words are removed (the app adds one disclaimer itself);
+* HTML line breaks (``<br>``) become real line breaks;
 * ``confidence`` and ``systems_used`` are filled in from what this session actually computed;
 * a skipped specialist is disclosed in ``confidence.reason``;
 * a remark about the body gets a visible "see a doctor if unwell" note.
@@ -26,6 +27,8 @@ INTERNAL = re.compile(
     r"存储错误|保存失败|未能保存|未经?人工审核"
 )
 KB_WORD = re.compile(r"知识库(?:的|中的|里的)?(?:释义|条目|解释)?")
+# Replies are plain text; a model writing HTML line breaks would show them literally.
+BREAK_TAG = re.compile(r"<br\s*/?>", re.IGNORECASE)
 SENTENCE = re.compile(r"[^。！？!?\n]*(?:[。！？!?]+|\n|$)")
 
 CERTAINTY = re.compile(r"一定会|一定能|一定是|必然|必定|注定|肯定会|绝对会|百分之百|毫无疑问|铁定")
@@ -88,6 +91,7 @@ def clean(text: str) -> str:
     """Drop sentences carrying a disclaimer or internal state; keep the rest verbatim."""
     if not text:
         return text
+    text = BREAK_TAG.sub("\n", text)
     kept = [
         piece
         for piece in SENTENCE.findall(text)

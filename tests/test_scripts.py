@@ -175,3 +175,40 @@ def test_compare_counts_hedged_verdicts_caveats_and_basis_layers():
     assert summary["hedged_first"] == 1  # a premise after the first sentence is fine
     assert summary["avg_caveats"] == 1.0
     assert summary["basis_sections"] == 1
+    assert summary["avg_lead_jargon"] == 1.0  # 日主 and 辰戌相冲 in the first reply's titles
+
+
+def test_compare_counts_jargon_the_user_did_not_ask_about():
+    from scripts.compare_layers import summarize
+
+    def row(question, summary, titles, text):
+        return dict(
+            status="submit_reading",
+            reply_chars=len(text),
+            analysis_chars=0,
+            evidence_share=None,
+            sections=len(titles),
+            section_titles=titles,
+            submit_rejections=[],
+            report_rejections=[],
+            submit_attempts=1,
+            reviews=[],
+            recomputed=[],
+            turn=1,
+            question=question,
+            output=dict(summary=summary, advice=["偏财运：多留意外部机会。"], closing=""),
+            text=text,
+        )
+
+    rows = [
+        row(
+            "这个月怎么样？",
+            "这个月整体偏压力，主要落在工作上。",
+            ["当前大运：丁酉", "能量压制：财生七杀"],
+            "丁酉大运，戊土为七杀；自己未来的方向更清楚。",
+        ),
+        row("我的偏财运怎么样？", "偏财运平稳。", ["压力偏大，但能逼出成果"], "偏财平稳。"),
+    ]
+    summary = summarize(rows)
+    assert summary["avg_lead_jargon"] == 1.5  # 丁酉、七杀、偏财, then nothing the user did not ask
+    assert summary["avg_jargon"] == 1.5  # 丁酉、七杀 in the first reply, 偏财 in the second

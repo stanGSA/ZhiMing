@@ -390,10 +390,32 @@ async def run(args) -> Path:
 HEDGE = re.compile(r"有条件|前提")
 CAVEAT = re.compile(r"不能当作|不能当成|不能用来|不能据此|不能扩展|不代表|不意味着|并不表示")
 BASIS = re.compile(r"基准|口径")
+# Plain language: terms a reader without training cannot parse. Same list as
+# common.validation.JARGON, copied so that old checkouts can still be reported.
+JARGON = re.compile(
+    r"七杀|偏官|正官|正财|偏财|正印|偏印|枭神|印星|财星|官星|食神|伤官|食伤|劫财|十神|"
+    r"日主(?![题要持角动导])|喜用神?|用神|"
+    r"(?<!自)[甲乙丙丁戊己庚辛壬癸][子丑寅卯辰巳午未申酉戌亥]|"
+    r"[子丑寅卯辰巳午未申酉戌亥]{2}相?[冲合刑害破]|"
+    r"(?:对分|四分|三分|六分|刑|拱)相|第[一二三四五六七八九十\d]{1,2}宫"
+)
 
 
 def first_sentence(output: dict) -> str:
     return re.split(r"[。！？!?]", output.get("summary") or "")[0]
+
+
+def lead_jargon(row: dict) -> int:
+    """Terms in the verdict, layer titles, advice and closing that the user did not ask about."""
+    output = row.get("output") or {}
+    lead = [
+        output.get("summary") or "",
+        *(row.get("section_titles") or []),
+        *(output.get("advice") or []),
+        output.get("closing") or "",
+    ]
+    asked = row.get("question") or ""
+    return sum(t not in asked for text in lead for t in JARGON.findall(text))
 
 
 def summarize(rows) -> dict:
@@ -418,6 +440,8 @@ def summarize(rows) -> dict:
         basis_sections=sum(
             any(BASIS.search(title) for title in r.get("section_titles") or []) for r in done
         ),
+        avg_jargon=round(sum(len(JARGON.findall(r.get("text") or "")) for r in done) / count, 1),
+        avg_lead_jargon=round(sum(lead_jargon(r) for r in done) / count, 1),
         rejections=sum(len(r["submit_rejections"]) + len(r["report_rejections"]) for r in rows),
         **{
             f"{category}_rejections": categories.count(category)
@@ -437,6 +461,7 @@ def summarize(rows) -> dict:
 
 CHECKLIST = (
     "- [ ] 先表态：第一句直接回答所问，前提放在第二句；再概括整体气象\n"
+    "- [ ] 说白话：不懂命理也能看懂结论、小标题和建议；正文术语附白话解释，不讲推算方法\n"
     "- [ ] 正文不向用户逐条解释写作边界；没问到时不单独写排盘基准\n"
     "- [ ] 分层推演：每层讲清作用关系 → 挑战／机遇 → 应对，而不是把依据拆成几个标题\n"
     "- [ ] 行动建议具体可执行\n"
