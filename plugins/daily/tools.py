@@ -16,12 +16,13 @@ from pathlib import Path
 from pydantic import Field
 
 from common.time_utils import NeedsInput
-from harness.models import StrictInput
+from harness.models import StrictInput, ToolResult
 from harness.registry import Tool
+from harness.session import profile_timezone
 from plugins.astro.calculator import BODY_ZH, natal_chart, transits
 from plugins.base import Signal
 from plugins.bazi.calculator import GAN, GAN_WX, WX, bazi_period, compute_bazi
-from plugins.context import BirthInput, birth_values, period_timezone
+from plugins.context import BirthInput, birth_values, confirmed_timezone, period_timezone
 from plugins.tarot.draw import draw_tarot
 
 SEED_ALGORITHM = "daily-sha256-v1"
@@ -117,6 +118,11 @@ def requested_date(session) -> str | None:
     anchor = Date.fromisoformat(session.calendar_anchor) if session.calendar_anchor else None
     birth = str(session.profile.get("birth_local_dt") or "")[:10] or None
     state = session.state
+    zone = getattr(session, "calendar_timezone", None)
+    if state.get("daily_date_zone") != zone and not state.get("daily_result"):
+        # Relative days were read in another calendar timezone: read the question again.
+        for key in ("daily_target_date", "daily_date_cursor", "daily_date_error"):
+            state.pop(key, None)
     cursor = max(state.get("question_message_index", 0), state.get("daily_date_cursor", 0))
     target = state.get("daily_target_date") or (state.get("daily_result") or {}).get("date")
     error = state.get("daily_date_error")
@@ -129,12 +135,33 @@ def requested_date(session) -> str | None:
             else:
                 target, error = candidate, None
     target = target or (anchor.isoformat() if anchor else None)
-    state.update(daily_target_date=target, daily_date_cursor=len(session.user_messages))
+    state.update(
+        daily_target_date=target,
+        daily_date_cursor=len(session.user_messages),
+        daily_date_zone=zone,
+    )
     if error:
         state["daily_date_error"] = error
         raise InvalidDate(error)
     state.pop("daily_date_error", None)
     return target
+
+
+def daily_timezone(session, chart):
+    """The day's timezone and the profile field that must hold it for the calendar to agree.
+
+    Stated consultation timezone, then the stored consultation/birth timezone, then the birth
+    clock timezone. The calendar anchor reads only the profile, so the last two must be saved.
+    """
+    birth_tz = chart.get("input", {}).get("tz")
+    confirmed = confirmed_timezone(session, birth_tz)
+    if confirmed:
+        return confirmed, "consultation_tz"
+    stored = profile_timezone(session.profile)
+    if stored:
+        field = "consultation_tz" if stored == session.profile.get("consultation_tz") else "tz"
+        return stored, field
+    return birth_tz, "tz"
 
 
 class DailyPlugin:
@@ -253,13 +280,19 @@ class DailyPlugin:
             )
             if not bazi["day_master"]:
                 raise NeedsInput("uncertain_day_master", "日柱无法确定，请补充出生时间。")
-            tz = (
-                period_timezone(args, session, chart)
-                if args.tz
-                else session.profile.get("consultation_tz") or birth["tz"]
-            )
+            if args.tz:
+                tz, field = period_timezone(args, session, chart), "consultation_tz"
+            else:
+                tz, field = daily_timezone(session, chart)
         except NeedsInput as exc:
             return exc.result()
+        if tz != session.calendar_timezone:
+            # "Today" was dated in the calendar timezone: never compute it in another one.
+            return ToolResult.failure(
+                "calendar_timezone_mismatch",
+                f"本次日期应按{tz}计算，但日历基准仍为{session.calendar_timezone}。"
+                f"请先用update_profile保存{field}={tz}，日历刷新后按新的日历基准日期再调用。",
+            )
         fingerprint = hashlib.sha256(
             json.dumps([SEED_ALGORITHM, birth, bazi_inputs, tz], sort_keys=True).encode()
         ).hexdigest()

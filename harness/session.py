@@ -5,7 +5,26 @@ import uuid
 from dataclasses import dataclass, field
 from datetime import datetime
 from typing import Any
-from zoneinfo import ZoneInfo
+from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
+
+DEFAULT_CALENDAR_TZ = "Asia/Shanghai"
+
+
+def valid_timezone(name: Any) -> bool:
+    if not isinstance(name, str) or not name:
+        return False
+    try:
+        ZoneInfo(name)
+    except (ValueError, OSError, ZoneInfoNotFoundError):
+        return False
+    return True
+
+
+def profile_timezone(profile: dict[str, Any]) -> str | None:
+    """Consultation timezone first, then birth timezone; invalid stored values are skipped."""
+    return next(
+        (profile[f] for f in ("consultation_tz", "tz") if valid_timezone(profile.get(f))), None
+    )
 
 
 @dataclass
@@ -23,7 +42,7 @@ class Session:
     user_messages: list[str] = field(default_factory=list)
     default_seed: int | None = None
     calendar_anchor: str | None = None
-    calendar_timezone: str = "Asia/Shanghai"
+    calendar_timezone: str = DEFAULT_CALENDAR_TZ
     calendar_instant: datetime | None = None
     safety_pending: bool = False
     output_validators: dict[str, Any] = field(default_factory=dict)
@@ -74,7 +93,7 @@ class Session:
             return
         if instant.tzinfo is None or instant.utcoffset() is None:
             raise ValueError("Calendar clock must return a timezone-aware datetime")
-        timezone = self.profile.get("consultation_tz") or self.profile.get("tz") or "Asia/Shanghai"
+        timezone = profile_timezone(self.profile) or DEFAULT_CALENDAR_TZ
         self.calendar_anchor = instant.astimezone(ZoneInfo(timezone)).date().isoformat()
         self.calendar_timezone = timezone
         self.calendar_instant = instant

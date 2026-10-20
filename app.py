@@ -138,12 +138,14 @@ class Runtime:
             return TurnOutcome(status="crisis_support", text=text, data={"safety": {"flag": True}})
         return None
 
-    async def turn(self, message: str) -> TurnOutcome:
+    async def turn(self, message: str, *, safety_checked: bool = False) -> TurnOutcome:
+        """safety_checked: the caller already ran safety_response on the user's own words."""
         self.compact_history()
-        self.session.refresh_calendar(self.clock())
-        safety = await self.safety_response(message)
+        # Safety first: nothing about the calendar or profile may delay a crisis response.
+        safety = None if safety_checked else await self.safety_response(message)
         if safety is not None:
             return safety
+        self.session.refresh_calendar(self.clock())
         # One budget per user request, shared by the orchestrator and every specialist. The
         # wall-clock deadline guards multi-agent fan-out only; single mode keeps week 1-3 limits.
         deadline = (

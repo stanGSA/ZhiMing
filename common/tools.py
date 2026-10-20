@@ -24,6 +24,7 @@ from common.schemas import (
 from common.validation import validate_reading
 from harness.models import ToolResult
 from harness.registry import Tool
+from harness.session import valid_timezone
 from knowledge.kb import KnowledgeBase
 from signals.merge import fingerprint, merge_signals, model_view, undisclosed
 
@@ -340,13 +341,10 @@ def common_tools(store, kb: KnowledgeBase, mode: str = "single", reviewer=None) 
         if args.field == "system_weights":
             return weights_validator(args.value, args.evidence)
         if args.field in ("lat", "lon", "location_id", "tz", "consultation_tz"):
+            # The calendar and crisis contacts read both fields every turn: only IANA keys.
+            if args.field in ("tz", "consultation_tz") and not valid_timezone(args.value):
+                return "请使用有效IANA时区"
             if args.field == "consultation_tz":
-                from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
-
-                try:
-                    ZoneInfo(str(args.value))
-                except (ValueError, ZoneInfoNotFoundError):
-                    return "请使用有效IANA时区"
                 return (
                     None
                     if consultation_timezone_evidence(

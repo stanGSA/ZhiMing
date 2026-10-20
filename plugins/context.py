@@ -122,15 +122,21 @@ def range_provenance(args, session):
     return None
 
 
-def period_timezone(args, session, chart):
-    """Consultation timezone is separate from the birth clock timezone."""
-    tz = args.tz or session.profile.get("consultation_tz") or session.state.get("timeframe_tz")
-    birth_tz = chart.get("input", {}).get("tz")
+def confirmed_timezone(session, birth_tz):
+    """The latest consultation timezone the user stated for this question, if any."""
     confirmed = None
     for text in session.user_messages[session.state.get("question_message_index", 0) :]:
         evidence = consultation_timezone_evidence(text, session, birth_tz)
         if evidence:
             confirmed = evidence
+    return confirmed
+
+
+def period_timezone(args, session, chart):
+    """Consultation timezone is separate from the birth clock timezone."""
+    tz = args.tz or session.profile.get("consultation_tz") or session.state.get("timeframe_tz")
+    birth_tz = chart.get("input", {}).get("tz")
+    confirmed = confirmed_timezone(session, birth_tz)
     if confirmed:
         if args.tz and args.tz != confirmed:
             raise NeedsInput(

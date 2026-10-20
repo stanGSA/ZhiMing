@@ -1,6 +1,7 @@
 """Application safety routing, before any divination tool can run."""
 
 import re
+import unicodedata
 from functools import lru_cache
 from importlib.resources import files
 
@@ -18,9 +19,15 @@ SAFETY_PROMPT = """只做安全分类，不进行占卜。判断用户是否表�
 SAFETY_CONFIRMATION = "我现在安全，没有自伤或伤人打算，也没有受到威胁"
 
 
+def _confirmation_form(text: str) -> str:
+    # Width, spacing, surrounding quotes and closing punctuation are not part of the wording.
+    text = re.sub(r"\s+", "", unicodedata.normalize("NFKC", text))
+    return text.strip("\"'“”‘’「」『』。.!~")
+
+
 def confirms_safety(message: str) -> bool:
     # A standalone confirmation only; appended requests or qualifiers do not release the hold.
-    return message.strip().rstrip("。.!！") == SAFETY_CONFIRMATION
+    return _confirmation_form(message) == _confirmation_form(SAFETY_CONFIRMATION)
 
 
 @lru_cache(maxsize=1)
@@ -38,9 +45,10 @@ def timezone_regions() -> dict[str, str]:
 
 def contact_region(config: dict, profile: dict) -> str | None:
     for field in ("consultation_tz", "tz"):
-        if profile.get(field):
+        value = profile.get(field)
+        if value:
             # An unknown/unsupported consultation location must not fall back to birth country.
-            return timezone_regions().get(profile[field])
+            return timezone_regions().get(value) if isinstance(value, str) else None
     return config.get("region")
 
 

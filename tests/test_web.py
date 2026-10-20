@@ -139,10 +139,10 @@ async def test_parallel_mutations_rejected_and_error_recovers(browser):
     started, release = asyncio.Event(), asyncio.Event()
     original = runtimes[-1].turn
 
-    async def slow_turn(message):
+    async def slow_turn(message, **options):
         started.set()
         await release.wait()
-        return await original(message)
+        return await original(message, **options)
 
     runtimes[-1].turn = slow_turn
     task = asyncio.create_task(client.post("/api/chat", json={"message": "抽一张牌"}))
@@ -154,7 +154,7 @@ async def test_parallel_mutations_rejected_and_error_recovers(browser):
     release.set()
     assert (await task).status_code == 200
 
-    async def broken_turn(message):
+    async def broken_turn(message, **options):
         raise RuntimeError("private upstream diagnostic")
 
     runtimes[-1].turn = broken_turn

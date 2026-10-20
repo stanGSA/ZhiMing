@@ -6,7 +6,8 @@ import httpx
 import pytest
 
 from app import create_runtime
-from common.safety import SAFETY_CONFIRMATION
+from common.location import consultation_timezone_evidence
+from common.safety import SAFETY_CONFIRMATION, SAFETY_PROMPT
 from harness.models import ModelResponse
 from memory.store import Store
 from tests.test_week6 import ask, with_birth
@@ -220,3 +221,193 @@ async def test_web_birth_form_selects_hotline_before_profile_is_saved(project):
             "/api/chat", json={"message": "我不想活了", "birth": {"location_id": "1803361"}}
         )
         assert "12356" in response.json()["messages"][-1]["text"]
+
+
+# ---- review fixes: invalid timezones, daily/calendar agreement, cleanup retries ----------
+
+
+async def test_invalid_timezone_rejected_and_legacy_value_cannot_block_crisis(project):
+    runtime = create_runtime(root=project, user_id="synthetic-tz", seed=42)
+    try:
+        runtime.session.append_user("我的时区是PST，住在America")
+        for value in ("PST", "America"):
+            result = await invoke(
+                runtime,
+                "update_profile",
+                {"field": "tz", "value": value, "evidence": "我的时区是PST，住在America"},
+            )
+            assert not result.ok and "IANA" in result.error
+        assert "tz" not in runtime.store.get_profile("synthetic-tz")
+        assert consultation_timezone_evidence("按America/Argentina时间", runtime.session) is None
+        runtime.store.update_profile("synthetic-tz", "tz", "PST", "旧版本写入")
+    finally:
+        runtime.close()
+    legacy = create_runtime(root=project, user_id="synthetic-tz", seed=42)
+    try:
+        assert legacy.session.calendar_timezone == "Asia/Shanghai"
+        result = await legacy.turn("我不想活了")
+        assert result.status == "crisis_support" and "紧急服务" in result.text
+    finally:
+        legacy.close()
+
+
+LOS_ANGELES = {
+    "tz": "America/Los_Angeles",
+    "lat": 34.05,
+    "lon": -118.24,
+    "name": "洛杉矶",
+    "display_name": "洛杉矶",
+}
+
+
+async def test_daily_saves_unsaved_birth_timezone_before_dating_today(runtime, scripted_model):
+    for field, value in {
+        "birth_local_dt": "1996-05-10 08:30",
+        "time_known": True,
+        "true_solar_time": False,
+    }.items():
+        runtime.session.profile = runtime.store.update_profile(
+            runtime.session.user_id, field, value, "合成测试资料"
+        )
+    runtime.clock = lambda: datetime(2026, 10, 20, 16, 1, tzinfo=UTC)
+    runtime.model = scripted_model([ModelResponse(text="收到")])
+    question = "我出生在洛杉矶，今天运势怎么样？"
+    await runtime.turn(question)
+    assert runtime.session.calendar_anchor == "2026-10-21"  # nothing saved: default calendar
+    await ask(runtime, question)
+    runtime.session.state["locations"] = {"la": LOS_ANGELES}
+    first = await invoke(runtime, "daily_fortune", {"date": "2026-10-21", "location_id": "la"})
+    assert first.code == "calendar_timezone_mismatch"
+    assert "tz=America/Los_Angeles" in first.error
+    saved = await invoke(
+        runtime,
+        "update_profile",
+        {"field": "tz", "value": "America/Los_Angeles", "evidence": "我出生在洛杉矶"},
+    )
+    assert saved.ok, saved.error
+    assert runtime.session.calendar_anchor == "2026-10-20"
+    stale = await invoke(runtime, "daily_fortune", {"date": "2026-10-21", "location_id": "la"})
+    assert not stale.ok and "2026-10-20" in stale.error
+    result = await invoke(runtime, "daily_fortune", {"date": "2026-10-20", "location_id": "la"})
+    assert result.ok, result.error
+    assert result.data["tz"] == "America/Los_Angeles" and result.data["date"] == "2026-10-20"
+
+
+async def test_daily_stated_consultation_timezone_is_saved_before_use(runtime, scripted_model):
+    with_birth(runtime, tz="America/Los_Angeles", lat=34.05, lon=-118.24, true_solar_time=False)
+    runtime.clock = lambda: datetime(2026, 10, 20, 16, 1, tzinfo=UTC)
+    runtime.model = scripted_model([ModelResponse(text="收到")])
+    question = "我现在住在北京，按北京时间看今天运势"
+    await runtime.turn(question)
+    assert runtime.session.calendar_anchor == "2026-10-20"  # birth timezone until saved
+    await ask(runtime, question)
+    first = await invoke(runtime, "daily_fortune", {"date": "2026-10-20"})
+    assert first.code == "calendar_timezone_mismatch"
+    assert "consultation_tz=Asia/Shanghai" in first.error
+    saved = await invoke(
+        runtime,
+        "update_profile",
+        {"field": "consultation_tz", "value": "Asia/Shanghai", "evidence": "按北京时间"},
+    )
+    assert saved.ok, saved.error
+    assert runtime.session.calendar_anchor == "2026-10-21"
+    result = await invoke(runtime, "daily_fortune", {"date": "2026-10-21"})
+    assert result.ok, result.error
+    assert result.data["tz"] == "Asia/Shanghai"
+
+
+async def test_web_cleanup_failure_keeps_deadline_and_is_retried(project, monkeypatch):
+    import shutil
+
+    now = [1_800_000_000.0]
+    monkeypatch.setattr("web.time.time", lambda: now[0])
+    runtimes = []
+
+    def factory(**kwargs):
+        runtime = create_runtime(**kwargs, seed=42)
+        runtimes.append(runtime)
+        return runtime
+
+    real_rmtree, failures = shutil.rmtree, []
+
+    def flaky_rmtree(path, *args, **kwargs):
+        if not failures:
+            failures.append(path)
+            raise PermissionError("trace file in use")
+        return real_rmtree(path, *args, **kwargs)
+
+    app = create_web_app(root=project, runtime_factory=factory)
+    async with (
+        app.router.lifespan_context(app),
+        httpx.AsyncClient(
+            transport=httpx.ASGITransport(app=app), base_url="http://testserver", headers=HEADERS
+        ) as client,
+    ):
+        await client.get("/api/session?provider=demo")
+        await client.post("/api/chat", json={"message": "抽张牌"})
+        user_id = runtimes[0].session.user_id
+        directory = runtimes[0].tracer.user_dir(user_id)
+        monkeypatch.setattr("web.shutil.rmtree", flaky_rmtree)
+        now[0] += MAX_IDLE + 1
+        response = await client.post("/api/chat", json={"message": "继续"})
+        assert response.status_code == 401 and failures and directory.exists()
+        store = Store(project / "data/app.db")
+        try:
+            assert user_id in store.expired_web_identities(now[0])  # kept for the retry
+        finally:
+            store.close()
+        assert (await client.get("/api/locations")).status_code == 200
+        assert not directory.exists()
+        store = Store(project / "data/app.db")
+        try:
+            assert user_id not in store.expired_web_identities(now[0])
+            assert store.recent_readings(user_id) == []
+        finally:
+            store.close()
+
+
+async def test_web_message_is_safety_classified_once(project):
+    calls = []
+
+    class Model:
+        async def chat(self, messages, tools):
+            if messages[0]["content"] == SAFETY_PROMPT:
+                calls.append(messages[-1]["content"])
+                return ModelResponse(text='{"crisis": false}')
+            return ModelResponse(text="收到")
+
+    def factory(**kwargs):
+        runtime = create_runtime(**kwargs, seed=42)
+        runtime.model = Model()
+        return runtime
+
+    app = create_web_app(root=project, runtime_factory=factory)
+    async with (
+        app.router.lifespan_context(app),
+        httpx.AsyncClient(
+            transport=httpx.ASGITransport(app=app), base_url="http://testserver", headers=HEADERS
+        ) as client,
+    ):
+        await client.get("/api/session")
+        response = await client.post("/api/chat", json={"message": "压力大，想消失几天去旅行"})
+        assert response.json()["messages"][-1]["status"] == "text"
+    assert len(calls) == 1
+
+
+async def test_safety_confirmation_ignores_quotes_width_and_spacing(runtime):
+    for confirmation in (
+        "“" + SAFETY_CONFIRMATION + "”",
+        SAFETY_CONFIRMATION.replace("，", ",") + " ！",
+    ):
+        await runtime.turn("我不想活了")
+        assert (await runtime.turn(confirmation)).status == "crisis_support"
+        assert not runtime.session.safety_pending
+
+
+async def test_compare_layers_pins_the_clock(runtime, scripted_model):
+    from scripts.compare_layers import ANCHOR, pin_calendar
+
+    pin_calendar(runtime)
+    runtime.model = scripted_model([ModelResponse(text="收到")])
+    await runtime.turn("今天怎么样？")
+    assert runtime.session.calendar_anchor == ANCHOR

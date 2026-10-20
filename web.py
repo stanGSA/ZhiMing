@@ -207,26 +207,40 @@ def create_web_app(
     cleanup_lock = asyncio.Lock()
     config = yaml.safe_load((root / "config.yaml").read_text(encoding="utf-8"))
 
-    async def purge_expired():
+    async def purge_expired(adopt: bool = False):
         async with cleanup_lock:
             store = Store(root / config["paths"]["app_db"])
             try:
                 now = time.time()
-                store.adopt_web_identities(now + MAX_IDLE)
+                if adopt:
+                    # Pre-lease records exist only before the first start of this version.
+                    store.adopt_web_identities(now + MAX_IDLE)
                 for user_id in store.expired_web_identities(now):
                     active = [(k, s) for k, s in sessions.items() if s.user_id == user_id]
                     if any(s.lock.locked() for _, s in active):
                         continue
-                    for key, session in active:
-                        sessions.pop(key, None)
-                        await close(session)
-                    store.forget(user_id)
-                    tracer = Tracer(root / config["paths"]["runs"])
-                    directory = tracer.user_dir(user_id).resolve()
-                    if directory.is_relative_to(tracer.root.resolve()) and directory.exists():
-                        shutil.rmtree(directory)
+                    try:
+                        for key, session in active:
+                            sessions.pop(key, None)
+                            await close(session)
+                        # Trace first: forget() also drops the deadline row, so any failure
+                        # before it leaves the identity listed and the next pass retries.
+                        tracer = Tracer(root / config["paths"]["runs"])
+                        directory = tracer.user_dir(user_id).resolve()
+                        if directory.is_relative_to(tracer.root.resolve()) and directory.exists():
+                            shutil.rmtree(directory)
+                        store.forget(user_id)
+                    except Exception:
+                        logger.exception("Could not remove an expired browser identity")
             finally:
                 store.close()
+
+    async def purge_safely():
+        try:
+            await purge_expired()
+        except Exception:
+            # A cleanup fault must not take down serving or the periodic reaper.
+            logger.exception("Expired browser data cleanup failed")
 
     async def close(session):
         try:
@@ -237,11 +251,11 @@ def create_web_app(
     async def reap():
         while True:
             await asyncio.sleep(60)
-            await purge_expired()
+            await purge_safely()
 
     @asynccontextmanager
     async def lifespan(_app):
-        await purge_expired()
+        await purge_expired(adopt=True)
         cleanup = asyncio.create_task(reap())
         yield
         cleanup.cancel()
@@ -279,7 +293,7 @@ def create_web_app(
                 return JSONResponse({"detail": "请从知命页面发起请求"}, status_code=403)
             if request.headers.get("x-zhiming-client") != "web":
                 return JSONResponse({"detail": "请求来源无效"}, status_code=403)
-        await purge_expired()
+        await purge_safely()
         response = await call_next(request)
         key = request.cookies.get(COOKIE, "")
         session = sessions.get(key)
@@ -456,7 +470,9 @@ def create_web_app(
                 )
                 return {**state(session), "busy": False}
             try:
-                outcome = await asyncio.wait_for(session.runtime.turn(message), timeout=360)
+                outcome = await asyncio.wait_for(
+                    session.runtime.turn(message, safety_checked=True), timeout=360
+                )
                 session.last_birth = evidence
             except TimeoutError:
                 outcome = None
