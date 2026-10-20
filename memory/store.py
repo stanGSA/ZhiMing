@@ -41,6 +41,7 @@ class Store:
           input_hash TEXT NOT NULL,result_json TEXT NOT NULL);
         CREATE TABLE IF NOT EXISTS bazi_charts(bazi_id TEXT PRIMARY KEY,user_id TEXT NOT NULL,
           input_hash TEXT NOT NULL,result_json TEXT NOT NULL);
+        CREATE TABLE IF NOT EXISTS web_identities(user_id TEXT PRIMARY KEY,expires_at REAL NOT NULL);
         PRAGMA user_version=2;
         """)
         columns = {row[1] for row in self.db.execute("PRAGMA table_info(readings)")}
@@ -292,6 +293,39 @@ class Store:
         result["output_json"] = json.loads(result["output_json"])
         return result
 
+    def touch_web_identity(self, user_id: str, expires_at: float) -> None:
+        with self.db:
+            self.db.execute(
+                "INSERT INTO web_identities VALUES(?,?) ON CONFLICT(user_id) "
+                "DO UPDATE SET expires_at=excluded.expires_at",
+                (user_id, expires_at),
+            )
+
+    def adopt_web_identities(self, expires_at: float) -> None:
+        """Give pre-lease browser records one idle period before orphan cleanup."""
+        with self.db:
+            for table in (
+                "profiles",
+                "profile_history",
+                "readings",
+                "daily",
+                "charts",
+                "bazi_charts",
+            ):
+                self.db.execute(
+                    f"INSERT OR IGNORE INTO web_identities SELECT DISTINCT user_id,? FROM {table} "
+                    "WHERE user_id LIKE 'web-%'",
+                    (expires_at,),
+                )
+
+    def expired_web_identities(self, now: float) -> list[str]:
+        return [
+            row[0]
+            for row in self.db.execute(
+                "SELECT user_id FROM web_identities WHERE expires_at<=?", (now,)
+            )
+        ]
+
     def forget(self, user_id: str) -> None:
         with self.db:
             for table in (
@@ -301,6 +335,7 @@ class Store:
                 "daily",
                 "charts",
                 "bazi_charts",
+                "web_identities",
             ):
                 self.db.execute(f"DELETE FROM {table} WHERE user_id=?", (user_id,))
         # Clear SQLite free pages; do not promise forensic erasure of filesystem backups.

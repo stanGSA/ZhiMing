@@ -293,6 +293,7 @@ def common_tools(store, kb: KnowledgeBase, mode: str = "single", reviewer=None) 
 
     def get_profile(args, session):
         session.profile = store.get_profile(session.user_id)
+        session.refresh_calendar()
         return {"profile": session.profile}
 
     def profile_validator(args, session):
@@ -422,6 +423,7 @@ def common_tools(store, kb: KnowledgeBase, mode: str = "single", reviewer=None) 
                 else value
             )
         session.profile = store.update_profile(session.user_id, args.field, value, args.evidence)
+        session.refresh_calendar()
         return {"profile": session.profile}
 
     def lookup(args, session):

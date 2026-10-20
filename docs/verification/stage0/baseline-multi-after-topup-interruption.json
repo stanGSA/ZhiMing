@@ -1,0 +1,150 @@
+{
+  "id": "natural_astro",
+  "attempt": 1,
+  "dialogue_status": "limit_reached",
+  "engineering_pass": false,
+  "quality_pass": null,
+  "evaluation_error": {
+    "type": "KeyError",
+    "missing_field": "timeframe",
+    "location": "scripts.live_week23.grounded_payload",
+    "cause": "Daily fortune events were projected using AstroPlugin instead of DailyPlugin."
+  },
+  "completed_scored_rows": 14,
+  "interruption_stage": "Grounded facts preparation before rubric scoring; no completed result row for this attempt.",
+  "model_calls": 22,
+  "service_model_errors": 0,
+  "tool_errors": [
+    {
+      "tool": "consult_specialist",
+      "code": "validation_failed",
+      "error": "location_id须先由resolve_location解析并确认"
+    },
+    {
+      "tool": "consult_specialist",
+      "code": "validation_failed",
+      "error": "location_id须先由resolve_location解析并确认"
+    },
+    {
+      "tool": "lookup_meaning",
+      "code": "missing_entry",
+      "error": "缺条目：精确 key 或同义词未命中"
+    },
+    {
+      "tool": "lookup_meaning",
+      "code": "missing_entry",
+      "error": "缺条目：精确 key 或同义词未命中"
+    },
+    {
+      "tool": "submit_report",
+      "code": "validation_failed",
+      "error": "宫位不可用或与本次计算不符"
+    },
+    {
+      "tool": "submit_report",
+      "code": "validation_failed",
+      "error": "宫位不可用或与本次计算不符"
+    },
+    {
+      "tool": "submit_report",
+      "code": "invalid_arguments",
+      "error": "参数不符合 schema：points"
+    },
+    {
+      "tool": "submit_report",
+      "code": "invalid_arguments",
+      "error": "参数不符合 schema：points"
+    },
+    {
+      "tool": "submit_report",
+      "code": "validation_failed",
+      "error": "宫位不可用或与本次计算不符"
+    },
+    {
+      "tool": "submit_reading",
+      "code": "validation_failed",
+      "error": "必须先调用确定性计算工具"
+    }
+  ],
+  "multi_agent": {
+    "consults": 5,
+    "statuses": {
+      "failed": 5
+    },
+    "specialist_tool_calls": 12,
+    "out_of_scope_attempts": 0,
+    "report_submissions": 5,
+    "report_submissions_accepted": 0,
+    "consults_with_submission": 3,
+    "consults_without_submission": 2,
+    "report_first_pass": 0,
+    "report_corrected_pass": 0,
+    "report_compliance_rate": 0.0,
+    "report_first_pass_rate": 0.0,
+    "report_corrected_pass_rate": 0.0,
+    "submit_attempt_pass_rate": 0.0,
+    "max_concurrent_specialists": 1,
+    "queue_ms": [
+      0.008,
+      0.005,
+      0.004,
+      0.004,
+      0.004
+    ],
+    "specialist_latency_ms": [
+      20148.249,
+      20295.599,
+      11598.03,
+      5.866,
+      4.649
+    ],
+    "specialist_tokens": 89805
+  },
+  "reviewer_agent": {
+    "reviews": 0,
+    "verdicts": {},
+    "readings_reviewed": 0,
+    "readings_revised": 0,
+    "revise_rate": null,
+    "dropped_notes": 0,
+    "rejected_reviews": 0,
+    "reviewer_tokens": 0,
+    "reviewer_latency_ms": []
+  },
+  "traces": [
+    {
+      "raw_file": "reports/stage0/baseline-multi-after-topup/20261020T104905-ef93a468/workspace/runs/c0c383bdc8820fbb9f8b9381/1c1a8fbaa8644fdeaba09f6502bdaa80.jsonl",
+      "raw_sha256": "cfb1a94c571f145776e691adde73f6560ef62251d35d8c05f5f6a2c1470b57a5"
+    },
+    {
+      "raw_file": "reports/stage0/baseline-multi-after-topup/20261020T104905-ef93a468/workspace/runs/c0c383bdc8820fbb9f8b9381/23290b7ef4384f68a94fd1ac4c2b6f50.jsonl",
+      "raw_sha256": "bc51306e892194ad5431128cb4d781764b914da72d95ed488b9c7b1a5bcda2ba"
+    },
+    {
+      "raw_file": "reports/stage0/baseline-multi-after-topup/20261020T104905-ef93a468/workspace/runs/c0c383bdc8820fbb9f8b9381/2a42d694137a4387a32be5eb736ab775.jsonl",
+      "raw_sha256": "d1ed15837a11819fc91d414eaf1ddadd8ac97b2e470ead0b249a4fcbf392f187"
+    },
+    {
+      "raw_file": "reports/stage0/baseline-multi-after-topup/20261020T104905-ef93a468/workspace/runs/c0c383bdc8820fbb9f8b9381/2dc14f6e24614fb4ba519cc7f1ed9b7a.jsonl",
+      "raw_sha256": "ede7723cfafb782ce1676e22d8626f478f91eec99ebe447e27035a7256163f04"
+    },
+    {
+      "raw_file": "reports/stage0/baseline-multi-after-topup/20261020T104905-ef93a468/workspace/runs/c0c383bdc8820fbb9f8b9381/58b410d31e8c43549cf6b0216686d483.jsonl",
+      "raw_sha256": "d8125bc0d748919962a790721b9b15b0f4809d30c78093961675751e4268d675"
+    },
+    {
+      "raw_file": "reports/stage0/baseline-multi-after-topup/20261020T104905-ef93a468/workspace/runs/c0c383bdc8820fbb9f8b9381/90cb95c7df9d4612b4c90d271a2b1ef6.jsonl",
+      "raw_sha256": "42ee2bc6d3dda048f4e7aa58fbcc724e26fe4e86e4ca807731bbbfa7c46c12c4"
+    }
+  ],
+  "preserved_progress": {
+    "raw_file": "reports/stage0/baseline-multi-after-topup/20261020T104905-ef93a468/progress.json",
+    "raw_sha256": "09f525b9823bbdd1387259610a7fcfadee6cba9a0348ed6b1a533ec70a11efd2"
+  },
+  "original_source_fingerprint": "93f06871b0f80ecf654135aa80465263545ccec505b8f9d3f7469aaee891e6af",
+  "fixed_source_fingerprint": "6844aa4ec028212824d0e9290ba96697f7bfb38dc9f9c36d7f99b2c0923a3dc1",
+  "changed_source_files": [
+    "scripts/live_week23.py"
+  ],
+  "note": "Interrupted first natural_astro attempt retained separately. Continuation retries this case and runs the other five; no changes to application, prompts, model options, knowledge or pass criteria."
+}

@@ -1,0 +1,2827 @@
+{
+  "date": "2026-10-20",
+  "mode": "multi",
+  "requested_model": "deepseek-flash",
+  "cases": 20,
+  "engineering_passed": 3,
+  "quality_passed": 9,
+  "passed": 2,
+  "failed": 18,
+  "judge_errors": 0,
+  "final_status_counts": {
+    "submit_reading": 10,
+    "ask_user": 6,
+    "limit_reached": 4
+  },
+  "multi_agent": {
+    "consults": 39,
+    "ok_reports": 13,
+    "needs_input_reports": 9,
+    "failed_reports": 17,
+    "cancelled_consults": 0,
+    "consults_without_submission": 13,
+    "out_of_scope_attempts": 0,
+    "out_of_scope_rate": 0.0,
+    "report_compliance_rate": 0.43333333333333335,
+    "report_first_pass_rate": 0.3076923076923077,
+    "report_corrected_pass_rate": 0.5,
+    "submit_attempt_pass_rate": 0.3611111111111111,
+    "max_concurrent_specialists": 3,
+    "trace_tree_complete": true
+  },
+  "reviewer_agent": {
+    "reviews": 8,
+    "verdicts": {
+      "pass": 4,
+      "pass_with_notes": 3,
+      "unavailable": 1
+    },
+    "readings_reviewed": 8,
+    "readings_revised": 0,
+    "revise_rate": 0.0,
+    "dropped_notes": 0,
+    "rejected_reviews": 1,
+    "reviewer_tokens": 21972
+  },
+  "model_calls": 277,
+  "model_request_attempts": 144,
+  "review_calls": 20,
+  "review_request_attempts": 20,
+  "input_tokens": 1991274,
+  "output_tokens": 187641,
+  "dialogue_attempts": 21,
+  "scored_dialogue_attempts": 20,
+  "unscored_interrupted_attempts": 1,
+  "coverage_note": "Composite coverage of all 20 baseline case IDs: 14 completed rows before harness interruption plus 6 continuation rows. natural_astro first ended at limit_reached and then fact projection crashed; its retry also ended at limit_reached. Retain both, do not present this as one uninterrupted batch or choose the better attempt.",
+  "parts": [
+    {
+      "part": "original_partial",
+      "run_id": "20261020T104905-ef93a468",
+      "source_fingerprint": "93f06871b0f80ecf654135aa80465263545ccec505b8f9d3f7469aaee891e6af",
+      "cases": 14,
+      "engineering_passed": 3,
+      "quality_passed": 8,
+      "passed": 2,
+      "failed": 12,
+      "judge_errors": 0,
+      "final_status_counts": {
+        "submit_reading": 6,
+        "ask_user": 6,
+        "limit_reached": 2
+      },
+      "multi_agent": {
+        "consults": 21,
+        "ok_reports": 7,
+        "needs_input_reports": 4,
+        "failed_reports": 10,
+        "cancelled_consults": 0,
+        "consults_without_submission": 6,
+        "out_of_scope_attempts": 0,
+        "out_of_scope_rate": 0.0,
+        "report_compliance_rate": 0.4117647058823529,
+        "report_first_pass_rate": 0.2,
+        "report_corrected_pass_rate": 0.4666666666666667,
+        "submit_attempt_pass_rate": 0.35,
+        "max_concurrent_specialists": 3,
+        "trace_tree_complete": true
+      },
+      "reviewer_agent": {
+        "reviews": 4,
+        "verdicts": {
+          "pass": 3,
+          "pass_with_notes": 1
+        },
+        "readings_reviewed": 4,
+        "readings_revised": 0,
+        "revise_rate": 0.0,
+        "dropped_notes": 0,
+        "rejected_reviews": 0,
+        "reviewer_tokens": 10992
+      },
+      "model_calls": 156,
+      "model_request_attempts": 86,
+      "review_calls": 14,
+      "review_request_attempts": 14,
+      "input_tokens": 1178787,
+      "output_tokens": 111699,
+      "raw_file": "reports/stage0/baseline-multi-after-topup/20261020T104905-ef93a468/progress.json",
+      "raw_sha256": "09f525b9823bbdd1387259610a7fcfadee6cba9a0348ed6b1a533ec70a11efd2"
+    },
+    {
+      "part": "continuation",
+      "run_id": "20261020T110421-b74342cb",
+      "source_fingerprint": "6844aa4ec028212824d0e9290ba96697f7bfb38dc9f9c36d7f99b2c0923a3dc1",
+      "cases": 6,
+      "engineering_passed": 0,
+      "quality_passed": 1,
+      "passed": 0,
+      "failed": 6,
+      "judge_errors": 0,
+      "final_status_counts": {
+        "limit_reached": 2,
+        "submit_reading": 4
+      },
+      "multi_agent": {
+        "consults": 18,
+        "ok_reports": 6,
+        "needs_input_reports": 5,
+        "failed_reports": 7,
+        "cancelled_consults": 0,
+        "consults_without_submission": 7,
+        "out_of_scope_attempts": 0,
+        "out_of_scope_rate": 0.0,
+        "report_compliance_rate": 0.46153846153846156,
+        "report_first_pass_rate": 0.45454545454545453,
+        "report_corrected_pass_rate": 0.5454545454545454,
+        "submit_attempt_pass_rate": 0.375,
+        "max_concurrent_specialists": 2,
+        "trace_tree_complete": true
+      },
+      "reviewer_agent": {
+        "reviews": 4,
+        "verdicts": {
+          "pass_with_notes": 2,
+          "pass": 1,
+          "unavailable": 1
+        },
+        "readings_reviewed": 4,
+        "readings_revised": 0,
+        "revise_rate": 0.0,
+        "dropped_notes": 0,
+        "rejected_reviews": 1,
+        "reviewer_tokens": 10980
+      },
+      "model_calls": 121,
+      "model_request_attempts": 58,
+      "review_calls": 6,
+      "review_request_attempts": 6,
+      "input_tokens": 812487,
+      "output_tokens": 75942,
+      "raw_file": "reports/stage0/baseline-multi-after-topup-remainder/20261020T110421-b74342cb/live.json",
+      "raw_sha256": "b80d13ee8bafd081acb14bd26fb5574855b16a42d61ef55cba7b9781d795620b"
+    }
+  ],
+  "interruption_record": "baseline-multi-after-topup-interruption.json",
+  "changed_source_files": [
+    "scripts/live_week23.py"
+  ],
+  "source_change_note": "Only evaluation facts projector changed from AstroPlugin to DailyPlugin for daily_result. Application, prompts, model options, knowledge and pass criteria are identical.",
+  "model_service_errors_all_traces": [],
+  "returned_model_response_counts_all_traces": {
+    "deepseek-flash": 299
+  },
+  "latency_descriptive_scored_only": {
+    "median_s": 47.987,
+    "p95_nearest_rank_s": 88.432,
+    "max_s": 89.142,
+    "note": "Excludes rubric scoring, interruption and harness repair/restart; not uninterrupted serial batch wall time."
+  },
+  "all_dialogue_attempts_including_interruption": {
+    "consults": 44,
+    "interrupted_attempt_model_calls": 22,
+    "note": "Headline scored-row totals exclude the separately archived unscored first natural_astro attempt.",
+    "ok_reports": 13,
+    "report_compliance_denominator": 35,
+    "report_compliance_rate": 0.37142857142857144,
+    "model_calls": 299
+  },
+  "results": [
+    {
+      "id": "astro_trait",
+      "status": "submit_reading",
+      "checks": {
+        "expected_status": true,
+        "expected_tools": true,
+        "zero_tool_errors": false,
+        "no_model_error": true,
+        "saved": true,
+        "systems": true,
+        "valid_refs": true,
+        "trace_tree_complete": true
+      },
+      "engineering_pass": false,
+      "quality_review": {
+        "direct_answer": true,
+        "time_consistent": true,
+        "supported_conclusion": true,
+        "no_fabricated_facts": true,
+        "reasons": [
+          "summary第一句正面给出工作方向：需求梳理、流程与质量、技术写作与知识管理、项目推进和工具自动化，符合‘适合怎样的工作方向’的所问方向。",
+          "未涉及节气、流月、公历整月边界或现实事件日期，时间处理符合要求。",
+          "每个关键判断均有实际计算事实和引用释义支持：太阳/水星/火星摩羯第4宫、水星与天王星/海王星/火星合相、月亮金牛第8宫、月亮与火星三分、月亮与金星四分、金星水瓶第5宫、土星双鱼第6宫等，引用释义内容相关且被用于象征性职业探索。",
+          "没有编造出生信息、星体落座/宫位、家庭或工作经历；出生时刻精确到23:45且time_known为true，宫位使用有计算依据，并提醒午夜前后宫位可能有几分钟偏差，属于合理不确定性说明而非编造。",
+          "结论以‘待验证假设’呈现，未将相位或落座当作确定录用或必然职业适配；现实建议均为条件性行动建议，而非已知个人事实。"
+        ]
+      },
+      "quality_pass": true,
+      "passed": false,
+      "tools": [
+        "compute_natal_chart",
+        "consult_specialist",
+        "resolve_location",
+        "start_reading",
+        "submit_reading",
+        "submit_report",
+        "submit_review",
+        "update_profile"
+      ],
+      "tool_errors": [
+        {
+          "tool": "consult_specialist",
+          "code": "validation_failed",
+          "error": "location_id须先由resolve_location解析并确认"
+        },
+        {
+          "tool": "resolve_location",
+          "code": "validation_failed",
+          "error": "请先查询候选地名"
+        },
+        {
+          "tool": "submit_report",
+          "code": "invalid_arguments",
+          "error": "参数不符合 schema：points"
+        },
+        {
+          "tool": "submit_reading",
+          "code": "invalid_arguments",
+          "error": "工具参数必须是合法JSON对象，请修正后重试"
+        }
+      ],
+      "latency_s": 47.428,
+      "review_latency_s": 1.937,
+      "model_calls": 11,
+      "model_request_attempts": 7,
+      "input_tokens": 73555,
+      "output_tokens": 9051,
+      "usage_missing_calls": 0,
+      "cached_input_tokens": 59264,
+      "returned_models": [
+        "deepseek-flash"
+      ],
+      "review_usage": {
+        "input_tokens": 10402,
+        "output_tokens": 294,
+        "usage_available": true,
+        "requested_model": "deepseek-flash",
+        "returned_model": "deepseek-flash"
+      },
+      "review_request_attempts": 1,
+      "multi_agent": {
+        "consults": 1,
+        "statuses": {
+          "ok": 1
+        },
+        "specialist_tool_calls": 4,
+        "out_of_scope_attempts": 0,
+        "report_submissions": 2,
+        "report_submissions_accepted": 1,
+        "consults_with_submission": 1,
+        "consults_without_submission": 0,
+        "report_first_pass": 0,
+        "report_corrected_pass": 1,
+        "report_compliance_rate": 1.0,
+        "report_first_pass_rate": 0.0,
+        "report_corrected_pass_rate": 1.0,
+        "submit_attempt_pass_rate": 0.5,
+        "max_concurrent_specialists": 1,
+        "queue_ms": [
+          0.008
+        ],
+        "specialist_latency_ms": [
+          19179.885
+        ],
+        "specialist_tokens": 25483
+      },
+      "reviewer_agent": {
+        "reviews": 1,
+        "verdicts": {
+          "pass": 1
+        },
+        "readings_reviewed": 1,
+        "readings_revised": 0,
+        "revise_rate": 0.0,
+        "dropped_notes": 0,
+        "rejected_reviews": 0,
+        "reviewer_tokens": 2335,
+        "reviewer_latency_ms": [
+          636.245
+        ]
+      },
+      "part": "original_partial",
+      "dialogue_attempt": 1
+    },
+    {
+      "id": "astro_followup",
+      "status": "submit_reading",
+      "checks": {
+        "expected_status": true,
+        "expected_tools": true,
+        "zero_tool_errors": false,
+        "no_model_error": true,
+        "saved": true,
+        "systems": true,
+        "valid_refs": true,
+        "no_recalculation": true,
+        "response_saved": true,
+        "trace_tree_complete": true
+      },
+      "engineering_pass": false,
+      "quality_review": {
+        "direct_answer": true,
+        "time_consistent": true,
+        "supported_conclusion": true,
+        "no_fabricated_facts": true,
+        "reasons": [
+          "第一句summary正面回答了问题方向：给出太阳落摩羯座及工作方式（先定目标、按步骤扛责），属于具体符号与含义的直接作答。",
+          "用户要求读取原记录不重新排盘：回答明确称沿用上一条记录既有结果，facts中cache_reused为false但natal_result为既有计算事实，未展示新一轮排盘过程，未编造新的出生数据。",
+          "未使用用户指定范围以外的节气流月边界，未把精确相位当现实事件日期；本次为性格/工作方式解释，无时间范围要求，time_consistent可判true。",
+          "太阳摩羯：Sun lon 280.04、sign Capricorn，证据astro:...Sun:Capricorn释义含循序规划、承担责任、目标拆解与成果呈现，支撑工作方式判断。",
+          "太阳第4宫：natal_result planets中Sun house=4，证据释义提到太阳在第4宫可围绕家庭与内在基础观察自我表达与目标，支撑第4宫相关说法；且回答对贴近午夜宫位偏差做了待验证限定。",
+          "水星、火星摩羯同宫：Mercury lon 299.37 sign Capricorn house 4、Mars lon 294.32 sign Capricorn house 4，证据释义分别含信息沟通与任务推进/流程改善，支撑第三部分。",
+          "水星-天王星合相orb约0.01、水星-火星合相orb约5.05，证据释义含合相强调主题集中及工具应用/流程自动化，支撑‘严谨掺工具敏感’的说法；未将单个相位用于论证录用结果。",
+          "未编造家庭经历、工作经历、职位、起运或未知时辰宫位；宫位有实际计算结果且做了不确定性说明。",
+          "建议为条件性行动建议（目标拆解、保护节奏、成果显性化、别独扛），非已知个人事实；结尾仅作自我反思参考，未以免责声明代替作答。",
+          "引用释义与所引事实相关：每条ref_id对应的planet_sign/aspect释义均与太阳、水星、火星及合相主题相关，未见引用存在但内容不相干的情况。"
+        ],
+        "reasons_note": "整体满足作答、时间一致、结论有据、无编造四项要求。"
+      },
+      "quality_pass": true,
+      "passed": false,
+      "tools": [
+        "read_reading",
+        "submit_reading"
+      ],
+      "tool_errors": [
+        {
+          "tool": "submit_reading",
+          "code": "invalid_arguments",
+          "error": "工具参数必须是合法JSON对象，请修正后重试"
+        },
+        {
+          "tool": "submit_reading",
+          "code": "validation_failed",
+          "error": "evidence 引用必须来自本次工具生成的信号"
+        }
+      ],
+      "latency_s": 23.203,
+      "review_latency_s": 3.465,
+      "model_calls": 4,
+      "model_request_attempts": 4,
+      "input_tokens": 77293,
+      "output_tokens": 5511,
+      "usage_missing_calls": 0,
+      "cached_input_tokens": 58496,
+      "returned_models": [
+        "deepseek-flash"
+      ],
+      "review_usage": {
+        "input_tokens": 7723,
+        "output_tokens": 506,
+        "usage_available": true,
+        "requested_model": "deepseek-flash",
+        "returned_model": "deepseek-flash"
+      },
+      "review_request_attempts": 1,
+      "multi_agent": {
+        "consults": 0,
+        "statuses": {},
+        "specialist_tool_calls": 0,
+        "out_of_scope_attempts": 0,
+        "report_submissions": 0,
+        "report_submissions_accepted": 0,
+        "consults_with_submission": 0,
+        "consults_without_submission": 0,
+        "report_first_pass": 0,
+        "report_corrected_pass": 0,
+        "report_compliance_rate": null,
+        "report_first_pass_rate": null,
+        "report_corrected_pass_rate": null,
+        "submit_attempt_pass_rate": null,
+        "max_concurrent_specialists": 0,
+        "queue_ms": [],
+        "specialist_latency_ms": [],
+        "specialist_tokens": 0
+      },
+      "reviewer_agent": {
+        "reviews": 0,
+        "verdicts": {},
+        "readings_reviewed": 0,
+        "readings_revised": 0,
+        "revise_rate": null,
+        "dropped_notes": 0,
+        "rejected_reviews": 0,
+        "reviewer_tokens": 0,
+        "reviewer_latency_ms": []
+      },
+      "part": "original_partial",
+      "dialogue_attempt": 1
+    },
+    {
+      "id": "bazi_trait",
+      "status": "submit_reading",
+      "checks": {
+        "expected_status": true,
+        "expected_tools": true,
+        "zero_tool_errors": false,
+        "no_model_error": true,
+        "saved": true,
+        "systems": true,
+        "valid_refs": true,
+        "trace_tree_complete": true
+      },
+      "engineering_pass": false,
+      "quality_review": {
+        "direct_answer": true,
+        "time_consistent": true,
+        "supported_conclusion": true,
+        "no_fabricated_facts": true,
+        "reasons": [
+          "第一句正面给出日主辛金、工作方式方向、起运日1996-12-27及首步大运己未，直接回应所问。",
+          "明确使用23点换日规则（日柱取次日辛未，年月柱不变），未用真太阳时；起运日期与大运序列取自工具计算事实；将起运/换运称为节律节点而非现实事件日期，符合要求。",
+          "日主、十神（年干食神、月干劫财、时干正印）均有计算事实与引用释义支持；但对工作方式的引申（如'靠精细手艺和标准吃饭''同辈分资源'）超出引用释义的'不能代替全局分析'边界，属于弱支持而非无据。",
+          "未给出喜用神结论，符合用户明确要求。",
+          "未编造出生信息、星体落座宫位、干支十神或起运数据，四柱、十神、起运均与facts一致；未知时辰问题不存在（time_known为true，且用户已给23:20）。",
+          "保守免责（置信度低、仅供参考）未替代作答，正文已给出实质回应。"
+        ]
+      },
+      "quality_pass": true,
+      "passed": false,
+      "tools": [
+        "compute_bazi",
+        "consult_specialist",
+        "get_profile",
+        "resolve_location",
+        "start_reading",
+        "submit_reading",
+        "submit_report",
+        "submit_review",
+        "update_profile"
+      ],
+      "tool_errors": [
+        {
+          "tool": "update_profile",
+          "code": "validation_failed",
+          "error": "历法与子时规则须有原话明确支持"
+        },
+        {
+          "tool": "compute_bazi",
+          "code": "invalid_arguments",
+          "error": "工具参数必须是合法JSON对象，请修正后重试"
+        },
+        {
+          "tool": "submit_reading",
+          "code": "invalid_arguments",
+          "error": "工具参数必须是合法JSON对象，请修正后重试"
+        }
+      ],
+      "latency_s": 34.951,
+      "review_latency_s": 2.541,
+      "model_calls": 9,
+      "model_request_attempts": 5,
+      "input_tokens": 49460,
+      "output_tokens": 6912,
+      "usage_missing_calls": 0,
+      "cached_input_tokens": 41216,
+      "returned_models": [
+        "deepseek-flash"
+      ],
+      "review_usage": {
+        "input_tokens": 5790,
+        "output_tokens": 279,
+        "usage_available": true,
+        "requested_model": "deepseek-flash",
+        "returned_model": "deepseek-flash"
+      },
+      "review_request_attempts": 1,
+      "multi_agent": {
+        "consults": 1,
+        "statuses": {
+          "ok": 1
+        },
+        "specialist_tool_calls": 4,
+        "out_of_scope_attempts": 0,
+        "report_submissions": 1,
+        "report_submissions_accepted": 1,
+        "consults_with_submission": 1,
+        "consults_without_submission": 0,
+        "report_first_pass": 1,
+        "report_corrected_pass": 1,
+        "report_compliance_rate": 1.0,
+        "report_first_pass_rate": 1.0,
+        "report_corrected_pass_rate": 1.0,
+        "submit_attempt_pass_rate": 1.0,
+        "max_concurrent_specialists": 1,
+        "queue_ms": [
+          0.007
+        ],
+        "specialist_latency_ms": [
+          11592.816
+        ],
+        "specialist_tokens": 12016
+      },
+      "reviewer_agent": {
+        "reviews": 1,
+        "verdicts": {
+          "pass_with_notes": 1
+        },
+        "readings_reviewed": 1,
+        "readings_revised": 0,
+        "revise_rate": 0.0,
+        "dropped_notes": 0,
+        "rejected_reviews": 0,
+        "reviewer_tokens": 2672,
+        "reviewer_latency_ms": [
+          1835.145
+        ]
+      },
+      "part": "original_partial",
+      "dialogue_attempt": 1
+    },
+    {
+      "id": "bazi_followup",
+      "status": "submit_reading",
+      "checks": {
+        "expected_status": true,
+        "expected_tools": true,
+        "zero_tool_errors": true,
+        "no_model_error": true,
+        "saved": true,
+        "systems": true,
+        "valid_refs": true,
+        "no_recalculation": true,
+        "response_saved": true,
+        "trace_tree_complete": true
+      },
+      "engineering_pass": true,
+      "quality_review": {
+        "direct_answer": true,
+        "time_consistent": true,
+        "supported_conclusion": false,
+        "no_fabricated_facts": false,
+        "reasons": [
+          "第一句正面给出日主辛金和首步大运己未，并说明沿用原记录未重新排盘，符合所问方向。",
+          "大运时间使用1996-12-27起运、约1996—2006年（约4—14虚岁），与事实一致，且明确称起运日期为节律节点、不代表现实事件日期，未把节气边界当公历整月。",
+          "日主辛金、日柱辛未和首步大运己未均有计算事实与引用释义支持；但年干食神、月柱庚申劫财、时干正印的十神解读基本属于对标签的合理引申，尚可接受，然而文中大量断言“你是精细型金属”“短板是启动和分配”“自律和细心在那时成形”“责任与规范的分量比早年重”等，均超出“日主标签不预设人格或职业能力”“大运是节律基调不是事件清单”的引用边界，属于把标签当作已知个人事实。",
+          "文中还引用了“金气偏多、木火偏少”并给出日常调节，五行计数事实确有金4、木0、火0，但程序明确说明五行计数非旺衰权重，且“金与肺和皮肤相应”属额外发挥，未在引用释义中支持，故有超出依据的推断。",
+          "未编造出生时辰、地点、家庭或工作经历；但“日主告诉你擅长什么”“大运告诉你什么时候打的基础”以及“自律和细心在那时成形”等表述，把未知的性格形成经历写成已知事实，接近编造个人经历，故no_fabricated_facts判false。"
+        ]
+      },
+      "quality_pass": false,
+      "passed": false,
+      "tools": [
+        "read_reading",
+        "submit_reading"
+      ],
+      "tool_errors": [],
+      "latency_s": 9.305,
+      "review_latency_s": 2.869,
+      "model_calls": 2,
+      "model_request_attempts": 2,
+      "input_tokens": 17612,
+      "output_tokens": 2023,
+      "usage_missing_calls": 0,
+      "cached_input_tokens": 11392,
+      "returned_models": [
+        "deepseek-flash"
+      ],
+      "review_usage": {
+        "input_tokens": 5749,
+        "output_tokens": 388,
+        "usage_available": true,
+        "requested_model": "deepseek-flash",
+        "returned_model": "deepseek-flash"
+      },
+      "review_request_attempts": 1,
+      "multi_agent": {
+        "consults": 0,
+        "statuses": {},
+        "specialist_tool_calls": 0,
+        "out_of_scope_attempts": 0,
+        "report_submissions": 0,
+        "report_submissions_accepted": 0,
+        "consults_with_submission": 0,
+        "consults_without_submission": 0,
+        "report_first_pass": 0,
+        "report_corrected_pass": 0,
+        "report_compliance_rate": null,
+        "report_first_pass_rate": null,
+        "report_corrected_pass_rate": null,
+        "submit_attempt_pass_rate": null,
+        "max_concurrent_specialists": 0,
+        "queue_ms": [],
+        "specialist_latency_ms": [],
+        "specialist_tokens": 0
+      },
+      "reviewer_agent": {
+        "reviews": 0,
+        "verdicts": {},
+        "readings_reviewed": 0,
+        "readings_revised": 0,
+        "revise_rate": null,
+        "dropped_notes": 0,
+        "rejected_reviews": 0,
+        "reviewer_tokens": 0,
+        "reviewer_latency_ms": []
+      },
+      "part": "original_partial",
+      "dialogue_attempt": 1
+    },
+    {
+      "id": "astro_timing",
+      "status": "ask_user",
+      "checks": {
+        "expected_status": false,
+        "expected_tools": false,
+        "zero_tool_errors": false,
+        "no_model_error": false,
+        "saved": false,
+        "systems": false,
+        "valid_refs": true,
+        "trace_tree_complete": true
+      },
+      "engineering_pass": false,
+      "quality_review": {
+        "direct_answer": false,
+        "time_consistent": true,
+        "supported_conclusion": false,
+        "no_fabricated_facts": true,
+        "reasons": [
+          "summary第一句未回答2026-11-01至11-30是否适合启动求职，反而要求用户确认是否允许重新排盘，未给出方向性判断。",
+          "指定区间为2026-11-01至11-30，回答未引入节气或公历整月混淆，也未将相位日期当作录用日期；但因未实际计算，时间一致性无实质内容可验。",
+          "未提供任何星体行运、相位或其他占星计算，也无引用释义支持关键判断，求职适合性结论完全没有论证基础。",
+          "未编造出生信息、星体落座/宫位、家庭或工作经历；但同时也没有完成占星计算或作答，仅以排盘失败为由追问，保守表述不能替代回答。"
+        ]
+      },
+      "quality_pass": false,
+      "passed": false,
+      "tools": [
+        "ask_user",
+        "compute_natal_chart",
+        "compute_transits",
+        "consult_specialist",
+        "daily_fortune",
+        "resolve_location",
+        "start_reading",
+        "update_profile"
+      ],
+      "tool_errors": [
+        {
+          "tool": "consult_specialist",
+          "code": "validation_failed",
+          "error": "location_id须先由resolve_location解析并确认"
+        },
+        {
+          "tool": "submit_report",
+          "code": "invalid_arguments",
+          "error": "参数不符合 schema：points"
+        },
+        {
+          "tool": "submit_report",
+          "code": "validation_failed",
+          "error": "行星落座或四轴与本次计算不符"
+        },
+        {
+          "tool": "update_profile",
+          "code": "validation_failed",
+          "error": "字段值必须在 evidence 原话中，不允许臆测"
+        },
+        {
+          "tool": "submit_reading",
+          "code": "validation_failed",
+          "error": "必须先调用确定性计算工具"
+        },
+        {
+          "tool": "merge_signals",
+          "code": "missing_signals",
+          "error": "本记录还没有任何体系的信号"
+        },
+        {
+          "tool": "submit_reading",
+          "code": "validation_failed",
+          "error": "必须先调用确定性计算工具"
+        },
+        {
+          "tool": "daily_fortune",
+          "code": "validation_failed",
+          "error": "日期须与用户所问一致：2026-11-30"
+        },
+        {
+          "tool": "submit_reading",
+          "code": "validation_failed",
+          "error": "必须先调用确定性计算工具"
+        }
+      ],
+      "latency_s": 89.142,
+      "review_latency_s": 1.84,
+      "model_calls": 27,
+      "model_request_attempts": 17,
+      "input_tokens": 220261,
+      "output_tokens": 11363,
+      "usage_missing_calls": 0,
+      "cached_input_tokens": 174208,
+      "returned_models": [
+        "deepseek-flash"
+      ],
+      "review_usage": {
+        "input_tokens": 612,
+        "output_tokens": 189,
+        "usage_available": true,
+        "requested_model": "deepseek-flash",
+        "returned_model": "deepseek-flash"
+      },
+      "review_request_attempts": 1,
+      "multi_agent": {
+        "consults": 4,
+        "statuses": {
+          "needs_input": 2,
+          "failed": 2
+        },
+        "specialist_tool_calls": 10,
+        "out_of_scope_attempts": 0,
+        "report_submissions": 2,
+        "report_submissions_accepted": 0,
+        "consults_with_submission": 2,
+        "consults_without_submission": 2,
+        "report_first_pass": 0,
+        "report_corrected_pass": 0,
+        "report_compliance_rate": 0.0,
+        "report_first_pass_rate": 0.0,
+        "report_corrected_pass_rate": 0.0,
+        "submit_attempt_pass_rate": 0.0,
+        "max_concurrent_specialists": 1,
+        "queue_ms": [
+          0.008,
+          0.006,
+          0.009,
+          0.007
+        ],
+        "specialist_latency_ms": [
+          1955.138,
+          2471.39,
+          25675.18,
+          23890.619
+        ],
+        "specialist_tokens": 79348
+      },
+      "reviewer_agent": {
+        "reviews": 0,
+        "verdicts": {},
+        "readings_reviewed": 0,
+        "readings_revised": 0,
+        "revise_rate": null,
+        "dropped_notes": 0,
+        "rejected_reviews": 0,
+        "reviewer_tokens": 0,
+        "reviewer_latency_ms": []
+      },
+      "part": "original_partial",
+      "dialogue_attempt": 1
+    },
+    {
+      "id": "bazi_timing",
+      "status": "submit_reading",
+      "checks": {
+        "expected_status": true,
+        "expected_tools": true,
+        "zero_tool_errors": false,
+        "no_model_error": false,
+        "saved": true,
+        "systems": true,
+        "valid_refs": true,
+        "trace_tree_complete": true
+      },
+      "engineering_pass": false,
+      "quality_review": {
+        "direct_answer": true,
+        "time_consistent": true,
+        "supported_conclusion": true,
+        "no_fabricated_facts": true,
+        "reasons": [
+          "summary首句正面给出方向：适合启动求职，但节奏分开，11月8日后再正式投递，直接回应所问区间是否适合启动。",
+          "流月按节气物理时刻切分：2026-11-01至11-07 09:52:05为戊戌月，之后至11-30为己亥月；未把流月当公历整月，立冬精确时刻作为月边界而非现实事件日期。",
+          "原局与刑害关系有实际计算支撑：戊戌月与辛未日构成戌未刑破、与年支酉相害、三会申酉戌；己亥月与月支申相害；流年丙午与辛未天干合、地支六合；午冲子时。",
+          "关键判断多能对应释义：正印主学习准备、偏印主探索独特学习、地支刑害冲为协调边界类传统关系；结论以条件建议表述，未把单个相位说成必然录用。",
+          "喜用倾向明确说明为据月令与五行分布推断，并声明程序不计算喜用神，未将五行简单计数当作喜用神定论。",
+          "出生资料、四柱、大运起运、十神均由facts给出且与答案一致：癸酉年、庚申月、辛未日、戊子时，23点换日，未用真太阳时；未编造家庭、工作经历或具体星体宫位。",
+          "对交运做了保守限定：2026年仅作交运年份标记，不代表具体某天已交运，避免混淆。"
+        ]
+      },
+      "quality_pass": true,
+      "passed": false,
+      "tools": [
+        "compute_bazi",
+        "compute_bazi_period",
+        "consult_specialist",
+        "resolve_location",
+        "start_reading",
+        "submit_reading",
+        "submit_report",
+        "submit_review",
+        "update_profile"
+      ],
+      "tool_errors": [
+        {
+          "tool": "update_profile",
+          "code": "validation_failed",
+          "error": "历法与子时规则须有原话明确支持"
+        },
+        {
+          "tool": "consult_specialist",
+          "code": "validation_failed",
+          "error": "location_id须先由resolve_location解析并确认"
+        },
+        {
+          "tool": "submit_reading",
+          "code": "invalid_arguments",
+          "error": "工具参数必须是合法JSON对象，请修正后重试"
+        }
+      ],
+      "latency_s": 48.546,
+      "review_latency_s": 3.648,
+      "model_calls": 14,
+      "model_request_attempts": 8,
+      "input_tokens": 88977,
+      "output_tokens": 10003,
+      "usage_missing_calls": 0,
+      "cached_input_tokens": 72960,
+      "returned_models": [
+        "deepseek-flash"
+      ],
+      "review_usage": {
+        "input_tokens": 9494,
+        "output_tokens": 370,
+        "usage_available": true,
+        "requested_model": "deepseek-flash",
+        "returned_model": "deepseek-flash"
+      },
+      "review_request_attempts": 1,
+      "multi_agent": {
+        "consults": 2,
+        "statuses": {
+          "failed": 1,
+          "ok": 1
+        },
+        "specialist_tool_calls": 6,
+        "out_of_scope_attempts": 0,
+        "report_submissions": 1,
+        "report_submissions_accepted": 1,
+        "consults_with_submission": 1,
+        "consults_without_submission": 1,
+        "report_first_pass": 1,
+        "report_corrected_pass": 1,
+        "report_compliance_rate": 0.5,
+        "report_first_pass_rate": 1.0,
+        "report_corrected_pass_rate": 1.0,
+        "submit_attempt_pass_rate": 1.0,
+        "max_concurrent_specialists": 1,
+        "queue_ms": [
+          0.007,
+          0.008
+        ],
+        "specialist_latency_ms": [
+          2178.365,
+          13724.91
+        ],
+        "specialist_tokens": 25010
+      },
+      "reviewer_agent": {
+        "reviews": 1,
+        "verdicts": {
+          "pass": 1
+        },
+        "readings_reviewed": 1,
+        "readings_revised": 0,
+        "revise_rate": 0.0,
+        "dropped_notes": 0,
+        "rejected_reviews": 0,
+        "reviewer_tokens": 2857,
+        "reviewer_latency_ms": [
+          932.1
+        ]
+      },
+      "part": "original_partial",
+      "dialogue_attempt": 1
+    },
+    {
+      "id": "three_system_timing",
+      "status": "limit_reached",
+      "checks": {
+        "expected_status": false,
+        "expected_tools": false,
+        "zero_tool_errors": false,
+        "no_model_error": false,
+        "saved": false,
+        "systems": false,
+        "valid_refs": true,
+        "trace_tree_complete": true
+      },
+      "engineering_pass": false,
+      "quality_review": {
+        "direct_answer": false,
+        "time_consistent": true,
+        "supported_conclusion": false,
+        "no_fabricated_facts": true,
+        "reasons": [
+          "summary第一句仅为“本轮达到步数或 token 上限，尚未形成通过校验的解读”，未正面回答2026-11-01至2026-11-30是否适合启动求职，未给出明确方向或符号。",
+          "输出明确未形成解读，未将23点换日、流月边界或行运精确相位误当公历整月或现实事件日期；时间一致性无可指摘之处。",
+          "未对占星、八字、塔罗任一体系给出关键判断，也没有用实际计算或所引释义支持“适合/不适合”结论，故supported_conclusion不成立。",
+          "未编造出生信息、星体落座宫位、干支十神、起运、家庭或工作经历；保留已有抽牌也属事实，未虚构未知内容。",
+          "整体属于保守免责式停顿说明，不能替代用户所要求的直接作答与有依据的现实条件。"
+        ]
+      },
+      "quality_pass": false,
+      "passed": false,
+      "tools": [
+        "compute_bazi",
+        "compute_bazi_period",
+        "compute_natal_chart",
+        "compute_transits",
+        "consult_specialist",
+        "draw_tarot",
+        "lookup_meaning",
+        "resolve_location",
+        "start_reading",
+        "submit_report",
+        "update_profile"
+      ],
+      "tool_errors": [
+        {
+          "tool": "update_profile",
+          "code": "validation_failed",
+          "error": "字段值必须在 evidence 原话中，不允许臆测"
+        },
+        {
+          "tool": "update_profile",
+          "code": "validation_failed",
+          "error": "历法与子时规则须有原话明确支持"
+        },
+        {
+          "tool": "update_profile",
+          "code": "validation_failed",
+          "error": "历法与子时规则须有原话明确支持"
+        },
+        {
+          "tool": "lookup_meaning",
+          "code": "missing_entry",
+          "error": "缺条目：精确 key 或同义词未命中"
+        },
+        {
+          "tool": "submit_report",
+          "code": "validation_failed",
+          "error": "要点ref_id必须来自本体系本次计算的interpretations或牌面ref_id"
+        },
+        {
+          "tool": "submit_report",
+          "code": "invalid_arguments",
+          "error": "参数不符合 schema：points"
+        },
+        {
+          "tool": "submit_report",
+          "code": "invalid_arguments",
+          "error": "参数不符合 schema：points"
+        },
+        {
+          "tool": "submit_report",
+          "code": "invalid_arguments",
+          "error": "参数不符合 schema：points"
+        },
+        {
+          "tool": "compute_bazi",
+          "code": "invalid_arguments",
+          "error": "工具参数必须是合法JSON对象，请修正后重试"
+        },
+        {
+          "tool": "submit_report",
+          "code": "validation_failed",
+          "error": "宫位不可用或与本次计算不符"
+        },
+        {
+          "tool": "submit_reading",
+          "code": "invalid_arguments",
+          "error": "工具参数必须是合法JSON对象，请修正后重试"
+        },
+        {
+          "tool": "submit_reading",
+          "code": "validation_failed",
+          "error": "evidence 引用必须来自本次工具生成的信号"
+        }
+      ],
+      "latency_s": 82.144,
+      "review_latency_s": 2.471,
+      "model_calls": 23,
+      "model_request_attempts": 6,
+      "input_tokens": 153340,
+      "output_tokens": 18336,
+      "usage_missing_calls": 0,
+      "cached_input_tokens": 109824,
+      "returned_models": [
+        "deepseek-flash"
+      ],
+      "review_usage": {
+        "input_tokens": 1239,
+        "output_tokens": 222,
+        "usage_available": true,
+        "requested_model": "deepseek-flash",
+        "returned_model": "deepseek-flash"
+      },
+      "review_request_attempts": 1,
+      "multi_agent": {
+        "consults": 5,
+        "statuses": {
+          "ok": 1,
+          "failed": 4
+        },
+        "specialist_tool_calls": 19,
+        "out_of_scope_attempts": 0,
+        "report_submissions": 6,
+        "report_submissions_accepted": 1,
+        "consults_with_submission": 4,
+        "consults_without_submission": 1,
+        "report_first_pass": 0,
+        "report_corrected_pass": 1,
+        "report_compliance_rate": 0.2,
+        "report_first_pass_rate": 0.0,
+        "report_corrected_pass_rate": 0.25,
+        "submit_attempt_pass_rate": 0.16666666666666666,
+        "max_concurrent_specialists": 3,
+        "queue_ms": [
+          0.004,
+          0.005,
+          0.004,
+          0.005,
+          0.005
+        ],
+        "specialist_latency_ms": [
+          16917.219,
+          24064.077,
+          31193.129,
+          13981.83,
+          24451.059
+        ],
+        "specialist_tokens": 117880
+      },
+      "reviewer_agent": {
+        "reviews": 0,
+        "verdicts": {},
+        "readings_reviewed": 0,
+        "readings_revised": 0,
+        "revise_rate": null,
+        "dropped_notes": 0,
+        "rejected_reviews": 0,
+        "reviewer_tokens": 0,
+        "reviewer_latency_ms": []
+      },
+      "part": "original_partial",
+      "dialogue_attempt": 1
+    },
+    {
+      "id": "unknown_time",
+      "status": "limit_reached",
+      "checks": {
+        "expected_status": false,
+        "expected_tools": false,
+        "zero_tool_errors": false,
+        "no_model_error": false,
+        "saved": false,
+        "systems": false,
+        "valid_refs": true,
+        "null_axes": true,
+        "no_hour": true,
+        "no_dayun": true,
+        "trace_tree_complete": true
+      },
+      "engineering_pass": false,
+      "quality_review": {
+        "direct_answer": false,
+        "time_consistent": false,
+        "supported_conclusion": false,
+        "no_fabricated_facts": true,
+        "reasons": [
+          "summary第一句为“本轮达到步数或 token 上限，尚未形成通过校验的解读”，未正面回答工作方向问题。",
+          "该回答未提供任何可评价的时间范围或节气/流月判断，但也因此未完成所问内容，time_consistent不成立（并非因误用范围，而是未作答）。",
+          "未给出任何占星或八字工作方向判断，更无计算与引用释义支持；cited_interpretations为空，supported_conclusion为false。",
+          "未编造出生信息、宫位、上升、时柱、大运、家庭或工作经历；但保守的未完成声明不能代替作答，整体不满足任务要求。"
+        ]
+      },
+      "quality_pass": false,
+      "passed": false,
+      "tools": [
+        "compute_bazi",
+        "compute_natal_chart",
+        "consult_specialist",
+        "lookup_meaning",
+        "merge_signals",
+        "resolve_location",
+        "start_reading",
+        "submit_report"
+      ],
+      "tool_errors": [
+        {
+          "tool": "submit_report",
+          "code": "invalid_arguments",
+          "error": "工具参数必须是合法JSON对象，请修正后重试"
+        },
+        {
+          "tool": "submit_reading",
+          "code": "invalid_arguments",
+          "error": "工具参数必须是合法JSON对象，请修正后重试"
+        },
+        {
+          "tool": "submit_reading",
+          "code": "validation_failed",
+          "error": "出生时间未知，不能使用宫位或四轴解读"
+        },
+        {
+          "tool": "submit_reading",
+          "code": "validation_failed",
+          "error": "出生时间未知，不能使用宫位或四轴解读"
+        },
+        {
+          "tool": "submit_reading",
+          "code": "validation_failed",
+          "error": "出生时间未知，不能使用宫位或四轴解读"
+        },
+        {
+          "tool": "submit_reading",
+          "code": "validation_failed",
+          "error": "出生时间未知，不能使用宫位或四轴解读"
+        }
+      ],
+      "latency_s": 85.686,
+      "review_latency_s": 1.687,
+      "model_calls": 14,
+      "model_request_attempts": 8,
+      "input_tokens": 134624,
+      "output_tokens": 23350,
+      "usage_missing_calls": 0,
+      "cached_input_tokens": 114816,
+      "returned_models": [
+        "deepseek-flash"
+      ],
+      "review_usage": {
+        "input_tokens": 2588,
+        "output_tokens": 173,
+        "usage_available": true,
+        "requested_model": "deepseek-flash",
+        "returned_model": "deepseek-flash"
+      },
+      "review_request_attempts": 1,
+      "multi_agent": {
+        "consults": 2,
+        "statuses": {
+          "ok": 2
+        },
+        "specialist_tool_calls": 7,
+        "out_of_scope_attempts": 0,
+        "report_submissions": 3,
+        "report_submissions_accepted": 2,
+        "consults_with_submission": 2,
+        "consults_without_submission": 0,
+        "report_first_pass": 1,
+        "report_corrected_pass": 2,
+        "report_compliance_rate": 1.0,
+        "report_first_pass_rate": 0.5,
+        "report_corrected_pass_rate": 1.0,
+        "submit_attempt_pass_rate": 0.6666666666666666,
+        "max_concurrent_specialists": 2,
+        "queue_ms": [
+          0.005,
+          0.004
+        ],
+        "specialist_latency_ms": [
+          11604.52,
+          19790.543
+        ],
+        "specialist_tokens": 36263
+      },
+      "reviewer_agent": {
+        "reviews": 0,
+        "verdicts": {},
+        "readings_reviewed": 0,
+        "readings_revised": 0,
+        "revise_rate": null,
+        "dropped_notes": 0,
+        "rejected_reviews": 0,
+        "reviewer_tokens": 0,
+        "reviewer_latency_ms": []
+      },
+      "part": "original_partial",
+      "dialogue_attempt": 1
+    },
+    {
+      "id": "missing_birth",
+      "status": "ask_user",
+      "checks": {
+        "expected_status": true,
+        "expected_tools": true,
+        "zero_tool_errors": true,
+        "no_model_error": true
+      },
+      "engineering_pass": true,
+      "quality_review": {
+        "direct_answer": true,
+        "time_consistent": true,
+        "supported_conclusion": true,
+        "no_fabricated_facts": true,
+        "reasons": [
+          "第一句明确说明需要出生资料，并列出日期（注明公历/农历）、出生时间（精确或不确定）、出生城市三项必要信息，符合追问信息场景只问必要资料的要求。",
+          "未使用任何时间范围或节气月边界，也没有把精确相位当作现实事件日期，时间一致性无问题。",
+          "未作任何占星判断或结论，只说明资料不足及不确定时辰时的处理方式（不看上升、天顶），结论范围克制且与现有信息相符。",
+          "没有编造出生信息、星体落座/宫位、干支十神、起运、家庭或工作经历；对未知出生时间仅声明将不解释上升、天顶等需精确时刻的部分，未虚构宫位或四轴。"
+        ]
+      },
+      "quality_pass": true,
+      "passed": true,
+      "tools": [
+        "ask_user"
+      ],
+      "tool_errors": [],
+      "latency_s": 1.737,
+      "review_latency_s": 1.539,
+      "model_calls": 1,
+      "model_request_attempts": 1,
+      "input_tokens": 5634,
+      "output_tokens": 135,
+      "usage_missing_calls": 0,
+      "cached_input_tokens": 5500,
+      "returned_models": [
+        "deepseek-flash"
+      ],
+      "review_usage": {
+        "input_tokens": 396,
+        "output_tokens": 189,
+        "usage_available": true,
+        "requested_model": "deepseek-flash",
+        "returned_model": "deepseek-flash"
+      },
+      "review_request_attempts": 1,
+      "multi_agent": {
+        "consults": 0,
+        "statuses": {},
+        "specialist_tool_calls": 0,
+        "out_of_scope_attempts": 0,
+        "report_submissions": 0,
+        "report_submissions_accepted": 0,
+        "consults_with_submission": 0,
+        "consults_without_submission": 0,
+        "report_first_pass": 0,
+        "report_corrected_pass": 0,
+        "report_compliance_rate": null,
+        "report_first_pass_rate": null,
+        "report_corrected_pass_rate": null,
+        "submit_attempt_pass_rate": null,
+        "max_concurrent_specialists": 0,
+        "queue_ms": [],
+        "specialist_latency_ms": [],
+        "specialist_tokens": 0
+      },
+      "reviewer_agent": {
+        "reviews": 0,
+        "verdicts": {},
+        "readings_reviewed": 0,
+        "readings_revised": 0,
+        "revise_rate": null,
+        "dropped_notes": 0,
+        "rejected_reviews": 0,
+        "reviewer_tokens": 0,
+        "reviewer_latency_ms": []
+      },
+      "part": "original_partial",
+      "dialogue_attempt": 1
+    },
+    {
+      "id": "ambiguous_place",
+      "status": "ask_user",
+      "checks": {
+        "expected_status": true,
+        "expected_tools": true,
+        "zero_tool_errors": true,
+        "no_model_error": true
+      },
+      "engineering_pass": true,
+      "quality_review": {
+        "direct_answer": true,
+        "time_consistent": true,
+        "supported_conclusion": true,
+        "no_fabricated_facts": true,
+        "reasons": [
+          "用户问工作方向，但出生地Springfield重名导致无法确定时区与经纬度；回答先要求确认城市编号，属于追问必要资料，未编造结论。",
+          "用户未指定时间范围；回答仅提及地名与时区选项，未做节气流月或现实事件日期推断，时间一致。",
+          "未输出任何工作方向结论，因此不存在需要计算支持的体系判断。",
+          "未编造出生信息、星体落座/宫位、干支十神、起运或经历，仅列出可能的Springfield地点及对应时区。"
+        ]
+      },
+      "quality_pass": true,
+      "passed": true,
+      "tools": [
+        "ask_user",
+        "resolve_location"
+      ],
+      "tool_errors": [],
+      "latency_s": 3.511,
+      "review_latency_s": 1.49,
+      "model_calls": 2,
+      "model_request_attempts": 2,
+      "input_tokens": 11949,
+      "output_tokens": 253,
+      "usage_missing_calls": 0,
+      "cached_input_tokens": 11136,
+      "returned_models": [
+        "deepseek-flash"
+      ],
+      "review_usage": {
+        "input_tokens": 481,
+        "output_tokens": 151,
+        "usage_available": true,
+        "requested_model": "deepseek-flash",
+        "returned_model": "deepseek-flash"
+      },
+      "review_request_attempts": 1,
+      "multi_agent": {
+        "consults": 0,
+        "statuses": {},
+        "specialist_tool_calls": 0,
+        "out_of_scope_attempts": 0,
+        "report_submissions": 0,
+        "report_submissions_accepted": 0,
+        "consults_with_submission": 0,
+        "consults_without_submission": 0,
+        "report_first_pass": 0,
+        "report_corrected_pass": 0,
+        "report_compliance_rate": null,
+        "report_first_pass_rate": null,
+        "report_corrected_pass_rate": null,
+        "submit_attempt_pass_rate": null,
+        "max_concurrent_specialists": 0,
+        "queue_ms": [],
+        "specialist_latency_ms": [],
+        "specialist_tokens": 0
+      },
+      "reviewer_agent": {
+        "reviews": 0,
+        "verdicts": {},
+        "readings_reviewed": 0,
+        "readings_revised": 0,
+        "revise_rate": null,
+        "dropped_notes": 0,
+        "rejected_reviews": 0,
+        "reviewer_tokens": 0,
+        "reviewer_latency_ms": []
+      },
+      "part": "original_partial",
+      "dialogue_attempt": 1
+    },
+    {
+      "id": "dst_gap",
+      "status": "ask_user",
+      "checks": {
+        "expected_status": true,
+        "expected_tools": true,
+        "zero_tool_errors": false,
+        "no_model_error": true,
+        "trace_tree_complete": true
+      },
+      "engineering_pass": false,
+      "quality_review": {
+        "direct_answer": false,
+        "time_consistent": false,
+        "supported_conclusion": false,
+        "no_fabricated_facts": true,
+        "reasons": [
+          "用户明确要求“只用八字看工作方向”，回答没有给出任何工作方向的正面结论或候选方向，只追问出生钟表时间，未完成所问。",
+          "回答涉及1986年北京夏令时，并称“5月4日起实行夏令时、凌晨2点跳到3点”。给定事实只含出生地经纬度和时区，没有夏令时起止规则或历史时间数据；该具体跳时事实未被支持，属于未经证实的时间事实陈述。",
+          "用户指定公历日期时间，回答未按该输入进行排盘或给出八字工作方向判断，未使用确定性计算支持任何结论。",
+          "追问必要性可理解（夏令时歧义会影响时柱），但回答未说明A/B两种选择分别会如何改变八字时柱/工作判断，且直接把“不存在时刻”当作既成事实，准确性和与所问方向的关联不足。",
+          "no_fabricated_facts方面：回答未编造出生信息、星体落座、干支十神、家庭或工作经历，此维度可判true；但保守追问不能替代对“只用八字看工作方向”的作答。"
+        ]
+      },
+      "quality_pass": false,
+      "passed": false,
+      "tools": [
+        "ask_user",
+        "compute_bazi",
+        "consult_specialist",
+        "resolve_location",
+        "start_reading",
+        "update_profile"
+      ],
+      "tool_errors": [
+        {
+          "tool": "consult_specialist",
+          "code": "validation_failed",
+          "error": "location_id须先由resolve_location解析并确认"
+        },
+        {
+          "tool": "consult_specialist",
+          "code": "validation_failed",
+          "error": "location_id须先由resolve_location解析并确认"
+        }
+      ],
+      "latency_s": 8.947,
+      "review_latency_s": 2.392,
+      "model_calls": 7,
+      "model_request_attempts": 6,
+      "input_tokens": 41379,
+      "output_tokens": 992,
+      "usage_missing_calls": 0,
+      "cached_input_tokens": 39808,
+      "returned_models": [
+        "deepseek-flash"
+      ],
+      "review_usage": {
+        "input_tokens": 549,
+        "output_tokens": 268,
+        "usage_available": true,
+        "requested_model": "deepseek-flash",
+        "returned_model": "deepseek-flash"
+      },
+      "review_request_attempts": 1,
+      "multi_agent": {
+        "consults": 1,
+        "statuses": {
+          "needs_input": 1
+        },
+        "specialist_tool_calls": 1,
+        "out_of_scope_attempts": 0,
+        "report_submissions": 0,
+        "report_submissions_accepted": 0,
+        "consults_with_submission": 0,
+        "consults_without_submission": 1,
+        "report_first_pass": 0,
+        "report_corrected_pass": 0,
+        "report_compliance_rate": null,
+        "report_first_pass_rate": null,
+        "report_corrected_pass_rate": null,
+        "submit_attempt_pass_rate": null,
+        "max_concurrent_specialists": 1,
+        "queue_ms": [
+          0.007
+        ],
+        "specialist_latency_ms": [
+          949.71
+        ],
+        "specialist_tokens": 2750
+      },
+      "reviewer_agent": {
+        "reviews": 0,
+        "verdicts": {},
+        "readings_reviewed": 0,
+        "readings_revised": 0,
+        "revise_rate": null,
+        "dropped_notes": 0,
+        "rejected_reviews": 0,
+        "reviewer_tokens": 0,
+        "reviewer_latency_ms": []
+      },
+      "part": "original_partial",
+      "dialogue_attempt": 1
+    },
+    {
+      "id": "dst_fold",
+      "status": "ask_user",
+      "checks": {
+        "expected_status": true,
+        "expected_tools": true,
+        "zero_tool_errors": false,
+        "no_model_error": true,
+        "trace_tree_complete": true
+      },
+      "engineering_pass": false,
+      "quality_review": {
+        "direct_answer": true,
+        "time_consistent": true,
+        "supported_conclusion": true,
+        "no_fabricated_facts": true,
+        "reasons": [
+          "用户仅询问工作方向，并说明未确认夏令时回拨前/后；回复首句正面指出时间落在夏令时回拨的01:30重复窗口，占星需先确认口径才能计算上升和天顶，符合追问必要资料的方向。",
+          "回复没有编造星体落座、宫位、四轴结论或工作事实，只给出A/B/C必要选项，并说明选C可在两个口径下分析，属于信息追问场景的合理处理。",
+          "1986年北京夏令时结束回拨导致01:30出现两次，这一时间边界说明与用户给定资料相符；回复未使用出生时间自作结论。",
+          "没有给出确定录用、喜用神或现实工作方向结论，因此不存在以单一相位论证确定结论的问题；supported_conclusion不因尚未作占星分析而false。",
+          "未编造出生信息、家庭或工作经历；仅要求用户确认回拨前/后，保守且必要。"
+        ]
+      },
+      "quality_pass": true,
+      "passed": false,
+      "tools": [
+        "ask_user",
+        "compute_natal_chart",
+        "consult_specialist",
+        "get_profile",
+        "resolve_location",
+        "start_reading"
+      ],
+      "tool_errors": [
+        {
+          "tool": "compute_natal_chart",
+          "code": "turn_finished",
+          "error": "本轮已结束，此调用未执行"
+        }
+      ],
+      "latency_s": 7.571,
+      "review_latency_s": 1.771,
+      "model_calls": 5,
+      "model_request_attempts": 4,
+      "input_tokens": 26130,
+      "output_tokens": 722,
+      "usage_missing_calls": 0,
+      "cached_input_tokens": 24960,
+      "returned_models": [
+        "deepseek-flash"
+      ],
+      "review_usage": {
+        "input_tokens": 541,
+        "output_tokens": 233,
+        "usage_available": true,
+        "requested_model": "deepseek-flash",
+        "returned_model": "deepseek-flash"
+      },
+      "review_request_attempts": 1,
+      "multi_agent": {
+        "consults": 1,
+        "statuses": {
+          "needs_input": 1
+        },
+        "specialist_tool_calls": 2,
+        "out_of_scope_attempts": 0,
+        "report_submissions": 0,
+        "report_submissions_accepted": 0,
+        "consults_with_submission": 0,
+        "consults_without_submission": 1,
+        "report_first_pass": 0,
+        "report_corrected_pass": 0,
+        "report_compliance_rate": null,
+        "report_first_pass_rate": null,
+        "report_corrected_pass_rate": null,
+        "submit_attempt_pass_rate": null,
+        "max_concurrent_specialists": 1,
+        "queue_ms": [
+          0.005
+        ],
+        "specialist_latency_ms": [
+          1270.988
+        ],
+        "specialist_tokens": 2372
+      },
+      "reviewer_agent": {
+        "reviews": 0,
+        "verdicts": {},
+        "readings_reviewed": 0,
+        "readings_revised": 0,
+        "revise_rate": null,
+        "dropped_notes": 0,
+        "rejected_reviews": 0,
+        "reviewer_tokens": 0,
+        "reviewer_latency_ms": []
+      },
+      "part": "original_partial",
+      "dialogue_attempt": 1
+    },
+    {
+      "id": "lunar_confirm",
+      "status": "ask_user",
+      "checks": {
+        "expected_status": true,
+        "expected_tools": true,
+        "zero_tool_errors": false,
+        "no_model_error": false,
+        "trace_tree_complete": true
+      },
+      "engineering_pass": false,
+      "quality_review": {
+        "direct_answer": false,
+        "time_consistent": true,
+        "supported_conclusion": false,
+        "no_fabricated_facts": true,
+        "reasons": [
+          "问题要求只用八字分析工作方向，回答首句却说“八字这次没能算出结果”，没有正面回答工作方向，direct_answer不通过。",
+          "用户给出的时间口径被正确追问，回答未把农历二月对应成公历整月，也没有虚构精密相位或事件日期，time_consistent通过。",
+          "回答未给出任何关于工作方向的结论，也没有提供任何八字计算依据或引用释义，supported_conclusion不通过。",
+          "回答没有编造出生信息、星体落座、宫位、干支十神、起运或家庭工作经历，关于2023年无闰二月的表述与公历常识一致，no_fabricated_facts通过。"
+        ]
+      },
+      "quality_pass": false,
+      "passed": false,
+      "tools": [
+        "ask_user",
+        "consult_specialist",
+        "daily_fortune",
+        "get_profile",
+        "resolve_location",
+        "start_reading"
+      ],
+      "tool_errors": [
+        {
+          "tool": "consult_specialist",
+          "code": "validation_failed",
+          "error": "location_id须先由resolve_location解析并确认"
+        },
+        {
+          "tool": "compute_bazi",
+          "code": "validation_failed",
+          "error": "出生日期必须来自用户原话或已有画像，不能猜测"
+        },
+        {
+          "tool": "compute_bazi",
+          "code": "validation_failed",
+          "error": "出生日期必须来自用户原话或已有画像，不能猜测"
+        },
+        {
+          "tool": "compute_bazi",
+          "code": "validation_failed",
+          "error": "出生日期必须来自用户原话或已有画像，不能猜测"
+        },
+        {
+          "tool": "compute_bazi",
+          "code": "validation_failed",
+          "error": "出生日期必须来自用户原话或已有画像，不能猜测"
+        },
+        {
+          "tool": "compute_bazi",
+          "code": "validation_failed",
+          "error": "出生日期必须来自用户原话或已有画像，不能猜测"
+        },
+        {
+          "tool": "submit_report",
+          "code": "validation_failed",
+          "error": "须先调用本体系的计算或抽牌工具，再提交报告"
+        },
+        {
+          "tool": "compute_bazi",
+          "code": "validation_failed",
+          "error": "出生日期必须来自用户原话或已有画像，不能猜测"
+        },
+        {
+          "tool": "compute_bazi",
+          "code": "validation_failed",
+          "error": "出生日期必须来自用户原话或已有画像，不能猜测"
+        },
+        {
+          "tool": "compute_bazi",
+          "code": "validation_failed",
+          "error": "出生日期必须来自用户原话或已有画像，不能猜测"
+        },
+        {
+          "tool": "compute_bazi",
+          "code": "validation_failed",
+          "error": "出生日期必须来自用户原话或已有画像，不能猜测"
+        },
+        {
+          "tool": "compute_bazi",
+          "code": "validation_failed",
+          "error": "出生日期必须来自用户原话或已有画像，不能猜测"
+        },
+        {
+          "tool": "compute_bazi",
+          "code": "validation_failed",
+          "error": "出生日期必须来自用户原话或已有画像，不能猜测"
+        },
+        {
+          "tool": "submit_report",
+          "code": "validation_failed",
+          "error": "须先调用本体系的计算或抽牌工具，再提交报告"
+        },
+        {
+          "tool": "compute_bazi",
+          "code": "validation_failed",
+          "error": "出生日期必须来自用户原话或已有画像，不能猜测"
+        },
+        {
+          "tool": "submit_reading",
+          "code": "validation_failed",
+          "error": "必须先调用确定性计算工具"
+        },
+        {
+          "tool": "submit_reading",
+          "code": "validation_failed",
+          "error": "必须先调用确定性计算工具"
+        }
+      ],
+      "latency_s": 46.972,
+      "review_latency_s": 1.728,
+      "model_calls": 22,
+      "model_request_attempts": 10,
+      "input_tokens": 113211,
+      "output_tokens": 7500,
+      "usage_missing_calls": 0,
+      "cached_input_tokens": 108416,
+      "returned_models": [
+        "deepseek-flash"
+      ],
+      "review_usage": {
+        "input_tokens": 513,
+        "output_tokens": 173,
+        "usage_available": true,
+        "requested_model": "deepseek-flash",
+        "returned_model": "deepseek-flash"
+      },
+      "review_request_attempts": 1,
+      "multi_agent": {
+        "consults": 2,
+        "statuses": {
+          "failed": 2
+        },
+        "specialist_tool_calls": 14,
+        "out_of_scope_attempts": 0,
+        "report_submissions": 2,
+        "report_submissions_accepted": 0,
+        "consults_with_submission": 2,
+        "consults_without_submission": 0,
+        "report_first_pass": 0,
+        "report_corrected_pass": 0,
+        "report_compliance_rate": 0.0,
+        "report_first_pass_rate": 0.0,
+        "report_corrected_pass_rate": 0.0,
+        "submit_attempt_pass_rate": 0.0,
+        "max_concurrent_specialists": 1,
+        "queue_ms": [
+          0.005,
+          0.004
+        ],
+        "specialist_latency_ms": [
+          12940.323,
+          10929.458
+        ],
+        "specialist_tokens": 46936
+      },
+      "reviewer_agent": {
+        "reviews": 0,
+        "verdicts": {},
+        "readings_reviewed": 0,
+        "readings_revised": 0,
+        "revise_rate": null,
+        "dropped_notes": 0,
+        "rejected_reviews": 0,
+        "reviewer_tokens": 0,
+        "reviewer_latency_ms": []
+      },
+      "part": "original_partial",
+      "dialogue_attempt": 1
+    },
+    {
+      "id": "investment_new",
+      "status": "submit_reading",
+      "checks": {
+        "expected_status": true,
+        "expected_tools": true,
+        "zero_tool_errors": false,
+        "no_model_error": false,
+        "saved": true,
+        "systems": true,
+        "valid_refs": true,
+        "trace_tree_complete": true,
+        "safety_flag": true
+      },
+      "engineering_pass": false,
+      "quality_review": {
+        "direct_answer": true,
+        "time_consistent": true,
+        "supported_conclusion": true,
+        "no_fabricated_facts": true,
+        "reasons": [
+          "summary第一句正面回答“不建议把全部积蓄买入一只股票”，方向明确，符合所问决策方向。",
+          "时间边界全部按节气时刻切分（乙巳2025-12-31至2026-02-03、丙午2026-02-03至2027-02-04、丁未2027-02-04后），与bazi_period_result的start_utc/end_utc一致，未把节气流月当作公历整月；大运2026年转丙辰也与dayun序列一致，且未把相位当作现实事件日期，仅作时间参考。",
+          "关键判断均有实际计算与引用释义支持：月柱庚申劫财当令、辛金日主、年支酉助金、五行金4、财星藏于日支未之乙（偏财）不透、时柱戊子正印，均有facts与cited_interpretations对应；流年乙巳偏财+天干冲日干、丙午正官+天干合/地支六合日柱+冲时支子、丁未七杀+天干冲年干癸+害时支子，均与bazi_period_result的relations一致。",
+          "结论“集中重注缺乏缓冲”是由原局劫财当令财不透与流年冲合信号同向推得，属条件建议，未把单个相位论证为确定录用或确定涨跌；五行仅作简单计数并明确非旺衰权重，未下喜用神结论，符合用户限制。",
+          "现实建议（留一年应急现金、仓位上限、外部约束、咨询持牌顾问）以“条件建议”表述，未当作已知个人事实；safety仅作补充，未替代正文作答。",
+          "未编造出生信息、星体落座宫位、干支十神、起运或家庭工作经历；23:20按next_day口径取辛未日、戊子时，已在facts与evidence中说明口径，符合要求。"
+        ]
+      },
+      "quality_pass": true,
+      "passed": false,
+      "tools": [
+        "compute_bazi",
+        "compute_bazi_period",
+        "consult_specialist",
+        "lookup_meaning",
+        "resolve_location",
+        "start_reading",
+        "submit_reading",
+        "submit_report",
+        "submit_review",
+        "update_profile"
+      ],
+      "tool_errors": [
+        {
+          "tool": "submit_report",
+          "code": "invalid_arguments",
+          "error": "参数不符合 schema：analysis"
+        },
+        {
+          "tool": "submit_report",
+          "code": "validation_failed",
+          "error": "不能使用“注定”这类确定性说法；趋势可以写“倾向/容易/往往”，请改写后重新提交"
+        }
+      ],
+      "latency_s": 61.426,
+      "review_latency_s": 3.968,
+      "model_calls": 15,
+      "model_request_attempts": 6,
+      "input_tokens": 109177,
+      "output_tokens": 11656,
+      "usage_missing_calls": 0,
+      "cached_input_tokens": 74752,
+      "returned_models": [
+        "deepseek-flash"
+      ],
+      "review_usage": {
+        "input_tokens": 10108,
+        "output_tokens": 457,
+        "usage_available": true,
+        "requested_model": "deepseek-flash",
+        "returned_model": "deepseek-flash"
+      },
+      "review_request_attempts": 1,
+      "multi_agent": {
+        "consults": 2,
+        "statuses": {
+          "failed": 1,
+          "ok": 1
+        },
+        "specialist_tool_calls": 11,
+        "out_of_scope_attempts": 0,
+        "report_submissions": 3,
+        "report_submissions_accepted": 1,
+        "consults_with_submission": 2,
+        "consults_without_submission": 0,
+        "report_first_pass": 0,
+        "report_corrected_pass": 1,
+        "report_compliance_rate": 0.5,
+        "report_first_pass_rate": 0.0,
+        "report_corrected_pass_rate": 0.5,
+        "submit_attempt_pass_rate": 0.3333333333333333,
+        "max_concurrent_specialists": 1,
+        "queue_ms": [
+          0.009,
+          0.005
+        ],
+        "specialist_latency_ms": [
+          16314.326,
+          21769.277
+        ],
+        "specialist_tokens": 73748
+      },
+      "reviewer_agent": {
+        "reviews": 1,
+        "verdicts": {
+          "pass": 1
+        },
+        "readings_reviewed": 1,
+        "readings_revised": 0,
+        "revise_rate": 0.0,
+        "dropped_notes": 0,
+        "rejected_reviews": 0,
+        "reviewer_tokens": 3128,
+        "reviewer_latency_ms": [
+          892.608
+        ]
+      },
+      "part": "original_partial",
+      "dialogue_attempt": 1
+    },
+    {
+      "id": "natural_astro",
+      "status": "limit_reached",
+      "checks": {
+        "expected_status": false,
+        "expected_tools": false,
+        "zero_tool_errors": false,
+        "no_model_error": false,
+        "saved": false,
+        "systems": false,
+        "valid_refs": true,
+        "trace_tree_complete": true
+      },
+      "engineering_pass": false,
+      "quality_review": {
+        "direct_answer": false,
+        "time_consistent": true,
+        "supported_conclusion": false,
+        "no_fabricated_facts": true,
+        "reasons": [
+          "summary第一句仅为“本轮达到步数或token上限，尚未形成通过校验的解读”，未正面回答“适合怎样的工作”，不满足直接作答要求。",
+          "资料给出的出生时间为1993-08-17 23:20、北京时间、北京城市质心坐标，与用户陈述一致；daily_result日期为2026-10-20且采用Asia/Shanghai时区，流日按23点换日分段，未把节气流月当作公历整月，时间一致性通过。",
+          "核心问题为职业适配，但输出没有给出任何占星职业解读；仅有抽牌保留提示，未对第10宫土星、第6宫冥王星、第4宫群星、天顶等作任何论证，结论未形成。",
+          "不存在编造出生信息、星体落座/宫位、干支十神、起运、家庭或工作经历；但“已有抽牌保留”属于流程说明而非作答，免责式收尾不能替代回答。"
+        ]
+      },
+      "quality_pass": false,
+      "passed": false,
+      "tools": [
+        "compute_natal_chart",
+        "consult_specialist",
+        "daily_fortune",
+        "lookup_meaning",
+        "resolve_location",
+        "start_reading",
+        "update_profile"
+      ],
+      "tool_errors": [
+        {
+          "tool": "consult_specialist",
+          "code": "validation_failed",
+          "error": "location_id须先由resolve_location解析并确认"
+        },
+        {
+          "tool": "submit_report",
+          "code": "invalid_arguments",
+          "error": "参数不符合 schema：points"
+        },
+        {
+          "tool": "submit_report",
+          "code": "validation_failed",
+          "error": "要点ref_id必须来自本体系本次计算的interpretations或牌面ref_id"
+        },
+        {
+          "tool": "submit_report",
+          "code": "validation_failed",
+          "error": "宫位不可用或与本次计算不符"
+        },
+        {
+          "tool": "submit_report",
+          "code": "validation_failed",
+          "error": "宫位不可用或与本次计算不符"
+        },
+        {
+          "tool": "compute_bazi",
+          "code": "validation_failed",
+          "error": "出生钟表时区须来自地点、用户原话或画像；新疆地点须确认钟表时间制"
+        },
+        {
+          "tool": "compute_bazi",
+          "code": "validation_failed",
+          "error": "出生钟表时区须来自地点、用户原话或画像；新疆地点须确认钟表时间制"
+        },
+        {
+          "tool": "compute_bazi",
+          "code": "validation_failed",
+          "error": "出生钟表时区须来自地点、用户原话或画像；新疆地点须确认钟表时间制"
+        },
+        {
+          "tool": "compute_bazi",
+          "code": "validation_failed",
+          "error": "出生钟表时区须来自地点、用户原话或画像；新疆地点须确认钟表时间制"
+        },
+        {
+          "tool": "compute_bazi",
+          "code": "validation_failed",
+          "error": "出生钟表时区须来自地点、用户原话或画像；新疆地点须确认钟表时间制"
+        },
+        {
+          "tool": "compute_bazi",
+          "code": "validation_failed",
+          "error": "经纬度与时区须来自地名解析、用户原话或画像，不能自行填写"
+        },
+        {
+          "tool": "compute_bazi",
+          "code": "validation_failed",
+          "error": "出生钟表时区须来自地点、用户原话或画像；新疆地点须确认钟表时间制"
+        },
+        {
+          "tool": "compute_bazi",
+          "code": "validation_failed",
+          "error": "出生钟表时区须来自地点、用户原话或画像；新疆地点须确认钟表时间制"
+        },
+        {
+          "tool": "compute_bazi",
+          "code": "validation_failed",
+          "error": "出生钟表时区须来自地点、用户原话或画像；新疆地点须确认钟表时间制"
+        },
+        {
+          "tool": "submit_reading",
+          "code": "validation_failed",
+          "error": "必须先调用确定性计算工具"
+        },
+        {
+          "tool": "submit_reading",
+          "code": "invalid_arguments",
+          "error": "参数不符合 schema：safety"
+        }
+      ],
+      "latency_s": 75.839,
+      "review_latency_s": 3.14,
+      "model_calls": 27,
+      "model_request_attempts": 11,
+      "input_tokens": 163346,
+      "output_tokens": 12625,
+      "usage_missing_calls": 0,
+      "cached_input_tokens": 138496,
+      "returned_models": [
+        "deepseek-flash"
+      ],
+      "review_usage": {
+        "input_tokens": 10939,
+        "output_tokens": 242,
+        "usage_available": true,
+        "requested_model": "deepseek-flash",
+        "returned_model": "deepseek-flash"
+      },
+      "review_request_attempts": 1,
+      "multi_agent": {
+        "consults": 4,
+        "statuses": {
+          "failed": 4
+        },
+        "specialist_tool_calls": 19,
+        "out_of_scope_attempts": 0,
+        "report_submissions": 4,
+        "report_submissions_accepted": 0,
+        "consults_with_submission": 2,
+        "consults_without_submission": 2,
+        "report_first_pass": 0,
+        "report_corrected_pass": 0,
+        "report_compliance_rate": 0.0,
+        "report_first_pass_rate": 0.0,
+        "report_corrected_pass_rate": 0.0,
+        "submit_attempt_pass_rate": 0.0,
+        "max_concurrent_specialists": 1,
+        "queue_ms": [
+          0.007,
+          0.008,
+          0.008,
+          0.008
+        ],
+        "specialist_latency_ms": [
+          20377.799,
+          18590.474,
+          5754.728,
+          2744.517
+        ],
+        "specialist_tokens": 93487
+      },
+      "reviewer_agent": {
+        "reviews": 0,
+        "verdicts": {},
+        "readings_reviewed": 0,
+        "readings_revised": 0,
+        "revise_rate": null,
+        "dropped_notes": 0,
+        "rejected_reviews": 0,
+        "reviewer_tokens": 0,
+        "reviewer_latency_ms": []
+      },
+      "part": "continuation",
+      "dialogue_attempt": 2
+    },
+    {
+      "id": "natural_bazi",
+      "status": "submit_reading",
+      "checks": {
+        "expected_status": true,
+        "expected_tools": true,
+        "zero_tool_errors": false,
+        "no_model_error": true,
+        "saved": true,
+        "systems": true,
+        "valid_refs": true,
+        "trace_tree_complete": true
+      },
+      "engineering_pass": false,
+      "quality_review": {
+        "direct_answer": true,
+        "time_consistent": true,
+        "supported_conclusion": true,
+        "no_fabricated_facts": true,
+        "reasons": [
+          "summary首句直接回答日主为辛金、约4岁起运、第一步大运为己未，符合提问方向。",
+          "起运按阴年男逆排、出生到上一节气间隔3年4个月10天折算，起运日1996-12-27与工具计算结果一致；未把节气折算成公历整月，也未将起运日期说成现实事件发生日期。",
+          "四柱癸酉、庚申、辛未、戊子与工具bazi_result一致；23:20按next_day规则取辛未，引用释义zishi:next_day支持该处理。",
+          "日主偏旺判断基于申月得令、酉金为禄、月干庚同气，有计算事实与劫财/食神/正印释义支撑；结论以‘倾向’表述，未断言确定命运。",
+          "辛金性格、金水输出通道、土运积累等均来自日主、十神及大运释义的合理引申，未编造家庭、工作、具体经历或虚构星体落座。",
+          "健康部分仅作传统五行与脏腑对应的生活调理提示，并附就医免责，未作诊断。",
+          "五行计数仅用于说明木火不显，未据此判定喜用神；大运影响均标注为传统推演且置信度低。",
+          "结尾行动建议为条件性建议，未把未经验证的内容写成个人已知事实。"
+        ]
+      },
+      "quality_pass": true,
+      "passed": false,
+      "tools": [
+        "compute_bazi",
+        "consult_specialist",
+        "resolve_location",
+        "start_reading",
+        "submit_reading",
+        "submit_report",
+        "submit_review",
+        "update_profile"
+      ],
+      "tool_errors": [
+        {
+          "tool": "update_profile",
+          "code": "validation_failed",
+          "error": "地理字段须来自已确认地点或原话"
+        },
+        {
+          "tool": "consult_specialist",
+          "code": "validation_failed",
+          "error": "location_id须先由resolve_location解析并确认"
+        },
+        {
+          "tool": "consult_specialist",
+          "code": "validation_failed",
+          "error": "location_id须先由resolve_location解析并确认"
+        },
+        {
+          "tool": "compute_bazi",
+          "code": "validation_failed",
+          "error": "出生钟表时区须来自地点、用户原话或画像；新疆地点须确认钟表时间制"
+        },
+        {
+          "tool": "compute_bazi",
+          "code": "validation_failed",
+          "error": "出生钟表时区须来自地点、用户原话或画像；新疆地点须确认钟表时间制"
+        },
+        {
+          "tool": "compute_bazi",
+          "code": "validation_failed",
+          "error": "出生钟表时区须来自地点、用户原话或画像；新疆地点须确认钟表时间制"
+        },
+        {
+          "tool": "update_profile",
+          "code": "validation_failed",
+          "error": "地理字段须来自已确认地点或原话"
+        },
+        {
+          "tool": "update_profile",
+          "code": "validation_failed",
+          "error": "地理字段须来自已确认地点或原话"
+        },
+        {
+          "tool": "update_profile",
+          "code": "validation_failed",
+          "error": "地理字段须来自已确认地点或原话"
+        },
+        {
+          "tool": "lookup_meaning",
+          "code": "missing_entry",
+          "error": "缺条目：精确 key 或同义词未命中"
+        },
+        {
+          "tool": "lookup_meaning",
+          "code": "missing_entry",
+          "error": "缺条目：精确 key 或同义词未命中"
+        },
+        {
+          "tool": "lookup_meaning",
+          "code": "missing_entry",
+          "error": "缺条目：精确 key 或同义词未命中"
+        },
+        {
+          "tool": "submit_reading",
+          "code": "invalid_arguments",
+          "error": "工具参数必须是合法JSON对象，请修正后重试"
+        }
+      ],
+      "latency_s": 56.32,
+      "review_latency_s": 3.177,
+      "model_calls": 19,
+      "model_request_attempts": 10,
+      "input_tokens": 104720,
+      "output_tokens": 8401,
+      "usage_missing_calls": 0,
+      "cached_input_tokens": 94464,
+      "returned_models": [
+        "deepseek-flash"
+      ],
+      "review_usage": {
+        "input_tokens": 6261,
+        "output_tokens": 332,
+        "usage_available": true,
+        "requested_model": "deepseek-flash",
+        "returned_model": "deepseek-flash"
+      },
+      "review_request_attempts": 1,
+      "multi_agent": {
+        "consults": 2,
+        "statuses": {
+          "needs_input": 1,
+          "ok": 1
+        },
+        "specialist_tool_calls": 10,
+        "out_of_scope_attempts": 0,
+        "report_submissions": 1,
+        "report_submissions_accepted": 1,
+        "consults_with_submission": 1,
+        "consults_without_submission": 1,
+        "report_first_pass": 1,
+        "report_corrected_pass": 1,
+        "report_compliance_rate": 1.0,
+        "report_first_pass_rate": 1.0,
+        "report_corrected_pass_rate": 1.0,
+        "submit_attempt_pass_rate": 1.0,
+        "max_concurrent_specialists": 1,
+        "queue_ms": [
+          0.007,
+          0.01
+        ],
+        "specialist_latency_ms": [
+          4871.768,
+          11469.101
+        ],
+        "specialist_tokens": 29698
+      },
+      "reviewer_agent": {
+        "reviews": 1,
+        "verdicts": {
+          "pass_with_notes": 1
+        },
+        "readings_reviewed": 1,
+        "readings_revised": 0,
+        "revise_rate": 0.0,
+        "dropped_notes": 0,
+        "rejected_reviews": 0,
+        "reviewer_tokens": 2913,
+        "reviewer_latency_ms": [
+          2016.365
+        ]
+      },
+      "part": "continuation",
+      "dialogue_attempt": 1
+    },
+    {
+      "id": "profile_reuse",
+      "status": "submit_reading",
+      "checks": {
+        "expected_status": true,
+        "expected_tools": true,
+        "zero_tool_errors": false,
+        "no_model_error": true,
+        "saved": true,
+        "systems": true,
+        "valid_refs": true,
+        "trace_tree_complete": true
+      },
+      "engineering_pass": false,
+      "quality_review": {
+        "direct_answer": true,
+        "time_consistent": true,
+        "supported_conclusion": false,
+        "no_fabricated_facts": false,
+        "reasons": [
+          "summary第一句正面回应了『2026年11月适合换工作吗』：『适合谈机会，但不适合仓促拍板落定』，给出方向性判断，符合direct_answer要求。",
+          "时间边界处理正确：把11月按立冬拆成2026-10-31T16:00至11-07T09:52（戊戌）和11-07T09:52至11-30（己亥），使用节气物理时刻而非公历整月；未把精确相位当作现实事件日期。",
+          "关键判断部分有计算支持但部分超出引用：戊戌月与日支未的破/刑、申酉戌三会、己亥与月支申害、丙辛天干合、丙午冲子等均与实际计算事实吻合，引用释义存在且相关。",
+          "但多项结论缺乏所引用释义支持：立冬前『谈新机会卡在资历、资格、内部审批等文书性环节』、『金代表同辈竞争与资源分账』、立冬后『钱财主要靠专业输出这条路』、『印旺压食伤』导致『想得多做得少』、以及『2026年起进入新大运』——大运序列显示丙辰大运start_year=2026，但起运细节引用仅为 convention 条目，未提供已交运的确认；从单个正官/偏印/关系相位推出具体求职审批和薪资到账节奏，属于超出释义的推断。",
+          "no_fabricated_facts存疑：原文称『本命又没有木（财）』——五行为木0、火0、土2、金4、水2，计数上木为0属实，但『无木即无财、钱财靠专业输出』属推论；『2026年起进入新大运』与 dayun 序列丙辰 start_year 2026 表面一致，但其引用的 dayun 释义仅为方法论 convention，未确认交运，属保守陈述而非确证事实；此外『流月天干为戊土正印，压制了你原本的表达与产出通道』在戊戌段：戊为正印属实，但『压制产出』为释义外推。",
+          "结论层面对『是否适合换工作』给出条件式答案（可谈不可仓促落定），方向明确；但 confidence 标为 low 且称『喜用倾向与大运交运细节属传统推演，非工具直出』，与正文把交运与财路讲成事实存在张力，supported_conclusion整体不成立。"
+        ]
+      },
+      "quality_pass": false,
+      "passed": false,
+      "tools": [
+        "compute_bazi",
+        "compute_bazi_period",
+        "consult_specialist",
+        "get_profile",
+        "lookup_meaning",
+        "resolve_location",
+        "start_reading",
+        "submit_reading",
+        "submit_report",
+        "submit_review"
+      ],
+      "tool_errors": [
+        {
+          "tool": "compute_bazi",
+          "code": "validation_failed",
+          "error": "出生钟表时区须来自地点、用户原话或画像；新疆地点须确认钟表时间制"
+        },
+        {
+          "tool": "lookup_meaning",
+          "code": "missing_entry",
+          "error": "缺条目：精确 key 或同义词未命中"
+        }
+      ],
+      "latency_s": 36.1,
+      "review_latency_s": 4.167,
+      "model_calls": 12,
+      "model_request_attempts": 5,
+      "input_tokens": 65344,
+      "output_tokens": 6204,
+      "usage_missing_calls": 0,
+      "cached_input_tokens": 54144,
+      "returned_models": [
+        "deepseek-flash"
+      ],
+      "review_usage": {
+        "input_tokens": 9650,
+        "output_tokens": 575,
+        "usage_available": true,
+        "requested_model": "deepseek-flash",
+        "returned_model": "deepseek-flash"
+      },
+      "review_request_attempts": 1,
+      "multi_agent": {
+        "consults": 2,
+        "statuses": {
+          "needs_input": 1,
+          "ok": 1
+        },
+        "specialist_tool_calls": 9,
+        "out_of_scope_attempts": 0,
+        "report_submissions": 1,
+        "report_submissions_accepted": 1,
+        "consults_with_submission": 1,
+        "consults_without_submission": 1,
+        "report_first_pass": 1,
+        "report_corrected_pass": 1,
+        "report_compliance_rate": 1.0,
+        "report_first_pass_rate": 1.0,
+        "report_corrected_pass_rate": 1.0,
+        "submit_attempt_pass_rate": 1.0,
+        "max_concurrent_specialists": 1,
+        "queue_ms": [
+          0.006,
+          0.007
+        ],
+        "specialist_latency_ms": [
+          2354.118,
+          13495.75
+        ],
+        "specialist_tokens": 31636
+      },
+      "reviewer_agent": {
+        "reviews": 1,
+        "verdicts": {
+          "pass": 1
+        },
+        "readings_reviewed": 1,
+        "readings_revised": 0,
+        "revise_rate": 0.0,
+        "dropped_notes": 0,
+        "rejected_reviews": 0,
+        "reviewer_tokens": 2734,
+        "reviewer_latency_ms": [
+          668.98
+        ]
+      },
+      "part": "continuation",
+      "dialogue_attempt": 1
+    },
+    {
+      "id": "range_before_birth",
+      "status": "submit_reading",
+      "checks": {
+        "expected_status": true,
+        "expected_tools": true,
+        "zero_tool_errors": false,
+        "no_model_error": false,
+        "saved": true,
+        "systems": false,
+        "valid_refs": true,
+        "trace_tree_complete": true
+      },
+      "engineering_pass": false,
+      "quality_review": {
+        "direct_answer": true,
+        "time_consistent": true,
+        "supported_conclusion": false,
+        "no_fabricated_facts": false,
+        "reasons": [
+          "summary第一句\"更适合求职，但真正的推进期在11月7日立冬之后\"正面回答了是否适合求职并给出时间取向，符合direct_answer。",
+          "时间边界处理正确：1—7日按戊戌月、11月7日09:52后按己亥月，采用节气时刻切月而非公历整月，未见把精确相位当现实事件日期，time_consistent成立。",
+          "关键判断超出释义支持：引用释义对天干合、地支六合均明言\"不等于事情必成\"，原文却据此推出\"岗位与名分更容易落实\"\"机会主动靠拢、走流程顺畅\"\"谈条件的顺畅度明显提升\"，属确定性推论过度，supported_conclusion为false。",
+          "五行计数为木0火0土2金4水2，原文推出\"金水偏旺、木火不显\"并\"偏喜火木\"，但约定明确五行计数非旺衰权重、程序不计算喜用神；即使标注\"推断\"，由简单计数得出喜用倾向依据不足，且据此给向南方、饮食温热等建议，属未获支持的结论。",
+          "大运引用ref为dayun:己未（1996起运），原文却称\"新的一段大运从2026年开始\"\"丙辰运\"\"2026交运之年\"，引用条目与所述内容不对应；且约定称起运日期不代表现实事件发生日期，原文将其引申为长线趋势判断，支撑失效。",
+          "no_fabricated_facts存在问题：事实层五行计数为木0火0，原文\"金水偏旺\"尚可争议，但\"食神、时干戊土正印护身\"式表述与\"旧岗位、旧东家牵绊\"\"交接、证明、竞业\"等被写成已发生或已知的个人处境，而非条件建议；求职行业、是否在职均未知却被当作事实叙述。",
+          "部分建议（分段推进、手续先清、面试留缓冲）属条件性行动建议，可接受；但\"谈判视角\"\"机会偏主动靠拢\"把合象解读成现实筹码，仍超出释义。",
+          "整月基调\"久没消息的渠道忽然有回音、有人主动提起\"属对现实事件的具体预测，释义明确关系不等于事情必成，构成过度断言。"
+        ]
+      },
+      "quality_pass": false,
+      "passed": false,
+      "tools": [
+        "compute_bazi",
+        "compute_bazi_period",
+        "compute_natal_chart",
+        "compute_transits",
+        "consult_specialist",
+        "resolve_location",
+        "start_reading",
+        "submit_reading",
+        "submit_report",
+        "update_profile"
+      ],
+      "tool_errors": [
+        {
+          "tool": "consult_specialist",
+          "code": "validation_failed",
+          "error": "location_id须先由resolve_location解析并确认"
+        },
+        {
+          "tool": "consult_specialist",
+          "code": "validation_failed",
+          "error": "location_id须先由resolve_location解析并确认"
+        },
+        {
+          "tool": "consult_specialist",
+          "code": "validation_failed",
+          "error": "location_id须先由resolve_location解析并确认"
+        },
+        {
+          "tool": "consult_specialist",
+          "code": "validation_failed",
+          "error": "location_id须先由resolve_location解析并确认"
+        },
+        {
+          "tool": "submit_report",
+          "code": "invalid_arguments",
+          "error": "参数不符合 schema：points"
+        },
+        {
+          "tool": "submit_report",
+          "code": "validation_failed",
+          "error": "行星落座或四轴与本次计算不符"
+        },
+        {
+          "tool": "submit_reading",
+          "code": "invalid_arguments",
+          "error": "工具参数必须是合法JSON对象，请修正后重试"
+        }
+      ],
+      "latency_s": 84.035,
+      "review_latency_s": 4.091,
+      "model_calls": 17,
+      "model_request_attempts": 8,
+      "input_tokens": 134287,
+      "output_tokens": 15723,
+      "usage_missing_calls": 0,
+      "cached_input_tokens": 94976,
+      "returned_models": [
+        "deepseek-flash"
+      ],
+      "review_usage": {
+        "input_tokens": 10895,
+        "output_tokens": 527,
+        "usage_available": true,
+        "requested_model": "deepseek-flash",
+        "returned_model": "deepseek-flash"
+      },
+      "review_request_attempts": 1,
+      "multi_agent": {
+        "consults": 3,
+        "statuses": {
+          "ok": 1,
+          "failed": 2
+        },
+        "specialist_tool_calls": 9,
+        "out_of_scope_attempts": 0,
+        "report_submissions": 3,
+        "report_submissions_accepted": 1,
+        "consults_with_submission": 3,
+        "consults_without_submission": 0,
+        "report_first_pass": 1,
+        "report_corrected_pass": 1,
+        "report_compliance_rate": 0.3333333333333333,
+        "report_first_pass_rate": 0.3333333333333333,
+        "report_corrected_pass_rate": 0.3333333333333333,
+        "submit_attempt_pass_rate": 0.3333333333333333,
+        "max_concurrent_specialists": 2,
+        "queue_ms": [
+          0.005,
+          0.004,
+          0.005
+        ],
+        "specialist_latency_ms": [
+          12082.682,
+          22398.485,
+          23181.551
+        ],
+        "specialist_tokens": 75711
+      },
+      "reviewer_agent": {
+        "reviews": 1,
+        "verdicts": {
+          "unavailable": 1
+        },
+        "readings_reviewed": 1,
+        "readings_revised": 0,
+        "revise_rate": 0.0,
+        "dropped_notes": 0,
+        "rejected_reviews": 0,
+        "reviewer_tokens": 0,
+        "reviewer_latency_ms": [
+          4.039
+        ]
+      },
+      "part": "continuation",
+      "dialogue_attempt": 1
+    },
+    {
+      "id": "overseas_bazi",
+      "status": "submit_reading",
+      "checks": {
+        "expected_status": true,
+        "expected_tools": true,
+        "zero_tool_errors": false,
+        "no_model_error": true,
+        "saved": true,
+        "systems": true,
+        "valid_refs": true,
+        "trace_tree_complete": true
+      },
+      "engineering_pass": false,
+      "quality_review": {
+        "direct_answer": true,
+        "time_consistent": true,
+        "supported_conclusion": false,
+        "no_fabricated_facts": false,
+        "reasons": [
+          "summary首句直接回答用户所问：日主是丁火，属阴火，日柱丁酉，并列出四柱，满足direct_answer要求。",
+          "四柱排盘运用真太阳时、23点后子时换次日规则，且年柱月柱按节气时刻处理，未将节气流月当作公历整月，也未把精确相位当作现实事件日期，满足time_consistent。",
+          "日主、四柱、十神标签、大运序列等关键项有计算事实与引用释义支持；但身偏弱的结论仅依据月令与五行计数和十神相耗，未做旺衰权重分析，且程序明确不计算喜用神，推断喜用倾向过度；性格部分以单柱十神直接推出具体行为倾向，引用释义明确提示不能代替全局分析，支撑不足，故supported_conclusion为false。",
+          "推导出起运约2003年底、大运丁亥/丙戌/乙酉/甲申等与事实一致，未编造；但性格段将天干十神直接具体化为“开会一句话点出问题”“喜欢独特视角”“要结果、要稳定资源”等个人化描述，且把五行调养直接落到“心与循环、眼目以及腰腹下肢”等身体对应，超出引用释义的保守范围，属于编造具体个人特质与身体对应，故no_fabricated_facts为false。"
+        ]
+      },
+      "quality_pass": false,
+      "passed": false,
+      "tools": [
+        "ask_user",
+        "compute_bazi",
+        "consult_specialist",
+        "resolve_location",
+        "start_reading",
+        "submit_reading",
+        "submit_report",
+        "submit_review",
+        "update_profile"
+      ],
+      "tool_errors": [
+        {
+          "tool": "consult_specialist",
+          "code": "validation_failed",
+          "error": "location_id须先由resolve_location解析并确认"
+        },
+        {
+          "tool": "update_profile",
+          "code": "validation_failed",
+          "error": "地理字段须来自已确认地点或原话"
+        },
+        {
+          "tool": "consult_specialist",
+          "code": "validation_failed",
+          "error": "location_id须先由resolve_location解析并确认"
+        },
+        {
+          "tool": "consult_specialist",
+          "code": "validation_failed",
+          "error": "location_id须先由resolve_location解析并确认"
+        },
+        {
+          "tool": "compute_bazi",
+          "code": "invalid_arguments",
+          "error": "参数不符合 schema：birth_place"
+        },
+        {
+          "tool": "compute_bazi",
+          "code": "validation_failed",
+          "error": "出生钟表时区须来自地点、用户原话或画像；新疆地点须确认钟表时间制"
+        },
+        {
+          "tool": "consult_specialist",
+          "code": "validation_failed",
+          "error": "location_id须先由resolve_location解析并确认"
+        },
+        {
+          "tool": "compute_bazi",
+          "code": "validation_failed",
+          "error": "出生钟表时区须来自地点、用户原话或画像；新疆地点须确认钟表时间制"
+        },
+        {
+          "tool": "compute_bazi",
+          "code": "validation_failed",
+          "error": "经纬度与时区须来自地名解析、用户原话或画像，不能自行填写"
+        },
+        {
+          "tool": "submit_reading",
+          "code": "invalid_arguments",
+          "error": "工具参数必须是合法JSON对象，请修正后重试"
+        },
+        {
+          "tool": "submit_review",
+          "code": "validation_failed",
+          "error": "有小修建议时用pass_with_notes"
+        }
+      ],
+      "latency_s": 52.165,
+      "review_latency_s": 2.678,
+      "model_calls": 26,
+      "model_request_attempts": 15,
+      "input_tokens": 146781,
+      "output_tokens": 8763,
+      "usage_missing_calls": 0,
+      "cached_input_tokens": 135168,
+      "returned_models": [
+        "deepseek-flash"
+      ],
+      "review_usage": {
+        "input_tokens": 5976,
+        "output_tokens": 354,
+        "usage_available": true,
+        "requested_model": "deepseek-flash",
+        "returned_model": "deepseek-flash"
+      },
+      "review_request_attempts": 1,
+      "multi_agent": {
+        "consults": 4,
+        "statuses": {
+          "needs_input": 3,
+          "ok": 1
+        },
+        "specialist_tool_calls": 11,
+        "out_of_scope_attempts": 0,
+        "report_submissions": 1,
+        "report_submissions_accepted": 1,
+        "consults_with_submission": 1,
+        "consults_without_submission": 3,
+        "report_first_pass": 1,
+        "report_corrected_pass": 1,
+        "report_compliance_rate": 1.0,
+        "report_first_pass_rate": 1.0,
+        "report_corrected_pass_rate": 1.0,
+        "submit_attempt_pass_rate": 1.0,
+        "max_concurrent_specialists": 1,
+        "queue_ms": [
+          0.008,
+          0.005,
+          0.005,
+          0.018
+        ],
+        "specialist_latency_ms": [
+          3071.609,
+          2771.652,
+          1103.424,
+          8335.837
+        ],
+        "specialist_tokens": 29153
+      },
+      "reviewer_agent": {
+        "reviews": 1,
+        "verdicts": {
+          "pass_with_notes": 1
+        },
+        "readings_reviewed": 1,
+        "readings_revised": 0,
+        "revise_rate": 0.0,
+        "dropped_notes": 0,
+        "rejected_reviews": 1,
+        "reviewer_tokens": 5333,
+        "reviewer_latency_ms": [
+          2404.653
+        ]
+      },
+      "part": "continuation",
+      "dialogue_attempt": 1
+    },
+    {
+      "id": "natural_unknown",
+      "status": "limit_reached",
+      "checks": {
+        "expected_status": false,
+        "expected_tools": false,
+        "zero_tool_errors": false,
+        "no_model_error": false,
+        "saved": false,
+        "systems": false,
+        "valid_refs": true,
+        "null_axes": true,
+        "no_hour": true,
+        "no_dayun": true,
+        "trace_tree_complete": true
+      },
+      "engineering_pass": false,
+      "quality_review": {
+        "direct_answer": false,
+        "time_consistent": true,
+        "supported_conclusion": false,
+        "no_fabricated_facts": true,
+        "reasons": [
+          "summary首句为“本轮达到步数或 token 上限，尚未形成通过校验的解读”，没有正面回答工作方式问题，也没有给出任何具体工作方式判断，因此direct_answer为false。",
+          "用户未指定时间范围；回答未把节气当公历整月，也未输出宫位、四轴或具体行运日期，时间边界处理本身没有违规，故time_consistent为true。",
+          "没有任何占星或八字解读结论，cited_interpretations为空，facts虽含三柱和行星落座但未被用于论证任何工作方式判断，故supported_conclusion为false；这不是支持了错误结论，而是缺失解读。",
+          "未编造出生时辰、宫位四轴、时柱、起运、家庭或工作经历；未知时辰也仅保留三柱并说明不能输出时柱与精确起运，因此no_fabricated_facts为true。",
+          "该输出是失败/未完成声明，不能替代对“工作方式”的实际作答；尽管没有捏造事实，但质量不合格，主要问题在direct_answer与supported_conclusion。"
+        ]
+      },
+      "quality_pass": false,
+      "passed": false,
+      "tools": [
+        "compute_bazi",
+        "compute_natal_chart",
+        "consult_specialist",
+        "get_profile",
+        "lookup_meaning",
+        "merge_signals",
+        "resolve_location",
+        "start_reading",
+        "submit_report",
+        "update_profile"
+      ],
+      "tool_errors": [
+        {
+          "tool": "lookup_meaning",
+          "code": "missing_entry",
+          "error": "缺条目：精确 key 或同义词未命中"
+        },
+        {
+          "tool": "submit_report",
+          "code": "validation_failed",
+          "error": "行星落座或四轴与本次计算不符"
+        },
+        {
+          "tool": "submit_report",
+          "code": "validation_failed",
+          "error": "行星落座或四轴与本次计算不符"
+        },
+        {
+          "tool": "submit_report",
+          "code": "validation_failed",
+          "error": "行星落座或四轴与本次计算不符"
+        },
+        {
+          "tool": "submit_report",
+          "code": "invalid_arguments",
+          "error": "参数不符合 schema：points"
+        },
+        {
+          "tool": "submit_reading",
+          "code": "invalid_arguments",
+          "error": "工具参数必须是合法JSON对象，请修正后重试"
+        },
+        {
+          "tool": "submit_reading",
+          "code": "validation_failed",
+          "error": "出生时间未知，不能使用宫位或四轴解读"
+        },
+        {
+          "tool": "submit_reading",
+          "code": "validation_failed",
+          "error": "出生时间未知，不能使用宫位或四轴解读"
+        }
+      ],
+      "latency_s": 88.432,
+      "review_latency_s": 1.973,
+      "model_calls": 20,
+      "model_request_attempts": 9,
+      "input_tokens": 151688,
+      "output_tokens": 21936,
+      "usage_missing_calls": 0,
+      "cached_input_tokens": 128384,
+      "returned_models": [
+        "deepseek-flash"
+      ],
+      "review_usage": {
+        "input_tokens": 2600,
+        "output_tokens": 260,
+        "usage_available": true,
+        "requested_model": "deepseek-flash",
+        "returned_model": "deepseek-flash"
+      },
+      "review_request_attempts": 1,
+      "multi_agent": {
+        "consults": 3,
+        "statuses": {
+          "ok": 2,
+          "failed": 1
+        },
+        "specialist_tool_calls": 12,
+        "out_of_scope_attempts": 0,
+        "report_submissions": 6,
+        "report_submissions_accepted": 2,
+        "consults_with_submission": 3,
+        "consults_without_submission": 0,
+        "report_first_pass": 1,
+        "report_corrected_pass": 2,
+        "report_compliance_rate": 0.6666666666666666,
+        "report_first_pass_rate": 0.3333333333333333,
+        "report_corrected_pass_rate": 0.6666666666666666,
+        "submit_attempt_pass_rate": 0.3333333333333333,
+        "max_concurrent_specialists": 2,
+        "queue_ms": [
+          0.006,
+          0.005,
+          0.006
+        ],
+        "specialist_latency_ms": [
+          14622.108,
+          21991.817,
+          21369.376
+        ],
+        "specialist_tokens": 78504
+      },
+      "reviewer_agent": {
+        "reviews": 0,
+        "verdicts": {},
+        "readings_reviewed": 0,
+        "readings_revised": 0,
+        "revise_rate": null,
+        "dropped_notes": 0,
+        "rejected_reviews": 0,
+        "reviewer_tokens": 0,
+        "reviewer_latency_ms": []
+      },
+      "part": "continuation",
+      "dialogue_attempt": 1
+    }
+  ],
+  "scope": "Synthetic data; rubric judge uses same DeepSeek model, not independent vendor/human verification. Scored composite totals retain original checks. All service trace checks include interrupted attempt."
+}

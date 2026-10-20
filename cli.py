@@ -11,7 +11,9 @@ from rich.console import Console
 from app import ROOT, create_runtime
 from common.tools import render_evidence
 
-cli = typer.Typer(help="知命：第一周塔罗 Agent 原型。支持真实模型及 demo 离线演示。")
+cli = typer.Typer(
+    help="知命：支持西方占星、塔罗、八字、姓名五格、解梦和每日运势。支持真实模型及 demo 离线演示。"
+)
 console = Console()
 
 
@@ -79,7 +81,9 @@ def chat(
         console.print(f"启动失败：{exc}", markup=False)
         raise typer.Exit(1) from None
     model_label = getattr(runtime.model, "model", "demo（离线规则演示）")
-    console.print(f"知命 · 第一周塔罗原型。运行模型：{model_label}", markup=False)
+    console.print(
+        f"知命 · 占星、塔罗、八字、姓名五格、解梦、每日运势。运行模型：{model_label}", markup=False
+    )
 
     async def interact():
         while True:

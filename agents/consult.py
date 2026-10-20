@@ -286,7 +286,7 @@ class ConsultService:
             {"role": "system", "content": spec.prompt},
             {
                 "role": "system",
-                "content": f"日历基准（Asia/Shanghai）：{session.calendar_anchor}；"
+                "content": f"日历基准（{session.calendar_timezone}）：{session.calendar_anchor}；"
                 "按子问题给出的日期范围计算，不猜系统月份。",
             },
             {

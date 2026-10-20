@@ -253,7 +253,11 @@ class DailyPlugin:
             )
             if not bazi["day_master"]:
                 raise NeedsInput("uncertain_day_master", "日柱无法确定，请补充出生时间。")
-            tz = period_timezone(args, session, chart)
+            tz = (
+                period_timezone(args, session, chart)
+                if args.tz
+                else session.profile.get("consultation_tz") or birth["tz"]
+            )
         except NeedsInput as exc:
             return exc.result()
         fingerprint = hashlib.sha256(

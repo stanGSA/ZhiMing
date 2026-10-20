@@ -1,0 +1,1207 @@
+{
+  "run_id": "20261020T102637-1a676e73",
+  "mode": "single",
+  "requested_model": "deepseek-flash",
+  "source_fingerprint": "93f06871b0f80ecf654135aa80465263545ccec505b8f9d3f7469aaee891e6af",
+  "cases": 20,
+  "passed": 2,
+  "failed": 18,
+  "multi_agent": null,
+  "reviewer_agent": null,
+  "model_calls": 102,
+  "model_request_attempts": 102,
+  "review_calls": 20,
+  "review_request_attempts": 20,
+  "input_tokens": 1514784,
+  "output_tokens": 107775,
+  "scope": "Synthetic data; same requested model for agent/rubric judge, not independent identity or human review; final answers also require separate inspection.",
+  "latency_baseline": {
+    "suite": "baseline",
+    "mode": "single",
+    "concurrency": 1,
+    "cases": 20,
+    "median_s": 23.613,
+    "p95_nearest_rank_s": 59.629,
+    "max_s": 63.183,
+    "wall_s": 568.346,
+    "measurement": "Dialogue wall time including clarification; excludes rubric judge, setup and knowledge build. Wall time includes all phases.",
+    "comparison": "Descriptive baseline only; previous concurrent batch has different source and service conditions, so no causal speedup claim."
+  },
+  "engineering_passed": 4,
+  "quality_passed": 9,
+  "judge_errors": 0,
+  "final_status_counts": {
+    "ask_user": 3,
+    "limit_reached": 1,
+    "submit_reading": 14,
+    "text": 2
+  },
+  "results": [
+    {
+      "id": "astro_trait",
+      "status": "submit_reading",
+      "checks": {
+        "expected_status": true,
+        "expected_tools": true,
+        "zero_tool_errors": false,
+        "no_model_error": true,
+        "saved": true,
+        "systems": true,
+        "valid_refs": true
+      },
+      "engineering_pass": false,
+      "quality_review": {
+        "direct_answer": true,
+        "time_consistent": true,
+        "supported_conclusion": true,
+        "no_fabricated_facts": true,
+        "reasons": [
+          "summary第一句直接给出适合的工作方向（梳理复杂问题、落地可交付结果，偏技术分析、流程优化、内容与知识管理），正面回应“适合怎样的工作方向”，并明确不作录用预测，符合问题要求。",
+          "用户已给定精确出生时刻且系统time_known为true，答案使用宫位与行星落座（太阳/水星/火星摩羯第4宫、金星水瓶第5宫、月亮金牛第8宫、土星双鱼第6宫、木星射手第3宫）均与facts.natal_result一致；未引入节气/公历边界或精确相位当现实日期，时间一致性成立。",
+          "关键判断有实际计算与引用释义支持：太阳摩羯、水星摩羯、火星摩羯、金星水瓶、月亮金牛、土星双鱼、木星射手、水星合天王（0.01°）、水星合火星、月亮三分火星、月亮六分土星、月亮四分金星等均在evidence中给出落座、宫位与容许度，引用释义内容（如摩羯的循序规划、水瓶的独立见解、第6宫职责边界）与判断相关，非不相干引用。",
+          "个性/工作方式属象征性反思，答案未把单个相位当作确定录用，也未作录用预测；结尾建议为条件建议（用小事验证工作方式、写清职责边界），符合允许范围。",
+          "未编造出生信息、星体落座/宫位、干支十神、起运或家庭工作经历：出生信息来自用户与resolved_locations，落座宫位均来自natal_result；未在时辰未知时解释时柱或四轴（且此处时辰已知，宫位引用有据）。"
+        ]
+      },
+      "quality_pass": true,
+      "passed": false,
+      "tools": [
+        "compute_natal_chart",
+        "resolve_location",
+        "start_reading",
+        "submit_reading"
+      ],
+      "tool_errors": [
+        {
+          "tool": "submit_reading",
+          "code": "invalid_arguments",
+          "error": "工具参数必须是合法JSON对象，请修正后重试"
+        }
+      ],
+      "latency_s": 33.73,
+      "model_calls": 4,
+      "input_tokens": 49682,
+      "output_tokens": 7356,
+      "returned_models": [
+        "deepseek-flash"
+      ],
+      "review_usage": {
+        "input_tokens": 15693,
+        "output_tokens": 390,
+        "usage_available": true,
+        "requested_model": "deepseek-flash",
+        "returned_model": "deepseek-flash"
+      }
+    },
+    {
+      "id": "astro_followup",
+      "status": "submit_reading",
+      "checks": {
+        "expected_status": true,
+        "expected_tools": true,
+        "zero_tool_errors": false,
+        "no_model_error": true,
+        "saved": true,
+        "systems": true,
+        "valid_refs": true,
+        "no_recalculation": true,
+        "response_saved": true
+      },
+      "engineering_pass": false,
+      "quality_review": {
+        "direct_answer": true,
+        "time_consistent": true,
+        "supported_conclusion": true,
+        "no_fabricated_facts": true,
+        "reasons": [
+          "summary首句直接回答太阳落摩羯座对工作方式的含义，给出循序规划、长期责任等具体方向，符合trait类问题要求。",
+          "用户要求读取原记录、不重排盘；答案与facts中natal_result一致：太阳摩羯10°02′、第4宫，水星摩羯29°22′、火星摩羯24°19′均在第4宫，未发现重排或矛盾。",
+          "未涉及节气/月边界或行运事件日期；本命相位仅作长期习惯讨论，未把精确相位当现实事件，时间维度合格。",
+          "关键判断均有实际计算事实支撑：太阳摩羯、第4宫、水星/火星摩羯同宫、火星土星六分、水星天王星合相均在evidence与cited_interpretations中可查；引用释义内容相关，用于象征性工作方式反思维度成立。",
+          "未预测录用，未涉及健康、法律、投资，行动建议为条件式自我探索而非已知个人事实。",
+          "未编造出生信息、星体落座宫位、十神、起运、家庭或工作经历；出生时刻已知，宫位解释有依据，保守声明同时保留了实质作答，未以免责代替回答。",
+          "水星与天王星合相容许度0.01°表述与facts一致；火星土星六分表述与facts一致。"
+        ]
+      },
+      "quality_pass": true,
+      "passed": false,
+      "tools": [
+        "read_reading",
+        "submit_reading"
+      ],
+      "tool_errors": [
+        {
+          "tool": "submit_reading",
+          "code": "invalid_arguments",
+          "error": "工具参数必须是合法JSON对象，请修正后重试"
+        }
+      ],
+      "latency_s": 16.496,
+      "model_calls": 3,
+      "input_tokens": 60586,
+      "output_tokens": 3603,
+      "returned_models": [
+        "deepseek-flash"
+      ],
+      "review_usage": {
+        "input_tokens": 7043,
+        "output_tokens": 319,
+        "usage_available": true,
+        "requested_model": "deepseek-flash",
+        "returned_model": "deepseek-flash"
+      }
+    },
+    {
+      "id": "bazi_trait",
+      "status": "submit_reading",
+      "checks": {
+        "expected_status": true,
+        "expected_tools": true,
+        "zero_tool_errors": false,
+        "no_model_error": true,
+        "saved": true,
+        "systems": true,
+        "valid_refs": true
+      },
+      "engineering_pass": false,
+      "quality_review": {
+        "direct_answer": true,
+        "time_consistent": true,
+        "supported_conclusion": true,
+        "no_fabricated_facts": true,
+        "reasons": [
+          "第一句直接给日主辛金并概述工作方式，回答了所问方向；四柱、起运日期、首步大运均列出。",
+          "按23点换日得癸酉年、庚申月、辛未日、戊子时，起运1996-12-27、首运己未与事实一致；未用真太阳时，节气换月未当公历整月，精确相位未充当现实事件日期。",
+          "日主、年柱食神、月柱劫财、时柱正印均有计算事实与对应释义支持；五行简单计数用于非喜用节奏倾向，未下喜用神结论；己未后续大运序列与事实一致。",
+          "未编造出生信息、落座宫位、十神、家庭或工作经历；五行计数、十神释义与起运事实均来自给定数据，建议为条件性建议。"
+        ]
+      },
+      "quality_pass": true,
+      "passed": false,
+      "tools": [
+        "compute_bazi",
+        "resolve_location",
+        "start_reading",
+        "submit_reading"
+      ],
+      "tool_errors": [
+        {
+          "tool": "compute_bazi",
+          "code": "invalid_arguments",
+          "error": "工具参数必须是合法JSON对象，请修正后重试"
+        }
+      ],
+      "latency_s": 13.022,
+      "model_calls": 4,
+      "input_tokens": 34601,
+      "output_tokens": 2116,
+      "returned_models": [
+        "deepseek-flash"
+      ],
+      "review_usage": {
+        "input_tokens": 5288,
+        "output_tokens": 223,
+        "usage_available": true,
+        "requested_model": "deepseek-flash",
+        "returned_model": "deepseek-flash"
+      }
+    },
+    {
+      "id": "bazi_followup",
+      "status": "submit_reading",
+      "checks": {
+        "expected_status": true,
+        "expected_tools": true,
+        "zero_tool_errors": true,
+        "no_model_error": true,
+        "saved": true,
+        "systems": true,
+        "valid_refs": true,
+        "no_recalculation": true,
+        "response_saved": true
+      },
+      "engineering_pass": true,
+      "quality_review": {
+        "direct_answer": true,
+        "time_consistent": true,
+        "supported_conclusion": false,
+        "no_fabricated_facts": false,
+        "reasons": [
+          "第一句直接给出“日主辛金”“首步大运己未”，正面回答了所问方向，direct_answer可判true。",
+          "大运用起运日期1996-12-27、约4岁起、每运约十年，来自dayun计算事实；未把大运当公历整月或具体事件日期，也未把节气边界当整月，time_consistent可判true。",
+          "关键判断缺乏实际释义支持：日主辛金引用内容只说“十神相对日主计算、不表示已知人格或职业能力”，但输出据此断言“靠精细和成色被认可”“一眼看出哪里差一点”“适合把关审校”，属于超出引用的性格与职业推断。",
+          "五行计数金4土2水2木0火0本身是简单计数，程序也声明“非旺衰权重、不计算喜用神”；输出却由计数推出“材料很足、底子扎实”“推进力偏少”，并把“补木”当传统辅助建议，五行计数不能支持这种强弱与补益判断。",
+          "首步大运己未引用含义只说明排运规则和“起运日期、年龄、序列以工具结果为准，不代表现实事件发生日期”，不包含“被照顾、被塑形、按规矩成形、留下求稳惯性”等十神/五行断语；输出把己未属土扩展为养育塑形和成年惯性，缺实际释义支持。",
+          "未编造出生年月日时、星体落座、十神、起运等基础事实，但输出把未审阅的日主、五行、大运释义写成确定人格与人生惯性，属于把推断当已知个人事实，no_fabricated_facts不应通过。",
+          "结论置信度标为低且免责，但不能替代每个体系的关键判断须有实际计算与引用释义支持；supported_conclusion应判false。"
+        ]
+      },
+      "quality_pass": false,
+      "passed": false,
+      "tools": [
+        "read_reading",
+        "submit_reading"
+      ],
+      "tool_errors": [],
+      "latency_s": 9.161,
+      "model_calls": 2,
+      "input_tokens": 21722,
+      "output_tokens": 1778,
+      "returned_models": [
+        "deepseek-flash"
+      ],
+      "review_usage": {
+        "input_tokens": 5173,
+        "output_tokens": 432,
+        "usage_available": true,
+        "requested_model": "deepseek-flash",
+        "returned_model": "deepseek-flash"
+      }
+    },
+    {
+      "id": "astro_timing",
+      "status": "submit_reading",
+      "checks": {
+        "expected_status": true,
+        "expected_tools": true,
+        "zero_tool_errors": true,
+        "no_model_error": true,
+        "saved": true,
+        "systems": true,
+        "valid_refs": true
+      },
+      "engineering_pass": true,
+      "quality_review": {
+        "direct_answer": true,
+        "time_consistent": true,
+        "supported_conclusion": false,
+        "no_fabricated_facts": true,
+        "reasons": [
+          "第一句“整体偏顺，2026年11月适合启动求职，但属于有条件适合”正面回答了是否适合启动求职，并给出条件方向，符合direct_answer要求。",
+          "区间使用2026-11-01至2026-11-30、America/New_York时区；把UTC 2026-12-01 01:26的火星四分冥王星按纽约当地时间归为11月30日，处理正确；未把相位日期当作录用日期，time_consistent为true。",
+          "关键判定“中旬起转顺、成功率更稳”“最适合正式投递”的依据主要是行运太阳与太阳、火星、海王星、天王星、水星的六分相及与土星的三分相；但这些引用释义均为象征性反思主题，明确不是现实事件预测，也未论证求职录用或成功率，supported_conclusion偏弱。",
+          "11月11日被描述为“这个月手感最好的窗口”起点，但当天同时出现太阳对月亮对分相，释义为需求拉扯，答案未在结论中平衡该摩擦，依据与结论匹配度不足。",
+          "本命太阳、水星、火星、天王星落摩羯与摩羯释义引用相符；月亮四分金星确实被引为本命相位，未见编造出生信息、星体落座、宫位、家庭或工作经历。",
+          "“成功率更稳”“门是开着的”等表述超出引用释义的证据强度，虽有免责声明但仍构成对结果的偏强判断，故supported_conclusion判否。"
+        ]
+      },
+      "quality_pass": false,
+      "passed": false,
+      "tools": [
+        "ask_user",
+        "compute_natal_chart",
+        "compute_transits",
+        "resolve_location",
+        "start_reading",
+        "submit_reading"
+      ],
+      "tool_errors": [],
+      "latency_s": 39.77,
+      "model_calls": 6,
+      "input_tokens": 82312,
+      "output_tokens": 4058,
+      "returned_models": [
+        "deepseek-flash"
+      ],
+      "review_usage": {
+        "input_tokens": 36240,
+        "output_tokens": 354,
+        "usage_available": true,
+        "requested_model": "deepseek-flash",
+        "returned_model": "deepseek-flash"
+      }
+    },
+    {
+      "id": "bazi_timing",
+      "status": "submit_reading",
+      "checks": {
+        "expected_status": true,
+        "expected_tools": true,
+        "zero_tool_errors": false,
+        "no_model_error": true,
+        "saved": true,
+        "systems": true,
+        "valid_refs": true
+      },
+      "engineering_pass": false,
+      "quality_review": {
+        "direct_answer": true,
+        "time_consistent": true,
+        "supported_conclusion": false,
+        "no_fabricated_facts": true,
+        "reasons": [
+          "summary第一句正面回答“适合启动求职”，方向明确。",
+          "流月与节气边界处理正确：11月1日至7日09:52:05立冬前为戊戌月，立冬后为己亥月；未把节气月当公历整月。",
+          "“思路容易反复／方向感变清楚”“机会正规、需要担责”“先上桌、再筛选”等职业结论缺乏所引用释义或计算事实的支持；引用仅说明日主定义与23点换日规则，未解释流月与原局关系。",
+          "原局四柱、23点换日（辛未日、戊子时）与所给事实一致，未编造出生信息、家庭或工作经历。",
+          "置信度标低并声明合成资料，但不足以替代对关键职业判断的论证；单个流月关系无法推出确定的求职顺逆。"
+        ]
+      },
+      "quality_pass": false,
+      "passed": false,
+      "tools": [
+        "compute_bazi",
+        "compute_bazi_period",
+        "resolve_location",
+        "start_reading",
+        "submit_reading"
+      ],
+      "tool_errors": [
+        {
+          "tool": "submit_reading",
+          "code": "validation_failed",
+          "error": "evidence 引用必须来自本次工具生成的信号"
+        },
+        {
+          "tool": "submit_reading",
+          "code": "validation_failed",
+          "error": "evidence 引用必须来自本次工具生成的信号"
+        },
+        {
+          "tool": "submit_reading",
+          "code": "validation_failed",
+          "error": "evidence 引用必须来自本次工具生成的信号"
+        },
+        {
+          "tool": "submit_reading",
+          "code": "validation_failed",
+          "error": "evidence 引用必须来自本次工具生成的信号"
+        }
+      ],
+      "latency_s": 52.981,
+      "model_calls": 8,
+      "input_tokens": 131102,
+      "output_tokens": 13958,
+      "returned_models": [
+        "deepseek-flash"
+      ],
+      "review_usage": {
+        "input_tokens": 3049,
+        "output_tokens": 216,
+        "usage_available": true,
+        "requested_model": "deepseek-flash",
+        "returned_model": "deepseek-flash"
+      }
+    },
+    {
+      "id": "three_system_timing",
+      "status": "submit_reading",
+      "checks": {
+        "expected_status": true,
+        "expected_tools": true,
+        "zero_tool_errors": false,
+        "no_model_error": true,
+        "saved": true,
+        "systems": true,
+        "valid_refs": true
+      },
+      "engineering_pass": false,
+      "quality_review": {
+        "direct_answer": true,
+        "time_consistent": true,
+        "supported_conclusion": false,
+        "no_fabricated_facts": false,
+        "reasons": [
+          "第一句“适合启动，但要边投边调”正面回答是否适合启动求职，方向明确，满足direct_answer。",
+          "时间范围使用用户指定的2026-11-01至11-30；八字流月按节气时刻分为戊戌（至11-07 09:52）和己亥（11-07 09:52起），没有把节气流月当成公历整月，未见时间边界错误。",
+          "占星行运日期与计算结果基本对应（木星合本命太阳11-04、火星合本命太阳11-14、火星对分本命土星11-19），且多以“倾向/节点”表述，未把精确相位写成现实事件日期。",
+          "但supported_conclusion不成立：行运木星合本命太阳被直接写成“带来曝光、被推荐、把积累拿出来讲的机会”，实际上引用释义仅为“学习与扩展/自我表达与目标”的象征性反思，未支持“猎头或内推来得比预期快”这类现实事件判断。",
+          "火星对分本命土星被写成“容易遇到流程长、审批多、职级与薪资口径不清、面试官说法不一致”，引用释义只说对分相提示需求拉扯、澄清优先级，未支持如此具体的职场遭遇。",
+          "八字部分把“本命在申月出生、金4木火各0”直接推出“行事倾向偏精准、要标准、重质量”，属于用简单五行计数推断性格倾向；计算约定明确说明五行计数非旺衰权重，且不计算喜用神。",
+          "“补益倾向参考”称“本命金偏重，传统上用火和木调和”，但计算事实只给出金4、木0、火0，未做旺衰判定，也未提供喜用神依据；该建议虽标注参考，仍属于缺乏计算支持的关键判断。",
+          "no_fabricated_facts不成立：回答中出现“土星落在与职业责任相关的第10宫”虽可由盘面支持，但同时虚构了“猎头或内推来得比预期快”“面试官之间说法不一致”“岗位突然愿意聊”等具体现实经历/事件，这些并非给定事实。",
+          "塔罗释义引用基本对应，但“宝剑三与火星对分土星呼应：外部规则与拒绝带来的挫败感”属于跨体系强行对应，引用未提供此关联。",
+          "整体可作为象征性反思和条件建议，但不能作为求职时机判断的可靠依据；单个相位或牌面均不能论证确定的岗位录用或具体职场遭遇，故supported_conclusion判false。"
+        ]
+      },
+      "quality_pass": false,
+      "passed": false,
+      "tools": [
+        "compute_bazi",
+        "compute_bazi_period",
+        "compute_natal_chart",
+        "compute_transits",
+        "draw_tarot",
+        "get_profile",
+        "resolve_location",
+        "start_reading",
+        "submit_reading"
+      ],
+      "tool_errors": [
+        {
+          "tool": "submit_reading",
+          "code": "validation_failed",
+          "error": "行运日期与引用事件不符"
+        }
+      ],
+      "latency_s": 57.698,
+      "model_calls": 5,
+      "input_tokens": 93237,
+      "output_tokens": 9112,
+      "returned_models": [
+        "deepseek-flash"
+      ],
+      "review_usage": {
+        "input_tokens": 39006,
+        "output_tokens": 576,
+        "usage_available": true,
+        "requested_model": "deepseek-flash",
+        "returned_model": "deepseek-flash"
+      }
+    },
+    {
+      "id": "unknown_time",
+      "status": "submit_reading",
+      "checks": {
+        "expected_status": true,
+        "expected_tools": true,
+        "zero_tool_errors": false,
+        "no_model_error": true,
+        "saved": true,
+        "systems": true,
+        "valid_refs": true,
+        "null_axes": true,
+        "no_hour": true,
+        "no_dayun": true
+      },
+      "engineering_pass": false,
+      "quality_review": {
+        "direct_answer": true,
+        "time_consistent": true,
+        "supported_conclusion": false,
+        "no_fabricated_facts": false,
+        "reasons": [
+          "第一句“整体偏顺：你更偏向有标准、能扛事、内容偏专业的工作方向”正面回应了工作方向问题，符合direct_answer要求。",
+          "未使用流月/节气边界当公历整月，未给出精确相位对应现实事件日期；月亮按中午代理并声明不确定性，时间一致性无违规。",
+          "关键判断存在超出证据或规则的问题：用太阳火星土星合相、月亮对分等单一或少数相位推出“扛责任、上手快”“要在有标准有反馈位置路越走越实”等较确定职业适配结论，而引用释义明确只是象征性反思、不决定职业适配或成败；五行计数（土4木1火1金0水0）本身不判断旺衰，答案却进一步推断喜用倾向为金水并据此给出职业环境方向，程序约定也说明不计算喜用神，推断依据不足。",
+          "存在与计算事实不一致处：答案称“火星、土星……彼此靠得很近（合相）”并把三者并列为紧贴合相，但火星与土星容许度约6.16度、太阳与火星约7.29度，明显宽于太阳土星1.13度，表述不够审慎。",
+          "身体养护部分将“土偏重、金水偏少”对应脾胃与水分代谢，属于象征extrapolation，虽带就医提醒，但仍把非医学证据当作身体倾向陈述，超出引用释义。",
+          "未编造具体出生时间、性别、宫位上升时柱、大运、家庭或工作经历；明确声明时辰未知、不解释宫位四轴、不排大运，这部分符合要求。",
+          "对月亮落座使用中午代理并标注不确定性，属于合理保守处理；对水星逆行也有说明，未把其当现实事件日期。",
+          "整体为条件式职业探索建议，但部分表述如“你的优势不在想法多，而在能扛事又看得清”过于确定化个人特质，且由宽容许度相位与象征释义支撑不足，故supported_conclusion判false。"
+        ]
+      },
+      "quality_pass": false,
+      "passed": false,
+      "tools": [
+        "compute_bazi",
+        "compute_natal_chart",
+        "resolve_location",
+        "start_reading",
+        "submit_reading"
+      ],
+      "tool_errors": [
+        {
+          "tool": "submit_reading",
+          "code": "invalid_arguments",
+          "error": "工具参数必须是合法JSON对象，请修正后重试"
+        }
+      ],
+      "latency_s": 34.679,
+      "model_calls": 4,
+      "input_tokens": 50188,
+      "output_tokens": 8399,
+      "returned_models": [
+        "deepseek-flash"
+      ],
+      "review_usage": {
+        "input_tokens": 16998,
+        "output_tokens": 470,
+        "usage_available": true,
+        "requested_model": "deepseek-flash",
+        "returned_model": "deepseek-flash"
+      }
+    },
+    {
+      "id": "missing_birth",
+      "status": "text",
+      "checks": {
+        "expected_status": false,
+        "expected_tools": false,
+        "zero_tool_errors": true,
+        "no_model_error": true
+      },
+      "engineering_pass": false,
+      "quality_review": {
+        "direct_answer": true,
+        "time_consistent": true,
+        "supported_conclusion": true,
+        "no_fabricated_facts": true,
+        "reasons": [
+          "用户明确说明只想用占星分析工作方向且未提供出生资料，回答第一句正面说明需先提供出生资料，符合追问必要资料的场景。",
+          "未涉及任何具体时间范围、节气或公历整月边界，也未把相位当作现实事件日期，时间一致性无冲突。",
+          "回答没有对性格、工作方向或命盘作任何实质判断，只是请求必要出生资料，不存在需要计算或释义支持的结论。",
+          "没有编造出生日期、出生时间、出生地点、星体落座、宫位、四轴或家庭工作经历；明确说明未知时辰则上升、天顶和宫位无法解读，属于正确边界提示。"
+        ]
+      },
+      "quality_pass": true,
+      "passed": false,
+      "tools": [],
+      "tool_errors": [],
+      "latency_s": 2.009,
+      "model_calls": 1,
+      "input_tokens": 7878,
+      "output_tokens": 192,
+      "returned_models": [
+        "deepseek-flash"
+      ],
+      "review_usage": {
+        "input_tokens": 516,
+        "output_tokens": 173,
+        "usage_available": true,
+        "requested_model": "deepseek-flash",
+        "returned_model": "deepseek-flash"
+      }
+    },
+    {
+      "id": "ambiguous_place",
+      "status": "ask_user",
+      "checks": {
+        "expected_status": true,
+        "expected_tools": true,
+        "zero_tool_errors": true,
+        "no_model_error": true
+      },
+      "engineering_pass": true,
+      "quality_review": {
+        "direct_answer": true,
+        "time_consistent": true,
+        "supported_conclusion": true,
+        "no_fabricated_facts": true,
+        "reasons": [
+          "问题指定出生地Springfield存在多个同名城市，且未给出国家/州，时区无法确定，占星排盘无法进行；回答第一句要求确认Springfield具体位置并列出编号，属于追问必要资料，未编造结论，符合direct_answer。",
+          "回答未使用任何日期范围或节气流月边界，也未把精确相位当作现实事件日期；仅指出时区不确定并要求澄清，time_consistent为true。",
+          "回答没有对工作方向或任何占星体系做出关键判断，因资料不足而未输出结论，不存在无计算支持的结论，supported_conclusion为true。",
+          "回答未编造出生信息、星体落座/宫位、干支十神、起运、家庭或工作经历，只列出Springfield同名城市及对应时区供选择，no_fabricated_facts为true。"
+        ]
+      },
+      "quality_pass": true,
+      "passed": true,
+      "tools": [
+        "ask_user",
+        "resolve_location"
+      ],
+      "tool_errors": [],
+      "latency_s": 3.236,
+      "model_calls": 2,
+      "input_tokens": 16417,
+      "output_tokens": 226,
+      "returned_models": [
+        "deepseek-flash"
+      ],
+      "review_usage": {
+        "input_tokens": 475,
+        "output_tokens": 210,
+        "usage_available": true,
+        "requested_model": "deepseek-flash",
+        "returned_model": "deepseek-flash"
+      }
+    },
+    {
+      "id": "dst_gap",
+      "status": "ask_user",
+      "checks": {
+        "expected_status": true,
+        "expected_tools": true,
+        "zero_tool_errors": false,
+        "no_model_error": true
+      },
+      "engineering_pass": false,
+      "quality_review": {
+        "direct_answer": true,
+        "time_consistent": false,
+        "supported_conclusion": true,
+        "no_fabricated_facts": false,
+        "reasons": [
+          "用户明确要求“只用八字看工作方向”，但回答没有给出任何八字或工作方向的结论，只追问出生时间，未正面回答所问方向。",
+          "回答称北京1986年5月4日凌晨2:30在夏令时中不存在，声称5月4日零时起直接跳到1点，这一夏令时起止具体日期未在给定事实或引用释义中确认，属于未支持的时间判断。",
+          "追问时间来源属于必要澄清，但把夏令时细节作为确定事实且与给定事实无据，时间一致性不能通过。",
+          "没有实际八字排盘、五行或十神计算，也没有引用任何释义，因此没有任何体系的关键判断需要支持；但也没有产出用户要求的结论。",
+          "未编造出生信息或星体落座，但自行给出1986年5月4日零时夏令时切换的具体断言，超出给定资料，属于无据事实性陈述。"
+        ]
+      },
+      "quality_pass": false,
+      "passed": false,
+      "tools": [
+        "ask_user",
+        "compute_bazi",
+        "resolve_location",
+        "start_reading"
+      ],
+      "tool_errors": [
+        {
+          "tool": "compute_bazi",
+          "code": "invalid_arguments",
+          "error": "工具参数必须是合法JSON对象，请修正后重试"
+        }
+      ],
+      "latency_s": 5.296,
+      "model_calls": 4,
+      "input_tokens": 32914,
+      "output_tokens": 498,
+      "returned_models": [
+        "deepseek-flash"
+      ],
+      "review_usage": {
+        "input_tokens": 488,
+        "output_tokens": 224,
+        "usage_available": true,
+        "requested_model": "deepseek-flash",
+        "returned_model": "deepseek-flash"
+      }
+    },
+    {
+      "id": "dst_fold",
+      "status": "ask_user",
+      "checks": {
+        "expected_status": true,
+        "expected_tools": false,
+        "zero_tool_errors": true,
+        "no_model_error": true
+      },
+      "engineering_pass": false,
+      "quality_review": {
+        "direct_answer": false,
+        "time_consistent": true,
+        "supported_conclusion": true,
+        "no_fabricated_facts": true,
+        "reasons": [
+          "用户问的是只看占星确定工作方向，并说明还没确认回拨前还是回拨后；回答没有给出任何工作方向或占星判断，第一句只是追问时间是否为夏令时01:30还是回拨后01:30，未正面回答所问方向。",
+          "回答正确聚焦于夏令时回拨造成的出生时间歧义，并说明会影响上升星座和宫位；没有把节气流月当公历月，也没有把星体相位当现实事件日期，时间处理方向一致。",
+          "由于尚未确定钟表时间口径，回答没有给出工作方向结论，而是指出需要先确认时间，这一条件性表述是合理的；不存在用单个相位论证录用或五行判断喜用神的问题。",
+          "回答未编造上升、宫位、星体落座、十神、家庭或工作经历，也未在时辰不明时解释四轴时柱；仅指出夏令时歧义，属于已知出生资料范围内。"
+        ]
+      },
+      "quality_pass": false,
+      "passed": false,
+      "tools": [
+        "ask_user"
+      ],
+      "tool_errors": [],
+      "latency_s": 1.507,
+      "model_calls": 1,
+      "input_tokens": 7900,
+      "output_tokens": 167,
+      "returned_models": [
+        "deepseek-flash"
+      ],
+      "review_usage": {
+        "input_tokens": 411,
+        "output_tokens": 232,
+        "usage_available": true,
+        "requested_model": "deepseek-flash",
+        "returned_model": "deepseek-flash"
+      }
+    },
+    {
+      "id": "lunar_confirm",
+      "status": "text",
+      "checks": {
+        "expected_status": false,
+        "expected_tools": false,
+        "zero_tool_errors": true,
+        "no_model_error": true
+      },
+      "engineering_pass": false,
+      "quality_review": {
+        "direct_answer": false,
+        "time_consistent": true,
+        "supported_conclusion": false,
+        "no_fabricated_facts": true,
+        "reasons": [
+          "用户要求只用八字分析工作方向；回答未给出任何八字分析或工作方向结论，仅在追问是否闰月及出生时间确认，未正面回答所问方向，故direct_answer为false。",
+          "回答使用用户指定的农历2023年二月十五、上午10点整及北京出生信息，未将节气月或农历月误作公历整月，也未将相位当现实事件日期，故time_consistent为true。",
+          "回答没有给出任何体系判断或结论，因此不存在由实际计算与释义支持的关键判断；supported_conclusion为false。",
+          "回答未编造出生信息、星体落座、宫位、干支十神、起运、家庭或工作经历；在时辰/闰月未确认时选择追问而非排盘解释，符合不编造要求，故no_fabricated_facts为true。"
+        ]
+      },
+      "quality_pass": false,
+      "passed": false,
+      "tools": [],
+      "tool_errors": [],
+      "latency_s": 1.45,
+      "model_calls": 1,
+      "input_tokens": 7894,
+      "output_tokens": 112,
+      "returned_models": [
+        "deepseek-flash"
+      ],
+      "review_usage": {
+        "input_tokens": 444,
+        "output_tokens": 211,
+        "usage_available": true,
+        "requested_model": "deepseek-flash",
+        "returned_model": "deepseek-flash"
+      }
+    },
+    {
+      "id": "investment_new",
+      "status": "submit_reading",
+      "checks": {
+        "expected_status": true,
+        "expected_tools": true,
+        "zero_tool_errors": true,
+        "no_model_error": true,
+        "saved": true,
+        "systems": true,
+        "valid_refs": true,
+        "safety_flag": true
+      },
+      "engineering_pass": true,
+      "quality_review": {
+        "direct_answer": true,
+        "time_consistent": true,
+        "supported_conclusion": true,
+        "no_fabricated_facts": true,
+        "reasons": [
+          "摘要首句直接给出\"暂不适合\"把全部积蓄押一只股票，正面回答了是否问题。",
+          "流月按节气时刻划分（如2026-10-08至11-07戊戌），未当作公历整月；也未把精确相位当作现实事件日期，仅作节令段倾向描述。",
+          "关键判断均有计算事实与释义支撑：日主辛金、月柱庚申劫财（资源边界）、年柱食神、时柱正印、2026丙午正官、丙辛合与午未合、戊戌月正印与申酉戌三会/酉害/未破刑、丁酉七杀等均有对应evidence与cited_interpretations。",
+          "未下喜用神结论，明确声明本盘不做喜用神判定，符合问题约束。",
+          "虽用十神推测性格（谨慎、算得细）并称\"你很可能刚经历紧绷期\"，属符号倾向表述且带免责说明，未编造具体出生外事实、家庭或工作经历；四柱、十神、起运等与facts一致，无虚构落座宫位。",
+          "财务建议均为条件性、纪律性建议（拆分应急金、仓位上限、分批、专业把关），未声称确定收益，符合高风险场景的保守处理。"
+        ]
+      },
+      "quality_pass": true,
+      "passed": true,
+      "tools": [
+        "compute_bazi",
+        "compute_bazi_period",
+        "resolve_location",
+        "start_reading",
+        "submit_reading"
+      ],
+      "tool_errors": [],
+      "latency_s": 20.997,
+      "model_calls": 5,
+      "input_tokens": 65206,
+      "output_tokens": 3787,
+      "returned_models": [
+        "deepseek-flash"
+      ],
+      "review_usage": {
+        "input_tokens": 13151,
+        "output_tokens": 307,
+        "usage_available": true,
+        "requested_model": "deepseek-flash",
+        "returned_model": "deepseek-flash"
+      }
+    },
+    {
+      "id": "natural_astro",
+      "status": "limit_reached",
+      "checks": {
+        "expected_status": false,
+        "expected_tools": false,
+        "zero_tool_errors": false,
+        "no_model_error": false,
+        "saved": false,
+        "systems": false,
+        "valid_refs": true
+      },
+      "engineering_pass": false,
+      "quality_review": {
+        "direct_answer": false,
+        "time_consistent": true,
+        "supported_conclusion": false,
+        "no_fabricated_facts": true,
+        "reasons": [
+          "summary第一句只说“达到步数或 token 上限，尚未形成通过校验的解读”，没有正面回答“适合怎样的工作”这一所问方向。",
+          "用户给出1993-08-17 23:20北京出生；回答未使用任何节气、月份或相位日期，故不存在时间范围或边界误用。",
+          "回答没有给出任何占星关键判断，也没有实际计算与引用释义支持，不能支持职业适配结论。",
+          "回答未编造出生信息、星体落座/宫位、干支十神、起运或家庭工作经历。",
+          "但回答仅说明未完成解读，并未对用户问题作出实质性回答，属于流程性中断说明而非结论。"
+        ]
+      },
+      "quality_pass": false,
+      "passed": false,
+      "tools": [
+        "compute_natal_chart",
+        "resolve_location",
+        "start_reading",
+        "update_profile"
+      ],
+      "tool_errors": [
+        {
+          "tool": "compute_natal_chart",
+          "code": "missing_dependency",
+          "error": "需要本次有效的 active_reading_id"
+        },
+        {
+          "tool": "compute_natal_chart",
+          "code": "validation_failed",
+          "error": "出生钟表时区须来自地点、用户原话或画像；新疆地点须确认钟表时间制"
+        },
+        {
+          "tool": "compute_natal_chart",
+          "code": "validation_failed",
+          "error": "出生钟表时区须来自地点、用户原话或画像；新疆地点须确认钟表时间制"
+        },
+        {
+          "tool": "compute_natal_chart",
+          "code": "validation_failed",
+          "error": "经纬度与时区须来自地名解析、用户原话或画像，不能自行填写"
+        },
+        {
+          "tool": "update_profile",
+          "code": "validation_failed",
+          "error": "地理字段须来自已确认地点或原话"
+        }
+      ],
+      "latency_s": 12.73,
+      "model_calls": 12,
+      "input_tokens": 104802,
+      "output_tokens": 1072,
+      "returned_models": [
+        "deepseek-flash"
+      ],
+      "review_usage": {
+        "input_tokens": 446,
+        "output_tokens": 178,
+        "usage_available": true,
+        "requested_model": "deepseek-flash",
+        "returned_model": "deepseek-flash"
+      }
+    },
+    {
+      "id": "natural_bazi",
+      "status": "submit_reading",
+      "checks": {
+        "expected_status": true,
+        "expected_tools": true,
+        "zero_tool_errors": false,
+        "no_model_error": true,
+        "saved": true,
+        "systems": true,
+        "valid_refs": true
+      },
+      "engineering_pass": false,
+      "quality_review": {
+        "direct_answer": true,
+        "time_consistent": true,
+        "supported_conclusion": true,
+        "no_fabricated_facts": true,
+        "reasons": [
+          "summary第一句正面回答日主（辛金）、起运（约3年4个月）和第一步大运（己未运），符合所问方向。",
+          "起运日期1996-12-27、起运间隔3年4个月10天、逆排得己未均与bazi_result.dayun及dayun释义一致；23:20落子时按next_day换日与zishi:next_day释义一致，年柱月柱不随换日，处理正确。",
+          "日主辛金、年柱癸酉食神、月柱庚申劫财、时柱戊子正印均有对应引用释义支持；五行计数（金4水2土2木火0）与工具结果一致，且未把计数直接当作喜用神判断，仅给生活化条件建议。",
+          "大运序列己未→戊午→丁巳→丙辰→乙卯→甲寅及起始年份均与工具序列一致；明确声明起运日期只是排盘节点，不对应现实事件，未编造具体事件。",
+          "未虚构出生信息、星体落座、家庭或工作经历；性格描述有五行与十神释义支撑但附置信度低与免责声明，未将传统命理当事实断言。",
+          "唯一可提的小瑕疵：文中“补木火”方向与饮食建议属传统生活层建议，虽非诊断，但依据仅来自五行计数；因已注明不作诊断且属条件建议，不构成捏造事实或结论越界。"
+        ]
+      },
+      "quality_pass": true,
+      "passed": false,
+      "tools": [
+        "compute_bazi",
+        "resolve_location",
+        "start_reading",
+        "submit_reading",
+        "update_profile"
+      ],
+      "tool_errors": [
+        {
+          "tool": "compute_bazi",
+          "code": "invalid_arguments",
+          "error": "工具参数必须是合法JSON对象，请修正后重试"
+        },
+        {
+          "tool": "submit_reading",
+          "code": "validation_failed",
+          "error": "本次工具结果没有该干支，不能编造"
+        }
+      ],
+      "latency_s": 27.372,
+      "model_calls": 6,
+      "input_tokens": 57248,
+      "output_tokens": 5077,
+      "returned_models": [
+        "deepseek-flash"
+      ],
+      "review_usage": {
+        "input_tokens": 6094,
+        "output_tokens": 354,
+        "usage_available": true,
+        "requested_model": "deepseek-flash",
+        "returned_model": "deepseek-flash"
+      }
+    },
+    {
+      "id": "profile_reuse",
+      "status": "submit_reading",
+      "checks": {
+        "expected_status": true,
+        "expected_tools": true,
+        "zero_tool_errors": false,
+        "no_model_error": true,
+        "saved": true,
+        "systems": true,
+        "valid_refs": true
+      },
+      "engineering_pass": false,
+      "quality_review": {
+        "direct_answer": true,
+        "time_consistent": true,
+        "supported_conclusion": false,
+        "no_fabricated_facts": true,
+        "reasons": [
+          "summary第一句正面回答‘2026年11月换工作’方向：整体偏顺、宜先谈定再离开、暂不宜裸辞。",
+          "时间范围使用用户指定的2026年11月，并按节气立冬精确切分11月7日前后两段；11月1日至7日标注为约按节气边界，没有把节气月当成公历整月。",
+          "引用的事实和释义能支撑部分判断，例如流年丙午正官、丙辛天干合、午未六合、午子冲、戊戌月正印及刑破害会、己亥月偏印及亥申害。",
+          "但结论明显超出证据：占星/八字解读释义对合冲刑害均写明‘不等于事情必成’，全文却给出‘偏顺’等职业决策倾向，单个或几个相位不足以论证换工作的确定结果。",
+          "喜用神部分不合规：程序明确不计算喜用神，原文仅凭五行简单计数得出‘木火偏缺’并给补益方向，属于用五行计数判断喜用神，证据不支持。",
+          "未编造出生信息、星体落座/宫位、家庭或工作经历；核心命盘与计算事实可核对。",
+          "免责声明确有，但不能替代对不合规推断的纠正。"
+        ]
+      },
+      "quality_pass": false,
+      "passed": false,
+      "tools": [
+        "compute_bazi",
+        "compute_bazi_period",
+        "resolve_location",
+        "start_reading",
+        "submit_reading"
+      ],
+      "tool_errors": [
+        {
+          "tool": "compute_bazi",
+          "code": "invalid_arguments",
+          "error": "工具参数必须是合法JSON对象，请修正后重试"
+        },
+        {
+          "tool": "compute_bazi_period",
+          "code": "validation_failed",
+          "error": "计算日期范围必须与用户明确指定范围一致"
+        },
+        {
+          "tool": "submit_reading",
+          "code": "validation_failed",
+          "error": "evidence 引用必须来自本次工具生成的信号"
+        },
+        {
+          "tool": "submit_reading",
+          "code": "validation_failed",
+          "error": "sections 的 ref_ids 必须来自本次工具生成的信号"
+        },
+        {
+          "tool": "submit_reading",
+          "code": "validation_failed",
+          "error": "sections 的 ref_ids 必须来自本次工具生成的信号"
+        },
+        {
+          "tool": "submit_reading",
+          "code": "validation_failed",
+          "error": "sections 的 ref_ids 必须来自本次工具生成的信号"
+        }
+      ],
+      "latency_s": 63.183,
+      "model_calls": 11,
+      "input_tokens": 158835,
+      "output_tokens": 17981,
+      "returned_models": [
+        "deepseek-flash"
+      ],
+      "review_usage": {
+        "input_tokens": 10805,
+        "output_tokens": 335,
+        "usage_available": true,
+        "requested_model": "deepseek-flash",
+        "returned_model": "deepseek-flash"
+      }
+    },
+    {
+      "id": "range_before_birth",
+      "status": "submit_reading",
+      "checks": {
+        "expected_status": true,
+        "expected_tools": true,
+        "zero_tool_errors": false,
+        "no_model_error": true,
+        "saved": true,
+        "systems": true,
+        "valid_refs": true
+      },
+      "engineering_pass": false,
+      "quality_review": {
+        "direct_answer": true,
+        "time_consistent": true,
+        "supported_conclusion": false,
+        "no_fabricated_facts": true,
+        "reasons": [
+          "第一句“适合求职，整体偏顺”正面回答了所问方向，符合direct_answer；追问信息场景不适用。",
+          "时间范围限定在2026-11-01至2026-11-30，11月7日己亥月按节气时刻换月（2026-11-07T09:52Z）处理，未把节气月当公历整月；流日相位精确日期仅作趋势参考而非现实事件日，故time_consistent成立。",
+          "八字流年丙午正官、与日柱辛未天干合/地支六合、戊戌月正印与三会、己亥月偏印与地支害等均有计算事实和释义支持，这些符号层面的判断可支撑‘机会感与自我审查拉扯’的条件性表述。",
+          "但结论中多处超出证据：如‘正式岗位线索更容易出现’‘招聘流程推进、面试安排’等现实事件预测，释义明确只作反思主题、不表示事件必然发生；单个相位或合相被用来论证‘适合求职、整体偏顺’，缺乏确定性计算与释义支持。",
+          "五行部分‘木和火在明面上偏少’可由计数（木0火0）验证，但由此推出‘补表达与产出、颜色方位’等喜用倾向，程序注明不计算喜用神，五行计数不能判断喜用神，属依据不足。",
+          "无虚构出生信息、星体落座与宫位、干支十神、起运、家庭或工作经历：出生时间、四柱、大运、本命落座宫位均与facts一致，故no_fabricated_facts成立。",
+          "整体summary正面作答且时间边界正确，但关键现实结论依赖单个相位与五行计数外推，supported_conclusion不成立。"
+        ]
+      },
+      "quality_pass": false,
+      "passed": false,
+      "tools": [
+        "compute_bazi",
+        "compute_bazi_period",
+        "compute_natal_chart",
+        "compute_transits",
+        "get_profile",
+        "resolve_location",
+        "start_reading",
+        "submit_reading",
+        "update_profile"
+      ],
+      "tool_errors": [
+        {
+          "tool": "submit_reading",
+          "code": "validation_failed",
+          "error": "行星落座或四轴与本次计算不符"
+        }
+      ],
+      "latency_s": 59.629,
+      "model_calls": 7,
+      "input_tokens": 144662,
+      "output_tokens": 10491,
+      "returned_models": [
+        "deepseek-flash"
+      ],
+      "review_usage": {
+        "input_tokens": 41616,
+        "output_tokens": 409,
+        "usage_available": true,
+        "requested_model": "deepseek-flash",
+        "returned_model": "deepseek-flash"
+      }
+    },
+    {
+      "id": "overseas_bazi",
+      "status": "submit_reading",
+      "checks": {
+        "expected_status": true,
+        "expected_tools": true,
+        "zero_tool_errors": false,
+        "no_model_error": true,
+        "saved": true,
+        "systems": true,
+        "valid_refs": true
+      },
+      "engineering_pass": false,
+      "quality_review": {
+        "direct_answer": true,
+        "time_consistent": true,
+        "supported_conclusion": true,
+        "no_fabricated_facts": true,
+        "reasons": [
+          "summary第一句直接回答“你的八字日主是丁火”，并给出四柱，正面回应所问日主。",
+          "使用用户确认的纽约出生地与真太阳时，四柱乙亥/戊子/丁酉/庚子与facts中bazi_result一致；23:45属子时边界，按next_day约定换日柱，年柱月柱仍按节气，未把节气月当作公历整月。",
+          "日主丁火、四柱与十神偏印/伤官/正财均有facts计算与对应引用释义支持；五行计数明确声明为简单计数而非旺衰判定。",
+          "但喜木火判断基于月令与五行计数推断，属倾向性推断而非确定结论，仅作条件化养护建议，未论证确定喜用神。",
+          "未编造出生信息、落座/宫位；基于已知时辰给出时柱，其十神亦有引用支持。家庭或工作经历未虚构，性格描述以传统标签的反思线索呈现，未当作已知个人事实。",
+          "大运等计算事实存在但正文未展开具体事件日期，未把精确相位或起运当作现实事件。"
+        ]
+      },
+      "quality_pass": true,
+      "passed": false,
+      "tools": [
+        "ask_user",
+        "compute_bazi",
+        "resolve_location",
+        "start_reading",
+        "submit_reading",
+        "update_profile"
+      ],
+      "tool_errors": [
+        {
+          "tool": "compute_bazi",
+          "code": "validation_failed",
+          "error": "出生钟表时区须来自地点、用户原话或画像；新疆地点须确认钟表时间制"
+        },
+        {
+          "tool": "compute_bazi",
+          "code": "invalid_arguments",
+          "error": "工具参数必须是合法JSON对象，请修正后重试"
+        },
+        {
+          "tool": "submit_reading",
+          "code": "validation_failed",
+          "error": "本次工具结果没有该干支，不能编造"
+        }
+      ],
+      "latency_s": 26.229,
+      "model_calls": 12,
+      "input_tokens": 116185,
+      "output_tokens": 4867,
+      "returned_models": [
+        "deepseek-flash"
+      ],
+      "review_usage": {
+        "input_tokens": 5413,
+        "output_tokens": 278,
+        "usage_available": true,
+        "requested_model": "deepseek-flash",
+        "returned_model": "deepseek-flash"
+      }
+    },
+    {
+      "id": "natural_unknown",
+      "status": "submit_reading",
+      "checks": {
+        "expected_status": true,
+        "expected_tools": true,
+        "zero_tool_errors": false,
+        "no_model_error": true,
+        "saved": true,
+        "systems": true,
+        "valid_refs": true,
+        "null_axes": true,
+        "no_hour": true,
+        "no_dayun": true
+      },
+      "engineering_pass": false,
+      "quality_review": {
+        "direct_answer": true,
+        "time_consistent": true,
+        "supported_conclusion": true,
+        "no_fabricated_facts": true,
+        "reasons": [
+          "所问是做事/工作风格这类性格问题，summary第一句给出正面判断（先立规矩、再自己扛、稳、责任心强），并说明时辰不明导致宫位四轴与时柱缺位，正面回应工作方式。",
+          "未使用用户指定范围之外的时间框架；本命相位只作长期习惯解读，未把相位当成现实事件日期；出生时间未知时用中午代理并明确标注不确定，月亮位置不确定性有说明，时间一致。",
+          "关键判断均有实际计算与引用释义支持：太阳/火星/土星在白羊及日月/月土对分有计算与释义；水星逆行、水火六分、水冥三分有事实与释义；金星双鱼、金冥四分、火海四分也有对应；八字仅用三柱给出己土、戊劫财、丙正印并有释义。释义本身强调象征性反思、单一落座不决定成败，未越界成确定职业适配结论。",
+          "未编造出生时辰、宫位、四轴或时柱；明确说宫位四轴用不上、八字缺时柱；未编造家庭/工作经历；八字五行计数（木1火1土4金0水0）与程序一致，且未据此断定喜用神，只给一般生活条件建议；无虚构星体落座或相位。"
+        ]
+      },
+      "quality_pass": true,
+      "passed": false,
+      "tools": [
+        "compute_bazi",
+        "compute_natal_chart",
+        "resolve_location",
+        "start_reading",
+        "submit_reading"
+      ],
+      "tool_errors": [
+        {
+          "tool": "submit_reading",
+          "code": "validation_failed",
+          "error": "出生时间未知，不能使用宫位或四轴解读"
+        }
+      ],
+      "latency_s": 28.246,
+      "model_calls": 4,
+      "input_tokens": 49475,
+      "output_tokens": 6719,
+      "returned_models": [
+        "deepseek-flash"
+      ],
+      "review_usage": {
+        "input_tokens": 13589,
+        "output_tokens": 315,
+        "usage_available": true,
+        "requested_model": "deepseek-flash",
+        "returned_model": "deepseek-flash"
+      }
+    }
+  ],
+  "raw_file": "reports/stage0/baseline-single/20261020T102637-1a676e73/serial-summary.json",
+  "raw_sha256": "e8811f5301b35abe9f95f5c4590bbac4388a1ab9a98deca4c9d2818440a3e2e0"
+}
