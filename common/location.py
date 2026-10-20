@@ -89,6 +89,27 @@ for _code, _short, _full in [
     ADMIN_ALIASES["CN"].update({_short: _code, _full: _code})
 
 
+def _consultation_timezone_mention(text, start, end):
+    """A birth clock label is not a request to change the consultation clock."""
+    before = re.split(r"[，,。；;！!？?\n]", text[:start])[-1]
+    after = re.split(r"[，,。；;！!？?\n]", text[end:])[0]
+    if re.search(r"(?:不(?:要|再)?(?:按|用|使用|采用)?|不是|别(?:按|用)?)\s*$", before):
+        return False
+    birth = list(re.finditer(r"出生|生于|生辰|生日|钟表", before))
+    consultation = list(
+        re.finditer(r"本次|这次|咨询|现在|目前|现居|现住|我住在", before + text[start:end])
+    )
+    requested_after = re.match(
+        r"(?:的)?(?:当地)?(?:时间)?(?:来)?(?:看|算|计算|咨询).{0,12}(?:运势|行运|流期)", after
+    )
+    if birth and not requested_after:
+        if not consultation or consultation[-1].end() <= birth[-1].end():
+            return False
+    if re.search(r"出生|生于|生辰|生日|钟表", after) and not consultation and not requested_after:
+        return False
+    return True
+
+
 def consultation_timezone_evidence(text, session, birth_tz=None):
     """Only current residence/consultation statements bind a resolved city to a timezone."""
     from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
@@ -96,7 +117,7 @@ def consultation_timezone_evidence(text, session, birth_tz=None):
     zones = set()
     for match in re.finditer(r"[A-Za-z_]+/[A-Za-z_+0-9/-]+", text):
         zone = match[0]
-        if re.search(r"不(?:要|用|按|是|使用|采用)?\s*$", text[: match.start()]):
+        if not _consultation_timezone_mention(text, match.start(), match.end()):
             continue
         try:
             ZoneInfo(zone)
@@ -104,11 +125,14 @@ def consultation_timezone_evidence(text, session, birth_tz=None):
         except (ValueError, OSError, ZoneInfoNotFoundError):  # e.g. a region directory name
             pass
     if any(
-        not re.search(r"(?:不(?:要)?(?:按|用|使用|采用)?|不是)\s*$", text[: m.start()])
+        _consultation_timezone_mention(text, m.start(), m.end())
         for m in re.finditer("北京时间", text)
     ):
         zones.add("Asia/Shanghai")
-    if birth_tz and re.search(r"出生地时间|出生地当地|按当地", text):
+    if birth_tz and any(
+        _consultation_timezone_mention(text, m.start(), m.end())
+        for m in re.finditer(r"(?:按|使用|采用)\s*(?:出生地(?:当地)?(?:时间)?|当地(?:时间)?)", text)
+    ):
         zones.add(birth_tz)
     for identity, location in session.state.get("locations", {}).items():
         aliases = session.state.get("location_aliases", {}).get(identity, [])
@@ -122,7 +146,7 @@ def consultation_timezone_evidence(text, session, birth_tz=None):
                 text,
                 re.I,
             )
-            if any(not re.search(r"不(?:要|是|再)?\s*$", text[: m.start()]) for m in matches):
+            if any(_consultation_timezone_mention(text, m.start(), m.end()) for m in matches):
                 zones.add(location["tz"])
     return next(iter(zones)) if len(zones) == 1 else None
 
