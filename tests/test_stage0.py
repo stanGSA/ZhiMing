@@ -431,13 +431,54 @@ async def test_compare_layers_pins_the_clock(runtime, scripted_model):
         ("出生在美国本次咨询按北京时间", "Asia/Shanghai"),
         ("出生在美国按北京时间看今天运势", "Asia/Shanghai"),
         ("本次按出生地时间看运势", "Asia/Shanghai"),
+        ("用出生地时间看今天运势", "Asia/Shanghai"),
+        ("以出生地时间为准", "Asia/Shanghai"),
+        ("时间就用出生地当地的", "Asia/Shanghai"),
+        ("这次用出生地时间看", "Asia/Shanghai"),
+        ("出生在美国按北京时间算流年", "Asia/Shanghai"),
+        ("出生在美国按北京时间看明天", "Asia/Shanghai"),
         ("不要按出生地时间看运势", None),
+        ("不用出生地时间", None),
+        ("不要用出生地时间看运势", None),
+        ("我用当地的手机号", None),
+        ("出生钟表用出生地时间记录", None),
+        ("出生钟表按北京时间记录", None),
+        ("北京时间早上8点出生", None),
+        ("出生时用北京时间算时辰", None),
+        ("按北京时间出生，今天运势如何", None),
     ],
 )
 def test_consultation_timezone_distinguishes_birth_clock(text, expected):
     session = Session(user_id="synthetic-timezone")
     session.state["locations"] = {"la": LOS_ANGELES}
     assert consultation_timezone_evidence(text, session, "Asia/Shanghai") == expected
+
+
+@pytest.mark.parametrize(
+    "text",
+    [
+        "用出生地时间看今天运势",
+        "以出生地时间为准",
+        "时间就用出生地当地的",
+        "这次用出生地时间看",
+        "出生在美国按北京时间算流年",
+        "出生在美国按北京时间看明天",
+    ],
+)
+async def test_explicit_consultation_timezone_overrides_saved_timezone(runtime, text):
+    with_birth(runtime, consultation_tz="America/Los_Angeles")
+    runtime.session.refresh_calendar(datetime(2026, 10, 20, 16, 1, tzinfo=UTC))
+    assert runtime.session.calendar_anchor == "2026-10-20"
+    runtime.session.append_user(text)
+    result = await invoke(
+        runtime,
+        "update_profile",
+        {"field": "consultation_tz", "value": "Asia/Shanghai", "evidence": text},
+    )
+    assert result.ok, result.error
+    assert runtime.store.get_profile(runtime.session.user_id)["consultation_tz"] == "Asia/Shanghai"
+    assert runtime.session.calendar_timezone == "Asia/Shanghai"
+    assert runtime.session.calendar_anchor == "2026-10-21"
 
 
 async def test_birth_timezone_evidence_cannot_overwrite_consultation_profile(runtime):

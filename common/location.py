@@ -100,7 +100,9 @@ def _consultation_timezone_mention(text, start, end):
         re.finditer(r"本次|这次|咨询|现在|目前|现居|现住|我住在", before + text[start:end])
     )
     requested_after = re.match(
-        r"(?:的)?(?:当地)?(?:时间)?(?:来)?(?:看|算|计算|咨询).{0,12}(?:运势|行运|流期)", after
+        r"(?:的)?(?:当地)?(?:时间)?(?:来)?(?:看|算|计算|咨询).{0,12}"
+        r"(?:运势|行运|流期|流年|流月|今天|明天)",
+        after,
     )
     if birth and not requested_after:
         if not consultation or consultation[-1].end() <= birth[-1].end():
@@ -131,7 +133,11 @@ def consultation_timezone_evidence(text, session, birth_tz=None):
         zones.add("Asia/Shanghai")
     if birth_tz and any(
         _consultation_timezone_mention(text, m.start(), m.end())
-        for m in re.finditer(r"(?:按|使用|采用)\s*(?:出生地(?:当地)?(?:时间)?|当地(?:时间)?)", text)
+        for m in re.finditer(
+            r"(?:按|用|以|使用|采用)\s*出生地(?:当地)?(?:的)?(?:时间)?"
+            r"|(?:按|使用|采用)\s*当地(?:时间)?|(?:用|以)\s*当地(?:的)?时间",
+            text,
+        )
     ):
         zones.add(birth_tz)
     for identity, location in session.state.get("locations", {}).items():
