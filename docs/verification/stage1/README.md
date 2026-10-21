@@ -51,6 +51,18 @@
 
 测试中的两家“服务”是 `httpx.MockTransport`：reviewer_a 走 OpenAI 兼容协议，reviewer_b 走 Anthropic 协议，返回与请求不同的模型名以验证身份记录；覆盖 JSON 解析失败后重试、HTTP 400 后续跑只补缺失调用、中途取消后不重复已完成调用。
 
+## 复核修复（PR #15 审查 R1–R3）
+
+项目负责人审查 `a26741d` 时离线复现了三个 P2 问题，均在审核脚本内修复，各有回归测试：
+
+| 编号 | 问题 | 修复 | 回归测试 |
+| --- | --- | --- | --- |
+| R1 | `revise` 把校验失败的修改建议也存起来，续跑只看 id 是否存在，无效建议永远不会重新生成，`apply` 又排除它们，流程卡住 | 续跑只跳过有效建议；无效建议重新请求，旧的无效稿保留在 `previous_invalid` 里（含 token 记录） | `test_rerun_of_revise_asks_again_for_invalid_proposals_only` |
+| R2 | `parse_verdicts` 接受 `verdict="pass"` 但 `issues` 非空的矛盾回复，合并只看结论，已报告问题的条目仍会写入账本 | 这种回复按解析失败处理并重试，不计入结论；一直矛盾时该调用保持未完成，批次不完整就不能写账本 | `test_pass_with_listed_issues_is_a_parse_error`、`test_a_reported_problem_never_becomes_an_approval` |
+| R3 | `--only-ids` 只选一两条（或同类少量）条目时只有一批，排除原条目所在批次后没有可放埋错副本的批次，`min()` 抛 `ValueError` | 没有可放的批次时为埋错副本新建独立批次，仍保证副本不与原条目同批 | `test_small_re_review_gives_planted_copies_their_own_batch`（1、2、6 条） |
+
+父提交对照：在 `a26741d` 的独立工作树中放入新测试文件，这 6 项全部失败（R3：`ValueError: min() arg is an empty sequence` ×3；R2：`DID NOT RAISE ValueError`，以及账本照常写入；R1：续跑没有发起任何修改调用）；修复后全部通过。
+
 ## 对模型可见内容的影响
 
 - 各插件工具结果的 `interpretations[].meaning`、`draw_tarot` 的 `cards[].meaning`、`lookup_meaning` 的 `entry` 新增 `review_status`（当前全部为 `"draft"`），保留 `reviewed: false`。`lookup_meaning` 不返回 `model_review`（审核方信息不给模型）。
@@ -80,16 +92,16 @@
 
 | 检查 | 命令 | 结果 |
 | --- | --- | --- |
-| 新增定向测试 | `uv run pytest -q tests/test_stage1_review.py tests/test_model_review_kb.py` | 29 + 14 = 43 通过 |
+| 新增定向测试 | `uv run pytest -q tests/test_stage1_review.py tests/test_model_review_kb.py` | 29 + 20 = 49 通过（复核修复前为 29 + 14） |
 | 相关原有测试 | `uv run pytest -q tests/test_kb.py tests/test_tarot.py tests/test_expression_policy.py tests/test_week5.py` | 98 通过 |
-| 全量（单次） | `uv run --extra web pytest -q -p no:cacheprovider -rfE` | 727 项：715 通过，12 项缺 de440s.bsp |
+| 全量（单次） | `uv run --extra web pytest -q -p no:cacheprovider -rfE` | 733 项：721 通过，12 项缺 de440s.bsp |
 | Lint | `uv run ruff check harness agents common plugins knowledge memory signals scripts tests app.py cli.py web.py evals` | 通过 |
 | 格式 | `uv run ruff format --check`（范围同上） | 138 个文件已格式化 |
 | 空白 | `git diff --check` | 通过 |
 | 构建 | `uv run python -m knowledge.build` | 见下表 |
 | 审核计划 | `uv run python -m scripts.model_review_kb plan --system tarot` | 见“塔罗试点计划” |
 
-**全量单次运行**（`uv run --extra web pytest -q -p no:cacheprovider -rfE`，在本 PR 最终文件上运行）：收集 727 项，**715 通过、1 失败、11 错误**。这 12 项全部因为缺少 `de440s.bsp`（见“失败与限制”），其余全部通过；其中新增 43 项（`test_stage1_review.py` 29、`test_model_review_kb.py` 14）。本数字为单次全量运行，不是多次运行去重合并。
+**全量单次运行**（`uv run --extra web pytest -q -p no:cacheprovider -rfE`，在含复核修复的最终文件上运行）：收集 733 项，**721 通过、1 失败、11 错误**。这 12 项全部因为缺少 `de440s.bsp`（见“失败与限制”），其余全部通过；其中新增 49 项（`test_stage1_review.py` 29、`test_model_review_kb.py` 20）。复核修复前的 `a26741d` 单次全量为 727 项、715 通过、同样 12 项缺数据；GitHub Actions 在 `a26741d` 上（含 de440s.bsp）Ubuntu 与 Windows 均通过。以上均为单次全量运行，不是多次运行去重合并。
 
 **父提交对照。** 在 `7d43641` 的独立工作树中放入两份新测试文件：两份都在收集阶段失败（`ModuleNotFoundError: No module named 'knowledge.review'`），即新功能在父提交上不存在。B2-7 修正的错误说法保留问题在父提交上直接复现：`mark_unreviewed` 收到 `level=medium, reason="牌面清楚，释义已经人工审核，可以参考。"` 与草稿信号时，父提交输出 `low / 牌面清楚，释义已经人工审核，可以参考。`（错误说法保留）；修复后输出 `low / 牌面清楚，可以参考；释义未经审核。`。
 

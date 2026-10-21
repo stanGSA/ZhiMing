@@ -300,6 +300,10 @@ def make_batches(
     for item in planted:
         kind = item["entry"]["kind"]
         allowed = [b for b in batches if item["original"] not in b["refs"]]
+        if not allowed:
+            # A small re-review fits in one batch: the copy goes to a batch of its own.
+            allowed = [dict(kind=kind, refs=[])]
+            batches.append(allowed[0])
         same_kind = [b for b in allowed if b["kind"] == kind] or allowed
         smallest = min(len(b["refs"]) for b in same_kind)
         rng.choice([b for b in same_kind if len(b["refs"]) == smallest])["refs"].append(item["ref"])
@@ -573,6 +577,9 @@ def parse_verdicts(text: str, batch: dict) -> dict[str, dict]:
         issues = item.get("issues") or []
         if not isinstance(issues, list):
             raise ValueError("issues必须是列表")
+        if item["verdict"] == "pass" and issues:
+            # A listed problem must never become an approval.
+            raise ValueError(f"条目{key}判pass却列出问题，结论自相矛盾")
         verdicts[key] = dict(
             verdict=item["verdict"],
             issues=[i if isinstance(i, dict) else dict(detail=str(i)) for i in issues],
@@ -1043,7 +1050,9 @@ async def revise(
     proposals = {p["id"]: p for p in (read_json(path) if path.is_file() else [])}
     try:
         for item in queue:
-            if item["id"] in proposals:
+            earlier = proposals.get(item["id"])
+            # A valid proposal is kept; an invalid one is asked for again on the next run.
+            if earlier is not None and earlier["invalid"] is None:
                 continue
             entry = by_id[item["id"]]
             issues = [
@@ -1088,6 +1097,10 @@ async def revise(
                 output_tokens=response.output_tokens,
                 latency_s=round(time.perf_counter() - started, 3),
                 at=now(),
+                # Earlier invalid attempts stay on record (and in the token count).
+                previous_invalid=(
+                    [*earlier.pop("previous_invalid", []), earlier] if earlier else []
+                ),
             )
             write_json(path, sorted(proposals.values(), key=lambda p: p["id"]))
     finally:

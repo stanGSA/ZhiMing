@@ -67,11 +67,12 @@ def real_entries(workspace):
 class Reviewer:
     """A mock vendor: flags any item that differs from the source entry with that key."""
 
-    def __init__(self, entries, name, rerun_flip=None, misses=(), broken=()):
+    def __init__(self, entries, name, rerun_flip=None, misses=(), broken=(), contradict=()):
         self.entries, self.name = entries, name
         self.rerun_flip = rerun_flip  # a key revised on the first look only
         self.misses = set(misses)  # mutations this reviewer never notices
         self.broken = list(broken)  # canned bad replies, served first
+        self.contradict = set(contradict)  # keys answered "pass" while listing a problem
         self.seen = Counter()
         self.requests = []
 
@@ -93,6 +94,9 @@ class Reviewer:
             else:
                 verdict = "pass"
             issues = [] if verdict == "pass" else [dict(dimension="consistency", detail="问题")]
+            if item["key"] in self.contradict:
+                verdict = "pass"
+                issues = [dict(dimension="medical_legal_finance", detail="含医疗诊断式说法")]
             out.append(dict(item=item["item"], verdict=verdict, issues=issues, reason="理由"))
         return dict(items=out)
 
@@ -528,3 +532,96 @@ def test_plan_command_calls_no_model(capsys):
     output = review.main(["plan", "--system", "daily"])
     assert output["entries"] == 9 and output["planted"] == 5  # minimum for a detection rate
     assert json.loads(capsys.readouterr().out)["system"] == "daily"
+
+
+# ---- review findings on the first draft PR --------------------------------------------------
+
+
+@pytest.mark.parametrize("count", [1, 2, 6])
+async def test_small_re_review_gives_planted_copies_their_own_batch(workspace, tmp_path, count):
+    """Re-reviewing a few revised entries: every batch holds the originals, so the copies
+    get a batch of their own instead of crashing the plan."""
+    workspace, config = workspace
+    ids = IDS[:count]
+    plan = review.prepare(workspace, config, "tarot", only_ids=ids)  # default size and rate
+    assert len(plan["planted"]) == min(count, 5)  # five, but at most one copy per entry
+    originals = {p["ref"]: p["original"] for p in plan["planted"]}
+    for batch in plan["batches"]:
+        refs = {i["ref"] for i in batch["items"]}
+        assert not any(originals[r] in refs for r in refs if r in originals)
+    *_, result = await complete_run(
+        workspace, config, tmp_path / f"small-{count}", only_ids=ids, plant_rate=0.1, batch_size=10
+    )
+    assert result["cached"] == result["expected"] and not result["failed"]
+
+
+def test_pass_with_listed_issues_is_a_parse_error():
+    batch = dict(batch="b001", items=[dict(item="i01", ref="x")])
+
+    def reply(verdict, issues):
+        return json.dumps(dict(items=[dict(item="i01", verdict=verdict, issues=issues)]))
+
+    with pytest.raises(ValueError, match="自相矛盾"):
+        review.parse_verdicts(reply("pass", [dict(dimension="medical", detail="医疗断言")]), batch)
+    assert review.parse_verdicts(reply("pass", []), batch)["i01"]["verdict"] == "pass"
+    assert review.parse_verdicts(reply("revise", ["x"]), batch)["i01"]["issues"] == [
+        dict(detail="x")
+    ]
+
+
+async def test_a_reported_problem_never_becomes_an_approval(workspace, tmp_path):
+    workspace, config = workspace
+    entries = real_entries(workspace)
+    # Both vendors answer "pass" for this entry while listing a medical claim, on every try.
+    reviewers = {
+        role: Reviewer(entries, role, contradict={"the_sun:upright"}) for role in review.REVIEWERS
+    }
+    plan, run, roles, _, result = await complete_run(
+        workspace, config, tmp_path / "contradict", reviewers
+    )
+    errors = [e for e in run.errors() if e["kind"] == "parse_error"]
+    assert errors and all("自相矛盾" in e["message"] for e in errors)
+    assert result["failed"]  # those calls stay open for a resume, not counted as verdicts
+    summary = review.merge(run, plan, roles)
+    merged = json.loads((run.path / "merged.json").read_text(encoding="utf-8"))
+    assert "kb:tarot:card:the_sun:upright" not in merged["approved_ids"]
+    assert "kb:tarot:card:the_sun:upright" in summary["incomplete"]
+    with pytest.raises(ValueError, match="不能记为模型交叉审核"):
+        review.record_ledger(workspace, [run.path], root=tmp_path)
+    assert not (workspace.reviews / "tarot.yaml").exists()
+
+
+async def test_rerun_of_revise_asks_again_for_invalid_proposals_only(workspace, tmp_path):
+    workspace, config = workspace
+    plan, run, roles, _, _ = await complete_run(workspace, config, tmp_path / "revise-again")
+    review.merge(run, plan, roles)
+    replies = {
+        "the_tower:upright": [dict(text="高塔正位提示结构需要调整，先检查最脆弱的环节。",
+            theme_map=dict(self=-0.4), synonyms=["高塔:正位"], keywords=["变动"])],
+        "death:reversed": [
+            dict(text="死神逆位提示改变被拖延，你注定无法摆脱。", theme_map=dict(self=-0.2),
+                 synonyms=["死神:逆位"], keywords=["拖延"]),
+            dict(text="死神逆位提示改变被拖延，可以先放下一件旧事。", theme_map=dict(self=-0.2),
+                 synonyms=["死神:逆位"], keywords=["拖延"]),
+        ],
+        "the_star:upright": [dict(text="星星正位提示恢复信心，可以设定小目标。",
+            theme_map=dict(self=0.3), synonyms=["星星:正位"], keywords=["希望"])],
+    }  # fmt: skip
+    asked = []
+
+    class Reviser:
+        async def chat(self, messages, tools):
+            key = json.loads(messages[-1]["content"])["entry"]["key"]
+            asked.append(key)
+            reply = replies[key].pop(0)
+            return ModelResponse(text=json.dumps(reply, ensure_ascii=False), model="c-1")
+
+    first = await review.revise(run, plan, roles, make_model=lambda r, s: Reviser())
+    assert [p["id"] for p in first if p["invalid"]] == ["kb:tarot:card:death:reversed"]
+    asked.clear()
+    second = await review.revise(run, plan, roles, make_model=lambda r, s: Reviser())
+    assert asked == ["death:reversed"]  # valid proposals are not asked for again
+    assert all(p["invalid"] is None for p in second)
+    death = next(p for p in second if p["id"].endswith("death:reversed"))
+    assert [old["invalid"] for old in death["previous_invalid"]] == ["修改稿含确定性说法“注定”"]
+    assert len(review.apply_revisions(workspace, run)) == 3
