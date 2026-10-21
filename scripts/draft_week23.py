@@ -121,29 +121,30 @@ GOD_DIRECTIONS = {
     ),
     "正印": (0.1, "重视照顾与支持", 0.0, ""),
 }
-# Traditional dignities (domicile/exaltation, detriment/fall) of the planets that signify a
-# theme below. The outer planets stay sign-neutral: their sign is shared by a whole generation.
+# Traditional dignities of the planets that signify a theme below: 入庙 domicile, 擢升
+# exaltation, 失势 detriment (opposite the domicile), 落陷 fall (opposite the exaltation).
+# The outer planets stay sign-neutral: their sign is shared by a whole generation.
 DIGNITY = {
-    "Moon": ({"Cancer": "入庙", "Taurus": "擢升"}, {"Capricorn": "落陷", "Scorpio": "失势"}),
+    "Moon": ({"Cancer": "入庙", "Taurus": "擢升"}, {"Capricorn": "失势", "Scorpio": "落陷"}),
     "Mercury": (
         {"Gemini": "入庙", "Virgo": "入庙并擢升"},
-        {"Sagittarius": "落陷", "Pisces": "落陷并失势"},
+        {"Sagittarius": "失势", "Pisces": "失势并落陷"},
     ),
     "Venus": (
         {"Taurus": "入庙", "Libra": "入庙", "Pisces": "擢升"},
-        {"Aries": "落陷", "Scorpio": "落陷", "Virgo": "失势"},
+        {"Aries": "失势", "Scorpio": "失势", "Virgo": "落陷"},
     ),
     "Mars": (
         {"Aries": "入庙", "Scorpio": "入庙", "Capricorn": "擢升"},
-        {"Taurus": "落陷", "Libra": "落陷", "Cancer": "失势"},
+        {"Taurus": "失势", "Libra": "失势", "Cancer": "落陷"},
     ),
     "Jupiter": (
         {"Sagittarius": "入庙", "Pisces": "入庙", "Cancer": "擢升"},
-        {"Gemini": "落陷", "Virgo": "落陷", "Capricorn": "失势"},
+        {"Gemini": "失势", "Virgo": "失势", "Capricorn": "落陷"},
     ),
     "Saturn": (
         {"Capricorn": "入庙", "Aquarius": "入庙", "Libra": "擢升"},
-        {"Cancer": "落陷", "Leo": "落陷", "Aries": "失势"},
+        {"Cancer": "失势", "Leo": "失势", "Aries": "落陷"},
     ),
 }
 # Sign-based directions only for each theme's traditional significators:

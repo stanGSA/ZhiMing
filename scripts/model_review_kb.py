@@ -178,8 +178,14 @@ def runtime_vendor(config: dict) -> str:
 
 
 def drafter_vendors(config: dict) -> set[str]:
-    drafters = (config.get("kb_review") or {}).get("drafter_vendors") or ()
-    return {str(vendor).strip().lower() for vendor in drafters}
+    drafters = (config.get("kb_review") or {}).get("drafter_vendors") or []
+    if isinstance(drafters, str):
+        drafters = [drafters]  # one vendor written without brackets, not a list of letters
+    if not isinstance(drafters, list) or not all(
+        isinstance(v, str) and v.strip() for v in drafters
+    ):
+        raise ValueError("kb_review.drafter_vendors 必须是厂商名列表")
+    return {vendor.strip().lower() for vendor in drafters}
 
 
 def check_roles(roles: dict, config: dict, needed: tuple[str, ...]) -> None:

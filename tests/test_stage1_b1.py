@@ -65,6 +65,32 @@ def test_classical_planets_have_directions_and_outer_planets_stay_neutral():
             assert entry["theme_map"].get(theme, 0.0) == (expected or 0.0)
 
 
+# Written out independently of DIGNITY: 入庙 domicile, 擢升 exaltation, 失势 detriment (opposite
+# the domicile), 落陷 fall (opposite the exaltation).
+@pytest.mark.parametrize(
+    "key,stated",
+    [
+        ("Venus:Taurus", "金星在金牛为入庙，"),
+        ("Venus:Pisces", "金星在双鱼为擢升，"),
+        ("Venus:Aries", "金星在白羊为失势，"),
+        ("Venus:Virgo", "金星在处女为落陷，"),
+        ("Moon:Capricorn", "月亮在摩羯为失势，"),
+        ("Moon:Scorpio", "月亮在天蝎为落陷，"),
+        ("Mars:Libra", "火星在天秤为失势，"),
+        ("Mars:Cancer", "火星在巨蟹为落陷，"),
+        ("Jupiter:Gemini", "木星在双子为失势，"),
+        ("Jupiter:Capricorn", "木星在摩羯为落陷，"),
+        ("Saturn:Leo", "土星在狮子为失势，"),
+        ("Saturn:Aries", "土星在白羊为落陷，"),
+        ("Mercury:Virgo", "水星在处女为入庙并擢升，"),
+        ("Mercury:Pisces", "水星在双鱼为失势并落陷，"),
+    ],
+)
+def test_dignity_terms_in_the_text(key, stated):
+    entry = next(e for e in source("astro") if e["id"] == f"kb:astro:planet_sign:{key}")
+    assert stated in entry["text"]
+
+
 @pytest.mark.parametrize("system", ["astro", "bazi"])
 def test_directions_are_stated_in_the_text_and_attributed(system):
     for entry in source(system):
@@ -86,6 +112,15 @@ def test_b1_drafter_cannot_review():
     }
     with pytest.raises(ValueError, match="起草"):
         review.check_roles(roles, config, review.REVIEWERS)
+    # One vendor written without brackets is that vendor, not a set of letters.
+    single = dict(config, kb_review={**config["kb_review"], "drafter_vendors": " Anthropic "})
+    assert review.drafter_vendors(single) == {"anthropic"}
+    with pytest.raises(ValueError, match="起草"):
+        review.check_roles(roles, single, review.REVIEWERS)
+    for wrong in ({"vendor": "anthropic"}, 5, ["anthropic", ""]):
+        broken = dict(config, kb_review={**config["kb_review"], "drafter_vendors": wrong})
+        with pytest.raises(ValueError, match="厂商名列表"):
+            review.check_roles(roles, broken, review.REVIEWERS)
 
 
 def test_daily_entries_stay_neutral_conventions():
