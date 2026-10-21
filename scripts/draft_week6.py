@@ -181,16 +181,19 @@ def dream_entries():
     return entries
 
 
+# The five-element colour convention; the knowledge review rubric quotes it too.
+DAY_COLORS = {
+    "木": ("青绿", "木对应生长，传统配色为青、绿"),
+    "火": ("红", "火对应热情，传统配色为红、紫"),
+    "土": ("黄", "土对应承载，传统配色为黄、棕"),
+    "金": ("白", "金对应决断，传统配色为白、金"),
+    "水": ("黑蓝", "水对应流动，传统配色为黑、蓝"),
+}
+
+
 def daily_entries():
-    colors = {
-        "木": ("青绿", "木对应生长，传统配色为青、绿"),
-        "火": ("红", "火对应热情，传统配色为红、紫"),
-        "土": ("黄", "土对应承载，传统配色为黄、棕"),
-        "金": ("白", "金对应决断，传统配色为白、金"),
-        "水": ("黑蓝", "水对应流动，传统配色为黑、蓝"),
-    }
     entries = []
-    for element, (color, text) in colors.items():
+    for element, (color, text) in DAY_COLORS.items():
         entries.append(
             entry(
                 "daily",

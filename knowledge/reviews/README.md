@@ -13,6 +13,7 @@
 - 体系级 kappa 按全部批次第一轮的真实及埋错样本计算，分类为放行（pass）／不通过（revise、reject），阈值仍为0.6。这是负责人明确批准的口径变更；埋错样本会改变分布，报告同时保留真实条目三分类、全部样本三分类 kappa 和各批原始指标，不能直接比较不同口径的数值。第二轮用于计算重跑一致率。
 - 体系汇总脚本会在活动目录写入 `campaign-acceptance.json`。此后 `model_review_kb ledger` 拒绝逐批写入该目录下的批次：单个小批次可能自身校准达标，但不代表体系校准达标。体系校准未达标时，`--write-ledger` 还会撤销该体系当前内容的全部已有批准，不论是哪个命令写入的。
 - 体系校准未达标时，即使当前内容获得四次 pass，也只记录双审候选，不新增模型审核批准。汇总中的 `candidate_count` 与实际账本的 `model_reviewed_count` 必须分开，正式三态覆盖率以重新构建结果为准。
+- 运行前登记的活动（如 `stage1-r2`，用 `python -m scripts.kb_review_live` 运行）：体系汇总按活动目录中的 `preregistration.json` 计算，kappa 在已冻结的标注校准集上计算；规则哈希、审核方、批次设置或校准集与登记不符的批次，都不能通过验收。
 
 ```yaml
 schema_version: 1

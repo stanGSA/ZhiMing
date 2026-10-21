@@ -1,0 +1,4820 @@
+schema_version: 1
+status: draft_needs_owner_confirmation
+drafted_by: Anthropic Claude，2026-10-22 应负责人要求起草；负责人逐条确认后冻结
+purpose: 阶段1第二轮知识库审核的标注校准集：kappa在此集合上计算（运行前登记）
+seed: 20261022
+items:
+- id: cal-tarot-01
+  system: tarot
+  label: pass
+  base: kb:tarot:card:swords_ten:reversed
+  rationale: 现行条目；2026-10-21两家各两轮均判通过；自动核对无确定性措辞，非零方向符合体系方向约定或有对应表述。请按判定锚点复核。
+  entry:
+    id: kb:tarot:card:swords_ten:reversed
+    system: tarot
+    kind: card
+    key: swords_ten:reversed
+    synonyms:
+    - 宝剑十:逆位
+    keywords:
+    - 耗尽
+    theme_map:
+      self: 0.2
+      career: 0.2
+    text: 恢复需要循序进行，避免在尚未休整时重回同样负担。这是象征性反思线索，不代表事件必然发生。
+    source: 本项目自写象征释义草稿；未引用现代网站或书籍文案
+    license: 本项目自写
+    reviewed: false
+    version: 1
+- id: cal-tarot-02
+  system: tarot
+  label: fail
+  base: kb:tarot:card:wands_knight:upright
+  defect:
+    type: direction_contradicts_text
+    detail: 牌义整体偏顺（各主题方向一致），theme_map.career 却是 -0.3（原为 +0.3）
+  change:
+    field: theme_map.career
+    before: 0.3
+    after: -0.3
+  rationale: 由现行条目改出一处缺陷，其余内容不变；按判定锚点应判 revise 或 reject。
+  entry:
+    id: kb:tarot:card:wands_knight:upright
+    system: tarot
+    kind: card
+    key: wands_knight:upright
+    synonyms:
+    - 权杖骑士:正位
+    keywords:
+    - 冒险
+    theme_map:
+      career: -0.3
+      self: 0.3
+    text: 行动力可以推动变化，同时需要检查速度与风险。这是象征性反思线索，不代表事件必然发生。
+    source: 本项目自写象征释义草稿；未引用现代网站或书籍文案
+    license: 本项目自写
+    reviewed: false
+    version: 1
+- id: cal-tarot-03
+  system: tarot
+  label: fail
+  base: kb:tarot:card:the_star:reversed
+  defect:
+    type: prediction
+    detail: 加入了对现实事件的预测（“预示……会……”），没有确定性词语但仍是预测
+  change:
+    field: text
+    before: （无）
+    after: 它预示你很快会在工作上得到认可。
+  rationale: 由现行条目改出一处缺陷，其余内容不变；按判定锚点应判 revise 或 reject。
+  entry:
+    id: kb:tarot:card:the_star:reversed
+    system: tarot
+    kind: card
+    key: the_star:reversed
+    synonyms:
+    - 星星:逆位
+    keywords:
+    - 希望
+    - 恢复
+    theme_map:
+      self: -0.2
+      career: -0.2
+      relationship: -0.2
+    text: 希望不足时先照顾当下需求，避免用理想要求自己立刻好转。这是象征性反思线索，不代表事件必然发生。它预示你很快会在工作上得到认可。
+    source: 本项目自写象征释义草稿；未引用现代网站或书籍文案
+    license: 本项目自写
+    reviewed: false
+    version: 1
+- id: cal-tarot-04
+  system: tarot
+  label: fail
+  base: kb:tarot:card:the_lovers:reversed
+  defect:
+    type: direction_contradicts_text
+    detail: 牌义整体偏阻（各主题方向一致），theme_map.career 却是 +0.4（原为 -0.4）
+  change:
+    field: theme_map.career
+    before: -0.4
+    after: 0.4
+  rationale: 由现行条目改出一处缺陷，其余内容不变；按判定锚点应判 revise 或 reject。
+  entry:
+    id: kb:tarot:card:the_lovers:reversed
+    system: tarot
+    kind: card
+    key: the_lovers:reversed
+    synonyms:
+    - 恋人:逆位
+    keywords:
+    - 价值
+    - 选择
+    theme_map:
+      self: -0.4
+      career: 0.4
+      relationship: -0.4
+    text: 价值分歧或沟通遗漏值得正视，避免仅凭吸引力作决定。这是象征性反思线索，不代表事件必然发生。
+    source: 本项目自写象征释义草稿；未引用现代网站或书籍文案
+    license: 本项目自写
+    reviewed: false
+    version: 1
+- id: cal-tarot-05
+  system: tarot
+  label: fail
+  base: kb:tarot:position:single:1
+  defect:
+    type: unsupported_direction
+    detail: text 没有事业方面的表述，theme_map.career 却标为 -0.3
+  change:
+    field: theme_map.career
+    before: 0.0
+    after: -0.3
+  rationale: 由现行条目改出一处缺陷，其余内容不变；按判定锚点应判 revise 或 reject。
+  entry:
+    id: kb:tarot:position:single:1
+    system: tarot
+    kind: position
+    key: single:1
+    synonyms: []
+    keywords:
+    - 当下提示
+    theme_map:
+      self: 0.0
+      career: -0.3
+      relationship: 0.0
+      finance: 0.0
+    text: 此牌位是单张牌阵中唯一的位置，用于梳理“当下提示”的象征线索，为理解当前处境与自我反思提供参考，不作确定性预测。
+    source: 本项目自写牌位说明
+    license: 本项目自写
+    reviewed: false
+    version: 2
+- id: cal-tarot-06
+  system: tarot
+  label: pass
+  base: kb:tarot:card:pentacles_queen:reversed
+  rationale: 现行条目；2026-10-21两家各两轮均判通过；自动核对无确定性措辞，非零方向符合体系方向约定或有对应表述。请按判定锚点复核。
+  entry:
+    id: kb:tarot:card:pentacles_queen:reversed
+    system: tarot
+    kind: card
+    key: pentacles_queen:reversed
+    synonyms:
+    - 星币王后:逆位
+    keywords:
+    - 照顾现实
+    theme_map:
+      finance: -0.3
+      career: -0.3
+    text: 过度承担现实事务时，重新安排支持和休息。这是象征性反思线索，不代表事件必然发生。
+    source: 本项目自写象征释义草稿；未引用现代网站或书籍文案
+    license: 本项目自写
+    reviewed: false
+    version: 1
+- id: cal-tarot-07
+  system: tarot
+  label: fail
+  base: kb:tarot:position:decision:2
+  defect:
+    type: unsupported_direction
+    detail: text 没有自我状态方面的表述，theme_map.self 却标为 -0.3
+  change:
+    field: theme_map.self
+    before: 0.0
+    after: -0.3
+  rationale: 由现行条目改出一处缺陷，其余内容不变；按判定锚点应判 revise 或 reject。
+  entry:
+    id: kb:tarot:position:decision:2
+    system: tarot
+    kind: position
+    key: decision:2
+    synonyms:
+    - 选择 A
+    - 选项 A
+    keywords:
+    - 选 A
+    - 选项比较
+    - 考虑因素
+    - 反思
+    theme_map:
+      self: -0.3
+      career: 0.0
+      relationship: 0.0
+      finance: 0.0
+    text: 此牌位对应“选 A”，用于梳理选择 A 的象征线索，帮助反思该选项的考虑因素，并与“现状”和“选 B”牌位对照理解，不作确定性预测。
+    source: 本项目自写牌位说明
+    license: 本项目自写
+    reviewed: false
+    version: 2
+- id: cal-tarot-08
+  system: tarot
+  label: pass
+  base: kb:tarot:card:cups_knight:upright
+  rationale: 现行条目；2026-10-21两家各两轮均判通过；自动核对无确定性措辞，非零方向符合体系方向约定或有对应表述。请按判定锚点复核。
+  entry:
+    id: kb:tarot:card:cups_knight:upright
+    system: tarot
+    kind: card
+    key: cups_knight:upright
+    synonyms:
+    - 圣杯骑士:正位
+    keywords:
+    - 邀请
+    theme_map:
+      relationship: 0.4
+      self: 0.4
+    text: 情感上的主动可以带来连接，承诺需要与实际行动一致。这是象征性反思线索，不代表事件必然发生。
+    source: 本项目自写象征释义草稿；未引用现代网站或书籍文案
+    license: 本项目自写
+    reviewed: false
+    version: 1
+- id: cal-tarot-09
+  system: tarot
+  label: fail
+  base: kb:tarot:card:pentacles_knight:upright
+  defect:
+    type: prediction
+    detail: 加入了对现实事件的预测（“预示……会……”），没有确定性词语但仍是预测
+  change:
+    field: text
+    before: （无）
+    after: 抽到这张牌，预示近期会有一笔意外收入。
+  rationale: 由现行条目改出一处缺陷，其余内容不变；按判定锚点应判 revise 或 reject。
+  entry:
+    id: kb:tarot:card:pentacles_knight:upright
+    system: tarot
+    kind: card
+    key: pentacles_knight:upright
+    synonyms:
+    - 星币骑士:正位
+    keywords:
+    - 稳步执行
+    theme_map:
+      finance: 0.3
+      career: 0.3
+    text: 耐心执行可以积累成果，定期检查方法是否仍有效。这是象征性反思线索，不代表事件必然发生。抽到这张牌，预示近期会有一笔意外收入。
+    source: 本项目自写象征释义草稿；未引用现代网站或书籍文案
+    license: 本项目自写
+    reviewed: false
+    version: 1
+- id: cal-tarot-10
+  system: tarot
+  label: fail
+  base: kb:tarot:card:the_sun:reversed
+  defect:
+    type: unsupported_direction
+    detail: text 没有财务方面的表述，theme_map.finance 却标为 +0.3
+  change:
+    field: theme_map.finance
+    before: 0.0
+    after: 0.3
+  rationale: 由现行条目改出一处缺陷，其余内容不变；按判定锚点应判 revise 或 reject。
+  entry:
+    id: kb:tarot:card:the_sun:reversed
+    system: tarot
+    kind: card
+    key: the_sun:reversed
+    synonyms:
+    - 太阳:逆位
+    keywords:
+    - 热情暂缓
+    - 清晰感减弱
+    - 调整期待
+    - 恢复节奏
+    theme_map:
+      self: -0.1
+      career: -0.1
+      relationship: -0.1
+      finance: 0.3
+    text: 太阳逆位可作为热情暂缓、清晰感减弱的象征性反思线索。短期热情不足不等于失败，可以尝试调整期待，逐步找回适合自己的节奏。这不代表事件必然发生。
+    source: 本项目自写象征释义草稿；未引用现代网站或书籍文案
+    license: 本项目自写
+    reviewed: false
+    version: 2
+- id: cal-tarot-11
+  system: tarot
+  label: fail
+  base: kb:tarot:position:three_card:1
+  defect:
+    type: position_mismatch
+    detail: 牌阵定义中三张牌阵第1位是“过去”，text 写成了“未来”
+  change:
+    field: text
+    before: “过去”
+    after: “未来”
+  rationale: 由现行条目改出一处缺陷，其余内容不变；按判定锚点应判 revise 或 reject。
+  entry:
+    id: kb:tarot:position:three_card:1
+    system: tarot
+    kind: position
+    key: three_card:1
+    synonyms: []
+    keywords:
+    - 过去
+    theme_map: {}
+    text: 此牌位用于梳理“未来”的象征线索。未来牌位表达反思方向，不作确定性预测。
+    source: 本项目自写牌位说明
+    license: 本项目自写
+    reviewed: false
+    version: 1
+- id: cal-tarot-12
+  system: tarot
+  label: fail
+  base: kb:tarot:card:wheel_of_fortune:reversed
+  defect:
+    type: direction_contradicts_text
+    detail: 牌义整体偏阻（各主题方向一致），theme_map.self 却是 +0.3（原为 -0.3）
+  change:
+    field: theme_map.self
+    before: -0.3
+    after: 0.3
+  rationale: 由现行条目改出一处缺陷，其余内容不变；按判定锚点应判 revise 或 reject。
+  entry:
+    id: kb:tarot:card:wheel_of_fortune:reversed
+    system: tarot
+    kind: card
+    key: wheel_of_fortune:reversed
+    synonyms:
+    - 命运之轮:逆位
+    keywords:
+    - 变化
+    - 适应
+    theme_map:
+      self: 0.3
+      career: -0.3
+      relationship: -0.3
+    text: 反复变化可能令人焦躁，适合稳定日常安排并准备替代路径。这是象征性反思线索，不代表事件必然发生。
+    source: 本项目自写象征释义草稿；未引用现代网站或书籍文案
+    license: 本项目自写
+    reviewed: false
+    version: 1
+- id: cal-tarot-13
+  system: tarot
+  label: pass
+  base: kb:tarot:card:wands_page:upright
+  rationale: 现行条目；2026-10-21两家各两轮均判通过；自动核对无确定性措辞，非零方向符合体系方向约定或有对应表述。请按判定锚点复核。
+  entry:
+    id: kb:tarot:card:wands_page:upright
+    system: tarot
+    kind: card
+    key: wands_page:upright
+    synonyms:
+    - 权杖侍从:正位
+    keywords:
+    - 探索
+    theme_map:
+      career: 0.3
+      self: 0.3
+    text: 好奇心适合转化成学习和试验，不必急于证明成果。这是象征性反思线索，不代表事件必然发生。
+    source: 本项目自写象征释义草稿；未引用现代网站或书籍文案
+    license: 本项目自写
+    reviewed: false
+    version: 1
+- id: cal-tarot-14
+  system: tarot
+  label: pass
+  base: kb:tarot:card:the_hanged_man:reversed
+  rationale: 现行条目；2026-10-21两家各两轮均判通过；自动核对无确定性措辞，非零方向符合体系方向约定或有对应表述。请按判定锚点复核。
+  entry:
+    id: kb:tarot:card:the_hanged_man:reversed
+    system: tarot
+    kind: card
+    key: the_hanged_man:reversed
+    synonyms:
+    - 倒吊人:逆位
+    keywords:
+    - 拖延
+    - 无效牺牲
+    - 审视付出
+    theme_map:
+      self: -0.3
+      career: -0.3
+      relationship: -0.3
+    text: 拖延与无效牺牲可能被混淆，确认哪些付出仍有意义。这是象征性反思线索，不代表事件必然发生。
+    source: 本项目自写象征释义草稿；未引用现代网站或书籍文案
+    license: 本项目自写
+    reviewed: false
+    version: 2
+- id: cal-tarot-15
+  system: tarot
+  label: pass
+  base: kb:tarot:card:strength:upright
+  rationale: 现行条目；2026-10-21两家各两轮均判通过；自动核对无确定性措辞，非零方向符合体系方向约定或有对应表述。请按判定锚点复核。
+  entry:
+    id: kb:tarot:card:strength:upright
+    system: tarot
+    kind: card
+    key: strength:upright
+    synonyms:
+    - 力量:正位
+    keywords:
+    - 耐心
+    - 韧性
+    theme_map:
+      self: 0.4
+      career: 0.4
+      relationship: 0.4
+    text: 温和而持续的力量适合处理压力，给自己留下恢复的空间。这是象征性反思线索，不代表事件必然发生。
+    source: 本项目自写象征释义草稿；未引用现代网站或书籍文案
+    license: 本项目自写
+    reviewed: false
+    version: 1
+- id: cal-tarot-16
+  system: tarot
+  label: fail
+  base: kb:tarot:card:the_hierophant:reversed
+  defect:
+    type: unsupported_direction
+    detail: text 没有财务方面的表述，theme_map.finance 却标为 -0.3
+  change:
+    field: theme_map.finance
+    before: 0.0
+    after: -0.3
+  rationale: 由现行条目改出一处缺陷，其余内容不变；按判定锚点应判 revise 或 reject。
+  entry:
+    id: kb:tarot:card:the_hierophant:reversed
+    system: tarot
+    kind: card
+    key: the_hierophant:reversed
+    synonyms:
+    - 教皇:逆位
+    keywords:
+    - 审视惯例
+    - 反思外部标准
+    - 自主选择
+    - 探索替代方式
+    theme_map:
+      self: -0.1
+      career: -0.1
+      relationship: -0.1
+      finance: -0.3
+    text: 惯例未必适合当前处境，可以重新审视外部标准与个人选择，探索更符合自身需要的方式，而非一概否定传统。这是象征性反思线索，不代表事件必然发生。
+    source: 本项目自写象征释义草稿；未引用现代网站或书籍文案
+    license: 本项目自写
+    reviewed: false
+    version: 2
+- id: cal-tarot-17
+  system: tarot
+  label: pass
+  base: kb:tarot:position:three_card:3
+  rationale: 现行条目；2026-10-21两家各两轮均判通过；自动核对无确定性措辞，非零方向符合体系方向约定或有对应表述。请按判定锚点复核。
+  entry:
+    id: kb:tarot:position:three_card:3
+    system: tarot
+    kind: position
+    key: three_card:3
+    synonyms: []
+    keywords:
+    - 未来
+    theme_map: {}
+    text: 此牌位用于梳理“未来”的象征线索。未来牌位表达反思方向，不作确定性预测。
+    source: 本项目自写牌位说明
+    license: 本项目自写
+    reviewed: false
+    version: 1
+- id: cal-tarot-18
+  system: tarot
+  label: pass
+  base: kb:tarot:card:the_magician:upright
+  rationale: 现行条目；2026-10-21两家各两轮均判通过；自动核对无确定性措辞，非零方向符合体系方向约定或有对应表述。请按判定锚点复核。
+  entry:
+    id: kb:tarot:card:the_magician:upright
+    system: tarot
+    kind: card
+    key: the_magician:upright
+    synonyms:
+    - 魔术师:正位
+    keywords:
+    - 资源
+    - 行动
+    theme_map:
+      self: 0.5
+      career: 0.5
+      relationship: 0.5
+    text: 手上的能力与资源可以转化为行动，关键是明确要完成的事。这是象征性反思线索，不代表事件必然发生。
+    source: 本项目自写象征释义草稿；未引用现代网站或书籍文案
+    license: 本项目自写
+    reviewed: false
+    version: 1
+- id: cal-tarot-19
+  system: tarot
+  label: fail
+  base: kb:tarot:card:swords_three:reversed
+  defect:
+    type: orientation_not_distinguished
+    detail: 逆位释义写成了正位释义（与 counterpart 文字相同），正逆位没有区分，且与本条方向不符
+  change:
+    field: text
+    before: 伤痛的整理可能开始，避免要求自己马上原谅或忘记。这是象征性反思线索，不代表事件必然发生。
+    after: 难过的经历需要被承认，给沟通和恢复留出空间。这是象征性反思线索，不代表事件必然发生。
+  rationale: 由现行条目改出一处缺陷，其余内容不变；按判定锚点应判 revise 或 reject。
+  entry:
+    id: kb:tarot:card:swords_three:reversed
+    system: tarot
+    kind: card
+    key: swords_three:reversed
+    synonyms:
+    - 宝剑三:逆位
+    keywords:
+    - 受伤
+    theme_map:
+      self: 0.1
+      career: 0.1
+    text: 难过的经历需要被承认，给沟通和恢复留出空间。这是象征性反思线索，不代表事件必然发生。
+    source: 本项目自写象征释义草稿；未引用现代网站或书籍文案
+    license: 本项目自写
+    reviewed: false
+    version: 1
+- id: cal-tarot-20
+  system: tarot
+  label: pass
+  base: kb:tarot:card:judgement:reversed
+  rationale: 现行条目；2026-10-21两家各两轮均判通过；自动核对无确定性措辞，非零方向符合体系方向约定或有对应表述。请按判定锚点复核。
+  entry:
+    id: kb:tarot:card:judgement:reversed
+    system: tarot
+    kind: card
+    key: judgement:reversed
+    synonyms:
+    - 审判:逆位
+    keywords:
+    - 复盘
+    - 回应
+    theme_map:
+      self: -0.3
+      career: -0.3
+      relationship: -0.3
+    text: 反复自责或回避复盘可能停住行动，尝试只改进一个具体问题。这是象征性反思线索，不代表事件必然发生。
+    source: 本项目自写象征释义草稿；未引用现代网站或书籍文案
+    license: 本项目自写
+    reviewed: false
+    version: 1
+- id: cal-tarot-21
+  system: tarot
+  label: pass
+  base: kb:tarot:position:three_card:2
+  rationale: 现行条目；2026-10-21两家各两轮均判通过；自动核对无确定性措辞，非零方向符合体系方向约定或有对应表述。请按判定锚点复核。
+  entry:
+    id: kb:tarot:position:three_card:2
+    system: tarot
+    kind: position
+    key: three_card:2
+    synonyms: []
+    keywords:
+    - 现在
+    theme_map: {}
+    text: 此牌位用于梳理“现在”的象征线索。未来牌位表达反思方向，不作确定性预测。
+    source: 本项目自写牌位说明
+    license: 本项目自写
+    reviewed: false
+    version: 1
+- id: cal-tarot-22
+  system: tarot
+  label: fail
+  base: kb:tarot:card:swords_page:reversed
+  defect:
+    type: orientation_not_distinguished
+    detail: 逆位释义写成了正位释义（与 counterpart 文字相同），正逆位没有区分，且与本条方向不符
+  change:
+    field: text
+    before: 过度猜疑或片面信息容易带来误判，补充来源再判断。这是象征性反思线索，不代表事件必然发生。
+    after: 好奇与分析适合用于核实信息，提问要保留尊重。这是象征性反思线索，不代表事件必然发生。
+  rationale: 由现行条目改出一处缺陷，其余内容不变；按判定锚点应判 revise 或 reject。
+  entry:
+    id: kb:tarot:card:swords_page:reversed
+    system: tarot
+    kind: card
+    key: swords_page:reversed
+    synonyms:
+    - 宝剑侍从:逆位
+    keywords:
+    - 求证
+    theme_map:
+      self: -0.3
+      career: -0.3
+    text: 好奇与分析适合用于核实信息，提问要保留尊重。这是象征性反思线索，不代表事件必然发生。
+    source: 本项目自写象征释义草稿；未引用现代网站或书籍文案
+    license: 本项目自写
+    reviewed: false
+    version: 1
+- id: cal-tarot-23
+  system: tarot
+  label: pass
+  base: kb:tarot:position:decision:1
+  rationale: 现行条目；2026-10-21两家各两轮均判通过；自动核对无确定性措辞，非零方向符合体系方向约定或有对应表述。请按判定锚点复核。
+  entry:
+    id: kb:tarot:position:decision:1
+    system: tarot
+    kind: position
+    key: decision:1
+    synonyms:
+    - 现状
+    - 当前处境
+    keywords:
+    - 现状
+    - 已有条件
+    - 主要困惑
+    - 需求澄清
+    - 决策背景
+    theme_map:
+      self: 0.0
+      career: 0.0
+      relationship: 0.0
+      finance: 0.0
+    text: 此牌位用于梳理当前处境的象征线索，关注已有条件、主要困惑与待澄清的需求，为比较选项A与选项B提供反思背景，不预设哪一选项更优。
+    source: 本项目自写牌位说明
+    license: 本项目自写
+    reviewed: false
+    version: 2
+- id: cal-tarot-24
+  system: tarot
+  label: fail
+  base: kb:tarot:card:wands_ace:reversed
+  defect:
+    type: prediction
+    detail: 加入了对现实事件的预测（“预示……会……”），没有确定性词语但仍是预测
+  change:
+    field: text
+    before: （无）
+    after: 它预示你很快会在工作上得到认可。
+  rationale: 由现行条目改出一处缺陷，其余内容不变；按判定锚点应判 revise 或 reject。
+  entry:
+    id: kb:tarot:card:wands_ace:reversed
+    system: tarot
+    kind: card
+    key: wands_ace:reversed
+    synonyms:
+    - 权杖一:逆位
+    keywords:
+    - 启动
+    theme_map:
+      career: -0.2
+      self: -0.2
+    text: 热情受阻时，先确认是否缺少清楚的目标。这是象征性反思线索，不代表事件必然发生。它预示你很快会在工作上得到认可。
+    source: 本项目自写象征释义草稿；未引用现代网站或书籍文案
+    license: 本项目自写
+    reviewed: false
+    version: 1
+- id: cal-tarot-25
+  system: tarot
+  label: pass
+  base: kb:tarot:position:decision:3
+  rationale: 现行条目；2026-10-21两家各两轮均判通过；自动核对无确定性措辞，非零方向符合体系方向约定或有对应表述。请按判定锚点复核。
+  entry:
+    id: kb:tarot:position:decision:3
+    system: tarot
+    kind: position
+    key: decision:3
+    synonyms:
+    - 选择 B
+    - B 选项
+    keywords:
+    - 选 B
+    - 选项比较
+    - 决策反思
+    theme_map:
+      self: 0.0
+      career: 0.0
+      relationship: 0.0
+      finance: 0.0
+    text: 此牌位对应“选 B”，用于梳理选择 B 的象征线索，帮助反思这一选项的考量、可能的影响及需要留意之处，可结合“现状”和“选 A”牌位进行比较，不作确定性预测。
+    source: 本项目自写牌位说明
+    license: 本项目自写
+    reviewed: false
+    version: 2
+- id: cal-tarot-26
+  system: tarot
+  label: fail
+  base: kb:tarot:card:wands_two:reversed
+  defect:
+    type: orientation_not_distinguished
+    detail: 逆位释义写成了正位释义（与 counterpart 文字相同），正逆位没有区分，且与本条方向不符
+  change:
+    field: text
+    before: 犹豫或过度规划可能拖慢开始，先确定一个近期选择。这是象征性反思线索，不代表事件必然发生。
+    after: 在行动前比较方向与资源，计划需要容纳现实限制。这是象征性反思线索，不代表事件必然发生。
+  rationale: 由现行条目改出一处缺陷，其余内容不变；按判定锚点应判 revise 或 reject。
+  entry:
+    id: kb:tarot:card:wands_two:reversed
+    system: tarot
+    kind: card
+    key: wands_two:reversed
+    synonyms:
+    - 权杖二:逆位
+    keywords:
+    - 规划
+    theme_map:
+      career: -0.2
+      self: -0.2
+    text: 在行动前比较方向与资源，计划需要容纳现实限制。这是象征性反思线索，不代表事件必然发生。
+    source: 本项目自写象征释义草稿；未引用现代网站或书籍文案
+    license: 本项目自写
+    reviewed: false
+    version: 1
+- id: cal-tarot-27
+  system: tarot
+  label: pass
+  base: kb:tarot:card:cups_ten:reversed
+  rationale: 现行条目；2026-10-21两家各两轮均判通过；自动核对无确定性措辞，非零方向符合体系方向约定或有对应表述。请按判定锚点复核。
+  entry:
+    id: kb:tarot:card:cups_ten:reversed
+    system: tarot
+    kind: card
+    key: cups_ten:reversed
+    synonyms:
+    - 圣杯十:逆位
+    keywords:
+    - 共处
+    theme_map:
+      relationship: -0.3
+      self: -0.3
+    text: 理想图景与现实相差时，先讨论具体责任与情感需要。这是象征性反思线索，不代表事件必然发生。
+    source: 本项目自写象征释义草稿；未引用现代网站或书籍文案
+    license: 本项目自写
+    reviewed: false
+    version: 1
+- id: cal-tarot-28
+  system: tarot
+  label: fail
+  base: kb:tarot:card:swords_nine:reversed
+  defect:
+    type: unsupported_direction
+    detail: text 没有财务方面的表述，theme_map.finance 却标为 +0.3
+  change:
+    field: theme_map.finance
+    before: 0.0
+    after: 0.3
+  rationale: 由现行条目改出一处缺陷，其余内容不变；按判定锚点应判 revise 或 reject。
+  entry:
+    id: kb:tarot:card:swords_nine:reversed
+    system: tarot
+    kind: card
+    key: swords_nine:reversed
+    synonyms:
+    - 宝剑九:逆位
+    - 宝剑九逆位
+    - 逆位宝剑九
+    keywords:
+    - 担忧缓解
+    - 接纳支持
+    - 表达感受
+    - 自我反思
+    theme_map:
+      self: 0.1
+      career: 0.0
+      relationship: 0.0
+      finance: 0.3
+    text: 宝剑九逆位可象征担忧逐渐缓解、开始接纳支持，提示你留意内心压力是否有所松动，并尝试向可信的人表达感受。这是象征性反思线索，不代表状态必然好转或事件必然发生。
+    source: 本项目自写象征释义草稿；未引用现代网站或书籍文案
+    license: 本项目自写
+    reviewed: false
+    version: 2
+- id: cal-tarot-29
+  system: tarot
+  label: pass
+  base: kb:tarot:card:cups_ace:reversed
+  rationale: 现行条目；2026-10-21两家各两轮均判通过；自动核对无确定性措辞，非零方向符合体系方向约定或有对应表述。请按判定锚点复核。
+  entry:
+    id: kb:tarot:card:cups_ace:reversed
+    system: tarot
+    kind: card
+    key: cups_ace:reversed
+    synonyms:
+    - 圣杯一:逆位
+    keywords:
+    - 感受
+    theme_map:
+      relationship: -0.2
+      self: -0.2
+    text: 情感难以流动时，先照顾自己的容量和边界。这是象征性反思线索，不代表事件必然发生。
+    source: 本项目自写象征释义草稿；未引用现代网站或书籍文案
+    license: 本项目自写
+    reviewed: false
+    version: 1
+- id: cal-tarot-30
+  system: tarot
+  label: pass
+  base: kb:tarot:card:the_hermit:upright
+  rationale: 现行条目；2026-10-21两家各两轮均判通过；自动核对无确定性措辞，非零方向符合体系方向约定或有对应表述。请按判定锚点复核。
+  entry:
+    id: kb:tarot:card:the_hermit:upright
+    system: tarot
+    kind: card
+    key: the_hermit:upright
+    synonyms:
+    - 隐者:正位
+    keywords:
+    - 独处
+    - 辨认
+    theme_map:
+      self: 0.1
+      career: 0.1
+      relationship: 0.1
+    text: 留出独处与梳理的时间，有助于辨认真正重要的问题。这是象征性反思线索，不代表事件必然发生。
+    source: 本项目自写象征释义草稿；未引用现代网站或书籍文案
+    license: 本项目自写
+    reviewed: false
+    version: 1
+- id: cal-astro-01
+  system: astro
+  label: fail
+  base: kb:astro:planet_house:Neptune:7
+  defect:
+    type: house_topic_wrong
+    detail: 第7宫的主题是“合作与关系”（参考事实），text 写成了“自我呈现”
+  change:
+    field: text
+    before: 第7宫，可围绕合作与关系
+    after: 第7宫，可围绕自我呈现
+  rationale: 由现行条目改出一处缺陷，其余内容不变；按判定锚点应判 revise 或 reject。
+  entry:
+    id: kb:astro:planet_house:Neptune:7
+    system: astro
+    kind: planet_house
+    key: Neptune:7
+    synonyms: []
+    keywords:
+    - Neptune:7
+    theme_map:
+      self: 0.0
+      career: 0.0
+      relationship: 0.0
+      finance: 0.0
+    text: 海王星在第7宫，可围绕自我呈现观察想象与理想的表达。
+    source: 自写草稿；参考传统回归黄道占星术语；待人工审核
+    license: 本项目自写
+    reviewed: false
+    version: 3
+- id: cal-astro-02
+  system: astro
+  label: pass
+  base: kb:astro:planet_house:Neptune:8
+  rationale: 现行条目；2026-10-21两家各两轮均判通过；自动核对无确定性措辞，非零方向符合体系方向约定或有对应表述。请按判定锚点复核。
+  entry:
+    id: kb:astro:planet_house:Neptune:8
+    system: astro
+    kind: planet_house
+    key: Neptune:8
+    synonyms: []
+    keywords:
+    - Neptune:8
+    theme_map:
+      self: 0.0
+      career: 0.0
+      relationship: 0.0
+      finance: 0.0
+    text: 海王星在第8宫，可围绕共享资源与信任观察想象与理想的表达。
+    source: 自写草稿；参考传统回归黄道占星术语；待人工审核
+    license: 本项目自写
+    reviewed: false
+    version: 3
+- id: cal-astro-03
+  system: astro
+  label: fail
+  base: kb:astro:planet_sign:Venus:Pisces
+  defect:
+    type: dignity_wrong
+    detail: 按本项目尊贵表此配置为擢升，text 写成了落陷
+  change:
+    field: text
+    before: 为擢升
+    after: 为落陷
+  rationale: 由现行条目改出一处缺陷，其余内容不变；按判定锚点应判 revise 或 reject。
+  entry:
+    id: kb:astro:planet_sign:Venus:Pisces
+    system: astro
+    kind: planet_sign
+    key: Venus:Pisces
+    synonyms:
+    - 金星落双鱼
+    - 金星在双鱼座
+    - 金星双鱼
+    keywords:
+    - Venus:Pisces
+    - 金星
+    - 双鱼座
+    - 擢升
+    - 美感
+    - 情感价值
+    - 理想化
+    - 关系边界
+    - 消费边界
+    - 预算核对
+    theme_map:
+      self: 0.0
+      career: 0.0
+      relationship: 0.2
+      finance: 0.0
+    text: 在传统占星中，金星落双鱼为落陷，常与感受力、想象力、美感及情感价值等象征主题相联系。关系方面，可将其作为探索好感表达、共情与和谐相处的提示，同时留意理想化倾向，尊重彼此的需求与边界。消费方面，这一象征更侧重美感与情感价值，并不意味着天然更有花费分寸；可留意慷慨或情感投入是否让消费边界变得模糊，在花费前核对预算与实际需要。职业探索可从用户体验、内容表达或协作协调等小任务入手，以真实成果与反馈判断适合程度。单一落座不决定性格、关系质量或成败。
+    source: 自写草稿；参考传统回归黄道占星术语；感情、财务方向由 Anthropic Claude 于2026-10-21按传统规则起草；待人工审核
+    license: 本项目自写
+    reviewed: false
+    version: 5
+- id: cal-astro-04
+  system: astro
+  label: pass
+  base: kb:astro:sign:Libra
+  rationale: 现行条目；2026-10-21两家各两轮均判通过；自动核对无确定性措辞，非零方向符合体系方向约定或有对应表述。请按判定锚点复核。
+  entry:
+    id: kb:astro:sign:Libra
+    system: astro
+    kind: sign
+    key: Libra
+    synonyms: []
+    keywords:
+    - Libra
+    theme_map:
+      self: 0.0
+      career: 0.0
+      relationship: 0.0
+      finance: 0.0
+    text: 天秤的象征表达可参考：重视协调与公平，练习明确取舍。
+    source: 自写草稿；参考传统回归黄道占星术语；待人工审核
+    license: 本项目自写
+    reviewed: false
+    version: 3
+- id: cal-astro-05
+  system: astro
+  label: fail
+  base: kb:astro:planet_house:Venus:5
+  defect:
+    type: house_topic_wrong
+    detail: 第5宫的主题是“创作与兴趣”（参考事实），text 写成了“社群与长期愿景”
+  change:
+    field: text
+    before: 第5宫，可围绕创作与兴趣
+    after: 第5宫，可围绕社群与长期愿景
+  rationale: 由现行条目改出一处缺陷，其余内容不变；按判定锚点应判 revise 或 reject。
+  entry:
+    id: kb:astro:planet_house:Venus:5
+    system: astro
+    kind: planet_house
+    key: Venus:5
+    synonyms: []
+    keywords:
+    - Venus:5
+    theme_map:
+      self: 0.0
+      career: 0.0
+      relationship: 0.2
+      finance: 0.0
+    text: 金星在第5宫，可围绕社群与长期愿景观察价值取舍与关系协调的表达。感情方面：恋爱与享受中较容易感到愉快，表达好感比较自然。
+    source: 自写草稿；参考传统回归黄道占星术语；感情、财务方向由 Anthropic Claude 于2026-10-21按传统规则起草；待人工审核
+    license: 本项目自写
+    reviewed: false
+    version: 4
+- id: cal-astro-06
+  system: astro
+  label: pass
+  base: kb:astro:house:1
+  rationale: 现行条目；2026-10-21两家各两轮均判通过；自动核对无确定性措辞，非零方向符合体系方向约定或有对应表述。请按判定锚点复核。
+  entry:
+    id: kb:astro:house:1
+    system: astro
+    kind: house
+    key: '1'
+    synonyms: []
+    keywords:
+    - '1'
+    theme_map:
+      self: 0.0
+      career: 0.0
+      relationship: 0.0
+      finance: 0.0
+    text: 第1宫用于讨论自我呈现；宫位依赖可靠出生时刻。
+    source: 自写草稿；参考传统回归黄道占星术语；待人工审核
+    license: 本项目自写
+    reviewed: false
+    version: 3
+- id: cal-astro-07
+  system: astro
+  label: fail
+  base: kb:astro:planet_house:Sun:1
+  defect:
+    type: unsupported_direction
+    detail: text 没有感情关系方面的表述，theme_map.relationship 却标为 -0.3
+  change:
+    field: theme_map.relationship
+    before: 0.0
+    after: -0.3
+  rationale: 由现行条目改出一处缺陷，其余内容不变；按判定锚点应判 revise 或 reject。
+  entry:
+    id: kb:astro:planet_house:Sun:1
+    system: astro
+    kind: planet_house
+    key: Sun:1
+    synonyms: []
+    keywords:
+    - Sun:1
+    theme_map:
+      self: 0.0
+      career: 0.0
+      relationship: -0.3
+      finance: 0.0
+    text: 太阳在第1宫，可围绕自我呈现观察自我表达与目标的表达。
+    source: 自写草稿；参考传统回归黄道占星术语；待人工审核
+    license: 本项目自写
+    reviewed: false
+    version: 3
+- id: cal-astro-08
+  system: astro
+  label: fail
+  base: kb:astro:planet_sign:Jupiter:Cancer
+  defect:
+    type: direction_contradicts_text
+    detail: text 对财务的表述偏顺，theme_map.finance 却是 -0.2（原为 +0.2）
+  change:
+    field: theme_map.finance
+    before: 0.2
+    after: -0.2
+  rationale: 由现行条目改出一处缺陷，其余内容不变；按判定锚点应判 revise 或 reject。
+  entry:
+    id: kb:astro:planet_sign:Jupiter:Cancer
+    system: astro
+    kind: planet_sign
+    key: Jupiter:Cancer
+    synonyms: []
+    keywords:
+    - Jupiter:Cancer
+    theme_map:
+      self: 0.0
+      career: 0.0
+      relationship: 0.0
+      finance: -0.2
+    text: 木星落巨蟹，关注学习与扩展。可尝试：关注归属感，表达需求而非期待别人猜。单一落座不决定性格或成败。可把培训、知识传播与跨文化学习作为小任务探索方向，并用真实成果与反馈决定职业选择。传统上木星在巨蟹为擢升，财务方面倾向看到机会、乐于扩展，仍需核实成本。
+    source: 自写草稿；参考传统回归黄道占星术语；感情、财务方向由 Anthropic Claude 于2026-10-21按传统规则起草；待人工审核
+    license: 本项目自写
+    reviewed: false
+    version: 4
+- id: cal-astro-09
+  system: astro
+  label: pass
+  base: kb:astro:planet:Uranus
+  rationale: 现行条目；2026-10-21两家各两轮均判通过；自动核对无确定性措辞，非零方向符合体系方向约定或有对应表述。请按判定锚点复核。
+  entry:
+    id: kb:astro:planet:Uranus
+    system: astro
+    kind: planet
+    key: Uranus
+    synonyms: []
+    keywords:
+    - Uranus
+    theme_map:
+      self: 0.0
+      career: 0.0
+      relationship: 0.0
+      finance: 0.0
+    text: 天王星在现代占星中用于讨论改变与独立。这是象征性反思主题，不表示现实事件必然发生。职业探索时可用研究新方法、工具应用与流程自动化等任务作实际验证的例子；不是已知技能或职业适配结论。
+    source: 自写草稿；参考传统回归黄道占星术语；待人工审核
+    license: 本项目自写
+    reviewed: false
+    version: 4
+- id: cal-astro-10
+  system: astro
+  label: pass
+  base: kb:astro:house:3
+  rationale: 现行条目；2026-10-21两家各两轮均判通过；自动核对无确定性措辞，非零方向符合体系方向约定或有对应表述。请按判定锚点复核。
+  entry:
+    id: kb:astro:house:3
+    system: astro
+    kind: house
+    key: '3'
+    synonyms: []
+    keywords:
+    - '3'
+    theme_map:
+      self: 0.0
+      career: 0.0
+      relationship: 0.0
+      finance: 0.0
+    text: 第3宫用于讨论学习和日常沟通；宫位依赖可靠出生时刻。
+    source: 自写草稿；参考传统回归黄道占星术语；待人工审核
+    license: 本项目自写
+    reviewed: false
+    version: 3
+- id: cal-astro-11
+  system: astro
+  label: fail
+  base: kb:astro:planet_house:Moon:9
+  defect:
+    type: unsupported_direction
+    detail: text 没有财务方面的表述，theme_map.finance 却标为 +0.3
+  change:
+    field: theme_map.finance
+    before: 0.0
+    after: 0.3
+  rationale: 由现行条目改出一处缺陷，其余内容不变；按判定锚点应判 revise 或 reject。
+  entry:
+    id: kb:astro:planet_house:Moon:9
+    system: astro
+    kind: planet_house
+    key: Moon:9
+    synonyms: []
+    keywords:
+    - Moon:9
+    theme_map:
+      self: 0.0
+      career: 0.0
+      relationship: 0.0
+      finance: 0.3
+    text: 月亮在第9宫，可围绕远行、学习与视野观察感受与安全感的表达。
+    source: 自写草稿；参考传统回归黄道占星术语；待人工审核
+    license: 本项目自写
+    reviewed: false
+    version: 3
+- id: cal-astro-12
+  system: astro
+  label: pass
+  base: kb:astro:planet_sign:Moon:Libra
+  rationale: 现行条目；2026-10-21两家各两轮均判通过；自动核对无确定性措辞，非零方向符合体系方向约定或有对应表述。请按判定锚点复核。
+  entry:
+    id: kb:astro:planet_sign:Moon:Libra
+    system: astro
+    kind: planet_sign
+    key: Moon:Libra
+    synonyms: []
+    keywords:
+    - Moon:Libra
+    theme_map:
+      self: 0.0
+      career: 0.0
+      relationship: 0.0
+      finance: 0.0
+    text: 月亮落天秤，关注感受与安全感。可尝试：重视协调与公平，练习明确取舍。单一落座不决定性格或成败。可把工作节奏、团队支持与资源稳定作为小任务探索方向，并用真实成果与反馈决定职业选择。
+    source: 自写草稿；参考传统回归黄道占星术语；待人工审核
+    license: 本项目自写
+    reviewed: false
+    version: 3
+- id: cal-astro-13
+  system: astro
+  label: pass
+  base: kb:astro:transit:no_exact_events
+  rationale: 现行条目；2026-10-21两家各两轮均判通过；自动核对无确定性措辞，非零方向符合体系方向约定或有对应表述。请按判定锚点复核。
+  entry:
+    id: kb:astro:transit:no_exact_events
+    system: astro
+    kind: transit
+    key: no_exact_events
+    synonyms: []
+    keywords:
+    - no_exact_events
+    theme_map:
+      self: 0.0
+      career: 0.0
+      relationship: 0.0
+      finance: 0.0
+    text: 指定区间没有检测到精确主要相位，不代表没有变化；不要把空事件表解释成确定的吉凶。
+    source: 自写草稿；参考传统回归黄道占星术语；待人工审核
+    license: 本项目自写
+    reviewed: false
+    version: 3
+- id: cal-astro-14
+  system: astro
+  label: fail
+  base: kb:astro:planet_house:Neptune:1
+  defect:
+    type: house_topic_wrong
+    detail: 第1宫的主题是“自我呈现”（参考事实），text 写成了“合作与关系”
+  change:
+    field: text
+    before: 第1宫，可围绕自我呈现
+    after: 第1宫，可围绕合作与关系
+  rationale: 由现行条目改出一处缺陷，其余内容不变；按判定锚点应判 revise 或 reject。
+  entry:
+    id: kb:astro:planet_house:Neptune:1
+    system: astro
+    kind: planet_house
+    key: Neptune:1
+    synonyms: []
+    keywords:
+    - Neptune:1
+    theme_map:
+      self: 0.0
+      career: 0.0
+      relationship: 0.0
+      finance: 0.0
+    text: 海王星在第1宫，可围绕合作与关系观察想象与理想的表达。
+    source: 自写草稿；参考传统回归黄道占星术语；待人工审核
+    license: 本项目自写
+    reviewed: false
+    version: 3
+- id: cal-astro-15
+  system: astro
+  label: fail
+  base: kb:astro:planet_house:Jupiter:5
+  defect:
+    type: unsupported_direction
+    detail: text 没有自我状态方面的表述，theme_map.self 却标为 -0.3
+  change:
+    field: theme_map.self
+    before: 0.0
+    after: -0.3
+  rationale: 由现行条目改出一处缺陷，其余内容不变；按判定锚点应判 revise 或 reject。
+  entry:
+    id: kb:astro:planet_house:Jupiter:5
+    system: astro
+    kind: planet_house
+    key: Jupiter:5
+    synonyms: []
+    keywords:
+    - Jupiter:5
+    theme_map:
+      self: -0.3
+      career: 0.0
+      relationship: 0.2
+      finance: 0.0
+    text: 木星在第5宫，可围绕创作与兴趣观察学习与扩展的表达。感情方面：恋爱中乐观大方，较容易遇到愉快的相处。
+    source: 自写草稿；参考传统回归黄道占星术语；感情、财务方向由 Anthropic Claude 于2026-10-21按传统规则起草；待人工审核
+    license: 本项目自写
+    reviewed: false
+    version: 4
+- id: cal-astro-16
+  system: astro
+  label: pass
+  base: kb:astro:planet_house:Uranus:4
+  rationale: 现行条目；2026-10-21两家各两轮均判通过；自动核对无确定性措辞，非零方向符合体系方向约定或有对应表述。请按判定锚点复核。
+  entry:
+    id: kb:astro:planet_house:Uranus:4
+    system: astro
+    kind: planet_house
+    key: Uranus:4
+    synonyms: []
+    keywords:
+    - Uranus:4
+    theme_map:
+      self: 0.0
+      career: 0.0
+      relationship: 0.0
+      finance: 0.0
+    text: 天王星在第4宫，可围绕家庭与内在基础观察改变与独立的表达。
+    source: 自写草稿；参考传统回归黄道占星术语；待人工审核
+    license: 本项目自写
+    reviewed: false
+    version: 3
+- id: cal-astro-17
+  system: astro
+  label: pass
+  base: kb:astro:planet_sign:Moon:Virgo
+  rationale: 现行条目；2026-10-21两家各两轮均判通过；自动核对无确定性措辞，非零方向符合体系方向约定或有对应表述。请按判定锚点复核。
+  entry:
+    id: kb:astro:planet_sign:Moon:Virgo
+    system: astro
+    kind: planet_sign
+    key: Moon:Virgo
+    synonyms: []
+    keywords:
+    - Moon:Virgo
+    theme_map:
+      self: 0.0
+      career: 0.0
+      relationship: 0.0
+      finance: 0.0
+    text: 月亮落处女，关注感受与安全感。可尝试：细分任务提升质量，避免完美主义拖慢。单一落座不决定性格或成败。可把工作节奏、团队支持与资源稳定作为小任务探索方向，并用真实成果与反馈决定职业选择。
+    source: 自写草稿；参考传统回归黄道占星术语；待人工审核
+    license: 本项目自写
+    reviewed: false
+    version: 3
+- id: cal-astro-18
+  system: astro
+  label: pass
+  base: kb:astro:planet:Venus
+  rationale: 现行条目；2026-10-21两家各两轮均判通过；自动核对无确定性措辞，非零方向符合体系方向约定或有对应表述。请按判定锚点复核。
+  entry:
+    id: kb:astro:planet:Venus
+    system: astro
+    kind: planet
+    key: Venus
+    synonyms: []
+    keywords:
+    - Venus
+    theme_map:
+      self: 0.0
+      career: 0.0
+      relationship: 0.0
+      finance: 0.0
+    text: 金星在传统占星中用于讨论价值取舍与关系协调。这是象征性反思主题，不表示现实事件必然发生。职业探索时可用用户体验、内容表达与协作协调等任务作实际验证的例子；不是已知技能或职业适配结论。
+    source: 自写草稿；参考传统回归黄道占星术语；待人工审核
+    license: 本项目自写
+    reviewed: false
+    version: 3
+- id: cal-astro-19
+  system: astro
+  label: pass
+  base: kb:astro:planet_house:Saturn:9
+  rationale: 现行条目；2026-10-21两家各两轮均判通过；自动核对无确定性措辞，非零方向符合体系方向约定或有对应表述。请按判定锚点复核。
+  entry:
+    id: kb:astro:planet_house:Saturn:9
+    system: astro
+    kind: planet_house
+    key: Saturn:9
+    synonyms: []
+    keywords:
+    - Saturn:9
+    theme_map:
+      self: 0.0
+      career: 0.0
+      relationship: 0.0
+      finance: 0.0
+    text: 土星在第9宫，可围绕远行、学习与视野观察责任、边界与长期投入的表达。
+    source: 自写草稿；参考传统回归黄道占星术语；待人工审核
+    license: 本项目自写
+    reviewed: false
+    version: 3
+- id: cal-astro-20
+  system: astro
+  label: fail
+  base: kb:astro:planet_sign:Saturn:Aries
+  defect:
+    type: dignity_wrong
+    detail: 按本项目尊贵表此配置为落陷，text 写成了擢升
+  change:
+    field: text
+    before: 为落陷
+    after: 为擢升
+  rationale: 由现行条目改出一处缺陷，其余内容不变；按判定锚点应判 revise 或 reject。
+  entry:
+    id: kb:astro:planet_sign:Saturn:Aries
+    system: astro
+    kind: planet_sign
+    key: Saturn:Aries
+    synonyms: []
+    keywords:
+    - Saturn:Aries
+    theme_map:
+      self: 0.0
+      career: 0.0
+      relationship: 0.0
+      finance: -0.15
+    text: 土星落白羊，关注责任、边界与长期投入。可尝试：主动尝试，同时留出确认步骤。单一落座不决定性格或成败。可把质量标准、长期计划和职责边界作为小任务探索方向，并用真实成果与反馈决定职业选择。传统上土星在白羊为擢升，财务方面容易因压力过度保守或感到资源吃紧，宜做长期规划。
+    source: 自写草稿；参考传统回归黄道占星术语；感情、财务方向由 Anthropic Claude 于2026-10-21按传统规则起草；待人工审核
+    license: 本项目自写
+    reviewed: false
+    version: 4
+- id: cal-astro-21
+  system: astro
+  label: fail
+  base: kb:astro:planet_sign:Mars:Scorpio
+  defect:
+    type: prediction
+    detail: 加入了对现实事件的预测（“预示……会……”），没有确定性词语但仍是预测
+  change:
+    field: text
+    before: （无）
+    after: 拥有这一配置的人，近期会遇到合适的伴侣。
+  rationale: 由现行条目改出一处缺陷，其余内容不变；按判定锚点应判 revise 或 reject。
+  entry:
+    id: kb:astro:planet_sign:Mars:Scorpio
+    system: astro
+    kind: planet_sign
+    key: Mars:Scorpio
+    synonyms: []
+    keywords:
+    - Mars:Scorpio
+    theme_map:
+      self: 0.0
+      career: 0.0
+      relationship: 0.15
+      finance: 0.0
+    text: 火星落天蝎，关注行动与竞争。可尝试：关注信任与深度，保护清楚的边界。单一落座不决定性格或成败。可把任务推进、交付与流程改善作为小任务探索方向，并用真实成果与反馈决定职业选择。传统上火星在天蝎为入庙，感情方面主动直接，敢于表达需求。拥有这一配置的人，近期会遇到合适的伴侣。
+    source: 自写草稿；参考传统回归黄道占星术语；感情、财务方向由 Anthropic Claude 于2026-10-21按传统规则起草；待人工审核
+    license: 本项目自写
+    reviewed: false
+    version: 4
+- id: cal-astro-22
+  system: astro
+  label: fail
+  base: kb:astro:planet_sign:Moon:Scorpio
+  defect:
+    type: direction_contradicts_text
+    detail: text 对感情关系的表述偏阻，theme_map.relationship 却是 +0.15（原为 -0.15）
+  change:
+    field: theme_map.relationship
+    before: -0.15
+    after: 0.15
+  rationale: 由现行条目改出一处缺陷，其余内容不变；按判定锚点应判 revise 或 reject。
+  entry:
+    id: kb:astro:planet_sign:Moon:Scorpio
+    system: astro
+    kind: planet_sign
+    key: Moon:Scorpio
+    synonyms: []
+    keywords:
+    - Moon:Scorpio
+    theme_map:
+      self: 0.0
+      career: 0.0
+      relationship: 0.15
+      finance: 0.0
+    text: 月亮落天蝎，关注感受与安全感。可尝试：关注信任与深度，保护清楚的边界。单一落座不决定性格或成败。可把工作节奏、团队支持与资源稳定作为小任务探索方向，并用真实成果与反馈决定职业选择。传统上月亮在天蝎为落陷，感情方面情感需求不易直接说出，宜主动沟通感受。
+    source: 自写草稿；参考传统回归黄道占星术语；感情、财务方向由 Anthropic Claude 于2026-10-21按传统规则起草；待人工审核
+    license: 本项目自写
+    reviewed: false
+    version: 4
+- id: cal-astro-23
+  system: astro
+  label: fail
+  base: kb:astro:planet_sign:Sun:Virgo
+  defect:
+    type: prediction
+    detail: 加入了对现实事件的预测（“预示……会……”），没有确定性词语但仍是预测
+  change:
+    field: text
+    before: （无）
+    after: 这一配置预示你今年会迎来职位上的晋升。
+  rationale: 由现行条目改出一处缺陷，其余内容不变；按判定锚点应判 revise 或 reject。
+  entry:
+    id: kb:astro:planet_sign:Sun:Virgo
+    system: astro
+    kind: planet_sign
+    key: Sun:Virgo
+    synonyms: []
+    keywords:
+    - Sun:Virgo
+    theme_map:
+      self: 0.0
+      career: 0.0
+      relationship: 0.0
+      finance: 0.0
+    text: 太阳落处女，关注自我表达与目标。可尝试：细分任务提升质量，避免完美主义拖慢。单一落座不决定性格或成败。可把目标拆解、项目责任和成果呈现作为小任务探索方向，并用真实成果与反馈决定职业选择。这一配置预示你今年会迎来职位上的晋升。
+    source: 自写草稿；参考传统回归黄道占星术语；待人工审核
+    license: 本项目自写
+    reviewed: false
+    version: 3
+- id: cal-astro-24
+  system: astro
+  label: pass
+  base: kb:astro:planet:Mercury
+  rationale: 现行条目；2026-10-21两家各两轮均判通过；自动核对无确定性措辞，非零方向符合体系方向约定或有对应表述。请按判定锚点复核。
+  entry:
+    id: kb:astro:planet:Mercury
+    system: astro
+    kind: planet
+    key: Mercury
+    synonyms: []
+    keywords:
+    - Mercury
+    theme_map:
+      self: 0.0
+      career: 0.0
+      relationship: 0.0
+      finance: 0.0
+    text: 水星在传统占星中用于讨论信息理解与沟通。这是象征性反思主题，不表示现实事件必然发生。职业探索时可用需求梳理、业务分析、技术写作与知识管理等任务作实际验证的例子；不是已知技能或职业适配结论。
+    source: 自写草稿；参考传统回归黄道占星术语；待人工审核
+    license: 本项目自写
+    reviewed: false
+    version: 3
+- id: cal-astro-25
+  system: astro
+  label: fail
+  base: kb:astro:planet_sign:Moon:Cancer
+  defect:
+    type: dignity_wrong
+    detail: 按本项目尊贵表此配置为入庙，text 写成了失势
+  change:
+    field: text
+    before: 为入庙
+    after: 为失势
+  rationale: 由现行条目改出一处缺陷，其余内容不变；按判定锚点应判 revise 或 reject。
+  entry:
+    id: kb:astro:planet_sign:Moon:Cancer
+    system: astro
+    kind: planet_sign
+    key: Moon:Cancer
+    synonyms: []
+    keywords:
+    - Moon:Cancer
+    theme_map:
+      self: 0.0
+      career: 0.0
+      relationship: 0.15
+      finance: 0.0
+    text: 月亮落巨蟹，关注感受与安全感。可尝试：关注归属感，表达需求而非期待别人猜。单一落座不决定性格或成败。可把工作节奏、团队支持与资源稳定作为小任务探索方向，并用真实成果与反馈决定职业选择。传统上月亮在巨蟹为失势，感情方面情感需求较容易被理解和回应。
+    source: 自写草稿；参考传统回归黄道占星术语；感情、财务方向由 Anthropic Claude 于2026-10-21按传统规则起草；待人工审核
+    license: 本项目自写
+    reviewed: false
+    version: 4
+- id: cal-astro-26
+  system: astro
+  label: fail
+  base: kb:astro:planet_sign:Moon:Taurus
+  defect:
+    type: dignity_wrong
+    detail: 按本项目尊贵表此配置为擢升，text 写成了落陷
+  change:
+    field: text
+    before: 为擢升
+    after: 为落陷
+  rationale: 由现行条目改出一处缺陷，其余内容不变；按判定锚点应判 revise 或 reject。
+  entry:
+    id: kb:astro:planet_sign:Moon:Taurus
+    system: astro
+    kind: planet_sign
+    key: Moon:Taurus
+    synonyms: []
+    keywords:
+    - Moon:Taurus
+    theme_map:
+      self: 0.0
+      career: 0.0
+      relationship: 0.15
+      finance: 0.0
+    text: 月亮落金牛，关注感受与安全感。可尝试：重视稳定资源，留意惯性。单一落座不决定性格或成败。可把工作节奏、团队支持与资源稳定作为小任务探索方向，并用真实成果与反馈决定职业选择。传统上月亮在金牛为落陷，感情方面情感需求较容易被理解和回应。
+    source: 自写草稿；参考传统回归黄道占星术语；感情、财务方向由 Anthropic Claude 于2026-10-21按传统规则起草；待人工审核
+    license: 本项目自写
+    reviewed: false
+    version: 4
+- id: cal-astro-27
+  system: astro
+  label: pass
+  base: kb:astro:house:8
+  rationale: 现行条目；2026-10-21两家各两轮均判通过；自动核对无确定性措辞，非零方向符合体系方向约定或有对应表述。请按判定锚点复核。
+  entry:
+    id: kb:astro:house:8
+    system: astro
+    kind: house
+    key: '8'
+    synonyms: []
+    keywords:
+    - '8'
+    theme_map:
+      self: 0.0
+      career: 0.0
+      relationship: 0.0
+      finance: 0.0
+    text: 第8宫用于讨论共享资源与信任；宫位依赖可靠出生时刻。
+    source: 自写草稿；参考传统回归黄道占星术语；待人工审核
+    license: 本项目自写
+    reviewed: false
+    version: 3
+- id: cal-astro-28
+  system: astro
+  label: pass
+  base: kb:astro:sign:Leo
+  rationale: 现行条目；2026-10-21两家各两轮均判通过；自动核对无确定性措辞，非零方向符合体系方向约定或有对应表述。请按判定锚点复核。
+  entry:
+    id: kb:astro:sign:Leo
+    system: astro
+    kind: sign
+    key: Leo
+    synonyms: []
+    keywords:
+    - Leo
+    theme_map:
+      self: 0.0
+      career: 0.0
+      relationship: 0.0
+      finance: 0.0
+    text: 狮子的象征表达可参考：愿意展示成果，也倾听合作反馈。
+    source: 自写草稿；参考传统回归黄道占星术语；待人工审核
+    license: 本项目自写
+    reviewed: false
+    version: 3
+- id: cal-astro-29
+  system: astro
+  label: pass
+  base: kb:astro:aspect:conjunction
+  rationale: 现行条目；2026-10-21两家各两轮均判通过；自动核对无确定性措辞，非零方向符合体系方向约定或有对应表述。请按判定锚点复核。
+  entry:
+    id: kb:astro:aspect:conjunction
+    system: astro
+    kind: aspect
+    key: conjunction
+    synonyms: []
+    keywords:
+    - conjunction
+    theme_map:
+      self: 0.0
+      career: 0.0
+      relationship: 0.0
+      finance: 0.0
+    text: 合相强调主题集中，需要协调两种需求。本命相位讨论长期习惯，行运相位只对应工具给出的日期范围；不是现实事件预测。
+    source: 自写草稿；参考传统回归黄道占星术语；待人工审核
+    license: 本项目自写
+    reviewed: false
+    version: 3
+- id: cal-astro-30
+  system: astro
+  label: fail
+  base: kb:astro:planet_house:Mercury:6
+  defect:
+    type: prediction
+    detail: 加入了对现实事件的预测（“预示……会……”），没有确定性词语但仍是预测
+  change:
+    field: text
+    before: （无）
+    after: 拥有这一配置的人，近期会遇到合适的伴侣。
+  rationale: 由现行条目改出一处缺陷，其余内容不变；按判定锚点应判 revise 或 reject。
+  entry:
+    id: kb:astro:planet_house:Mercury:6
+    system: astro
+    kind: planet_house
+    key: Mercury:6
+    synonyms: []
+    keywords:
+    - Mercury:6
+    theme_map:
+      self: 0.0
+      career: 0.0
+      relationship: 0.0
+      finance: 0.0
+    text: 水星在第6宫，可围绕日常工作与习惯观察信息理解与沟通的表达。拥有这一配置的人，近期会遇到合适的伴侣。
+    source: 自写草稿；参考传统回归黄道占星术语；待人工审核
+    license: 本项目自写
+    reviewed: false
+    version: 3
+- id: cal-bazi-01
+  system: bazi
+  label: fail
+  base: kb:bazi:ten_god:正印
+  defect:
+    type: prediction
+    detail: 加入了对现实事件的预测（“预示……会……”），没有确定性词语但仍是预测
+  change:
+    field: text
+    before: （无）
+    after: 命局中出现它，预示近两年会遇到贵人相助。
+  rationale: 由现行条目改出一处缺陷，其余内容不变；按判定锚点应判 revise 或 reject。
+  entry:
+    id: kb:bazi:ten_god:正印
+    system: bazi
+    kind: ten_god
+    key: 正印
+    synonyms: []
+    keywords:
+    - 正印
+    theme_map:
+      self: 0.2
+      career: 0.2
+      relationship: 0.1
+      finance: 0.0
+    text: 正印是相对日主的传统关系标签，主题是学习与支持：借助学习和支持体系完善准备，避免只积累不行动。感情方面重视照顾与支持。传统上配偶星按性别区分，这里只作不分性别的倾向参考。命局中出现它，预示近两年会遇到贵人相助。
+    source: 自写草稿；参考《渊海子平》《三命通会》传统术语，未复制原文；感情、财务方向由 Anthropic Claude 于2026-10-21按传统规则起草；待人工审核
+    license: 本项目自写
+    reviewed: false
+    version: 4
+- id: cal-bazi-02
+  system: bazi
+  label: pass
+  base: kb:bazi:convention:unknown_time
+  rationale: 现行条目；2026-10-21两家各两轮均判通过；自动核对无确定性措辞，非零方向符合体系方向约定或有对应表述，与参考事实一致。请按判定锚点复核。
+  entry:
+    id: kb:bazi:convention:unknown_time
+    system: bazi
+    kind: convention
+    key: unknown_time
+    synonyms: []
+    keywords:
+    - unknown_time
+    theme_map:
+      self: 0.0
+      career: 0.0
+      relationship: 0.0
+      finance: 0.0
+    text: 出生时辰未知只能提供能确定的三柱，时柱与精确起运不可用；出生日期跨节气或真太阳时可能跨日时须先追问，仍未知则展示候选并标明不确定性。
+    source: 自写草稿；参考《渊海子平》《三命通会》传统术语，未复制原文；待人工审核
+    license: 本项目自写
+    reviewed: false
+    version: 3
+- id: cal-bazi-03
+  system: bazi
+  label: fail
+  base: kb:bazi:god_pillar:劫财:year
+  defect:
+    type: prediction
+    detail: 加入了对现实事件的预测（“预示……会……”），没有确定性词语但仍是预测
+  change:
+    field: text
+    before: （无）
+    after: 有此组合的人，中年以后财运会明显上升。
+  rationale: 由现行条目改出一处缺陷，其余内容不变；按判定锚点应判 revise 或 reject。
+  entry:
+    id: kb:bazi:god_pillar:劫财:year
+    system: bazi
+    kind: god_pillar
+    key: 劫财:year
+    synonyms: []
+    keywords:
+    - 劫财:year
+    theme_map:
+      self: -0.1
+      career: -0.1
+      relationship: -0.15
+      finance: -0.2
+    text: 劫财是相对日主的传统关系标签，主题是竞争与共享：留意资源边界，协商清楚投入和分配。感情方面容易出现竞争或争执，宜坦诚说明边界；财务方面留意资源被分走或冲动花费，借贷与合伙要写清约定。传统上配偶星按性别区分，这里只作不分性别的倾向参考。在年柱可作为该柱位置的反思线索，不能代替全局分析。有此组合的人，中年以后财运会明显上升。
+    source: 自写草稿；参考《渊海子平》《三命通会》传统术语，未复制原文；感情、财务方向由 Anthropic Claude 于2026-10-21按传统规则起草；待人工审核
+    license: 本项目自写
+    reviewed: false
+    version: 4
+- id: cal-bazi-04
+  system: bazi
+  label: pass
+  base: kb:bazi:element:土
+  rationale: 现行条目；2026-10-21两家各两轮均判通过；自动核对无确定性措辞，非零方向符合体系方向约定或有对应表述，与参考事实一致。请按判定锚点复核。
+  entry:
+    id: kb:bazi:element:土
+    system: bazi
+    kind: element
+    key: 土
+    synonyms: []
+    keywords:
+    - 土
+    theme_map:
+      self: 0.0
+      career: 0.0
+      relationship: 0.0
+      finance: 0.0
+    text: 五行土的出现次数只说明本工具的简单计数，需结合节气与藏干理解，不能据此断言需要补某五行。
+    source: 自写草稿；参考《渊海子平》《三命通会》传统术语，未复制原文；待人工审核
+    license: 本项目自写
+    reviewed: false
+    version: 3
+- id: cal-bazi-05
+  system: bazi
+  label: fail
+  base: kb:bazi:hidden:子
+  defect:
+    type: hidden_stems_wrong
+    detail: 子的藏干应为癸（参考事实），text 写成甲
+  change:
+    field: text
+    before: 癸
+    after: 甲
+  rationale: 由现行条目改出一处缺陷，其余内容不变；按判定锚点应判 revise 或 reject。
+  entry:
+    id: kb:bazi:hidden:子
+    system: bazi
+    kind: hidden
+    key: 子
+    synonyms:
+    - 子藏癸
+    - 子支藏干
+    keywords:
+    - 子
+    - 癸
+    - 藏干
+    - 日主
+    - 十神
+    theme_map:
+      self: 0.0
+      career: 0.0
+      relationship: 0.0
+      finance: 0.0
+    text: 在传统命理的藏干表中，子藏甲，即地支“子”对应的藏干是天干“癸”。“藏干”指传统规则中地支所对应的天干；“日主”指出生那一天的天干，是计算十神关系的参照。癸对应哪一种十神，需根据当前日主确定，不能仅凭藏干数量判断旺衰。这些属于传统命理的符号规则，不代表对个人特质或现实结果的确定判断。
+    source: 自写草稿；参考《渊海子平》《三命通会》传统术语，未复制原文；待人工审核
+    license: 本项目自写
+    reviewed: false
+    version: 4
+- id: cal-bazi-06
+  system: bazi
+  label: pass
+  base: kb:bazi:relation:地支冲
+  rationale: 现行条目；2026-10-21两家各两轮均判通过；自动核对无确定性措辞，非零方向符合体系方向约定或有对应表述，与参考事实一致。请按判定锚点复核。
+  entry:
+    id: kb:bazi:relation:地支冲
+    system: bazi
+    kind: relation
+    key: 地支冲
+    synonyms:
+    - 地支相冲
+    - 地支六冲
+    - 六冲
+    keywords:
+    - 地支冲
+    - 相冲
+    - 子午
+    - 丑未
+    - 寅申
+    - 卯酉
+    - 辰戌
+    - 巳亥
+    - 对立
+    - 变动
+    - 冲击
+    - 调整
+    theme_map:
+      self: 0.0
+      career: 0.0
+      relationship: 0.0
+      finance: 0.0
+    text: 地支冲是传统干支体系中特定地支之间的相冲关系，共有六组：子午、丑未、寅申、卯酉、辰戌、巳亥。白话说，它用两个方向相对、彼此冲撞的意象，象征对立、变动或原有安排受到冲击，侧重直接的拉扯与调整，并非刑、害、破等关系的另一种叫法。作为反思提示，可以用它检查不同需求是否冲突、原有节奏是否需要调整。相冲并非一概不利，也不能据此认定会发生争执、分离或其他具体事件；实际判断仍需依据现实情况。
+    source: 自写草稿；参考《渊海子平》《三命通会》传统术语，未复制原文；待人工审核
+    license: 本项目自写
+    reviewed: false
+    version: 4
+- id: cal-bazi-07
+  system: bazi
+  label: pass
+  base: kb:bazi:ten_god:食神
+  rationale: 现行条目；2026-10-21两家各两轮均判通过；自动核对无确定性措辞，非零方向符合体系方向约定或有对应表述，与参考事实一致。请按判定锚点复核。
+  entry:
+    id: kb:bazi:ten_god:食神
+    system: bazi
+    kind: ten_god
+    key: 食神
+    synonyms: []
+    keywords:
+    - 食神
+    theme_map:
+      self: 0.2
+      career: 0.2
+      relationship: 0.15
+      finance: 0.15
+    text: 食神是相对日主的传统关系标签，主题是表达与产出：通过稳定输出展示技能，保持可持续节奏。感情方面温和，重视相处的愉快感；财务方面倾向通过技能与产出带来收入。传统上配偶星按性别区分，这里只作不分性别的倾向参考。
+    source: 自写草稿；参考《渊海子平》《三命通会》传统术语，未复制原文；感情、财务方向由 Anthropic Claude 于2026-10-21按传统规则起草；待人工审核
+    license: 本项目自写
+    reviewed: false
+    version: 4
+- id: cal-bazi-08
+  system: bazi
+  label: fail
+  base: kb:bazi:hidden:寅
+  defect:
+    type: not_object_specific
+    detail: 只有通用说明，没有写出寅本身的核心信息（锚点C），换成同类其他对象也同样成立
+  change:
+    field: text
+    before: 在传统八字体系中，寅的藏干为甲、丙、戊，分别属阳木、阳火、阳土，其中甲为本气。藏干是指一个地支按传统对应关系所包含的天干；日主是指出生当天的天干，用作分析其他干支关系的参照。寅中甲、丙、戊各自对应的十神，需相对具体日主确定，不能仅凭藏干数量判断五行力量的旺衰。这些属于传统命理的分类规则，不代表对个人性格或人生结果的确定判断。
+    after: 在传统命理中，“藏干”指地支所对应的天干，具体按固定表列出。各藏干对应的十神需结合日主确定，不能仅凭藏干数量判断五行旺衰。这些是传统命理的分类规则，不代表对个人命运的确定判断。
+  rationale: 由现行条目改出一处缺陷，其余内容不变；按判定锚点应判 revise 或 reject。
+  entry:
+    id: kb:bazi:hidden:寅
+    system: bazi
+    kind: hidden
+    key: 寅
+    synonyms:
+    - 寅藏干
+    - 寅支藏干
+    keywords:
+    - 寅
+    - 藏干
+    - 甲
+    - 丙
+    - 戊
+    - 本气
+    - 日主
+    - 十神
+    theme_map:
+      self: 0.0
+      career: 0.0
+      relationship: 0.0
+      finance: 0.0
+    text: 在传统命理中，“藏干”指地支所对应的天干，具体按固定表列出。各藏干对应的十神需结合日主确定，不能仅凭藏干数量判断五行旺衰。这些是传统命理的分类规则，不代表对个人命运的确定判断。
+    source: 自写草稿；参考《渊海子平》《三命通会》传统术语，未复制原文；待人工审核
+    license: 本项目自写
+    reviewed: false
+    version: 4
+- id: cal-bazi-09
+  system: bazi
+  label: pass
+  base: kb:bazi:nayin:松柏木
+  rationale: 现行条目；2026-10-21两家各两轮均判通过；自动核对无确定性措辞，非零方向符合体系方向约定或有对应表述，与参考事实一致。请按判定锚点复核。
+  entry:
+    id: kb:bazi:nayin:松柏木
+    system: bazi
+    kind: nayin
+    key: 松柏木
+    synonyms: []
+    keywords:
+    - 松柏木
+    theme_map:
+      self: 0.0
+      career: 0.0
+      relationship: 0.0
+      finance: 0.0
+    text: 纳音松柏木是干支组合的传统分类，与天干地支主五行计数口径不同，不据纳音单独推断职业或成败。
+    source: 自写草稿；参考《渊海子平》《三命通会》传统术语，未复制原文；待人工审核
+    license: 本项目自写
+    reviewed: false
+    version: 3
+- id: cal-bazi-10
+  system: bazi
+  label: fail
+  base: kb:bazi:nayin:平地木
+  defect:
+    type: prediction
+    detail: 加入了对现实事件的预测（“预示……会……”），没有确定性词语但仍是预测
+  change:
+    field: text
+    before: （无）
+    after: 有此组合的人，中年以后财运会明显上升。
+  rationale: 由现行条目改出一处缺陷，其余内容不变；按判定锚点应判 revise 或 reject。
+  entry:
+    id: kb:bazi:nayin:平地木
+    system: bazi
+    kind: nayin
+    key: 平地木
+    synonyms: []
+    keywords:
+    - 平地木
+    theme_map:
+      self: 0.0
+      career: 0.0
+      relationship: 0.0
+      finance: 0.0
+    text: 纳音平地木是干支组合的传统分类，与天干地支主五行计数口径不同，不据纳音单独推断职业或成败。有此组合的人，中年以后财运会明显上升。
+    source: 自写草稿；参考《渊海子平》《三命通会》传统术语，未复制原文；待人工审核
+    license: 本项目自写
+    reviewed: false
+    version: 3
+- id: cal-bazi-11
+  system: bazi
+  label: fail
+  base: kb:bazi:branch:丑
+  defect:
+    type: branch_element_wrong
+    detail: 地支丑属土（参考事实），text 写成属金
+  change:
+    field: text
+    before: 属土
+    after: 属金
+  rationale: 由现行条目改出一处缺陷，其余内容不变；按判定锚点应判 revise 或 reject。
+  entry:
+    id: kb:bazi:branch:丑
+    system: bazi
+    kind: branch
+    key: 丑
+    synonyms: []
+    keywords:
+    - 丑
+    - 地支
+    - 土
+    - 藏干
+    - 己
+    - 癸
+    - 辛
+    - 五行
+    theme_map:
+      self: 0.0
+      career: 0.0
+      relationship: 0.0
+      finance: 0.0
+    text: 丑是十二地支之一，在传统干支体系中属金，藏干为己、癸、辛，分别对应土、水、金。“藏干”指传统上认为地支中包含的天干。若按地支本身的五行属性统计，丑计入土；若分析藏干，则还会涉及己土、癸水、辛金，两种方式统计的对象不同，不宜混为一谈。五行出现的数量不能直接决定“旺衰”（传统体系中五行力量的强弱），也不能据此确定“喜用神”（传统分析中被认为有助于平衡或协调的五行）。这些属性属于传统文化分类，不代表个人能力或生活结果的好坏。
+    source: 自写草稿；参考《渊海子平》《三命通会》传统术语，未复制原文；待人工审核
+    license: 本项目自写
+    reviewed: false
+    version: 4
+- id: cal-bazi-12
+  system: bazi
+  label: pass
+  base: kb:bazi:hidden:戌
+  rationale: 现行条目；2026-10-21两家各两轮均判通过；自动核对无确定性措辞，非零方向符合体系方向约定或有对应表述，与参考事实一致。请按判定锚点复核。
+  entry:
+    id: kb:bazi:hidden:戌
+    system: bazi
+    kind: hidden
+    key: 戌
+    synonyms:
+    - 戌藏干
+    - 戌支藏干
+    keywords:
+    - 戌
+    - 藏干
+    - 戊
+    - 辛
+    - 丁
+    - 日主
+    - 十神
+    theme_map:
+      self: 0.0
+      career: 0.0
+      relationship: 0.0
+      finance: 0.0
+    text: 在传统八字术语中，“藏干”指地支中所配属的天干。戌的藏干为戊、辛、丁，分别属土、金、火。“日主”指出生当日的天干，是确定十神关系的参照；戌中各藏干的十神类别，需相对具体日主计算，不能仅凭藏干数量判断五行旺衰。这些属于传统命理的分类规则，不代表对个人能力、经历或未来的确定判断。
+    source: 自写草稿；参考《渊海子平》《三命通会》传统术语，未复制原文；待人工审核
+    license: 本项目自写
+    reviewed: false
+    version: 4
+- id: cal-bazi-13
+  system: bazi
+  label: pass
+  base: kb:bazi:god_pillar:比肩:day
+  rationale: 现行条目；2026-10-21两家各两轮均判通过；自动核对无确定性措辞，非零方向符合体系方向约定或有对应表述，与参考事实一致。请按判定锚点复核。
+  entry:
+    id: kb:bazi:god_pillar:比肩:day
+    system: bazi
+    kind: god_pillar
+    key: 比肩:day
+    synonyms: []
+    keywords:
+    - 比肩:day
+    theme_map:
+      self: 0.1
+      career: 0.1
+      relationship: -0.1
+      finance: -0.1
+    text: 比肩是相对日主的传统关系标签，主题是独立与同伴：明确自己的职责，也给同伴协作空间。感情方面重视平等与独立，也容易各自坚持，宜留出协商空间；财务方面同伴分担也分享，留意合伙分配。传统上配偶星按性别区分，这里只作不分性别的倾向参考。在日柱可作为该柱位置的反思线索，不能代替全局分析。
+    source: 自写草稿；参考《渊海子平》《三命通会》传统术语，未复制原文；感情、财务方向由 Anthropic Claude 于2026-10-21按传统规则起草；待人工审核
+    license: 本项目自写
+    reviewed: false
+    version: 4
+- id: cal-bazi-14
+  system: bazi
+  label: fail
+  base: kb:bazi:branch:卯
+  defect:
+    type: not_object_specific
+    detail: 只有通用说明，没有写出卯本身的核心信息（锚点C），换成同类其他对象也同样成立
+  change:
+    field: text
+    before: 在传统干支体系中，卯是十二地支之一，五行属木，藏干为乙（乙也属木）。“藏干”指传统上归入某个地支之中的天干。按地支本身所属五行计数时，每出现一个卯，就记作一个木；列出卯所藏的乙，则是在说明其内部归属，并不是额外多出一个地支。这是两种不同的信息口径，不宜混合重复计数。五行出现的数量不能直接用来判断其强弱（传统术语称“旺衰”），也不能据此认定哪些五行有利或适合用来调和（涉及“喜用神”的传统判断）。这些分类不代表个人性格、事业、关系或财务结果。
+    after: 卯是十二地支之一，属于传统干支体系的基本单位。地支的五行与藏干按传统表确定，五行数量不能直接决定旺衰。这些属性属于传统文化分类，不代表个人能力或生活结果的好坏。
+  rationale: 由现行条目改出一处缺陷，其余内容不变；按判定锚点应判 revise 或 reject。
+  entry:
+    id: kb:bazi:branch:卯
+    system: bazi
+    kind: branch
+    key: 卯
+    synonyms:
+    - 地支卯
+    - 卯木
+    keywords:
+    - 卯
+    - 十二地支
+    - 木
+    - 藏干
+    - 乙
+    - 五行计数
+    theme_map:
+      self: 0.0
+      career: 0.0
+      relationship: 0.0
+      finance: 0.0
+    text: 卯是十二地支之一，属于传统干支体系的基本单位。地支的五行与藏干按传统表确定，五行数量不能直接决定旺衰。这些属性属于传统文化分类，不代表个人能力或生活结果的好坏。
+    source: 自写草稿；参考《渊海子平》《三命通会》传统术语，未复制原文；待人工审核
+    license: 本项目自写
+    reviewed: false
+    version: 4
+- id: cal-bazi-15
+  system: bazi
+  label: fail
+  base: kb:bazi:stem:庚
+  defect:
+    type: unsupported_direction
+    detail: text 没有事业方面的表述，theme_map.career 却标为 -0.3
+  change:
+    field: theme_map.career
+    before: 0.0
+    after: -0.3
+  rationale: 由现行条目改出一处缺陷，其余内容不变；按判定锚点应判 revise 或 reject。
+  entry:
+    id: kb:bazi:stem:庚
+    system: bazi
+    kind: stem
+    key: 庚
+    synonyms:
+    - 庚金
+    keywords:
+    - 庚
+    - 天干
+    - 阳金
+    - 五行
+    theme_map:
+      self: 0.0
+      career: -0.3
+      relationship: 0.0
+      finance: 0.0
+    text: 庚是十天干之一，在传统阴阳五行体系中属阳金，常以刚健、坚实的金属意象作象征性说明。相关解读需结合日主、所在柱位与节气等整体信息，不宜仅凭庚字推断个人性格或命运。
+    source: 自写草稿；参考《渊海子平》《三命通会》传统术语，未复制原文；待人工审核
+    license: 本项目自写
+    reviewed: false
+    version: 4
+- id: cal-bazi-16
+  system: bazi
+  label: pass
+  base: kb:bazi:hidden:午
+  rationale: 现行条目；2026-10-21两家各两轮均判通过；自动核对无确定性措辞，非零方向符合体系方向约定或有对应表述，与参考事实一致。请按判定锚点复核。
+  entry:
+    id: kb:bazi:hidden:午
+    system: bazi
+    kind: hidden
+    key: 午
+    synonyms:
+    - 午藏干
+    - 午支藏干
+    keywords:
+    - 午
+    - 丁
+    - 己
+    - 藏干
+    - 日主
+    - 十神
+    - 阴火
+    - 阴土
+    theme_map:
+      self: 0.0
+      career: 0.0
+      relationship: 0.0
+      finance: 0.0
+    text: 在传统八字术语中，“藏干”指地支中所对应的天干。午的藏干为丁、己，分别属阴火、阴土。“日主”指出生当天干支中的天干，是分析十神关系的参照；午中丁、己各自对应的十神，需相对当前日主确定，不能仅凭藏干数量判断五行旺衰。这些属于传统命理的分类规则，不代表对个人性格或人生结果的确定判断。
+    source: 自写草稿；参考《渊海子平》《三命通会》传统术语，未复制原文；待人工审核
+    license: 本项目自写
+    reviewed: false
+    version: 4
+- id: cal-bazi-17
+  system: bazi
+  label: fail
+  base: kb:bazi:hidden:亥
+  defect:
+    type: hidden_stems_wrong
+    detail: 亥的藏干应为壬、甲（参考事实），text 写成壬、乙
+  change:
+    field: text
+    before: 壬、甲
+    after: 壬、乙
+  rationale: 由现行条目改出一处缺陷，其余内容不变；按判定锚点应判 revise 或 reject。
+  entry:
+    id: kb:bazi:hidden:亥
+    system: bazi
+    kind: hidden
+    key: 亥
+    synonyms:
+    - 亥支藏干
+    - 亥中藏干
+    keywords:
+    - 亥
+    - 藏干
+    - 壬
+    - 甲
+    - 壬水
+    - 甲木
+    - 日主
+    - 十神
+    theme_map:
+      self: 0.0
+      career: 0.0
+      relationship: 0.0
+      finance: 0.0
+    text: 在传统命理中，“藏干”指地支所对应的天干。亥藏壬、乙，即壬水和甲木。“日主”指出生日期干支中的天干，是这一体系的比较基准；壬、甲各自对应的“十神”（与日主的关系类别），需根据具体日主确定，不能仅凭藏干数量判断五行旺衰。这些是传统命理的分类规则，不代表对个人命运的确定判断。
+    source: 自写草稿；参考《渊海子平》《三命通会》传统术语，未复制原文；待人工审核
+    license: 本项目自写
+    reviewed: false
+    version: 4
+- id: cal-bazi-18
+  system: bazi
+  label: fail
+  base: kb:bazi:hidden:申
+  defect:
+    type: hidden_stems_wrong
+    detail: 申的藏干应为庚、壬、戊（参考事实），text 写成庚、壬、甲
+  change:
+    field: text
+    before: 庚、壬、戊
+    after: 庚、壬、甲
+  rationale: 由现行条目改出一处缺陷，其余内容不变；按判定锚点应判 revise 或 reject。
+  entry:
+    id: kb:bazi:hidden:申
+    system: bazi
+    kind: hidden
+    key: 申
+    synonyms:
+    - 申藏干
+    - 申支藏干
+    keywords:
+    - 申
+    - 藏干
+    - 庚
+    - 壬
+    - 戊
+    - 日主
+    - 十神
+    theme_map:
+      self: 0.0
+      career: 0.0
+      relationship: 0.0
+      finance: 0.0
+    text: 在传统命理中，“藏干”指地支中所含的天干。申的藏干为庚、壬、甲。“日主”指出生日的天干；申中各藏干对应的“十神”（传统命理中的关系分类），需根据它们与日主的关系确定，不能仅凭藏干数量判断五行旺衰。
+    source: 自写草稿；参考《渊海子平》《三命通会》传统术语，未复制原文；待人工审核
+    license: 本项目自写
+    reviewed: false
+    version: 4
+- id: cal-bazi-19
+  system: bazi
+  label: pass
+  base: kb:bazi:element:木
+  rationale: 现行条目；2026-10-21两家各两轮均判通过；自动核对无确定性措辞，非零方向符合体系方向约定或有对应表述，与参考事实一致。请按判定锚点复核。
+  entry:
+    id: kb:bazi:element:木
+    system: bazi
+    kind: element
+    key: 木
+    synonyms: []
+    keywords:
+    - 木
+    theme_map:
+      self: 0.0
+      career: 0.0
+      relationship: 0.0
+      finance: 0.0
+    text: 五行木的出现次数只说明本工具的简单计数，需结合节气与藏干理解，不能据此断言需要补某五行。
+    source: 自写草稿；参考《渊海子平》《三命通会》传统术语，未复制原文；待人工审核
+    license: 本项目自写
+    reviewed: false
+    version: 3
+- id: cal-bazi-20
+  system: bazi
+  label: fail
+  base: kb:bazi:relation:天干冲
+  defect:
+    type: not_object_specific
+    detail: 只有通用说明，没有写出天干冲本身的核心信息（锚点C），换成同类其他对象也同样成立
+  change:
+    field: text
+    before: 天干冲是传统命理中对特定天干之间对立关系的称呼。本条采用甲庚、乙辛、丙壬、丁癸四组相冲的常见口径：在传统五行与方位对应中，这些组合涉及东西或南北方向相对，以及金克木、水克火。白话说，“冲”强调两端相对、难以协调的张力，并常被赋予变动、调整的象征意义。它的对象是天干，不是地支；也不同于强调配合、牵连的天干合。不同流派对天干冲的采用和解释存在差异。这里仅将其作为反思自身取向、做事方式与协调空间的文化隐喻，不据此判断现实中的吉凶或成败。
+    after: 天干冲是传统干支体系中的一种关系，需结合具体干支判断。它属于传统文化中的分类，不代表现实中的吉凶，也不能据此判断个人、事业、关系或财务的结果。
+  rationale: 由现行条目改出一处缺陷，其余内容不变；按判定锚点应判 revise 或 reject。
+  entry:
+    id: kb:bazi:relation:天干冲
+    system: bazi
+    kind: relation
+    key: 天干冲
+    synonyms:
+    - 天干相冲
+    keywords:
+    - 天干冲
+    - 甲庚
+    - 乙辛
+    - 丙壬
+    - 丁癸
+    - 方向对立
+    - 五行相克
+    - 张力
+    - 变动
+    - 调整
+    theme_map:
+      self: 0.0
+      career: 0.0
+      relationship: 0.0
+      finance: 0.0
+    text: 天干冲是传统干支体系中的一种关系，需结合具体干支判断。它属于传统文化中的分类，不代表现实中的吉凶，也不能据此判断个人、事业、关系或财务的结果。
+    source: 自写草稿；参考《渊海子平》《三命通会》传统术语，未复制原文；待人工审核
+    license: 本项目自写
+    reviewed: false
+    version: 4
+- id: cal-bazi-21
+  system: bazi
+  label: pass
+  base: kb:bazi:convention:true_solar_time
+  rationale: 现行条目；2026-10-21两家各两轮均判通过；自动核对无确定性措辞，非零方向符合体系方向约定或有对应表述，与参考事实一致。请按判定锚点复核。
+  entry:
+    id: kb:bazi:convention:true_solar_time
+    system: bazi
+    kind: convention
+    key: true_solar_time
+    synonyms:
+    - 真太阳时
+    - 视太阳时
+    keywords:
+    - true_solar_time
+    - 真太阳时
+    - 平太阳时
+    - 均时差
+    - 经度修正
+    - 北京时间
+    - 历史夏令时
+    - 节气边界
+    theme_map:
+      self: 0.0
+      career: 0.0
+      relationship: 0.0
+      finance: 0.0
+    text: 启用真太阳时时，先将记录时间换算为北京时间标准时（UTC+8；如记录使用了历史夏令时，须先扣除夏令时偏移），再按下式换算：真太阳时＝北京时间标准时＋（当地东经度数－120）×4分钟＋均时差。此处将均时差定义为“真太阳时（视太阳时）－平太阳时”：真太阳时比平太阳时快时取正值、相加，慢时取负值、相减；若所用资料将均时差定义为“平太阳时－真太阳时”，则应减去该资料的均时差值。换算后可能跨越日期或时辰边界；节气对应的物理时刻不变，比较时须使用一致的时间基准。关闭真太阳时换算时，先处理历史夏令时等时区偏移，再使用北京时间标准时。
+    source: 自写草稿；参考《渊海子平》《三命通会》传统术语，未复制原文；待人工审核
+    license: 本项目自写
+    reviewed: false
+    version: 4
+- id: cal-bazi-22
+  system: bazi
+  label: pass
+  base: kb:bazi:element_relation:同类
+  rationale: 现行条目；2026-10-21两家各两轮均判通过；自动核对无确定性措辞，非零方向符合体系方向约定或有对应表述，与参考事实一致。请按判定锚点复核。
+  entry:
+    id: kb:bazi:element_relation:同类
+    system: bazi
+    kind: element_relation
+    key: 同类
+    synonyms:
+    - 五行同类
+    - 同属一种五行
+    keywords:
+    - 同类
+    - 五行
+    - 五行属性相同
+    - 阴阳
+    - 甲木
+    - 乙木
+    - 比肩
+    - 劫财
+    theme_map:
+      self: 0.0
+      career: 0.0
+      relationship: 0.0
+      finance: 0.0
+    text: 五行关系中的“同类”，指双方同属金、木、水、火、土中的一种五行，不要求阴阳相同。例如，甲木与乙木都属木，因此属于五行同类。在传统命理中，相对于日主，阴阳相同或不同可进一步区分为比肩或劫财。仅凭同类关系不能判断喜用神，也不能据此推断吉凶。
+    source: 自写草稿；参考《渊海子平》《三命通会》传统术语，未复制原文；待人工审核
+    license: 本项目自写
+    reviewed: false
+    version: 4
+- id: cal-bazi-23
+  system: bazi
+  label: pass
+  base: kb:bazi:nayin:沙中土
+  rationale: 现行条目；2026-10-21两家各两轮均判通过；自动核对无确定性措辞，非零方向符合体系方向约定或有对应表述，与参考事实一致。请按判定锚点复核。
+  entry:
+    id: kb:bazi:nayin:沙中土
+    system: bazi
+    kind: nayin
+    key: 沙中土
+    synonyms: []
+    keywords:
+    - 沙中土
+    theme_map:
+      self: 0.0
+      career: 0.0
+      relationship: 0.0
+      finance: 0.0
+    text: 纳音沙中土是干支组合的传统分类，与天干地支主五行计数口径不同，不据纳音单独推断职业或成败。
+    source: 自写草稿；参考《渊海子平》《三命通会》传统术语，未复制原文；待人工审核
+    license: 本项目自写
+    reviewed: false
+    version: 3
+- id: cal-bazi-24
+  system: bazi
+  label: pass
+  base: kb:bazi:god_pillar:比肩:time
+  rationale: 现行条目；2026-10-21两家各两轮均判通过；自动核对无确定性措辞，非零方向符合体系方向约定或有对应表述，与参考事实一致。请按判定锚点复核。
+  entry:
+    id: kb:bazi:god_pillar:比肩:time
+    system: bazi
+    kind: god_pillar
+    key: 比肩:time
+    synonyms: []
+    keywords:
+    - 比肩:time
+    theme_map:
+      self: 0.1
+      career: 0.1
+      relationship: -0.1
+      finance: -0.1
+    text: 比肩是相对日主的传统关系标签，主题是独立与同伴：明确自己的职责，也给同伴协作空间。感情方面重视平等与独立，也容易各自坚持，宜留出协商空间；财务方面同伴分担也分享，留意合伙分配。传统上配偶星按性别区分，这里只作不分性别的倾向参考。在时柱可作为该柱位置的反思线索，不能代替全局分析。
+    source: 自写草稿；参考《渊海子平》《三命通会》传统术语，未复制原文；感情、财务方向由 Anthropic Claude 于2026-10-21按传统规则起草；待人工审核
+    license: 本项目自写
+    reviewed: false
+    version: 4
+- id: cal-bazi-25
+  system: bazi
+  label: fail
+  base: kb:bazi:relation:三会
+  defect:
+    type: group_members_wrong
+    detail: 亥子丑三会为水（参考事实），text 写成会木
+  change:
+    field: text
+    before: 亥子丑对应冬季，会水
+    after: 亥子丑对应冬季，会木
+  rationale: 由现行条目改出一处缺陷，其余内容不变；按判定锚点应判 revise 或 reject。
+  entry:
+    id: kb:bazi:relation:三会
+    system: bazi
+    kind: relation
+    key: 三会
+    synonyms:
+    - 地支三会
+    keywords:
+    - 三会
+    - 地支
+    - 同一季节
+    - 五行会聚
+    - 寅卯辰
+    - 巳午未
+    - 申酉戌
+    - 亥子丑
+    theme_map:
+      self: 0.0
+      career: 0.0
+      relationship: 0.0
+      finance: 0.0
+    text: 三会是传统干支体系中，代表同一季节的三个地支组合在一起、被视为相应五行之气会聚的关系：寅卯辰对应春季，会木；巳午未对应夏季，会火；申酉戌对应秋季，会金；亥子丑对应冬季，会木。白话说，就是把同一季节的三个地支看作一组，强调某种力量的集中。它与三合的区别在于：三会按同一季节组合，三合则按五行生长、旺盛、收藏三个阶段组合。这里的“力量”是传统象征说法，不表示现实中一定有利或不利，也不能据此判断个人、事业、关系或财务的结果。本条只介绍组合含义，不判断具体情况下是否满足形成相应五行格局的条件。
+    source: 自写草稿；参考《渊海子平》《三命通会》传统术语，未复制原文；待人工审核
+    license: 本项目自写
+    reviewed: false
+    version: 4
+- id: cal-bazi-26
+  system: bazi
+  label: pass
+  base: kb:bazi:stem:辛
+  rationale: 现行条目；2026-10-21两家各两轮均判通过；自动核对无确定性措辞，非零方向符合体系方向约定或有对应表述，与参考事实一致。请按判定锚点复核。
+  entry:
+    id: kb:bazi:stem:辛
+    system: bazi
+    kind: stem
+    key: 辛
+    synonyms:
+    - 辛金
+    keywords:
+    - 辛
+    - 十天干
+    - 阴金
+    - 五行
+    theme_map:
+      self: 0.0
+      career: 0.0
+      relationship: 0.0
+      finance: 0.0
+    text: 辛是十天干之一，在传统阴阳五行体系中属阴金，常以珠玉、精细金属作象征。相关解读需结合日主、所在柱位与节气等整体信息，不宜单凭一个字推断性格或命运。
+    source: 自写草稿；参考《渊海子平》《三命通会》传统术语，未复制原文；待人工审核
+    license: 本项目自写
+    reviewed: false
+    version: 4
+- id: cal-bazi-27
+  system: bazi
+  label: fail
+  base: kb:bazi:branch:寅
+  defect:
+    type: branch_element_wrong
+    detail: 地支寅属木（参考事实），text 写成属火
+  change:
+    field: text
+    before: 属木
+    after: 属火
+  rationale: 由现行条目改出一处缺陷，其余内容不变；按判定锚点应判 revise 或 reject。
+  entry:
+    id: kb:bazi:branch:寅
+    system: bazi
+    kind: branch
+    key: 寅
+    synonyms:
+    - 地支寅
+    - 寅木
+    keywords:
+    - 寅
+    - 地支
+    - 木
+    - 藏干
+    - 甲
+    - 丙
+    - 戊
+    - 五行数量
+    theme_map:
+      self: 0.0
+      career: 0.0
+      relationship: 0.0
+      finance: 0.0
+    text: 寅是十二地支之一，在传统干支体系中属火，藏干为甲、丙、戊，分别对应木、火、土。“藏干”指传统上认为地支中所包含的天干。按地支本身的五行属性统计数量时，寅计入木；分析藏干时，则另外考察甲、丙、戊所代表的五行，两者是不同的观察口径，不宜混为简单加总。五行出现的数量不能直接决定其强弱（传统术语称“旺衰”），也不能单凭数量判断哪些五行被认为有助于整体平衡（涉及“喜用神”的判断）。这些属于传统命理的解释框架，不代表对个人性格、际遇或吉凶的确定结论。
+    source: 自写草稿；参考《渊海子平》《三命通会》传统术语，未复制原文；待人工审核
+    license: 本项目自写
+    reviewed: false
+    version: 4
+- id: cal-bazi-28
+  system: bazi
+  label: pass
+  base: kb:bazi:element_relation:生
+  rationale: 现行条目；2026-10-21两家各两轮均判通过；自动核对无确定性措辞，非零方向符合体系方向约定或有对应表述，与参考事实一致。请按判定锚点复核。
+  entry:
+    id: kb:bazi:element_relation:生
+    system: bazi
+    kind: element_relation
+    key: 生
+    synonyms:
+    - 相生
+    - 五行相生
+    keywords:
+    - 生
+    - 相生
+    - 五行
+    - 生助
+    - 滋养
+    - 作用方向
+    theme_map:
+      self: 0.0
+      career: 0.0
+      relationship: 0.0
+      finance: 0.0
+    text: 在传统五行理论中，“生”指一行对另一行的生助、滋养关系，由双方的五行属性及作用方向确定，不以阴阳属性为成立条件。例如“水生木”表示水生助木，而不是木生助水。相生顺序为木生火、火生土、土生金、金生水、水生木。阴阳属性可用于进一步区分十神等关系。相生本身不代表吉凶，仅凭这一关系不能判断喜用神。
+    source: 自写草稿；参考《渊海子平》《三命通会》传统术语，未复制原文；待人工审核
+    license: 本项目自写
+    reviewed: false
+    version: 4
+- id: cal-bazi-29
+  system: bazi
+  label: fail
+  base: kb:bazi:relation:三合
+  defect:
+    type: group_members_wrong
+    detail: 申子辰三合为水局（参考事实），text 写成木局
+  change:
+    field: text
+    before: 申子辰合水局
+    after: 申子辰合木局
+  rationale: 由现行条目改出一处缺陷，其余内容不变；按判定锚点应判 revise 或 reject。
+  entry:
+    id: kb:bazi:relation:三合
+    system: bazi
+    kind: relation
+    key: 三合
+    synonyms:
+    - 地支三合
+    keywords:
+    - 三合
+    - 地支
+    - 五行会聚
+    - 申子辰
+    - 亥卯未
+    - 寅午戌
+    - 巳酉丑
+    - 多方协调
+    theme_map:
+      self: 0.0
+      career: 0.0
+      relationship: 0.0
+      finance: 0.0
+    text: 三合是传统干支体系中特定三个地支形成的组合：申子辰合木局、亥卯未合木局、寅午戌合火局、巳酉丑合金局。白话说，传统上把这些组合解释为三方围绕同一种五行属性会聚，并非任意三个地支都算三合。它不同于两个地支配对的“六合”，也不同于同一季节三个地支相聚的“三会”。三合不表示一概有利，也不保证合作顺利或事情成功；可借此反思多方如何协调、共同目标是否清晰。本条不判断组合是否满足传统所说的五行转化条件。
+    source: 自写草稿；参考《渊海子平》《三命通会》传统术语，未复制原文；待人工审核
+    license: 本项目自写
+    reviewed: false
+    version: 4
+- id: cal-bazi-30
+  system: bazi
+  label: fail
+  base: kb:bazi:stem:己
+  defect:
+    type: unsupported_direction
+    detail: text 没有感情关系方面的表述，theme_map.relationship 却标为 +0.3
+  change:
+    field: theme_map.relationship
+    before: 0.0
+    after: 0.3
+  rationale: 由现行条目改出一处缺陷，其余内容不变；按判定锚点应判 revise 或 reject。
+  entry:
+    id: kb:bazi:stem:己
+    system: bazi
+    kind: stem
+    key: 己
+    synonyms:
+    - 己土
+    keywords:
+    - 己
+    - 天干
+    - 阴土
+    - 田园之土
+    - 承载
+    - 涵养
+    theme_map:
+      self: 0.0
+      career: 0.0
+      relationship: 0.3
+      finance: 0.0
+    text: 己是十天干之一，在传统阴阳五行体系中属阴土，常以田园之土比喻其承载、涵养的象征含义。相关解读需结合日主、所在柱位与节气等整体背景，不宜仅凭“己”字推断个人性格或命运。
+    source: 自写草稿；参考《渊海子平》《三命通会》传统术语，未复制原文；待人工审核
+    license: 本项目自写
+    reviewed: false
+    version: 4
+- id: cal-name-01
+  system: name
+  label: pass
+  base: kb:name:convention:stroke_rule
+  rationale: 现行条目；2026-10-21两家各两轮均判通过；自动核对无确定性措辞，非零方向符合体系方向约定或有对应表述，与参考事实一致。请按判定锚点复核。
+  entry:
+    id: kb:name:convention:stroke_rule
+    system: name
+    kind: convention
+    key: stroke_rule
+    synonyms: []
+    keywords:
+    - stroke_rule
+    theme_map:
+      self: 0.0
+      career: 0.0
+      relationship: 0.0
+      finance: 0.0
+    text: 五格笔画按康熙字典繁体字形计数，偏旁按原字计算（如氵按水4画、艹按艸6画），数字一至十按数值计；与现代简体笔画不同。
+    source: 自写草稿；按五格剖象法（熊崎氏）民间约定整理，未复制任何书籍文字；待人工审核
+    license: 本项目自写
+    reviewed: false
+    version: 1
+- id: cal-name-02
+  system: name
+  label: fail
+  base: kb:name:shuli:71
+  defect:
+    type: tail_digit_element_wrong
+    detail: 尾数1对应木（参考事实），text 写成土
+  change:
+    field: text
+    before: 尾数1在三才里对应木
+    after: 尾数1在三才里对应土
+  rationale: 由现行条目改出一处缺陷，其余内容不变；按判定锚点应判 revise 或 reject。
+  entry:
+    id: kb:name:shuli:71
+    system: name
+    kind: shuli
+    key: '71'
+    synonyms: []
+    keywords:
+    - 71数
+    - 半吉
+    theme_map:
+      self: 0.05
+      career: 0.05
+      relationship: 0.05
+      finance: 0.05
+    text: 71数在五格数理的民间约定中常被归为“半吉”，尾数1在三才里对应土。传统上被看作吉凶参半的数，意味着顺与不顺都与个人选择有关，适合提醒自己稳住节奏。数理是取名习俗，不决定一个人的经历。
+    source: 自写草稿；按五格剖象法（熊崎氏）民间约定整理，未复制任何书籍文字；待人工审核
+    license: 本项目自写
+    reviewed: false
+    version: 1
+- id: cal-name-03
+  system: name
+  label: pass
+  base: kb:name:sancai:木火金
+  rationale: 现行条目；2026-10-21两家各两轮均判通过；自动核对无确定性措辞，非零方向符合体系方向约定或有对应表述，与参考事实一致。请按判定锚点复核。
+  entry:
+    id: kb:name:sancai:木火金
+    system: name
+    kind: sancai
+    key: 木火金
+    synonyms: []
+    keywords:
+    - 木火金
+    - 需要协调
+    theme_map:
+      self: 0.1
+      career: 0.0
+      relationship: -0.1
+      finance: 0.0
+    text: 三才木火金（天格木、人格火、地格金）：天格木与人格火是“生”的关系，外部环境容易给自我提供支持；人格火与地格金是“克”的关系，对身边的人和事要求较多，宜放慢节奏沟通。按五行生克规则整体可看作“需要协调”，只作自我观察的线索。
+    source: 自写草稿；按五格剖象法（熊崎氏）民间约定整理，未复制任何书籍文字；待人工审核
+    license: 本项目自写
+    reviewed: false
+    version: 1
+- id: cal-name-04
+  system: name
+  label: fail
+  base: kb:name:sancai:水水木
+  defect:
+    type: prediction
+    detail: 加入了对现实事件的预测（“预示……会……”），没有确定性词语但仍是预测
+  change:
+    field: text
+    before: （无）
+    after: 用这个数理的人，中年以后会财运亨通。
+  rationale: 由现行条目改出一处缺陷，其余内容不变；按判定锚点应判 revise 或 reject。
+  entry:
+    id: kb:name:sancai:水水木
+    system: name
+    kind: sancai
+    key: 水水木
+    synonyms: []
+    keywords:
+    - 水水木
+    - 较顺
+    theme_map:
+      self: 0.1
+      career: 0.1
+      relationship: 0.1
+      finance: 0.0
+    text: 三才水水木（天格水、人格水、地格木）：天格水与人格水是“同”的关系，内外节奏一致，容易保持方向；人格水与地格木是“生”的关系，愿意为身边的人与生活基础投入。按五行生克规则整体可看作“较顺”，只作自我观察的线索。用这个数理的人，中年以后会财运亨通。
+    source: 自写草稿；按五格剖象法（熊崎氏）民间约定整理，未复制任何书籍文字；待人工审核
+    license: 本项目自写
+    reviewed: false
+    version: 1
+- id: cal-name-05
+  system: name
+  label: pass
+  base: kb:name:shuli:37
+  rationale: 现行条目；2026-10-21两家各两轮均判通过；自动核对无确定性措辞，非零方向符合体系方向约定或有对应表述，与参考事实一致。请按判定锚点复核。
+  entry:
+    id: kb:name:shuli:37
+    system: name
+    kind: shuli
+    key: '37'
+    synonyms: []
+    keywords:
+    - 37数
+    - 吉
+    - 五格数理
+    - 尾数7、8对应金
+    - 人际支持
+    theme_map:
+      self: 0.15
+      career: 0.15
+      relationship: 0.15
+      finance: 0.15
+    text: 37数在五格数理的民间约定中常被归为“吉”。按这一习俗用于三才配置的尾数五行规则，尾数7、8对应金，因此37的尾数对应金。传统释义常赋予它顺遂、获得助力的象征意义，可借此提醒自己善用已有优势与人际支持。这些说法属于取名习俗，不代表对个人经历或未来结果的预测。
+    source: 自写草稿；按五格剖象法（熊崎氏）民间约定整理，未复制任何书籍文字；待人工审核
+    license: 本项目自写
+    reviewed: false
+    version: 2
+- id: cal-name-06
+  system: name
+  label: pass
+  base: kb:name:element:木
+  rationale: 现行条目；2026-10-21两家各两轮均判通过；自动核对无确定性措辞，非零方向符合体系方向约定或有对应表述，与参考事实一致。请按判定锚点复核。
+  entry:
+    id: kb:name:element:木
+    system: name
+    kind: element
+    key: 木
+    synonyms: []
+    keywords:
+    - 木
+    theme_map:
+      self: 0.0
+      career: 0.0
+      relationship: 0.0
+      finance: 0.0
+    text: 三才中的木象征生长、计划与向上发展；它来自格数尾数，不是名字用字的字义五行。
+    source: 自写草稿；按五格剖象法（熊崎氏）民间约定整理，未复制任何书籍文字；待人工审核
+    license: 本项目自写
+    reviewed: false
+    version: 1
+- id: cal-name-07
+  system: name
+  label: fail
+  base: kb:name:sancai:木金金
+  defect:
+    type: unsupported_direction
+    detail: text 没有财务方面的表述，theme_map.finance 却标为 +0.3
+  change:
+    field: theme_map.finance
+    before: 0.0
+    after: 0.3
+  rationale: 由现行条目改出一处缺陷，其余内容不变；按判定锚点应判 revise 或 reject。
+  entry:
+    id: kb:name:sancai:木金金
+    system: name
+    kind: sancai
+    key: 木金金
+    synonyms: []
+    keywords:
+    - 木金金
+    - 需要协调
+    theme_map:
+      self: -0.1
+      career: 0.0
+      relationship: 0.1
+      finance: 0.3
+    text: 三才木金金（天格木、人格金、地格金）：天格木与人格金是“被克”的关系，自我倾向主动掌控环境，宜留意与长辈或规则的协调；人格金与地格金是“同”的关系，自我与生活基础步调一致。按五行生克规则整体可看作“需要协调”，只作自我观察的线索。
+    source: 自写草稿；按五格剖象法（熊崎氏）民间约定整理，未复制任何书籍文字；待人工审核
+    license: 本项目自写
+    reviewed: false
+    version: 1
+- id: cal-name-08
+  system: name
+  label: pass
+  base: kb:name:sancai:水木土
+  rationale: 现行条目；2026-10-21两家各两轮均判通过；自动核对无确定性措辞，非零方向符合体系方向约定或有对应表述，与参考事实一致。请按判定锚点复核。
+  entry:
+    id: kb:name:sancai:水木土
+    system: name
+    kind: sancai
+    key: 水木土
+    synonyms: []
+    keywords:
+    - 水木土
+    - 需要协调
+    theme_map:
+      self: 0.1
+      career: 0.0
+      relationship: -0.1
+      finance: 0.0
+    text: 三才水木土（天格水、人格木、地格土）：天格水与人格木是“生”的关系，外部环境容易给自我提供支持；人格木与地格土是“克”的关系，对身边的人和事要求较多，宜放慢节奏沟通。按五行生克规则整体可看作“需要协调”，只作自我观察的线索。
+    source: 自写草稿；按五格剖象法（熊崎氏）民间约定整理，未复制任何书籍文字；待人工审核
+    license: 本项目自写
+    reviewed: false
+    version: 1
+- id: cal-name-09
+  system: name
+  label: pass
+  base: kb:name:element:火
+  rationale: 现行条目；2026-10-21两家各两轮均判通过；自动核对无确定性措辞，非零方向符合体系方向约定或有对应表述，与参考事实一致。请按判定锚点复核。
+  entry:
+    id: kb:name:element:火
+    system: name
+    kind: element
+    key: 火
+    synonyms: []
+    keywords:
+    - 火
+    theme_map:
+      self: 0.0
+      career: 0.0
+      relationship: 0.0
+      finance: 0.0
+    text: 三才中的火象征热情、表达与行动力；它来自格数尾数，不是名字用字的字义五行。
+    source: 自写草稿；按五格剖象法（熊崎氏）民间约定整理，未复制任何书籍文字；待人工审核
+    license: 本项目自写
+    reviewed: false
+    version: 1
+- id: cal-name-10
+  system: name
+  label: pass
+  base: kb:name:shuli:18
+  rationale: 现行条目；2026-10-21两家各两轮均判通过；自动核对无确定性措辞，非零方向符合体系方向约定或有对应表述，与参考事实一致。请按判定锚点复核。
+  entry:
+    id: kb:name:shuli:18
+    system: name
+    kind: shuli
+    key: '18'
+    synonyms: []
+    keywords:
+    - 18数
+    - 吉
+    theme_map:
+      self: 0.15
+      career: 0.15
+      relationship: 0.15
+      finance: 0.15
+    text: 18数在五格数理的民间约定中常被归为“吉”，尾数8在三才里对应金。传统上被看作顺遂、易得助力的数，可提醒自己善用已有的优势与人际支持。数理是取名习俗，不决定一个人的经历。
+    source: 自写草稿；按五格剖象法（熊崎氏）民间约定整理，未复制任何书籍文字；待人工审核
+    license: 本项目自写
+    reviewed: false
+    version: 1
+- id: cal-name-11
+  system: name
+  label: fail
+  base: kb:name:shuli:77
+  defect:
+    type: tail_digit_element_wrong
+    detail: 尾数7对应金（参考事实），text 写成木
+  change:
+    field: text
+    before: 尾数7在三才里对应金
+    after: 尾数7在三才里对应木
+  rationale: 由现行条目改出一处缺陷，其余内容不变；按判定锚点应判 revise 或 reject。
+  entry:
+    id: kb:name:shuli:77
+    system: name
+    kind: shuli
+    key: '77'
+    synonyms: []
+    keywords:
+    - 77数
+    - 半吉
+    theme_map:
+      self: 0.05
+      career: 0.05
+      relationship: 0.05
+      finance: 0.05
+    text: 77数在五格数理的民间约定中常被归为“半吉”，尾数7在三才里对应木。传统上被看作吉凶参半的数，意味着顺与不顺都与个人选择有关，适合提醒自己稳住节奏。数理是取名习俗，不决定一个人的经历。
+    source: 自写草稿；按五格剖象法（熊崎氏）民间约定整理，未复制任何书籍文字；待人工审核
+    license: 本项目自写
+    reviewed: false
+    version: 1
+- id: cal-name-12
+  system: name
+  label: pass
+  base: kb:name:convention:bazi_compare
+  rationale: 现行条目；2026-10-21两家各两轮均判通过；自动核对无确定性措辞，非零方向符合体系方向约定或有对应表述，与参考事实一致。请按判定锚点复核。
+  entry:
+    id: kb:name:convention:bazi_compare
+    system: name
+    kind: convention
+    key: bazi_compare
+    synonyms: []
+    keywords:
+    - bazi_compare
+    theme_map:
+      self: 0.0
+      career: 0.0
+      relationship: 0.0
+      finance: 0.0
+    text: 名字与八字的对照只并列三才五行与原局五行计数，不判断喜用神，也不据此建议改名或“补”某个五行。
+    source: 自写草稿；按五格剖象法（熊崎氏）民间约定整理，未复制任何书籍文字；待人工审核
+    license: 本项目自写
+    reviewed: false
+    version: 1
+- id: cal-name-13
+  system: name
+  label: pass
+  base: kb:name:sancai:木土水
+  rationale: 现行条目；2026-10-21两家各两轮均判通过；自动核对无确定性措辞，非零方向符合体系方向约定或有对应表述，与参考事实一致。请按判定锚点复核。
+  entry:
+    id: kb:name:sancai:木土水
+    system: name
+    kind: sancai
+    key: 木土水
+    synonyms: []
+    keywords:
+    - 木土水
+    - 张力较多
+    theme_map:
+      self: -0.1
+      career: -0.1
+      relationship: -0.1
+      finance: 0.0
+    text: 三才木土水（天格木、人格土、地格水）：天格木与人格土是“克”的关系，外部要求对自我形成压力，需要练习设定边界；人格土与地格水是“克”的关系，对身边的人和事要求较多，宜放慢节奏沟通。按五行生克规则整体可看作“张力较多”，只作自我观察的线索。
+    source: 自写草稿；按五格剖象法（熊崎氏）民间约定整理，未复制任何书籍文字；待人工审核
+    license: 本项目自写
+    reviewed: false
+    version: 1
+- id: cal-name-14
+  system: name
+  label: pass
+  base: kb:name:grid:总格
+  rationale: 现行条目；2026-10-21两家各两轮均判通过；自动核对无确定性措辞，非零方向符合体系方向约定或有对应表述，与参考事实一致。请按判定锚点复核。
+  entry:
+    id: kb:name:grid:总格
+    system: name
+    kind: grid
+    key: 总格
+    synonyms: []
+    keywords:
+    - 总格
+    - 五格
+    - 全名笔画总和
+    - 笔画规则
+    theme_map:
+      self: 0.0
+      career: 0.0
+      relationship: 0.0
+      finance: 0.0
+    text: 总格是全名各字按五格所用笔画规则计算后的总和，不另加虚数。传统五格常采用康熙字典笔画等约定口径，可能与日常书写的笔画数不同。在五格的传统解释中，总格用于象征性讨论整体发展与中后期状态，不代表对个人未来的确定预测。
+    source: 自写草稿；按五格剖象法（熊崎氏）民间约定整理，未复制任何书籍文字；待人工审核
+    license: 本项目自写
+    reviewed: false
+    version: 2
+- id: cal-name-15
+  system: name
+  label: pass
+  base: kb:name:grid:地格
+  rationale: 现行条目；2026-10-21两家各两轮均判通过；自动核对无确定性措辞，非零方向符合体系方向约定或有对应表述，与参考事实一致。请按判定锚点复核。
+  entry:
+    id: kb:name:grid:地格
+    system: name
+    kind: grid
+    key: 地格
+    synonyms: []
+    keywords:
+    - 地格
+    - 名字笔画
+    - 单字名加一
+    - 早年基础
+    - 家庭
+    - 亲近关系
+    theme_map:
+      self: 0.0
+      career: 0.0
+      relationship: 0.0
+      finance: 0.0
+    text: 地格通常按名字（不含姓氏）各字的笔画数相加，单字名另加一。在传统五格说法中，地格用于象征早年基础、家庭与亲近关系，这类解释不代表对个人经历或关系状况的预测。
+    source: 自写草稿；按五格剖象法（熊崎氏）民间约定整理，未复制任何书籍文字；待人工审核
+    license: 本项目自写
+    reviewed: false
+    version: 2
+- id: cal-name-16
+  system: name
+  label: pass
+  base: kb:name:element:金
+  rationale: 现行条目；2026-10-21两家各两轮均判通过；自动核对无确定性措辞，非零方向符合体系方向约定或有对应表述，与参考事实一致。请按判定锚点复核。
+  entry:
+    id: kb:name:element:金
+    system: name
+    kind: element
+    key: 金
+    synonyms: []
+    keywords:
+    - 金
+    theme_map:
+      self: 0.0
+      career: 0.0
+      relationship: 0.0
+      finance: 0.0
+    text: 三才中的金象征规则、决断与边界；它来自格数尾数，不是名字用字的字义五行。
+    source: 自写草稿；按五格剖象法（熊崎氏）民间约定整理，未复制任何书籍文字；待人工审核
+    license: 本项目自写
+    reviewed: false
+    version: 1
+- id: cal-name-17
+  system: name
+  label: pass
+  base: kb:name:convention:compound_surname
+  rationale: 现行条目；2026-10-21两家各两轮均判通过；自动核对无确定性措辞，非零方向符合体系方向约定或有对应表述，与参考事实一致。请按判定锚点复核。
+  entry:
+    id: kb:name:convention:compound_surname
+    system: name
+    kind: convention
+    key: compound_surname
+    synonyms: []
+    keywords:
+    - compound_surname
+    theme_map:
+      self: 0.0
+      career: 0.0
+      relationship: 0.0
+      finance: 0.0
+    text: 复姓的天格取两字笔画之和，不加假数；人格取姓的第二字与名的第一字。
+    source: 自写草稿；按五格剖象法（熊崎氏）民间约定整理，未复制任何书籍文字；待人工审核
+    license: 本项目自写
+    reviewed: false
+    version: 1
+- id: cal-name-18
+  system: name
+  label: fail
+  base: kb:name:shuli:3
+  defect:
+    type: evaluation_as_fact
+    detail: 把民间约定的评价写成了对使用者现实的客观推断
+  change:
+    field: text
+    before: （无）
+    after: 名字里有这个数的人，做事容易成功。
+  rationale: 由现行条目改出一处缺陷，其余内容不变；按判定锚点应判 revise 或 reject。
+  entry:
+    id: kb:name:shuli:3
+    system: name
+    kind: shuli
+    key: '3'
+    synonyms: []
+    keywords:
+    - 3数
+    - 吉
+    - 生发
+    - 活力
+    - 开拓进取
+    - 火
+    theme_map:
+      self: 0.3
+      career: 0.2
+      relationship: 0.0
+      finance: 0.0
+    text: 3数在五格数理的民间约定中常被归为“吉”，尾数3在三才配置中对应火。其传统释义侧重生发、活力与开拓进取，可作为主动尝试、将想法付诸行动的文化意象，也可提醒自己在起步时保持热情，并兼顾节奏与耐心。数理属于取名习俗，不决定个人性格、际遇或行动结果。名字里有这个数的人，做事容易成功。
+    source: 自写草稿；按五格剖象法（熊崎氏）民间约定整理，未复制任何书籍文字；待人工审核
+    license: 本项目自写
+    reviewed: false
+    version: 2
+- id: cal-name-19
+  system: name
+  label: fail
+  base: kb:name:shuli:62
+  defect:
+    type: evaluation_as_fact
+    detail: 把民间约定的评价写成了对使用者现实的客观推断
+  change:
+    field: text
+    before: （无）
+    after: 名字里有这个数的人，做事容易成功。
+  rationale: 由现行条目改出一处缺陷，其余内容不变；按判定锚点应判 revise 或 reject。
+  entry:
+    id: kb:name:shuli:62
+    system: name
+    kind: shuli
+    key: '62'
+    synonyms: []
+    keywords:
+    - 62数
+    - 五格数理
+    - 传统凶数
+    - 取名习俗
+    theme_map:
+      self: -0.15
+      career: -0.15
+      relationship: -0.15
+      finance: -0.15
+    text: 62数在五格数理的民间约定中常被归为“凶”，传统解释多与波折、阻碍有关。这是取名习俗中的象征性分类，并不意味着个人会遭遇不顺，也不能据此预测人生经历。若将其作为日常提醒，可以理解为给计划留余量、遇事多求证，而不是对命运下结论。名字里有这个数的人，做事容易成功。
+    source: 自写草稿；按五格剖象法（熊崎氏）民间约定整理，未复制任何书籍文字；待人工审核
+    license: 本项目自写
+    reviewed: false
+    version: 2
+- id: cal-name-20
+  system: name
+  label: fail
+  base: kb:name:sancai:火水木
+  defect:
+    type: evaluation_as_fact
+    detail: 把民间约定的评价写成了对使用者现实的客观推断
+  change:
+    field: text
+    before: （无）
+    after: 有这种三才配置的人，性格稳重、事业顺利。
+  rationale: 由现行条目改出一处缺陷，其余内容不变；按判定锚点应判 revise 或 reject。
+  entry:
+    id: kb:name:sancai:火水木
+    system: name
+    kind: sancai
+    key: 火水木
+    synonyms: []
+    keywords:
+    - 火水木
+    - 民间姓名学
+    - 象征性解读
+    - 需要协调
+    - 投入平衡
+    - 自我观察
+    theme_map:
+      self: -0.1
+      career: 0.0
+      relationship: -0.1
+      finance: 0.0
+    text: 三才火水木（天格火、人格水、地格木）：按传统五行生克规则，人格水克天格火，人格水生地格木。生克关系本身不代表个人性格或处境；按民间姓名学对三才的约定，这一组合可象征性地概括为“需要协调”。可借此观察自己如何协调个人意愿与长辈期待、外部规则，以及如何平衡对身边人和日常生活的投入。这些解读仅作自我观察的参考，不用于判断个人能力、关系好坏或未来结果。有这种三才配置的人，性格稳重、事业顺利。
+    source: 自写草稿；按五格剖象法（熊崎氏）民间约定整理，未复制任何书籍文字；待人工审核
+    license: 本项目自写
+    reviewed: false
+    version: 2
+- id: cal-name-21
+  system: name
+  label: fail
+  base: kb:name:shuli:75
+  defect:
+    type: tail_digit_element_wrong
+    detail: 尾数5对应土（参考事实），text 写成水
+  change:
+    field: text
+    before: 尾数5在三才里对应土
+    after: 尾数5在三才里对应水
+  rationale: 由现行条目改出一处缺陷，其余内容不变；按判定锚点应判 revise 或 reject。
+  entry:
+    id: kb:name:shuli:75
+    system: name
+    kind: shuli
+    key: '75'
+    synonyms: []
+    keywords:
+    - 75数
+    - 半吉
+    theme_map:
+      self: 0.05
+      career: 0.05
+      relationship: 0.05
+      finance: 0.05
+    text: 75数在五格数理的民间约定中常被归为“半吉”，尾数5在三才里对应水。传统上被看作吉凶参半的数，意味着顺与不顺都与个人选择有关，适合提醒自己稳住节奏。数理是取名习俗，不决定一个人的经历。
+    source: 自写草稿；按五格剖象法（熊崎氏）民间约定整理，未复制任何书籍文字；待人工审核
+    license: 本项目自写
+    reviewed: false
+    version: 1
+- id: cal-name-22
+  system: name
+  label: fail
+  base: kb:name:sancai:金火金
+  defect:
+    type: sancai_relation_wrong
+    detail: 五行相克为火克金（参考事实），text 写成金克火
+  change:
+    field: text
+    before: 火克金
+    after: 金克火
+  rationale: 由现行条目改出一处缺陷，其余内容不变；按判定锚点应判 revise 或 reject。
+  entry:
+    id: kb:name:sancai:金火金
+    system: name
+    kind: sancai
+    key: 金火金
+    synonyms: []
+    keywords:
+    - 金火金
+    - 张力较多
+    - 姓名学民间象征
+    - 自我观察
+    theme_map:
+      self: -0.1
+      career: -0.1
+      relationship: -0.1
+      finance: 0.0
+    text: 三才金火金（天格金、人格火、地格金）：按传统五行生克关系，金克火，因此天格金受人格火所克，地格金也受人格火所克。在姓名学的民间象征约定中，这一组合常被解读为“张力较多”，并延伸出主动掌控环境、对身边人事要求较多等性格与沟通联想。这些联想并非由五行关系推导出的现实判断，也不能据此认定个人性格或预测际遇。若作为自我观察的线索，可留意自己与长辈、规则的协调方式，以及沟通时是否需要放慢节奏；是否适用应以实际经历为准。
+    source: 自写草稿；按五格剖象法（熊崎氏）民间约定整理，未复制任何书籍文字；待人工审核
+    license: 本项目自写
+    reviewed: false
+    version: 2
+- id: cal-name-23
+  system: name
+  label: fail
+  base: kb:name:shuli:29
+  defect:
+    type: shuli_level_wrong
+    detail: 本项目归类中29为吉（参考事实），text 写成凶
+  change:
+    field: text
+    before: “吉”
+    after: “凶”
+  rationale: 由现行条目改出一处缺陷，其余内容不变；按判定锚点应判 revise 或 reject。
+  entry:
+    id: kb:name:shuli:29
+    system: name
+    kind: shuli
+    key: '29'
+    synonyms:
+    - 29数
+    - 二十九数
+    keywords:
+    - 29数
+    - 吉
+    - 五格剖象法
+    - 智谋
+    - 进取
+    - 财力归集
+    - 节制欲望
+    - 取名民俗
+    theme_map:
+      self: 0.3
+      career: 0.25
+      relationship: 0.0
+      finance: 0.15
+    text: 29数在五格剖象法的民间约定中通常被列为“凶”，其尾数9按三才五行配属规则属水。传统释义偏重智谋、进取，并以财力归集、声名与事业成就为象征，也常附有节制欲望、避免贪求过多的提醒。作为取名民俗，可借此提醒自己发挥思考与规划能力，在追求目标时保持分寸。这些象征不代表实际财富或成就，数理也不决定个人经历。
+    source: 自写草稿；按五格剖象法（熊崎氏）民间约定整理，未复制任何书籍文字；待人工审核
+    license: 本项目自写
+    reviewed: false
+    version: 2
+- id: cal-name-24
+  system: name
+  label: fail
+  base: kb:name:shuli:5
+  defect:
+    type: prediction
+    detail: 加入了对现实事件的预测（“预示……会……”），没有确定性词语但仍是预测
+  change:
+    field: text
+    before: （无）
+    after: 这样的配置预示婚姻会比较美满。
+  rationale: 由现行条目改出一处缺陷，其余内容不变；按判定锚点应判 revise 或 reject。
+  entry:
+    id: kb:name:shuli:5
+    system: name
+    kind: shuli
+    key: '5'
+    synonyms: []
+    keywords:
+    - 5数
+    - 吉
+    - 五格数理
+    - 取名习俗
+    - 和谐
+    - 支持
+    theme_map:
+      self: 0.15
+      career: 0.15
+      relationship: 0.15
+      finance: 0.15
+    text: 5数在五格数理的民间取名习俗中常被归为“吉”，传统释义多赋予它顺遂、和谐、获得支持等象征意义。这些寓意可作为善用自身优势、珍惜人际支持的提醒，不代表实际经历或结果。五格数理属于取名文化，不决定个人的发展。这样的配置预示婚姻会比较美满。
+    source: 自写草稿；按五格剖象法（熊崎氏）民间约定整理，未复制任何书籍文字；待人工审核
+    license: 本项目自写
+    reviewed: false
+    version: 2
+- id: cal-name-25
+  system: name
+  label: pass
+  base: kb:name:shuli:78
+  rationale: 现行条目；2026-10-21两家各两轮均判通过；自动核对无确定性措辞，非零方向符合体系方向约定或有对应表述，与参考事实一致。请按判定锚点复核。
+  entry:
+    id: kb:name:shuli:78
+    system: name
+    kind: shuli
+    key: '78'
+    synonyms: []
+    keywords:
+    - 78数
+    - 半吉
+    theme_map:
+      self: 0.05
+      career: 0.05
+      relationship: 0.05
+      finance: 0.05
+    text: 78数在五格数理的民间约定中常被归为“半吉”，尾数8在三才里对应金。传统上被看作吉凶参半的数，意味着顺与不顺都与个人选择有关，适合提醒自己稳住节奏。数理是取名习俗，不决定一个人的经历。
+    source: 自写草稿；按五格剖象法（熊崎氏）民间约定整理，未复制任何书籍文字；待人工审核
+    license: 本项目自写
+    reviewed: false
+    version: 1
+- id: cal-name-26
+  system: name
+  label: fail
+  base: kb:name:shuli:68
+  defect:
+    type: shuli_level_wrong
+    detail: 本项目归类中68为吉（参考事实），text 写成凶
+  change:
+    field: text
+    before: “吉”
+    after: “凶”
+  rationale: 由现行条目改出一处缺陷，其余内容不变；按判定锚点应判 revise 或 reject。
+  entry:
+    id: kb:name:shuli:68
+    system: name
+    kind: shuli
+    key: '68'
+    synonyms: []
+    keywords:
+    - 68数
+    - 吉
+    theme_map:
+      self: 0.15
+      career: 0.15
+      relationship: 0.15
+      finance: 0.15
+    text: 68数在五格数理的民间约定中常被归为“凶”，尾数8在三才里对应金。传统上被看作顺遂、易得助力的数，可提醒自己善用已有的优势与人际支持。数理是取名习俗，不决定一个人的经历。
+    source: 自写草稿；按五格剖象法（熊崎氏）民间约定整理，未复制任何书籍文字；待人工审核
+    license: 本项目自写
+    reviewed: false
+    version: 1
+- id: cal-name-27
+  system: name
+  label: fail
+  base: kb:name:shuli:11
+  defect:
+    type: shuli_level_wrong
+    detail: 本项目归类中11为吉（参考事实），text 写成凶
+  change:
+    field: text
+    before: “吉”
+    after: “凶”
+  rationale: 由现行条目改出一处缺陷，其余内容不变；按判定锚点应判 revise 或 reject。
+  entry:
+    id: kb:name:shuli:11
+    system: name
+    kind: shuli
+    key: '11'
+    synonyms: []
+    keywords:
+    - 11数
+    - 吉
+    theme_map:
+      self: 0.15
+      career: 0.15
+      relationship: 0.15
+      finance: 0.15
+    text: 11数在五格数理的民间约定中常被归为“凶”，尾数1在三才里对应木。传统上被看作顺遂、易得助力的数，可提醒自己善用已有的优势与人际支持。数理是取名习俗，不决定一个人的经历。
+    source: 自写草稿；按五格剖象法（熊崎氏）民间约定整理，未复制任何书籍文字；待人工审核
+    license: 本项目自写
+    reviewed: false
+    version: 1
+- id: cal-name-28
+  system: name
+  label: fail
+  base: kb:name:sancai:水金水
+  defect:
+    type: unsupported_direction
+    detail: text 没有财务方面的表述，theme_map.finance 却标为 +0.3
+  change:
+    field: theme_map.finance
+    before: 0.0
+    after: 0.3
+  rationale: 由现行条目改出一处缺陷，其余内容不变；按判定锚点应判 revise 或 reject。
+  entry:
+    id: kb:name:sancai:水金水
+    system: name
+    kind: sancai
+    key: 水金水
+    synonyms: []
+    keywords:
+    - 水金水
+    - 较顺
+    theme_map:
+      self: 0.1
+      career: 0.1
+      relationship: 0.1
+      finance: 0.3
+    text: 三才水金水（天格水、人格金、地格水）：天格水与人格金是“被生”的关系，自我习惯向外付出、照顾外部期待；人格金与地格水是“生”的关系，愿意为身边的人与生活基础投入。按五行生克规则整体可看作“较顺”，只作自我观察的线索。
+    source: 自写草稿；按五格剖象法（熊崎氏）民间约定整理，未复制任何书籍文字；待人工审核
+    license: 本项目自写
+    reviewed: false
+    version: 1
+- id: cal-name-29
+  system: name
+  label: fail
+  base: kb:name:sancai:火木土
+  defect:
+    type: sancai_relation_wrong
+    detail: 五行相克为木克土（参考事实），text 写成土克木
+  change:
+    field: text
+    before: 木克土
+    after: 土克木
+  rationale: 由现行条目改出一处缺陷，其余内容不变；按判定锚点应判 revise 或 reject。
+  entry:
+    id: kb:name:sancai:火木土
+    system: name
+    kind: sancai
+    key: 火木土
+    synonyms:
+    - 三才火木土
+    - 天格火人格木地格土
+    keywords:
+    - 火木土
+    - 五格剖象法
+    - 民间姓名学
+    - 传统吉或偏吉评价
+    - 象征性解读
+    - 自我观察
+    theme_map:
+      self: 0.1
+      career: 0.1
+      relationship: 0.0
+      finance: 0.0
+    text: 三才火木土（天格火、人格木、地格土）：按传统五行生克说法，木生火，即人格木生天格火；土克木，即人格木克地格土。在常见五格剖象法的三才配置解读中，这一组合通常被归为吉或偏吉，不宜仅凭“木克土”将整体理解为偏阻。这是民间姓名学的传统评价，不构成对性格、能力或人生结果的事实判断，也不预示实际吉凶。若用于自我观察，可将其作为积极发挥自身所长、兼顾行动与协调的提醒，而不必据此评价自己或他人。
+    source: 自写草稿；按五格剖象法（熊崎氏）民间约定整理，未复制任何书籍文字；待人工审核
+    license: 本项目自写
+    reviewed: false
+    version: 3
+- id: cal-name-30
+  system: name
+  label: pass
+  base: kb:name:grid:人格
+  rationale: 现行条目；2026-10-21两家各两轮均判通过；自动核对无确定性措辞，非零方向符合体系方向约定或有对应表述，与参考事实一致。请按判定锚点复核。
+  entry:
+    id: kb:name:grid:人格
+    system: name
+    kind: grid
+    key: 人格
+    synonyms: []
+    keywords:
+    - 人格
+    theme_map:
+      self: 0.0
+      career: 0.0
+      relationship: 0.0
+      finance: 0.0
+    text: 人格由姓末字与名首字组成，五格约定中被看作名字的核心，对应自我认知、性格与做事方式。
+    source: 自写草稿；按五格剖象法（熊崎氏）民间约定整理，未复制任何书籍文字；待人工审核
+    license: 本项目自写
+    reviewed: false
+    version: 1
+- id: cal-dream-01
+  system: dream
+  label: pass
+  base: kb:dream:symbol:葬礼
+  rationale: 现行条目；2026-10-21两家各两轮均判通过；自动核对无确定性措辞，非零方向符合体系方向约定或有对应表述。请按判定锚点复核。
+  entry:
+    id: kb:dream:symbol:葬礼
+    system: dream
+    kind: symbol
+    key: 葬礼
+    synonyms:
+    - 丧礼
+    - 参加葬礼
+    - 追悼会
+    keywords:
+    - 葬礼
+    - 事件
+    theme_map:
+      self: -0.05
+      career: 0.0
+      relationship: -0.05
+      finance: 0.0
+    text: 梦见葬礼，常象征告别某种状态、旧习惯的结束，不预示现实中有人去世。事件类梦境常折射对变化与关系的期待或担心，不预示现实中会发生同样的事。
+    source: 自写草稿；常见意象的心理联想整理，未复制《周公解梦》或现代网站文字；待人工审核
+    license: 本项目自写
+    reviewed: false
+    version: 1
+- id: cal-dream-02
+  system: dream
+  label: fail
+  base: kb:dream:symbol:龙
+  defect:
+    type: direction_contradicts_text
+    detail: text 对自我状态的表述偏顺，theme_map.self 却是 -0.15（原为 +0.15）
+  change:
+    field: theme_map.self
+    before: 0.15
+    after: -0.15
+  rationale: 由现行条目改出一处缺陷，其余内容不变；按判定锚点应判 revise 或 reject。
+  entry:
+    id: kb:dream:symbol:龙
+    system: dream
+    kind: symbol
+    key: 龙
+    synonyms:
+    - 金龙
+    - 金色的龙
+    - 神龙
+    keywords:
+    - 龙
+    - 动物
+    theme_map:
+      self: -0.15
+      career: 0.15
+      relationship: 0.0
+      finance: 0.0
+    text: 梦见龙，常象征力量、志向与被看见的愿望。动物意象常对应本能、情绪或某种性格特质，含义随梦中感受而变，不是吉凶预兆。
+    source: 自写草稿；常见意象的心理联想整理，未复制《周公解梦》或现代网站文字；待人工审核
+    license: 本项目自写
+    reviewed: false
+    version: 1
+- id: cal-dream-03
+  system: dream
+  label: pass
+  base: kb:dream:symbol:蛇
+  rationale: 现行条目；2026-10-21两家各两轮均判通过；自动核对无确定性措辞，非零方向符合体系方向约定或有对应表述。请按判定锚点复核。
+  entry:
+    id: kb:dream:symbol:蛇
+    system: dream
+    kind: symbol
+    key: 蛇
+    synonyms:
+    - 大蛇
+    - 毒蛇
+    - 蟒蛇
+    - 小蛇
+    keywords:
+    - 蛇
+    - 动物
+    theme_map:
+      self: -0.05
+      career: 0.0
+      relationship: 0.0
+      finance: 0.0
+    text: 梦见蛇，常与本能、转变、未知的担心或被压抑的力量有关。动物意象常对应本能、情绪或某种性格特质，含义随梦中感受而变，不是吉凶预兆。
+    source: 自写草稿；常见意象的心理联想整理，未复制《周公解梦》或现代网站文字；待人工审核
+    license: 本项目自写
+    reviewed: false
+    version: 2
+- id: cal-dream-04
+  system: dream
+  label: fail
+  base: kb:dream:symbol:商场
+  defect:
+    type: prediction
+    detail: 加入了对现实事件的预测（“预示……会……”），没有确定性词语但仍是预测
+  change:
+    field: text
+    before: （无）
+    after: 这个梦预示近期会有一笔意外之财。
+  rationale: 由现行条目改出一处缺陷，其余内容不变；按判定锚点应判 revise 或 reject。
+  entry:
+    id: kb:dream:symbol:商场
+    system: dream
+    kind: symbol
+    key: 商场
+    synonyms:
+    - 购物中心
+    keywords:
+    - 商场
+    - 场所
+    theme_map:
+      self: 0.0
+      career: 0.0
+      relationship: 0.0
+      finance: 0.0
+    text: 梦见商场，常与选择、欲望与资源有关。场所意象多与安全感、归属和当下所处的人生阶段有关，只作心理层面的参考。这个梦预示近期会有一笔意外之财。
+    source: 自写草稿；常见意象的心理联想整理，未复制《周公解梦》或现代网站文字；待人工审核
+    license: 本项目自写
+    reviewed: false
+    version: 2
+- id: cal-dream-05
+  system: dream
+  label: fail
+  base: kb:dream:symbol:写字
+  defect:
+    type: unsupported_direction
+    detail: text 没有感情关系方面的表述，theme_map.relationship 却标为 +0.3
+  change:
+    field: theme_map.relationship
+    before: 0.0
+    after: 0.3
+  rationale: 由现行条目改出一处缺陷，其余内容不变；按判定锚点应判 revise 或 reject。
+  entry:
+    id: kb:dream:symbol:写字
+    system: dream
+    kind: symbol
+    key: 写字
+    synonyms: []
+    keywords:
+    - 写字
+    - 处境
+    theme_map:
+      self: 0.0
+      career: 0.0
+      relationship: 0.3
+      finance: 0.0
+    text: 梦见写字，常与整理思绪、表达或任务压力有关。这类处境梦常与近期的压力和节奏有关，只反映心理感受，不预示现实事件。
+    source: 自写草稿；常见意象的心理联想整理，未复制《周公解梦》或现代网站文字；待人工审核
+    license: 本项目自写
+    reviewed: false
+    version: 2
+- id: cal-dream-06
+  system: dream
+  label: fail
+  base: kb:dream:symbol:医生
+  defect:
+    type: synonym_not_same_image
+    detail: 同义词“护士”不同人物：护士不是医生
+  change:
+    field: synonyms
+    before: （无）
+    after: 护士
+  rationale: 由现行条目改出一处缺陷，其余内容不变；按判定锚点应判 revise 或 reject。
+  entry:
+    id: kb:dream:symbol:医生
+    system: dream
+    kind: symbol
+    key: 医生
+    synonyms:
+    - 大夫
+    - 护士
+    keywords:
+    - 医生
+    - 人物
+    theme_map:
+      self: 0.05
+      career: 0.0
+      relationship: 0.0
+      finance: 0.0
+    text: 梦见医生，常与需要照顾、修复或寻求专业帮助的心情有关。梦中的人物多映照你与对方的关系或自己的某一面，不代表对方现实中的状况。
+    source: 自写草稿；常见意象的心理联想整理，未复制《周公解梦》或现代网站文字；待人工审核
+    license: 本项目自写
+    reviewed: false
+    version: 2
+- id: cal-dream-07
+  system: dream
+  label: pass
+  base: kb:dream:symbol:生病
+  rationale: 现行条目；2026-10-21两家各两轮均判通过；自动核对无确定性措辞，非零方向符合体系方向约定或有对应表述。请按判定锚点复核。
+  entry:
+    id: kb:dream:symbol:生病
+    system: dream
+    kind: symbol
+    key: 生病
+    synonyms:
+    - 得病
+    - 发烧
+    - 感冒
+    keywords:
+    - 生病
+    - 身体
+    theme_map:
+      self: -0.1
+      career: 0.0
+      relationship: 0.0
+      finance: 0.0
+    text: 梦见生病，常与疲惫、需要休息或希望被照顾有关。身体类意象多反映对自我形象与掌控感的在意，不代表健康状况，身体不适请就医。
+    source: 自写草稿；常见意象的心理联想整理，未复制《周公解梦》或现代网站文字；待人工审核
+    license: 本项目自写
+    reviewed: false
+    version: 1
+- id: cal-dream-08
+  system: dream
+  label: fail
+  base: kb:dream:symbol:图书馆
+  defect:
+    type: synonym_not_same_image
+    detail: 同义词“书店”不同场所：书店不是图书馆
+  change:
+    field: synonyms
+    before: （无）
+    after: 书店
+  rationale: 由现行条目改出一处缺陷，其余内容不变；按判定锚点应判 revise 或 reject。
+  entry:
+    id: kb:dream:symbol:图书馆
+    system: dream
+    kind: symbol
+    key: 图书馆
+    synonyms:
+    - 书店
+    keywords:
+    - 图书馆
+    - 求知
+    - 阅读
+    - 查找资料
+    - 整理思绪
+    - 学习准备
+    theme_map:
+      self: 0.1
+      career: 0.1
+      relationship: 0.0
+      finance: 0.0
+    text: 梦见图书馆，可以从求知、查找资料和整理思绪的角度理解。寻找书籍、安静阅读或面对众多书架等细节，可能让人联想到探索问题、梳理知识或为学习与工作做准备。具体含义需结合梦中的感受和近期经历，仅作自我反思的参考。
+    source: 自写草稿；常见意象的心理联想整理，未复制《周公解梦》或现代网站文字；待人工审核
+    license: 本项目自写
+    reviewed: false
+    version: 3
+- id: cal-dream-09
+  system: dream
+  label: fail
+  base: kb:dream:symbol:瀑布
+  defect:
+    type: unsupported_direction
+    detail: text 没有财务方面的表述，theme_map.finance 却标为 -0.3
+  change:
+    field: theme_map.finance
+    before: 0.0
+    after: -0.3
+  rationale: 由现行条目改出一处缺陷，其余内容不变；按判定锚点应判 revise 或 reject。
+  entry:
+    id: kb:dream:symbol:瀑布
+    system: dream
+    kind: symbol
+    key: 瀑布
+    synonyms:
+    - 飞瀑
+    keywords:
+    - 瀑布
+    - 自然
+    theme_map:
+      self: 0.05
+      career: 0.0
+      relationship: 0.0
+      finance: -0.3
+    text: 梦见瀑布，常象征情绪释放与能量涌动。自然景象常映照情绪的起伏与内在状态，不预示天气或灾害。
+    source: 自写草稿；常见意象的心理联想整理，未复制《周公解梦》或现代网站文字；待人工审核
+    license: 本项目自写
+    reviewed: false
+    version: 1
+- id: cal-dream-10
+  system: dream
+  label: fail
+  base: kb:dream:symbol:下雨
+  defect:
+    type: prediction
+    detail: 加入了对现实事件的预测（“预示……会……”），没有确定性词语但仍是预测
+  change:
+    field: text
+    before: （无）
+    after: 这个梦预示你很快会升职加薪。
+  rationale: 由现行条目改出一处缺陷，其余内容不变；按判定锚点应判 revise 或 reject。
+  entry:
+    id: kb:dream:symbol:下雨
+    system: dream
+    kind: symbol
+    key: 下雨
+    synonyms:
+    - 大雨
+    - 下大雨
+    - 暴雨
+    - 雨天
+    - 毛毛雨
+    keywords:
+    - 下雨
+    - 自然
+    theme_map:
+      self: -0.05
+      career: 0.0
+      relationship: 0.0
+      finance: 0.0
+    text: 梦见下雨，常与情绪需要释放、或一段低落后的清洗有关。自然景象常映照情绪的起伏与内在状态，不预示天气或灾害。这个梦预示你很快会升职加薪。
+    source: 自写草稿；常见意象的心理联想整理，未复制《周公解梦》或现代网站文字；待人工审核
+    license: 本项目自写
+    reviewed: false
+    version: 1
+- id: cal-dream-11
+  system: dream
+  label: pass
+  base: kb:dream:convention:unmatched
+  rationale: 现行条目；2026-10-21两家各两轮均判通过；自动核对无确定性措辞，非零方向符合体系方向约定或有对应表述。请按判定锚点复核。
+  entry:
+    id: kb:dream:convention:unmatched
+    system: dream
+    kind: convention
+    key: unmatched
+    synonyms: []
+    keywords:
+    - unmatched
+    theme_map:
+      self: 0.0
+      career: 0.0
+      relationship: 0.0
+      finance: 0.0
+    text: 词典没有收录的意象记为未命中，不作含义解读；可以请用户补充当时的感受或细节。
+    source: 自写草稿；常见意象的心理联想整理，未复制《周公解梦》或现代网站文字；待人工审核
+    license: 本项目自写
+    reviewed: false
+    version: 1
+- id: cal-dream-12
+  system: dream
+  label: pass
+  base: kb:dream:symbol:手机
+  rationale: 现行条目；2026-10-21两家各两轮均判通过；自动核对无确定性措辞，非零方向符合体系方向约定或有对应表述。请按判定锚点复核。
+  entry:
+    id: kb:dream:symbol:手机
+    system: dream
+    kind: symbol
+    key: 手机
+    synonyms:
+    - 移动电话
+    - 手提电话
+    keywords:
+    - 手机
+    - 通信设备
+    - 联系
+    - 信息接收
+    - 对外沟通
+    theme_map:
+      self: 0.0
+      career: 0.0
+      relationship: 0.0
+      finance: 0.0
+    text: 梦中的手机可以作为联系、信息接收与对外沟通的联想线索，本身没有固定的正面或负面含义。理解时可结合手机的状态、使用情境及梦中的情绪；若出现没电或损坏，可进一步探索是否有联系不便、信息中断或沟通受阻的感受，但不代表现实中必然出现这些情况。
+    source: 自写草稿；常见意象的心理联想整理，未复制《周公解梦》或现代网站文字；待人工审核
+    license: 本项目自写
+    reviewed: false
+    version: 2
+- id: cal-dream-13
+  system: dream
+  label: fail
+  base: kb:dream:symbol:自杀
+  defect:
+    type: synonym_not_same_image
+    detail: 同义词“想不开”常见其他义项：想不开也常指一时纠结
+  change:
+    field: synonyms
+    before: （无）
+    after: 想不开
+  rationale: 由现行条目改出一处缺陷，其余内容不变；按判定锚点应判 revise 或 reject。
+  entry:
+    id: kb:dream:symbol:自杀
+    system: dream
+    kind: symbol
+    key: 自杀
+    synonyms:
+    - 轻生
+    - 自尽
+    - 想不开
+    keywords:
+    - 自杀
+    - 结束某种状态
+    - 压力
+    - 求助
+    theme_map:
+      self: -0.15
+      career: 0.0
+      relationship: 0.0
+      finance: 0.0
+    text: 梦见自杀，可以从想结束某种状态、近期压力或生活节奏变化的角度理解，但没有固定含义。梦境本身不等于现实中有轻生意图，也不能据此排除现实风险或预测现实事件。若现实中有轻生念头，请尽快联系信任的人并寻求专业支持；若有立即伤害自己的危险，请立即联系当地紧急求助渠道。
+    source: 自写草稿；常见意象的心理联想整理，未复制《周公解梦》或现代网站文字；待人工审核
+    license: 本项目自写
+    reviewed: false
+    version: 2
+- id: cal-dream-14
+  system: dream
+  label: pass
+  base: kb:dream:symbol:道歉
+  rationale: 现行条目；2026-10-21两家各两轮均判通过；自动核对无确定性措辞，非零方向符合体系方向约定或有对应表述。请按判定锚点复核。
+  entry:
+    id: kb:dream:symbol:道歉
+    system: dream
+    kind: symbol
+    key: 道歉
+    synonyms:
+    - 赔礼道歉
+    keywords:
+    - 道歉
+    - 事件
+    theme_map:
+      self: 0.0
+      career: 0.0
+      relationship: 0.05
+      finance: 0.0
+    text: 梦见道歉，常反映想修复关系或放下内疚。事件类梦境常折射对变化与关系的期待或担心，不预示现实中会发生同样的事。
+    source: 自写草稿；常见意象的心理联想整理，未复制《周公解梦》或现代网站文字；待人工审核
+    license: 本项目自写
+    reviewed: false
+    version: 1
+- id: cal-dream-15
+  system: dream
+  label: fail
+  base: kb:dream:symbol:糖果
+  defect:
+    type: prediction
+    detail: 加入了对现实事件的预测（“预示……会……”），没有确定性词语但仍是预测
+  change:
+    field: text
+    before: （无）
+    after: 梦见它，往往预示家里将有喜事。
+  rationale: 由现行条目改出一处缺陷，其余内容不变；按判定锚点应判 revise 或 reject。
+  entry:
+    id: kb:dream:symbol:糖果
+    system: dream
+    kind: symbol
+    key: 糖果
+    synonyms:
+    - 水果糖
+    - 奶糖
+    - 棒棒糖
+    keywords:
+    - 糖果
+    - 饮食
+    - 奖励
+    - 甜蜜
+    - 童年回忆
+    - 满足感
+    theme_map:
+      self: 0.05
+      career: 0.0
+      relationship: 0.0
+      finance: 0.0
+    text: 梦见糖果，可能让人联想到奖励、甜蜜与童年回忆，也可能涉及满足感、被照顾的感受或个人需求。具体含义需结合梦中的情绪与近期经历理解，不代表现实事件的预兆。梦见它，往往预示家里将有喜事。
+    source: 自写草稿；常见意象的心理联想整理，未复制《周公解梦》或现代网站文字；待人工审核
+    license: 本项目自写
+    reviewed: false
+    version: 2
+- id: cal-dream-16
+  system: dream
+  label: fail
+  base: kb:dream:symbol:麒麟
+  defect:
+    type: synonym_not_same_image
+    detail: 同义词“瑞兽”上位泛称：瑞兽包含麒麟以外的神兽
+  change:
+    field: synonyms
+    before: （无）
+    after: 瑞兽
+  rationale: 由现行条目改出一处缺陷，其余内容不变；按判定锚点应判 revise 或 reject。
+  entry:
+    id: kb:dream:symbol:麒麟
+    system: dream
+    kind: symbol
+    key: 麒麟
+    synonyms:
+    - 瑞兽
+    keywords:
+    - 麒麟
+    - 动物
+    theme_map:
+      self: 0.1
+      career: 0.0
+      relationship: 0.0
+      finance: 0.0
+    text: 梦见麒麟，常与祥瑞的愿望和对美好的期待有关。动物意象常对应本能、情绪或某种性格特质，含义随梦中感受而变，不是吉凶预兆。
+    source: 自写草稿；常见意象的心理联想整理，未复制《周公解梦》或现代网站文字；待人工审核
+    license: 本项目自写
+    reviewed: false
+    version: 2
+- id: cal-dream-17
+  system: dream
+  label: fail
+  base: kb:dream:symbol:葡萄
+  defect:
+    type: prediction
+    detail: 加入了对现实事件的预测（“预示……会……”），没有确定性词语但仍是预测
+  change:
+    field: text
+    before: （无）
+    after: 这个梦预示近期会有一笔意外之财。
+  rationale: 由现行条目改出一处缺陷，其余内容不变；按判定锚点应判 revise 或 reject。
+  entry:
+    id: kb:dream:symbol:葡萄
+    system: dream
+    kind: symbol
+    key: 葡萄
+    synonyms:
+    - 一串葡萄
+    keywords:
+    - 葡萄
+    - 饮食
+    theme_map:
+      self: 0.0
+      career: 0.0
+      relationship: 0.0
+      finance: 0.05
+    text: 梦见葡萄，常象征积累与丰收。饮食意象多与满足感、照顾与需求有关，只反映心理状态。这个梦预示近期会有一笔意外之财。
+    source: 自写草稿；常见意象的心理联想整理，未复制《周公解梦》或现代网站文字；待人工审核
+    license: 本项目自写
+    reviewed: false
+    version: 1
+- id: cal-dream-18
+  system: dream
+  label: pass
+  base: kb:dream:convention:no_symbol
+  rationale: 现行条目；2026-10-21两家各两轮均判通过；自动核对无确定性措辞，非零方向符合体系方向约定或有对应表述。请按判定锚点复核。
+  entry:
+    id: kb:dream:convention:no_symbol
+    system: dream
+    kind: convention
+    key: no_symbol
+    synonyms: []
+    keywords:
+    - no_symbol
+    theme_map:
+      self: 0.0
+      career: 0.0
+      relationship: 0.0
+      finance: 0.0
+    text: 没有可识别的意象时，不作解读，可以询问用户是否记得场景、人物或情绪。
+    source: 自写草稿；常见意象的心理联想整理，未复制《周公解梦》或现代网站文字；待人工审核
+    license: 本项目自写
+    reviewed: false
+    version: 1
+- id: cal-dream-19
+  system: dream
+  label: pass
+  base: kb:dream:symbol:恋人
+  rationale: 现行条目；2026-10-21两家各两轮均判通过；自动核对无确定性措辞，非零方向符合体系方向约定或有对应表述。请按判定锚点复核。
+  entry:
+    id: kb:dream:symbol:恋人
+    system: dream
+    kind: symbol
+    key: 恋人
+    synonyms:
+    - 男朋友
+    - 女朋友
+    - 恋爱对象
+    - 爱人
+    keywords:
+    - 恋人
+    - 人物
+    theme_map:
+      self: 0.0
+      career: 0.0
+      relationship: 0.0
+      finance: 0.0
+    text: 梦见恋人，可以尝试从关系中的安全感与期待来理解。梦中的人物可能让你联想到与对方的相处，也可能引发对自身感受或需求的思考；具体含义需结合梦境情节和近期经历探索，不能仅凭梦境判断对方现实中的状况。
+    source: 自写草稿；常见意象的心理联想整理，未复制《周公解梦》或现代网站文字；待人工审核
+    license: 本项目自写
+    reviewed: false
+    version: 3
+- id: cal-dream-20
+  system: dream
+  label: pass
+  base: kb:dream:symbol:公司
+  rationale: 现行条目；2026-10-21两家各两轮均判通过；自动核对无确定性措辞，非零方向符合体系方向约定或有对应表述。请按判定锚点复核。
+  entry:
+    id: kb:dream:symbol:公司
+    system: dream
+    kind: symbol
+    key: 公司
+    synonyms:
+    - 任职公司
+    - 所在公司
+    keywords:
+    - 公司
+    - 工作场景
+    - 工作角色
+    - 责任
+    - 职场人际
+    theme_map:
+      self: 0.0
+      career: 0.0
+      relationship: 0.0
+      finance: 0.0
+    text: 梦见公司，常与工作角色、责任和人际有关。场所意象多与安全感、归属和当下所处的人生阶段有关，只作心理层面的参考。
+    source: 自写草稿；常见意象的心理联想整理，未复制《周公解梦》或现代网站文字；待人工审核
+    license: 本项目自写
+    reviewed: false
+    version: 2
+- id: cal-dream-21
+  system: dream
+  label: pass
+  base: kb:dream:symbol:兄弟姐妹
+  rationale: 现行条目；2026-10-21两家各两轮均判通过；自动核对无确定性措辞，非零方向符合体系方向约定或有对应表述。请按判定锚点复核。
+  entry:
+    id: kb:dream:symbol:兄弟姐妹
+    system: dream
+    kind: symbol
+    key: 兄弟姐妹
+    synonyms:
+    - 哥哥
+    - 姐姐
+    - 弟弟
+    - 妹妹
+    keywords:
+    - 兄弟姐妹
+    - 人物
+    theme_map:
+      self: 0.0
+      career: 0.0
+      relationship: 0.05
+      finance: 0.0
+    text: 梦见兄弟姐妹，常与家庭中的位置、比较或陪伴有关。梦中的人物多映照你与对方的关系或自己的某一面，不代表对方现实中的状况。
+    source: 自写草稿；常见意象的心理联想整理，未复制《周公解梦》或现代网站文字；待人工审核
+    license: 本项目自写
+    reviewed: false
+    version: 1
+- id: cal-dream-22
+  system: dream
+  label: pass
+  base: kb:dream:symbol:瘫痪
+  rationale: 现行条目；2026-10-21两家各两轮均判通过；自动核对无确定性措辞，非零方向符合体系方向约定或有对应表述。请按判定锚点复核。
+  entry:
+    id: kb:dream:symbol:瘫痪
+    system: dream
+    kind: symbol
+    key: 瘫痪
+    synonyms:
+    - 梦见瘫痪
+    - 梦到自己瘫痪
+    keywords:
+    - 瘫痪
+    - 梦中身体
+    - 无力感
+    - 行动受限感
+    - 掌控感
+    theme_map:
+      self: -0.1
+      career: 0.0
+      relationship: 0.0
+      finance: 0.0
+    text: 梦见自己瘫痪，可作为探索无力感、行动受限感或掌控感的线索，具体含义需结合梦中情境与个人感受理解。本条指梦中身体瘫痪的情节，不将受困、被束缚或单纯乏力等同于瘫痪，也不将入睡或醒来时实际经历的“鬼压床”直接归入此类梦境。梦境内容不能用于判断健康状况；若现实中出现身体不适，建议寻求专业医疗帮助。
+    source: 自写草稿；常见意象的心理联想整理，未复制《周公解梦》或现代网站文字；待人工审核
+    license: 本项目自写
+    reviewed: false
+    version: 2
+- id: cal-dream-23
+  system: dream
+  label: fail
+  base: kb:dream:symbol:新郎
+  defect:
+    type: synonym_not_same_image
+    detail: 同义词“新娘”不同人物：新娘不是新郎
+  change:
+    field: synonyms
+    before: （无）
+    after: 新娘
+  rationale: 由现行条目改出一处缺陷，其余内容不变；按判定锚点应判 revise 或 reject。
+  entry:
+    id: kb:dream:symbol:新郎
+    system: dream
+    kind: symbol
+    key: 新郎
+    synonyms:
+    - 新娘
+    keywords:
+    - 新郎
+    - 人物
+    theme_map:
+      self: 0.0
+      career: 0.0
+      relationship: 0.05
+      finance: 0.0
+    text: 梦见新郎，常与角色转变与承诺有关。梦中的人物多映照你与对方的关系或自己的某一面，不代表对方现实中的状况。
+    source: 自写草稿；常见意象的心理联想整理，未复制《周公解梦》或现代网站文字；待人工审核
+    license: 本项目自写
+    reviewed: false
+    version: 2
+- id: cal-dream-24
+  system: dream
+  label: pass
+  base: kb:dream:symbol:被追
+  rationale: 现行条目；2026-10-21两家各两轮均判通过；自动核对无确定性措辞，非零方向符合体系方向约定或有对应表述。请按判定锚点复核。
+  entry:
+    id: kb:dream:symbol:被追
+    system: dream
+    kind: symbol
+    key: 被追
+    synonyms:
+    - 被人追赶
+    - 有人追赶我
+    - 被追赶
+    - 被人追赶逃跑
+    keywords:
+    - 被追赶
+    - 逃跑
+    - 压力
+    - 回避
+    theme_map:
+      self: -0.15
+      career: 0.0
+      relationship: 0.0
+      finance: 0.0
+    text: 梦见被追赶、逃跑，可能与近期感受到的压力，或想暂时避开的责任、情绪有关。这里的“被追”指被追赶的处境，不指感情上的被追求。具体含义需结合梦中的感受和现实经历理解，不宜据此预测现实事件。
+    source: 自写草稿；常见意象的心理联想整理，未复制《周公解梦》或现代网站文字；待人工审核
+    license: 本项目自写
+    reviewed: false
+    version: 2
+- id: cal-dream-25
+  system: dream
+  label: pass
+  base: kb:dream:convention:psyche_only
+  rationale: 现行条目；2026-10-21两家各两轮均判通过；自动核对无确定性措辞，非零方向符合体系方向约定或有对应表述。请按判定锚点复核。
+  entry:
+    id: kb:dream:convention:psyche_only
+    system: dream
+    kind: convention
+    key: psyche_only
+    synonyms: []
+    keywords:
+    - psyche_only
+    theme_map:
+      self: 0.0
+      career: 0.0
+      relationship: 0.0
+      finance: 0.0
+    text: 梦境只提供心理与情绪层面的线索，不参与时机与运势判断，不预示现实中会发生的事。
+    source: 自写草稿；常见意象的心理联想整理，未复制《周公解梦》或现代网站文字；待人工审核
+    license: 本项目自写
+    reviewed: false
+    version: 1
+- id: cal-dream-26
+  system: dream
+  label: pass
+  base: kb:dream:symbol:肉
+  rationale: 现行条目；2026-10-21两家各两轮均判通过；自动核对无确定性措辞，非零方向符合体系方向约定或有对应表述。请按判定锚点复核。
+  entry:
+    id: kb:dream:symbol:肉
+    system: dream
+    kind: symbol
+    key: 肉
+    synonyms:
+    - 吃肉
+    - 生肉
+    keywords:
+    - 肉
+    - 饮食
+    theme_map:
+      self: 0.0
+      career: 0.0
+      relationship: 0.0
+      finance: 0.0
+    text: 梦见肉，常与欲望、能量与物质需求有关。饮食意象多与满足感、照顾与需求有关，只反映心理状态。
+    source: 自写草稿；常见意象的心理联想整理，未复制《周公解梦》或现代网站文字；待人工审核
+    license: 本项目自写
+    reviewed: false
+    version: 1
+- id: cal-dream-27
+  system: dream
+  label: fail
+  base: kb:dream:symbol:壁虎
+  defect:
+    type: prediction
+    detail: 加入了对现实事件的预测（“预示……会……”），没有确定性词语但仍是预测
+  change:
+    field: text
+    before: （无）
+    after: 梦到它预示近期会收到好消息。
+  rationale: 由现行条目改出一处缺陷，其余内容不变；按判定锚点应判 revise 或 reject。
+  entry:
+    id: kb:dream:symbol:壁虎
+    system: dream
+    kind: symbol
+    key: 壁虎
+    synonyms: []
+    keywords:
+    - 壁虎
+    - 动物
+    theme_map:
+      self: 0.0
+      career: 0.0
+      relationship: 0.0
+      finance: 0.0
+    text: 梦见壁虎，常与适应、放下或自我保护有关。动物意象常对应本能、情绪或某种性格特质，含义随梦中感受而变，不是吉凶预兆。梦到它预示近期会收到好消息。
+    source: 自写草稿；常见意象的心理联想整理，未复制《周公解梦》或现代网站文字；待人工审核
+    license: 本项目自写
+    reviewed: false
+    version: 2
+- id: cal-dream-28
+  system: dream
+  label: fail
+  base: kb:dream:symbol:考试
+  defect:
+    type: synonym_not_same_image
+    detail: 同义词“考场”只是场所：考场不等于考试这件事
+  change:
+    field: synonyms
+    before: （无）
+    after: 考场
+  rationale: 由现行条目改出一处缺陷，其余内容不变；按判定锚点应判 revise 或 reject。
+  entry:
+    id: kb:dream:symbol:考试
+    system: dream
+    kind: symbol
+    key: 考试
+    synonyms:
+    - 高考
+    - 考研
+    - 测验
+    - 期末考
+    - 考场
+    keywords:
+    - 考试
+    - 被评价
+    - 准备不足
+    - 压力
+    theme_map:
+      self: -0.1
+      career: -0.1
+      relationship: 0.0
+      finance: 0.0
+    text: 梦见考试，可能与被评价的压力、对准备是否充分的担心有关。理解这类梦时，可以结合近期的学习、工作节奏和梦中的感受，不宜据此推断现实中的考试结果或其他事件。
+    source: 自写草稿；常见意象的心理联想整理，未复制《周公解梦》或现代网站文字；待人工审核
+    license: 本项目自写
+    reviewed: false
+    version: 2
+- id: cal-dream-29
+  system: dream
+  label: pass
+  base: kb:dream:symbol:车祸
+  rationale: 现行条目；2026-10-21两家各两轮均判通过；自动核对无确定性措辞，非零方向符合体系方向约定或有对应表述。请按判定锚点复核。
+  entry:
+    id: kb:dream:symbol:车祸
+    system: dream
+    kind: symbol
+    key: 车祸
+    synonyms:
+    - 撞车
+    - 出车祸
+    - 翻车
+    keywords:
+    - 车祸
+    - 交通
+    theme_map:
+      self: -0.15
+      career: 0.0
+      relationship: 0.0
+      finance: 0.0
+    text: 梦见车祸，常反映对失控与冲突的担心，不预示出行事故。交通工具常对应生活节奏与方向感，梦中的顺利或延误只是心理感受，不预示出行安全。
+    source: 自写草稿；常见意象的心理联想整理，未复制《周公解梦》或现代网站文字；待人工审核
+    license: 本项目自写
+    reviewed: false
+    version: 1
+- id: cal-dream-30
+  system: dream
+  label: fail
+  base: kb:dream:symbol:监狱
+  defect:
+    type: direction_contradicts_text
+    detail: text 对自我状态的表述偏阻，theme_map.self 却是 +0.15（原为 -0.15）
+  change:
+    field: theme_map.self
+    before: -0.15
+    after: 0.15
+  rationale: 由现行条目改出一处缺陷，其余内容不变；按判定锚点应判 revise 或 reject。
+  entry:
+    id: kb:dream:symbol:监狱
+    system: dream
+    kind: symbol
+    key: 监狱
+    synonyms:
+    - 牢房
+    - 坐牢
+    keywords:
+    - 监狱
+    - 场所
+    theme_map:
+      self: 0.15
+      career: 0.0
+      relationship: 0.0
+      finance: 0.0
+    text: 梦见监狱，常与内疚、被限制或自我约束过强有关。场所意象多与安全感、归属和当下所处的人生阶段有关，只作心理层面的参考。
+    source: 自写草稿；常见意象的心理联想整理，未复制《周公解梦》或现代网站文字；待人工审核
+    license: 本项目自写
+    reviewed: false
+    version: 1
+- id: cal-daily-01
+  system: daily
+  label: pass
+  base: kb:daily:convention:daily_seed
+  rationale: 现行条目；2026-10-21两家各两轮均判通过；自动核对无确定性措辞，非零方向符合体系方向约定或有对应表述，与参考事实一致。请按判定锚点复核。
+  entry:
+    id: kb:daily:convention:daily_seed
+    system: daily
+    kind: convention
+    key: daily_seed
+    synonyms: []
+    keywords:
+    - daily_seed
+    theme_map:
+      self: 0.0
+      career: 0.0
+      relationship: 0.0
+      finance: 0.0
+    text: 每日一牌的种子由用户编号与日期的SHA256计算，同一用户同一天结果不变；不同日期重新计算。
+    source: 自写草稿；五行配色为传统约定，仅作说明；待人工审核
+    license: 本项目自写
+    reviewed: false
+    version: 1
+- id: cal-daily-02
+  system: daily
+  label: pass
+  base: kb:daily:day_element:土
+  rationale: 现行条目；2026-10-21两家各两轮均判通过；自动核对无确定性措辞，非零方向符合体系方向约定或有对应表述，与参考事实一致。请按判定锚点复核。
+  entry:
+    id: kb:daily:day_element:土
+    system: daily
+    kind: day_element
+    key: 土
+    synonyms: []
+    keywords:
+    - 土
+    - 黄
+    theme_map:
+      self: 0.0
+      career: 0.0
+      relationship: 0.0
+      finance: 0.0
+    text: 流日天干五行为土：土对应承载，传统配色为黄、棕。“幸运色”只是这一传统配色约定，不带来实际运气。
+    source: 自写草稿；五行配色为传统约定，仅作说明；待人工审核
+    license: 本项目自写
+    reviewed: false
+    version: 1
+- id: cal-daily-03
+  system: daily
+  label: fail
+  base: kb:daily:convention:daily_seed
+  defect:
+    type: nonzero_direction
+    detail: 每日运势条目按本项目约定须保持中性（theme_map 全为0），此处 self 标为 +0.2
+  change:
+    field: theme_map.self
+    before: 0.0
+    after: 0.2
+  rationale: 由现行条目改出一处缺陷，其余内容不变；按判定锚点应判 revise 或 reject。
+  entry:
+    id: kb:daily:convention:daily_seed
+    system: daily
+    kind: convention
+    key: daily_seed
+    synonyms: []
+    keywords:
+    - daily_seed
+    theme_map:
+      self: 0.2
+      career: 0.0
+      relationship: 0.0
+      finance: 0.0
+    text: 每日一牌的种子由用户编号与日期的SHA256计算，同一用户同一天结果不变；不同日期重新计算。
+    source: 自写草稿；五行配色为传统约定，仅作说明；待人工审核
+    license: 本项目自写
+    reviewed: false
+    version: 1
+- id: cal-daily-04
+  system: daily
+  label: pass
+  base: kb:daily:day_element:金
+  rationale: 现行条目；2026-10-21两家各两轮均判通过；自动核对无确定性措辞，非零方向符合体系方向约定或有对应表述，与参考事实一致。请按判定锚点复核。
+  entry:
+    id: kb:daily:day_element:金
+    system: daily
+    kind: day_element
+    key: 金
+    synonyms: []
+    keywords:
+    - 金
+    - 白
+    theme_map:
+      self: 0.0
+      career: 0.0
+      relationship: 0.0
+      finance: 0.0
+    text: 流日天干五行为金：金对应决断，传统配色为白、金。“幸运色”只是这一传统配色约定，不带来实际运气。
+    source: 自写草稿；五行配色为传统约定，仅作说明；待人工审核
+    license: 本项目自写
+    reviewed: false
+    version: 1
+- id: cal-daily-05
+  system: daily
+  label: fail
+  base: kb:daily:day_element:金
+  defect:
+    type: luck_claim
+    detail: 把配色约定写成了能带来实际运气
+  change:
+    field: text
+    before: 不带来实际运气
+    after: 可以为当天带来好运
+  rationale: 由现行条目改出一处缺陷，其余内容不变；按判定锚点应判 revise 或 reject。
+  entry:
+    id: kb:daily:day_element:金
+    system: daily
+    kind: day_element
+    key: 金
+    synonyms: []
+    keywords:
+    - 金
+    - 白
+    theme_map:
+      self: 0.0
+      career: 0.0
+      relationship: 0.0
+      finance: 0.0
+    text: 流日天干五行为金：金对应决断，传统配色为白、金。“幸运色”只是这一传统配色约定，可以为当天带来好运。
+    source: 自写草稿；五行配色为传统约定，仅作说明；待人工审核
+    license: 本项目自写
+    reviewed: false
+    version: 1
+- id: cal-daily-06
+  system: daily
+  label: fail
+  base: kb:daily:day_element:火
+  defect:
+    type: color_wrong
+    detail: 火的传统配色为红、紫（参考事实），text 写成黄、棕
+  change:
+    field: text
+    before: 传统配色为红、紫
+    after: 传统配色为黄、棕
+  rationale: 由现行条目改出一处缺陷，其余内容不变；按判定锚点应判 revise 或 reject。
+  entry:
+    id: kb:daily:day_element:火
+    system: daily
+    kind: day_element
+    key: 火
+    synonyms: []
+    keywords:
+    - 火
+    - 红
+    theme_map:
+      self: 0.0
+      career: 0.0
+      relationship: 0.0
+      finance: 0.0
+    text: 流日天干五行为火：火对应热情，传统配色为黄、棕。“幸运色”只是这一传统配色约定，不带来实际运气。
+    source: 自写草稿；五行配色为传统约定，仅作说明；待人工审核
+    license: 本项目自写
+    reviewed: false
+    version: 1
+- id: cal-daily-07
+  system: daily
+  label: fail
+  base: kb:daily:day_element:水
+  defect:
+    type: color_wrong
+    detail: 水的传统配色为黑、蓝（参考事实），text 写成青、绿
+  change:
+    field: text
+    before: 传统配色为黑、蓝
+    after: 传统配色为青、绿
+  rationale: 由现行条目改出一处缺陷，其余内容不变；按判定锚点应判 revise 或 reject。
+  entry:
+    id: kb:daily:day_element:水
+    system: daily
+    kind: day_element
+    key: 水
+    synonyms: []
+    keywords:
+    - 水
+    - 黑蓝
+    theme_map:
+      self: 0.0
+      career: 0.0
+      relationship: 0.0
+      finance: 0.0
+    text: 流日天干五行为水：水对应流动，传统配色为青、绿。“幸运色”只是这一传统配色约定，不带来实际运气。
+    source: 自写草稿；五行配色为传统约定，仅作说明；待人工审核
+    license: 本项目自写
+    reviewed: false
+    version: 1
+- id: cal-daily-08
+  system: daily
+  label: fail
+  base: kb:daily:convention:unknown_time
+  defect:
+    type: nonzero_direction
+    detail: 每日运势条目按本项目约定须保持中性（theme_map 全为0），此处 self 标为 +0.2
+  change:
+    field: theme_map.self
+    before: 0.0
+    after: 0.2
+  rationale: 由现行条目改出一处缺陷，其余内容不变；按判定锚点应判 revise 或 reject。
+  entry:
+    id: kb:daily:convention:unknown_time
+    system: daily
+    kind: convention
+    key: unknown_time
+    synonyms: []
+    keywords:
+    - unknown_time
+    theme_map:
+      self: 0.2
+      career: 0.0
+      relationship: 0.0
+      finance: 0.0
+    text: 出生时间未知时以中午为代理计算本命盘，月亮位置与当天精确相位时刻存在不确定性。
+    source: 自写草稿；五行配色为传统约定，仅作说明；待人工审核
+    license: 本项目自写
+    reviewed: false
+    version: 1
+- id: cal-daily-09
+  system: daily
+  label: pass
+  base: kb:daily:convention:unknown_time
+  rationale: 现行条目；2026-10-21两家各两轮均判通过；自动核对无确定性措辞，非零方向符合体系方向约定或有对应表述，与参考事实一致。请按判定锚点复核。
+  entry:
+    id: kb:daily:convention:unknown_time
+    system: daily
+    kind: convention
+    key: unknown_time
+    synonyms: []
+    keywords:
+    - unknown_time
+    theme_map:
+      self: 0.0
+      career: 0.0
+      relationship: 0.0
+      finance: 0.0
+    text: 出生时间未知时以中午为代理计算本命盘，月亮位置与当天精确相位时刻存在不确定性。
+    source: 自写草稿；五行配色为传统约定，仅作说明；待人工审核
+    license: 本项目自写
+    reviewed: false
+    version: 1
+- id: cal-daily-10
+  system: daily
+  label: pass
+  base: kb:daily:convention:no_exact_events
+  rationale: 现行条目；2026-10-21两家各两轮均判通过；自动核对无确定性措辞，非零方向符合体系方向约定或有对应表述，与参考事实一致。请按判定锚点复核。
+  entry:
+    id: kb:daily:convention:no_exact_events
+    system: daily
+    kind: convention
+    key: no_exact_events
+    synonyms: []
+    keywords:
+    - no_exact_events
+    theme_map:
+      self: 0.0
+      career: 0.0
+      relationship: 0.0
+      finance: 0.0
+    text: 在本功能所检查的月亮与快行星对本命盘的精确相位范围内，今天没有匹配到节点。这不排除慢行星相位或接近精确角度、处于允许误差范围内的相位，也不表示今天整体的行运情况或好坏。
+    source: 自写草稿；五行配色为传统约定，仅作说明；待人工审核
+    license: 本项目自写
+    reviewed: false
+    version: 2
+- id: cal-daily-11
+  system: daily
+  label: fail
+  base: kb:daily:day_element:土
+  defect:
+    type: luck_claim
+    detail: 把配色约定写成了能带来实际运气
+  change:
+    field: text
+    before: 不带来实际运气
+    after: 可以为当天带来好运
+  rationale: 由现行条目改出一处缺陷，其余内容不变；按判定锚点应判 revise 或 reject。
+  entry:
+    id: kb:daily:day_element:土
+    system: daily
+    kind: day_element
+    key: 土
+    synonyms: []
+    keywords:
+    - 土
+    - 黄
+    theme_map:
+      self: 0.0
+      career: 0.0
+      relationship: 0.0
+      finance: 0.0
+    text: 流日天干五行为土：土对应承载，传统配色为黄、棕。“幸运色”只是这一传统配色约定，可以为当天带来好运。
+    source: 自写草稿；五行配色为传统约定，仅作说明；待人工审核
+    license: 本项目自写
+    reviewed: false
+    version: 1
+- id: cal-daily-12
+  system: daily
+  label: pass
+  base: kb:daily:day_element:火
+  rationale: 现行条目；2026-10-21两家各两轮均判通过；自动核对无确定性措辞，非零方向符合体系方向约定或有对应表述，与参考事实一致。请按判定锚点复核。
+  entry:
+    id: kb:daily:day_element:火
+    system: daily
+    kind: day_element
+    key: 火
+    synonyms: []
+    keywords:
+    - 火
+    - 红
+    theme_map:
+      self: 0.0
+      career: 0.0
+      relationship: 0.0
+      finance: 0.0
+    text: 流日天干五行为火：火对应热情，传统配色为红、紫。“幸运色”只是这一传统配色约定，不带来实际运气。
+    source: 自写草稿；五行配色为传统约定，仅作说明；待人工审核
+    license: 本项目自写
+    reviewed: false
+    version: 1
+- id: cal-daily-13
+  system: daily
+  label: pass
+  base: kb:daily:convention:moment_only
+  rationale: 现行条目；2026-10-21两家各两轮均判通过；自动核对无确定性措辞，非零方向符合体系方向约定或有对应表述，与参考事实一致。请按判定锚点复核。
+  entry:
+    id: kb:daily:convention:moment_only
+    system: daily
+    kind: convention
+    key: moment_only
+    synonyms: []
+    keywords:
+    - moment_only
+    theme_map:
+      self: 0.0
+      career: 0.0
+      relationship: 0.0
+      finance: 0.0
+    text: 每日运势是当天的提示，属于短时信号，不改变本命或流年的长期判断。
+    source: 自写草稿；五行配色为传统约定，仅作说明；待人工审核
+    license: 本项目自写
+    reviewed: false
+    version: 1
+- id: cal-daily-14
+  system: daily
+  label: fail
+  base: kb:daily:convention:moment_only
+  defect:
+    type: nonzero_direction
+    detail: 每日运势条目按本项目约定须保持中性（theme_map 全为0），此处 self 标为 +0.2
+  change:
+    field: theme_map.self
+    before: 0.0
+    after: 0.2
+  rationale: 由现行条目改出一处缺陷，其余内容不变；按判定锚点应判 revise 或 reject。
+  entry:
+    id: kb:daily:convention:moment_only
+    system: daily
+    kind: convention
+    key: moment_only
+    synonyms: []
+    keywords:
+    - moment_only
+    theme_map:
+      self: 0.2
+      career: 0.0
+      relationship: 0.0
+      finance: 0.0
+    text: 每日运势是当天的提示，属于短时信号，不改变本命或流年的长期判断。
+    source: 自写草稿；五行配色为传统约定，仅作说明；待人工审核
+    license: 本项目自写
+    reviewed: false
+    version: 1
+- id: cal-daily-15
+  system: daily
+  label: fail
+  base: kb:daily:convention:no_exact_events
+  defect:
+    type: nonzero_direction
+    detail: 每日运势条目按本项目约定须保持中性（theme_map 全为0），此处 self 标为 +0.2
+  change:
+    field: theme_map.self
+    before: 0.0
+    after: 0.2
+  rationale: 由现行条目改出一处缺陷，其余内容不变；按判定锚点应判 revise 或 reject。
+  entry:
+    id: kb:daily:convention:no_exact_events
+    system: daily
+    kind: convention
+    key: no_exact_events
+    synonyms: []
+    keywords:
+    - no_exact_events
+    theme_map:
+      self: 0.2
+      career: 0.0
+      relationship: 0.0
+      finance: 0.0
+    text: 在本功能所检查的月亮与快行星对本命盘的精确相位范围内，今天没有匹配到节点。这不排除慢行星相位或接近精确角度、处于允许误差范围内的相位，也不表示今天整体的行运情况或好坏。
+    source: 自写草稿；五行配色为传统约定，仅作说明；待人工审核
+    license: 本项目自写
+    reviewed: false
+    version: 2
+- id: cal-daily-16
+  system: daily
+  label: pass
+  base: kb:daily:day_element:水
+  rationale: 现行条目；2026-10-21两家各两轮均判通过；自动核对无确定性措辞，非零方向符合体系方向约定或有对应表述，与参考事实一致。请按判定锚点复核。
+  entry:
+    id: kb:daily:day_element:水
+    system: daily
+    kind: day_element
+    key: 水
+    synonyms: []
+    keywords:
+    - 水
+    - 黑蓝
+    theme_map:
+      self: 0.0
+      career: 0.0
+      relationship: 0.0
+      finance: 0.0
+    text: 流日天干五行为水：水对应流动，传统配色为黑、蓝。“幸运色”只是这一传统配色约定，不带来实际运气。
+    source: 自写草稿；五行配色为传统约定，仅作说明；待人工审核
+    license: 本项目自写
+    reviewed: false
+    version: 1
+- id: cal-daily-17
+  system: daily
+  label: fail
+  base: kb:daily:day_element:木
+  defect:
+    type: color_wrong
+    detail: 木的传统配色为青、绿（参考事实），text 写成红、紫
+  change:
+    field: text
+    before: 传统配色为青、绿
+    after: 传统配色为红、紫
+  rationale: 由现行条目改出一处缺陷，其余内容不变；按判定锚点应判 revise 或 reject。
+  entry:
+    id: kb:daily:day_element:木
+    system: daily
+    kind: day_element
+    key: 木
+    synonyms: []
+    keywords:
+    - 木
+    - 青绿
+    theme_map:
+      self: 0.0
+      career: 0.0
+      relationship: 0.0
+      finance: 0.0
+    text: 流日天干五行为木：木对应生长，传统配色为红、紫。“幸运色”只是这一传统配色约定，不带来实际运气。
+    source: 自写草稿；五行配色为传统约定，仅作说明；待人工审核
+    license: 本项目自写
+    reviewed: false
+    version: 1
+- id: cal-daily-18
+  system: daily
+  label: pass
+  base: kb:daily:day_element:木
+  rationale: 现行条目；2026-10-21两家各两轮均判通过；自动核对无确定性措辞，非零方向符合体系方向约定或有对应表述，与参考事实一致。请按判定锚点复核。
+  entry:
+    id: kb:daily:day_element:木
+    system: daily
+    kind: day_element
+    key: 木
+    synonyms: []
+    keywords:
+    - 木
+    - 青绿
+    theme_map:
+      self: 0.0
+      career: 0.0
+      relationship: 0.0
+      finance: 0.0
+    text: 流日天干五行为木：木对应生长，传统配色为青、绿。“幸运色”只是这一传统配色约定，不带来实际运气。
+    source: 自写草稿；五行配色为传统约定，仅作说明；待人工审核
+    license: 本项目自写
+    reviewed: false
+    version: 1

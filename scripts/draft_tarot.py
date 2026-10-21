@@ -569,6 +569,16 @@ MINOR_DRAFTS = {
 }
 
 
+# Which themes a card's direction applies to; the knowledge review rubric quotes this too.
+MAJOR_THEMES = ["self", "career", "relationship"]
+SUIT_THEMES = {
+    "wands": ["career", "self"],
+    "cups": ["relationship", "self"],
+    "swords": ["self", "career"],
+    "pentacles": ["finance", "career"],
+}
+
+
 def draft(output: Path) -> None:
     if output.exists():
         raise FileExistsError("源文件已存在；请直接审核编辑，脚本不覆盖人工修改")
@@ -576,18 +586,13 @@ def draft(output: Path) -> None:
     for i, (card_id, name) in enumerate(DECK):
         if i < 22:
             words, upright, reversed_text, up_value, reversed_value = MAJOR_DRAFTS[i]
-            themes = ["self", "career", "relationship"]
+            themes = MAJOR_THEMES
         else:
             suit = card_id.split("_")[0]
             words, upright, reversed_text, up_value, reversed_value = MINOR_DRAFTS[suit][
                 (i - 22) % 14
             ]
-            themes = {
-                "wands": ["career", "self"],
-                "cups": ["relationship", "self"],
-                "swords": ["self", "career"],
-                "pentacles": ["finance", "career"],
-            }[suit]
+            themes = SUIT_THEMES[suit]
         for orientation, text, value in [
             ("upright", upright, up_value),
             ("reversed", reversed_text, reversed_value),
