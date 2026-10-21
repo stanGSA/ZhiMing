@@ -10,7 +10,7 @@ B1修订后占星55条、八字52条有感情或财务方向，十神10/10及七
 
 完整逐体系计数、四项指标、模型身份、费用限制、兼容性及未过关原因见[本次验收报告](20261022-acceptance/report.md)和[全部真实证据](../kb-model-review/20261021-live/campaign/summary.json)。代码/CI结果见[PR #17](https://github.com/stanGSA/ZhiMing/pull/17)，不自动合并。阶段2真实回答质量未在本次开展。
 
-最终本地全量814项、专项66项通过；最终Ubuntu/Windows CI因GitHub账户付款或支出额度问题未启动，不能记作通过，原始诊断见[CI平台阻塞](20261022-acceptance/ci-platform-block.json)。
+整改提交`fc5da04`在本机Windows全量824项、相关专项108项通过，云端受下载限制的11项Skyfield独立核验及doctor也已通过；Ruff与147文件格式检查通过，见[本机补验记录](20261022-acceptance/fc5da04/summary.json)。Ubuntu/Windows CI仍因GitHub账户付款或支出额度问题未启动，不能记作通过，[本轮平台诊断](20261022-acceptance/fc5da04/ci-annotations.json)保留原文。此前814项、66项结果为整改前记录。
 
 合并前复核整改（2026-10-22）：修复了逐批写账本绕过体系关口的问题；账本report改为POSIX路径（知识库版本因此由`v1-bac48fbe859be33a`变为`v1-c0c1725272723b2e`，内容不变）；明确披露占星、每日运势的289条批准依赖新kappa口径；修正了埋错样本泄露答案的问题；拦截解梦同义词删减后出现的误匹配并做了回归评估；中转站地址改由环境变量提供。详见[验收报告“合并前复核整改”一节](20261022-acceptance/report.md)。
 
