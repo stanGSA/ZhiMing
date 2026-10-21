@@ -1,0 +1,92 @@
+{
+  "batch": "b026",
+  "reviewer": "reviewer_a",
+  "run_pass": 2,
+  "attempt": 1,
+  "vendor": "deepseek",
+  "requested_model": "deepseek-flash",
+  "returned_model": "deepseek-flash",
+  "api": "openai",
+  "started_at": "2026-10-21T16:15:25+00:00",
+  "finished_at": "2026-10-21T16:15:28+00:00",
+  "latency_s": 2.758,
+  "http_attempts": 1,
+  "finish_reason": "stop",
+  "prompt_sha256": "cf547845c59e4cdb52882cea1342e8a9c31ad51dc9cc218334fd8e14940c0f67",
+  "input_tokens": 2470,
+  "output_tokens": 682,
+  "cached_input_tokens": 2304,
+  "usage_available": true,
+  "raw_text": "{\n  \"items\": [\n    {\n      \"item\": \"i01\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"释义符合舞台意象的常见心理联想，主题倾向轻微正向且与文字一致，措辞平和无宿命化。\"\n    },\n    {\n      \"item\": \"i02\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"茶与平静、待客的联想合理，主题方向与文字一致，无确定性断言。\"\n    },\n    {\n      \"item\": \"i03\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"自行车象征自立与平衡前进，方向与文字一致，且明确不预示出行安全。\"\n    },\n    {\n      \"item\": \"i04\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"苹果与健康愿望、诱惑的联想常见，主题方向一致，无宿命化表述。\"\n    },\n    {\n      \"item\": \"i05\",\n      \"verdict\": \"revise\",\n      \"issues\": [\n        {\n          \"dimension\": \"consistency\",\n          \"detail\": \"同义词“油菜花”含“菜”字，可能误命中“菜”等其他意象，建议移出或单独处理。\"\n        }\n      ],\n      \"reason\": \"释义本身合理，但同义词“油菜花”存在误命中其他意象的风险。\"\n    },\n    {\n      \"item\": \"i06\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"草与生命力、日常琐事的联想合理，主题全为0与文字中性一致。\"\n    },\n    {\n      \"item\": \"i07\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"草原与开阔自由的联想合理，主题轻微正向且与文字一致。\"\n    },\n    {\n      \"item\": \"i08\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"药与修复、寻求帮助的联想合理，且明确不代表用药建议，无医疗确定性结论。\"\n    },\n    {\n      \"item\": \"i09\",\n      \"verdict\": \"reject\",\n      \"issues\": [\n        {\n          \"dimension\": \"certainty\",\n          \"detail\": \"出现“意味着必然破财，结局已经注定，无法避免”等宿命化确定性断言。\"\n        },\n        {\n          \"dimension\": \"theme_direction\",\n          \"detail\": \"文字断言必然破财，与theme_map中finance为0不一致。\"\n        }\n      ],\n      \"reason\": \"释义含宿命化断言且与财务主题方向矛盾。\"\n    },\n    {\n      \"item\": \"i10\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"船与情绪航行、漂泊安定的联想合理，主题中性且无出行安全预示。\"\n    },\n    {\n      \"item\": \"i11\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"荷花象征清净与本心，主题轻微正向且与文字一致。\"\n    }\n  ]\n}",
+  "verdicts": {
+    "i01": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "释义符合舞台意象的常见心理联想，主题倾向轻微正向且与文字一致，措辞平和无宿命化。"
+    },
+    "i02": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "茶与平静、待客的联想合理，主题方向与文字一致，无确定性断言。"
+    },
+    "i03": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "自行车象征自立与平衡前进，方向与文字一致，且明确不预示出行安全。"
+    },
+    "i04": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "苹果与健康愿望、诱惑的联想常见，主题方向一致，无宿命化表述。"
+    },
+    "i05": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "consistency",
+          "detail": "同义词“油菜花”含“菜”字，可能误命中“菜”等其他意象，建议移出或单独处理。"
+        }
+      ],
+      "reason": "释义本身合理，但同义词“油菜花”存在误命中其他意象的风险。"
+    },
+    "i06": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "草与生命力、日常琐事的联想合理，主题全为0与文字中性一致。"
+    },
+    "i07": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "草原与开阔自由的联想合理，主题轻微正向且与文字一致。"
+    },
+    "i08": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "药与修复、寻求帮助的联想合理，且明确不代表用药建议，无医疗确定性结论。"
+    },
+    "i09": {
+      "verdict": "reject",
+      "issues": [
+        {
+          "dimension": "certainty",
+          "detail": "出现“意味着必然破财，结局已经注定，无法避免”等宿命化确定性断言。"
+        },
+        {
+          "dimension": "theme_direction",
+          "detail": "文字断言必然破财，与theme_map中finance为0不一致。"
+        }
+      ],
+      "reason": "释义含宿命化断言且与财务主题方向矛盾。"
+    },
+    "i10": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "船与情绪航行、漂泊安定的联想合理，主题中性且无出行安全预示。"
+    },
+    "i11": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "荷花象征清净与本心，主题轻微正向且与文字一致。"
+    }
+  }
+}

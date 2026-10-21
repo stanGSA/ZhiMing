@@ -1,0 +1,42 @@
+{
+  "batch": "b002",
+  "reviewer": "reviewer_a",
+  "run_pass": 1,
+  "attempt": 1,
+  "vendor": "deepseek",
+  "requested_model": "deepseek-flash",
+  "returned_model": "deepseek-flash",
+  "api": "openai",
+  "started_at": "2026-10-21T16:48:24+00:00",
+  "finished_at": "2026-10-21T16:48:26+00:00",
+  "latency_s": 1.647,
+  "http_attempts": 1,
+  "finish_reason": "stop",
+  "prompt_sha256": "92a457c0642dcd895b12363f95f544206ca78748f346d36886c7e7edfef4b765",
+  "input_tokens": 1196,
+  "output_tokens": 199,
+  "cached_input_tokens": 384,
+  "usage_available": true,
+  "raw_text": "{\"items\": [{\"item\": \"i01\", \"verdict\": \"reject\", \"issues\": [{\"dimension\": \"medical_legal_finance\", \"detail\": \"末尾突然出现“你已经患有焦虑症，应当尽快服用药物”，这是对用户下达医疗诊断和用药建议的确定性结论，与排盘口径说明无关，且可能造成误导。\"}, {\"dimension\": \"consistency\", \"detail\": \"正文混入与 key（子初换日排盘口径）完全无关的医疗断言，条目内容与 key 不符。\"}], \"reason\": \"排盘口径说明被无关的医疗诊断和用药建议污染，属于医疗确定性结论，必须退回。\"}, {\"item\": \"i02\", \"verdict\": \"pass\", \"issues\": [], \"reason\": \"地支破的传统含义、与冲刑害的区分、theme_map 轻度偏阻方向及免责表述均一致且无问题。\"}]}",
+  "verdicts": {
+    "i01": {
+      "verdict": "reject",
+      "issues": [
+        {
+          "dimension": "medical_legal_finance",
+          "detail": "末尾突然出现“你已经患有焦虑症，应当尽快服用药物”，这是对用户下达医疗诊断和用药建议的确定性结论，与排盘口径说明无关，且可能造成误导。"
+        },
+        {
+          "dimension": "consistency",
+          "detail": "正文混入与 key（子初换日排盘口径）完全无关的医疗断言，条目内容与 key 不符。"
+        }
+      ],
+      "reason": "排盘口径说明被无关的医疗诊断和用药建议污染，属于医疗确定性结论，必须退回。"
+    },
+    "i02": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "地支破的传统含义、与冲刑害的区分、theme_map 轻度偏阻方向及免责表述均一致且无问题。"
+    }
+  }
+}

@@ -1,0 +1,4025 @@
+{
+  "recorded_at": "2026-10-21T16:59:40+00:00",
+  "roles": {
+    "reviewer_a": {
+      "completed_outputs": 366,
+      "error_events": 4,
+      "http_attempts": 369,
+      "input_tokens": 886922,
+      "output_tokens": 178083,
+      "usage_unknown_errors": 1,
+      "returned_models": {
+        "deepseek-flash": 369
+      },
+      "cost": null,
+      "cost_basis": "费率与账单不可获得，不能将未知费用写作0；token仅为实际返回的已知用量"
+    },
+    "reviewer_b": {
+      "completed_outputs": 366,
+      "error_events": 0,
+      "http_attempts": 385,
+      "input_tokens": 968508,
+      "output_tokens": 329860,
+      "usage_unknown_errors": 0,
+      "returned_models": {
+        "gpt-6.1-sol": 366
+      },
+      "cost": null,
+      "cost_basis": "费率与账单不可获得，不能将未知费用写作0；token仅为实际返回的已知用量"
+    },
+    "reviser": {
+      "completed_outputs": 365,
+      "error_events": 0,
+      "http_attempts": 375,
+      "input_tokens": 208405,
+      "output_tokens": 95827,
+      "usage_unknown_errors": 0,
+      "returned_models": {
+        "gpt-6-astra": 365
+      },
+      "cost": null,
+      "cost_basis": "费率与账单不可获得，不能将未知费用写作0；token仅为实际返回的已知用量"
+    }
+  },
+  "runs": [
+    {
+      "run": "astro-initial",
+      "purpose": "audit",
+      "system": "astro",
+      "entries": 280,
+      "planted": 28,
+      "calls": 124,
+      "expected": 124,
+      "errors": 1,
+      "usage": {
+        "reviewer_a": {
+          "calls": 62,
+          "input_tokens": 137548,
+          "output_tokens": 30411,
+          "latency_s": 159.978,
+          "returned_models": [
+            "deepseek-flash"
+          ],
+          "errors": {
+            "service_error": 1
+          },
+          "retried_calls": 0,
+          "http_retries": 0,
+          "cost": null,
+          "known_cost_estimate": null,
+          "usage_complete": false,
+          "cost_basis": "配置单价估算，非账单；服务失败的用量可能未知",
+          "currency": null
+        },
+        "reviewer_b": {
+          "calls": 62,
+          "input_tokens": 148222,
+          "output_tokens": 48183,
+          "latency_s": 2311.808,
+          "returned_models": [
+            "gpt-6.1-sol"
+          ],
+          "errors": {},
+          "retried_calls": 0,
+          "http_retries": 7,
+          "cost": null,
+          "known_cost_estimate": null,
+          "usage_complete": true,
+          "cost_basis": "配置单价估算，非账单；服务失败的用量可能未知",
+          "currency": null
+        },
+        "reviser": {
+          "calls": 21,
+          "input_tokens": 10643,
+          "output_tokens": 6202,
+          "latency_s": 362.162,
+          "returned_models": [
+            "gpt-6-astra"
+          ],
+          "errors": {},
+          "retried_calls": 0,
+          "http_retries": 1,
+          "cost": null,
+          "known_cost_estimate": null,
+          "usage_complete": true,
+          "cost_basis": "配置单价估算，非账单；服务失败的用量可能未知",
+          "currency": null
+        }
+      }
+    },
+    {
+      "run": "astro-rereview-1",
+      "purpose": "audit",
+      "system": "astro",
+      "entries": 21,
+      "planted": 5,
+      "calls": 16,
+      "expected": 16,
+      "errors": 0,
+      "usage": {
+        "reviewer_a": {
+          "calls": 8,
+          "input_tokens": 17430,
+          "output_tokens": 3021,
+          "latency_s": 21.336,
+          "returned_models": [
+            "deepseek-flash"
+          ],
+          "errors": {},
+          "retried_calls": 0,
+          "http_retries": 0,
+          "cost": null,
+          "known_cost_estimate": null,
+          "usage_complete": true,
+          "cost_basis": "配置单价估算，非账单；服务失败的用量可能未知",
+          "currency": null
+        },
+        "reviewer_b": {
+          "calls": 8,
+          "input_tokens": 19614,
+          "output_tokens": 5080,
+          "latency_s": 254.827,
+          "returned_models": [
+            "gpt-6.1-sol"
+          ],
+          "errors": {},
+          "retried_calls": 0,
+          "http_retries": 0,
+          "cost": null,
+          "known_cost_estimate": null,
+          "usage_complete": true,
+          "cost_basis": "配置单价估算，非账单；服务失败的用量可能未知",
+          "currency": null
+        },
+        "reviser": {
+          "calls": 2,
+          "input_tokens": 1389,
+          "output_tokens": 697,
+          "latency_s": 25.234,
+          "returned_models": [
+            "gpt-6-astra"
+          ],
+          "errors": {},
+          "retried_calls": 0,
+          "http_retries": 0,
+          "cost": null,
+          "known_cost_estimate": null,
+          "usage_complete": true,
+          "cost_basis": "配置单价估算，非账单；服务失败的用量可能未知",
+          "currency": null
+        }
+      }
+    },
+    {
+      "run": "astro-rereview-2",
+      "purpose": "audit",
+      "system": "astro",
+      "entries": 2,
+      "planted": 2,
+      "calls": 8,
+      "expected": 8,
+      "errors": 0,
+      "usage": {
+        "reviewer_a": {
+          "calls": 4,
+          "input_tokens": 4476,
+          "output_tokens": 638,
+          "latency_s": 9.194,
+          "returned_models": [
+            "deepseek-flash"
+          ],
+          "errors": {},
+          "retried_calls": 0,
+          "http_retries": 0,
+          "cost": null,
+          "known_cost_estimate": null,
+          "usage_complete": true,
+          "cost_basis": "配置单价估算，非账单；服务失败的用量可能未知",
+          "currency": null
+        },
+        "reviewer_b": {
+          "calls": 4,
+          "input_tokens": 5088,
+          "output_tokens": 1043,
+          "latency_s": 36.914,
+          "returned_models": [
+            "gpt-6.1-sol"
+          ],
+          "errors": {},
+          "retried_calls": 0,
+          "http_retries": 0,
+          "cost": null,
+          "known_cost_estimate": null,
+          "usage_complete": true,
+          "cost_basis": "配置单价估算，非账单；服务失败的用量可能未知",
+          "currency": null
+        }
+      }
+    },
+    {
+      "run": "bazi-initial",
+      "purpose": "audit",
+      "system": "bazi",
+      "entries": 141,
+      "planted": 14,
+      "calls": 68,
+      "expected": 68,
+      "errors": 1,
+      "usage": {
+        "reviewer_a": {
+          "calls": 34,
+          "input_tokens": 78802,
+          "output_tokens": 16442,
+          "latency_s": 90.08,
+          "returned_models": [
+            "deepseek-flash"
+          ],
+          "errors": {
+            "parse_error": 1
+          },
+          "retried_calls": 1,
+          "http_retries": 0,
+          "cost": null,
+          "known_cost_estimate": null,
+          "usage_complete": true,
+          "cost_basis": "配置单价估算，非账单；服务失败的用量可能未知",
+          "currency": null
+        },
+        "reviewer_b": {
+          "calls": 34,
+          "input_tokens": 83786,
+          "output_tokens": 34741,
+          "latency_s": 1031.432,
+          "returned_models": [
+            "gpt-6.1-sol"
+          ],
+          "errors": {},
+          "retried_calls": 0,
+          "http_retries": 0,
+          "cost": null,
+          "known_cost_estimate": null,
+          "usage_complete": true,
+          "cost_basis": "配置单价估算，非账单；服务失败的用量可能未知",
+          "currency": null
+        },
+        "reviser": {
+          "calls": 51,
+          "input_tokens": 31786,
+          "output_tokens": 16596,
+          "latency_s": 1242.988,
+          "returned_models": [
+            "gpt-6-astra"
+          ],
+          "errors": {},
+          "retried_calls": 0,
+          "http_retries": 4,
+          "cost": null,
+          "known_cost_estimate": null,
+          "usage_complete": true,
+          "cost_basis": "配置单价估算，非账单；服务失败的用量可能未知",
+          "currency": null
+        }
+      }
+    },
+    {
+      "run": "bazi-rereview-1",
+      "purpose": "audit",
+      "system": "bazi",
+      "entries": 49,
+      "planted": 5,
+      "calls": 24,
+      "expected": 24,
+      "errors": 0,
+      "usage": {
+        "reviewer_a": {
+          "calls": 12,
+          "input_tokens": 36758,
+          "output_tokens": 5500,
+          "latency_s": 32.145,
+          "returned_models": [
+            "deepseek-flash"
+          ],
+          "errors": {},
+          "retried_calls": 0,
+          "http_retries": 0,
+          "cost": null,
+          "known_cost_estimate": null,
+          "usage_complete": true,
+          "cost_basis": "配置单价估算，非账单；服务失败的用量可能未知",
+          "currency": null
+        },
+        "reviewer_b": {
+          "calls": 12,
+          "input_tokens": 41200,
+          "output_tokens": 8688,
+          "latency_s": 242.199,
+          "returned_models": [
+            "gpt-6.1-sol"
+          ],
+          "errors": {},
+          "retried_calls": 0,
+          "http_retries": 0,
+          "cost": null,
+          "known_cost_estimate": null,
+          "usage_complete": true,
+          "cost_basis": "配置单价估算，非账单；服务失败的用量可能未知",
+          "currency": null
+        },
+        "reviser": {
+          "calls": 2,
+          "input_tokens": 1770,
+          "output_tokens": 741,
+          "latency_s": 28.969,
+          "returned_models": [
+            "gpt-6-astra"
+          ],
+          "errors": {},
+          "retried_calls": 0,
+          "http_retries": 0,
+          "cost": null,
+          "known_cost_estimate": null,
+          "usage_complete": true,
+          "cost_basis": "配置单价估算，非账单；服务失败的用量可能未知",
+          "currency": null
+        }
+      }
+    },
+    {
+      "run": "bazi-rereview-2",
+      "purpose": "audit",
+      "system": "bazi",
+      "entries": 2,
+      "planted": 2,
+      "calls": 8,
+      "expected": 8,
+      "errors": 0,
+      "usage": {
+        "reviewer_a": {
+          "calls": 4,
+          "input_tokens": 4762,
+          "output_tokens": 696,
+          "latency_s": 8.687,
+          "returned_models": [
+            "deepseek-flash"
+          ],
+          "errors": {},
+          "retried_calls": 0,
+          "http_retries": 0,
+          "cost": null,
+          "known_cost_estimate": null,
+          "usage_complete": true,
+          "cost_basis": "配置单价估算，非账单；服务失败的用量可能未知",
+          "currency": null
+        },
+        "reviewer_b": {
+          "calls": 4,
+          "input_tokens": 5440,
+          "output_tokens": 1008,
+          "latency_s": 39.136,
+          "returned_models": [
+            "gpt-6.1-sol"
+          ],
+          "errors": {},
+          "retried_calls": 0,
+          "http_retries": 0,
+          "cost": null,
+          "known_cost_estimate": null,
+          "usage_complete": true,
+          "cost_basis": "配置单价估算，非账单；服务失败的用量可能未知",
+          "currency": null
+        }
+      }
+    },
+    {
+      "run": "daily-initial",
+      "purpose": "audit",
+      "system": "daily",
+      "entries": 9,
+      "planted": 5,
+      "calls": 8,
+      "expected": 8,
+      "errors": 0,
+      "usage": {
+        "reviewer_a": {
+          "calls": 4,
+          "input_tokens": 6440,
+          "output_tokens": 1821,
+          "latency_s": 14.938,
+          "returned_models": [
+            "deepseek-flash"
+          ],
+          "errors": {},
+          "retried_calls": 0,
+          "http_retries": 0,
+          "cost": null,
+          "known_cost_estimate": null,
+          "usage_complete": true,
+          "cost_basis": "配置单价估算，非账单；服务失败的用量可能未知",
+          "currency": null
+        },
+        "reviewer_b": {
+          "calls": 4,
+          "input_tokens": 6896,
+          "output_tokens": 3380,
+          "latency_s": 78.795,
+          "returned_models": [
+            "gpt-6.1-sol"
+          ],
+          "errors": {},
+          "retried_calls": 0,
+          "http_retries": 0,
+          "cost": null,
+          "known_cost_estimate": null,
+          "usage_complete": true,
+          "cost_basis": "配置单价估算，非账单；服务失败的用量可能未知",
+          "currency": null
+        },
+        "reviser": {
+          "calls": 1,
+          "input_tokens": 574,
+          "output_tokens": 195,
+          "latency_s": 11.413,
+          "returned_models": [
+            "gpt-6-astra"
+          ],
+          "errors": {},
+          "retried_calls": 0,
+          "http_retries": 0,
+          "cost": null,
+          "known_cost_estimate": null,
+          "usage_complete": true,
+          "cost_basis": "配置单价估算，非账单；服务失败的用量可能未知",
+          "currency": null
+        }
+      }
+    },
+    {
+      "run": "daily-rereview-1",
+      "purpose": "audit",
+      "system": "daily",
+      "entries": 1,
+      "planted": 1,
+      "calls": 8,
+      "expected": 8,
+      "errors": 0,
+      "usage": {
+        "reviewer_a": {
+          "calls": 4,
+          "input_tokens": 2806,
+          "output_tokens": 423,
+          "latency_s": 8.22,
+          "returned_models": [
+            "deepseek-flash"
+          ],
+          "errors": {},
+          "retried_calls": 0,
+          "http_retries": 0,
+          "cost": null,
+          "known_cost_estimate": null,
+          "usage_complete": true,
+          "cost_basis": "配置单价估算，非账单；服务失败的用量可能未知",
+          "currency": null
+        },
+        "reviewer_b": {
+          "calls": 4,
+          "input_tokens": 3216,
+          "output_tokens": 553,
+          "latency_s": 32.34,
+          "returned_models": [
+            "gpt-6.1-sol"
+          ],
+          "errors": {},
+          "retried_calls": 0,
+          "http_retries": 0,
+          "cost": null,
+          "known_cost_estimate": null,
+          "usage_complete": true,
+          "cost_basis": "配置单价估算，非账单；服务失败的用量可能未知",
+          "currency": null
+        }
+      }
+    },
+    {
+      "run": "dream-initial",
+      "purpose": "audit",
+      "system": "dream",
+      "entries": 358,
+      "planted": 36,
+      "calls": 148,
+      "expected": 148,
+      "errors": 0,
+      "usage": {
+        "reviewer_a": {
+          "calls": 74,
+          "input_tokens": 179644,
+          "output_tokens": 37880,
+          "latency_s": 212.057,
+          "returned_models": [
+            "deepseek-flash"
+          ],
+          "errors": {},
+          "retried_calls": 0,
+          "http_retries": 0,
+          "cost": null,
+          "known_cost_estimate": null,
+          "usage_complete": true,
+          "cost_basis": "配置单价估算，非账单；服务失败的用量可能未知",
+          "currency": null
+        },
+        "reviewer_b": {
+          "calls": 74,
+          "input_tokens": 200586,
+          "output_tokens": 84079,
+          "latency_s": 3135.05,
+          "returned_models": [
+            "gpt-6.1-sol"
+          ],
+          "errors": {},
+          "retried_calls": 0,
+          "http_retries": 8,
+          "cost": null,
+          "known_cost_estimate": null,
+          "usage_complete": true,
+          "cost_basis": "配置单价估算，非账单；服务失败的用量可能未知",
+          "currency": null
+        },
+        "reviser": {
+          "calls": 131,
+          "input_tokens": 74951,
+          "output_tokens": 27944,
+          "latency_s": 2331.907,
+          "returned_models": [
+            "gpt-6-astra"
+          ],
+          "errors": {},
+          "retried_calls": 0,
+          "http_retries": 2,
+          "cost": null,
+          "known_cost_estimate": null,
+          "usage_complete": true,
+          "cost_basis": "配置单价估算，非账单；服务失败的用量可能未知",
+          "currency": null
+        }
+      }
+    },
+    {
+      "run": "dream-rereview-1",
+      "purpose": "audit",
+      "system": "dream",
+      "entries": 131,
+      "planted": 13,
+      "calls": 56,
+      "expected": 56,
+      "errors": 0,
+      "usage": {
+        "reviewer_a": {
+          "calls": 28,
+          "input_tokens": 69976,
+          "output_tokens": 13507,
+          "latency_s": 78.786,
+          "returned_models": [
+            "deepseek-flash"
+          ],
+          "errors": {},
+          "retried_calls": 0,
+          "http_retries": 0,
+          "cost": null,
+          "known_cost_estimate": null,
+          "usage_complete": true,
+          "cost_basis": "配置单价估算，非账单；服务失败的用量可能未知",
+          "currency": null
+        },
+        "reviewer_b": {
+          "calls": 28,
+          "input_tokens": 78894,
+          "output_tokens": 24217,
+          "latency_s": 599.762,
+          "returned_models": [
+            "gpt-6.1-sol"
+          ],
+          "errors": {},
+          "retried_calls": 0,
+          "http_retries": 0,
+          "cost": null,
+          "known_cost_estimate": null,
+          "usage_complete": true,
+          "cost_basis": "配置单价估算，非账单；服务失败的用量可能未知",
+          "currency": null
+        },
+        "reviser": {
+          "calls": 14,
+          "input_tokens": 8076,
+          "output_tokens": 3290,
+          "latency_s": 115.187,
+          "returned_models": [
+            "gpt-6-astra"
+          ],
+          "errors": {},
+          "retried_calls": 0,
+          "http_retries": 0,
+          "cost": null,
+          "known_cost_estimate": null,
+          "usage_complete": true,
+          "cost_basis": "配置单价估算，非账单；服务失败的用量可能未知",
+          "currency": null
+        }
+      }
+    },
+    {
+      "run": "dream-rereview-2",
+      "purpose": "audit",
+      "system": "dream",
+      "entries": 14,
+      "planted": 5,
+      "calls": 8,
+      "expected": 8,
+      "errors": 0,
+      "usage": {
+        "reviewer_a": {
+          "calls": 4,
+          "input_tokens": 10054,
+          "output_tokens": 2259,
+          "latency_s": 14.663,
+          "returned_models": [
+            "deepseek-flash"
+          ],
+          "errors": {},
+          "retried_calls": 0,
+          "http_retries": 0,
+          "cost": null,
+          "known_cost_estimate": null,
+          "usage_complete": true,
+          "cost_basis": "配置单价估算，非账单；服务失败的用量可能未知",
+          "currency": null
+        },
+        "reviewer_b": {
+          "calls": 4,
+          "input_tokens": 11466,
+          "output_tokens": 3381,
+          "latency_s": 200.841,
+          "returned_models": [
+            "gpt-6.1-sol"
+          ],
+          "errors": {},
+          "retried_calls": 0,
+          "http_retries": 1,
+          "cost": null,
+          "known_cost_estimate": null,
+          "usage_complete": true,
+          "cost_basis": "配置单价估算，非账单；服务失败的用量可能未知",
+          "currency": null
+        }
+      }
+    },
+    {
+      "run": "dream-rereview-3",
+      "purpose": "audit",
+      "system": "dream",
+      "entries": 1,
+      "planted": 1,
+      "calls": 8,
+      "expected": 8,
+      "errors": 0,
+      "usage": {
+        "reviewer_a": {
+          "calls": 4,
+          "input_tokens": 2878,
+          "output_tokens": 372,
+          "latency_s": 7.115,
+          "returned_models": [
+            "deepseek-flash"
+          ],
+          "errors": {},
+          "retried_calls": 0,
+          "http_retries": 0,
+          "cost": null,
+          "known_cost_estimate": null,
+          "usage_complete": true,
+          "cost_basis": "配置单价估算，非账单；服务失败的用量可能未知",
+          "currency": null
+        },
+        "reviewer_b": {
+          "calls": 4,
+          "input_tokens": 3300,
+          "output_tokens": 453,
+          "latency_s": 23.719,
+          "returned_models": [
+            "gpt-6.1-sol"
+          ],
+          "errors": {},
+          "retried_calls": 0,
+          "http_retries": 0,
+          "cost": null,
+          "known_cost_estimate": null,
+          "usage_complete": true,
+          "cost_basis": "配置单价估算，非账单；服务失败的用量可能未知",
+          "currency": null
+        }
+      }
+    },
+    {
+      "run": "name-initial",
+      "purpose": "audit",
+      "system": "name",
+      "entries": 220,
+      "planted": 22,
+      "calls": 100,
+      "expected": 100,
+      "errors": 2,
+      "usage": {
+        "reviewer_a": {
+          "calls": 50,
+          "input_tokens": 133008,
+          "output_tokens": 29989,
+          "latency_s": 160.287,
+          "returned_models": [
+            "deepseek-flash"
+          ],
+          "errors": {
+            "parse_error": 2
+          },
+          "retried_calls": 2,
+          "http_retries": 0,
+          "cost": null,
+          "known_cost_estimate": null,
+          "usage_complete": true,
+          "cost_basis": "配置单价估算，非账单；服务失败的用量可能未知",
+          "currency": null
+        },
+        "reviewer_b": {
+          "calls": 50,
+          "input_tokens": 138216,
+          "output_tokens": 53574,
+          "latency_s": 1672.717,
+          "returned_models": [
+            "gpt-6.1-sol"
+          ],
+          "errors": {},
+          "retried_calls": 0,
+          "http_retries": 3,
+          "cost": null,
+          "known_cost_estimate": null,
+          "usage_complete": true,
+          "cost_basis": "配置单价估算，非账单；服务失败的用量可能未知",
+          "currency": null
+        },
+        "reviser": {
+          "calls": 106,
+          "input_tokens": 58733,
+          "output_tokens": 30623,
+          "latency_s": 1806.796,
+          "returned_models": [
+            "gpt-6-astra"
+          ],
+          "errors": {},
+          "retried_calls": 0,
+          "http_retries": 3,
+          "cost": null,
+          "known_cost_estimate": null,
+          "usage_complete": true,
+          "cost_basis": "配置单价估算，非账单；服务失败的用量可能未知",
+          "currency": null
+        }
+      }
+    },
+    {
+      "run": "name-rereview-1",
+      "purpose": "audit",
+      "system": "name",
+      "entries": 106,
+      "planted": 11,
+      "calls": 52,
+      "expected": 52,
+      "errors": 0,
+      "usage": {
+        "reviewer_a": {
+          "calls": 26,
+          "input_tokens": 74366,
+          "output_tokens": 12367,
+          "latency_s": 68.985,
+          "returned_models": [
+            "deepseek-flash"
+          ],
+          "errors": {},
+          "retried_calls": 0,
+          "http_retries": 0,
+          "cost": null,
+          "known_cost_estimate": null,
+          "usage_complete": true,
+          "cost_basis": "配置单价估算，非账单；服务失败的用量可能未知",
+          "currency": null
+        },
+        "reviewer_b": {
+          "calls": 26,
+          "input_tokens": 82514,
+          "output_tokens": 23937,
+          "latency_s": 585.816,
+          "returned_models": [
+            "gpt-6.1-sol"
+          ],
+          "errors": {},
+          "retried_calls": 0,
+          "http_retries": 0,
+          "cost": null,
+          "known_cost_estimate": null,
+          "usage_complete": true,
+          "cost_basis": "配置单价估算，非账单；服务失败的用量可能未知",
+          "currency": null
+        },
+        "reviser": {
+          "calls": 18,
+          "input_tokens": 11607,
+          "output_tokens": 5635,
+          "latency_s": 189.193,
+          "returned_models": [
+            "gpt-6-astra"
+          ],
+          "errors": {},
+          "retried_calls": 0,
+          "http_retries": 0,
+          "cost": null,
+          "known_cost_estimate": null,
+          "usage_complete": true,
+          "cost_basis": "配置单价估算，非账单；服务失败的用量可能未知",
+          "currency": null
+        }
+      }
+    },
+    {
+      "run": "name-rereview-2",
+      "purpose": "audit",
+      "system": "name",
+      "entries": 18,
+      "planted": 5,
+      "calls": 12,
+      "expected": 12,
+      "errors": 0,
+      "usage": {
+        "reviewer_a": {
+          "calls": 6,
+          "input_tokens": 15816,
+          "output_tokens": 2766,
+          "latency_s": 18.475,
+          "returned_models": [
+            "deepseek-flash"
+          ],
+          "errors": {},
+          "retried_calls": 0,
+          "http_retries": 0,
+          "cost": null,
+          "known_cost_estimate": null,
+          "usage_complete": true,
+          "cost_basis": "配置单价估算，非账单；服务失败的用量可能未知",
+          "currency": null
+        },
+        "reviewer_b": {
+          "calls": 6,
+          "input_tokens": 17564,
+          "output_tokens": 4510,
+          "latency_s": 117.608,
+          "returned_models": [
+            "gpt-6.1-sol"
+          ],
+          "errors": {},
+          "retried_calls": 0,
+          "http_retries": 0,
+          "cost": null,
+          "known_cost_estimate": null,
+          "usage_complete": true,
+          "cost_basis": "配置单价估算，非账单；服务失败的用量可能未知",
+          "currency": null
+        },
+        "reviser": {
+          "calls": 1,
+          "input_tokens": 628,
+          "output_tokens": 388,
+          "latency_s": 18.135,
+          "returned_models": [
+            "gpt-6-astra"
+          ],
+          "errors": {},
+          "retried_calls": 0,
+          "http_retries": 0,
+          "cost": null,
+          "known_cost_estimate": null,
+          "usage_complete": true,
+          "cost_basis": "配置单价估算，非账单；服务失败的用量可能未知",
+          "currency": null
+        }
+      }
+    },
+    {
+      "run": "name-rereview-3",
+      "purpose": "audit",
+      "system": "name",
+      "entries": 1,
+      "planted": 1,
+      "calls": 8,
+      "expected": 8,
+      "errors": 0,
+      "usage": {
+        "reviewer_a": {
+          "calls": 4,
+          "input_tokens": 3476,
+          "output_tokens": 656,
+          "latency_s": 10.239,
+          "returned_models": [
+            "deepseek-flash"
+          ],
+          "errors": {},
+          "retried_calls": 0,
+          "http_retries": 0,
+          "cost": null,
+          "known_cost_estimate": null,
+          "usage_complete": true,
+          "cost_basis": "配置单价估算，非账单；服务失败的用量可能未知",
+          "currency": null
+        },
+        "reviewer_b": {
+          "calls": 4,
+          "input_tokens": 3936,
+          "output_tokens": 802,
+          "latency_s": 34.14,
+          "returned_models": [
+            "gpt-6.1-sol"
+          ],
+          "errors": {},
+          "retried_calls": 0,
+          "http_retries": 0,
+          "cost": null,
+          "known_cost_estimate": null,
+          "usage_complete": true,
+          "cost_basis": "配置单价估算，非账单；服务失败的用量可能未知",
+          "currency": null
+        }
+      }
+    },
+    {
+      "run": "revision-repairs/dream-aliases-1",
+      "purpose": "revision_only_constraint_repair",
+      "system": "dream",
+      "entries": 2,
+      "planted": 0,
+      "calls": 0,
+      "expected": 0,
+      "errors": 0,
+      "usage": {
+        "reviewer_a": {
+          "calls": 0,
+          "input_tokens": 0,
+          "output_tokens": 0,
+          "latency_s": 0,
+          "returned_models": [],
+          "errors": {},
+          "retried_calls": 0,
+          "http_retries": 0,
+          "cost": null,
+          "known_cost_estimate": null,
+          "usage_complete": true,
+          "cost_basis": "配置单价估算，非账单；服务失败的用量可能未知",
+          "currency": null
+        },
+        "reviewer_b": {
+          "calls": 0,
+          "input_tokens": 0,
+          "output_tokens": 0,
+          "latency_s": 0,
+          "returned_models": [],
+          "errors": {},
+          "retried_calls": 0,
+          "http_retries": 0,
+          "cost": null,
+          "known_cost_estimate": null,
+          "usage_complete": true,
+          "cost_basis": "配置单价估算，非账单；服务失败的用量可能未知",
+          "currency": null
+        },
+        "reviser": {
+          "calls": 2,
+          "input_tokens": 823,
+          "output_tokens": 408,
+          "latency_s": 19.921,
+          "returned_models": [
+            "gpt-6-astra"
+          ],
+          "errors": {},
+          "retried_calls": 0,
+          "http_retries": 0,
+          "cost": null,
+          "known_cost_estimate": null,
+          "usage_complete": true,
+          "cost_basis": "配置单价估算，非账单；服务失败的用量可能未知",
+          "currency": null
+        }
+      }
+    },
+    {
+      "run": "tarot-pilot",
+      "purpose": "audit",
+      "system": "tarot",
+      "entries": 163,
+      "planted": 16,
+      "calls": 68,
+      "expected": 68,
+      "errors": 0,
+      "usage": {
+        "reviewer_a": {
+          "calls": 34,
+          "input_tokens": 97266,
+          "output_tokens": 17211,
+          "latency_s": 158.66,
+          "returned_models": [
+            "deepseek-flash"
+          ],
+          "errors": {},
+          "retried_calls": 0,
+          "http_retries": 0,
+          "cost": null,
+          "known_cost_estimate": null,
+          "usage_complete": true,
+          "cost_basis": "配置单价估算，非账单；服务失败的用量可能未知",
+          "currency": null
+        },
+        "reviewer_b": {
+          "calls": 34,
+          "input_tokens": 106014,
+          "output_tokens": 28140,
+          "latency_s": 2196.634,
+          "returned_models": [
+            "gpt-6.1-sol"
+          ],
+          "errors": {},
+          "retried_calls": 0,
+          "http_retries": 0,
+          "cost": null,
+          "known_cost_estimate": null,
+          "usage_complete": true,
+          "cost_basis": "配置单价估算，非账单；服务失败的用量可能未知",
+          "currency": null
+        },
+        "reviser": {
+          "calls": 16,
+          "input_tokens": 7425,
+          "output_tokens": 3108,
+          "latency_s": 453.191,
+          "returned_models": [
+            "gpt-6-astra"
+          ],
+          "errors": {},
+          "retried_calls": 0,
+          "http_retries": 0,
+          "cost": null,
+          "known_cost_estimate": null,
+          "usage_complete": true,
+          "cost_basis": "配置单价估算，非账单；服务失败的用量可能未知",
+          "currency": null
+        }
+      }
+    },
+    {
+      "run": "tarot-rereview-1",
+      "purpose": "audit",
+      "system": "tarot",
+      "entries": 14,
+      "planted": 5,
+      "calls": 8,
+      "expected": 8,
+      "errors": 0,
+      "usage": {
+        "reviewer_a": {
+          "calls": 4,
+          "input_tokens": 11416,
+          "output_tokens": 2124,
+          "latency_s": 17.032,
+          "returned_models": [
+            "deepseek-flash"
+          ],
+          "errors": {},
+          "retried_calls": 0,
+          "http_retries": 0,
+          "cost": null,
+          "known_cost_estimate": null,
+          "usage_complete": true,
+          "cost_basis": "配置单价估算，非账单；服务失败的用量可能未知",
+          "currency": null
+        },
+        "reviewer_b": {
+          "calls": 4,
+          "input_tokens": 12556,
+          "output_tokens": 4091,
+          "latency_s": 175.589,
+          "returned_models": [
+            "gpt-6.1-sol"
+          ],
+          "errors": {},
+          "retried_calls": 0,
+          "http_retries": 0,
+          "cost": null,
+          "known_cost_estimate": null,
+          "usage_complete": true,
+          "cost_basis": "配置单价估算，非账单；服务失败的用量可能未知",
+          "currency": null
+        }
+      }
+    }
+  ],
+  "completed_outputs": 1097,
+  "error_events": 4,
+  "http_attempts": 1129,
+  "input_tokens": 2063835,
+  "output_tokens": 603770,
+  "cost": null,
+  "rates_available": false,
+  "budget_policy": "负责人明确授权无预算上限；并非零成本",
+  "revision_proposals": [
+    {
+      "run": "astro-initial",
+      "id": "kb:astro:planet:Neptune",
+      "before_sha256": "2d902e621c16f79d7553df3f17bca3d08458b6cddc47d798a10d044ed18844f0",
+      "invalid": null,
+      "attempts": 1,
+      "note": "将“传统占星”改为“现代占星”，纠正海王星象征含义的体系归属；其余内容保持不变。"
+    },
+    {
+      "run": "astro-initial",
+      "id": "kb:astro:planet:Pluto",
+      "before_sha256": "2a927e6a01d792f68488dbb110efe66f17f56cdef8033dbdb6481d565d4c8717",
+      "invalid": null,
+      "attempts": 1,
+      "note": "将“传统占星”改为“现代占星”，纠正冥王星象征解释的体系归属；其余内容保持不变。"
+    },
+    {
+      "run": "astro-initial",
+      "id": "kb:astro:planet:Uranus",
+      "before_sha256": "bf0e8406349debb4faeb06e48b5b0886ad4b300cf781e2d3082da31b10095dba",
+      "invalid": null,
+      "attempts": 1,
+      "note": "将“在传统占星中”修正为“在现代占星中”，其余内容保持不变。"
+    },
+    {
+      "run": "astro-initial",
+      "id": "kb:astro:planet_house:Jupiter:8",
+      "before_sha256": "28633d12b754c18f133311753d8cefdcd8b585421b6a1d2f535a2fe9ecc1c375",
+      "invalid": null,
+      "attempts": 1,
+      "note": "删除偏确定性的财务受益表述，改为象征性观察与自我反思；补充第八宫相关议题，将财务方向调整为中性，并完善同义词和关键词。"
+    },
+    {
+      "run": "astro-initial",
+      "id": "kb:astro:planet_house:Jupiter:9",
+      "before_sha256": "65b9a7287fbe1f335ae7c0350404bd7a7914a0320d1452c3710a9e340f214c4b",
+      "invalid": null,
+      "attempts": 1,
+      "note": "删去重复、生硬的表达，用具体场景解释含义；将 self 调为温和正向，与个人成长的文字方向一致，其余主题保持中性；补充同义词和关键词，并明确象征性与不确定性。"
+    },
+    {
+      "run": "astro-initial",
+      "id": "kb:astro:planet_house:Mars:1",
+      "before_sha256": "181f66bca1d3b6227d8b3be029760fb614acc4ad2063ecc22bd767022f46b2e6",
+      "invalid": null,
+      "attempts": 1,
+      "note": "将 self 调为正向权重以对应主动表达与行动的主题；用先行动、争取机会等白话解释冲劲，补充同义词与关键词，并保留非确定性表述。"
+    },
+    {
+      "run": "astro-initial",
+      "id": "kb:astro:planet_house:Mars:10",
+      "before_sha256": "f4349dfc4db4eab9f88f73ae17925f0c639c9a0581370f7d09fe0b4f45bb00bd",
+      "invalid": null,
+      "attempts": 1,
+      "note": "将 career 调整为正向权重，与职业行动及责任主题保持一致；补充同义词和关键词，并明确象征性解读不预示事业结果。"
+    },
+    {
+      "run": "astro-initial",
+      "id": "kb:astro:planet_house:Mars:11",
+      "before_sha256": "94d6d50300106a7fbf47e667c46d520945ff928f3fe932d21a0cd8127ee2aae0",
+      "invalid": null,
+      "attempts": 1,
+      "note": "明确个人主动性与同伴协作的温和正向倾向，相应调整 self、relationship 权重；未明确涉及职业或财务方向，保留两项为0。补充同义词与检索关键词，并限定为非确定性的象征解读。"
+    },
+    {
+      "run": "astro-initial",
+      "id": "kb:astro:planet_house:Mars:12",
+      "before_sha256": "7ec38cc85f23873c1d44c65b535d14e613a860c0fa7778bd508ae6d72bfb3e2e",
+      "invalid": null,
+      "attempts": 1,
+      "note": "补充火星行动力、竞争心及隐蔽或受抑表达的传统张力；self 设为轻度负向以对应行动表达的阻力，其余主题保持中性。增加同义词和检索关键词，并以象征性、非必然的措辞避免确定性断言。"
+    },
+    {
+      "run": "astro-initial",
+      "id": "kb:astro:planet_house:Mars:3",
+      "before_sha256": "b5f1e4548ff144a2801dd209a44e621730bcff7f5651812599ef45c655945991",
+      "invalid": null,
+      "attempts": 1,
+      "note": "将原句改为更自然、具体的学习与交流场景；补充自我发展和工作沟通的主题权重及检索词，并明确其为观察视角，避免固定性格或结果的断言。"
+    },
+    {
+      "run": "astro-initial",
+      "id": "kb:astro:planet_house:Mars:4",
+      "before_sha256": "68c0f9a31b3511d20261f2c1d6fe08ae020618c94b3e705f2cf7af5c292f2be7",
+      "invalid": null,
+      "attempts": 1,
+      "note": "补充第4宫的家庭、居住与内在基础主题，兼顾火星的维护动力与冲突倾向；以 self 正向、relationship 轻度负向对应文字侧重，其余主题保持中性，并补充同义词和关键词。"
+    },
+    {
+      "run": "astro-initial",
+      "id": "kb:astro:planet_house:Mercury:2",
+      "before_sha256": "f9780a828756df045460283454aa71a3c1f9c1c15a1bfb41148910d03143b6e6",
+      "invalid": null,
+      "attempts": 1,
+      "note": "将获得收入的断言改为对收入机会的可能关注，弱化支出建议，并明确占星象征不代表实际财务结果；其余字段保持不变。"
+    },
+    {
+      "run": "astro-initial",
+      "id": "kb:astro:planet_house:Sun:5",
+      "before_sha256": "19fa0e29ee3269c8afce74fa0bb8c9c19db5de1f0cbe8fa1f2966ebcd008a38d",
+      "invalid": null,
+      "attempts": 1,
+      "note": "删去重复拗口的表述，改用更直白的语言；保留原主题权重，补充同义表述与关键词，并采用非确定性措辞。"
+    },
+    {
+      "run": "astro-initial",
+      "id": "kb:astro:planet_house:Sun:7",
+      "before_sha256": "1092254dc2fc12d89aaeef495b0cdd986eea470eb7a71a5e99941b9b052f7c93",
+      "invalid": null,
+      "attempts": 1,
+      "note": "将relationship由0.1改为0.0，并明确关系主题的重要性不代表关系顺逆，保留太阳在第7宫的自我表达与合作主题。"
+    },
+    {
+      "run": "astro-initial",
+      "id": "kb:astro:planet_house:Sun:8",
+      "before_sha256": "95203c01a7af48a742017831dc50abaa6a23f82031564cf214f7d054cd303aec",
+      "invalid": null,
+      "attempts": 1,
+      "note": "将 finance 从 0.1 调整为 0.0，区分财务关注主题与财务顺逆倾向；精简重复表述，保留共享资源与信任主题，并明确其象征性。"
+    },
+    {
+      "run": "astro-initial",
+      "id": "kb:astro:planet_sign:Jupiter:Capricorn",
+      "before_sha256": "292eb96eb05d0948b49526bfe25dde05d6626d7bb4c41052df34b8f2a09d137e",
+      "invalid": null,
+      "attempts": 1,
+      "note": "保留传统落陷归属与主题权重，删除缺乏落座特异性的“高估机会或分散投入”，改为扩展与现实约束、谨慎倾向之间的张力；明确落陷不等于必然不利，补充同义词与关键词。"
+    },
+    {
+      "run": "astro-initial",
+      "id": "kb:astro:planet_sign:Jupiter:Virgo",
+      "before_sha256": "9061e00ff0f5a51e1081f09c20b4d16c047cb5784cb06c49f4e7eb3309c01c57",
+      "invalid": null,
+      "attempts": 1,
+      "note": "澄清失势对应 detriment 而非 fall；删除由单一落座推导财务风险的表述，将财务方向改为中性；保留可选择的实践建议，补充同义词与关键词。"
+    },
+    {
+      "run": "astro-initial",
+      "id": "kb:astro:planet_sign:Mars:Capricorn",
+      "before_sha256": "32657f9b31856429ab688fe72d08512f3a80f3afbd99427a0e58e020439dcb64",
+      "invalid": null,
+      "attempts": 1,
+      "note": "保留传统擢升术语，将感情描述改为克制、务实与谨慎投入，补充沟通建议；关系主题改为中性，避免将表达风格等同于关系顺利；补充同义词与关键词，并保留非决定性说明。"
+    },
+    {
+      "run": "astro-initial",
+      "id": "kb:astro:planet_sign:Mars:Taurus",
+      "before_sha256": "f413a16a28d8f692000302f02708e5749fec86ca947ea223b9eec8d69d237232",
+      "invalid": null,
+      "attempts": 1,
+      "note": "删除易混淆的尊贵状态术语，改用象征性描述；移除对感情主动性与急躁的负向推断，将关系主题调整为中性，并补充同义词和关键词。"
+    },
+    {
+      "run": "astro-initial",
+      "id": "kb:astro:planet_sign:Venus:Pisces",
+      "before_sha256": "91652ae88e2ce459e151ae69110ca8d5d67f1a035834c990be137186124bedd5",
+      "invalid": null,
+      "attempts": 1,
+      "note": "保留传统擢升说法，删除由擢升推导消费分寸较好的表述，改为关注美感、情感价值与消费边界，增加预算核对提示；将财务主题调整为中性，并补充同义词和关键词。"
+    },
+    {
+      "run": "astro-initial",
+      "id": "kb:astro:planet_sign:Venus:Virgo",
+      "before_sha256": "04142e1822d6fba5eac647dc339485376a7079a9896dc9a831a7cb80176fe86b",
+      "invalid": null,
+      "attempts": 1,
+      "note": "保留传统落陷术语及其非决定性说明，将“急切”和“情绪冲动消费”改为拘谨、挑剔、过度分析及消费取舍中过度关注细节与完美的可能倾向；补充同义词与关键词，主题权重保持不变。"
+    },
+    {
+      "run": "astro-rereview-1",
+      "id": "kb:astro:planet_house:Sun:5",
+      "before_sha256": "64ebcf53f3e855a0cd52ee1a46cf1447e856271000b7d656b7e91795e7c93c0c",
+      "invalid": null,
+      "attempts": 1,
+      "note": "将 self 从 0.0 调整为 0.6，以匹配正文中展现个性、获得成就感的正向自我主题；其余内容保持不变。"
+    },
+    {
+      "run": "astro-rereview-1",
+      "id": "kb:astro:planet_sign:Jupiter:Capricorn",
+      "before_sha256": "4e27cde3fe6e2a67849fc3f0120b4ea8b8a01589f455489968f3d8ecfb624c6d",
+      "invalid": null,
+      "attempts": 1,
+      "note": "明确传统术语为落陷（fall），纠正审核意见将其等同于 detriment 的混淆；统一关键词表述，补充同义词，并将财务方向调整为中性，避免把传统落陷标签转化为财务负面判断。"
+    },
+    {
+      "run": "bazi-initial",
+      "id": "kb:bazi:branch:丑",
+      "before_sha256": "d582032bd72703e49a00bfec83986c3e85462a5c9f8074d5e9a4b9caf1b06c9c",
+      "invalid": null,
+      "attempts": 1,
+      "note": "补充丑属土、藏己癸辛的专属信息，明确五行计数的对象，并用白话解释藏干、旺衰和喜用神；保留中性主题及不凭数量判断强弱或有利与否的提醒。"
+    },
+    {
+      "run": "bazi-initial",
+      "id": "kb:bazi:branch:亥",
+      "before_sha256": "20e960b49f6d75244c4dd7ebbc9accd57877d962663818ea3ff022157e60f37f",
+      "invalid": null,
+      "attempts": 1,
+      "note": "补充亥属水、藏壬甲的专属信息，明确五行统计对象与藏干层次，白话解释藏干、旺衰和喜用神；保留中性主题及不凭数量判断的提醒。"
+    },
+    {
+      "run": "bazi-initial",
+      "id": "kb:bazi:branch:午",
+      "before_sha256": "eb7aef4d3b45c9ff9511d66abef386c07c01ca3795c3a1a461837390e8310ad7",
+      "invalid": null,
+      "attempts": 1,
+      "note": "补充午属火、藏丁己的专属信息；明确计数对象，解释藏干、旺衰和喜用神，区分统计口径，并保留不凭数量判断强弱或吉凶的提醒。"
+    },
+    {
+      "run": "bazi-initial",
+      "id": "kb:bazi:branch:卯",
+      "before_sha256": "1994b8722eb233c40ccc893fd5feb76f439fd79e37fe72b969b53f12e81f629a",
+      "invalid": null,
+      "attempts": 1,
+      "note": "补充卯属木、藏干为乙的专属信息；明确计数对象，白话解释藏干、旺衰及喜用神相关概念，并区分地支五行计数与藏干信息，保留中性方向及不凭数量推断结果的提醒。"
+    },
+    {
+      "run": "bazi-initial",
+      "id": "kb:bazi:branch:子",
+      "before_sha256": "a86993f07261736c259faee71096651b11c65bd333fd8beafdbdb6463d49cb04",
+      "invalid": null,
+      "attempts": 1,
+      "note": "补充子属水、藏癸的专属信息，明确五行计数的对象与藏干记录的区别，解释藏干、旺衰和喜用神，并保留中性主题及不凭数量作确定判断的提醒。"
+    },
+    {
+      "run": "bazi-initial",
+      "id": "kb:bazi:branch:寅",
+      "before_sha256": "b504c11a186cf92759fc857e79338bd19b6476f8cf66f7e2de51fc223d95d212",
+      "invalid": null,
+      "attempts": 1,
+      "note": "补充寅属木、藏甲丙戊的专属信息；明确五行数量的统计对象，以白话解释藏干、旺衰及喜用神，并保留不凭数量直接判断的提醒与中性主题方向。"
+    },
+    {
+      "run": "bazi-initial",
+      "id": "kb:bazi:branch:巳",
+      "before_sha256": "9fa2f27aa2c91e392b9982200cefbb52d2f43410ef7edf8c668b94a651f8fc03",
+      "invalid": null,
+      "attempts": 1,
+      "note": "补充巳属火、藏干为丙戊庚的专属信息，明确计数对象，白话解释藏干、旺衰和喜用神；保留中性主题及不凭数量判断的提醒。"
+    },
+    {
+      "run": "bazi-initial",
+      "id": "kb:bazi:branch:戌",
+      "before_sha256": "c57595256aba2695fac5ec8492426f6884ca4af468930e39b43f2147e6bd9db3",
+      "invalid": null,
+      "attempts": 1,
+      "note": "补充戌属土、藏干为戊辛丁的专属信息；明确五行计数对象，并以白话解释藏干、旺衰和喜用神，保留不凭数量直接判断的提醒及中性主题方向。"
+    },
+    {
+      "run": "bazi-initial",
+      "id": "kb:bazi:branch:未",
+      "before_sha256": "08441adcf9ce3657379fca9f572f3c58e69dd146e172a5d5ca7a6220a3125665",
+      "invalid": null,
+      "attempts": 1,
+      "note": "补充未属土、藏己丁乙的专属信息，明确五行计数对象并解释藏干、旺衰与喜用神；保留中性主题及不凭数量判断的提醒。"
+    },
+    {
+      "run": "bazi-initial",
+      "id": "kb:bazi:branch:申",
+      "before_sha256": "58e5e823ea8c1146983f036cb1be384f4870de3f0ded5bf2e85b035e9fea97df",
+      "invalid": null,
+      "attempts": 1,
+      "note": "补充申属金及藏庚壬戊的专属信息，明确五行计数对象和两种统计口径，白话解释藏干、旺衰与喜用神，保留中性主题及不凭数量作确定判断的提醒。"
+    },
+    {
+      "run": "bazi-initial",
+      "id": "kb:bazi:convention:dayun",
+      "before_sha256": "ff9dd2824b004617141fc25454d0d9daa003f0018332898a64705a8db4ea58de",
+      "invalid": null,
+      "attempts": 2,
+      "note": "移除工具库名、接口名及未解释的流派编号，改用通俗语言说明排法，补充天干阴阳、节令和月柱的含义，并保留不同排法的差异及非确定性说明。"
+    },
+    {
+      "run": "bazi-initial",
+      "id": "kb:bazi:convention:true_solar_time",
+      "before_sha256": "d2aaee187e25fa1f782fc2d016725018ca9274bdfe4ca5755f52fdbabf582268",
+      "invalid": null,
+      "attempts": 1,
+      "note": "明确均时差的符号定义、正负值加减规则及相反定义的处理方式；补充换算前的夏令时处理和时间基准一致性说明，主题权重保持中性。"
+    },
+    {
+      "run": "bazi-initial",
+      "id": "kb:bazi:convention:zishi_next_day",
+      "before_sha256": "6e96bd72e525e52624ab4dc303724a7380d6184c3528e50f2322556454bd3f50",
+      "invalid": null,
+      "attempts": 1,
+      "note": "将23:00换日明确为可选口径，说明与i02互斥、同一排盘不得混用，并保留年柱月柱依节气交接划分的规则；补充同义词与检索关键词，主题方向保持中性。"
+    },
+    {
+      "run": "bazi-initial",
+      "id": "kb:bazi:convention:zishi_same_day",
+      "before_sha256": "d8c3e5574ed479159fcb995f3905e81c5764d69402ea30997e2e7b5799366d4e",
+      "invalid": null,
+      "attempts": 1,
+      "note": "注明本条为早晚子时的一种流派约定，与i03的子初换日口径区分；明确时间区间、早晚子时的日柱归属及起时所用日干，提示不可混用。"
+    },
+    {
+      "run": "bazi-initial",
+      "id": "kb:bazi:element_relation:克",
+      "before_sha256": "dc1c472165c31a57ee7190e56e89b1924329d618a740f5ee63afd83db7973fdb",
+      "invalid": null,
+      "attempts": 1,
+      "note": "纠正阴阳是相克成立条件的表述，补充白话含义、五行相克方向及“克我”“我克”的区别；提示与“耗”并列时明确主体和术语口径，保留主题中性及不据此推断吉凶、喜用神的边界。"
+    },
+    {
+      "run": "bazi-initial",
+      "id": "kb:bazi:element_relation:同类",
+      "before_sha256": "b8db31eb41ac5669a1c063fb6ac34bc70e4fa9eae9980724f63ca2286a670e5b",
+      "invalid": null,
+      "attempts": 1,
+      "note": "明确同类指五行属性相同，纠正以阴阳为必要条件的表述；补充甲木与乙木示例，说明阴阳用于进一步区分比肩、劫财，并将喜用神限制说明改为“仅凭同类关系不能判断”。"
+    },
+    {
+      "run": "bazi-initial",
+      "id": "kb:bazi:element_relation:泄",
+      "before_sha256": "e8aa782be170f65b50ad91104d2afeaa5874c819bf1d0b40094295902b13b4ae",
+      "invalid": null,
+      "attempts": 1,
+      "note": "去除阴阳作为成立条件的错误表述，明确以生出方为参照及“我生者泄我”的方向，补充木生火的例子，并说明泄不天然不利、不能单独用于判断喜用神。"
+    },
+    {
+      "run": "bazi-initial",
+      "id": "kb:bazi:element_relation:生",
+      "before_sha256": "0131c9406099062b38048de13f93b02755f91a1a37a391a6108691453533e67f",
+      "invalid": null,
+      "attempts": 1,
+      "note": "纠正了将阴阳作为相生成立条件的表述，补充通俗释义、方向示例和相生顺序，明确仅凭相生不能判断喜用神，保留中性主题方向。"
+    },
+    {
+      "run": "bazi-initial",
+      "id": "kb:bazi:element_relation:耗",
+      "before_sha256": "fcb3ac90887c43a7ca6e01f4a24d3c0f8ee2d14cfbf3d8d8047b7bbe11e2d6e5",
+      "invalid": null,
+      "attempts": 1,
+      "note": "纠正将阴阳列为成立条件的说法，明确参照主体及我克的作用方向，补充白话解释、示例和耗泄区别，并说明不能据此判断喜用神或推断必然破财。"
+    },
+    {
+      "run": "bazi-initial",
+      "id": "kb:bazi:hidden:丑",
+      "before_sha256": "8cb5d0736759eefb1b3af4ee03ff2273f2392daa25aa264f95d537b75278bc95",
+      "invalid": null,
+      "attempts": 1,
+      "note": "补全丑藏己、癸、辛及其五行，解释藏干、日主和十神，保留十神计算与不凭藏干数量判断旺衰的原则；补充检索词，主题方向保持中性。"
+    },
+    {
+      "run": "bazi-initial",
+      "id": "kb:bazi:hidden:亥",
+      "before_sha256": "5d64b6040a5811ff798366cfb79efed88cc9b91fd137851b6c2b36939853e4ec",
+      "invalid": null,
+      "attempts": 1,
+      "note": "补充亥藏壬、甲的具体内容，解释藏干、日主和十神，保留不凭藏干数量判断旺衰的原则，并完善检索词。"
+    },
+    {
+      "run": "bazi-initial",
+      "id": "kb:bazi:hidden:午",
+      "before_sha256": "5280624daf810d1f25b968d29198329023189b39aeaed8332532efb34e68e9d9",
+      "invalid": null,
+      "attempts": 1,
+      "note": "补充午藏丁、己的具体内容，解释藏干与日主的含义，保留十神须相对日主确定及不凭藏干数量判断旺衰的原则，并补充检索词。"
+    },
+    {
+      "run": "bazi-initial",
+      "id": "kb:bazi:hidden:卯",
+      "before_sha256": "faf02c86fe6e6a719d77142bcd8094e8eb63901cc03dfe47f357a312ad586948",
+      "invalid": null,
+      "attempts": 1,
+      "note": "补充“卯藏乙”的具体内容，解释藏干与日主，并保留十神计算及不凭藏干数量判断旺衰的原则；更新同义表述和关键词，主题方向保持中性。"
+    },
+    {
+      "run": "bazi-initial",
+      "id": "kb:bazi:hidden:子",
+      "before_sha256": "ad968345c5a5993d12f1ad9e167dd4f5bf13d70f2a61e74317b20fbb38ff2ad8",
+      "invalid": null,
+      "attempts": 1,
+      "note": "补充“子藏癸”的具体内容，白话解释藏干与日主，保留十神计算和旺衰判断的限制，并明确其传统符号规则属性。"
+    },
+    {
+      "run": "bazi-initial",
+      "id": "kb:bazi:hidden:寅",
+      "before_sha256": "7aa5f0ab0ff4e4ebf1bc7ff38e1c523f7dc3a5554bbeacb0d65018ef51768fba",
+      "invalid": null,
+      "attempts": 1,
+      "note": "补充寅藏甲、丙、戊及其五行属性，解释藏干与日主，保留十神须相对日主确定、不凭藏干数量判断旺衰的原则；补充检索词，主题方向保持中性。"
+    },
+    {
+      "run": "bazi-initial",
+      "id": "kb:bazi:hidden:巳",
+      "before_sha256": "b896ab67961d7f8a9ea18d5950655bf680b69539b7cba78ed948acffcf704c3a",
+      "invalid": null,
+      "attempts": 1,
+      "note": "补充巳藏丙、戊、庚的具体内容及五行属性，解释藏干、日主和十神，保留相对日主计算十神及不凭藏干数量判断旺衰的原则；补充检索词，主题方向保持中性。"
+    },
+    {
+      "run": "bazi-initial",
+      "id": "kb:bazi:hidden:戌",
+      "before_sha256": "e4954ff4830b44e196a2019cacf88a3587b3e09fd0b136de3610f86373761798",
+      "invalid": null,
+      "attempts": 1,
+      "note": "补充戌藏戊、辛、丁及对应五行，解释藏干与日主的含义，保留十神计算和不凭藏干数量判断旺衰的原则，并明确其传统分类属性；主题方向保持中性。"
+    },
+    {
+      "run": "bazi-initial",
+      "id": "kb:bazi:hidden:未",
+      "before_sha256": "3eaf1994c48548f97e8e0533f5aed440fa1582e0984ead848561f0a71b0b8631",
+      "invalid": null,
+      "attempts": 1,
+      "note": "补全未藏己、丁、乙的具体内容，解释藏干、日主及十神，保留十神计算与不凭藏干数量判断旺衰的原则；补充检索词，主题方向保持中性。"
+    },
+    {
+      "run": "bazi-initial",
+      "id": "kb:bazi:hidden:申",
+      "before_sha256": "646cf3d6e8c663c01a294abeb3386b844bb3b026815fe6e7e68c0577d4c6c2c4",
+      "invalid": null,
+      "attempts": 1,
+      "note": "补充申藏庚、壬、戊的具体内容，解释藏干、日主和十神的含义，保留十神按日主关系确定及不凭藏干数量判断旺衰的原则；主题方向保持中性。"
+    },
+    {
+      "run": "bazi-initial",
+      "id": "kb:bazi:relation:三会",
+      "before_sha256": "6f4b14962c920ea907998736f691987e8b68d361e116b9af63dd4f42bed12cee",
+      "invalid": null,
+      "attempts": 1,
+      "note": "补充三会的季节性组合、四组地支及对应五行，白话解释会聚含义并区分三合；移除未解释的术语，说明不判断具体成立条件；主题方向全部归零，避免将力量集中等同于有利。"
+    },
+    {
+      "run": "bazi-initial",
+      "id": "kb:bazi:relation:三合",
+      "before_sha256": "e31426dfb71876b68231c9980c0633de40ad37c9bf84280a60306570a970d888",
+      "invalid": null,
+      "attempts": 1,
+      "note": "补充三合的四组地支及传统五行会聚含义，以白话区分三合、三会与六合；去除内部术语，将缺乏方向依据的主题标注改为中性，并明确不保证有利结果、不判断五行转化条件。"
+    },
+    {
+      "run": "bazi-initial",
+      "id": "kb:bazi:relation:地支六合",
+      "before_sha256": "292fa4a76b7edf2929669010413dab702a90b1806362b0006e24cc8a05bf98d6",
+      "invalid": null,
+      "attempts": 1,
+      "note": "明确六合属于地支间的六组固定配对，列出配对并区别于三合、三会；用白话说明联结与牵绊的双向含义及相合不必然转化，去除未解释的术语，将缺乏方向依据的主题映射归零，补充同义表述与关键词。"
+    },
+    {
+      "run": "bazi-initial",
+      "id": "kb:bazi:relation:地支冲",
+      "before_sha256": "ab46fb9f48d26d32105140a70c1a03f393bcb897ce0b4dbebec7f82cd2fb8971",
+      "invalid": null,
+      "attempts": 1,
+      "note": "明确相冲发生于特定地支之间，补充六组配对及白话意象，突出其直接对立与变动的含义；删除无关术语，将缺少正文支持的负向主题改为中性，并补充同义词与关键词。"
+    },
+    {
+      "run": "bazi-initial",
+      "id": "kb:bazi:relation:地支刑",
+      "before_sha256": "699233215d21d3663dfc439815fbbc66ccdeb234503fea53dfd03c3891166ff3",
+      "invalid": null,
+      "attempts": 1,
+      "note": "明确相刑限于特定地支关系，补充白话含义及与冲、害、破的侧重点区别；为自我、事业的轻微负向标注补充对应说明，删除化局与MVP术语，保留非宿命化边界。"
+    },
+    {
+      "run": "bazi-initial",
+      "id": "kb:bazi:relation:地支害",
+      "before_sha256": "38301584e48e68cdce4c1ca739207bd8cc9acc6069bd35abe87c0fc5962f8193",
+      "invalid": null,
+      "attempts": 2,
+      "note": "明确相害发生于特定地支之间，补充六组配对及隐性摩擦的传统意涵，突出与冲的侧重点差异；删除“化局”“MVP”，使自我、事业和关系的轻微负向标注与正文对应，并保留非确定性说明。"
+    },
+    {
+      "run": "bazi-initial",
+      "id": "kb:bazi:relation:地支破",
+      "before_sha256": "efdf87ab6b363c39c7fe6c2e53139200521d1ee93497debb36de51b9bdc0845f",
+      "invalid": null,
+      "attempts": 1,
+      "note": "明确为特定地支间的相破关系，补充实例、传统含义及白话解释，突出配合松动的特点；删除“化局”“MVP”等无关术语。正文不对现实领域作吉凶判断，因此将主题方向统一设为中性，并补充同义词和关键词。"
+    },
+    {
+      "run": "bazi-initial",
+      "id": "kb:bazi:relation:天干冲",
+      "before_sha256": "5a81e5335bd301e2519b80461af9945ac5ac2b682292f6aa0239c6bb080c714a",
+      "invalid": null,
+      "attempts": 1,
+      "note": "明确相冲对象、四组配对及采用口径，补充白话解释和流派差异，区分地支冲与天干合；删除无关术语，将缺乏现实方向依据的主题权重改为中性。"
+    },
+    {
+      "run": "bazi-initial",
+      "id": "kb:bazi:relation:天干合",
+      "before_sha256": "384adcc7c5f171622bf9c80e4afbbf1ce4902e51b3873194cd495fef3ff1b7b4",
+      "invalid": null,
+      "attempts": 1,
+      "note": "明确对象为特定天干，补充五合配对及白话解释，区分相合与合化，移除未解释的“化局”“MVP”；因相合不预设有利，将主题方向统一调整为中性，并补充同义词与关键词。"
+    },
+    {
+      "run": "bazi-initial",
+      "id": "kb:bazi:relation:自刑",
+      "before_sha256": "303a84296c464b692ea306ebfd54e3248b51e4b994154593bfcfc567eae5df1f",
+      "invalid": null,
+      "attempts": 1,
+      "note": "补充自刑所属的地支刑关系及通常形成对象，以白话说明其反复纠结、自我牵制的象征含义，为自我与事业的轻微负向映射提供依据；删除无关的“化局”“MVP”表述，并强调不能据此断定现实结果。"
+    },
+    {
+      "run": "bazi-initial",
+      "id": "kb:bazi:stem:丁",
+      "before_sha256": "1c79c973effdf7513fb81e381e134a72368144440810248c66b2d11ff5faea1f",
+      "invalid": null,
+      "attempts": 1,
+      "note": "补充丁属阴火的具体属性及传统比喻，保留结合整体信息解读、避免单字断命的提醒；主题方向保持中性。"
+    },
+    {
+      "run": "bazi-initial",
+      "id": "kb:bazi:stem:丙",
+      "before_sha256": "f843cbb7270c0158596522a88b8626ef80f5bc5fe513f3c03738d1fbd2b274e9",
+      "invalid": null,
+      "attempts": 1,
+      "note": "补充丙属阳火及太阳之火的传统意象，增强辨识性；保留结合整体解读、不凭单字判断的提醒，补充同义词与关键词，主题方向维持中性。"
+    },
+    {
+      "run": "bazi-initial",
+      "id": "kb:bazi:stem:乙",
+      "before_sha256": "552652b45cdc6e2341774b4e9c6b8b2aee0fe680460a1bc7216587e4e5c3beda",
+      "invalid": null,
+      "attempts": 1,
+      "note": "补充乙属阴木的基本属性及传统意象，增强条目辨识度；保留结合整体解读的提醒，并补充相关别称与关键词。"
+    },
+    {
+      "run": "bazi-initial",
+      "id": "kb:bazi:stem:壬",
+      "before_sha256": "85d05d4e236cce96ed7db1414a375c52e1ddbeceb4a881c23d28a77e38d8b9bb",
+      "invalid": null,
+      "attempts": 1,
+      "note": "补充壬属阳水的具体属性及传统意象，保留结合整体信息理解、不凭单字推断的提醒，并补充同义称呼与关键词；主题方向保持中性。"
+    },
+    {
+      "run": "bazi-initial",
+      "id": "kb:bazi:stem:己",
+      "before_sha256": "095b15d9c25858e482fc68e02035d94a8944976b1a0095964484d7cd4e734c63",
+      "invalid": null,
+      "attempts": 1,
+      "note": "补充己属阴土的基本属性及传统象征，增强条目辨识度；保留结合整体背景解读、不凭单字推断的提醒，主题方向保持中性。"
+    },
+    {
+      "run": "bazi-initial",
+      "id": "kb:bazi:stem:庚",
+      "before_sha256": "b9ab73ab1b269309e952b3a096cf1752d561255f6797bd5be5642ae2ad2f01e9",
+      "invalid": null,
+      "attempts": 1,
+      "note": "补充庚属阳金的具体属性与传统象征意象，保留结合整体信息解读的提醒；增加相关别称和关键词，主题方向保持中性。"
+    },
+    {
+      "run": "bazi-initial",
+      "id": "kb:bazi:stem:戊",
+      "before_sha256": "4242e5caaea256fb290a3e62c36f5b8d269ef3d597fd25a345f231688b0e076e",
+      "invalid": null,
+      "attempts": 1,
+      "note": "补充戊属阳土的具体属性与传统象征意象，保留结合整体解读、避免单字推断的提醒；新增相关同义称谓与关键词，主题方向保持中性。"
+    },
+    {
+      "run": "bazi-initial",
+      "id": "kb:bazi:stem:甲",
+      "before_sha256": "40f519f6b71f7e0bca9e909199f5998b81f322fd56572f3b371660b0f6145b89",
+      "invalid": null,
+      "attempts": 1,
+      "note": "补充甲为十天干之首、属阳木的具体属性及传统象征含义，保留结合整体背景解读的提醒，完善同义词与关键词，主题方向保持中性。"
+    },
+    {
+      "run": "bazi-initial",
+      "id": "kb:bazi:stem:癸",
+      "before_sha256": "2d212de411fa7f8b8746e988821d2483decbb8d327707de2c5691eeae395b284",
+      "invalid": null,
+      "attempts": 1,
+      "note": "补充癸属阴水及雨露象征，增强条目辨识度；保留结合整体信息、不凭单字判断的提醒，并补充同义称谓与关键词。"
+    },
+    {
+      "run": "bazi-initial",
+      "id": "kb:bazi:stem:辛",
+      "before_sha256": "2a4ecddf474a44bb3cb4e8b903e0ee10ee05e19e8b87a53dd988c0d39afdee97",
+      "invalid": null,
+      "attempts": 1,
+      "note": "补充辛属阴金及其传统象征，增强条目辨识度；保留结合整体信息解读的提醒，主题方向维持中性。"
+    },
+    {
+      "run": "bazi-rereview-1",
+      "id": "kb:bazi:convention:zishi_next_day",
+      "before_sha256": "61390cff2f2cdb8b01d8bb78fe71717d913881a131d5a7ffcfd326eeaaa17956",
+      "invalid": null,
+      "attempts": 1,
+      "note": "删除两处错误的i02引用，改用“午夜换日”名称及规则描述，避免在审核意见所指编号不一致时引入新的错误；明确对照时段不含次日00:00，其余规则及字段保持不变。"
+    },
+    {
+      "run": "bazi-rereview-1",
+      "id": "kb:bazi:relation:地支破",
+      "before_sha256": "e6991feb1920cf4c14ae1fb5043ac30507867017bfb9c150753116c1ff1e87bb",
+      "invalid": null,
+      "attempts": 1,
+      "note": "将事业与关系主题调整为轻度负向，与配合松动、约定及分工上的偏阻含义保持一致；明确该倾向仅属传统象征解释，不构成现实结果预测。保留自我与财务主题为中性。"
+    },
+    {
+      "run": "daily-initial",
+      "id": "kb:daily:convention:no_exact_events",
+      "before_sha256": "aa2241d853f6370c6d23664506a3a49751e1ff1d51609aae1d5a351a9e9f2be5",
+      "invalid": null,
+      "attempts": 1,
+      "note": "将未匹配到节点限定为本功能检查的精确相位范围，说明仍可能存在其他相位，避免将局部结果扩大为整体行运判断；保留中性主题值。"
+    },
+    {
+      "run": "dream-initial",
+      "id": "kb:dream:symbol:下雪",
+      "before_sha256": "8a0480974fa38dbfb7834ab5928ed6d3432e4c31ac8c5b2ffa17f9214c4de0ff",
+      "invalid": null,
+      "attempts": 1,
+      "note": "保持“下雪”的降雪事件范围，将“雪地”等场景或物象词移出同义词，改用描述降雪的近义表达；释义改为可能的情绪联想，避免固定象征断言。"
+    },
+    {
+      "run": "dream-initial",
+      "id": "kb:dream:symbol:丢东西",
+      "before_sha256": "b70c7ea5d22a4950b60d026f4ae4d29208d8bb65561afe7988dbfad0a00cda01",
+      "invalid": null,
+      "attempts": 1,
+      "note": "将“丢了”“弄丢”“遗失”等宽泛同义词限定为物品遗失语境，减少误命中；细化关键词，并将释义中的概括性表述调整为可能性表达。"
+    },
+    {
+      "run": "dream-initial",
+      "id": "kb:dream:symbol:乌龟",
+      "before_sha256": "f2dcf22ead196afcd16b89b938f0324914e68444fe5b4c6e94480839f7eb0045",
+      "invalid": null,
+      "attempts": 1,
+      "note": "删除有歧义的同义词“王八”，避免混淆鳖与乌龟或误命中辱骂语境；其余内容保持不变。"
+    },
+    {
+      "run": "dream-initial",
+      "id": "kb:dream:symbol:井",
+      "before_sha256": "48a916b6d9cd0a57094d183a433001be4b83601a7445265ed4e99987934957dc",
+      "invalid": null,
+      "attempts": 1,
+      "note": "移除不等同于一般井的同义词“掉进井里”，并在释义中区分坠井情境；删除泛化的自然景象描述，调整关键词，保留主题中性评分。"
+    },
+    {
+      "run": "dream-initial",
+      "id": "kb:dream:symbol:伞",
+      "before_sha256": "69e575928aa771c495971a4d99dae4e516685a9a3f3c01ab35df85e91e8cb6c6",
+      "invalid": null,
+      "attempts": 1,
+      "note": "从同义词中移除并非等义的“没带伞”，正文补充有伞与缺伞的分情境说明，保留中性主题权重，避免确定性解读。"
+    },
+    {
+      "run": "dream-initial",
+      "id": "kb:dream:symbol:停电",
+      "before_sha256": "687f3598db76de7477a774097314b63db65eabf3c182e2c917e9675f6b661aa1",
+      "invalid": null,
+      "attempts": 1,
+      "note": "删除含义不明确的同义词“灯全黑了”，避免误命中主动关灯或灯具故障等情境；其余内容保持不变。"
+    },
+    {
+      "run": "dream-initial",
+      "id": "kb:dream:symbol:偷东西",
+      "before_sha256": "6abd8cd4f64484653fb927223c54da1917d94f81492d12021c33d87765ab1d26",
+      "invalid": null,
+      "attempts": 1,
+      "note": "将缺乏正文依据的财务负向倾向调整为中性；将心理关联改为可能性表述，并使关键词与正文一致。"
+    },
+    {
+      "run": "dream-initial",
+      "id": "kb:dream:symbol:公交车",
+      "before_sha256": "73c2ddaba0b256d31fb38335860075ac79bdd222bd718f7c739f1953be1ea0c1",
+      "invalid": null,
+      "attempts": 1,
+      "note": "删除范围过宽的“大巴”，将“巴士”限定为“公共巴士”，补充“公共汽车”，减少对旅游包车、长途客车等意象的误匹配；其余内容不变。"
+    },
+    {
+      "run": "dream-initial",
+      "id": "kb:dream:symbol:公司",
+      "before_sha256": "d09527984b3e507242ebfe74a2fa8e954fc529260fa717b6d141c013c038f511",
+      "invalid": null,
+      "attempts": 1,
+      "note": "删除非严格同义词“办公室”“工位”及有歧义的“单位”，改用明确指向公司的表达；关键词聚焦工作情境，正文与主题值保持不变。"
+    },
+    {
+      "run": "dream-initial",
+      "id": "kb:dream:symbol:公园",
+      "before_sha256": "f114374ad252fbcf29748d5f3a9043fe54bf3bc1f3ea4beaaeea1f71cf06e2df",
+      "invalid": null,
+      "attempts": 1,
+      "note": "移除不等同于公园的同义词“花园”“游乐园”；将缺乏正文支持的关系主题倾向归零；调整释义与关键词，强调结合梦境情绪理解及非预测性。"
+    },
+    {
+      "run": "dream-initial",
+      "id": "kb:dream:symbol:写字",
+      "before_sha256": "319a8574d402363b6e6f1736d9d3d58365d4bcdee00211a6ef6805f32850f702",
+      "invalid": null,
+      "attempts": 1,
+      "note": "移除非等价同义词“写信”“写作业”，避免将通信表达、学习任务等独立意象归入“写字”；其余内容保持不变。"
+    },
+    {
+      "run": "dream-initial",
+      "id": "kb:dream:symbol:剪头发",
+      "before_sha256": "f98cb2c3cd7fe94b57614a89946a361963fdf15912031d3164b460c4ced95a68",
+      "invalid": null,
+      "attempts": 1,
+      "note": "删除同义词「理发」，降低误命中「理发店」等其他意象的风险；其余内容保持不变。"
+    },
+    {
+      "run": "dream-initial",
+      "id": "kb:dream:symbol:化妆",
+      "before_sha256": "593a486cfad9dfa3e8480fab14767f426945db99e4335632f5693b0469e190c6",
+      "invalid": null,
+      "attempts": 1,
+      "note": "将 self 和 relationship 调为中性，使主题方向与正文一致；正文改用可能性表述并移除医疗相关内容；以“上妆”替换范围较窄的“涂口红”，关键词聚焦形象与社交联想。"
+    },
+    {
+      "run": "dream-initial",
+      "id": "kb:dream:symbol:医生",
+      "before_sha256": "8f9121d484b3d9ec90a8326908e57509e24fbdccb3f1bbdd99fd82b6a25fd979",
+      "invalid": null,
+      "attempts": 1,
+      "note": "移除并非医生同义词的“护士”，避免不同职业意象误匹配；其余内容保持不变。"
+    },
+    {
+      "run": "dream-initial",
+      "id": "kb:dream:symbol:升职",
+      "before_sha256": "a4a1b636e9c2329ed76f262d1c97dd42502fac477c753e501541365124774033",
+      "invalid": null,
+      "attempts": 1,
+      "note": "移除非同义词“加薪”，将 finance 调整为中性；明确区分职位晋升与薪酬变化，使用可能性表述，并细化关键词。"
+    },
+    {
+      "run": "dream-initial",
+      "id": "kb:dream:symbol:变老",
+      "before_sha256": "c498f933404106d82397fb72ebdf0a09329f8a6af0f21ebd287da7f4854e5138",
+      "invalid": null,
+      "attempts": 1,
+      "note": "将 self 调整为中性，使主题方向与正文一致；弱化概括性解读，强调结合情绪与经历理解，并补充与正文对应的关键词。"
+    },
+    {
+      "run": "dream-initial",
+      "id": "kb:dream:symbol:台风",
+      "before_sha256": "b892ff3c94d809d65b45cd76f7750dc4977ebc6d7b7711e0cdea8252a4aaa2f3",
+      "invalid": null,
+      "attempts": 1,
+      "note": "移除与台风属于不同天气现象的同义词“龙卷风”，避免误命中；将释义中的心理关联改为可能性表述，保留原主题方向。"
+    },
+    {
+      "run": "dream-initial",
+      "id": "kb:dream:symbol:吃饭",
+      "before_sha256": "9ad59d12bbdd697a1ee666800d9810152755e688cfb4847cad176947a6e611b7",
+      "invalid": null,
+      "attempts": 1,
+      "note": "移除同义词“做饭给我吃”，避免将不一定包含实际进食的烹饪情节误匹配为“吃饭”；其余内容保持不变。"
+    },
+    {
+      "run": "dream-initial",
+      "id": "kb:dream:symbol:同事",
+      "before_sha256": "46474d84d74f151b5c0268545fdbec262daa3157b0d09d8c1e2338765cf1ab74",
+      "invalid": null,
+      "attempts": 1,
+      "note": "将 career、relationship 从轻微负向调整为中性，与正文的多种可能联想保持一致；将释义措辞调整为可能性表达，避免确定性解读。"
+    },
+    {
+      "run": "dream-initial",
+      "id": "kb:dream:symbol:商场",
+      "before_sha256": "2e4d1ac559c511199c315bf0024f00101c41d796351e1aff8e957fba74b34909",
+      "invalid": null,
+      "attempts": 1,
+      "note": "移除并非严格同义的“超市”，保留“购物中心”；释义、主题方向与关键词保持不变。"
+    },
+    {
+      "run": "dream-initial",
+      "id": "kb:dream:symbol:图书馆",
+      "before_sha256": "00fdf94b79a4776f129e7ad412641122b1c112f32bcd9c24fb9c531af2ccdc96",
+      "invalid": null,
+      "attempts": 1,
+      "note": "移除非同义词“书店”，避免混淆不同场所意象；其余内容保持不变。"
+    },
+    {
+      "run": "dream-initial",
+      "id": "kb:dream:symbol:地震",
+      "before_sha256": "d5c2100a9e9d133a6d5a4a0232ee3f88ceae3432163589688e701d61e2ee0c8d",
+      "invalid": null,
+      "attempts": 1,
+      "note": "为房屋、楼体晃动增加明确的地震语境，并替换可能用于比喻的“地动山摇”，减少误命中；释义改为可能性表述，细化关键词，保留原主题倾向。"
+    },
+    {
+      "run": "dream-initial",
+      "id": "kb:dream:symbol:坠落",
+      "before_sha256": "ab177341ad4f18f6788c490ff8867db908ef38be146858b092ed246a0886bdbd",
+      "invalid": null,
+      "attempts": 1,
+      "note": "删除含义宽泛的“掉进”“失足”，并将同义词限定为本人明确发生坠落的情境；释义改为非确定性的理解线索，保留原主题方向，细化关键词。"
+    },
+    {
+      "run": "dream-initial",
+      "id": "kb:dream:symbol:墓地",
+      "before_sha256": "fa670d1e6aa7c6a2446aa4fe02470c057f86f80600b61ab6742d4364db382e39",
+      "invalid": null,
+      "attempts": 1,
+      "note": "移除具体物件“墓碑”，避免与墓地这一场所意象混淆；释义改用可能性和探索性措辞，避免确定性解读。"
+    },
+    {
+      "run": "dream-initial",
+      "id": "kb:dream:symbol:墙",
+      "before_sha256": "bab536594d66277a8dbc9f244fd830dc7c1b8ac636eb7f6371fe7603f59d6cd5",
+      "invalid": null,
+      "attempts": 1,
+      "note": "从同义词中移除“墙倒了”，避免将墙体倒塌事件与静态墙体混同；其余内容保持不变。"
+    },
+    {
+      "run": "dream-initial",
+      "id": "kb:dream:symbol:壁虎",
+      "before_sha256": "fca1724d75bb6440b94e4390eeb2898b4e645e971983f83ce7d395d01b336162",
+      "invalid": null,
+      "attempts": 1,
+      "note": "删除范围大于“壁虎”的非等义词“蜥蜴”，避免将其他蜥蜴意象误匹配到本条目；其余内容保持不变。"
+    },
+    {
+      "run": "dream-initial",
+      "id": "kb:dream:symbol:声音",
+      "before_sha256": "e0b352ca0d97a6e58d1024f9b331071f71ca1463960c1623055f160e16ff1b16",
+      "invalid": null,
+      "attempts": 1,
+      "note": "将释义统一为一般声音意象，移除失声类同义词、身体类关键词及无关健康提示；主题方向调整为中性，补充结合声音特征与梦中感受理解的线索。"
+    },
+    {
+      "run": "dream-initial",
+      "id": "kb:dream:symbol:大海",
+      "before_sha256": "670acde78461e2506d32b32779d01fc8f88c76beca6dd652bdd0a4c3e8b5d1b7",
+      "invalid": null,
+      "attempts": 1,
+      "note": "将 self 调整为中性，与正文方向一致；移除指向岸边场所的“海边”“大海边”，并移除偏指物质的“海水”，仅保留“海洋”为同义词；正文强调结合个人体验理解，不作固定判断或现实预测。"
+    },
+    {
+      "run": "dream-initial",
+      "id": "kb:dream:symbol:失业",
+      "before_sha256": "141711c71ee372a7c94ee4a43130fade5e35dadbf6a36e8b9cc2e10a39149576",
+      "invalid": null,
+      "attempts": 1,
+      "note": "弱化梦境含义的绝对化表述，补充可能的信息来源；以具体心理感受替代笼统的处境描述，细化关键词，并使主题方向与释义中的担忧相对应。"
+    },
+    {
+      "run": "dream-initial",
+      "id": "kb:dream:symbol:头发",
+      "before_sha256": "956bfb501f489a9915aa65ca14928a619906bd3e06163cab1dc242ce70a25a4a",
+      "invalid": null,
+      "attempts": 1,
+      "note": "同义词改为“发丝”“头发丝”，移除包含独立情节的“掉头发”“脱发”及带形态限定的“长头发”，避免混同不同意象。正文、主题权重与关键词保持不变。"
+    },
+    {
+      "run": "dream-initial",
+      "id": "kb:dream:symbol:奶",
+      "before_sha256": "7c1a02a823c99eff3a1f1e14dfe836657bba358418913461090a63a7805dc0e2",
+      "invalid": null,
+      "attempts": 1,
+      "note": "删除“只反映心理状态”的排他性断言，补充身体感受与近期经历的可能影响，将象征解释调整为参考性表述，并明确不作为现实预兆；其余字段保持不变。"
+    },
+    {
+      "run": "dream-initial",
+      "id": "kb:dream:symbol:宝石",
+      "before_sha256": "8e10ba7d6473d36bd39a6655cae59e319145fa1f70b9070227544166d6f7375b",
+      "invalid": null,
+      "attempts": 1,
+      "note": "将 finance 从 0.1 调整为 0.0，避免把心理价值感映射为财务正向；其余内容保持不变。"
+    },
+    {
+      "run": "dream-initial",
+      "id": "kb:dream:symbol:宠物",
+      "before_sha256": "b64548ba8c73b300f06373819cfa65152e32d434f953876031709c301af4c279",
+      "invalid": null,
+      "attempts": 1,
+      "note": "移除带有失落或怀念情境的同义词“死去的宠物”，避免将其直接等同于一般宠物意象；调整释义与关键词，使其聚焦陪伴和照料，并保留非预兆说明。"
+    },
+    {
+      "run": "dream-initial",
+      "id": "kb:dream:symbol:寺庙",
+      "before_sha256": "1b6f2ef46973bd08f0186713b02930a37b3379587c35169fb3fd5b3e133ff650",
+      "invalid": null,
+      "attempts": 1,
+      "note": "移除不同宗教场所“道观”及指代较宽泛的“庙”，改用“寺院”“佛寺”；释义增加经历与文化记忆的可能关联，避免固定化解读，并细化关键词。"
+    },
+    {
+      "run": "dream-initial",
+      "id": "kb:dream:symbol:废墟",
+      "before_sha256": "6bc8eee2bee8ab59316cde13bcbec233fb449eb9da52b7efbd5dd1dfb90caf83",
+      "invalid": null,
+      "attempts": 1,
+      "note": "移除范围过宽的同义词“废弃的房子”“破房子”，改为限定倒塌或毁坏后的建筑残迹；补充意象边界并调整关键词，保留主题权重，释义采用非确定性表述。"
+    },
+    {
+      "run": "dream-initial",
+      "id": "kb:dream:symbol:开车",
+      "before_sha256": "18bfb16e5894090ac5cd98dbce0227fef6456850f0600397cf92de2efb4ba39f",
+      "invalid": null,
+      "attempts": 1,
+      "note": "移除非同义的特定情境“刹车失灵”，避免误命中；释义改用可能性表述，补充驾驶经历与情境参考，优化关键词并保持主题方向中性。"
+    },
+    {
+      "run": "dream-initial",
+      "id": "kb:dream:symbol:恋人",
+      "before_sha256": "0b7f1d44572f82aef30af89d51ce08773c8238a74fec12c35911faa0afc1c5b2",
+      "invalid": null,
+      "attempts": 1,
+      "note": "将有歧义的同义词“对象”改为“恋爱对象”，限定恋爱语境，减少非恋人意象的误匹配；其余内容保持不变。"
+    },
+    {
+      "run": "dream-initial",
+      "id": "kb:dream:symbol:战场",
+      "before_sha256": "602586c00e9fa3dc31e6203a99a6031b4582fdbe525bbefa3b68ae96a71284ee",
+      "invalid": null,
+      "attempts": 1,
+      "note": "将缺乏文字依据的事业主题倾向调为中性，保留自我主题的轻微负向倾向；将释义改为探索性的条件联想，补充非预测说明，并完善关键词。"
+    },
+    {
+      "run": "dream-initial",
+      "id": "kb:dream:symbol:房间",
+      "before_sha256": "f6b3e97cbe7f5c4ac53d7daa32b555252070f7b87867499803bad22e3dab66de",
+      "invalid": null,
+      "attempts": 1,
+      "note": "收紧同义词，移除带有无门、大小或封闭特征的表达；释义明确区分出入受限等特殊情境，保留中性主题方向，并调整关键词以贴合释义。"
+    },
+    {
+      "run": "dream-initial",
+      "id": "kb:dream:symbol:手",
+      "before_sha256": "d64226e7a99098fd62f2ebfe64e6cc13c97627996ab179b2fb26fea6b6143d4d",
+      "invalid": null,
+      "attempts": 1,
+      "note": "移除不属于同义词的“手受伤”，在释义中将其区分为具体情境，补充行动受限与脆弱感的条件性解释；保留中性主题权重及健康提醒。"
+    },
+    {
+      "run": "dream-initial",
+      "id": "kb:dream:symbol:手机",
+      "before_sha256": "1d6150be9f257d9c8ed8945ba6d39cdcee493ae4d6aa225b86b23175f33ef2c8",
+      "invalid": null,
+      "attempts": 1,
+      "note": "删除范围过宽的“电话”及非同义的故障情境，改用准确别称；在释义中区分手机本体与没电、损坏情境，保留中性主题权重，并细化关键词。"
+    },
+    {
+      "run": "dream-initial",
+      "id": "kb:dream:symbol:打架",
+      "before_sha256": "f39e00d2fb2f79aaca8637579edcc89d2af98e61f2a4fad915e5cfc0c54ce440",
+      "invalid": null,
+      "attempts": 1,
+      "note": "将多义的“动手”替换为明确指向冲突行为的“动手打人”，减少误匹配；其余内容保持不变。"
+    },
+    {
+      "run": "dream-initial",
+      "id": "kb:dream:symbol:打雷",
+      "before_sha256": "6b6ddb72465fe70c16a8cc2075acff977d2eb775033e5ed28bc160bd2d169798",
+      "invalid": null,
+      "attempts": 1,
+      "note": "将同义词“雷电”“闪电”“打闪”替换为“雷声”“响雷”，区分雷声与闪电意象，避免误命中；其余内容保持不变。"
+    },
+    {
+      "run": "dream-initial",
+      "id": "kb:dream:symbol:找东西",
+      "before_sha256": "33957c0ad9443ecfa9826b60dcffff4c095e5af81e2757be7cd0b43143c3eb24",
+      "invalid": null,
+      "attempts": 1,
+      "note": "将同义词限定为寻找物品，避免误匹配找人、找路等意象；将宽泛关键词“处境”替换为“寻找物品”，并弱化释义中的确定性表述。"
+    },
+    {
+      "run": "dream-initial",
+      "id": "kb:dream:symbol:拍照",
+      "before_sha256": "357fc5b3db3cddb548150305b0e1fe82711e372a2a43619e51eacbb51c5e7374",
+      "invalid": null,
+      "attempts": 1,
+      "note": "将 self 从 0.05 调整为 0，使主题方向与文字的中性心理描述一致；其余内容保持不变。"
+    },
+    {
+      "run": "dream-initial",
+      "id": "kb:dream:symbol:拥抱",
+      "before_sha256": "485faa48a4418b0fc6547684ad32e93d9f8267f7fc6ec83973c2b85ccdc24af7",
+      "invalid": null,
+      "attempts": 1,
+      "note": "将同义词限定为人际拥抱，避免误命中抱住物体的意象；关键词改为贴合释义的表达，并弱化心理解释的确定性。"
+    },
+    {
+      "run": "dream-initial",
+      "id": "kb:dream:symbol:搬家",
+      "before_sha256": "4088d14df8b13c8968dd1e316f3518a0b15e2f541a5a2103770452f203edb1a5",
+      "invalid": null,
+      "attempts": 1,
+      "note": "将 relationship 调为中性，消除缺乏文字依据的正向倾向；self 同步调为中性，与未描述明确顺逆方向的释义一致。文字改用可能性表述，避免确定性断言。"
+    },
+    {
+      "run": "dream-initial",
+      "id": "kb:dream:symbol:摩托车",
+      "before_sha256": "da4eac4e030ccf01f9ea96ad9205507c2bdb4d6a7926d7fecfb81e7685e89b1c",
+      "invalid": null,
+      "attempts": 1,
+      "note": "移除可能误匹配其他交通工具的“电动车”“电瓶车”，改为明确指向摩托车的同义词；其余内容保持不变。"
+    },
+    {
+      "run": "dream-initial",
+      "id": "kb:dream:symbol:新郎",
+      "before_sha256": "28c5134f7be99814a93c6a9a0365349e69c68efe8faa4d23bae2ec29988bccb4",
+      "invalid": null,
+      "attempts": 1,
+      "note": "移除非同义意象“新娘”，避免不同人物角色误匹配；其余字段保持不变。"
+    },
+    {
+      "run": "dream-initial",
+      "id": "kb:dream:symbol:星星",
+      "before_sha256": "23a5c88f3f3f6d01618c655b1d5785be247a75217a834b01f7b61dcb68021f59",
+      "invalid": null,
+      "attempts": 1,
+      "note": "移除具有独立意象特征的“流星”和可能指代花卉的“满天星”，避免同义词误匹配；其余内容保持不变。"
+    },
+    {
+      "run": "dream-initial",
+      "id": "kb:dream:symbol:朋友",
+      "before_sha256": "0a0b2e403e1b6f5aa3d2dca3c4f68e88274035a09e096d3f66f5ac1306ff912c",
+      "invalid": null,
+      "attempts": 1,
+      "note": "删除同义词“兄弟们”，避免朋友与亲属含义混淆；其余内容保持不变。"
+    },
+    {
+      "run": "dream-initial",
+      "id": "kb:dream:symbol:杯子",
+      "before_sha256": "9e8b3e869ee4fa5819f159ac9a30538668b4b7738142c622a4db2c130a8ecc0a",
+      "invalid": null,
+      "attempts": 1,
+      "note": "移除包含破损情节的“杯子碎了”同义词，说明破碎情境需单独理解；将释义调整为开放式联想，保留主题评分中性，并更新关键词。"
+    },
+    {
+      "run": "dream-initial",
+      "id": "kb:dream:symbol:果树",
+      "before_sha256": "a151289bcda08bba345af36dc526adc6ba2881077ca36d048092a53f1c9a0ba4",
+      "invalid": null,
+      "attempts": 1,
+      "note": "将范围过宽的同义词“结果子”“果实累累”替换为明确限定树木意象的表达，避免误命中藤蔓等其他结果植物；其余内容保持不变。"
+    },
+    {
+      "run": "dream-initial",
+      "id": "kb:dream:symbol:桥",
+      "before_sha256": "774800986abfcef6c2737bea6908f58d12073ef65ba4bf0d47b9b50ad4ac8d50",
+      "invalid": null,
+      "attempts": 1,
+      "note": "删除包含连接中断情节的“桥断了”，并将动作情境“过桥”移出同义词，补充“桥梁”；释义改为非确定性的联想表达，强调结合个人感受与经历理解。"
+    },
+    {
+      "run": "dream-initial",
+      "id": "kb:dream:symbol:水晶",
+      "before_sha256": "2d6648a0d6e39d91b1058aeca531e978db64241f25ea02d257f9da9fd32db3b3",
+      "invalid": null,
+      "attempts": 1,
+      "note": "移除同义词“水晶球”，避免将具有独立用途和象征联想的物品等同于一般水晶；其余内容保持不变。"
+    },
+    {
+      "run": "dream-initial",
+      "id": "kb:dream:symbol:沙漠",
+      "before_sha256": "a765250985b90043775759b49b637bc977dc2f08898274273a5bde0a8f5698a6",
+      "invalid": null,
+      "attempts": 1,
+      "note": "移除非同一地貌的“戈壁”及范围更广的“荒漠”，避免将相关概念直接等同；将释义改为可能的联想，保留轻微负向自我倾向，并补充关键词。"
+    },
+    {
+      "run": "dream-initial",
+      "id": "kb:dream:symbol:没穿衣服",
+      "before_sha256": "d3ef0f787319504deef1dc9a743dd8ca072518170b2d36cdfa2675611765a35e",
+      "invalid": null,
+      "attempts": 1,
+      "note": "移除可能误命中衣物丢失情境的同义词“衣服不见了”，其余内容保持不变。"
+    },
+    {
+      "run": "dream-initial",
+      "id": "kb:dream:symbol:河",
+      "before_sha256": "d9a3c06482fd69330976db9ebf38cf44f5dc4b0fdedb3353a351c5ef19bf76f7",
+      "invalid": null,
+      "attempts": 1,
+      "note": "删除同义词中的“过河”，避免将跨越河流的行动与自然景物混为一类；其余内容保持不变。"
+    },
+    {
+      "run": "dream-initial",
+      "id": "kb:dream:symbol:泥石流",
+      "before_sha256": "a5b82a77a732651a315b2497f8976b5f6d55797aae86a6580c8246e0f17986b8",
+      "invalid": null,
+      "attempts": 1,
+      "note": "移除并非泥石流同义词的“山体滑坡”“塌方”，避免混淆不同灾害意象；其余内容保持不变。"
+    },
+    {
+      "run": "dream-initial",
+      "id": "kb:dream:symbol:洗澡",
+      "before_sha256": "070176d5be76e010c4c2c7d8489bdba558ff5bd67522dd8b2e920348fbfaa070",
+      "invalid": null,
+      "attempts": 1,
+      "note": "删除不等同于洗澡的同义词“洗头”，避免将仅洗头的梦境误匹配到本条；其余内容保持不变。"
+    },
+    {
+      "run": "dream-initial",
+      "id": "kb:dream:symbol:洪水",
+      "before_sha256": "c7dd9262c84396fd707d0264af22ad526a97d4d8e848e6b01ba4bc5f7ce22365",
+      "invalid": null,
+      "attempts": 1,
+      "note": "移除含义过宽的同义词“涨水”，避免将普通水位上升误归为洪水意象；其余内容保持不变。"
+    },
+    {
+      "run": "dream-initial",
+      "id": "kb:dream:symbol:海浪",
+      "before_sha256": "bbd1ed79055922716e937da2066147ce68583383fe96fef5bf2a3b85ad0cf88a",
+      "invalid": null,
+      "attempts": 1,
+      "note": "删除独立灾害意象“海啸”和含义过宽的“浪”，将其余同义表达限定为海浪语境；释义改为可供探索的线索，强调结合个人经历理解，保留原主题倾向。"
+    },
+    {
+      "run": "dream-initial",
+      "id": "kb:dream:symbol:游泳",
+      "before_sha256": "bd47c9e9ef9bc0a236dbd78248b1e9adcc8de8e824961f3b04ed591efb2f6d26",
+      "invalid": null,
+      "attempts": 1,
+      "note": "将 self 调整为中性，与释义未明确偏向适应良好或状态改善的描述一致；弱化对梦境含义的确定性表述，其余主题、同义词和关键词保持不变。"
+    },
+    {
+      "run": "dream-initial",
+      "id": "kb:dream:symbol:漏水",
+      "before_sha256": "cb4088fd783cb1a9f5afc464c8429c39409f13988b497466b25feb84fbc48e8c",
+      "invalid": null,
+      "attempts": 1,
+      "note": "将“自然”分类及自然景象相关说明改为居住环境、房屋设施表述；保留消耗与修补的心理联想及原主题倾向，并明确梦境不代表现实中的必然损坏或损失。"
+    },
+    {
+      "run": "dream-initial",
+      "id": "kb:dream:symbol:火车",
+      "before_sha256": "59e037d516398c78d6eb0c0c3f79042424cdd1480c1a1b5f024d27f4a4759aac",
+      "invalid": null,
+      "attempts": 1,
+      "note": "移除可能误命中的同义词“地铁”；用轨道、时刻表和站点等火车特征替换通用解释，补充相关关键词，并保留非预测性表述与中性主题评分。"
+    },
+    {
+      "run": "dream-initial",
+      "id": "kb:dream:symbol:灯",
+      "before_sha256": "43edf8362dc3f3088e30089e93f64a103ce3c8f940d4b31209bd54fbb7eaaae9",
+      "invalid": null,
+      "attempts": 1,
+      "note": "移除包含熄灭情境的同义词“灯灭了”，避免与一般灯意象混同；释义补充明暗、亮灭及情绪的情境差异，保留非确定性表达，并细化关键词。"
+    },
+    {
+      "run": "dream-initial",
+      "id": "kb:dream:symbol:熊",
+      "before_sha256": "438c240549f844c45fdeba766d35b9ee95680dec69b5c1bb26a65a59285032cb",
+      "invalid": null,
+      "attempts": 1,
+      "note": "移除容易误命中独立意象的同义词“熊猫”；以熊的举动和梦中感受替换泛化的动物模板句，补充对应关键词，主题方向保持中性。"
+    },
+    {
+      "run": "dream-initial",
+      "id": "kb:dream:symbol:牙齿",
+      "before_sha256": "681e74bef6de8e167edef316c3d1ca2e0bedfbb447f8642cb80fcaaafa9d0b2b",
+      "invalid": null,
+      "attempts": 1,
+      "note": "将 self 调为中性；移除疼痛和受损情境类同义词，改用一般牙齿的等义表达；正文区分普通牙齿与牙疼、蛀牙情境，并弱化固定象征关联。"
+    },
+    {
+      "run": "dream-initial",
+      "id": "kb:dream:symbol:牛",
+      "before_sha256": "a52b984222bec3dcdebd561ae1eec4063d80af52da4b3ddcf7fcbb06da0be417",
+      "invalid": null,
+      "attempts": 1,
+      "note": "移除有倒票、代办牟利者等人物含义的同义词“黄牛”，避免在无法限定动物语境时误匹配；其余内容保持不变。"
+    },
+    {
+      "run": "dream-initial",
+      "id": "kb:dream:symbol:狐狸",
+      "before_sha256": "35300ce057db57fac9cf8f9587e9532595e2887cd102d9fe0bfb79989041655c",
+      "invalid": null,
+      "attempts": 1,
+      "note": "删除同义词“狐狸精”，避免将精怪意象或对人的贬称误匹配为狐狸动物意象；其余内容保持不变。"
+    },
+    {
+      "run": "dream-initial",
+      "id": "kb:dream:symbol:猪",
+      "before_sha256": "d678e2ac878e74049be3513a7c3e46ece0ab98c24c69b7fc4fca95eacc988ed7",
+      "invalid": null,
+      "attempts": 1,
+      "note": "将 finance 调为中性，避免仅凭物质相关话题赋予财务正向倾向；保留满足、放松支持的自我主题轻微正向，并将释义调整为可能性表述。"
+    },
+    {
+      "run": "dream-initial",
+      "id": "kb:dream:symbol:猫头鹰",
+      "before_sha256": "6974653982f5ccc8cc8db89bae4e8321c608d692faee8c1218d21421d58b3949",
+      "invalid": null,
+      "attempts": 1,
+      "note": "删除存在人物及作息含义的同义词“夜猫子”，避免误匹配；其余字段保持不变。"
+    },
+    {
+      "run": "dream-initial",
+      "id": "kb:dream:symbol:电梯",
+      "before_sha256": "fd657af0b539cef140c4a307d6d65a43b134a1b77b854c08bec744a73d2212f5",
+      "invalid": null,
+      "attempts": 1,
+      "note": "将 self 和 career 调为中性，使主题方向与正文一致；移除带有特定失控情节的同义词“电梯下坠”；调整正文及关键词，突出电梯意象，并说明解释需结合情境、不预示现实结果。"
+    },
+    {
+      "run": "dream-initial",
+      "id": "kb:dream:symbol:电脑",
+      "before_sha256": "829d52f2e18cb59b2a8aa682dbbb51b70ae1501a43bb1212502b456fc467c8dd",
+      "invalid": null,
+      "attempts": 1,
+      "note": "移除含有故障情节的“电脑坏了”，避免将额外情境当作同义词；补充“计算机”，并使释义和关键词更聚焦电脑的日常用途，保留中性主题评分。"
+    },
+    {
+      "run": "dream-initial",
+      "id": "kb:dream:symbol:画",
+      "before_sha256": "fe961d2dc2e610edc9a6e1737a0b5e9521e18d3b5dc8a9b5a1d389d584ad39db",
+      "invalid": null,
+      "attempts": 1,
+      "note": "移除行为类同义词“画画”，以“画作”明确物品指向；补充观看画作与动手创作的区别，并强调结合梦境情绪与经历理解。"
+    },
+    {
+      "run": "dream-initial",
+      "id": "kb:dream:symbol:瘫痪",
+      "before_sha256": "397beff57ab8b44e99ef3a3ee8d52f61e7fdeba626fb5621700c38c0869f672b",
+      "invalid": null,
+      "attempts": 1,
+      "note": "移除范围过宽的同义词“动不了”“全身无力”“鬼压床”，收窄为明确的梦见瘫痪表述；正文区分梦境情节、受困或乏力与入睡或醒来时的实际体验，并将象征解释改为探索性提示。"
+    },
+    {
+      "run": "dream-initial",
+      "id": "kb:dream:symbol:眼睛",
+      "before_sha256": "20b08e69474bfa9a24ae5c639f59539db691e6bd7a2700e0d407a12b3f7a21ec",
+      "invalid": null,
+      "attempts": 1,
+      "note": "移除并非眼睛同义词的“看不见”“失明”“眼睛疼”，改用直接指称眼睛的词语，避免混入视觉受限或疼痛情境；正文聚焦观察与觉察，保留非确定性表述，并调整关键词以贴合释义。"
+    },
+    {
+      "run": "dream-initial",
+      "id": "kb:dream:symbol:碗",
+      "before_sha256": "af715ee5c8711effae11b5d661b2674f55ef410a29826824b1e4febdc455e026",
+      "invalid": null,
+      "attempts": 1,
+      "note": "移除易引发生计或工作歧义的“饭碗”，以及并非同义词的破损情境“碗碎了”；正文聚焦普通碗的日常联想，明确破损需结合情境理解。主题保持中性，不赋予正负方向。"
+    },
+    {
+      "run": "dream-initial",
+      "id": "kb:dream:symbol:神仙",
+      "before_sha256": "e4c032a35c75592cd08539a369abe16c10eaa8b549a37fe1268bd27266f4144e",
+      "invalid": null,
+      "attempts": 1,
+      "note": "移除不等同于“神仙”的同义词“菩萨”“佛祖”“神明”，避免混淆宗教文化身份；保留指引与安慰的心理联想，改用可能性表述，并删除不适用于该意象的泛化人物关系说明。"
+    },
+    {
+      "run": "dream-initial",
+      "id": "kb:dream:symbol:种树",
+      "before_sha256": "aa99720a3c2ab7e7a898d98498d9553a2cef5283f2bf6c4c7d483b298cf48994",
+      "invalid": null,
+      "attempts": 1,
+      "note": "将“种花”“栽种”替换为“栽树”“植树”，避免混入其他植物种植意象；保留原主题倾向，细化关键词，并将释义调整为非确定性的心理联想。"
+    },
+    {
+      "run": "dream-initial",
+      "id": "kb:dream:symbol:窗户",
+      "before_sha256": "95684efae9d1b2eb4b67d094a604e2d651030b2cbb1bc579e22be218050b926e",
+      "invalid": null,
+      "attempts": 1,
+      "note": "移除存在对象或语境歧义的同义词“窗外”“窗口”；将释义和关键词聚焦于窗户本身，避免泛化为场所意象，并明确其仅供个人反思。"
+    },
+    {
+      "run": "dream-initial",
+      "id": "kb:dream:symbol:米饭",
+      "before_sha256": "db196a48e429caccbb89ec900c6568cc354369cc10ebfd3e72414b81f04971b4",
+      "invalid": null,
+      "attempts": 1,
+      "note": "移除指向未煮熟粮食的“大米”，保留“白米饭”，避免混淆原粮与熟食；将释义中的确定性表述改为结合个人经历的可能性解读。"
+    },
+    {
+      "run": "dream-initial",
+      "id": "kb:dream:symbol:糖果",
+      "before_sha256": "b8d4a0be51775f48cb0e8989f71a608a5f1e5e51dcc70fd993e4cb4b977bf7c7",
+      "invalid": null,
+      "attempts": 1,
+      "note": "将范围过宽的“糖”“巧克力”替换为明确的糖果名称，减少误命中；将释义改为可能性表述，去除“只反映心理状态”的绝对限定，并补充相关关键词。"
+    },
+    {
+      "run": "dream-initial",
+      "id": "kb:dream:symbol:绳子",
+      "before_sha256": "2ac747e6ce613cf437866c1700d75fb70f8b188e21adc28aab6c15db626c0285",
+      "invalid": null,
+      "attempts": 1,
+      "note": "移除表示受束缚情境而非物品同义词的“被绑”，避免误命中其他束缚工具；其余内容保持不变。"
+    },
+    {
+      "run": "dream-initial",
+      "id": "kb:dream:symbol:老公",
+      "before_sha256": "091fdddb14f72afd42ded50350118b6d1c5881915c4cab25bb1469e51b50d097",
+      "invalid": null,
+      "attempts": 1,
+      "note": "保留原称谓入口，将其定位于配偶／伴侣主题，并补充称呼的个人意义、身份感受及梦中称谓与现实身份不一致的理解角度，减少与其他伴侣称谓释义的实质重复；主题方向改为中性，避免性别角色预设和现实推断。"
+    },
+    {
+      "run": "dream-initial",
+      "id": "kb:dream:symbol:老婆",
+      "before_sha256": "f44af93e65525f5ca9980b63adbf3e91da130dfede464d3bfdc86f70380f7e4f",
+      "invalid": null,
+      "attempts": 1,
+      "note": "保留原条目身份，将释义明确为配偶／伴侣通用解释的称谓入口，避免按性别重复编写独立释义；补充情境化理解提示，并将关系主题设为无方向。"
+    },
+    {
+      "run": "dream-initial",
+      "id": "kb:dream:symbol:老鼠",
+      "before_sha256": "7391e0ed35bd56413681f1efb2c6436ca22a11c4979900f706a7a5a369bca033",
+      "invalid": null,
+      "attempts": 1,
+      "note": "将财务主题调整为中性，避免正文未涉及财务却设置负向倾向；将心理关联改为可能性表述，保留自我主题的轻微负向及非预兆说明。"
+    },
+    {
+      "run": "dream-initial",
+      "id": "kb:dream:symbol:考试",
+      "before_sha256": "8b7ae4052b1dea3ab757a48e32d59abea257a8b431f65baab7895e349bb55fcc",
+      "invalid": null,
+      "attempts": 1,
+      "note": "删除范围过宽的同义词“做题”和仅表示场所的“考场”，避免误匹配普通学习或场所梦；正文采用可能性表述，细化关键词，保留原主题方向。"
+    },
+    {
+      "run": "dream-initial",
+      "id": "kb:dream:symbol:自杀",
+      "before_sha256": "0bbf63b28826258df46e78046557eb3ae2755f6e682da978210e5d20e9ff930f",
+      "invalid": null,
+      "attempts": 1,
+      "note": "移除含义过宽的同义词“想不开”，改用更贴近条目的表达；将梦境解释改为可能的理解角度，明确梦境不能证明或排除现实轻生意图，并保留分情境的求助提醒。"
+    },
+    {
+      "run": "dream-initial",
+      "id": "kb:dream:symbol:自行车",
+      "before_sha256": "366d7a9396d9441e54e7a22ed0fc0b6e348d2c0690811821119c533d15cbd9cf",
+      "invalid": null,
+      "attempts": 1,
+      "note": "将范围过宽的同义词“骑车”改为“骑自行车”，避免误命中摩托车、电动车等其他交通意象；其余内容保持不变。"
+    },
+    {
+      "run": "dream-initial",
+      "id": "kb:dream:symbol:花",
+      "before_sha256": "3dee0d7bce32aa7a038a0d8a22aa5660053f54d864b9bbc3eb94a78f57bd4619",
+      "invalid": null,
+      "attempts": 1,
+      "note": "移除具体花卉子类“油菜花”，避免误命中；移除表示过程的“开花”和集合景象“花海”，收窄同义词范围。释义改为可能的心理联想，避免将关系变化解读为预示；主题权重保持不变。"
+    },
+    {
+      "run": "dream-initial",
+      "id": "kb:dream:symbol:草原",
+      "before_sha256": "68617abf9d961cf2d89075951a26c0cb05693473ee463ada1abe40bb6ea76832",
+      "invalid": null,
+      "attempts": 1,
+      "note": "删除范围过宽的同义词“草地”，避免误命中庭院草坪或小片草地场景；其余内容保持不变。"
+    },
+    {
+      "run": "dream-initial",
+      "id": "kb:dream:symbol:虫子",
+      "before_sha256": "d787855244daa272360a9f6a77b5d2fe5fa70efc93eac3a809fbc6eb16dc2ac0",
+      "invalid": null,
+      "attempts": 1,
+      "note": "移除具体虫类同义词“毛毛虫”和过宽同义词“虫”，删除泛化关键词“动物”，减少跨意象误命中；限定释义适用于未明确种类的虫子，并提示优先参考具体虫类条目，保留非确定性的轻微负向自我主题。"
+    },
+    {
+      "run": "dream-initial",
+      "id": "kb:dream:symbol:蚯蚓",
+      "before_sha256": "8a15e8cb27cbc3fcd9e23a62d6b3846558e0b27a050a111d84c87560305b76ae",
+      "invalid": null,
+      "attempts": 1,
+      "note": "删除非同义词“泥鳅”，避免误命中其他动物意象；其余字段保持不变。"
+    },
+    {
+      "run": "dream-initial",
+      "id": "kb:dream:symbol:蛇",
+      "before_sha256": "78c239537ae8c0365961bc8d7278d9521a0e01acb9d5c9aba697940a915f8a6a",
+      "invalid": null,
+      "attempts": 1,
+      "note": "删除非稳定同义词“小龙”，避免误命中龙或其他意象；其余内容保持不变。"
+    },
+    {
+      "run": "dream-initial",
+      "id": "kb:dream:symbol:蜘蛛",
+      "before_sha256": "cf81917310c9b4b6b6e629212df28eab051d645287cf8d75eb63f6119d677bf0",
+      "invalid": null,
+      "attempts": 1,
+      "note": "移除同义词“蜘蛛网”，避免将仅梦见网的情形混入蜘蛛条目；其余内容保持不变。"
+    },
+    {
+      "run": "dream-initial",
+      "id": "kb:dream:symbol:蜜蜂",
+      "before_sha256": "373106ca01607d71ef1e09058f82000f232b25abb92d3d56e010d8a358860c1a",
+      "invalid": null,
+      "attempts": 1,
+      "note": "移除并非蜜蜂同义词的“马蜂”“黄蜂”，避免不同蜂类意象误命中；其余内容保持不变。"
+    },
+    {
+      "run": "dream-initial",
+      "id": "kb:dream:symbol:蟑螂",
+      "before_sha256": "e5212a912c7bfdb4aa3d7614fded18beb45aa8cf7befd8708315b04799ca903a",
+      "invalid": null,
+      "attempts": 1,
+      "note": "移除存在人名或昵称歧义的独立同义词“小强”，避免将人物意象误匹配为蟑螂；其余内容保持不变。"
+    },
+    {
+      "run": "dream-initial",
+      "id": "kb:dream:symbol:被冤枉",
+      "before_sha256": "1fc66a53f3290e7787987fac2a3efbad9d2ced811bedf647f4965d62c1a4cd76",
+      "invalid": null,
+      "attempts": 1,
+      "note": "将角色不明确的同义词“冤枉”替换为“受到冤枉”“被人冤枉”，明确受事角色，避免误匹配主动冤枉他人的情境；其余内容保持不变。"
+    },
+    {
+      "run": "dream-initial",
+      "id": "kb:dream:symbol:被绑架",
+      "before_sha256": "7e510fae26c84aa617af7c6ca1f6b4f2395708c1322e9d99b7f352ad02ce8556",
+      "invalid": null,
+      "attempts": 1,
+      "note": "将同义词“绑架”替换为明确被动处境的表述，避免匹配绑架别人或目睹绑架的梦境；释义明确梦者角色并采用可能性措辞，关键词聚焦被绑架处境，主题方向保持不变。"
+    },
+    {
+      "run": "dream-initial",
+      "id": "kb:dream:symbol:被表扬",
+      "before_sha256": "cc84f716a89ae549c91ce996543495f83db1e67526506211c5777e23378be82c",
+      "invalid": null,
+      "attempts": 1,
+      "note": "将自我与事业倾向调为中性，区分渴望认可与实际获得认可；用可能性表述心理关联，并调整关键词以贴合释义。"
+    },
+    {
+      "run": "dream-initial",
+      "id": "kb:dream:symbol:被追",
+      "before_sha256": "66a956a0778ce6e78d1b8dd9fa9eafdab8d4fdf8ee7cb478b3644aedd597ba94",
+      "invalid": null,
+      "attempts": 1,
+      "note": "替换可能指感情追求或追赶角色不明的同义词，明确被追赶的语义范围；调整关键词，并将释义改为结合个人经历理解的可能性表述。"
+    },
+    {
+      "run": "dream-initial",
+      "id": "kb:dream:symbol:豹子",
+      "before_sha256": "830898c5268f87a282d70e96c70b54643deb2578fdf2219dc853d5384357eb4c",
+      "invalid": null,
+      "attempts": 1,
+      "note": "移除非严格同义词“猎豹”，避免与豹子、花豹混淆；其余内容保持不变。"
+    },
+    {
+      "run": "dream-initial",
+      "id": "kb:dream:symbol:购物",
+      "before_sha256": "e62f2def64024c0e00a2f4f372eb8bb51a4f0e2977a26b6a328a78bfa30790ed",
+      "invalid": null,
+      "attempts": 1,
+      "note": "将 finance 调整为中性，避免由购物推导财务正向倾向；将心理联想改为可能性表述，并更新关键词以贴合释义。"
+    },
+    {
+      "run": "dream-initial",
+      "id": "kb:dream:symbol:赶不上车",
+      "before_sha256": "85be805b9524d1a90322a373b54757c79291f6f8f09ff6fd8a56b71fcc5cfd53",
+      "invalid": null,
+      "attempts": 1,
+      "note": "为两条有歧义的同义词补充未赶上乘车的限定，避免误匹配送别或旁观情境；释义改用可能性表述，关键词补充“错过乘车”，主题权重保持不变。"
+    },
+    {
+      "run": "dream-initial",
+      "id": "kb:dream:symbol:跳下",
+      "before_sha256": "d1bfbb570a7918063d8b89aa04235cb86089c85fd246d806be076f6f54cf2515",
+      "invalid": null,
+      "attempts": 1,
+      "note": "移除容易混淆不同情境的同义词“跳楼”；补充失控与不安的可能联想，并按自愿程度和梦中感受区分理解，保留非预测性的表述。"
+    },
+    {
+      "run": "dream-initial",
+      "id": "kb:dream:symbol:躲藏",
+      "before_sha256": "671465c97630d365a40e74fbf384181ece623836e940f3a5aeb54fb42d3084cd",
+      "invalid": null,
+      "attempts": 1,
+      "note": "将同义词明确限定为自身躲藏，避免与藏匿物品混淆；同步明确正文与关键词的指向，并将心理解释调整为可能性表述。"
+    },
+    {
+      "run": "dream-initial",
+      "id": "kb:dream:symbol:迟到",
+      "before_sha256": "7097ac80698e6c6b317dd71aab97c59e7ca4b2f06fa3dfe56a10180bc759ec74",
+      "invalid": null,
+      "attempts": 1,
+      "note": "将范围过宽的同义词“来不及”限定为“来不及按时到达”，减少对逃跑、救助或完成动作等非迟到情境的误匹配；其余内容保持不变。"
+    },
+    {
+      "run": "dream-initial",
+      "id": "kb:dream:symbol:迷失",
+      "before_sha256": "4f921b7c19de47e39942edb277141ff4a2751ff10337ff61b49c5411cf808bc8",
+      "invalid": null,
+      "attempts": 1,
+      "note": "将易与空间迷路或宽泛情绪混淆的同义词替换为自我定位、目标感相关表达；正文明确区分心理迷失与空间迷路，并同步细化关键词，保留原主题方向。"
+    },
+    {
+      "run": "dream-initial",
+      "id": "kb:dream:symbol:迷路",
+      "before_sha256": "7dfc8cf53971ea782e987d76defca5e9f9c1f852929ecb96b6446163d7ebcc37",
+      "invalid": null,
+      "attempts": 1,
+      "note": "将同义词和关键词限定为空间寻路情境，正文明确以找不到路为意象起点，并区分于目标或身份层面的“迷失”；保留原有主题方向。"
+    },
+    {
+      "run": "dream-initial",
+      "id": "kb:dream:symbol:逃跑",
+      "before_sha256": "2eda6065c9364e2ad9fa8ab6480e54b78d2dc0ca9deeec804b979220a953b31e",
+      "invalid": null,
+      "attempts": 1,
+      "note": "删除可能误匹配比赛、锻炼或赶路情境的同义词“拼命跑”；正文改用可能性表述并强调结合逃离情境理解，关键词聚焦逃离与回避压力，主题倾向保持不变。"
+    },
+    {
+      "run": "dream-initial",
+      "id": "kb:dream:symbol:醒不过来",
+      "before_sha256": "6687bda570b858a7052abcc8f04dd7bf68acef9ef8f87a0298aed17d46c1f768",
+      "invalid": null,
+      "attempts": 1,
+      "note": "移除不等同于醒不过来体验的“梦中梦”，补充更贴切的同义表达；细化关键词，并将正文改为可能性表述，保留原主题倾向。"
+    },
+    {
+      "run": "dream-initial",
+      "id": "kb:dream:symbol:金子",
+      "before_sha256": "9bfa4596aa274d6b27ec9c11a1b9daa1d06d004e07380b6b8ea8e9b3866ed91b",
+      "invalid": null,
+      "attempts": 1,
+      "note": "将 finance 从 0.1 调整为 0.0，避免正文中的个人价值象征被延伸为财务方面的正向含义；其余内容保持不变。"
+    },
+    {
+      "run": "dream-initial",
+      "id": "kb:dream:symbol:针",
+      "before_sha256": "828d7bbf1171832914ff03f1e77c680572b3754831761ce6990cc0562c76d933",
+      "invalid": null,
+      "attempts": 1,
+      "note": "移除表示注射事件的“打针”，将“针线”替换为更明确的针类物品名称，减少情境混淆；正文改为结合用途与感受的可能联想，主题评分保持中性。"
+    },
+    {
+      "run": "dream-initial",
+      "id": "kb:dream:symbol:钓鱼",
+      "before_sha256": "5527beb7f32e72b5a126687e5750f73ae3bd6f21e44b6ab67c2fdd66b8b13cd6",
+      "invalid": null,
+      "attempts": 1,
+      "note": "将 finance 从 0.05 调整为 0.0，去除缺乏释义支持的财务正向倾向，其余内容保持不变。"
+    },
+    {
+      "run": "dream-initial",
+      "id": "kb:dream:symbol:钱",
+      "before_sha256": "ef37589c8b9a0f95b3abd85a8c7afec1b67e8d4c6cafd063f1b3069546c9dd97",
+      "invalid": null,
+      "attempts": 1,
+      "note": "移除同义词中的“付款”，避免将支付行为与钱这一物品意象混淆；其余内容保持不变。"
+    },
+    {
+      "run": "dream-initial",
+      "id": "kb:dream:symbol:银行",
+      "before_sha256": "d1f64d8fab6cbb90e9e6adfc872cac8ce11d6b2a40fbba5153cb91121af5d7fd",
+      "invalid": null,
+      "attempts": 1,
+      "note": "删除同义词“取钱”，避免将取钱行为误匹配为银行场所；其余字段保持不变。"
+    },
+    {
+      "run": "dream-initial",
+      "id": "kb:dream:symbol:门",
+      "before_sha256": "eb1671a41493235d6da9337d9f7c6edc657ae8f6dfb0ea63967f1ba1a3fbe9ee",
+      "invalid": null,
+      "attempts": 1,
+      "note": "从同义词中移除“门锁”，避免将锁具意象误匹配为门；其余内容保持不变。"
+    },
+    {
+      "run": "dream-initial",
+      "id": "kb:dream:symbol:门票",
+      "before_sha256": "151842dd716f31fa9fc08b9b84825c1bff2d23a5b3b8bfa4c70590f2fa9a2396",
+      "invalid": null,
+      "attempts": 1,
+      "note": "保持条目对象不变，移除不同用途的“车票”“机票”，改用入场凭证类同义词；正文与关键词聚焦门票意象，并保留情境性、非预测性的解释。"
+    },
+    {
+      "run": "dream-initial",
+      "id": "kb:dream:symbol:隧道",
+      "before_sha256": "d7bc0076cc87f178138e1a1ea4c643c6c2ae96c0b8e8d508e1be793b7e28fee3",
+      "invalid": null,
+      "attempts": 1,
+      "note": "删除不等同于隧道的同义词“山洞”“洞穴”，避免误命中洞穴类意象；其余内容保持不变。"
+    },
+    {
+      "run": "dream-initial",
+      "id": "kb:dream:symbol:雪山",
+      "before_sha256": "de97c11f50c16376990786741145414269a4196c957720cec310874b2ef92bda",
+      "invalid": null,
+      "attempts": 1,
+      "note": "删除非同义意象“冰山”，避免误匹配冰山梦境；其余内容保持不变。"
+    },
+    {
+      "run": "dream-initial",
+      "id": "kb:dream:symbol:青蛙",
+      "before_sha256": "9550e68abcdc30103659bfa0e84ccc1f760d998ce7bd72e497cb84308d22bd5d",
+      "invalid": null,
+      "attempts": 1,
+      "note": "移除容易与蟾蜍混淆的同义词“蛤蟆”“癞蛤蟆”，保留原释义、主题映射和关键词。"
+    },
+    {
+      "run": "dream-initial",
+      "id": "kb:dream:symbol:鞋子",
+      "before_sha256": "4854418117867e42488481cbf7ae622a4f2349c1bf6a9b87b80c5512daccbaaf",
+      "invalid": null,
+      "attempts": 1,
+      "note": "移除包含丢失情境的“鞋子丢了”和属于具体鞋型的“高跟鞋”，避免作为同义词误命中；释义聚焦鞋子意象，补充情绪与穿着感受的语境，并明确其不具有固定含义或预测作用。"
+    },
+    {
+      "run": "dream-initial",
+      "id": "kb:dream:symbol:领导",
+      "before_sha256": "8472cdcdb406aa04eb187b9e9fdf89d28ca490cff94be28d2656c3f79d3fb044",
+      "invalid": null,
+      "attempts": 1,
+      "note": "将 career 从 -0.05 调整为 0.0，使主题方向与中性释义一致；将梦境联想改为更审慎的可能性表述，保留同义词与关键词。"
+    },
+    {
+      "run": "dream-initial",
+      "id": "kb:dream:symbol:饿",
+      "before_sha256": "65c7fe984023a4b2e78f935260a23a16b69a8a8225761559328242de7753fcd2",
+      "invalid": null,
+      "attempts": 1,
+      "note": "删除“只反映心理状态”的限定，补充现实饥饿感进入梦境的可能，并将需求联想改为非确定性表述；其余字段保持不变。"
+    },
+    {
+      "run": "dream-initial",
+      "id": "kb:dream:symbol:首饰",
+      "before_sha256": "f58921629794343accacabe63bc28ed17958ca57cdea4a22e8995dd1f915516b",
+      "invalid": null,
+      "attempts": 1,
+      "note": "将 finance 从 0.05 调为 0.0，避免把心理层面的自我价值感解读为财务利好；其余内容保持不变。"
+    },
+    {
+      "run": "dream-initial",
+      "id": "kb:dream:symbol:骨头",
+      "before_sha256": "9e1bcdc5867ff6b574fb217f0c9f4ead8862028e578e6d25da64e4723b9b8325",
+      "invalid": null,
+      "attempts": 1,
+      "note": "将 self 调为中性，使主题方向与正文一致；将旧事表述改为可能的记忆联想，避免暗示现实中存在隐情，并补充贴合正文的关键词。"
+    },
+    {
+      "run": "dream-initial",
+      "id": "kb:dream:symbol:高楼",
+      "before_sha256": "db22fd5177e696d2d4f9705a6238c326a7d1795f144edacb946606a1f51855b0",
+      "invalid": null,
+      "attempts": 1,
+      "note": "移除非同义词“楼顶”，避免将建筑顶部场景误匹配为高楼意象；其余内容保持不变。"
+    },
+    {
+      "run": "dream-initial",
+      "id": "kb:dream:symbol:鸡蛋",
+      "before_sha256": "cc2f321c7a171d7d16e59f2027a52042cbe43d54a18a823e58abea9d3ba45957",
+      "invalid": null,
+      "attempts": 1,
+      "note": "移除范围过宽的“蛋”和带有破损情境的“打碎的鸡蛋”同义词；补充破损情境的区别；将排他性表述改为联想参考，并说明梦境可能受多种因素影响。"
+    },
+    {
+      "run": "dream-initial",
+      "id": "kb:dream:symbol:麒麟",
+      "before_sha256": "00d93fa7e74c81b51bba7694b1b13df9083b4995e89dd6d8eae488e2b8155cbb",
+      "invalid": null,
+      "attempts": 1,
+      "note": "删除范围过宽的同义词“瑞兽”，避免误命中其他神兽意象；其余内容保持不变。"
+    },
+    {
+      "run": "dream-initial",
+      "id": "kb:dream:symbol:黑暗",
+      "before_sha256": "caef92368ea013e2a27de163ff7ac8560d27b515f94900cae79bc3999d0825de",
+      "invalid": null,
+      "attempts": 1,
+      "note": "删除不等同于“黑暗”的独立意象“黑洞”，避免同义词误命中；其余内容保持不变。"
+    },
+    {
+      "run": "dream-rereview-1",
+      "id": "kb:dream:symbol:丢东西",
+      "before_sha256": "8ff97082d28954ae0943360b990fbf224222b899d2e4b7c4c47c548d2e11d882",
+      "invalid": null,
+      "attempts": 1,
+      "note": "将 finance 从 -0.1 调整为 0.0，避免赋予缺少文字依据的财务负向倾向；其余内容保持不变。"
+    },
+    {
+      "run": "dream-rereview-1",
+      "id": "kb:dream:symbol:乌龟",
+      "before_sha256": "47ea8061bfc0cb0f1186d74926cd16def4950d12b005402dc3778d4e1e15acca",
+      "invalid": null,
+      "attempts": 1,
+      "note": "移除非严格同义词“海龟”，避免将可区分的海龟意象误匹配到乌龟条目；其余内容保持不变。"
+    },
+    {
+      "run": "dream-rereview-1",
+      "id": "kb:dream:symbol:图书馆",
+      "before_sha256": "7fc82cf9efcdc9d8e1079189b3d922a7358b1e46444c40749dc1510807dc79dd",
+      "invalid": null,
+      "attempts": 1,
+      "note": "删除泛化的场所模板，补充图书馆特有的阅读、检索和知识梳理联想，为自我与职业主题提供文字支撑，并保留非确定性的参考表述。"
+    },
+    {
+      "run": "dream-rereview-1",
+      "id": "kb:dream:symbol:宝石",
+      "before_sha256": "a6ca24ead1fb69d0fcf5dffa74ddebaa850a199882d664dd9f5679a57a43f897",
+      "invalid": null,
+      "attempts": 1,
+      "note": "删除泛化的物品意象模板，围绕宝石的光泽、稀有感和珍藏状态展开价值感与潜力联想；移除并非等义词的钻石、玉石、翡翠，避免泛称与具体类别混同，并更新关键词。"
+    },
+    {
+      "run": "dream-rereview-1",
+      "id": "kb:dream:symbol:开车",
+      "before_sha256": "17a650fcba1b08904537b594250097c252244c194f8cc8c41932fa8c1d92b2f3",
+      "invalid": null,
+      "attempts": 1,
+      "note": "将范围过宽的同义词“驾驶”替换为“驾驶汽车”，避免误命中飞机、船舶等其他交通意象；其余内容保持不变。"
+    },
+    {
+      "run": "dream-rereview-1",
+      "id": "kb:dream:symbol:恋人",
+      "before_sha256": "edb13a85d1c201bdf209dfb2bb0f3636a5c91e1aaf58bf47842842f8e4618844",
+      "invalid": null,
+      "attempts": 1,
+      "note": "将人物映照关系的概括改为可能性与探索式表述，保留梦境不能作为现实判断依据的边界；将关系主题调整为中性，与释义一致。"
+    },
+    {
+      "run": "dream-rereview-1",
+      "id": "kb:dream:symbol:海浪",
+      "before_sha256": "cda53563a616e0e3c95349c1969b0163ebf10be2312753fc97a67a15c1310449",
+      "invalid": null,
+      "attempts": 1,
+      "note": "将 self 从 -0.1 调整为 0.0，使主题方向与中性释义一致；其余内容保持不变。"
+    },
+    {
+      "run": "dream-rereview-1",
+      "id": "kb:dream:symbol:牙齿",
+      "before_sha256": "09608aefa8a7f76d5ae6e2356e50d70b804ba240d960cd70ecf381056aae0718",
+      "invalid": null,
+      "attempts": 1,
+      "note": "删除过宽的同义词“牙”“齿”和关键词“身体”；在正文中明确具体疼痛、受损情境优先识别及其他意象排除原则，并限定关键词的检索用途。保留中性主题权重与非预测性表述；匹配原则仍需由检索系统落实。"
+    },
+    {
+      "run": "dream-rereview-1",
+      "id": "kb:dream:symbol:购物",
+      "before_sha256": "39f403b1cad238747f210db178f21eb35726da781bc2812acb788b01ae2ad4fb",
+      "invalid": null,
+      "attempts": 1,
+      "note": "删除覆盖范围过宽的同义词“逛街”，避免误匹配散步、闲逛或浏览街景等不含购物意图的情境；其余内容保持不变。"
+    },
+    {
+      "run": "dream-rereview-1",
+      "id": "kb:dream:symbol:赶不上车",
+      "before_sha256": "17902eb8f925c9012a5fd9774af07747b4af0c0e1d6c73b39ed9b31bc9e4f3d2",
+      "invalid": null,
+      "attempts": 1,
+      "note": "将 self 调为轻微负向，以对应正文中的担忧与压力；将 career 归零，避免将一般自我状态无依据地限定到事业。其余内容保持不变。"
+    },
+    {
+      "run": "dream-rereview-1",
+      "id": "kb:dream:symbol:迟到",
+      "before_sha256": "f242a0ab660e37e6ea847c101838c8171a8f8e0dff5126851124f31fcb12bc10",
+      "invalid": null,
+      "attempts": 1,
+      "note": "将缺乏正文支持的 career 负向调整为 0，保留 self 的轻微负向；释义改为条件性心理联想，避免绝对表述，并细化关键词。"
+    },
+    {
+      "run": "dream-rereview-1",
+      "id": "kb:dream:symbol:迷路",
+      "before_sha256": "b537059cec91d72e803e9b64bfca4134a218efa511767585f6242c08513c41d9",
+      "invalid": null,
+      "attempts": 1,
+      "note": "将 career 从 -0.1 调为 0.0，消除正文未支持的事业负向指向；其余内容保持不变。"
+    },
+    {
+      "run": "dream-rereview-1",
+      "id": "kb:dream:symbol:金子",
+      "before_sha256": "3a1275173843052543ef299d98febee67f4192e105eeb5d7d10bcaf103e4ccc9",
+      "invalid": null,
+      "attempts": 1,
+      "note": "弱化固定的正面象征表述，加入不同情绪下的理解路径，使文字与 self 的轻微正向一致；补充相关关键词，并明确不预示财富变化。"
+    },
+    {
+      "run": "dream-rereview-1",
+      "id": "kb:dream:symbol:门票",
+      "before_sha256": "c0f550b2bef7d363aac10f1938c4e91005c2667cc9b4194298f3d6113e2bb815",
+      "invalid": null,
+      "attempts": 1,
+      "note": "将 self、career 从 0.05 调整为 0.0，使主题方向与释义的中性表述一致；其余内容保持不变。"
+    },
+    {
+      "run": "name-initial",
+      "id": "kb:name:convention:ambiguous_form",
+      "before_sha256": "caa165ede4adb0e16c599cee4bc87a806a08622204c394f938aebab9731a19ed",
+      "invalid": null,
+      "attempts": 1,
+      "note": "区分简繁转换与异体字选择，明确先按既定康熙繁体计数规则转换，再确认有歧义的字形；补充计数约定的适用边界，保持主题方向中性。"
+    },
+    {
+      "run": "name-initial",
+      "id": "kb:name:grid:地格",
+      "before_sha256": "35dfd8c0673061d8c3d75fccf542a04dbd47fe010271a9d72c183ef9e9c5ddd4",
+      "invalid": null,
+      "attempts": 1,
+      "note": "明确名字不含姓氏，补充笔画相加及单字名加一的计算约定，并说明传统象征含义不构成预测。"
+    },
+    {
+      "run": "name-initial",
+      "id": "kb:name:grid:外格",
+      "before_sha256": "6cd94aa44c0c1254a8ebfbd22affa838662b981d5eaf717ee85c937149392014",
+      "invalid": null,
+      "attempts": 1,
+      "note": "删除易误导的统一计算公式，补充姓名结构与补数约定，并注明单姓单名时通常为2；保留传统象征含义，避免将其作为现实判断依据。"
+    },
+    {
+      "run": "name-initial",
+      "id": "kb:name:grid:总格",
+      "before_sha256": "5098f0beb8eb0f300c7d6a891111bb1ab27ee0a1dde215254ce908b9c9826aba",
+      "invalid": null,
+      "attempts": 1,
+      "note": "澄清笔画计算采用五格约定口径而非日常书写笔画，补充不另加虚数，并将发展与阶段状态的解释限定为传统象征性说法。"
+    },
+    {
+      "run": "name-initial",
+      "id": "kb:name:sancai:土土土",
+      "before_sha256": "ef108b0c5bcac41c4d1eb14bac945dc7c342fea70d6c29ac34bd1ae1f4194fa2",
+      "invalid": null,
+      "attempts": 1,
+      "note": "明确“较顺”属于三才姓名学的民间约定，将现实倾向描述改为象征性解释，并说明不构成客观推断；保留原主题方向。"
+    },
+    {
+      "run": "name-initial",
+      "id": "kb:name:sancai:土土木",
+      "before_sha256": "06e25c3fa61ed69095247c11203d2d039535483964455d3c8ea9162c0f5c27a3",
+      "invalid": null,
+      "attempts": 1,
+      "note": "明确区分传统五行关系与三才姓名学的民间解释约定，将“需要协调”及精力牵扯标为象征性引申，去除对现实状态的直接断言；保留原主题倾向。"
+    },
+    {
+      "run": "name-initial",
+      "id": "kb:name:sancai:土土水",
+      "before_sha256": "0708d25afc98d54f59d9f1cf1bb74b6008c358399d41610affaa3c4d0bf2c423",
+      "invalid": null,
+      "attempts": 1,
+      "note": "明确“需要协调”及沟通解读属于三才姓名学的民间象征性解释，移除由五行关系直接推断现实行为的表述，并说明不能据此判断性格、人际表现或未来发展。"
+    },
+    {
+      "run": "name-initial",
+      "id": "kb:name:sancai:土土火",
+      "before_sha256": "15bdf7c2e5b4640c2afaef8667960ca72b50b2b6ca9032e6ee43e10c8207f81c",
+      "invalid": null,
+      "attempts": 1,
+      "note": "明确“较顺”属于三才姓名学的民间约定，保留土土比和、火生土的关系说明，将现实效果表述改为象征性提示，并补充不代表个人际遇或发展结果的限定。"
+    },
+    {
+      "run": "name-initial",
+      "id": "kb:name:sancai:土土金",
+      "before_sha256": "4805237fc602465dc64a569dd243ca163618707970a6058fb4d0f966baa54a90",
+      "invalid": null,
+      "attempts": 1,
+      "note": "明确“较顺”属于三才姓名学的民间约定，而非五行规则直接得出的结论；保留比和、相生关系，将性格倾向描述改为自我观察提示，并补充文化参考边界。"
+    },
+    {
+      "run": "name-initial",
+      "id": "kb:name:sancai:土木土",
+      "before_sha256": "fe7b12ab92ab8b191ee8fe4fa47587b818d0d1c32da72e9c07e22be886fe7d71",
+      "invalid": null,
+      "attempts": 1,
+      "note": "将“张力较多”明确限定为三才姓名学的民间象征评价，区分五行关系与现实状态；保留两处木克土关系，将性格断言改为自我观察建议。"
+    },
+    {
+      "run": "name-initial",
+      "id": "kb:name:sancai:土木木",
+      "before_sha256": "548e2d395adf1efe080321357a8995c8345b5e7822ff76c71e3c04fc7399f223",
+      "invalid": null,
+      "attempts": 1,
+      "note": "在正文中明确“需要协调”及相关心理联想属于姓名三才的民间约定，澄清木克土的方向，并避免将传统解释直接表述为实际性格判断；保留原主题倾向。"
+    },
+    {
+      "run": "name-initial",
+      "id": "kb:name:sancai:土木水",
+      "before_sha256": "ac9a88362f9bbaa085465250471b40b8a3248891ec97de4e14eda6e9226aba85",
+      "invalid": null,
+      "attempts": 1,
+      "note": "明确“需要协调”及家庭支持等解读属于姓名三才的民间约定，改为象征性反思提示，并区分传统生克关系与现实判断。"
+    },
+    {
+      "run": "name-initial",
+      "id": "kb:name:sancai:土木火",
+      "before_sha256": "86fd7fd092349f5458e6b831bd900ca6614d2e56654747725dcdc1e2a7af5ad7",
+      "invalid": null,
+      "attempts": 1,
+      "note": "明确木克土、木生火的指向，将“需要协调”及生活联想限定为姓名三才的民间象征性解释，并把性格断言改为自我观察问题。"
+    },
+    {
+      "run": "name-initial",
+      "id": "kb:name:sancai:土木金",
+      "before_sha256": "c5ac8baa771b7e202fe89edbf1f813039389ded533aded7e4de117d5fa8191f8",
+      "invalid": null,
+      "attempts": 1,
+      "note": "明确两组相克关系的方向，将“张力较多”限定为三才姓名学的民间评价；删除由相克直接推出现实性格、精力消耗与关系阻力的表述，保留结合实际情况进行自我观察的建议。"
+    },
+    {
+      "run": "name-initial",
+      "id": "kb:name:sancai:土水土",
+      "before_sha256": "13d203698b2e11b548d6d4c9dfe5aef92886639e84f314f51c954a70a596772d",
+      "invalid": null,
+      "attempts": 1,
+      "note": "明确两组土克水关系，将生克规则与姓名学民间象征释义分开；把压力、精力分配等表述改为非确定性的观察提示，并补充适用边界。"
+    },
+    {
+      "run": "name-initial",
+      "id": "kb:name:sancai:土水木",
+      "before_sha256": "f89c70881223914082c234d609c0458d49bb9ada1a0ba18d630b1457e679c837",
+      "invalid": null,
+      "attempts": 1,
+      "note": "明确区分传统五行生克关系与姓名学民间象征解释，将压力、边界和投入改为观察话题，避免直接推断个人表现；保留原主题权重，补充解释框架相关关键词。"
+    },
+    {
+      "run": "name-initial",
+      "id": "kb:name:sancai:土水水",
+      "before_sha256": "f31f8605eb455830aababf0d448176de5c00a22104677d7d15bd7a6161aaff83",
+      "invalid": null,
+      "attempts": 1,
+      "note": "明确区分五行关系与姓名学民间象征解读，删除对现实压力和生活步调的直接断言，并说明其不用于判断处境或预测未来。"
+    },
+    {
+      "run": "name-initial",
+      "id": "kb:name:sancai:土水火",
+      "before_sha256": "baf5bd0abdf1a18f64ad6645f863542a43180a589618972a1996dcc60751610a",
+      "invalid": null,
+      "attempts": 1,
+      "note": "明确区分五行生克关系与姓名学民间象征解读，说明“张力较多”并非个人状态的直接推论；将压力、边界和沟通方面的描述改为可选的自我反思问题。"
+    },
+    {
+      "run": "name-initial",
+      "id": "kb:name:sancai:土水金",
+      "before_sha256": "88c563bf8714eb9e4327b35e603c6ed6db60ecfb6ed9ecc24f44c69718d4a824",
+      "invalid": null,
+      "attempts": 1,
+      "note": "明确外部压力、家庭支持及“需要协调”均属姓名学民间约定下的象征性解读，避免将其表述为现实判断；保留生克关系与主题方向，并补充相关关键词。"
+    },
+    {
+      "run": "name-initial",
+      "id": "kb:name:sancai:土火土",
+      "before_sha256": "f8db6302f8e25ca0f9baab414eddd95ec3d879eb296cf6485ab5e54d6f658046",
+      "invalid": null,
+      "attempts": 1,
+      "note": "保留土火土对应的天格土、人格火、地格土，明确两处均由人格火生土，消除“生／被生”的参照歧义；将付出、投入及“较顺”明确限定为姓名学民间象征解读，补充非现实结果预测的边界。"
+    },
+    {
+      "run": "name-initial",
+      "id": "kb:name:sancai:土火木",
+      "before_sha256": "12497058a243972b1fa5884fb4af79dd5f44d09d8ec18029221bb26ab84baa4e",
+      "invalid": null,
+      "attempts": 1,
+      "note": "明确两组生克关系的方向，将付出、家庭支持及“较顺”标明为姓名学民间约定下的象征解读，并补充不代表现实处境或未来结果的说明。"
+    },
+    {
+      "run": "name-initial",
+      "id": "kb:name:sancai:土火水",
+      "before_sha256": "350dba330c78028db6149d06d2e0c950ff217b06b1bcc5b58f1ded658758dbbb",
+      "invalid": null,
+      "attempts": 1,
+      "note": "明确相关描述属于姓名学民间象征解释，改用具体五行关系避免视角歧义；将自我主题调整为轻微偏负以对应精力协调压力，人际主题因缺少明确方向调整为中性，并更新关键词。"
+    },
+    {
+      "run": "name-initial",
+      "id": "kb:name:sancai:土火火",
+      "before_sha256": "b08286fcbc6258534eac7e662e332bfdd3b9b3c70ee2f301e0aec1003994e0e0",
+      "invalid": null,
+      "attempts": 1,
+      "note": "明确火生土的方向及火火同类关系，将付出、步调相近和“较顺”限定为姓名学民间约定下的象征解释，避免将其等同于生克规则或实际性格、运势。"
+    },
+    {
+      "run": "name-initial",
+      "id": "kb:name:sancai:土火金",
+      "before_sha256": "2a9e0e5c83a387979bf6647df7c4922f36e2aea3f81ebc196b4aa32131765997",
+      "invalid": null,
+      "attempts": 1,
+      "note": "明确区分五行生克规则与姓名学民间象征解释，将性格判断改为观察提示；self 调为中性，relationship 也改为中性，以免将沟通提醒等同于关系负向判断。"
+    },
+    {
+      "run": "name-initial",
+      "id": "kb:name:sancai:木火水",
+      "before_sha256": "6f886ae0c8b501279884b8552318334ad0c86819d0224f7aac4d16838833c190",
+      "invalid": null,
+      "attempts": 1,
+      "note": "将 relationship 调为无方向，避免缺乏文字依据的负向标注；将现实倾向表述改为象征性观察提示，保留五行关系与协调主题。"
+    },
+    {
+      "run": "name-initial",
+      "id": "kb:name:sancai:水水水",
+      "before_sha256": "9549b805946a44f0efec386024be3f45e5bce4de4c4b3baa77ca899c6c690674",
+      "invalid": null,
+      "attempts": 1,
+      "note": "删除由同元素直接推导“较顺”的评价，补充常见民间三才解释中的偏凶定位及失衡提醒；保留步调协调的反思角度，明确传统象征不构成现实预测，并调整主题倾向与检索词。"
+    },
+    {
+      "run": "name-initial",
+      "id": "kb:name:sancai:水金火",
+      "before_sha256": "f6d5a7509b9c3e8515ffce11eb796d0b47bf0dbd914572b71e2ac2eb14365f63",
+      "invalid": null,
+      "attempts": 1,
+      "note": "将 self 从正向调整为轻微偏负，与精力受牵扯、需要协调的文字一致；明确生克关系的主体，并将性格化表述改为非确定性的观察提示。"
+    },
+    {
+      "run": "name-initial",
+      "id": "kb:name:sancai:火木土",
+      "before_sha256": "cf99e38a2349cc8a31c36abac7c1180f2cec0be1c9307118895b8252a2ee4714",
+      "invalid": null,
+      "attempts": 1,
+      "note": "将 self 调为轻微负向，与“需要协调”的基调一致；明确木生火、木克土的方向，避免“被生”的视角歧义；补充民间姓名学约定及象征性解读的限定，将性格断言改为可选的自我观察提示。"
+    },
+    {
+      "run": "name-initial",
+      "id": "kb:name:sancai:火木木",
+      "before_sha256": "c94ea60b4e2f1fda150923bc370282a659a35ed1fef9477ad33a7edb8324dba3",
+      "invalid": null,
+      "attempts": 1,
+      "note": "明确“较顺”属于民间姓名学的三才评价约定，而非五行生克规则的直接结论；澄清相生方向，并将性格描述改为自我观察线索。"
+    },
+    {
+      "run": "name-initial",
+      "id": "kb:name:sancai:火木水",
+      "before_sha256": "4e73b7d5f932e5cbe650326b16e6ff6036b136b8323b7b79368f2b52b900c862",
+      "invalid": null,
+      "attempts": 1,
+      "note": "在正文中明确“较顺”属于民间姓名学的象征性约定；用木生火、水生木说明相生方向，并将性格与家庭支持的表述改为观察性联想，避免确定性判断。"
+    },
+    {
+      "run": "name-initial",
+      "id": "kb:name:sancai:火木火",
+      "before_sha256": "c1f06a7ca52197c86c0ed44e8b52f157da6d8f5051b94d950a84baa9a847f574",
+      "invalid": null,
+      "attempts": 1,
+      "note": "明确“较顺”源于民间姓名学的三才约定；用“人格木生天格火、地格火”消除关系表述的歧义，并将付出与投入改为象征性解读，避免性格或未来发展的确定性断言。"
+    },
+    {
+      "run": "name-initial",
+      "id": "kb:name:sancai:火木金",
+      "before_sha256": "793789d5917dcff20f3b73cd928fbe958165de00f6569af658f7eab08ed67a60",
+      "invalid": null,
+      "attempts": 1,
+      "note": "将 self 调整为轻微负向以对应“需要协调”的象征基调；明确木生火、金克木的关系及主体，避免“被生”的视角歧义；补充民间姓名学约定的定位，删除对个人习惯和状态的直接推断。"
+    },
+    {
+      "run": "name-initial",
+      "id": "kb:name:sancai:火水土",
+      "before_sha256": "d84e5f0f0cc3c38a9b4d4057a1204954c0bc48e8a84c02584c31f80164533d8d",
+      "invalid": null,
+      "attempts": 1,
+      "note": "明确“张力较多”源于民间姓名学对三才的象征性约定；写清两组相克关系的方向，并将性格与生活倾向改为可选的自我观察提示，补充不用于现实预测的边界。"
+    },
+    {
+      "run": "name-initial",
+      "id": "kb:name:sancai:火水木",
+      "before_sha256": "0035d01b126b05ae5ac77813c7df27fd35ae220580a408aa89a83ce639419e3e",
+      "invalid": null,
+      "attempts": 1,
+      "note": "明确水克火、水生木的关系，将“需要协调”归于民间姓名学的象征性约定；把性格倾向表述改为观察提示，并将 relationship 调为轻微负向，与协调主题保持一致。"
+    },
+    {
+      "run": "name-initial",
+      "id": "kb:name:sancai:火水水",
+      "before_sha256": "920d0e7d05c58d43e8ddbba94563ab4f799cfef7c9025d30423496623b6002ec",
+      "invalid": null,
+      "attempts": 1,
+      "note": "将 relationship 调整为轻微负向，与“需要协调”的象征性基调保持一致；明确该评价源于民间姓名学约定，区分五行关系与个人状态，删除直接推断性格和生活步调的表述。"
+    },
+    {
+      "run": "name-initial",
+      "id": "kb:name:sancai:火水火",
+      "before_sha256": "282e0d0e758a3d903d10357123bf4c08985ca7b8549a656ac072420f41bdd68e",
+      "invalid": null,
+      "attempts": 1,
+      "note": "明确“张力较多”属于民间姓名学对三才的象征性解读，区分五行生克关系与个人状态判断，并将性格描述改为可选的自我观察提示。"
+    },
+    {
+      "run": "name-initial",
+      "id": "kb:name:sancai:火水金",
+      "before_sha256": "cd503b1b19dbd1cca794b01ef21a5534aa2b6acbe8269a3e18f7e72a5c5a69fc",
+      "invalid": null,
+      "attempts": 1,
+      "note": "将 relationship 调整为轻微负向，与“需要协调”的基调一致；明确协调与生活基础支持均属民间姓名学的象征性解读，改用观察性表述，避免对性格和家庭支持作确定性断言。"
+    },
+    {
+      "run": "name-initial",
+      "id": "kb:name:sancai:火火火",
+      "before_sha256": "d65bd5a9cf6fada486aa978b93b0cf7cb57f6530fe1f5228e010f44df91c4a10",
+      "invalid": null,
+      "attempts": 1,
+      "note": "删除同类即整体较顺的简化判断，补充传统解释中火旺、急躁及耐力和稳定性不足的提示；明确其为民间象征性倾向，将原先偏正向的主题分值调整为中性，并更新关键词。"
+    },
+    {
+      "run": "name-initial",
+      "id": "kb:name:sancai:火金土",
+      "before_sha256": "43602ea77356a837d81055a7c582135840761b9756e0d065fa24be5275a2e760",
+      "invalid": null,
+      "attempts": 1,
+      "note": "明确地格土生人格金的方向；将“需要协调”限定为传统生克结构的象征性概括，将主题方向统一设为中性，避免把象征关系直接解释为现实压力或关系利好。"
+    },
+    {
+      "run": "name-initial",
+      "id": "kb:name:sancai:火金水",
+      "before_sha256": "a9f1f80cf3f2202818821582b0d01a388cd54c2344829cd0a0aa540537dc5883",
+      "invalid": null,
+      "attempts": 1,
+      "note": "保留正确的生克描述，明确“需要协调”是无正负方向的象征性概括；将个人与关系主题均调整为0，并把压力、投入的倾向性断言改为开放的自我观察提示。"
+    },
+    {
+      "run": "name-initial",
+      "id": "kb:name:sancai:火金金",
+      "before_sha256": "60a418235ebe9f57a34d84d634acc0860d64fa80862e55c4b82d6576a5620a14",
+      "invalid": null,
+      "attempts": 1,
+      "note": "将relationship由0.1调整为0.0，消除缺乏文字依据的正向标注；将压力和步调一致的断言改为象征性观察，并明确五行属性相同不代表关系向好。"
+    },
+    {
+      "run": "name-initial",
+      "id": "kb:name:sancai:金土木",
+      "before_sha256": "260a4a0ca50c7b33f2765a6d25059d040c6fa465fc96f4006f5f44946d311e99",
+      "invalid": null,
+      "attempts": 1,
+      "note": "将 self 调为轻微负向，与精力分散、个人需求需被关注的文字一致；relationship 调为中性，避免缺少依据的负向标注。明确生克关系的主体，并将性格式描述改为象征性、自我观察式提示。"
+    },
+    {
+      "run": "name-initial",
+      "id": "kb:name:sancai:金土水",
+      "before_sha256": "76cd00f75758ea484f50e72d49b00505b1aff9d032019b2e01cba7133fffba07",
+      "invalid": null,
+      "attempts": 1,
+      "note": "将 self 从 0.1 调整为中性 0.0，与文字依据保持一致；明确生克关系的方向，将性格描述改为观察提示，并补充非预测性说明。"
+    },
+    {
+      "run": "name-initial",
+      "id": "kb:name:sancai:金水土",
+      "before_sha256": "ca83f65057ccd52e06dab862bb23ca45b9f60baaac5d57408bd3b1882f638cbd",
+      "invalid": null,
+      "attempts": 1,
+      "note": "明确三才评价属于姓名学的民间约定，将现实倾向表述改为象征解读，并说明五行生克关系不能用于推断个人现实处境与发展。"
+    },
+    {
+      "run": "name-initial",
+      "id": "kb:name:sancai:金水木",
+      "before_sha256": "a20452b6e8658e2e1a9eb2ea687ed41d212b16de9a6e28ff5d408ea5347a098a",
+      "invalid": null,
+      "attempts": 1,
+      "note": "明确“较顺”属于姓名学民间约定中的评价，将外部支持与投入改为象征性反思角度，避免由姓名推断个人特征或现实结果；同步调整关键词。"
+    },
+    {
+      "run": "name-initial",
+      "id": "kb:name:sancai:金水水",
+      "before_sha256": "70c80d94ab24d7a1f977c0467afefca5030df5b1a661c107c40ebcd252d696f2",
+      "invalid": null,
+      "attempts": 1,
+      "note": "删除整体“较顺”的简化评价及正向主题倾向，补充常见传统解释中的不利意象与版本差异，明确民间性质和非预测性，并更新同义词与关键词。"
+    },
+    {
+      "run": "name-initial",
+      "id": "kb:name:sancai:金水火",
+      "before_sha256": "59b413923197e32bbd939d40da9b1f8fb4370006aede6e21f2b7add800b59f96",
+      "invalid": null,
+      "attempts": 1,
+      "note": "明确“需要协调”属于姓名学民间约定，将外部支持及人际要求的解读限定为象征性反思提示，避免对性格和际遇作确定性判断；其余字段保持不变。"
+    },
+    {
+      "run": "name-initial",
+      "id": "kb:name:sancai:金水金",
+      "before_sha256": "6d0475f329349fa88bb11d67acadf9a339d2fad6ef9e4e9ad9671a089ed174ba",
+      "invalid": null,
+      "attempts": 1,
+      "note": "明确“较顺”属于姓名学的民间约定，将环境与家庭支持限定为象征解读，并说明不能据此判断实际支持状况或预测人生结果。"
+    },
+    {
+      "run": "name-initial",
+      "id": "kb:name:sancai:金火土",
+      "before_sha256": "f2de501e09feac40476aedf87be4b8fb5400ef020b3567feef03a3909844afd7",
+      "invalid": null,
+      "attempts": 1,
+      "note": "在正文中明确三才顺阻属于姓名学的民间约定，澄清生克方向，并将主动掌控、愿意投入等个人倾向描述改为可供反思的象征角度。"
+    },
+    {
+      "run": "name-initial",
+      "id": "kb:name:sancai:金火木",
+      "before_sha256": "fdb5a66b67f000d5c8b091cc312fba938ded3c01e52baea1143064b44c687ef5",
+      "invalid": null,
+      "attempts": 1,
+      "note": "明确“需要协调”与家庭支持等解释属于姓名学民间约定中的象征提示，将现实状态断言改为观察话题，并区分五行生克关系与现实推断。"
+    },
+    {
+      "run": "name-initial",
+      "id": "kb:name:sancai:金火水",
+      "before_sha256": "879a89436fd9e914e784e34a877ed1ae491207e85f5d65bde267abaa0beb4e85",
+      "invalid": null,
+      "attempts": 1,
+      "note": "明确“张力较多”属于姓名学民间约定中的象征评价，澄清两处相克的方向，并将个人倾向与处境判断改为非确定性的观察提示；关键词同步调整，主题权重保持不变。"
+    },
+    {
+      "run": "name-initial",
+      "id": "kb:name:sancai:金火火",
+      "before_sha256": "f120c4b99c74284d130f2a9d98f042d1a2fecbfea5582afddb6e931ad232ac86",
+      "invalid": null,
+      "attempts": 1,
+      "note": "明确三才评价属于姓名学的民间象征约定，将个人倾向的直接描述改为反思提示，并说明不据此判断个人状态或未来发展。"
+    },
+    {
+      "run": "name-initial",
+      "id": "kb:name:sancai:金火金",
+      "before_sha256": "11ed2eae57af40d737e5523651abddf78ce8e160541b533f021af6dac5cd60ea",
+      "invalid": null,
+      "attempts": 1,
+      "note": "明确“张力较多”及性格、沟通联想属于姓名学民间象征约定，区分五行生克关系与现实判断，并保留非确定性的自我观察建议。"
+    },
+    {
+      "run": "name-initial",
+      "id": "kb:name:sancai:金金水",
+      "before_sha256": "d046bccc8b628767d516d30407fe703fc2e5fb67e01b68a3011128bc1840141e",
+      "invalid": null,
+      "attempts": 1,
+      "note": "明确“人格金生地格水”的方向，将相关释义改为自我对身边的人与生活基础的付出，并以象征性表述避免对性格或人生走向作确定性判断。"
+    },
+    {
+      "run": "name-initial",
+      "id": "kb:name:shuli:19",
+      "before_sha256": "449f40834fb60b8129aa753c7c9abec55885b0790364706b87879feba1f67fa9",
+      "invalid": null,
+      "attempts": 1,
+      "note": "删除有争议的尾数五行对应说法；补充19数在民间解释中才智与困阻并存、推进过程受阻的象征；将缺乏对应释义的人际与财务主题设为中性，并保留非宿命化说明。"
+    },
+    {
+      "run": "name-initial",
+      "id": "kb:name:shuli:2",
+      "before_sha256": "b29f35ae8a95a21b233483ebb2dd4cb5bf189bb4c6efd72617e310999a1979c3",
+      "invalid": null,
+      "attempts": 1,
+      "note": "删除有争议且非必要的尾数五行对应说法，补充2数常见的传统象征以增强区分度，明确其不用于判断个人特质或预测经历；同步调整主题方向及检索词。"
+    },
+    {
+      "run": "name-initial",
+      "id": "kb:name:shuli:20",
+      "before_sha256": "941f40278e3253154abb5d9ede52370c2db970a223b32c0c56fb66b8c64d852b",
+      "invalid": null,
+      "attempts": 1,
+      "note": "删除有争议的尾数与五行对应表述；补充20数常见的象征含义及白话解释，减少与其他条目的重复；将未明确涉及的关系、财务主题设为中性，并保留不决定实际经历的说明。"
+    },
+    {
+      "run": "name-initial",
+      "id": "kb:name:shuli:21",
+      "before_sha256": "4b9527ac188548a7e06cf8534fd2854d9ba74395cbffc701d35e47078f3f040e",
+      "invalid": null,
+      "attempts": 1,
+      "note": "删除尾数与五行对应的表述，补充21数独立、领导与开创事业的民间象征；调整主题权重与检索词，保留非决定性的说明。"
+    },
+    {
+      "run": "name-initial",
+      "id": "kb:name:shuli:22",
+      "before_sha256": "245fd1203ecd171cedd3ba6bb72415a1cbeb3e804644d4c30db7c40a6df7b432",
+      "invalid": null,
+      "attempts": 1,
+      "note": "删除有争议的尾数与五行对应说法；补充22数常见的力量薄弱、进展受挫等民间象征，并明确不作现实预测；将缺乏释义依据的关系、财务主题设为0，调整同义词与关键词。"
+    },
+    {
+      "run": "name-initial",
+      "id": "kb:name:shuli:23",
+      "before_sha256": "3a072fd38acbb61f7a236f5b609d6f2279969c2a94fb1b86127ca772bf432a18",
+      "invalid": null,
+      "attempts": 1,
+      "note": "删除有争议且非必要的尾数五行对应；以民间象征表述补充23数的进取、行动力与领导意象，替换泛化的顺遂、易得助力描述；调整主题权重，并明确数理不能用于判断个人特质或未来。"
+    },
+    {
+      "run": "name-initial",
+      "id": "kb:name:shuli:24",
+      "before_sha256": "f55a7476054d78c34c97cb2a763244adf59ceecf6e2a6b8c0f440a8d34dce817",
+      "invalid": null,
+      "attempts": 1,
+      "note": "删除尾数4对应火的说法，补充24数常见的积累、经营与丰足象征，明确其不构成财富或收益预示；同步调整主题倾向并补充同义词、关键词。"
+    },
+    {
+      "run": "name-initial",
+      "id": "kb:name:shuli:25",
+      "before_sha256": "cea9f4c45a7b963920d87a3b667c74ac3cad51d91526e2db260f9d6db02cc5b7",
+      "invalid": null,
+      "attempts": 1,
+      "note": "删除有争议的尾数五行对应说法；补充25数常见的才智、独立与性情刚强意象，以反思建议代替性格或命运断言，并调整主题权重与检索词。"
+    },
+    {
+      "run": "name-initial",
+      "id": "kb:name:shuli:26",
+      "before_sha256": "75c4d11a58304c2fc232ac1d107b43155ae52d3943e800e9f8fd6d814edbcad9",
+      "invalid": null,
+      "attempts": 1,
+      "note": "删除尾数6对应土的说法；补充26数常见的复杂象征以增强区分度，并明确其仅属民俗解释，不用于预测个人经历。"
+    },
+    {
+      "run": "name-initial",
+      "id": "kb:name:shuli:27",
+      "before_sha256": "fd4ba86ee3b4a9637475f605cdadc6ea37dd653233690aefda38801585bc2d95",
+      "invalid": null,
+      "attempts": 1,
+      "note": "删除有争议且非必要的五行对应表述，补充27数传统释义中的刚强、坚持己见与人际摩擦特点；保留非宿命化说明，调整主题倾向并补充检索词。"
+    },
+    {
+      "run": "name-initial",
+      "id": "kb:name:shuli:28",
+      "before_sha256": "29ca779b5ebf874255077f5af59b85b0cf177185e76fbfe569c173e4ef0063f0",
+      "invalid": null,
+      "attempts": 1,
+      "note": "补充28数在民俗释义中侧重处境变动、困顿与支持不足的特点，区别于通用波折描述；同步细化关键词，明确象征含义不构成现实预测。"
+    },
+    {
+      "run": "name-initial",
+      "id": "kb:name:shuli:29",
+      "before_sha256": "dec4e3bd816563e0c70defa768c9d8d25f2592671ea93753d2712acdaab560d3",
+      "invalid": null,
+      "attempts": 1,
+      "note": "以智谋、进取及节制欲望替换笼统的顺遂、易得助力描述；将财富与成就限定为传统象征，并按释义调整主题权重，补充同义词和关键词。"
+    },
+    {
+      "run": "name-initial",
+      "id": "kb:name:shuli:3",
+      "before_sha256": "c02b8705a2b3ca469b3a9373d9e35a08bc88d9a1b33b6391063f29f01f4840d5",
+      "invalid": null,
+      "attempts": 1,
+      "note": "将泛化的顺遂、助力表述改为3数较具辨识性的生发、活力与开拓进取意象；相应调整主题权重和关键词，保留传统分类及五行对应，并明确其不决定个人经历或结果。"
+    },
+    {
+      "run": "name-initial",
+      "id": "kb:name:shuli:30",
+      "before_sha256": "35b882082db20e3653eb0607a200c179f58898ac58146d96f7b049aa9d1cf0fa",
+      "invalid": null,
+      "attempts": 1,
+      "note": "补充30数在不同数理表中归为凶或半吉的口径差异，明确尾数配五行的适用语境；删除将吉凶解释为个人选择的表述，四个主题方向均改为中性，并补充检索词。"
+    },
+    {
+      "run": "name-initial",
+      "id": "kb:name:shuli:31",
+      "before_sha256": "fb2610c62ccd8598e737016064026ad2d73c0191f8453fcec7d6654bd6e57338",
+      "invalid": null,
+      "attempts": 1,
+      "note": "补充31数稳健发展、组织领导与获得信任的传统意象，减少模板化表述；明确其文化属性与非预测性质，补充检索词，并将缺乏释义依据的财务主题设为中性。"
+    },
+    {
+      "run": "name-initial",
+      "id": "kb:name:shuli:32",
+      "before_sha256": "817bf684989c5d8d8288a3ea188a5f50e10b9eed393a5c2fd3b3224729a2fb99",
+      "invalid": null,
+      "attempts": 1,
+      "note": "突出32数传统释义中的机缘、贵人助力与协作特点，减少通用顺遂描述；同步调整主题权重及检索词，并保留非决定性的习俗说明。"
+    },
+    {
+      "run": "name-initial",
+      "id": "kb:name:shuli:33",
+      "before_sha256": "a03e43e731f9b7aacbae116fe61ecafbd1517489f9bad3f815e19583086e5fcc",
+      "invalid": null,
+      "attempts": 1,
+      "note": "突出33数传统上的升腾、进取与权威意象，补充领导力及过刚需调节的提醒；保留尾数属火的配属说明，调整主题权重与检索词，并明确象征解释不等于性格判断或经历预测。"
+    },
+    {
+      "run": "name-initial",
+      "id": "kb:name:shuli:34",
+      "before_sha256": "ab09f950563857acbc7228acc8c820f7312678afa2bdfb283661bf1f9419a4cc",
+      "invalid": null,
+      "attempts": 1,
+      "note": "突出34数传统上关于基础受损、挫折与重整的象征，替换泛化的波折描述；明确民俗解释不构成经历预测，将提示聚焦于自我反思，并将其他主题设为无方向。"
+    },
+    {
+      "run": "name-initial",
+      "id": "kb:name:shuli:35",
+      "before_sha256": "0467eceb44bc2b7bef41432078e017ba8a377760a850ae629569d6860d11669f",
+      "invalid": null,
+      "attempts": 1,
+      "note": "补充35数传统释义中温和、稳健、重修养与技艺的辨识特征，替换通用的顺遂与助力表述；调整主题权重，补充检索词，并明确传统意象不代表实际性格或人生预测。"
+    },
+    {
+      "run": "name-initial",
+      "id": "kb:name:shuli:36",
+      "before_sha256": "3b34750c5a3cd97f3283da40ceeb8101e0bfeb5881cfb0411e10fdef2593be1f",
+      "invalid": null,
+      "attempts": 1,
+      "note": "补充36数传统释义中波澜较多、重义气而易承担过多的特点，减少与其他凶数条目的重复；明确其仅为习俗中的象征描述，并将无对应释义支撑的财务方向调整为0。"
+    },
+    {
+      "run": "name-initial",
+      "id": "kb:name:shuli:37",
+      "before_sha256": "054a818180f1e4131669a5a5234eb29527e23e6102a6b0ed7b29fde3ec34eacf",
+      "invalid": null,
+      "attempts": 1,
+      "note": "审核意见均确认原文尾数7对应金无误，故保留该对应关系，并明确7、8对应金的规则；将顺遂、助力限定为传统象征意义，强化非预测性说明，保留原主题权重。"
+    },
+    {
+      "run": "name-initial",
+      "id": "kb:name:shuli:38",
+      "before_sha256": "ca318a324e4ac9eccb5ed2c6552901c7b27ea0ff1e3d992c15dd648005d3b07e",
+      "invalid": null,
+      "attempts": 1,
+      "note": "保留审核意见确认无误的“半吉”和尾数8属金表述，明确7、8属金的规则；弱化吉凶与个人选择之间的因果暗示，将无明确方向的主题权重归零。"
+    },
+    {
+      "run": "name-initial",
+      "id": "kb:name:shuli:39",
+      "before_sha256": "7d36a7a425bfaa2f557bad4ca4072a908e5238c6802aae0763491504f4f8759f",
+      "invalid": null,
+      "attempts": 1,
+      "note": "审核意见均确认原文尾数9对应水无误；本次明确写出“9、0对应水”的常用规则，便于表述统一，并强化传统释义与现实预测的区分。保留原主题权重。"
+    },
+    {
+      "run": "name-initial",
+      "id": "kb:name:shuli:4",
+      "before_sha256": "ab51514fb795c9969d4c2030019f78b7050e5ec8267cdb99f354f4413b641c4c",
+      "invalid": null,
+      "attempts": 1,
+      "note": "删除与本条核心释义无关的三才尾数五行表述，避免沿用审核意见中结论与所列对应表不一致的说法；明确“凶”仅为民俗分类，将四个主题方向归零，避免暗示实际负面影响。"
+    },
+    {
+      "run": "name-initial",
+      "id": "kb:name:shuli:40",
+      "before_sha256": "456fe56fe950d9e6822aff54967f1cee75f81a3cdb60a48dc62c54073a43ce6f",
+      "invalid": null,
+      "attempts": 1,
+      "note": "将常见传统归类由“半吉”更正为“凶”，调整相关释义与关键词；保留并明确9、0属水的配属规则。自我主题设为轻度负向以对应传统警示寓意，其余主题归零，避免无依据延伸，并明确数理不决定现实状况。"
+    },
+    {
+      "run": "name-initial",
+      "id": "kb:name:shuli:41",
+      "before_sha256": "c3e86cd5883032d73af4c8ac44eb6f91682ff37954cc2fa5adda16fb86ddafe8",
+      "invalid": null,
+      "attempts": 1,
+      "note": "审核意见已确认原文“尾数1对应木”无误，因此保留该对应，并明确采用“尾数1、2属木”的常用规则；将顺遂、助力限定为传统意象，避免被理解为现实预测。"
+    },
+    {
+      "run": "name-initial",
+      "id": "kb:name:shuli:42",
+      "before_sha256": "8dc09285443f82998ec0298159a472578bfefa2743e184b482db3a07f40a0ef2",
+      "invalid": null,
+      "attempts": 1,
+      "note": "审核意见均确认原有五行对应无误；本次明确采用“尾数1、2对应木”的统一表述，保留传统分类及原主题权重，补充检索词，并强调传统标签不用于预测个人经历。"
+    },
+    {
+      "run": "name-initial",
+      "id": "kb:name:shuli:43",
+      "before_sha256": "17d1abf9023a83901f1bb401468c5e46af345cc837b47293c8e3d9680278e2a2",
+      "invalid": null,
+      "attempts": 1,
+      "note": "审核意见均确认原有配属无误，故保留尾数3对应火，并明确3、4对应火的完整规则；说明“凶”仅为传统分类，避免命运推断，补充同义写法与检索词。"
+    },
+    {
+      "run": "name-initial",
+      "id": "kb:name:shuli:44",
+      "before_sha256": "71aac082b249ef1ce5b44d196161f599fab030a0bb15680a60ae81e501c85a59",
+      "invalid": null,
+      "attempts": 1,
+      "note": "审核意见均确认常用规则中尾数4属火，故保留该对应并补全规则以明确口径；将“凶”限定为传统象征性评价，补充检索词，保留原主题倾向，不改动条目标识。"
+    },
+    {
+      "run": "name-initial",
+      "id": "kb:name:shuli:45",
+      "before_sha256": "021ba97080cd80b30f75e4b15d26558e51ef01ef3b3b428ff894372ac4892387",
+      "invalid": null,
+      "attempts": 1,
+      "note": "保留原文正确的尾数5对应土及传统吉向表述，明确补充“尾数5、6对应土”的统一规则，并强调其民俗属性与非预测性；未改动条目标识。"
+    },
+    {
+      "run": "name-initial",
+      "id": "kb:name:shuli:46",
+      "before_sha256": "03f100afa62b706b06d77ad1ab69082ba747a49532ef7a053fd623620d66d31e",
+      "invalid": null,
+      "attempts": 1,
+      "note": "删除有争议且非本条必需的尾数与三才五行对应表述；保留传统分类并明确其民俗属性与非预测性，补充同义词和关键词。"
+    },
+    {
+      "run": "name-initial",
+      "id": "kb:name:shuli:47",
+      "before_sha256": "f4c45587ea839cbf18a0ef391d12a149936c819173333a6cac7d360f5e2ebe2a",
+      "invalid": null,
+      "attempts": 1,
+      "note": "删除尾数7与三才五行对应的争议表述，保留传统吉数寓意，并明确其仅为习俗中的象征，不用于预测现实结果。"
+    },
+    {
+      "run": "name-initial",
+      "id": "kb:name:shuli:48",
+      "before_sha256": "34f5815870683ee392fbecc1c0ef1596030e150cff67c4cd7ea04ec1d0eafc1b",
+      "invalid": null,
+      "attempts": 1,
+      "note": "删除有争议的尾数与三才五行对应说法；保留传统吉数寓意，明确其民俗属性及非预测性质。"
+    },
+    {
+      "run": "name-initial",
+      "id": "kb:name:shuli:49",
+      "before_sha256": "80d895f949b72efb37082ba90f80dfd30d039725dbe748d94e6e9c0d8ecd4220",
+      "invalid": null,
+      "attempts": 1,
+      "note": "删除有争议且非必要的尾数五行解释；将“半吉”限定为部分民间说法，避免把传统评价用于现实预测；仅保留自我提醒的微正方向，其余主题设为中性，并补充同义表达与关键词。"
+    },
+    {
+      "run": "name-initial",
+      "id": "kb:name:shuli:5",
+      "before_sha256": "e91c49cf4acd15a536df81c0e9f80904b3fd8537c3fc7cafe72e6cd0fdf7b003",
+      "invalid": null,
+      "attempts": 1,
+      "note": "删除“尾数5在三才里对应土”的争议表述，将正向释义明确为传统象征寓意，保留非决定性说明，并补充相关关键词。"
+    },
+    {
+      "run": "name-initial",
+      "id": "kb:name:shuli:50",
+      "before_sha256": "063cd4881b7b4d1d81567c2a788d724d9346d1d04edccc73be4918f011a08fa9",
+      "invalid": null,
+      "attempts": 1,
+      "note": "删除尾数0与三才五行对应的争议表述；保留“半吉”的民俗分类并明确其非预测性质；去除顺逆与个人选择的因果暗示，将各主题方向调整为中性，补充同义词与关键词。"
+    },
+    {
+      "run": "name-initial",
+      "id": "kb:name:shuli:51",
+      "before_sha256": "d258e0dd638de141f1fa6d393493bf240c25bd5c1e825b4ba284b28647f2d100",
+      "invalid": null,
+      "attempts": 1,
+      "note": "删除存在争议且易混淆的尾数与三才五行对应说法；保留“半吉”的民俗分类，将相关解释改为可选的自我提醒，并明确其不具备可靠预测作用。"
+    },
+    {
+      "run": "name-initial",
+      "id": "kb:name:shuli:52",
+      "before_sha256": "76b7fd9cd9b44211fa1b774f985c20028605d02dffda8e3a9e3cf9913e6e39dd",
+      "invalid": null,
+      "attempts": 1,
+      "note": "删除尾数与三才五行对应的争议表述，将正面含义明确限定为传统寓意，保留非预测性提醒；补充同义词与关键词，并将缺乏文本依据的财务方向设为0。"
+    },
+    {
+      "run": "name-initial",
+      "id": "kb:name:shuli:53",
+      "before_sha256": "34af46231234218a7de06d4538d56ffb475c1153ed2d58e9a1658bd52a6110bb",
+      "invalid": null,
+      "attempts": 1,
+      "note": "删除有争议且易混淆的尾数与三才五行对应说法；保留“半吉”的民俗分类，将行动建议改为可选择的自我提醒，并明确数理不用于预测个人经历或结果。"
+    },
+    {
+      "run": "name-initial",
+      "id": "kb:name:shuli:54",
+      "before_sha256": "996f73c1d8a966bfc00256b836ec09c817b339b42450d42ac472e707bc6d8495",
+      "invalid": null,
+      "attempts": 1,
+      "note": "删除有争议的尾数与三才五行对应表述，保留传统分类及其文化语境，明确不可据此预测个人经历，并补充同义词与关键词。"
+    },
+    {
+      "run": "name-initial",
+      "id": "kb:name:shuli:55",
+      "before_sha256": "7c5e67ddfbcc3411c8bd3eb41b00caf97f06034536cf897ecb098e9d3f205bf5",
+      "invalid": null,
+      "attempts": 1,
+      "note": "修正了五格数理五行对应与三才配置混淆的表述，删除顺逆均由个人选择决定的暗示，并明确其文化参考性质。"
+    },
+    {
+      "run": "name-initial",
+      "id": "kb:name:shuli:56",
+      "before_sha256": "bc0ad1bb89017a6023260ac7c1a5a83622194adc75743c81f196e4c8ab19a001",
+      "invalid": null,
+      "attempts": 1,
+      "note": "区分了五格数理的五行配属与三才配置，补充传统分类可能存在版本差异；保留轻度负向主题权重，并明确这些解释不用于预测命运。"
+    },
+    {
+      "run": "name-initial",
+      "id": "kb:name:shuli:57",
+      "before_sha256": "7f3634d2c81a78758e3dfde2660a173ff8d1f9e4a74d5924e22ee5684c0d101c",
+      "invalid": null,
+      "attempts": 1,
+      "note": "纠正了将尾数配属五行直接称为三才规则的表述，区分五格数理五行配属与三才组合，并保留民俗寓意及非预测性说明。"
+    },
+    {
+      "run": "name-initial",
+      "id": "kb:name:shuli:58",
+      "before_sha256": "31f4396b5f80bdc01fb03a4dcbcc722661b7a32cf965850f9939de8d9c3fa228",
+      "invalid": null,
+      "attempts": 1,
+      "note": "修正五行配属与三才配置混用的表述，说明三才需分别看天格、人格、地格；保留民俗定位，避免将数理解释为现实结果的决定因素。"
+    },
+    {
+      "run": "name-initial",
+      "id": "kb:name:shuli:59",
+      "before_sha256": "d6ea1a7b60508d4f6d8f5ee10149cbc81cc74f27ca2b77b3ee0ae0ab5e9d6922",
+      "invalid": null,
+      "attempts": 1,
+      "note": "删除了将尾数五行对应归入三才规则的不准确表述，保留传统分类及非命运预测的说明；其余字段不变。"
+    },
+    {
+      "run": "name-initial",
+      "id": "kb:name:shuli:6",
+      "before_sha256": "53f8c5e2d5edf1193e7ab92c17ae40596ad52014a00e0e976b52c8ce7fc27731",
+      "invalid": null,
+      "attempts": 1,
+      "note": "修正了将单个数的五行对应与三才配置混同的表述，明确6对应土属于该习俗的数理五行规则，并保留非决定性的文化释义。"
+    },
+    {
+      "run": "name-initial",
+      "id": "kb:name:shuli:60",
+      "before_sha256": "75b7a7785dbe8cacc27d4c7e760025c3262065b6d854bad5ffc92bd770427c57",
+      "invalid": null,
+      "attempts": 1,
+      "note": "删除了将尾数0与三才五行直接对应的不准确说明；保留传统分类并明确其民俗属性，避免将象征性解读当作个人命运预测。"
+    },
+    {
+      "run": "name-initial",
+      "id": "kb:name:shuli:61",
+      "before_sha256": "b154ad83c8085ae7bfbcd19640844b3abaf3d6ff41b876c6ba2b5019c8d85d25",
+      "invalid": null,
+      "attempts": 1,
+      "note": "将尾数1配属木明确为五格数理的五行配属规则，并与三才配置作区分；保留传统寓意及非决定性说明，补充相关关键词。"
+    },
+    {
+      "run": "name-initial",
+      "id": "kb:name:shuli:62",
+      "before_sha256": "99e1df5b6803c7c2f0a2f4812015acc4eab25a38e4d232245fb09aaa4f30b936",
+      "invalid": null,
+      "attempts": 1,
+      "note": "删除了“尾数2在三才里对应木”的表述，避免混淆数理吉凶与三才五行；保留传统分类，明确其不具有命运预测意义，并调整关键词。"
+    },
+    {
+      "run": "name-initial",
+      "id": "kb:name:shuli:63",
+      "before_sha256": "09941ad48d4fe890d9edc5ec209bb82620f117e0a54825f769d22d68982acac8",
+      "invalid": null,
+      "attempts": 1,
+      "note": "将数理五行的划分与三才组合明确区分，修正“尾数3在三才里对应火”的误导性表述，并保留民俗属性及非决定性说明。"
+    },
+    {
+      "run": "name-initial",
+      "id": "kb:name:shuli:7",
+      "before_sha256": "8ef807bbe01ff85f29fb1087cbc0d04f17b501b60f539a30d9462d63cd4c2522",
+      "invalid": null,
+      "attempts": 1,
+      "note": "删除不贴切的“顺遂、易得助力”，突出传统释义中的独立刚健与坚定行动，补充过刚失和及兼顾合作的提醒；相应调整主题权重和关键词，保留非决定论说明。"
+    },
+    {
+      "run": "name-initial",
+      "id": "kb:name:shuli:8",
+      "before_sha256": "f56902f8e27cf07aefee74bd59664c5078e65fd6438682807d6b077c71670650",
+      "invalid": null,
+      "attempts": 1,
+      "note": "将“顺遂、易得助力”调整为勤勉、意志坚定与自我发展的传统寓意；保留尾数8对应金的习俗说明，将关系与财务主题归零，并明确数理不用于性格判断或人生预测。"
+    },
+    {
+      "run": "name-rereview-1",
+      "id": "kb:name:sancai:土水木",
+      "before_sha256": "7106bc133c3d946deb9258525db6bbe06ecbcc02a79902be83a3097b14cdc9b5",
+      "invalid": null,
+      "attempts": 1,
+      "note": "将 relationship 从正向调整为中性，并明确投入不代表关系顺逆，消除主题方向与正文依据不一致的问题；其余字段保持不变。"
+    },
+    {
+      "run": "name-rereview-1",
+      "id": "kb:name:sancai:土水水",
+      "before_sha256": "b145f68a1716496e642b56cebcc9f2c335ce3734f503148588eb7dc968cc0957",
+      "invalid": null,
+      "attempts": 1,
+      "note": "将 relationship 从 0.1 调整为 0.0，移除正文未支持的关系正向倾向；其余内容保持不变。"
+    },
+    {
+      "run": "name-rereview-1",
+      "id": "kb:name:sancai:土水金",
+      "before_sha256": "ab73ad3e563da6af7c6ba8bb5866407c4675b146b016990b29087f42423a0027",
+      "invalid": null,
+      "attempts": 1,
+      "note": "将 relationship 从 +0.1 调整为 -0.1，并明确文字侧重个人边界与人际磨合，使其与“需要协调”的轻微负向一致；保留支持因素及非预测性说明，补充相关关键词。"
+    },
+    {
+      "run": "name-rereview-1",
+      "id": "kb:name:sancai:土火水",
+      "before_sha256": "a6c5501210ced9f25de7e34f5cdd8f790ed22a395fea2b101bb3b8f36fcb9618",
+      "invalid": null,
+      "attempts": 1,
+      "note": "删除“精力牵扯”“需要协调”等偏阻表述，明确五行生克不直接对应现实助力或阻碍；保留中性的自我观察提示，将四个主题统一设为无方向，并同步调整关键词。"
+    },
+    {
+      "run": "name-rereview-1",
+      "id": "kb:name:sancai:土火金",
+      "before_sha256": "b8ba1322cbd71099241ccc9cb67a9edee9896fcf69af8eea93cbd4b2d8aaf196",
+      "invalid": null,
+      "attempts": 1,
+      "note": "将自我与关系主题调整为轻微负向，与文字中的协调压力相对应；事业与财务未涉及方向判断，保持为零。保留民间象征解释及非预测性限定，主题分值仅标记文本倾向。"
+    },
+    {
+      "run": "name-rereview-1",
+      "id": "kb:name:sancai:木火水",
+      "before_sha256": "d00a254c3b81913b6ef57428ba808d6e0af1918d89f298c472f93e7522edca63",
+      "invalid": null,
+      "attempts": 1,
+      "note": "将 self 从 0.1 调整为 0.0，表示没有明确的整体方向，与释义中支持与协调需求并存的表述保持一致；其余内容不变。"
+    },
+    {
+      "run": "name-rereview-1",
+      "id": "kb:name:sancai:火木土",
+      "before_sha256": "54ed040f96305cf23c360023f86d434de93aebe3f4895b2e3bf04dd8efcc2771",
+      "invalid": null,
+      "attempts": 1,
+      "note": "将总体定位由“需要协调”修正为常见传统解读中的“吉或偏吉”，移除原有负向主题倾向；保留正确的五行关系，明确传统评价不代表实际人生结果，并补充同义表述与相关关键词。"
+    },
+    {
+      "run": "name-rereview-1",
+      "id": "kb:name:sancai:火木水",
+      "before_sha256": "7f2409049c1a7bec071d2bb9608923fce79ad55cc0fe0de9462a1a40c8c31180",
+      "invalid": null,
+      "attempts": 1,
+      "note": "将“较顺”纠正为常见传统解释中的偏凶定位，说明相邻相生不代表整体偏吉；移除缺乏依据的家庭支持联想，调整主题方向与关键词，并明确民俗评价不构成现实预测。"
+    },
+    {
+      "run": "name-rereview-1",
+      "id": "kb:name:sancai:金水土",
+      "before_sha256": "0a2dc417903a6aef9bae0b3247390e86bef49c7ad54d7a4c250856ebdeca80d3",
+      "invalid": null,
+      "attempts": 1,
+      "note": "将 self 和 relationship 调整为无方向，消除缺少文字依据的正负分配；正文明确支持与协调需求并存、不对应各主题的正负倾向，并同步调整关键词。"
+    },
+    {
+      "run": "name-rereview-1",
+      "id": "kb:name:sancai:金火土",
+      "before_sha256": "98b0c6871317b6ce77e2c12b093e067f961991a4985a1bd39eac70a7cc3e393a",
+      "invalid": null,
+      "attempts": 1,
+      "note": "将 relationship 从 0.1 调整为 -0.1，使其与文字中“需要协调”的轻微张力提示一致；该数值仅标注释义方向，不代表对个人关系的预测。其余内容保持不变。"
+    },
+    {
+      "run": "name-rereview-1",
+      "id": "kb:name:sancai:金火木",
+      "before_sha256": "f0db74a0aa5ea29b551cbb568ab5deaf12c707cc4285c930a2d0afc2baffa03a",
+      "invalid": null,
+      "attempts": 1,
+      "note": "将 relationship 从 0.1 调整为 -0.1，使其与文字中关系层面“需要协调”的轻度挑战提示一致；其余内容保持不变。"
+    },
+    {
+      "run": "name-rereview-1",
+      "id": "kb:name:sancai:金火火",
+      "before_sha256": "a031170c86048541ecd286581a64f19845fbbaf8945b2d82f24e3252d840b866",
+      "invalid": null,
+      "attempts": 1,
+      "note": "将 relationship 从 0.1 调整为 0.0，移除正文未支持的关系正向倾向；其余内容保持不变。"
+    },
+    {
+      "run": "name-rereview-1",
+      "id": "kb:name:sancai:金金水",
+      "before_sha256": "7698aaaf101a9537d75d7330c7f482f891f29846f9fdffb82dda5730b0d4954a",
+      "invalid": null,
+      "attempts": 1,
+      "note": "取消整体“较顺”的简化判断，区分五行关系与三才整体评价；补充民间释义中的不利意象及版本差异，将主题方向调整为中性，并保留文化解读边界。"
+    },
+    {
+      "run": "name-rereview-1",
+      "id": "kb:name:shuli:26",
+      "before_sha256": "8fe691dc4ad97802d3179569b5e077ce830067b72a3bfb4e6d3b8a222f253118",
+      "invalid": null,
+      "attempts": 1,
+      "note": "将缺乏文字依据的relationship和finance方向归零；保留self、career的轻微负向标记，其余内容不变。"
+    },
+    {
+      "run": "name-rereview-1",
+      "id": "kb:name:shuli:4",
+      "before_sha256": "12d7e7702071dd20864bb3066ae264bac6a1bb8d9d80ff189a1e960dd8e8c684",
+      "invalid": null,
+      "attempts": 1,
+      "note": "将自我主题调整为轻度负向，并明确其仅对应民俗中的受阻、受挫象征；保留其他主题中性及不作现实判断或预测的边界。"
+    },
+    {
+      "run": "name-rereview-1",
+      "id": "kb:name:shuli:49",
+      "before_sha256": "ac9a29d53bbc509f32b89684f4dcb9784111f90a4fa36b809c939da6dffbe02c",
+      "invalid": null,
+      "attempts": 1,
+      "note": "将 self 从 0.05 调整为 0，使主题方向与中性释义一致；“稳住节奏”仅作为应对建议，不作为正向倾向的依据。其余内容保持不变。"
+    },
+    {
+      "run": "name-rereview-1",
+      "id": "kb:name:shuli:51",
+      "before_sha256": "bbb22f97507ef199eef1087195a7143e4811d6e01ecf9980148bd7c52e0d5823",
+      "invalid": null,
+      "attempts": 1,
+      "note": "将四个主题的方向值均由0.05调整为0，与释义的中性表述保持一致，不将自我提醒类建议作为正向依据；其余内容不变。"
+    },
+    {
+      "run": "name-rereview-1",
+      "id": "kb:name:shuli:53",
+      "before_sha256": "60333ba394add171b82beaef4f992feea6cba4e86a8af27f14f52a61902fb725",
+      "invalid": null,
+      "attempts": 1,
+      "note": "将四个主题的倾向均由0.05调整为0，与释义中“吉凶参半”、兼顾顺境与困难的中性表述一致；其余内容保持不变。"
+    },
+    {
+      "run": "name-rereview-2",
+      "id": "kb:name:sancai:火木水",
+      "before_sha256": "89303556c972e193091f965f462ec11428936ba24d1fdfb49eabbd736b296fb2",
+      "invalid": null,
+      "attempts": 1,
+      "note": "将 self、career 调整为适度负向，以匹配传统评价的文本倾向；移除“成功难稳”“基础不安”等断语式措辞，补充主题分值不代表现实风险或概率的说明，并保持关系与财务主题中性。"
+    },
+    {
+      "run": "dream-aliases-1",
+      "id": "kb:dream:symbol:房子",
+      "before_sha256": "042e30b42a6b76465ca5d1920ae6b9297e4d384b1656d8c9af80b93604116120",
+      "invalid": null,
+      "attempts": 1,
+      "note": "删除与“房间”条目重复的同义词“屋子”，其余内容保持不变。"
+    },
+    {
+      "run": "dream-aliases-1",
+      "id": "kb:dream:symbol:房间",
+      "before_sha256": "bb6909011a2ba18803e11d0963111e58cdbf9cc26c99149d8be97ad9d9f18598",
+      "invalid": null,
+      "attempts": 1,
+      "note": "删除与“房子”条目重复且过于宽泛的同义词“屋子”，不新增未经全库查重的同义词；其余内容保持不变。"
+    },
+    {
+      "run": "tarot-pilot",
+      "id": "kb:tarot:card:pentacles_four:reversed",
+      "before_sha256": "17bcdec7483d32eb88e68b66c53de5a7d9ab0ac725f75517b15b4daa8de583b6",
+      "invalid": null,
+      "attempts": 1,
+      "note": "将关键词“保留”替换为“过度控制”和“担心损失”，突出逆位含义并与释义保持一致；其余字段保持不变。"
+    },
+    {
+      "run": "tarot-pilot",
+      "id": "kb:tarot:card:pentacles_knight:reversed",
+      "before_sha256": "224ffcb67c8fa08b01d1ede3569773e920f5cbc6bb73380c26be33b6e740e0e1",
+      "invalid": null,
+      "attempts": 1,
+      "note": "将偏向正位的关键词“稳步执行”替换为“执行停滞”“过度保守”“僵化重复”，与逆位正文保持一致；其余内容不变。"
+    },
+    {
+      "run": "tarot-pilot",
+      "id": "kb:tarot:card:pentacles_nine:reversed",
+      "before_sha256": "fc5da78787bb5204badb876bb3cdc714bf488ac97a91c04de5177bfdbadbdd66",
+      "invalid": null,
+      "attempts": 1,
+      "note": "将关键词“自主”改为“自主感不足”，与正文及逆位侧重点保持一致，避免与正位混淆；其余内容不变。"
+    },
+    {
+      "run": "tarot-pilot",
+      "id": "kb:tarot:card:pentacles_page:reversed",
+      "before_sha256": "bbab146deaa6f8ca747013f8206ede2a4c0747049ca7ced3f74fae83c19b5bdc",
+      "invalid": null,
+      "attempts": 1,
+      "note": "将关键词“学习落实”改为“落实不足”“计划未落地”，使其与逆位正文一致，避免混淆正逆位含义；其余内容保持不变。"
+    },
+    {
+      "run": "tarot-pilot",
+      "id": "kb:tarot:card:swords_nine:reversed",
+      "before_sha256": "d611af18daf74c8ecc9cb6b19a8443058166aee85361537330a6e6b6a93b87fb",
+      "invalid": null,
+      "attempts": 2,
+      "note": "移除与缓解方向冲突的困扰分支，突出担忧缓解与接纳支持；保留自我主题的轻微正向倾向，将缺乏明确依据的其他主题设为0，并补充同义词与关键词。"
+    },
+    {
+      "run": "tarot-pilot",
+      "id": "kb:tarot:card:the_fool:reversed",
+      "before_sha256": "8086d3fd15f25cd819df2e6685c9e18d7745a5df90103a64c5c537bf5c348f0e",
+      "invalid": null,
+      "attempts": 1,
+      "note": "将偏正位的关键词“尝试”“开放”替换为与逆位释义及主题方向一致的关键词，其余内容保持不变。"
+    },
+    {
+      "run": "tarot-pilot",
+      "id": "kb:tarot:card:the_hanged_man:reversed",
+      "before_sha256": "21ef9b5108522d47accde142b3a9cb1ee702853d39309b992d3c79da9b6f0993",
+      "invalid": null,
+      "attempts": 1,
+      "note": "将偏向正位的关键词“暂停、换位”替换为“拖延、无效牺牲、审视付出”，使其与逆位释义一致；其余内容保持不变。"
+    },
+    {
+      "run": "tarot-pilot",
+      "id": "kb:tarot:card:the_hierophant:reversed",
+      "before_sha256": "8011c086a8e3249eb9d4832ac2c573b91e3ae1c2d0ef0586d6385384c33904e7",
+      "invalid": null,
+      "attempts": 1,
+      "note": "将沿用正位的关键词改为与逆位释义一致的反思、自主选择类表述；补充并非一概否定传统的限定，并将无方向的 finance 主题设为 0。"
+    },
+    {
+      "run": "tarot-pilot",
+      "id": "kb:tarot:card:the_sun:reversed",
+      "before_sha256": "14f26a5bf0d7ed05aeb4aa3c71d1341baf8082f30ee3b8991a4a41141d5111af",
+      "invalid": null,
+      "attempts": 1,
+      "note": "将关键词调整为与逆位释义一致的反思方向，补充财务主题为无方向，并保留非确定性的象征说明。"
+    },
+    {
+      "run": "tarot-pilot",
+      "id": "kb:tarot:card:wands_ten:reversed",
+      "before_sha256": "f0e18650930520b4f494648b082ccb10649359f8c95ce9658509f4ffd42d9775",
+      "invalid": null,
+      "attempts": 2,
+      "note": "突出卸下负担与释然的偏顺牌意，将自我和事业主题倾向提升至 0.4，保留沟通交接及非必然性的边界。"
+    },
+    {
+      "run": "tarot-pilot",
+      "id": "kb:tarot:position:decision:1",
+      "before_sha256": "30a4cc5a49e143c70c53196eeec8a5ece9abdf19393e2d60dd215d6458fe0271",
+      "invalid": null,
+      "attempts": 1,
+      "note": "删除与牌阵结构不符的“未来牌位”说明，明确现状牌位为比较选项A与选项B提供反思背景；补充中性主题值及相关同义词、关键词。"
+    },
+    {
+      "run": "tarot-pilot",
+      "id": "kb:tarot:position:decision:2",
+      "before_sha256": "e1e9ac2ea7994d5563a190f80a295bbc5027ee683fc0bb856262f83d62ce7a64",
+      "invalid": null,
+      "attempts": 1,
+      "note": "删除与牌阵结构不符的“未来牌位”说明，明确本牌位对应“选 A”，保留反思用途及非确定性预测的边界，并补充中性主题映射、同义词和关键词。"
+    },
+    {
+      "run": "tarot-pilot",
+      "id": "kb:tarot:position:decision:3",
+      "before_sha256": "57c12017a5e9ec24e1c9fbde4a8079e585197408c979d0cd189618737db961a6",
+      "invalid": null,
+      "attempts": 1,
+      "note": "删除与牌阵结构不符的“未来牌位”说明，明确本牌位对应“选 B”及其比较反思用途；补充同义词、关键词和中性主题映射，保留不作确定性预测的边界。"
+    },
+    {
+      "run": "tarot-pilot",
+      "id": "kb:tarot:position:single:1",
+      "before_sha256": "bea25b3fa7ef83a61195fbf754f4e3ca8e6250247fc6917f3c4211859a103e14",
+      "invalid": null,
+      "attempts": 1,
+      "note": "删除不适用于单张牌阵的“未来牌位”说明，明确此牌位为唯一位置，保留象征性参考与非确定性预测的边界。"
+    }
+  ],
+  "changed_entries": 323
+}

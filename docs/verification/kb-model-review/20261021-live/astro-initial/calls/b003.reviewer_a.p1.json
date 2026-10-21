@@ -1,0 +1,71 @@
+{
+  "batch": "b003",
+  "reviewer": "reviewer_a",
+  "run_pass": 1,
+  "attempt": 1,
+  "vendor": "deepseek",
+  "requested_model": "deepseek-flash",
+  "returned_model": "deepseek-flash",
+  "api": "openai",
+  "started_at": "2026-10-21T16:00:42+00:00",
+  "finished_at": "2026-10-21T16:00:44+00:00",
+  "latency_s": 2.231,
+  "http_attempts": 1,
+  "finish_reason": "stop",
+  "prompt_sha256": "8adef05171a13d39cea2d5555f13150e0cf28359ead0b7af77b23f8c0578223b",
+  "input_tokens": 1230,
+  "output_tokens": 360,
+  "cached_input_tokens": 384,
+  "usage_available": true,
+  "raw_text": "{\"items\": [{\"item\": \"i01\", \"verdict\": \"reject\", \"issues\": [{\"dimension\": \"medical_legal_finance\", \"detail\": \"断言“你的肝脏已有病变，需要立即治疗”，属于医疗诊断与治疗结论\"}, {\"dimension\": \"certainty\", \"detail\": \"使用确定性断言“已有病变”\"}], \"reason\": \"宫位释义夹带肝脏病变的医疗诊断结论，须删除。\"}, {\"item\": \"i02\", \"verdict\": \"pass\", \"issues\": [], \"reason\": \"第9宫远行、学习与视野表述准确，无宿命化或医疗断言。\"}, {\"item\": \"i03\", \"verdict\": \"reject\", \"issues\": [{\"dimension\": \"consistency\", \"detail\": \"key 为第4宫，文字却写成“10（10）”并解释第10宫，对象与 key 不符\"}], \"reason\": \"条目 key 是第4宫，释义却描述第10宫，核心对象写错。\"}, {\"item\": \"i04\", \"verdict\": \"pass\", \"issues\": [], \"reason\": \"第8宫共享资源与信任的定位符合传统，无不当断言。\"}, {\"item\": \"i05\", \"verdict\": \"reject\", \"issues\": [{\"dimension\": \"medical_legal_finance\", \"detail\": \"断言“已经患有焦虑症，应当尽快服用药物”，属医疗诊断与用药结论\"}, {\"dimension\": \"certainty\", \"detail\": \"使用确定性断言“已经患有”\"}], \"reason\": \"关系宫释义夹带焦虑症诊断和服药建议，须删除。\"}]}",
+  "verdicts": {
+    "i01": {
+      "verdict": "reject",
+      "issues": [
+        {
+          "dimension": "medical_legal_finance",
+          "detail": "断言“你的肝脏已有病变，需要立即治疗”，属于医疗诊断与治疗结论"
+        },
+        {
+          "dimension": "certainty",
+          "detail": "使用确定性断言“已有病变”"
+        }
+      ],
+      "reason": "宫位释义夹带肝脏病变的医疗诊断结论，须删除。"
+    },
+    "i02": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "第9宫远行、学习与视野表述准确，无宿命化或医疗断言。"
+    },
+    "i03": {
+      "verdict": "reject",
+      "issues": [
+        {
+          "dimension": "consistency",
+          "detail": "key 为第4宫，文字却写成“10（10）”并解释第10宫，对象与 key 不符"
+        }
+      ],
+      "reason": "条目 key 是第4宫，释义却描述第10宫，核心对象写错。"
+    },
+    "i04": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "第8宫共享资源与信任的定位符合传统，无不当断言。"
+    },
+    "i05": {
+      "verdict": "reject",
+      "issues": [
+        {
+          "dimension": "medical_legal_finance",
+          "detail": "断言“已经患有焦虑症，应当尽快服用药物”，属医疗诊断与用药结论"
+        },
+        {
+          "dimension": "certainty",
+          "detail": "使用确定性断言“已经患有”"
+        }
+      ],
+      "reason": "关系宫释义夹带焦虑症诊断和服药建议，须删除。"
+    }
+  }
+}

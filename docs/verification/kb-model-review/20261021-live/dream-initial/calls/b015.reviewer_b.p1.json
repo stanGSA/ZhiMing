@@ -1,0 +1,103 @@
+{
+  "batch": "b015",
+  "reviewer": "reviewer_b",
+  "run_pass": 1,
+  "attempt": 1,
+  "vendor": "openai",
+  "requested_model": "gpt-6.1-sol",
+  "returned_model": "gpt-6.1-sol",
+  "api": "openai",
+  "started_at": "2026-10-21T16:05:08+00:00",
+  "finished_at": "2026-10-21T16:07:42+00:00",
+  "latency_s": 154.275,
+  "http_attempts": 2,
+  "finish_reason": "stop",
+  "prompt_sha256": "faf7451b226659074aa03281ce0159a42182c6e3bc9208e73e4d126836aa34a9",
+  "input_tokens": 2734,
+  "output_tokens": 1003,
+  "cached_input_tokens": 2731,
+  "usage_available": true,
+  "raw_text": "{\n  \"items\": [\n    {\n      \"item\": \"i01\",\n      \"verdict\": \"revise\",\n      \"issues\": [\n        {\n          \"dimension\": \"consistency\",\n          \"detail\": \"同义词“结果子”“果实累累”也可描述藤蔓等非树木植物，可能将其他结果意象误命中为果树；建议限定为“树上结果”“果树结满果实”。\"\n        }\n      ],\n      \"reason\": \"释义本身合理，但同义词范围超出果树意象。\"\n    },\n    {\n      \"item\": \"i02\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"转换与新开始的联想合理，主题倾向温和，且明确仅作心理参考。\"\n    },\n    {\n      \"item\": \"i03\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"团聚、传统与新开始符合春节的常见联想，关系倾向与文字一致。\"\n    },\n    {\n      \"item\": \"i04\",\n      \"verdict\": \"revise\",\n      \"issues\": [\n        {\n          \"dimension\": \"consistency\",\n          \"detail\": \"“桥断了”包含连接中断或过渡受阻的关键情节，不宜与一般的桥作为同义词合并；建议拆分情境或补充相应解释。\"\n        }\n      ],\n      \"reason\": \"一般桥的释义合理，但未覆盖同义词中断桥情境的含义差异。\"\n    },\n    {\n      \"item\": \"i05\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"攻击、防卫与对立符合枪的常见心理联想，自我主题轻微偏阻与文字相容。\"\n    },\n    {\n      \"item\": \"i06\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"直觉、柔和情绪与思念的联想合理，主题倾向与措辞一致。\"\n    },\n    {\n      \"item\": \"i07\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"成长、根基与生命力符合树的常见象征，自我主题偏顺有文字支持。\"\n    },\n    {\n      \"item\": \"i08\",\n      \"verdict\": \"revise\",\n      \"issues\": [\n        {\n          \"dimension\": \"consistency\",\n          \"detail\": \"“兄弟们”既可指朋友，也可指有亲属关系的兄弟，可能误命中亲属意象；建议移除或限定为明确指朋友的称呼。\"\n        }\n      ],\n      \"reason\": \"释义与关系倾向合理，但“兄弟们”存在朋友与亲属之间的歧义。\"\n    },\n    {\n      \"item\": \"i09\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"简单、质朴与回归属于村庄的常见联想，表达温和且无预兆断言。\"\n    },\n    {\n      \"item\": \"i10\",\n      \"verdict\": \"revise\",\n      \"issues\": [\n        {\n          \"dimension\": \"consistency\",\n          \"detail\": \"“杯子碎了”包含破损这一关键情节，与一般杯子的容纳、给予含义不同；建议拆分情境或补充对破损感受的解释。\"\n        }\n      ],\n      \"reason\": \"一般杯子的释义合理，但不能直接覆盖杯子破碎的情境。\"\n    },\n    {\n      \"item\": \"i11\",\n      \"verdict\": \"revise\",\n      \"issues\": [\n        {\n          \"dimension\": \"consistency\",\n          \"detail\": \"同义词“蚊子”与落叶无关，会将昆虫意象误命中为落叶，应删除。\"\n        }\n      ],\n      \"reason\": \"核心释义符合落叶意象，但同义词中混入了无关对象。\"\n    }\n  ]\n}",
+  "verdicts": {
+    "i01": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "consistency",
+          "detail": "同义词“结果子”“果实累累”也可描述藤蔓等非树木植物，可能将其他结果意象误命中为果树；建议限定为“树上结果”“果树结满果实”。"
+        }
+      ],
+      "reason": "释义本身合理，但同义词范围超出果树意象。"
+    },
+    "i02": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "转换与新开始的联想合理，主题倾向温和，且明确仅作心理参考。"
+    },
+    "i03": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "团聚、传统与新开始符合春节的常见联想，关系倾向与文字一致。"
+    },
+    "i04": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "consistency",
+          "detail": "“桥断了”包含连接中断或过渡受阻的关键情节，不宜与一般的桥作为同义词合并；建议拆分情境或补充相应解释。"
+        }
+      ],
+      "reason": "一般桥的释义合理，但未覆盖同义词中断桥情境的含义差异。"
+    },
+    "i05": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "攻击、防卫与对立符合枪的常见心理联想，自我主题轻微偏阻与文字相容。"
+    },
+    "i06": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "直觉、柔和情绪与思念的联想合理，主题倾向与措辞一致。"
+    },
+    "i07": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "成长、根基与生命力符合树的常见象征，自我主题偏顺有文字支持。"
+    },
+    "i08": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "consistency",
+          "detail": "“兄弟们”既可指朋友，也可指有亲属关系的兄弟，可能误命中亲属意象；建议移除或限定为明确指朋友的称呼。"
+        }
+      ],
+      "reason": "释义与关系倾向合理，但“兄弟们”存在朋友与亲属之间的歧义。"
+    },
+    "i09": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "简单、质朴与回归属于村庄的常见联想，表达温和且无预兆断言。"
+    },
+    "i10": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "consistency",
+          "detail": "“杯子碎了”包含破损这一关键情节，与一般杯子的容纳、给予含义不同；建议拆分情境或补充对破损感受的解释。"
+        }
+      ],
+      "reason": "一般杯子的释义合理，但不能直接覆盖杯子破碎的情境。"
+    },
+    "i11": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "consistency",
+          "detail": "同义词“蚊子”与落叶无关，会将昆虫意象误命中为落叶，应删除。"
+        }
+      ],
+      "reason": "核心释义符合落叶意象，但同义词中混入了无关对象。"
+    }
+  }
+}

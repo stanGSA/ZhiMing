@@ -1,0 +1,48 @@
+{
+  "batch": "b031",
+  "reviewer": "reviewer_b",
+  "run_pass": 1,
+  "attempt": 1,
+  "vendor": "openai",
+  "requested_model": "gpt-6.1-sol",
+  "returned_model": "gpt-6.1-sol",
+  "api": "openai",
+  "started_at": "2026-10-21T16:09:22+00:00",
+  "finished_at": "2026-10-21T16:09:33+00:00",
+  "latency_s": 10.903,
+  "http_attempts": 1,
+  "finish_reason": "stop",
+  "prompt_sha256": "0ad71cc84d9c0863c6dc8ad6f7a1c7dbd2587c51a1ef36efb8b9dab5f1f89aa1",
+  "input_tokens": 1084,
+  "output_tokens": 308,
+  "cached_input_tokens": null,
+  "usage_available": true,
+  "raw_text": "{\n  \"items\": [\n    {\n      \"item\": \"i01\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"准确限定了未检测到精确主要相位的含义，主题值中性，且未作确定性吉凶判断。\"\n    },\n    {\n      \"item\": \"i02\",\n      \"verdict\": \"revise\",\n      \"issues\": [\n        {\n          \"dimension\": \"theme_direction\",\n          \"detail\": \"文字强调较顺的协作和优势转化，self、career 却为负值，方向相反；宜调整为正向。\"\n        }\n      ],\n      \"reason\": \"三分相的核心释义符合传统，但自我与事业的负向倾向值与文字不一致。\"\n    },\n    {\n      \"item\": \"i03\",\n      \"verdict\": \"revise\",\n      \"issues\": [\n        {\n          \"dimension\": \"theme_direction\",\n          \"detail\": \"文字以不同需求的拉扯为核心，self、career 却为正值；澄清优先级是应对建议，不足以支持整体偏顺，宜调整为偏阻或中性。\"\n        }\n      ],\n      \"reason\": \"对分相的核心释义符合传统，但自我与事业的正向倾向值未体现文字中的张力。\"\n    }\n  ]\n}",
+  "verdicts": {
+    "i01": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "准确限定了未检测到精确主要相位的含义，主题值中性，且未作确定性吉凶判断。"
+    },
+    "i02": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "theme_direction",
+          "detail": "文字强调较顺的协作和优势转化，self、career 却为负值，方向相反；宜调整为正向。"
+        }
+      ],
+      "reason": "三分相的核心释义符合传统，但自我与事业的负向倾向值与文字不一致。"
+    },
+    "i03": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "theme_direction",
+          "detail": "文字以不同需求的拉扯为核心，self、career 却为正值；澄清优先级是应对建议，不足以支持整体偏顺，宜调整为偏阻或中性。"
+        }
+      ],
+      "reason": "对分相的核心释义符合传统，但自我与事业的正向倾向值未体现文字中的张力。"
+    }
+  }
+}

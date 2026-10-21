@@ -1,0 +1,96 @@
+{
+  "batch": "b002",
+  "reviewer": "reviewer_a",
+  "run_pass": 2,
+  "attempt": 1,
+  "vendor": "deepseek",
+  "requested_model": "deepseek-flash",
+  "returned_model": "deepseek-flash",
+  "api": "openai",
+  "started_at": "2026-10-21T16:01:02+00:00",
+  "finished_at": "2026-10-21T16:01:04+00:00",
+  "latency_s": 2.656,
+  "http_attempts": 1,
+  "finish_reason": "stop",
+  "prompt_sha256": "11f81b4a894471d5afac07aa712484caff2057e80aba4d8011f095ba3e8302b1",
+  "input_tokens": 1942,
+  "output_tokens": 542,
+  "cached_input_tokens": 1792,
+  "usage_available": true,
+  "raw_text": "{\"items\": [{\"item\": \"i01\", \"verdict\": \"reject\", \"issues\": [{\"dimension\": \"certainty\", \"detail\": \"出现这一象征意味着必然破财，结局已经注定，无法避免——宿命化断言\"}, {\"dimension\": \"consistency\", \"detail\": \"moment_only 讲的是短时信号，后文却断言必然破财，与 key 矛盾\"}], \"reason\": \"释义含宿命化且与 key 不符的断言\"}, {\"item\": \"i02\", \"verdict\": \"pass\", \"issues\": [], \"reason\": \"五行配色为传统约定且明确免责，方向中性无问题\"}, {\"item\": \"i03\", \"verdict\": \"pass\", \"issues\": [], \"reason\": \"五行配色为传统约定且明确免责，方向中性无问题\"}, {\"item\": \"i04\", \"verdict\": \"reject\", \"issues\": [{\"dimension\": \"medical_legal_finance\", \"detail\": \"这代表身体已有慢性疾病，不必就医也会自愈——医疗确定性结论\"}, {\"dimension\": \"consistency\", \"detail\": \"daily_seed 讲种子算法，后文却谈疾病自愈，与 key 不符\"}], \"reason\": \"含医疗确定性结论且与 key 无关\"}, {\"item\": \"i05\", \"verdict\": \"revise\", \"issues\": [{\"dimension\": \"consistency\", \"detail\": \"key 为 no_exact_events，释义却写 unknown_time 的出生时间代理说明，与 key 不符\"}], \"reason\": \"释义内容与 key 不匹配，需改写\"}, {\"item\": \"i06\", \"verdict\": \"pass\", \"issues\": [], \"reason\": \"五行配色为传统约定且明确免责，方向中性无问题\"}, {\"item\": \"i07\", \"verdict\": \"pass\", \"issues\": [], \"reason\": \"五行配色为传统约定且明确免责，方向中性无问题\"}, {\"item\": \"i08\", \"verdict\": \"pass\", \"issues\": [], \"reason\": \"五行配色为传统约定且明确免责，方向中性无问题\"}, {\"item\": \"i09\", \"verdict\": \"revise\", \"issues\": [{\"dimension\": \"certainty\", \"detail\": \"出现这一象征意味着必然破财，结局已经注定，无法避免——宿命化断言且与出生时间说明无关\"}], \"reason\": \"后一句为宿命化断言且与 unknown_time 说明无关，应删除\"}]}",
+  "verdicts": {
+    "i01": {
+      "verdict": "reject",
+      "issues": [
+        {
+          "dimension": "certainty",
+          "detail": "出现这一象征意味着必然破财，结局已经注定，无法避免——宿命化断言"
+        },
+        {
+          "dimension": "consistency",
+          "detail": "moment_only 讲的是短时信号，后文却断言必然破财，与 key 矛盾"
+        }
+      ],
+      "reason": "释义含宿命化且与 key 不符的断言"
+    },
+    "i02": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "五行配色为传统约定且明确免责，方向中性无问题"
+    },
+    "i03": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "五行配色为传统约定且明确免责，方向中性无问题"
+    },
+    "i04": {
+      "verdict": "reject",
+      "issues": [
+        {
+          "dimension": "medical_legal_finance",
+          "detail": "这代表身体已有慢性疾病，不必就医也会自愈——医疗确定性结论"
+        },
+        {
+          "dimension": "consistency",
+          "detail": "daily_seed 讲种子算法，后文却谈疾病自愈，与 key 不符"
+        }
+      ],
+      "reason": "含医疗确定性结论且与 key 无关"
+    },
+    "i05": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "consistency",
+          "detail": "key 为 no_exact_events，释义却写 unknown_time 的出生时间代理说明，与 key 不符"
+        }
+      ],
+      "reason": "释义内容与 key 不匹配，需改写"
+    },
+    "i06": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "五行配色为传统约定且明确免责，方向中性无问题"
+    },
+    "i07": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "五行配色为传统约定且明确免责，方向中性无问题"
+    },
+    "i08": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "五行配色为传统约定且明确免责，方向中性无问题"
+    },
+    "i09": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "certainty",
+          "detail": "出现这一象征意味着必然破财，结局已经注定，无法避免——宿命化断言且与出生时间说明无关"
+        }
+      ],
+      "reason": "后一句为宿命化断言且与 unknown_time 说明无关，应删除"
+    }
+  }
+}

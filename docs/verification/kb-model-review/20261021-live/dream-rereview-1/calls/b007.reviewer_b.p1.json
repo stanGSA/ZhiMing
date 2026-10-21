@@ -1,0 +1,83 @@
+{
+  "batch": "b007",
+  "reviewer": "reviewer_b",
+  "run_pass": 1,
+  "attempt": 1,
+  "vendor": "openai",
+  "requested_model": "gpt-6.1-sol",
+  "returned_model": "gpt-6.1-sol",
+  "api": "openai",
+  "started_at": "2026-10-21T16:47:42+00:00",
+  "finished_at": "2026-10-21T16:48:04+00:00",
+  "latency_s": 22.213,
+  "http_attempts": 1,
+  "finish_reason": "stop",
+  "prompt_sha256": "df9da7e68bbe7ca64c39039806535a03d3d25f691541e5190571e71b9cc4727c",
+  "input_tokens": 2854,
+  "output_tokens": 972,
+  "cached_input_tokens": null,
+  "usage_available": true,
+  "raw_text": "{\n  \"items\": [\n    {\n      \"item\": \"i01\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"洪水与情绪淹没、压力过载的联想合理，自我主题偏负与文字一致，且明确排除灾害预兆。\"\n    },\n    {\n      \"item\": \"i02\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"漏水与消耗、疏漏及修补需求的联想贴合意象，主题方向一致，没有现实损失的确定性断言。\"\n    },\n    {\n      \"item\": \"i03\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"牛所关联的勤恳、耐力与积累符合常见象征，事业和财务轻度偏正有文字依据，且不作吉凶预测。\"\n    },\n    {\n      \"item\": \"i04\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"狐狸与机敏、试探及动机疑虑的联想合理，自我和关系轻度偏负与文字相符。\"\n    },\n    {\n      \"item\": \"i05\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"释义将游泳作为情绪应对与环境适应的观察线索，未预设顺逆，与全中性的主题方向一致。\"\n    },\n    {\n      \"item\": \"i06\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"对熊的力量、保护、威胁和休整等联想兼顾不同情境，中性主题设置合理，没有预兆化表达。\"\n    },\n    {\n      \"item\": \"i07\",\n      \"verdict\": \"revise\",\n      \"issues\": [\n        {\n          \"dimension\": \"consistency\",\n          \"detail\": \"同义词“牙”“齿”过于宽泛，容易命中“牙疼”“蛀牙”等文字已明确要求区分的情境，也可能误命中“齿轮”等其他意象；建议收窄同义词，并对疼痛、受损情境设置排除或优先匹配规则。\"\n        }\n      ],\n      \"reason\": \"释义本身平和且无健康判断，但同义词范围与正文要求区分具体牙齿情境的原则不一致。\"\n    },\n    {\n      \"item\": \"i08\",\n      \"verdict\": \"revise\",\n      \"issues\": [\n        {\n          \"dimension\": \"theme_direction\",\n          \"detail\": \"正文仅提到情绪起伏和面对变化的感受，未明确偏向压力、失控或其他负面体验，self 却设为负向；建议改为中性，或在正文中补充偏负方向的适用情境。\"\n        }\n      ],\n      \"reason\": \"海浪的释义保持中性，但自我主题被设为偏负，方向依据不足。\"\n    },\n    {\n      \"item\": \"i09\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"固定轨道、时刻表和站点构成贴合火车的独特联想，顺利与延误等情境兼具，全中性方向合理。\"\n    },\n    {\n      \"item\": \"i10\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"灯与指引、清晰感和希望的联想支持自我主题轻度偏正，同时保留情境差异且未预测现实结果。\"\n    }\n  ]\n}",
+  "verdicts": {
+    "i01": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "洪水与情绪淹没、压力过载的联想合理，自我主题偏负与文字一致，且明确排除灾害预兆。"
+    },
+    "i02": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "漏水与消耗、疏漏及修补需求的联想贴合意象，主题方向一致，没有现实损失的确定性断言。"
+    },
+    "i03": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "牛所关联的勤恳、耐力与积累符合常见象征，事业和财务轻度偏正有文字依据，且不作吉凶预测。"
+    },
+    "i04": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "狐狸与机敏、试探及动机疑虑的联想合理，自我和关系轻度偏负与文字相符。"
+    },
+    "i05": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "释义将游泳作为情绪应对与环境适应的观察线索，未预设顺逆，与全中性的主题方向一致。"
+    },
+    "i06": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "对熊的力量、保护、威胁和休整等联想兼顾不同情境，中性主题设置合理，没有预兆化表达。"
+    },
+    "i07": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "consistency",
+          "detail": "同义词“牙”“齿”过于宽泛，容易命中“牙疼”“蛀牙”等文字已明确要求区分的情境，也可能误命中“齿轮”等其他意象；建议收窄同义词，并对疼痛、受损情境设置排除或优先匹配规则。"
+        }
+      ],
+      "reason": "释义本身平和且无健康判断，但同义词范围与正文要求区分具体牙齿情境的原则不一致。"
+    },
+    "i08": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "theme_direction",
+          "detail": "正文仅提到情绪起伏和面对变化的感受，未明确偏向压力、失控或其他负面体验，self 却设为负向；建议改为中性，或在正文中补充偏负方向的适用情境。"
+        }
+      ],
+      "reason": "海浪的释义保持中性，但自我主题被设为偏负，方向依据不足。"
+    },
+    "i09": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "固定轨道、时刻表和站点构成贴合火车的独特联想，顺利与延误等情境兼具，全中性方向合理。"
+    },
+    "i10": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "灯与指引、清晰感和希望的联想支持自我主题轻度偏正，同时保留情境差异且未预测现实结果。"
+    }
+  }
+}

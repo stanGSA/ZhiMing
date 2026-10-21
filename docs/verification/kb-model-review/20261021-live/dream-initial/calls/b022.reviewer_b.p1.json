@@ -1,0 +1,102 @@
+{
+  "batch": "b022",
+  "reviewer": "reviewer_b",
+  "run_pass": 1,
+  "attempt": 1,
+  "vendor": "openai",
+  "requested_model": "gpt-6.1-sol",
+  "returned_model": "gpt-6.1-sol",
+  "api": "openai",
+  "started_at": "2026-10-21T16:09:38+00:00",
+  "finished_at": "2026-10-21T16:10:08+00:00",
+  "latency_s": 30.139,
+  "http_attempts": 1,
+  "finish_reason": "stop",
+  "prompt_sha256": "37efb4d508bd76ca38aec2a7de25ccf84888abdf6e8351a7414e098308221769",
+  "input_tokens": 2786,
+  "output_tokens": 1198,
+  "cached_input_tokens": null,
+  "usage_available": true,
+  "raw_text": "{\n  \"items\": [\n    {\n      \"item\": \"i01\",\n      \"verdict\": \"revise\",\n      \"issues\": [\n        {\n          \"dimension\": \"theme_direction\",\n          \"detail\": \"文字侧重踏实、安稳、满足与照顾，不支持 self 和 finance 的负向倾向；其中财务也没有明确的方向性描述。\"\n        },\n        {\n          \"dimension\": \"consistency\",\n          \"detail\": \"“大米”通常指未煮熟的米，不等同于“米饭”，作为同义词会混淆食材与熟食意象。\"\n        }\n      ],\n      \"reason\": \"核心联想合理，但主题方向及“大米”的同义词归属需要调整。\"\n    },\n    {\n      \"item\": \"i02\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"休息需求与压力节奏的联想合理，中性主题设置与文字一致，且未作事件预言。\"\n    },\n    {\n      \"item\": \"i03\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"释义以关系承诺、独立空间及变化担忧为主，关系轻微负向可与文字对应，也明确区分了梦境与现实事件。\"\n    },\n    {\n      \"item\": \"i04\",\n      \"verdict\": \"revise\",\n      \"issues\": [\n        {\n          \"dimension\": \"consistency\",\n          \"detail\": \"“看不见”“失明”“眼睛疼”分别涉及视觉受限或疼痛情境，并非“眼睛”的同义词；“看不见”还可能源于黑暗或遮挡，容易误命中。建议拆分为具体意象或移出同义词列表。\"\n        }\n      ],\n      \"reason\": \"正文措辞平和且无健康诊断，但同义词混入了需要区分的症状与情境。\"\n    },\n    {\n      \"item\": \"i05\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"祖辈与家庭根源、传统和照顾记忆的联系合理，同义词及关系主题的轻微正向均无明显冲突。\"\n    },\n    {\n      \"item\": \"i06\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"兼顾石头的稳固与阻碍含义，中性主题设置合适，没有灾害预兆或确定性断言。\"\n    },\n    {\n      \"item\": \"i07\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"礼物与重视、付出和情感交换的联系清楚，关系主题的轻微正向与正文一致。\"\n    },\n    {\n      \"item\": \"i08\",\n      \"verdict\": \"revise\",\n      \"issues\": [\n        {\n          \"dimension\": \"consistency\",\n          \"detail\": \"“碗碎了”是带有破损情节的具体意象，不是“碗”的同义词；直接归入本条会忽略破损情境与普通容器意象的差异。\"\n        }\n      ],\n      \"reason\": \"一般碗的释义可以保留，但应将“碗碎了”移出同义词或另作情境释义。\"\n    },\n    {\n      \"item\": \"i09\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"监狱与受限、内疚及过强自我约束的联想合理，自我主题负向与文字一致，也未推断现实法律后果。\"\n    },\n    {\n      \"item\": \"i10\",\n      \"verdict\": \"revise\",\n      \"issues\": [\n        {\n          \"dimension\": \"consistency\",\n          \"detail\": \"“菩萨”“佛祖”与“神仙”并非同义词，分别具有不同的宗教文化身份；“神明”也比“神仙”范围更广。建议区分条目，或改用明确的上位分类而非作为同义词合并。\"\n        }\n      ],\n      \"reason\": \"寻求指引与安慰的心理联想可用，但同义词混淆了不同宗教文化对象。\"\n    },\n    {\n      \"item\": \"i11\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"眼镜与观察、看清事物及改变视角的联系自然，主题保持中性且强调结合情绪理解，适合作为草稿使用。\"\n    }\n  ]\n}",
+  "verdicts": {
+    "i01": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "theme_direction",
+          "detail": "文字侧重踏实、安稳、满足与照顾，不支持 self 和 finance 的负向倾向；其中财务也没有明确的方向性描述。"
+        },
+        {
+          "dimension": "consistency",
+          "detail": "“大米”通常指未煮熟的米，不等同于“米饭”，作为同义词会混淆食材与熟食意象。"
+        }
+      ],
+      "reason": "核心联想合理，但主题方向及“大米”的同义词归属需要调整。"
+    },
+    "i02": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "休息需求与压力节奏的联想合理，中性主题设置与文字一致，且未作事件预言。"
+    },
+    "i03": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "释义以关系承诺、独立空间及变化担忧为主，关系轻微负向可与文字对应，也明确区分了梦境与现实事件。"
+    },
+    "i04": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "consistency",
+          "detail": "“看不见”“失明”“眼睛疼”分别涉及视觉受限或疼痛情境，并非“眼睛”的同义词；“看不见”还可能源于黑暗或遮挡，容易误命中。建议拆分为具体意象或移出同义词列表。"
+        }
+      ],
+      "reason": "正文措辞平和且无健康诊断，但同义词混入了需要区分的症状与情境。"
+    },
+    "i05": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "祖辈与家庭根源、传统和照顾记忆的联系合理，同义词及关系主题的轻微正向均无明显冲突。"
+    },
+    "i06": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "兼顾石头的稳固与阻碍含义，中性主题设置合适，没有灾害预兆或确定性断言。"
+    },
+    "i07": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "礼物与重视、付出和情感交换的联系清楚，关系主题的轻微正向与正文一致。"
+    },
+    "i08": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "consistency",
+          "detail": "“碗碎了”是带有破损情节的具体意象，不是“碗”的同义词；直接归入本条会忽略破损情境与普通容器意象的差异。"
+        }
+      ],
+      "reason": "一般碗的释义可以保留，但应将“碗碎了”移出同义词或另作情境释义。"
+    },
+    "i09": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "监狱与受限、内疚及过强自我约束的联想合理，自我主题负向与文字一致，也未推断现实法律后果。"
+    },
+    "i10": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "consistency",
+          "detail": "“菩萨”“佛祖”与“神仙”并非同义词，分别具有不同的宗教文化身份；“神明”也比“神仙”范围更广。建议区分条目，或改用明确的上位分类而非作为同义词合并。"
+        }
+      ],
+      "reason": "寻求指引与安慰的心理联想可用，但同义词混淆了不同宗教文化对象。"
+    },
+    "i11": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "眼镜与观察、看清事物及改变视角的联系自然，主题保持中性且强调结合情绪理解，适合作为草稿使用。"
+    }
+  }
+}

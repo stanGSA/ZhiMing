@@ -1,0 +1,310 @@
+{
+  "system": "bazi",
+  "entries": 141,
+  "planted": 14,
+  "metrics": {
+    "pass_rate": 0.6525,
+    "detection": {
+      "reviewer_a": 1.0,
+      "reviewer_b": 1.0
+    },
+    "detection_merged": 1.0,
+    "rerun": {
+      "reviewer_a": 0.8903,
+      "reviewer_b": 1.0
+    },
+    "kappa": -0.0416,
+    "observed_agreement": 0.6596,
+    "verdict_counts": {
+      "reviewer_a": {
+        "pass": 138,
+        "revise": 3
+      },
+      "reviewer_b": {
+        "revise": 45,
+        "pass": 96
+      }
+    }
+  },
+  "gates": {
+    "pass_rate": false,
+    "detection_merged": true,
+    "detection_single": true,
+    "rerun": false,
+    "kappa": false,
+    "complete": true
+  },
+  "thresholds": {
+    "pass_rate": 0.95,
+    "detection_merged": 0.9,
+    "detection_single": 0.8,
+    "rerun": 0.9,
+    "kappa": 0.6
+  },
+  "calibrated": false,
+  "passed": false,
+  "approved": 92,
+  "queued": 49,
+  "incomplete": [],
+  "planted_detail": [
+    {
+      "ref": "planted-001",
+      "original": "kb:bazi:god_pillar:伤官:month",
+      "mutation": "flip_signs",
+      "reviewer_a": "revise",
+      "reviewer_b": "revise"
+    },
+    {
+      "ref": "planted-002",
+      "original": "kb:bazi:convention:year_month_boundary",
+      "mutation": "fatalistic",
+      "reviewer_a": "reject",
+      "reviewer_b": "revise"
+    },
+    {
+      "ref": "planted-003",
+      "original": "kb:bazi:god_pillar:食神:day",
+      "mutation": "wrong_term",
+      "reviewer_a": "reject",
+      "reviewer_b": "reject"
+    },
+    {
+      "ref": "planted-004",
+      "original": "kb:bazi:god_pillar:七杀:month",
+      "mutation": "medical",
+      "reviewer_a": "reject",
+      "reviewer_b": "reject"
+    },
+    {
+      "ref": "planted-005",
+      "original": "kb:bazi:stem:庚",
+      "mutation": "foreign_text",
+      "reviewer_a": "reject",
+      "reviewer_b": "reject"
+    },
+    {
+      "ref": "planted-006",
+      "original": "kb:bazi:relation:地支刑",
+      "mutation": "medical",
+      "reviewer_a": "reject",
+      "reviewer_b": "reject"
+    },
+    {
+      "ref": "planted-007",
+      "original": "kb:bazi:relation:自刑",
+      "mutation": "foreign_text",
+      "reviewer_a": "reject",
+      "reviewer_b": "reject"
+    },
+    {
+      "ref": "planted-008",
+      "original": "kb:bazi:nayin:沙中土",
+      "mutation": "wrong_term",
+      "reviewer_a": "reject",
+      "reviewer_b": "reject"
+    },
+    {
+      "ref": "planted-009",
+      "original": "kb:bazi:god_pillar:正官:day",
+      "mutation": "fatalistic",
+      "reviewer_a": "revise",
+      "reviewer_b": "revise"
+    },
+    {
+      "ref": "planted-010",
+      "original": "kb:bazi:element_relation:克",
+      "mutation": "medical",
+      "reviewer_a": "reject",
+      "reviewer_b": "reject"
+    },
+    {
+      "ref": "planted-011",
+      "original": "kb:bazi:stem:壬",
+      "mutation": "foreign_text",
+      "reviewer_a": "reject",
+      "reviewer_b": "reject"
+    },
+    {
+      "ref": "planted-012",
+      "original": "kb:bazi:branch:戌",
+      "mutation": "fatalistic",
+      "reviewer_a": "revise",
+      "reviewer_b": "revise"
+    },
+    {
+      "ref": "planted-013",
+      "original": "kb:bazi:nayin:泉中水",
+      "mutation": "wrong_term",
+      "reviewer_a": "revise",
+      "reviewer_b": "reject"
+    },
+    {
+      "ref": "planted-014",
+      "original": "kb:bazi:nayin:霹雳火",
+      "mutation": "wrong_term",
+      "reviewer_a": "reject",
+      "reviewer_b": "reject"
+    }
+  ],
+  "detection_by_mutation": {
+    "flip_signs": {
+      "total": 1,
+      "reviewer_a": 1,
+      "reviewer_b": 1
+    },
+    "fatalistic": {
+      "total": 3,
+      "reviewer_a": 3,
+      "reviewer_b": 3
+    },
+    "wrong_term": {
+      "total": 4,
+      "reviewer_a": 4,
+      "reviewer_b": 4
+    },
+    "medical": {
+      "total": 3,
+      "reviewer_a": 3,
+      "reviewer_b": 3
+    },
+    "foreign_text": {
+      "total": 3,
+      "reviewer_a": 3,
+      "reviewer_b": 3
+    }
+  },
+  "usage": {
+    "reviewer_a": {
+      "calls": 34,
+      "input_tokens": 78802,
+      "output_tokens": 16442,
+      "latency_s": 90.08,
+      "returned_models": [
+        "deepseek-flash"
+      ],
+      "errors": {
+        "parse_error": 1
+      },
+      "retried_calls": 1,
+      "http_retries": 0,
+      "cost": null,
+      "known_cost_estimate": null,
+      "usage_complete": true,
+      "cost_basis": "配置单价估算，非账单；服务失败的用量可能未知",
+      "currency": null
+    },
+    "reviewer_b": {
+      "calls": 34,
+      "input_tokens": 83786,
+      "output_tokens": 34741,
+      "latency_s": 1031.432,
+      "returned_models": [
+        "gpt-6.1-sol"
+      ],
+      "errors": {},
+      "retried_calls": 0,
+      "http_retries": 0,
+      "cost": null,
+      "known_cost_estimate": null,
+      "usage_complete": true,
+      "cost_basis": "配置单价估算，非账单；服务失败的用量可能未知",
+      "currency": null
+    }
+  },
+  "code_findings": [],
+  "human_reviewed_rate": 0.0,
+  "approved_ids": [
+    "kb:bazi:branch:辰",
+    "kb:bazi:branch:酉",
+    "kb:bazi:convention:day_master",
+    "kb:bazi:convention:unknown_time",
+    "kb:bazi:convention:year_month_boundary",
+    "kb:bazi:element:土",
+    "kb:bazi:element:木",
+    "kb:bazi:element:水",
+    "kb:bazi:element:火",
+    "kb:bazi:element:金",
+    "kb:bazi:god_pillar:七杀:day",
+    "kb:bazi:god_pillar:七杀:month",
+    "kb:bazi:god_pillar:七杀:time",
+    "kb:bazi:god_pillar:七杀:year",
+    "kb:bazi:god_pillar:伤官:day",
+    "kb:bazi:god_pillar:伤官:month",
+    "kb:bazi:god_pillar:伤官:time",
+    "kb:bazi:god_pillar:伤官:year",
+    "kb:bazi:god_pillar:偏印:day",
+    "kb:bazi:god_pillar:偏印:month",
+    "kb:bazi:god_pillar:偏印:time",
+    "kb:bazi:god_pillar:偏印:year",
+    "kb:bazi:god_pillar:偏财:day",
+    "kb:bazi:god_pillar:偏财:month",
+    "kb:bazi:god_pillar:偏财:time",
+    "kb:bazi:god_pillar:偏财:year",
+    "kb:bazi:god_pillar:劫财:day",
+    "kb:bazi:god_pillar:劫财:month",
+    "kb:bazi:god_pillar:劫财:time",
+    "kb:bazi:god_pillar:劫财:year",
+    "kb:bazi:god_pillar:正印:day",
+    "kb:bazi:god_pillar:正印:month",
+    "kb:bazi:god_pillar:正印:time",
+    "kb:bazi:god_pillar:正印:year",
+    "kb:bazi:god_pillar:正官:day",
+    "kb:bazi:god_pillar:正官:month",
+    "kb:bazi:god_pillar:正官:time",
+    "kb:bazi:god_pillar:正官:year",
+    "kb:bazi:god_pillar:正财:day",
+    "kb:bazi:god_pillar:正财:month",
+    "kb:bazi:god_pillar:正财:time",
+    "kb:bazi:god_pillar:正财:year",
+    "kb:bazi:god_pillar:比肩:day",
+    "kb:bazi:god_pillar:比肩:month",
+    "kb:bazi:god_pillar:比肩:time",
+    "kb:bazi:god_pillar:比肩:year",
+    "kb:bazi:god_pillar:食神:day",
+    "kb:bazi:god_pillar:食神:month",
+    "kb:bazi:god_pillar:食神:time",
+    "kb:bazi:god_pillar:食神:year",
+    "kb:bazi:hidden:辰",
+    "kb:bazi:hidden:酉",
+    "kb:bazi:nayin:剑锋金",
+    "kb:bazi:nayin:城头土",
+    "kb:bazi:nayin:壁上土",
+    "kb:bazi:nayin:大林木",
+    "kb:bazi:nayin:大海水",
+    "kb:bazi:nayin:大溪水",
+    "kb:bazi:nayin:大驿土",
+    "kb:bazi:nayin:天上火",
+    "kb:bazi:nayin:天河水",
+    "kb:bazi:nayin:屋上土",
+    "kb:bazi:nayin:山下火",
+    "kb:bazi:nayin:山头火",
+    "kb:bazi:nayin:平地木",
+    "kb:bazi:nayin:杨柳木",
+    "kb:bazi:nayin:松柏木",
+    "kb:bazi:nayin:桑柘木",
+    "kb:bazi:nayin:沙中土",
+    "kb:bazi:nayin:沙中金",
+    "kb:bazi:nayin:泉中水",
+    "kb:bazi:nayin:海中金",
+    "kb:bazi:nayin:涧下水",
+    "kb:bazi:nayin:炉中火",
+    "kb:bazi:nayin:白蜡金",
+    "kb:bazi:nayin:石榴木",
+    "kb:bazi:nayin:覆灯火",
+    "kb:bazi:nayin:路旁土",
+    "kb:bazi:nayin:金箔金",
+    "kb:bazi:nayin:钗钏金",
+    "kb:bazi:nayin:长流水",
+    "kb:bazi:nayin:霹雳火",
+    "kb:bazi:ten_god:七杀",
+    "kb:bazi:ten_god:伤官",
+    "kb:bazi:ten_god:偏印",
+    "kb:bazi:ten_god:偏财",
+    "kb:bazi:ten_god:劫财",
+    "kb:bazi:ten_god:正印",
+    "kb:bazi:ten_god:正官",
+    "kb:bazi:ten_god:正财",
+    "kb:bazi:ten_god:比肩",
+    "kb:bazi:ten_god:食神"
+  ]
+}

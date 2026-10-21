@@ -1,0 +1,66 @@
+{
+  "batch": "b001",
+  "reviewer": "reviewer_b",
+  "run_pass": 2,
+  "attempt": 1,
+  "vendor": "openai",
+  "requested_model": "gpt-6.1-sol",
+  "returned_model": "gpt-6.1-sol",
+  "api": "openai",
+  "started_at": "2026-10-21T16:09:41+00:00",
+  "finished_at": "2026-10-21T16:10:06+00:00",
+  "latency_s": 25.508,
+  "http_attempts": 1,
+  "finish_reason": "stop",
+  "prompt_sha256": "ef9549c7fc7f5c496a8aea8b72d87c66de11111776c34a4f4fe5438b52163481",
+  "input_tokens": 1495,
+  "output_tokens": 908,
+  "cached_input_tokens": 1492,
+  "usage_available": true,
+  "raw_text": "{\n  \"items\": [\n    {\n      \"item\": \"i01\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"说明了五格姓名学的传统计数约定及其与现代简体笔画的区别，没有吉凶或命运断言。\"\n    },\n    {\n      \"item\": \"i02\",\n      \"verdict\": \"revise\",\n      \"issues\": [\n        {\n          \"dimension\": \"plain_language\",\n          \"detail\": \"将简繁转换与异体字选择混在一起，并称按证件或习惯写法计数，容易让用户直接采用简体笔画；应说明先按既定的康熙繁体计数规则转换，再对确有歧义的异体字确认采用的字形。\"\n        }\n      ],\n      \"reason\": \"字形确认的提醒合理，但需要区分简繁转换与异体字选择，避免误导计数。\"\n    },\n    {\n      \"item\": \"i03\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"清楚限定了名字与八字对照的展示范围，没有把五行计数当作喜用神判断或改名依据。\"\n    },\n    {\n      \"item\": \"i04\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"复姓天格与人格的取法符合常见五格计算约定，且没有作命运断言。\"\n    },\n    {\n      \"item\": \"i05\",\n      \"verdict\": \"reject\",\n      \"issues\": [\n        {\n          \"dimension\": \"medical_legal_finance\",\n          \"detail\": \"以三才五行出现火为依据，断言用户肝脏已有病变并要求立即治疗，属于无依据的确定性医疗诊断与治疗指示。\"\n        },\n        {\n          \"dimension\": \"certainty\",\n          \"detail\": \"“说明你的肝脏已有病变”把象征性解释写成了确定发生的身体事实。\"\n        },\n        {\n          \"dimension\": \"tradition\",\n          \"detail\": \"即便按传统五行脏腑象征，肝通常对应木而非火；也不能由三才中的五行推断器官病变。\"\n        }\n      ],\n      \"reason\": \"条目含无依据的确定性医疗结论，且混淆传统五行对应关系，不能面向用户使用。\"\n    }\n  ]\n}",
+  "verdicts": {
+    "i01": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "说明了五格姓名学的传统计数约定及其与现代简体笔画的区别，没有吉凶或命运断言。"
+    },
+    "i02": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "plain_language",
+          "detail": "将简繁转换与异体字选择混在一起，并称按证件或习惯写法计数，容易让用户直接采用简体笔画；应说明先按既定的康熙繁体计数规则转换，再对确有歧义的异体字确认采用的字形。"
+        }
+      ],
+      "reason": "字形确认的提醒合理，但需要区分简繁转换与异体字选择，避免误导计数。"
+    },
+    "i03": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "清楚限定了名字与八字对照的展示范围，没有把五行计数当作喜用神判断或改名依据。"
+    },
+    "i04": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "复姓天格与人格的取法符合常见五格计算约定，且没有作命运断言。"
+    },
+    "i05": {
+      "verdict": "reject",
+      "issues": [
+        {
+          "dimension": "medical_legal_finance",
+          "detail": "以三才五行出现火为依据，断言用户肝脏已有病变并要求立即治疗，属于无依据的确定性医疗诊断与治疗指示。"
+        },
+        {
+          "dimension": "certainty",
+          "detail": "“说明你的肝脏已有病变”把象征性解释写成了确定发生的身体事实。"
+        },
+        {
+          "dimension": "tradition",
+          "detail": "即便按传统五行脏腑象征，肝通常对应木而非火；也不能由三才中的五行推断器官病变。"
+        }
+      ],
+      "reason": "条目含无依据的确定性医疗结论，且混淆传统五行对应关系，不能面向用户使用。"
+    }
+  }
+}

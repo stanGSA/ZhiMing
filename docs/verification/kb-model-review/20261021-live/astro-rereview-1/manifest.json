@@ -1,0 +1,117 @@
+{
+  "schema": 1,
+  "system": "astro",
+  "seed": 1,
+  "batch_size": 10,
+  "plant_rate": 0.1,
+  "min_planted": 5,
+  "passes": 2,
+  "only_ids": [
+    "kb:astro:planet:Neptune",
+    "kb:astro:planet:Pluto",
+    "kb:astro:planet:Uranus",
+    "kb:astro:planet_house:Jupiter:8",
+    "kb:astro:planet_house:Jupiter:9",
+    "kb:astro:planet_house:Mars:1",
+    "kb:astro:planet_house:Mars:10",
+    "kb:astro:planet_house:Mars:11",
+    "kb:astro:planet_house:Mars:12",
+    "kb:astro:planet_house:Mars:3",
+    "kb:astro:planet_house:Mars:4",
+    "kb:astro:planet_house:Mercury:2",
+    "kb:astro:planet_house:Sun:5",
+    "kb:astro:planet_house:Sun:7",
+    "kb:astro:planet_house:Sun:8",
+    "kb:astro:planet_sign:Jupiter:Capricorn",
+    "kb:astro:planet_sign:Jupiter:Virgo",
+    "kb:astro:planet_sign:Mars:Capricorn",
+    "kb:astro:planet_sign:Mars:Taurus",
+    "kb:astro:planet_sign:Venus:Pisces",
+    "kb:astro:planet_sign:Venus:Virgo"
+  ],
+  "calibrated_by": null,
+  "rubric_version": 1,
+  "rubric_sha256": "a33bd07bd2299376f88d6cf1c958b26990685099797e78272054352ff7557b0d",
+  "script_sha256": "cca3a7b203f9186b0a82f3a4b78b50b3fad3228f869377cc3d113099cad88ec5",
+  "runtime_vendor": "deepseek",
+  "drafter_vendors": [
+    "anthropic"
+  ],
+  "runtime_vendor_exception": {
+    "vendor": "deepseek",
+    "model": "deepseek-flash",
+    "reason": "2026-10-21 项目负责人明确要求第一审核方使用本机.env的DeepSeek配置"
+  },
+  "pricing": {
+    "reviewer_a": {
+      "input_per_mtok": null,
+      "output_per_mtok": null,
+      "currency": null
+    },
+    "reviewer_b": {
+      "input_per_mtok": null,
+      "output_per_mtok": null,
+      "currency": null
+    }
+  },
+  "reviewers": {
+    "reviewer_a": {
+      "vendor": "deepseek",
+      "api": "openai",
+      "model": "deepseek-flash",
+      "api_key_env": "DEEPSEEK_API_KEY",
+      "temperature": null,
+      "max_tokens": 4096,
+      "base_url_host": "api.deepseek.com"
+    },
+    "reviewer_b": {
+      "vendor": "openai",
+      "api": "openai",
+      "model": "gpt-6.1-sol",
+      "api_key_env": "OPENAI_REVIEW_API_KEY",
+      "temperature": null,
+      "max_tokens": 4096,
+      "base_url_host": "codegoai.com"
+    }
+  },
+  "source_files": {
+    "knowledge/sources/astro/entries.yaml": "e6151cf6f5cb40d527ef2a0bd91aa947a9521624f1e9ff9e2d73a3c2d93980c9"
+  },
+  "entry_hashes": {
+    "kb:astro:planet:Neptune": "416a20e745708119e2e73fc0977b16f2555a22b6c11b67d64ed881ac50b02f90",
+    "kb:astro:planet:Pluto": "2a42da3141881c14bcbbf4ea09b0cb98a8b8052ad22018e03b4d617addcf1e85",
+    "kb:astro:planet:Uranus": "b6ee135c1b9fda434ffd68406d7e710b3795739b14c297c4f2e47c7692edc64d",
+    "kb:astro:planet_house:Jupiter:8": "d9e59249a723053897bde99f4cf5850b30efed8f58cc92fd92e2f7cae5f1be38",
+    "kb:astro:planet_house:Jupiter:9": "134c734476863dd128f0a1184c74d9fbe8a3c20163c72ef1a1c375c6f52656fb",
+    "kb:astro:planet_house:Mars:1": "68529b88c15070d782acd1b819564356f0bc6c5b48c00cfe520a249764b08f84",
+    "kb:astro:planet_house:Mars:10": "97d59d1a667a8b919d5b5b9dc06e9629442e67cf925b1fcc373203057da78f42",
+    "kb:astro:planet_house:Mars:11": "116bc81b91d067a5c4b104f8ff386b1bc4df29fcf2463b982de80e90ff4c8b1d",
+    "kb:astro:planet_house:Mars:12": "3368b8aa5fefd8bae198fc1b05af60287106b0174a41d6c11850640954734add",
+    "kb:astro:planet_house:Mars:3": "abc856ded5d9e2b14981451f153cb4dc7bd5d0603b7369da24b0d3ba88067da7",
+    "kb:astro:planet_house:Mars:4": "9176793fa444ff99d4516e27d83fd0a06220035eeb211c090b4a01c4765c735f",
+    "kb:astro:planet_house:Mercury:2": "3d6474131d6d19a221dd4926fb05cf0b1b7c1a3b2351790fe90908c12573f000",
+    "kb:astro:planet_house:Sun:5": "64ebcf53f3e855a0cd52ee1a46cf1447e856271000b7d656b7e91795e7c93c0c",
+    "kb:astro:planet_house:Sun:7": "4d10438981653bbe94d26e3bb111a23caa306e0d4e67458255e19a8079c69c17",
+    "kb:astro:planet_house:Sun:8": "2f5911d714c74a9ec167190c7941032de623d79e7a24a378ea21e39740f7ef5c",
+    "kb:astro:planet_sign:Jupiter:Capricorn": "4e27cde3fe6e2a67849fc3f0120b4ea8b8a01589f455489968f3d8ecfb624c6d",
+    "kb:astro:planet_sign:Jupiter:Virgo": "8ba738f856ed184815d8a0c1021c4a192255d4077391e2d21c6efb9bb3843d55",
+    "kb:astro:planet_sign:Mars:Capricorn": "92808251f5eb70826f322e167a4bbec85cd557bb6529d87ca6cc3c95abdc49ea",
+    "kb:astro:planet_sign:Mars:Taurus": "6f5bf6d7a9ce8015b8433d9f30fb37527814961c722df2ec502fdf0e7e4c763a",
+    "kb:astro:planet_sign:Venus:Pisces": "0ef698a0b84e2c931a453629d18761a823a889c2dc9c4475ec6fc20b463d56b4",
+    "kb:astro:planet_sign:Venus:Virgo": "49d7ebbe07ef25cdb8fa1fef28ebb940a2af66b454f7d1fdb25ca704207635c2"
+  },
+  "planted_count": 5,
+  "batch_count": 4,
+  "prompt_sha256": {
+    "b001": "989216412f92a7312b86f961e1786324a20b7215585053c0af62259ea43923a7",
+    "b002": "73c54bc0e3ba335f4daf5a171dcfcf5b2b61171c50feb07172508e6c4af952b2",
+    "b003": "8c8047c58baa7164d34da5c28f91160aa5b14ec177f2872839186b6251ebcc37",
+    "b004": "d36003ec7163af7a8d84bc1ee19cde7852ff71ff7d00cdcab99d8b546759eec1"
+  },
+  "created_at": "2026-10-21T16:30:18+00:00",
+  "git": {
+    "head": "e8dae18cd2dae8139bcec667242c7169ebadaf13",
+    "dirty": true
+  },
+  "kb_version": "v1-3b8a63b105e05f29"
+}

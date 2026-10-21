@@ -1,0 +1,88 @@
+{
+  "batch": "b027",
+  "reviewer": "reviewer_b",
+  "run_pass": 1,
+  "attempt": 1,
+  "vendor": "openai",
+  "requested_model": "gpt-6.1-sol",
+  "returned_model": "gpt-6.1-sol",
+  "api": "openai",
+  "started_at": "2026-10-21T16:11:06+00:00",
+  "finished_at": "2026-10-21T16:11:40+00:00",
+  "latency_s": 33.924,
+  "http_attempts": 1,
+  "finish_reason": "stop",
+  "prompt_sha256": "c40149dbf34bec12a5c709682fb9a65a487388bb4edfa9fe312514fad9830f8c",
+  "input_tokens": 2619,
+  "output_tokens": 1216,
+  "cached_input_tokens": null,
+  "usage_available": true,
+  "raw_text": "{\n  \"items\": [\n    {\n      \"item\": \"i01\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"琐事烦扰与精力消耗的联想贴合蚊子意象，自我主题轻微负向与文字一致。\"\n    },\n    {\n      \"item\": \"i02\",\n      \"verdict\": \"revise\",\n      \"issues\": [\n        {\n          \"dimension\": \"consistency\",\n          \"detail\": \"“小龙”并非“蛇”的稳定同义词，也可能指龙的意象，容易误命中；建议删除该同义词。\"\n        }\n      ],\n      \"reason\": \"释义本身平和且方向基本一致，但同义词混入了另一种意象。\"\n    },\n    {\n      \"item\": \"i03\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"勤劳、琐碎事务与细小焦虑的联想合理，中性主题设置符合文字的多义性。\"\n    },\n    {\n      \"item\": \"i04\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"庆祝、被关心与满足感的表述支持自我和关系主题的轻微正向，没有预兆或专业领域确定性结论。\"\n    },\n    {\n      \"item\": \"i05\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"以告别和结束解释葬礼意象，措辞平和并明确排除死亡预兆，轻微负向设置与告别语境基本相符。\"\n    },\n    {\n      \"item\": \"i06\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"收获与适应环境的联想没有被写成现实预兆，财务主题轻微正向与收获表述基本一致。\"\n    },\n    {\n      \"item\": \"i07\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"积累与丰收的象征解释合理，财务主题轻微正向与文字一致。\"\n    },\n    {\n      \"item\": \"i08\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"放下、循环与阶段结束符合落叶的常见联想，自我主题轻微负向与结束语境基本相符。\"\n    },\n    {\n      \"item\": \"i09\",\n      \"verdict\": \"revise\",\n      \"issues\": [\n        {\n          \"dimension\": \"consistency\",\n          \"detail\": \"“泥鳅”是鱼类，不是“蚯蚓”的同义词，会将不同动物意象混为一谈；应删除该同义词。\"\n        }\n      ],\n      \"reason\": \"正文与蚯蚓意象基本相符，但同义词存在明确的对象混淆。\"\n    },\n    {\n      \"item\": \"i10\",\n      \"verdict\": \"revise\",\n      \"issues\": [\n        {\n          \"dimension\": \"consistency\",\n          \"detail\": \"同义词“虫”过于宽泛，若用于包含匹配，容易误命中萤火虫、寄生虫等具有不同含义的具体意象；建议限制为完整表达匹配，并优先识别具体虫类。\"\n        }\n      ],\n      \"reason\": \"释义与负向自我主题一致，但过宽的同义词存在跨意象误命中风险。\"\n    }\n  ]\n}",
+  "verdicts": {
+    "i01": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "琐事烦扰与精力消耗的联想贴合蚊子意象，自我主题轻微负向与文字一致。"
+    },
+    "i02": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "consistency",
+          "detail": "“小龙”并非“蛇”的稳定同义词，也可能指龙的意象，容易误命中；建议删除该同义词。"
+        }
+      ],
+      "reason": "释义本身平和且方向基本一致，但同义词混入了另一种意象。"
+    },
+    "i03": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "勤劳、琐碎事务与细小焦虑的联想合理，中性主题设置符合文字的多义性。"
+    },
+    "i04": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "庆祝、被关心与满足感的表述支持自我和关系主题的轻微正向，没有预兆或专业领域确定性结论。"
+    },
+    "i05": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "以告别和结束解释葬礼意象，措辞平和并明确排除死亡预兆，轻微负向设置与告别语境基本相符。"
+    },
+    "i06": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "收获与适应环境的联想没有被写成现实预兆，财务主题轻微正向与收获表述基本一致。"
+    },
+    "i07": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "积累与丰收的象征解释合理，财务主题轻微正向与文字一致。"
+    },
+    "i08": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "放下、循环与阶段结束符合落叶的常见联想，自我主题轻微负向与结束语境基本相符。"
+    },
+    "i09": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "consistency",
+          "detail": "“泥鳅”是鱼类，不是“蚯蚓”的同义词，会将不同动物意象混为一谈；应删除该同义词。"
+        }
+      ],
+      "reason": "正文与蚯蚓意象基本相符，但同义词存在明确的对象混淆。"
+    },
+    "i10": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "consistency",
+          "detail": "同义词“虫”过于宽泛，若用于包含匹配，容易误命中萤火虫、寄生虫等具有不同含义的具体意象；建议限制为完整表达匹配，并优先识别具体虫类。"
+        }
+      ],
+      "reason": "释义与负向自我主题一致，但过宽的同义词存在跨意象误命中风险。"
+    }
+  }
+}

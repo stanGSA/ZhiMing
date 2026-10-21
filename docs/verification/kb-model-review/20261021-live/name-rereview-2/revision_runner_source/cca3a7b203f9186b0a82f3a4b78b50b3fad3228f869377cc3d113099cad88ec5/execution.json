@@ -1,0 +1,28 @@
+{
+  "role": {
+    "vendor": "openai",
+    "api": "openai",
+    "model": "gpt-6-astra",
+    "api_key_env": "OPENAI_REVIEW_API_KEY",
+    "temperature": null,
+    "max_tokens": 4096,
+    "base_url_host": "codegoai.com"
+  },
+  "vendor_exception": {
+    "vendor": "openai",
+    "model": "gpt-6-astra",
+    "reviewers": {
+      "reviewer_a": {
+        "vendor": "deepseek",
+        "model": "deepseek-flash"
+      },
+      "reviewer_b": {
+        "vendor": "openai",
+        "model": "gpt-6.1-sol"
+      }
+    },
+    "reason": "2026-10-21 项目负责人在知晓同厂商限制后明确要求第三方使用OpenAI"
+  },
+  "at": "2026-10-21T16:52:14+00:00",
+  "script_sha256": "cca3a7b203f9186b0a82f3a4b78b50b3fad3228f869377cc3d113099cad88ec5"
+}

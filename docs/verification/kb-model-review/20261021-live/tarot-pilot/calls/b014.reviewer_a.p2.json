@@ -1,0 +1,83 @@
+{
+  "batch": "b014",
+  "reviewer": "reviewer_a",
+  "run_pass": 2,
+  "attempt": 1,
+  "vendor": "deepseek",
+  "requested_model": "deepseek-flash",
+  "returned_model": "deepseek-flash",
+  "api": "openai",
+  "started_at": "2026-10-21T15:23:10+00:00",
+  "finished_at": "2026-10-21T15:23:15+00:00",
+  "latency_s": 4.608,
+  "http_attempts": 1,
+  "finish_reason": "stop",
+  "prompt_sha256": "a5350f3f4db2b7978acfd3b41f4db58d4775dc4e6d184d6654e7c24b7614b179",
+  "input_tokens": 2967,
+  "output_tokens": 486,
+  "cached_input_tokens": 2816,
+  "usage_available": true,
+  "raw_text": "{\n  \"items\": [\n    {\"item\": \"i01\", \"verdict\": \"pass\", \"issues\": [], \"reason\": \"逆位释义方向与文字一致，无宿命化或违规结论，语言通俗。\"},\n    {\"item\": \"i02\", \"verdict\": \"reject\", \"issues\": [{\"dimension\": \"medical_legal_finance\", \"detail\": \"释义直接诊断为焦虑症并建议服药，属于医疗确定性结论。\"}], \"reason\": \"含医疗诊断与用药建议，须删除该句。\"},\n    {\"item\": \"i03\", \"verdict\": \"pass\", \"issues\": [], \"reason\": \"正位释义方向与文字一致，措辞为反思性，无违规内容。\"},\n    {\"item\": \"i04\", \"verdict\": \"pass\", \"issues\": [], \"reason\": \"逆位释义方向与文字一致，语言通俗且无宿命化断言。\"},\n    {\"item\": \"i05\", \"verdict\": \"pass\", \"issues\": [], \"reason\": \"逆位释义方向与文字一致，措辞为建议性质，无违规。\"},\n    {\"item\": \"i06\", \"verdict\": \"pass\", \"issues\": [], \"reason\": \"正位释义方向与文字一致，语言通俗且无确定性断言。\"},\n    {\"item\": \"i07\", \"verdict\": \"pass\", \"issues\": [], \"reason\": \"逆位释义方向与文字一致，措辞为反思建议，无违规。\"},\n    {\"item\": \"i08\", \"verdict\": \"pass\", \"issues\": [], \"reason\": \"逆位释义方向与文字一致，语言通俗且无确定性断言。\"},\n    {\"item\": \"i09\", \"verdict\": \"pass\", \"issues\": [], \"reason\": \"正位释义方向与文字一致，措辞为反思建议，无违规。\"},\n    {\"item\": \"i10\", \"verdict\": \"pass\", \"issues\": [], \"reason\": \"正位释义方向与文字一致，语言通俗且无确定性断言。\"},\n    {\"item\": \"i11\", \"verdict\": \"pass\", \"issues\": [], \"reason\": \"正位释义方向与文字一致，措辞为反思性，无违规内容。\"}\n  ]\n}",
+  "verdicts": {
+    "i01": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "逆位释义方向与文字一致，无宿命化或违规结论，语言通俗。"
+    },
+    "i02": {
+      "verdict": "reject",
+      "issues": [
+        {
+          "dimension": "medical_legal_finance",
+          "detail": "释义直接诊断为焦虑症并建议服药，属于医疗确定性结论。"
+        }
+      ],
+      "reason": "含医疗诊断与用药建议，须删除该句。"
+    },
+    "i03": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "正位释义方向与文字一致，措辞为反思性，无违规内容。"
+    },
+    "i04": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "逆位释义方向与文字一致，语言通俗且无宿命化断言。"
+    },
+    "i05": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "逆位释义方向与文字一致，措辞为建议性质，无违规。"
+    },
+    "i06": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "正位释义方向与文字一致，语言通俗且无确定性断言。"
+    },
+    "i07": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "逆位释义方向与文字一致，措辞为反思建议，无违规。"
+    },
+    "i08": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "逆位释义方向与文字一致，语言通俗且无确定性断言。"
+    },
+    "i09": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "正位释义方向与文字一致，措辞为反思建议，无违规。"
+    },
+    "i10": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "正位释义方向与文字一致，语言通俗且无确定性断言。"
+    },
+    "i11": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "正位释义方向与文字一致，措辞为反思性，无违规内容。"
+    }
+  }
+}

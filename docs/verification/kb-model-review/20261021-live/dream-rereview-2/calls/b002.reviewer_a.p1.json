@@ -1,0 +1,95 @@
+{
+  "batch": "b002",
+  "reviewer": "reviewer_a",
+  "run_pass": 1,
+  "attempt": 1,
+  "vendor": "deepseek",
+  "requested_model": "deepseek-flash",
+  "returned_model": "deepseek-flash",
+  "api": "openai",
+  "started_at": "2026-10-21T16:53:04+00:00",
+  "finished_at": "2026-10-21T16:53:06+00:00",
+  "latency_s": 2.844,
+  "http_attempts": 1,
+  "finish_reason": "stop",
+  "prompt_sha256": "1f4c30b7040a8764df80815d89981de0f2d169e5a9a817d7e5c9a6320472b49a",
+  "input_tokens": 2222,
+  "output_tokens": 642,
+  "cached_input_tokens": 384,
+  "usage_available": true,
+  "raw_text": "{\n  \"items\": [\n    {\n      \"item\": \"i01\",\n      \"verdict\": \"reject\",\n      \"issues\": [\n        {\"dimension\": \"certainty\", \"detail\": \"结尾出现“注定会失去现在的感情，一定会发生”的宿命化断言\"},\n        {\"dimension\": \"theme_direction\", \"detail\": \"文字断言感情必然失去，但 relationship 主题值为 0，方向与文字不一致\"},\n        {\"dimension\": \"consistency\", \"detail\": \"乌龟的释义混入了与 key 无关的感情预兆断言\"}\n      ],\n      \"reason\": \"文字含宿命化感情断言且与主题方向矛盾，核心内容偏离乌龟意象。\"\n    },\n    {\n      \"item\": \"i02\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"释义围绕空间寻路情境，方向与主题一致，措辞平和无宿命化。\"\n    },\n    {\n      \"item\": \"i03\",\n      \"verdict\": \"reject\",\n      \"issues\": [\n        {\"dimension\": \"medical_legal_finance\", \"detail\": \"结尾出现“肝脏已有病变，需要立即治疗”的医疗诊断确定性结论\"}\n      ],\n      \"reason\": \"含医疗诊断确定性断言，违反医疗维度要求。\"\n    },\n    {\n      \"item\": \"i04\",\n      \"verdict\": \"revise\",\n      \"issues\": [\n        {\"dimension\": \"consistency\", \"detail\": \"同义词列表含“丢东西”，与“赶不上车”意象不符，会误命中丢东西类梦境\"}\n      ],\n      \"reason\": \"同义词“丢东西”会误命中其他意象，需删除。\"\n    },\n    {\n      \"item\": \"i05\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"释义围绕入场资格与准备状态，主题全为 0 与文字无方向一致，措辞平和。\"\n    },\n    {\n      \"item\": \"i06\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"释义围绕时间压力，self 为负与文字一致，无宿命化断言。\"\n    },\n    {\n      \"item\": \"i07\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"释义围绕价值感与珍视，self 微正与文字一致，明确不预示财富变化。\"\n    },\n    {\n      \"item\": \"i08\",\n      \"verdict\": \"reject\",\n      \"issues\": [\n        {\"dimension\": \"tradition\", \"detail\": \"key 为“开车”，释义却写成“恋人的释义”，对象写错\"},\n        {\"dimension\": \"consistency\", \"detail\": \"文字与 key“开车”及关键词“生活方向、行动节奏、掌控感”完全不符\"}\n      ],\n      \"reason\": \"释义文字与 key“开车”不符，写成了恋人的内容。\"\n    }\n  ]\n}",
+  "verdicts": {
+    "i01": {
+      "verdict": "reject",
+      "issues": [
+        {
+          "dimension": "certainty",
+          "detail": "结尾出现“注定会失去现在的感情，一定会发生”的宿命化断言"
+        },
+        {
+          "dimension": "theme_direction",
+          "detail": "文字断言感情必然失去，但 relationship 主题值为 0，方向与文字不一致"
+        },
+        {
+          "dimension": "consistency",
+          "detail": "乌龟的释义混入了与 key 无关的感情预兆断言"
+        }
+      ],
+      "reason": "文字含宿命化感情断言且与主题方向矛盾，核心内容偏离乌龟意象。"
+    },
+    "i02": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "释义围绕空间寻路情境，方向与主题一致，措辞平和无宿命化。"
+    },
+    "i03": {
+      "verdict": "reject",
+      "issues": [
+        {
+          "dimension": "medical_legal_finance",
+          "detail": "结尾出现“肝脏已有病变，需要立即治疗”的医疗诊断确定性结论"
+        }
+      ],
+      "reason": "含医疗诊断确定性断言，违反医疗维度要求。"
+    },
+    "i04": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "consistency",
+          "detail": "同义词列表含“丢东西”，与“赶不上车”意象不符，会误命中丢东西类梦境"
+        }
+      ],
+      "reason": "同义词“丢东西”会误命中其他意象，需删除。"
+    },
+    "i05": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "释义围绕入场资格与准备状态，主题全为 0 与文字无方向一致，措辞平和。"
+    },
+    "i06": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "释义围绕时间压力，self 为负与文字一致，无宿命化断言。"
+    },
+    "i07": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "释义围绕价值感与珍视，self 微正与文字一致，明确不预示财富变化。"
+    },
+    "i08": {
+      "verdict": "reject",
+      "issues": [
+        {
+          "dimension": "tradition",
+          "detail": "key 为“开车”，释义却写成“恋人的释义”，对象写错"
+        },
+        {
+          "dimension": "consistency",
+          "detail": "文字与 key“开车”及关键词“生活方向、行动节奏、掌控感”完全不符"
+        }
+      ],
+      "reason": "释义文字与 key“开车”不符，写成了恋人的内容。"
+    }
+  }
+}

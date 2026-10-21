@@ -1,0 +1,61 @@
+{
+  "batch": "b001",
+  "reviewer": "reviewer_a",
+  "run_pass": 1,
+  "attempt": 1,
+  "vendor": "deepseek",
+  "requested_model": "deepseek-flash",
+  "returned_model": "deepseek-flash",
+  "api": "openai",
+  "started_at": "2026-10-21T16:00:36+00:00",
+  "finished_at": "2026-10-21T16:00:42+00:00",
+  "latency_s": 6.719,
+  "http_attempts": 1,
+  "finish_reason": "stop",
+  "prompt_sha256": "ef9549c7fc7f5c496a8aea8b72d87c66de11111776c34a4f4fe5438b52163481",
+  "input_tokens": 1365,
+  "output_tokens": 306,
+  "cached_input_tokens": 128,
+  "usage_available": true,
+  "raw_text": "{\"items\": [{\"item\": \"i01\", \"verdict\": \"pass\", \"issues\": [], \"reason\": \"康熙字典笔画计数与常见五格民间约定一致，举例准确，表述平实。\"}, {\"item\": \"i02\", \"verdict\": \"pass\", \"issues\": [], \"reason\": \"说明异体字笔画差异并建议按实际写法确认，符合民间约定，无断言。\"}, {\"item\": \"i03\", \"verdict\": \"pass\", \"issues\": [], \"reason\": \"只并列五行计数不作喜用神判断，属克制表述，与 key 一致。\"}, {\"item\": \"i04\", \"verdict\": \"pass\", \"issues\": [], \"reason\": \"复姓天格、人格取法符合五格剖象法民间通行算法。\"}, {\"item\": \"i05\", \"verdict\": \"reject\", \"issues\": [{\"dimension\": \"medical_legal_finance\", \"detail\": \"“出现它说明你的肝脏已有病变，需要立即治疗”属医疗诊断与确定性断言\"}, {\"dimension\": \"certainty\", \"detail\": \"以“说明……已有病变”作宿命化医学断言\"}, {\"dimension\": \"consistency\", \"detail\": \"五行象征与肝脏病变的断言与释义主体、key 不协调，且超出三才释义范围\"}], \"reason\": \"含医疗诊断式确定性结论，须拒收。\"}]}",
+  "verdicts": {
+    "i01": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "康熙字典笔画计数与常见五格民间约定一致，举例准确，表述平实。"
+    },
+    "i02": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "说明异体字笔画差异并建议按实际写法确认，符合民间约定，无断言。"
+    },
+    "i03": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "只并列五行计数不作喜用神判断，属克制表述，与 key 一致。"
+    },
+    "i04": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "复姓天格、人格取法符合五格剖象法民间通行算法。"
+    },
+    "i05": {
+      "verdict": "reject",
+      "issues": [
+        {
+          "dimension": "medical_legal_finance",
+          "detail": "“出现它说明你的肝脏已有病变，需要立即治疗”属医疗诊断与确定性断言"
+        },
+        {
+          "dimension": "certainty",
+          "detail": "以“说明……已有病变”作宿命化医学断言"
+        },
+        {
+          "dimension": "consistency",
+          "detail": "五行象征与肝脏病变的断言与释义主体、key 不协调，且超出三才释义范围"
+        }
+      ],
+      "reason": "含医疗诊断式确定性结论，须拒收。"
+    }
+  }
+}

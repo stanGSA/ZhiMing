@@ -1,0 +1,482 @@
+{
+  "system": "tarot",
+  "entries": 163,
+  "planted": 16,
+  "metrics": {
+    "pass_rate": 0.9141,
+    "detection": {
+      "reviewer_a": 0.9375,
+      "reviewer_b": 1.0
+    },
+    "detection_merged": 1.0,
+    "rerun": {
+      "reviewer_a": 0.9162,
+      "reviewer_b": 0.9888
+    },
+    "kappa": 0.7939,
+    "observed_agreement": 0.9877,
+    "verdict_counts": {
+      "reviewer_a": {
+        "pass": 157,
+        "revise": 6
+      },
+      "reviewer_b": {
+        "pass": 159,
+        "revise": 4
+      }
+    }
+  },
+  "gates": {
+    "pass_rate": false,
+    "detection_merged": true,
+    "detection_single": true,
+    "rerun": true,
+    "kappa": true,
+    "complete": true
+  },
+  "thresholds": {
+    "pass_rate": 0.95,
+    "detection_merged": 0.9,
+    "detection_single": 0.8,
+    "rerun": 0.9,
+    "kappa": 0.6
+  },
+  "calibrated": true,
+  "passed": false,
+  "approved": 149,
+  "queued": 14,
+  "incomplete": [],
+  "planted_detail": [
+    {
+      "ref": "planted-001",
+      "original": "kb:tarot:card:pentacles_ace:reversed",
+      "mutation": "foreign_text",
+      "reviewer_a": "revise",
+      "reviewer_b": "reject"
+    },
+    {
+      "ref": "planted-002",
+      "original": "kb:tarot:card:wands_seven:upright",
+      "mutation": "fatalistic",
+      "reviewer_a": "reject",
+      "reviewer_b": "revise"
+    },
+    {
+      "ref": "planted-003",
+      "original": "kb:tarot:card:cups_queen:reversed",
+      "mutation": "flip_signs",
+      "reviewer_a": "revise",
+      "reviewer_b": "revise"
+    },
+    {
+      "ref": "planted-004",
+      "original": "kb:tarot:card:swords_ace:upright",
+      "mutation": "swap_orientation",
+      "reviewer_a": "revise",
+      "reviewer_b": "reject"
+    },
+    {
+      "ref": "planted-005",
+      "original": "kb:tarot:card:judgement:reversed",
+      "mutation": "medical",
+      "reviewer_a": "reject",
+      "reviewer_b": "reject"
+    },
+    {
+      "ref": "planted-006",
+      "original": "kb:tarot:card:wands_ace:reversed",
+      "mutation": "medical",
+      "reviewer_a": "reject",
+      "reviewer_b": "reject"
+    },
+    {
+      "ref": "planted-007",
+      "original": "kb:tarot:card:the_magician:upright",
+      "mutation": "flip_signs",
+      "reviewer_a": "revise",
+      "reviewer_b": "revise"
+    },
+    {
+      "ref": "planted-008",
+      "original": "kb:tarot:card:the_sun:reversed",
+      "mutation": "foreign_text",
+      "reviewer_a": "revise",
+      "reviewer_b": "revise"
+    },
+    {
+      "ref": "planted-009",
+      "original": "kb:tarot:card:the_devil:upright",
+      "mutation": "fatalistic",
+      "reviewer_a": "reject",
+      "reviewer_b": "revise"
+    },
+    {
+      "ref": "planted-010",
+      "original": "kb:tarot:card:pentacles_seven:upright",
+      "mutation": "swap_orientation",
+      "reviewer_a": "reject",
+      "reviewer_b": "revise"
+    },
+    {
+      "ref": "planted-011",
+      "original": "kb:tarot:card:cups_three:reversed",
+      "mutation": "medical",
+      "reviewer_a": "reject",
+      "reviewer_b": "reject"
+    },
+    {
+      "ref": "planted-012",
+      "original": "kb:tarot:card:the_world:reversed",
+      "mutation": "foreign_text",
+      "reviewer_a": "pass",
+      "reviewer_b": "revise"
+    },
+    {
+      "ref": "planted-013",
+      "original": "kb:tarot:card:cups_four:upright",
+      "mutation": "swap_orientation",
+      "reviewer_a": "revise",
+      "reviewer_b": "reject"
+    },
+    {
+      "ref": "planted-014",
+      "original": "kb:tarot:card:the_emperor:upright",
+      "mutation": "flip_signs",
+      "reviewer_a": "revise",
+      "reviewer_b": "revise"
+    },
+    {
+      "ref": "planted-015",
+      "original": "kb:tarot:card:the_high_priestess:reversed",
+      "mutation": "fatalistic",
+      "reviewer_a": "reject",
+      "reviewer_b": "reject"
+    },
+    {
+      "ref": "planted-016",
+      "original": "kb:tarot:card:wheel_of_fortune:upright",
+      "mutation": "swap_orientation",
+      "reviewer_a": "revise",
+      "reviewer_b": "revise"
+    }
+  ],
+  "detection_by_mutation": {
+    "foreign_text": {
+      "total": 3,
+      "reviewer_a": 2,
+      "reviewer_b": 3
+    },
+    "fatalistic": {
+      "total": 3,
+      "reviewer_a": 3,
+      "reviewer_b": 3
+    },
+    "flip_signs": {
+      "total": 3,
+      "reviewer_a": 3,
+      "reviewer_b": 3
+    },
+    "swap_orientation": {
+      "total": 4,
+      "reviewer_a": 4,
+      "reviewer_b": 4
+    },
+    "medical": {
+      "total": 3,
+      "reviewer_a": 3,
+      "reviewer_b": 3
+    }
+  },
+  "usage": {
+    "reviewer_a": {
+      "calls": 34,
+      "input_tokens": 97266,
+      "output_tokens": 17211,
+      "latency_s": 158.66,
+      "returned_models": [
+        "deepseek-flash"
+      ],
+      "errors": {},
+      "retried_calls": 0,
+      "http_retries": 0,
+      "cost": null,
+      "known_cost_estimate": null,
+      "usage_complete": true,
+      "cost_basis": "配置单价估算，非账单；服务失败的用量可能未知",
+      "currency": null
+    },
+    "reviewer_b": {
+      "calls": 34,
+      "input_tokens": 106014,
+      "output_tokens": 28140,
+      "latency_s": 2196.634,
+      "returned_models": [
+        "gpt-6.1-sol"
+      ],
+      "errors": {},
+      "retried_calls": 0,
+      "http_retries": 0,
+      "cost": null,
+      "known_cost_estimate": null,
+      "usage_complete": true,
+      "cost_basis": "配置单价估算，非账单；服务失败的用量可能未知",
+      "currency": null
+    },
+    "reviser": {
+      "calls": 2,
+      "input_tokens": 1008,
+      "output_tokens": 318,
+      "latency_s": 63.34,
+      "returned_models": [
+        "gpt-6-astra"
+      ],
+      "errors": {},
+      "retried_calls": 0,
+      "http_retries": 0,
+      "cost": null,
+      "known_cost_estimate": null,
+      "usage_complete": true,
+      "cost_basis": "配置单价估算，非账单；服务失败的用量可能未知",
+      "currency": null
+    }
+  },
+  "code_findings": [
+    {
+      "id": "kb:tarot:card:cups_eight:upright",
+      "check": "tarot_same_direction",
+      "detail": "relationship：正位-0.1，逆位-0.3（kb:tarot:card:cups_eight:reversed）"
+    },
+    {
+      "id": "kb:tarot:card:cups_eight:upright",
+      "check": "tarot_same_direction",
+      "detail": "self：正位-0.1，逆位-0.3（kb:tarot:card:cups_eight:reversed）"
+    },
+    {
+      "id": "kb:tarot:card:death:upright",
+      "check": "tarot_same_direction",
+      "detail": "career：正位-0.1，逆位-0.4（kb:tarot:card:death:reversed）"
+    },
+    {
+      "id": "kb:tarot:card:death:upright",
+      "check": "tarot_same_direction",
+      "detail": "relationship：正位-0.1，逆位-0.4（kb:tarot:card:death:reversed）"
+    },
+    {
+      "id": "kb:tarot:card:death:upright",
+      "check": "tarot_same_direction",
+      "detail": "self：正位-0.1，逆位-0.4（kb:tarot:card:death:reversed）"
+    },
+    {
+      "id": "kb:tarot:card:swords_five:upright",
+      "check": "tarot_same_direction",
+      "detail": "career：正位-0.5，逆位-0.1（kb:tarot:card:swords_five:reversed）"
+    },
+    {
+      "id": "kb:tarot:card:swords_five:upright",
+      "check": "tarot_same_direction",
+      "detail": "self：正位-0.5，逆位-0.1（kb:tarot:card:swords_five:reversed）"
+    },
+    {
+      "id": "kb:tarot:card:swords_two:upright",
+      "check": "tarot_same_direction",
+      "detail": "career：正位-0.1，逆位-0.2（kb:tarot:card:swords_two:reversed）"
+    },
+    {
+      "id": "kb:tarot:card:swords_two:upright",
+      "check": "tarot_same_direction",
+      "detail": "self：正位-0.1，逆位-0.2（kb:tarot:card:swords_two:reversed）"
+    },
+    {
+      "id": "kb:tarot:card:the_hanged_man:upright",
+      "check": "tarot_same_direction",
+      "detail": "career：正位-0.1，逆位-0.3（kb:tarot:card:the_hanged_man:reversed）"
+    },
+    {
+      "id": "kb:tarot:card:the_hanged_man:upright",
+      "check": "tarot_same_direction",
+      "detail": "relationship：正位-0.1，逆位-0.3（kb:tarot:card:the_hanged_man:reversed）"
+    },
+    {
+      "id": "kb:tarot:card:the_hanged_man:upright",
+      "check": "tarot_same_direction",
+      "detail": "self：正位-0.1，逆位-0.3（kb:tarot:card:the_hanged_man:reversed）"
+    },
+    {
+      "id": "kb:tarot:card:the_tower:upright",
+      "check": "tarot_same_direction",
+      "detail": "career：正位-0.6，逆位-0.4（kb:tarot:card:the_tower:reversed）"
+    },
+    {
+      "id": "kb:tarot:card:the_tower:upright",
+      "check": "tarot_same_direction",
+      "detail": "relationship：正位-0.6，逆位-0.4（kb:tarot:card:the_tower:reversed）"
+    },
+    {
+      "id": "kb:tarot:card:the_tower:upright",
+      "check": "tarot_same_direction",
+      "detail": "self：正位-0.6，逆位-0.4（kb:tarot:card:the_tower:reversed）"
+    },
+    {
+      "id": "kb:tarot:card:wands_five:upright",
+      "check": "tarot_same_direction",
+      "detail": "career：正位-0.3，逆位-0.1（kb:tarot:card:wands_five:reversed）"
+    },
+    {
+      "id": "kb:tarot:card:wands_five:upright",
+      "check": "tarot_same_direction",
+      "detail": "self：正位-0.3，逆位-0.1（kb:tarot:card:wands_five:reversed）"
+    }
+  ],
+  "human_reviewed_rate": 0.0,
+  "approved_ids": [
+    "kb:tarot:card:cups_ace:reversed",
+    "kb:tarot:card:cups_ace:upright",
+    "kb:tarot:card:cups_eight:reversed",
+    "kb:tarot:card:cups_eight:upright",
+    "kb:tarot:card:cups_five:reversed",
+    "kb:tarot:card:cups_five:upright",
+    "kb:tarot:card:cups_four:reversed",
+    "kb:tarot:card:cups_four:upright",
+    "kb:tarot:card:cups_king:reversed",
+    "kb:tarot:card:cups_king:upright",
+    "kb:tarot:card:cups_knight:reversed",
+    "kb:tarot:card:cups_knight:upright",
+    "kb:tarot:card:cups_nine:reversed",
+    "kb:tarot:card:cups_nine:upright",
+    "kb:tarot:card:cups_page:reversed",
+    "kb:tarot:card:cups_page:upright",
+    "kb:tarot:card:cups_queen:reversed",
+    "kb:tarot:card:cups_queen:upright",
+    "kb:tarot:card:cups_seven:reversed",
+    "kb:tarot:card:cups_seven:upright",
+    "kb:tarot:card:cups_six:reversed",
+    "kb:tarot:card:cups_six:upright",
+    "kb:tarot:card:cups_ten:reversed",
+    "kb:tarot:card:cups_ten:upright",
+    "kb:tarot:card:cups_three:reversed",
+    "kb:tarot:card:cups_three:upright",
+    "kb:tarot:card:cups_two:reversed",
+    "kb:tarot:card:cups_two:upright",
+    "kb:tarot:card:death:reversed",
+    "kb:tarot:card:death:upright",
+    "kb:tarot:card:judgement:reversed",
+    "kb:tarot:card:judgement:upright",
+    "kb:tarot:card:justice:reversed",
+    "kb:tarot:card:justice:upright",
+    "kb:tarot:card:pentacles_ace:reversed",
+    "kb:tarot:card:pentacles_ace:upright",
+    "kb:tarot:card:pentacles_eight:reversed",
+    "kb:tarot:card:pentacles_eight:upright",
+    "kb:tarot:card:pentacles_five:reversed",
+    "kb:tarot:card:pentacles_five:upright",
+    "kb:tarot:card:pentacles_four:upright",
+    "kb:tarot:card:pentacles_king:reversed",
+    "kb:tarot:card:pentacles_king:upright",
+    "kb:tarot:card:pentacles_knight:upright",
+    "kb:tarot:card:pentacles_nine:upright",
+    "kb:tarot:card:pentacles_page:upright",
+    "kb:tarot:card:pentacles_queen:reversed",
+    "kb:tarot:card:pentacles_queen:upright",
+    "kb:tarot:card:pentacles_seven:reversed",
+    "kb:tarot:card:pentacles_seven:upright",
+    "kb:tarot:card:pentacles_six:reversed",
+    "kb:tarot:card:pentacles_six:upright",
+    "kb:tarot:card:pentacles_ten:reversed",
+    "kb:tarot:card:pentacles_ten:upright",
+    "kb:tarot:card:pentacles_three:reversed",
+    "kb:tarot:card:pentacles_three:upright",
+    "kb:tarot:card:pentacles_two:reversed",
+    "kb:tarot:card:pentacles_two:upright",
+    "kb:tarot:card:strength:reversed",
+    "kb:tarot:card:strength:upright",
+    "kb:tarot:card:swords_ace:reversed",
+    "kb:tarot:card:swords_ace:upright",
+    "kb:tarot:card:swords_eight:reversed",
+    "kb:tarot:card:swords_eight:upright",
+    "kb:tarot:card:swords_five:reversed",
+    "kb:tarot:card:swords_five:upright",
+    "kb:tarot:card:swords_four:reversed",
+    "kb:tarot:card:swords_four:upright",
+    "kb:tarot:card:swords_king:reversed",
+    "kb:tarot:card:swords_king:upright",
+    "kb:tarot:card:swords_knight:reversed",
+    "kb:tarot:card:swords_knight:upright",
+    "kb:tarot:card:swords_nine:upright",
+    "kb:tarot:card:swords_page:reversed",
+    "kb:tarot:card:swords_page:upright",
+    "kb:tarot:card:swords_queen:reversed",
+    "kb:tarot:card:swords_queen:upright",
+    "kb:tarot:card:swords_seven:reversed",
+    "kb:tarot:card:swords_seven:upright",
+    "kb:tarot:card:swords_six:reversed",
+    "kb:tarot:card:swords_six:upright",
+    "kb:tarot:card:swords_ten:reversed",
+    "kb:tarot:card:swords_ten:upright",
+    "kb:tarot:card:swords_three:reversed",
+    "kb:tarot:card:swords_three:upright",
+    "kb:tarot:card:swords_two:reversed",
+    "kb:tarot:card:swords_two:upright",
+    "kb:tarot:card:temperance:reversed",
+    "kb:tarot:card:temperance:upright",
+    "kb:tarot:card:the_chariot:reversed",
+    "kb:tarot:card:the_chariot:upright",
+    "kb:tarot:card:the_devil:reversed",
+    "kb:tarot:card:the_devil:upright",
+    "kb:tarot:card:the_emperor:reversed",
+    "kb:tarot:card:the_emperor:upright",
+    "kb:tarot:card:the_empress:reversed",
+    "kb:tarot:card:the_empress:upright",
+    "kb:tarot:card:the_fool:upright",
+    "kb:tarot:card:the_hanged_man:upright",
+    "kb:tarot:card:the_hermit:reversed",
+    "kb:tarot:card:the_hermit:upright",
+    "kb:tarot:card:the_hierophant:upright",
+    "kb:tarot:card:the_high_priestess:reversed",
+    "kb:tarot:card:the_high_priestess:upright",
+    "kb:tarot:card:the_lovers:reversed",
+    "kb:tarot:card:the_lovers:upright",
+    "kb:tarot:card:the_magician:reversed",
+    "kb:tarot:card:the_magician:upright",
+    "kb:tarot:card:the_moon:reversed",
+    "kb:tarot:card:the_moon:upright",
+    "kb:tarot:card:the_star:reversed",
+    "kb:tarot:card:the_star:upright",
+    "kb:tarot:card:the_sun:upright",
+    "kb:tarot:card:the_tower:reversed",
+    "kb:tarot:card:the_tower:upright",
+    "kb:tarot:card:the_world:reversed",
+    "kb:tarot:card:the_world:upright",
+    "kb:tarot:card:wands_ace:reversed",
+    "kb:tarot:card:wands_ace:upright",
+    "kb:tarot:card:wands_eight:reversed",
+    "kb:tarot:card:wands_eight:upright",
+    "kb:tarot:card:wands_five:reversed",
+    "kb:tarot:card:wands_five:upright",
+    "kb:tarot:card:wands_four:reversed",
+    "kb:tarot:card:wands_four:upright",
+    "kb:tarot:card:wands_king:reversed",
+    "kb:tarot:card:wands_king:upright",
+    "kb:tarot:card:wands_knight:reversed",
+    "kb:tarot:card:wands_knight:upright",
+    "kb:tarot:card:wands_nine:reversed",
+    "kb:tarot:card:wands_nine:upright",
+    "kb:tarot:card:wands_page:reversed",
+    "kb:tarot:card:wands_page:upright",
+    "kb:tarot:card:wands_queen:reversed",
+    "kb:tarot:card:wands_queen:upright",
+    "kb:tarot:card:wands_seven:reversed",
+    "kb:tarot:card:wands_seven:upright",
+    "kb:tarot:card:wands_six:reversed",
+    "kb:tarot:card:wands_six:upright",
+    "kb:tarot:card:wands_ten:upright",
+    "kb:tarot:card:wands_three:reversed",
+    "kb:tarot:card:wands_three:upright",
+    "kb:tarot:card:wands_two:reversed",
+    "kb:tarot:card:wands_two:upright",
+    "kb:tarot:card:wheel_of_fortune:reversed",
+    "kb:tarot:card:wheel_of_fortune:upright",
+    "kb:tarot:position:three_card:1",
+    "kb:tarot:position:three_card:2",
+    "kb:tarot:position:three_card:3"
+  ]
+}

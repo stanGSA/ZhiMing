@@ -2,7 +2,6 @@
 
 import copy
 import json
-import shutil
 
 import pytest
 import yaml
@@ -12,6 +11,7 @@ from knowledge.build import build
 from knowledge.kb import KnowledgeBase
 from knowledge.review import approval, load_ledgers, write_ledger
 from scripts import model_review_kb as review
+from tests.knowledge_fixture import copy_draft_knowledge
 from tests.test_model_review_kb import (
     IDS,
     ROLES,
@@ -25,9 +25,10 @@ TARGET = "kb:tarot:card:the_tower:upright"
 
 @pytest.fixture
 def workspace(tmp_path, monkeypatch):
-    shutil.copytree(review.ROOT / "knowledge", tmp_path / "knowledge")
+    copy_draft_knowledge(review.ROOT / "knowledge", tmp_path / "knowledge")
     config = review.load_config(review.ROOT)
     config["kb_review"] = dict(timeout_s=10, roles=copy.deepcopy(ROLES))
+    config["kb_review"]["budget"] = dict(unlimited=True, state_path="offline-budget.json")
     for spec in ROLES.values():
         monkeypatch.setenv(spec["api_key_env"], "offline-placeholder")
     return review.Workspace(tmp_path), config

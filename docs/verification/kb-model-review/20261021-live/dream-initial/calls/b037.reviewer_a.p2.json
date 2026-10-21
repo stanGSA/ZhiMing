@@ -1,0 +1,111 @@
+{
+  "batch": "b037",
+  "reviewer": "reviewer_a",
+  "run_pass": 2,
+  "attempt": 1,
+  "vendor": "deepseek",
+  "requested_model": "deepseek-flash",
+  "returned_model": "deepseek-flash",
+  "api": "openai",
+  "started_at": "2026-10-21T16:15:40+00:00",
+  "finished_at": "2026-10-21T16:15:44+00:00",
+  "latency_s": 3.296,
+  "http_attempts": 1,
+  "finish_reason": "stop",
+  "prompt_sha256": "a53c112817189b0c1c6b535380be17444d12e99a71bc5fa2323041c1ecc9a17a",
+  "input_tokens": 2549,
+  "output_tokens": 705,
+  "cached_input_tokens": 2304,
+  "usage_available": true,
+  "raw_text": "{\"items\": [{\"item\": \"i01\", \"verdict\": \"pass\", \"issues\": [], \"reason\": \"释义符合鹰的传统象征，主题方向与文字一致，措辞平和且无宿命化断言。\"}, {\"item\": \"i02\", \"verdict\": \"pass\", \"issues\": [], \"reason\": \"释义符合鹿的传统象征，主题方向一致，措辞温和无误导。\"}, {\"item\": \"i03\", \"verdict\": \"reject\", \"issues\": [{\"dimension\": \"medical_legal_finance\", \"detail\": \"释义含“你已经患有焦虑症，应当尽快服用药物”的医疗诊断与用药结论。\"}], \"reason\": \"梦中意象被直接断言为焦虑症诊断并给出用药建议，违反医疗确定性结论禁令。\"}, {\"item\": \"i04\", \"verdict\": \"pass\", \"issues\": [], \"reason\": \"释义对复活的解读平和，方向与文字一致，并明确不预示现实事件。\"}, {\"item\": \"i05\", \"verdict\": \"reject\", \"issues\": [{\"dimension\": \"tradition\", \"detail\": \"key 为“地震”，释义却讲“泥鳅（蚯蚓）”，对象写错。\"}, {\"dimension\": \"consistency\", \"detail\": \"文字与 key、关键词“地震”“自然”不符，且末尾用“动物意象”套语。\"}], \"reason\": \"释义内容讲的是蚯蚓而非地震，核心对象与 key 完全不符。\"}, {\"item\": \"i06\", \"verdict\": \"revise\", \"issues\": [{\"dimension\": \"consistency\", \"detail\": \"同义词列入“投票”，与跑步无关，会误命中投票意象。\"}], \"reason\": \"释义本身可用，但同义词“投票”会造成误命中，需移除。\"}, {\"item\": \"i07\", \"verdict\": \"reject\", \"issues\": [{\"dimension\": \"certainty\", \"detail\": \"释义含“意味着必然破财，结局已经注定，无法避免”的宿命化断言。\"}, {\"dimension\": \"medical_legal_finance\", \"detail\": \"对财务作出“必然破财、注定”的确定性结论。\"}], \"reason\": \"条目同时含宿命化与财务确定性断言，与前半段平和释义自相矛盾。\"}, {\"item\": \"i08\", \"verdict\": \"pass\", \"issues\": [], \"reason\": \"黑暗释义符合传统心理联想，方向为负与文字一致，无预兆化措辞。\"}, {\"item\": \"i09\", \"verdict\": \"revise\", \"issues\": [{\"dimension\": \"consistency\", \"detail\": \"同义词列入“梳子”，与云无关，会误命中梳子意象。\"}], \"reason\": \"释义无误，但同义词“梳子”会造成误命中，需移除。\"}, {\"item\": \"i10\", \"verdict\": \"pass\", \"issues\": [], \"reason\": \"龙的传统象征把握准确，主题方向与文字一致，措辞非宿命化。\"}, {\"item\": \"i11\", \"verdict\": \"pass\", \"issues\": [], \"reason\": \"麒麟释义平和，方向一致，未作吉凶预兆断言。\"}]}",
+  "verdicts": {
+    "i01": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "释义符合鹰的传统象征，主题方向与文字一致，措辞平和且无宿命化断言。"
+    },
+    "i02": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "释义符合鹿的传统象征，主题方向一致，措辞温和无误导。"
+    },
+    "i03": {
+      "verdict": "reject",
+      "issues": [
+        {
+          "dimension": "medical_legal_finance",
+          "detail": "释义含“你已经患有焦虑症，应当尽快服用药物”的医疗诊断与用药结论。"
+        }
+      ],
+      "reason": "梦中意象被直接断言为焦虑症诊断并给出用药建议，违反医疗确定性结论禁令。"
+    },
+    "i04": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "释义对复活的解读平和，方向与文字一致，并明确不预示现实事件。"
+    },
+    "i05": {
+      "verdict": "reject",
+      "issues": [
+        {
+          "dimension": "tradition",
+          "detail": "key 为“地震”，释义却讲“泥鳅（蚯蚓）”，对象写错。"
+        },
+        {
+          "dimension": "consistency",
+          "detail": "文字与 key、关键词“地震”“自然”不符，且末尾用“动物意象”套语。"
+        }
+      ],
+      "reason": "释义内容讲的是蚯蚓而非地震，核心对象与 key 完全不符。"
+    },
+    "i06": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "consistency",
+          "detail": "同义词列入“投票”，与跑步无关，会误命中投票意象。"
+        }
+      ],
+      "reason": "释义本身可用，但同义词“投票”会造成误命中，需移除。"
+    },
+    "i07": {
+      "verdict": "reject",
+      "issues": [
+        {
+          "dimension": "certainty",
+          "detail": "释义含“意味着必然破财，结局已经注定，无法避免”的宿命化断言。"
+        },
+        {
+          "dimension": "medical_legal_finance",
+          "detail": "对财务作出“必然破财、注定”的确定性结论。"
+        }
+      ],
+      "reason": "条目同时含宿命化与财务确定性断言，与前半段平和释义自相矛盾。"
+    },
+    "i08": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "黑暗释义符合传统心理联想，方向为负与文字一致，无预兆化措辞。"
+    },
+    "i09": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "consistency",
+          "detail": "同义词列入“梳子”，与云无关，会误命中梳子意象。"
+        }
+      ],
+      "reason": "释义无误，但同义词“梳子”会造成误命中，需移除。"
+    },
+    "i10": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "龙的传统象征把握准确，主题方向与文字一致，措辞非宿命化。"
+    },
+    "i11": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "麒麟释义平和，方向一致，未作吉凶预兆断言。"
+    }
+  }
+}

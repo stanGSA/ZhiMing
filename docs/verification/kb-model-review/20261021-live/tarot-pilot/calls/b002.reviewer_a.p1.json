@@ -1,0 +1,87 @@
+{
+  "batch": "b002",
+  "reviewer": "reviewer_a",
+  "run_pass": 1,
+  "attempt": 1,
+  "vendor": "deepseek",
+  "requested_model": "deepseek-flash",
+  "returned_model": "deepseek-flash",
+  "api": "openai",
+  "started_at": "2026-10-21T15:16:52+00:00",
+  "finished_at": "2026-10-21T15:16:56+00:00",
+  "latency_s": 4.077,
+  "http_attempts": 1,
+  "finish_reason": "stop",
+  "prompt_sha256": "2353136b89f6a5448c726147c24d8489e0b23ac7a7e84bd46538f91b11287dea",
+  "input_tokens": 2930,
+  "output_tokens": 643,
+  "cached_input_tokens": 384,
+  "usage_available": true,
+  "raw_text": "{\"items\": [{\"item\": \"i01\", \"verdict\": \"pass\", \"issues\": [], \"reason\": \"圣杯王后正位释义符合共情与情绪守护的传统含义，主题方向为正且措辞非宿命化。\"}, {\"item\": \"i02\", \"verdict\": \"revise\", \"issues\": [{\"dimension\": \"theme_direction\", \"detail\": \"释义文字写的是给机会尝试的积极倾向，但 theme_map 中 relationship/self 均为负值，方向与文字不一致。\"}, {\"dimension\": \"consistency\", \"detail\": \"正位释义与逆位 counterpart 文字完全相同，正逆位区分不清；圣杯四正位传统偏停顿/不满，此处写积极尝试也不贴合。\"}], \"reason\": \"正位文字为积极方向却配负值主题，且与逆位文字完全重复，正逆位未区分。\"}, {\"item\": \"i03\", \"verdict\": \"pass\", \"issues\": [], \"reason\": \"圣杯骑士正位的情感主动与承诺须落实于行动，符合传统，方向为正，措辞非宿命化。\"}, {\"item\": \"i04\", \"verdict\": \"pass\", \"issues\": [], \"reason\": \"圣杯骑士逆位的理想化与言行不一，符合传统逆位含义，方向为负，与正位对照合理。\"}, {\"item\": \"i05\", \"verdict\": \"pass\", \"issues\": [], \"reason\": \"圣杯侍从逆位的敏感含糊、易被误解，符合传统，方向为负，与正位对照合理。\"}, {\"item\": \"i06\", \"verdict\": \"pass\", \"issues\": [], \"reason\": \"圣杯九逆位的期待落空与重新定义满足，符合传统逆位含义，方向为负，与正位对照合理。\"}, {\"item\": \"i07\", \"verdict\": \"pass\", \"issues\": [], \"reason\": \"圣杯九正位的满足与审视需求，符合传统，方向为正，措辞带反思非宿命化。\"}, {\"item\": \"i08\", \"verdict\": \"pass\", \"issues\": [], \"reason\": \"圣杯七正位的选项繁多与需核实，符合传统，方向偏负，与逆位对照合理。\"}, {\"item\": \"i09\", \"verdict\": \"pass\", \"issues\": [], \"reason\": \"圣杯侍从正位的温和表达与不成熟沟通，符合传统，方向为正，与逆位对照合理。\"}, {\"item\": \"i10\", \"verdict\": \"pass\", \"issues\": [], \"reason\": \"圣杯七逆位的缩小选项与检查遗漏，符合传统逆位含义，方向偏正，与正位对照合理。\"}, {\"item\": \"i11\", \"verdict\": \"pass\", \"issues\": [], \"reason\": \"圣杯王后逆位的情绪过载与设立边界，符合传统逆位含义，方向为负，与正位对照合理。\"}]}",
+  "verdicts": {
+    "i01": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "圣杯王后正位释义符合共情与情绪守护的传统含义，主题方向为正且措辞非宿命化。"
+    },
+    "i02": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "theme_direction",
+          "detail": "释义文字写的是给机会尝试的积极倾向，但 theme_map 中 relationship/self 均为负值，方向与文字不一致。"
+        },
+        {
+          "dimension": "consistency",
+          "detail": "正位释义与逆位 counterpart 文字完全相同，正逆位区分不清；圣杯四正位传统偏停顿/不满，此处写积极尝试也不贴合。"
+        }
+      ],
+      "reason": "正位文字为积极方向却配负值主题，且与逆位文字完全重复，正逆位未区分。"
+    },
+    "i03": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "圣杯骑士正位的情感主动与承诺须落实于行动，符合传统，方向为正，措辞非宿命化。"
+    },
+    "i04": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "圣杯骑士逆位的理想化与言行不一，符合传统逆位含义，方向为负，与正位对照合理。"
+    },
+    "i05": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "圣杯侍从逆位的敏感含糊、易被误解，符合传统，方向为负，与正位对照合理。"
+    },
+    "i06": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "圣杯九逆位的期待落空与重新定义满足，符合传统逆位含义，方向为负，与正位对照合理。"
+    },
+    "i07": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "圣杯九正位的满足与审视需求，符合传统，方向为正，措辞带反思非宿命化。"
+    },
+    "i08": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "圣杯七正位的选项繁多与需核实，符合传统，方向偏负，与逆位对照合理。"
+    },
+    "i09": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "圣杯侍从正位的温和表达与不成熟沟通，符合传统，方向为正，与逆位对照合理。"
+    },
+    "i10": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "圣杯七逆位的缩小选项与检查遗漏，符合传统逆位含义，方向偏正，与正位对照合理。"
+    },
+    "i11": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "圣杯王后逆位的情绪过载与设立边界，符合传统逆位含义，方向为负，与正位对照合理。"
+    }
+  }
+}

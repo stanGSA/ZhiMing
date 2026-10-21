@@ -4,7 +4,7 @@ import json
 import os
 from typing import Any, Literal, Protocol
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, model_validator
 from tenacity import retry, retry_if_exception, stop_after_attempt, wait_random_exponential
 
 from harness.models import ModelResponse, ToolCall
@@ -278,8 +278,26 @@ class RoleModelSpec(BaseModel):
     model: str = Field(min_length=1)
     api_key_env: str = Field(pattern=r"^[A-Z][A-Z0-9_]*$")
     base_url: str | None = None
+    # An address that should not be committed (a third-party relay) is read from here.
+    base_url_env: str | None = Field(default=None, pattern=r"^[A-Z][A-Z0-9_]*$")
     temperature: float | None = Field(default=None, ge=0, le=2)
     max_tokens: int = Field(default=4096, gt=0)
+
+    @model_validator(mode="after")
+    def one_base_url(self):
+        if self.base_url and self.base_url_env:
+            raise ValueError("base_url 与 base_url_env 只能配置一个")
+        return self
+
+    def endpoint(self) -> str | None:
+        """The service address. An unset base_url_env is an error: the key belongs to that
+        service and must never fall back to the vendor's default endpoint."""
+        if self.base_url_env is None:
+            return self.base_url
+        value = os.getenv(self.base_url_env, "").strip()
+        if not value:
+            raise ValueError(f"未设置 {self.base_url_env}")
+        return value
 
 
 def role_model(spec: RoleModelSpec, timeout: float = 120, http_client=None) -> ChatModel:
@@ -288,7 +306,7 @@ def role_model(spec: RoleModelSpec, timeout: float = 120, http_client=None) -> C
             spec.model,
             timeout,
             api_key_env=spec.api_key_env,
-            base_url=spec.base_url,
+            base_url=spec.endpoint(),
             max_tokens=spec.max_tokens,
             temperature=spec.temperature,
             http_client=http_client,
@@ -296,9 +314,10 @@ def role_model(spec: RoleModelSpec, timeout: float = 120, http_client=None) -> C
     return OpenAIModel(
         spec.model,
         timeout,
+        provider="deepseek" if spec.vendor.strip().lower() == "deepseek" else "openai",
         max_tokens=spec.max_tokens,
         api_key_env=spec.api_key_env,
-        base_url=spec.base_url,
+        base_url=spec.endpoint(),
         temperature=spec.temperature,
         http_client=http_client,
     )

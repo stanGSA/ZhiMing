@@ -1,0 +1,101 @@
+{
+  "schema": 1,
+  "system": "dream",
+  "seed": 1,
+  "batch_size": 10,
+  "plant_rate": 0.1,
+  "min_planted": 5,
+  "passes": 2,
+  "only_ids": [
+    "kb:dream:symbol:丢东西",
+    "kb:dream:symbol:乌龟",
+    "kb:dream:symbol:图书馆",
+    "kb:dream:symbol:宝石",
+    "kb:dream:symbol:开车",
+    "kb:dream:symbol:恋人",
+    "kb:dream:symbol:海浪",
+    "kb:dream:symbol:牙齿",
+    "kb:dream:symbol:购物",
+    "kb:dream:symbol:赶不上车",
+    "kb:dream:symbol:迟到",
+    "kb:dream:symbol:迷路",
+    "kb:dream:symbol:金子",
+    "kb:dream:symbol:门票"
+  ],
+  "calibrated_by": null,
+  "rubric_version": 1,
+  "rubric_sha256": "a33bd07bd2299376f88d6cf1c958b26990685099797e78272054352ff7557b0d",
+  "script_sha256": "cca3a7b203f9186b0a82f3a4b78b50b3fad3228f869377cc3d113099cad88ec5",
+  "runtime_vendor": "deepseek",
+  "drafter_vendors": [
+    "anthropic"
+  ],
+  "runtime_vendor_exception": {
+    "vendor": "deepseek",
+    "model": "deepseek-flash",
+    "reason": "2026-10-21 项目负责人明确要求第一审核方使用本机.env的DeepSeek配置"
+  },
+  "pricing": {
+    "reviewer_a": {
+      "input_per_mtok": null,
+      "output_per_mtok": null,
+      "currency": null
+    },
+    "reviewer_b": {
+      "input_per_mtok": null,
+      "output_per_mtok": null,
+      "currency": null
+    }
+  },
+  "reviewers": {
+    "reviewer_a": {
+      "vendor": "deepseek",
+      "api": "openai",
+      "model": "deepseek-flash",
+      "api_key_env": "DEEPSEEK_API_KEY",
+      "temperature": null,
+      "max_tokens": 4096,
+      "base_url_host": "api.deepseek.com"
+    },
+    "reviewer_b": {
+      "vendor": "openai",
+      "api": "openai",
+      "model": "gpt-6.1-sol",
+      "api_key_env": "OPENAI_REVIEW_API_KEY",
+      "temperature": null,
+      "max_tokens": 4096,
+      "base_url_host": "codegoai.com"
+    }
+  },
+  "source_files": {
+    "knowledge/sources/dream/entries.yaml": "ff6fe71e78e64ab1f0fd92ccfd364abb9258608b9b8f3d755a61a73280407f31"
+  },
+  "entry_hashes": {
+    "kb:dream:symbol:丢东西": "6327347c7a6b30cae2b4ca291826107a272df095e5eb9797d254cc5dd6a1c12b",
+    "kb:dream:symbol:乌龟": "7b4a861ddffff1eecedf0177e5096bbaf36a9a8a5b99705fa7873c283db67be0",
+    "kb:dream:symbol:图书馆": "d0ff6b72d9aec42fc394d48f66888dc46cf17c115e7eeea5b60f6c02dbba298b",
+    "kb:dream:symbol:宝石": "38b666da7c225a53da851e3dae8595d828eb508639f1f75817169dc788772dc2",
+    "kb:dream:symbol:开车": "25eff7c52c4179baf2d40d640c2a9e2e6c77fff840120142c1a21c052d68e06d",
+    "kb:dream:symbol:恋人": "ed3e075eab26aa58bb634d61baf2e0861400c830fc821fe29dc0b816f8fb45c4",
+    "kb:dream:symbol:海浪": "b9815d660d351a89fe9d6e492bf7fd388a937d8305bcd4c4d0c99ddf4c21468f",
+    "kb:dream:symbol:牙齿": "ed744c00b575b8e8c4df189bc7586676524b730e8964d225edf17649ced983a0",
+    "kb:dream:symbol:购物": "7a8f69dae774d78431f86944b1f941dcd4e751082bd172365e885da1ec7a0ab0",
+    "kb:dream:symbol:赶不上车": "f0e1c478dc5bbd6f288bba0c3b933924cbb6a0c81ba92da386c482641e022569",
+    "kb:dream:symbol:迟到": "aeb042e7c422650d0697da2c1b7ada3c9f5531b999094bcb72b9848e147ab1c5",
+    "kb:dream:symbol:迷路": "c25b3439b0f246f488f1e699e79e6c743a83ca48876d031350003279f6bc6f6f",
+    "kb:dream:symbol:金子": "b184e5d7da82fb116791c298536f703900ef25a2cedbccdda60d4498a0e019d7",
+    "kb:dream:symbol:门票": "ebb8c95766bf80f7ae83247f6d0ba5881c1217d9bea8be4b7dc355b5dd222040"
+  },
+  "planted_count": 5,
+  "batch_count": 2,
+  "prompt_sha256": {
+    "b001": "a942edab03734b4fd9f50f6ed37bb0b84d22a7c2225780c0930129b30e673f1f",
+    "b002": "1f4c30b7040a8764df80815d89981de0f2d169e5a9a817d7e5c9a6320472b49a"
+  },
+  "created_at": "2026-10-21T16:52:59+00:00",
+  "git": {
+    "head": "e8dae18cd2dae8139bcec667242c7169ebadaf13",
+    "dirty": true
+  },
+  "kb_version": "v1-bac48fbe859be33a"
+}

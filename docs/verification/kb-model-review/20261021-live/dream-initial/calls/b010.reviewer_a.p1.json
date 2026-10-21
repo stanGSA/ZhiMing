@@ -1,0 +1,88 @@
+{
+  "batch": "b010",
+  "reviewer": "reviewer_a",
+  "run_pass": 1,
+  "attempt": 1,
+  "vendor": "deepseek",
+  "requested_model": "deepseek-flash",
+  "returned_model": "deepseek-flash",
+  "api": "openai",
+  "started_at": "2026-10-21T16:00:52+00:00",
+  "finished_at": "2026-10-21T16:00:55+00:00",
+  "latency_s": 2.865,
+  "http_attempts": 1,
+  "finish_reason": "stop",
+  "prompt_sha256": "b0ecf91a006922bf8c9998482e1d51bbbe532c9c967deb5bd0ad754d5d8d640d",
+  "input_tokens": 2467,
+  "output_tokens": 479,
+  "cached_input_tokens": 384,
+  "usage_available": true,
+  "raw_text": "{\"items\":[{\"item\":\"i01\",\"verdict\":\"pass\",\"issues\":[],\"reason\":\"屋顶释义符合常见心理联想，主题方向中性，措辞平和且未宿命化。\"},{\"item\":\"i02\",\"verdict\":\"pass\",\"issues\":[],\"reason\":\"寺庙释义贴合传统与心理联想，self 微正与文字中宁静、寄托一致。\"},{\"item\":\"i03\",\"verdict\":\"pass\",\"issues\":[],\"reason\":\"客户释义聚焦工作压力，career 微负与文字一致，措辞非确定性。\"},{\"item\":\"i04\",\"verdict\":\"pass\",\"issues\":[],\"reason\":\"小偷释义涉及界限与担忧，self、finance 微负与文字方向一致。\"},{\"item\":\"i05\",\"verdict\":\"pass\",\"issues\":[],\"reason\":\"工作释义为压力或成就感延续，career 微负可接受，且有免责表述。\"},{\"item\":\"i06\",\"verdict\":\"pass\",\"issues\":[],\"reason\":\"岛释义体现独处与隔绝，主题中性合理，措辞平和。\"},{\"item\":\"i07\",\"verdict\":\"reject\",\"issues\":[{\"dimension\":\"medical_legal_finance\",\"detail\":\"文本出现“这代表身体已有慢性疾病，不必就医也会自愈”，属医疗确定性结论并劝人不必就医\"}],\"reason\":\"含医疗诊断与否定就医的确定性断言，必须删除该句。\"},{\"item\":\"i08\",\"verdict\":\"pass\",\"issues\":[],\"reason\":\"山释义涵盖目标、阻碍与依靠，self、career 微正方向不矛盾。\"},{\"item\":\"i09\",\"verdict\":\"revise\",\"issues\":[{\"dimension\":\"consistency\",\"detail\":\"同义词“死去的宠物”会命中该意象，但释义完全未处理死亡相关感受，且敏感意象措辞未作平和说明\"}],\"reason\":\"同义词含“死去的宠物”而释义未涵盖，建议调整同义词或补充平和措辞。\"},{\"item\":\"i10\",\"verdict\":\"pass\",\"issues\":[],\"reason\":\"宝石释义聚焦珍视品质与潜力，self、finance 微正与文字一致。\"},{\"item\":\"i11\",\"verdict\":\"pass\",\"issues\":[],\"reason\":\"帽子释义涉及身份与遮掩，主题中性，措辞无宿命化。\"}]}",
+  "verdicts": {
+    "i01": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "屋顶释义符合常见心理联想，主题方向中性，措辞平和且未宿命化。"
+    },
+    "i02": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "寺庙释义贴合传统与心理联想，self 微正与文字中宁静、寄托一致。"
+    },
+    "i03": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "客户释义聚焦工作压力，career 微负与文字一致，措辞非确定性。"
+    },
+    "i04": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "小偷释义涉及界限与担忧，self、finance 微负与文字方向一致。"
+    },
+    "i05": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "工作释义为压力或成就感延续，career 微负可接受，且有免责表述。"
+    },
+    "i06": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "岛释义体现独处与隔绝，主题中性合理，措辞平和。"
+    },
+    "i07": {
+      "verdict": "reject",
+      "issues": [
+        {
+          "dimension": "medical_legal_finance",
+          "detail": "文本出现“这代表身体已有慢性疾病，不必就医也会自愈”，属医疗确定性结论并劝人不必就医"
+        }
+      ],
+      "reason": "含医疗诊断与否定就医的确定性断言，必须删除该句。"
+    },
+    "i08": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "山释义涵盖目标、阻碍与依靠，self、career 微正方向不矛盾。"
+    },
+    "i09": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "consistency",
+          "detail": "同义词“死去的宠物”会命中该意象，但释义完全未处理死亡相关感受，且敏感意象措辞未作平和说明"
+        }
+      ],
+      "reason": "同义词含“死去的宠物”而释义未涵盖，建议调整同义词或补充平和措辞。"
+    },
+    "i10": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "宝石释义聚焦珍视品质与潜力，self、finance 微正与文字一致。"
+    },
+    "i11": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "帽子释义涉及身份与遮掩，主题中性，措辞无宿命化。"
+    }
+  }
+}

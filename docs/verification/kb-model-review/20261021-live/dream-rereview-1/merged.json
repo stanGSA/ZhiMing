@@ -1,0 +1,325 @@
+{
+  "system": "dream",
+  "entries": 131,
+  "planted": 13,
+  "metrics": {
+    "pass_rate": 0.8931,
+    "detection": {
+      "reviewer_a": 0.7692,
+      "reviewer_b": 1.0
+    },
+    "detection_merged": 1.0,
+    "rerun": {
+      "reviewer_a": 0.9583,
+      "reviewer_b": 0.9792
+    },
+    "kappa": 0.0,
+    "observed_agreement": 0.9237,
+    "verdict_counts": {
+      "reviewer_a": {
+        "pass": 131
+      },
+      "reviewer_b": {
+        "pass": 121,
+        "revise": 10
+      }
+    }
+  },
+  "gates": {
+    "pass_rate": false,
+    "detection_merged": true,
+    "detection_single": false,
+    "rerun": true,
+    "kappa": false,
+    "complete": true
+  },
+  "thresholds": {
+    "pass_rate": 0.95,
+    "detection_merged": 0.9,
+    "detection_single": 0.8,
+    "rerun": 0.9,
+    "kappa": 0.6
+  },
+  "calibrated": false,
+  "passed": false,
+  "approved": 117,
+  "queued": 14,
+  "incomplete": [],
+  "planted_detail": [
+    {
+      "ref": "planted-001",
+      "original": "kb:dream:symbol:废墟",
+      "mutation": "foreign_text",
+      "reviewer_a": "reject",
+      "reviewer_b": "reject"
+    },
+    {
+      "ref": "planted-002",
+      "original": "kb:dream:symbol:台风",
+      "mutation": "fatalistic",
+      "reviewer_a": "reject",
+      "reviewer_b": "revise"
+    },
+    {
+      "ref": "planted-003",
+      "original": "kb:dream:symbol:灯",
+      "mutation": "misleading_synonym",
+      "reviewer_a": "revise",
+      "reviewer_b": "revise"
+    },
+    {
+      "ref": "planted-004",
+      "original": "kb:dream:symbol:奶",
+      "mutation": "medical",
+      "reviewer_a": "reject",
+      "reviewer_b": "reject"
+    },
+    {
+      "ref": "planted-005",
+      "original": "kb:dream:symbol:骨头",
+      "mutation": "foreign_text",
+      "reviewer_a": "reject",
+      "reviewer_b": "reject"
+    },
+    {
+      "ref": "planted-006",
+      "original": "kb:dream:symbol:钱",
+      "mutation": "fatalistic",
+      "reviewer_a": "reject",
+      "reviewer_b": "revise"
+    },
+    {
+      "ref": "planted-007",
+      "original": "kb:dream:symbol:雪山",
+      "mutation": "misleading_synonym",
+      "reviewer_a": "revise",
+      "reviewer_b": "revise"
+    },
+    {
+      "ref": "planted-008",
+      "original": "kb:dream:symbol:蟑螂",
+      "mutation": "flip_signs",
+      "reviewer_a": "pass",
+      "reviewer_b": "revise"
+    },
+    {
+      "ref": "planted-009",
+      "original": "kb:dream:symbol:桥",
+      "mutation": "medical",
+      "reviewer_a": "reject",
+      "reviewer_b": "reject"
+    },
+    {
+      "ref": "planted-010",
+      "original": "kb:dream:symbol:墙",
+      "mutation": "flip_signs",
+      "reviewer_a": "pass",
+      "reviewer_b": "revise"
+    },
+    {
+      "ref": "planted-011",
+      "original": "kb:dream:symbol:饿",
+      "mutation": "flip_signs",
+      "reviewer_a": "pass",
+      "reviewer_b": "revise"
+    },
+    {
+      "ref": "planted-012",
+      "original": "kb:dream:symbol:公交车",
+      "mutation": "misleading_synonym",
+      "reviewer_a": "revise",
+      "reviewer_b": "revise"
+    },
+    {
+      "ref": "planted-013",
+      "original": "kb:dream:symbol:被绑架",
+      "mutation": "medical",
+      "reviewer_a": "reject",
+      "reviewer_b": "reject"
+    }
+  ],
+  "detection_by_mutation": {
+    "foreign_text": {
+      "total": 2,
+      "reviewer_a": 2,
+      "reviewer_b": 2
+    },
+    "fatalistic": {
+      "total": 2,
+      "reviewer_a": 2,
+      "reviewer_b": 2
+    },
+    "misleading_synonym": {
+      "total": 3,
+      "reviewer_a": 3,
+      "reviewer_b": 3
+    },
+    "medical": {
+      "total": 3,
+      "reviewer_a": 3,
+      "reviewer_b": 3
+    },
+    "flip_signs": {
+      "total": 3,
+      "reviewer_a": 0,
+      "reviewer_b": 3
+    }
+  },
+  "usage": {
+    "reviewer_a": {
+      "calls": 28,
+      "input_tokens": 69976,
+      "output_tokens": 13507,
+      "latency_s": 78.786,
+      "returned_models": [
+        "deepseek-flash"
+      ],
+      "errors": {},
+      "retried_calls": 0,
+      "http_retries": 0,
+      "cost": null,
+      "known_cost_estimate": null,
+      "usage_complete": true,
+      "cost_basis": "配置单价估算，非账单；服务失败的用量可能未知",
+      "currency": null
+    },
+    "reviewer_b": {
+      "calls": 28,
+      "input_tokens": 78894,
+      "output_tokens": 24217,
+      "latency_s": 599.762,
+      "returned_models": [
+        "gpt-6.1-sol"
+      ],
+      "errors": {},
+      "retried_calls": 0,
+      "http_retries": 0,
+      "cost": null,
+      "known_cost_estimate": null,
+      "usage_complete": true,
+      "cost_basis": "配置单价估算，非账单；服务失败的用量可能未知",
+      "currency": null
+    }
+  },
+  "code_findings": [],
+  "human_reviewed_rate": 0.0,
+  "approved_ids": [
+    "kb:dream:symbol:下雪",
+    "kb:dream:symbol:井",
+    "kb:dream:symbol:伞",
+    "kb:dream:symbol:停电",
+    "kb:dream:symbol:偷东西",
+    "kb:dream:symbol:公交车",
+    "kb:dream:symbol:公司",
+    "kb:dream:symbol:公园",
+    "kb:dream:symbol:写字",
+    "kb:dream:symbol:剪头发",
+    "kb:dream:symbol:化妆",
+    "kb:dream:symbol:医生",
+    "kb:dream:symbol:升职",
+    "kb:dream:symbol:变老",
+    "kb:dream:symbol:台风",
+    "kb:dream:symbol:吃饭",
+    "kb:dream:symbol:同事",
+    "kb:dream:symbol:商场",
+    "kb:dream:symbol:地震",
+    "kb:dream:symbol:坠落",
+    "kb:dream:symbol:墓地",
+    "kb:dream:symbol:墙",
+    "kb:dream:symbol:壁虎",
+    "kb:dream:symbol:声音",
+    "kb:dream:symbol:大海",
+    "kb:dream:symbol:失业",
+    "kb:dream:symbol:头发",
+    "kb:dream:symbol:奶",
+    "kb:dream:symbol:宠物",
+    "kb:dream:symbol:寺庙",
+    "kb:dream:symbol:废墟",
+    "kb:dream:symbol:战场",
+    "kb:dream:symbol:房间",
+    "kb:dream:symbol:手",
+    "kb:dream:symbol:手机",
+    "kb:dream:symbol:打架",
+    "kb:dream:symbol:打雷",
+    "kb:dream:symbol:找东西",
+    "kb:dream:symbol:拍照",
+    "kb:dream:symbol:拥抱",
+    "kb:dream:symbol:搬家",
+    "kb:dream:symbol:摩托车",
+    "kb:dream:symbol:新郎",
+    "kb:dream:symbol:星星",
+    "kb:dream:symbol:朋友",
+    "kb:dream:symbol:杯子",
+    "kb:dream:symbol:果树",
+    "kb:dream:symbol:桥",
+    "kb:dream:symbol:水晶",
+    "kb:dream:symbol:沙漠",
+    "kb:dream:symbol:没穿衣服",
+    "kb:dream:symbol:河",
+    "kb:dream:symbol:泥石流",
+    "kb:dream:symbol:洗澡",
+    "kb:dream:symbol:洪水",
+    "kb:dream:symbol:游泳",
+    "kb:dream:symbol:漏水",
+    "kb:dream:symbol:火车",
+    "kb:dream:symbol:灯",
+    "kb:dream:symbol:熊",
+    "kb:dream:symbol:牛",
+    "kb:dream:symbol:狐狸",
+    "kb:dream:symbol:猪",
+    "kb:dream:symbol:猫头鹰",
+    "kb:dream:symbol:电梯",
+    "kb:dream:symbol:电脑",
+    "kb:dream:symbol:画",
+    "kb:dream:symbol:瘫痪",
+    "kb:dream:symbol:眼睛",
+    "kb:dream:symbol:碗",
+    "kb:dream:symbol:神仙",
+    "kb:dream:symbol:种树",
+    "kb:dream:symbol:窗户",
+    "kb:dream:symbol:米饭",
+    "kb:dream:symbol:糖果",
+    "kb:dream:symbol:绳子",
+    "kb:dream:symbol:老公",
+    "kb:dream:symbol:老婆",
+    "kb:dream:symbol:老鼠",
+    "kb:dream:symbol:考试",
+    "kb:dream:symbol:自杀",
+    "kb:dream:symbol:自行车",
+    "kb:dream:symbol:花",
+    "kb:dream:symbol:草原",
+    "kb:dream:symbol:虫子",
+    "kb:dream:symbol:蚯蚓",
+    "kb:dream:symbol:蛇",
+    "kb:dream:symbol:蜘蛛",
+    "kb:dream:symbol:蜜蜂",
+    "kb:dream:symbol:蟑螂",
+    "kb:dream:symbol:被冤枉",
+    "kb:dream:symbol:被绑架",
+    "kb:dream:symbol:被表扬",
+    "kb:dream:symbol:被追",
+    "kb:dream:symbol:豹子",
+    "kb:dream:symbol:跳下",
+    "kb:dream:symbol:躲藏",
+    "kb:dream:symbol:迷失",
+    "kb:dream:symbol:逃跑",
+    "kb:dream:symbol:醒不过来",
+    "kb:dream:symbol:针",
+    "kb:dream:symbol:钓鱼",
+    "kb:dream:symbol:钱",
+    "kb:dream:symbol:银行",
+    "kb:dream:symbol:门",
+    "kb:dream:symbol:隧道",
+    "kb:dream:symbol:雪山",
+    "kb:dream:symbol:青蛙",
+    "kb:dream:symbol:鞋子",
+    "kb:dream:symbol:领导",
+    "kb:dream:symbol:饿",
+    "kb:dream:symbol:首饰",
+    "kb:dream:symbol:骨头",
+    "kb:dream:symbol:高楼",
+    "kb:dream:symbol:鸡蛋",
+    "kb:dream:symbol:麒麟",
+    "kb:dream:symbol:黑暗"
+  ]
+}

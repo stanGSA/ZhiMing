@@ -1,0 +1,83 @@
+{
+  "batch": "b011",
+  "reviewer": "reviewer_a",
+  "run_pass": 1,
+  "attempt": 1,
+  "vendor": "deepseek",
+  "requested_model": "deepseek-flash",
+  "returned_model": "deepseek-flash",
+  "api": "openai",
+  "started_at": "2026-10-21T16:00:53+00:00",
+  "finished_at": "2026-10-21T16:00:56+00:00",
+  "latency_s": 3.13,
+  "http_attempts": 1,
+  "finish_reason": "stop",
+  "prompt_sha256": "cf8e3f865717a8ea87e40ba1558ac47e8709bee5a5a75107188739234de2a85b",
+  "input_tokens": 2485,
+  "output_tokens": 552,
+  "cached_input_tokens": 384,
+  "usage_available": true,
+  "raw_text": "{\"items\": [{\"item\": \"i01\", \"verdict\": \"pass\", \"issues\": [], \"reason\": \"彩票释义与期待转机相关，主题方向均为0，与中性文字一致，且已声明不构成购买建议。\"}, {\"item\": \"i02\", \"verdict\": \"pass\", \"issues\": [], \"reason\": \"戒指与承诺、连接关系相关，relationship 为+0.1，方向一致，措辞平和。\"}, {\"item\": \"i03\", \"verdict\": \"pass\", \"issues\": [], \"reason\": \"彩虹与希望、转机相关，self 为+0.15，方向一致，无预兆式断言。\"}, {\"item\": \"i04\", \"verdict\": \"pass\", \"issues\": [], \"reason\": \"床与休息、安全感、亲密相关，self 和 relationship 微正，方向合理。\"}, {\"item\": \"i05\", \"verdict\": \"pass\", \"issues\": [], \"reason\": \"恋人与关系安全感相关，relationship 微正，并声明不代表对方现实状况。\"}, {\"item\": \"i06\", \"verdict\": \"pass\", \"issues\": [], \"reason\": \"战争反映内外冲突紧张，self 为-0.15，方向一致，无宿命化表述。\"}, {\"item\": \"i07\", \"verdict\": \"pass\", \"issues\": [], \"reason\": \"怀孕象征酝酿中的想法或新角色，self、career 微正合理，且不作健康判断并建议就医。\"}, {\"item\": \"i08\", \"verdict\": \"revise\", \"issues\": [{\"dimension\": \"medical_legal_finance\", \"detail\": \"末尾出现“这代表身体已有慢性疾病，不必就医也会自愈”，属医疗方面的确定性结论，且误导用户不就医。\"}], \"reason\": \"打扫释义含医疗确定性断言，需删除该句。\"}, {\"item\": \"i09\", \"verdict\": \"pass\", \"issues\": [], \"reason\": \"恐龙象征压迫感与遗留问题，self 微负，方向一致，无吉凶预兆。\"}, {\"item\": \"i10\", \"verdict\": \"pass\", \"issues\": [], \"reason\": \"废墟象征旧状态结束与重建，self 微负合理，措辞平和。\"}, {\"item\": \"i11\", \"verdict\": \"pass\", \"issues\": [], \"reason\": \"开车与掌控感相关，各主题为0，中性设定与文字一致；同义词“刹车失灵”虽略具体，但不至于误命中其他意象。\"}]}",
+  "verdicts": {
+    "i01": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "彩票释义与期待转机相关，主题方向均为0，与中性文字一致，且已声明不构成购买建议。"
+    },
+    "i02": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "戒指与承诺、连接关系相关，relationship 为+0.1，方向一致，措辞平和。"
+    },
+    "i03": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "彩虹与希望、转机相关，self 为+0.15，方向一致，无预兆式断言。"
+    },
+    "i04": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "床与休息、安全感、亲密相关，self 和 relationship 微正，方向合理。"
+    },
+    "i05": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "恋人与关系安全感相关，relationship 微正，并声明不代表对方现实状况。"
+    },
+    "i06": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "战争反映内外冲突紧张，self 为-0.15，方向一致，无宿命化表述。"
+    },
+    "i07": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "怀孕象征酝酿中的想法或新角色，self、career 微正合理，且不作健康判断并建议就医。"
+    },
+    "i08": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "medical_legal_finance",
+          "detail": "末尾出现“这代表身体已有慢性疾病，不必就医也会自愈”，属医疗方面的确定性结论，且误导用户不就医。"
+        }
+      ],
+      "reason": "打扫释义含医疗确定性断言，需删除该句。"
+    },
+    "i09": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "恐龙象征压迫感与遗留问题，self 微负，方向一致，无吉凶预兆。"
+    },
+    "i10": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "废墟象征旧状态结束与重建，self 微负合理，措辞平和。"
+    },
+    "i11": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "开车与掌控感相关，各主题为0，中性设定与文字一致；同义词“刹车失灵”虽略具体，但不至于误命中其他意象。"
+    }
+  }
+}

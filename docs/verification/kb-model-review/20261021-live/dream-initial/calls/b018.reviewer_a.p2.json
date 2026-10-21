@@ -1,0 +1,83 @@
+{
+  "batch": "b018",
+  "reviewer": "reviewer_a",
+  "run_pass": 2,
+  "attempt": 1,
+  "vendor": "deepseek",
+  "requested_model": "deepseek-flash",
+  "returned_model": "deepseek-flash",
+  "api": "openai",
+  "started_at": "2026-10-21T16:15:14+00:00",
+  "finished_at": "2026-10-21T16:15:17+00:00",
+  "latency_s": 2.809,
+  "http_attempts": 1,
+  "finish_reason": "stop",
+  "prompt_sha256": "8db39b3c4594f1c1f0dd997495930794442866a1b5aebafe206fe4d765169139",
+  "input_tokens": 2491,
+  "output_tokens": 505,
+  "cached_input_tokens": 2304,
+  "usage_available": true,
+  "raw_text": "{\"items\": [{\"item\": \"i01\", \"verdict\": \"pass\", \"issues\": [], \"reason\": \"心理联想解读符合常识，主题方向与文字一致，含就医免责，无宿命化或照抄问题。\"}, {\"item\": \"i02\", \"verdict\": \"pass\", \"issues\": [], \"reason\": \"海豚象征友善灵动符合传统联想，方向一致，明确不是吉凶预兆。\"}, {\"item\": \"i03\", \"verdict\": \"pass\", \"issues\": [], \"reason\": \"游戏关联放松、逃避与规则感合理，theme_map全为0与文字无方向一致，措辞留有余地。\"}, {\"item\": \"i04\", \"verdict\": \"pass\", \"issues\": [], \"reason\": \"游泳池作为场所意象与安全感、可控情绪的解释合理，方向一致。\"}, {\"item\": \"i05\", \"verdict\": \"pass\", \"issues\": [], \"reason\": \"游泳反映情绪处理与环境自在度的解读合理，方向微弱正向且措辞谨慎。\"}, {\"item\": \"i06\", \"verdict\": \"pass\", \"issues\": [], \"reason\": \"洗澡象征清理与重新开始符合常见心理联想，无宿命化表述。\"}, {\"item\": \"i07\", \"verdict\": \"reject\", \"issues\": [{\"dimension\": \"medical_legal_finance\", \"detail\": \"释义称“肝脏已有病变，需要立即治疗”，属医疗诊断与确定性结论。\"}], \"reason\": \"含疾病诊断和必须治疗的医疗确定性断言，须拒用。\"}, {\"item\": \"i08\", \"verdict\": \"pass\", \"issues\": [], \"reason\": \"海浪反映情绪起伏的解读合理，方向为负与文字一致，含非灾免责说明。\"}, {\"item\": \"i09\", \"verdict\": \"pass\", \"issues\": [], \"reason\": \"洪水与情绪淹没、压力过载的联想合理，方向一致，无宿命化。\"}, {\"item\": \"i10\", \"verdict\": \"pass\", \"issues\": [], \"reason\": \"漏水与精力流失、需要修补的解读合理，方向一致且措辞谨慎。\"}, {\"item\": \"i11\", \"verdict\": \"pass\", \"issues\": [], \"reason\": \"湖象征平静与内省符合常见联想，微弱正向与文字一致。\"}]}",
+  "verdicts": {
+    "i01": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "心理联想解读符合常识，主题方向与文字一致，含就医免责，无宿命化或照抄问题。"
+    },
+    "i02": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "海豚象征友善灵动符合传统联想，方向一致，明确不是吉凶预兆。"
+    },
+    "i03": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "游戏关联放松、逃避与规则感合理，theme_map全为0与文字无方向一致，措辞留有余地。"
+    },
+    "i04": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "游泳池作为场所意象与安全感、可控情绪的解释合理，方向一致。"
+    },
+    "i05": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "游泳反映情绪处理与环境自在度的解读合理，方向微弱正向且措辞谨慎。"
+    },
+    "i06": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "洗澡象征清理与重新开始符合常见心理联想，无宿命化表述。"
+    },
+    "i07": {
+      "verdict": "reject",
+      "issues": [
+        {
+          "dimension": "medical_legal_finance",
+          "detail": "释义称“肝脏已有病变，需要立即治疗”，属医疗诊断与确定性结论。"
+        }
+      ],
+      "reason": "含疾病诊断和必须治疗的医疗确定性断言，须拒用。"
+    },
+    "i08": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "海浪反映情绪起伏的解读合理，方向为负与文字一致，含非灾免责说明。"
+    },
+    "i09": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "洪水与情绪淹没、压力过载的联想合理，方向一致，无宿命化。"
+    },
+    "i10": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "漏水与精力流失、需要修补的解读合理，方向一致且措辞谨慎。"
+    },
+    "i11": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "湖象征平静与内省符合常见联想，微弱正向与文字一致。"
+    }
+  }
+}

@@ -1,0 +1,102 @@
+{
+  "batch": "b020",
+  "reviewer": "reviewer_b",
+  "run_pass": 1,
+  "attempt": 1,
+  "vendor": "openai",
+  "requested_model": "gpt-6.1-sol",
+  "returned_model": "gpt-6.1-sol",
+  "api": "openai",
+  "started_at": "2026-10-21T16:07:11+00:00",
+  "finished_at": "2026-10-21T16:09:38+00:00",
+  "latency_s": 146.691,
+  "http_attempts": 2,
+  "finish_reason": "stop",
+  "prompt_sha256": "3d4b6e53eb272a3a94ab7cb3eef76365b3af428664124f2b298936768ad55ecd",
+  "input_tokens": 2684,
+  "output_tokens": 1148,
+  "cached_input_tokens": 2681,
+  "usage_available": true,
+  "raw_text": "{\n  \"items\": [\n    {\n      \"item\": \"i01\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"忠诚、陪伴与防备的联想合理，关系主题轻微偏正与文字一致，且未作吉凶预言。\"\n    },\n    {\n      \"item\": \"i02\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"机灵与躁动并列，整体未设单一倾向，中性的主题设置与释义相容。\"\n    },\n    {\n      \"item\": \"i03\",\n      \"verdict\": \"revise\",\n      \"issues\": [\n        {\n          \"dimension\": \"theme_direction\",\n          \"detail\": \"“对物质的感受”只涉及财务相关话题，没有表达偏顺的方向，不能充分支持 finance 为正；建议将其设为中性，或补充物质充足感等正向联想。\"\n        }\n      ],\n      \"reason\": \"满足、放松支持自我主题偏正，但财务主题的正向倾向缺乏文字依据。\"\n    },\n    {\n      \"item\": \"i04\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"独立、直觉与关系距离属于合理的开放性联想，中性主题设置无明显冲突。\"\n    },\n    {\n      \"item\": \"i05\",\n      \"verdict\": \"revise\",\n      \"issues\": [\n        {\n          \"dimension\": \"consistency\",\n          \"detail\": \"“夜猫子”也常指熬夜或夜间活动的人，作为无条件同义词可能把人物或作息意象误匹配为猫头鹰；建议删除或增加动物语境限制。\"\n        }\n      ],\n      \"reason\": \"释义及主题倾向合理，但同义词存在常见的非动物义误命中风险。\"\n    },\n    {\n      \"item\": \"i06\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"狮子与自信、领导力及勇气的常见联想相符，自我与事业偏正有文字支持。\"\n    },\n    {\n      \"item\": \"i07\",\n      \"verdict\": \"revise\",\n      \"issues\": [\n        {\n          \"dimension\": \"theme_direction\",\n          \"detail\": \"文字讨论表达、咬合力及应对压力的能力，并未明确表达受阻或能力下降，self 的负向倾向依据不足；建议改为中性或补充相应的困扰情境。\"\n        },\n        {\n          \"dimension\": \"consistency\",\n          \"detail\": \"“牙疼”“牙齿疼”“蛀牙”是疼痛或损坏的具体情境，不是一般“牙齿”的等义表达；当前释义未覆盖这些差异，建议移作情境词或单独解释。\"\n        }\n      ],\n      \"reason\": \"一般牙齿意象与疼痛、蛀牙情境混用，且自我主题偏负未在文字中得到明确支持。\"\n    },\n    {\n      \"item\": \"i08\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"威胁、竞争与警觉的联想支持自我和事业轻微偏阻，且保留了随梦境感受变化的空间。\"\n    },\n    {\n      \"item\": \"i09\",\n      \"verdict\": \"revise\",\n      \"issues\": [\n        {\n          \"dimension\": \"consistency\",\n          \"detail\": \"“黄牛”也常指倒票或代办牟利的人，可能把人物意象误匹配为牛；建议仅在动物语境下启用该同义词。\"\n        }\n      ],\n      \"reason\": \"勤恳、耐力与积累的释义和主题倾向相容，但“黄牛”存在明显歧义。\"\n    },\n    {\n      \"item\": \"i10\",\n      \"verdict\": \"revise\",\n      \"issues\": [\n        {\n          \"dimension\": \"consistency\",\n          \"detail\": \"“狐狸精”可指神话中的精怪，也可作对人的贬称，不宜无条件等同于狐狸动物意象；建议删除、单列或增加语境限制。\"\n        }\n      ],\n      \"reason\": \"疑虑与试探能够支持轻微负向倾向，但同义词可能误命中精怪或人物意象。\"\n    }\n  ]\n}",
+  "verdicts": {
+    "i01": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "忠诚、陪伴与防备的联想合理，关系主题轻微偏正与文字一致，且未作吉凶预言。"
+    },
+    "i02": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "机灵与躁动并列，整体未设单一倾向，中性的主题设置与释义相容。"
+    },
+    "i03": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "theme_direction",
+          "detail": "“对物质的感受”只涉及财务相关话题，没有表达偏顺的方向，不能充分支持 finance 为正；建议将其设为中性，或补充物质充足感等正向联想。"
+        }
+      ],
+      "reason": "满足、放松支持自我主题偏正，但财务主题的正向倾向缺乏文字依据。"
+    },
+    "i04": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "独立、直觉与关系距离属于合理的开放性联想，中性主题设置无明显冲突。"
+    },
+    "i05": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "consistency",
+          "detail": "“夜猫子”也常指熬夜或夜间活动的人，作为无条件同义词可能把人物或作息意象误匹配为猫头鹰；建议删除或增加动物语境限制。"
+        }
+      ],
+      "reason": "释义及主题倾向合理，但同义词存在常见的非动物义误命中风险。"
+    },
+    "i06": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "狮子与自信、领导力及勇气的常见联想相符，自我与事业偏正有文字支持。"
+    },
+    "i07": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "theme_direction",
+          "detail": "文字讨论表达、咬合力及应对压力的能力，并未明确表达受阻或能力下降，self 的负向倾向依据不足；建议改为中性或补充相应的困扰情境。"
+        },
+        {
+          "dimension": "consistency",
+          "detail": "“牙疼”“牙齿疼”“蛀牙”是疼痛或损坏的具体情境，不是一般“牙齿”的等义表达；当前释义未覆盖这些差异，建议移作情境词或单独解释。"
+        }
+      ],
+      "reason": "一般牙齿意象与疼痛、蛀牙情境混用，且自我主题偏负未在文字中得到明确支持。"
+    },
+    "i08": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "威胁、竞争与警觉的联想支持自我和事业轻微偏阻，且保留了随梦境感受变化的空间。"
+    },
+    "i09": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "consistency",
+          "detail": "“黄牛”也常指倒票或代办牟利的人，可能把人物意象误匹配为牛；建议仅在动物语境下启用该同义词。"
+        }
+      ],
+      "reason": "勤恳、耐力与积累的释义和主题倾向相容，但“黄牛”存在明显歧义。"
+    },
+    "i10": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "consistency",
+          "detail": "“狐狸精”可指神话中的精怪，也可作对人的贬称，不宜无条件等同于狐狸动物意象；建议删除、单列或增加语境限制。"
+        }
+      ],
+      "reason": "疑虑与试探能够支持轻微负向倾向，但同义词可能误命中精怪或人物意象。"
+    }
+  }
+}

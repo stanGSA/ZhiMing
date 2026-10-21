@@ -1,0 +1,75 @@
+{
+  "schema": 1,
+  "system": "name",
+  "seed": 1,
+  "batch_size": 10,
+  "plant_rate": 0.1,
+  "min_planted": 5,
+  "passes": 2,
+  "only_ids": [
+    "kb:name:sancai:火木水"
+  ],
+  "calibrated_by": null,
+  "rubric_version": 1,
+  "rubric_sha256": "a33bd07bd2299376f88d6cf1c958b26990685099797e78272054352ff7557b0d",
+  "script_sha256": "cca3a7b203f9186b0a82f3a4b78b50b3fad3228f869377cc3d113099cad88ec5",
+  "runtime_vendor": "deepseek",
+  "drafter_vendors": [
+    "anthropic"
+  ],
+  "runtime_vendor_exception": {
+    "vendor": "deepseek",
+    "model": "deepseek-flash",
+    "reason": "2026-10-21 项目负责人明确要求第一审核方使用本机.env的DeepSeek配置"
+  },
+  "pricing": {
+    "reviewer_a": {
+      "input_per_mtok": null,
+      "output_per_mtok": null,
+      "currency": null
+    },
+    "reviewer_b": {
+      "input_per_mtok": null,
+      "output_per_mtok": null,
+      "currency": null
+    }
+  },
+  "reviewers": {
+    "reviewer_a": {
+      "vendor": "deepseek",
+      "api": "openai",
+      "model": "deepseek-flash",
+      "api_key_env": "DEEPSEEK_API_KEY",
+      "temperature": null,
+      "max_tokens": 4096,
+      "base_url_host": "api.deepseek.com"
+    },
+    "reviewer_b": {
+      "vendor": "openai",
+      "api": "openai",
+      "model": "gpt-6.1-sol",
+      "api_key_env": "OPENAI_REVIEW_API_KEY",
+      "temperature": null,
+      "max_tokens": 4096,
+      "base_url_host": "codegoai.com"
+    }
+  },
+  "source_files": {
+    "knowledge/sources/name/entries.yaml": "0e73c3bbc4edef097527484f64e8b856ad8d508e42f5541f6122d12aaf2ea4b0"
+  },
+  "entry_hashes": {
+    "kb:name:sancai:火木水": "4fc723d3945232ff20e524df625ef16c8dfcbca666deca227e5a9b4bdb2d02fc"
+  },
+  "planted_count": 1,
+  "batch_count": 2,
+  "prompt_sha256": {
+    "b001": "f35bdaddc6ae782a7138143d6e8599839472a7783d9b108f11d973a6e69b12da",
+    "b002": "5f0219edff39eeabf852c7a7c6f595321d20775ca84b59c5b6e370bbd4779017"
+  },
+  "created_at": "2026-10-21T16:54:21+00:00",
+  "git": {
+    "head": "e8dae18cd2dae8139bcec667242c7169ebadaf13",
+    "dirty": true
+  },
+  "kb_version": "v1-bac48fbe859be33a"
+}

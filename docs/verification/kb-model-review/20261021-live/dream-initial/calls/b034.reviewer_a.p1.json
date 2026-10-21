@@ -1,0 +1,83 @@
+{
+  "batch": "b034",
+  "reviewer": "reviewer_a",
+  "run_pass": 1,
+  "attempt": 1,
+  "vendor": "deepseek",
+  "requested_model": "deepseek-flash",
+  "returned_model": "deepseek-flash",
+  "api": "openai",
+  "started_at": "2026-10-21T16:01:27+00:00",
+  "finished_at": "2026-10-21T16:01:30+00:00",
+  "latency_s": 2.266,
+  "http_attempts": 1,
+  "finish_reason": "stop",
+  "prompt_sha256": "805844afa556755b903fa846f51b3f88f414b0dfd45c0a0281d7e6eef7609af3",
+  "input_tokens": 2453,
+  "output_tokens": 431,
+  "cached_input_tokens": 384,
+  "usage_available": true,
+  "raw_text": "{\"items\":[{\"item\":\"i01\",\"verdict\":\"pass\",\"issues\":[],\"reason\":\"释义符合主流心理联想，方向全为0与文字中性一致，无宿命化断言。\"},{\"item\":\"i02\",\"verdict\":\"pass\",\"issues\":[],\"reason\":\"鞋子与立足点、方向的联想合理，theme_map全0与文字中性一致。\"},{\"item\":\"i03\",\"verdict\":\"pass\",\"issues\":[],\"reason\":\"陌生人象征未知自我或新可能，传统心理联想合理，无确定性断言。\"},{\"item\":\"i04\",\"verdict\":\"pass\",\"issues\":[],\"reason\":\"项链与珍视联系、自我价值的联想合理，theme_map微正与文字一致。\"},{\"item\":\"i05\",\"verdict\":\"pass\",\"issues\":[],\"reason\":\"雾象征看不清方向，theme_map负值与文字一致，无预兆化表述。\"},{\"item\":\"i06\",\"verdict\":\"pass\",\"issues\":[],\"reason\":\"隐身与不想被关注/被忽视的联想合理，self与relationship微负与文字一致。\"},{\"item\":\"i07\",\"verdict\":\"pass\",\"issues\":[],\"reason\":\"雪山象征高远目标或难以靠近的情感，theme_map全0与文字中性一致。\"},{\"item\":\"i08\",\"verdict\":\"pass\",\"issues\":[],\"reason\":\"青蛙象征转变与适应符合常见心理联想，且明确非吉凶预兆。\"},{\"item\":\"i09\",\"verdict\":\"pass\",\"issues\":[],\"reason\":\"隧道象征过渡期合理，theme_map全0与文字中性一致。\"},{\"item\":\"i10\",\"verdict\":\"reject\",\"issues\":[{\"dimension\":\"medical_legal_finance\",\"detail\":\"出现“代表身体已有慢性疾病，不必就医也会自愈”的医疗确定性结论，误导用户放弃就医。\"}],\"reason\":\"释义包含医疗诊断与“不必就医”的确定性断言，属禁止内容。\"},{\"item\":\"i11\",\"verdict\":\"pass\",\"issues\":[],\"reason\":\"面条与长久、日常满足的联想合理，theme_map微正与文字一致。\"}]}",
+  "verdicts": {
+    "i01": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "释义符合主流心理联想，方向全为0与文字中性一致，无宿命化断言。"
+    },
+    "i02": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "鞋子与立足点、方向的联想合理，theme_map全0与文字中性一致。"
+    },
+    "i03": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "陌生人象征未知自我或新可能，传统心理联想合理，无确定性断言。"
+    },
+    "i04": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "项链与珍视联系、自我价值的联想合理，theme_map微正与文字一致。"
+    },
+    "i05": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "雾象征看不清方向，theme_map负值与文字一致，无预兆化表述。"
+    },
+    "i06": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "隐身与不想被关注/被忽视的联想合理，self与relationship微负与文字一致。"
+    },
+    "i07": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "雪山象征高远目标或难以靠近的情感，theme_map全0与文字中性一致。"
+    },
+    "i08": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "青蛙象征转变与适应符合常见心理联想，且明确非吉凶预兆。"
+    },
+    "i09": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "隧道象征过渡期合理，theme_map全0与文字中性一致。"
+    },
+    "i10": {
+      "verdict": "reject",
+      "issues": [
+        {
+          "dimension": "medical_legal_finance",
+          "detail": "出现“代表身体已有慢性疾病，不必就医也会自愈”的医疗确定性结论，误导用户放弃就医。"
+        }
+      ],
+      "reason": "释义包含医疗诊断与“不必就医”的确定性断言，属禁止内容。"
+    },
+    "i11": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "面条与长久、日常满足的联想合理，theme_map微正与文字一致。"
+    }
+  }
+}

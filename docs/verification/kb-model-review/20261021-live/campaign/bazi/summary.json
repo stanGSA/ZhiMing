@@ -1,0 +1,1063 @@
+{
+  "system": "bazi",
+  "entries": 141,
+  "candidate_count": 141,
+  "draft_count": 0,
+  "metrics": {
+    "detection": {
+      "reviewer_a": 1.0,
+      "reviewer_b": 1.0
+    },
+    "detection_merged": 1.0,
+    "rerun": {
+      "reviewer_a": 0.92018779342723,
+      "reviewer_b": 1.0
+    },
+    "kappa": 0.3639,
+    "kappa_real_three_class": 0.0008,
+    "kappa_all_three_class": 0.3632,
+    "observed_agreement": 0.7699530516431925,
+    "observed_agreement_real_three_class": 0.7447916666666666,
+    "pass_rate": 1.0
+  },
+  "gates": {
+    "complete": true,
+    "detection_merged": true,
+    "detection_single": true,
+    "rerun": true,
+    "kappa": false,
+    "pass_rate": true
+  },
+  "calibrated": false,
+  "passed": false,
+  "samples": {
+    "detection": {
+      "reviewer_a": [
+        21,
+        21
+      ],
+      "reviewer_b": [
+        21,
+        21
+      ]
+    },
+    "detection_merged": [
+      21,
+      21
+    ],
+    "rerun": {
+      "reviewer_a": [
+        196,
+        213
+      ],
+      "reviewer_b": [
+        213,
+        213
+      ]
+    },
+    "kappa_pairs": 213,
+    "kappa_real_pairs": 192,
+    "verdict_pairs": {
+      "pass/revise": 46,
+      "pass/pass": 142,
+      "revise/pass": 3,
+      "revise/revise": 5,
+      "reject/revise": 2,
+      "reject/reject": 14,
+      "revise/reject": 1
+    },
+    "verdict_pairs_real": {
+      "pass/revise": 46,
+      "pass/pass": 142,
+      "revise/pass": 3,
+      "revise/revise": 1
+    }
+  },
+  "batches": [
+    {
+      "path": "docs/verification/kb-model-review/20261021-live/bazi-initial",
+      "entries": 141,
+      "metrics": {
+        "pass_rate": 0.6525,
+        "detection": {
+          "reviewer_a": 1.0,
+          "reviewer_b": 1.0
+        },
+        "detection_merged": 1.0,
+        "rerun": {
+          "reviewer_a": 0.8903,
+          "reviewer_b": 1.0
+        },
+        "kappa": -0.0416,
+        "observed_agreement": 0.6596,
+        "verdict_counts": {
+          "reviewer_a": {
+            "pass": 138,
+            "revise": 3
+          },
+          "reviewer_b": {
+            "revise": 45,
+            "pass": 96
+          }
+        }
+      },
+      "gates": {
+        "pass_rate": false,
+        "detection_merged": true,
+        "detection_single": true,
+        "rerun": false,
+        "kappa": false,
+        "complete": true
+      },
+      "errors": 1,
+      "usage": {
+        "reviewer_a": {
+          "calls": 34,
+          "input_tokens": 78802,
+          "output_tokens": 16442,
+          "latency_s": 90.08,
+          "returned_models": [
+            "deepseek-flash"
+          ],
+          "errors": {
+            "parse_error": 1
+          },
+          "retried_calls": 1,
+          "http_retries": 0,
+          "cost": null,
+          "known_cost_estimate": null,
+          "usage_complete": true,
+          "cost_basis": "配置单价估算，非账单；服务失败的用量可能未知",
+          "currency": null
+        },
+        "reviewer_b": {
+          "calls": 34,
+          "input_tokens": 83786,
+          "output_tokens": 34741,
+          "latency_s": 1031.432,
+          "returned_models": [
+            "gpt-6.1-sol"
+          ],
+          "errors": {},
+          "retried_calls": 0,
+          "http_retries": 0,
+          "cost": null,
+          "known_cost_estimate": null,
+          "usage_complete": true,
+          "cost_basis": "配置单价估算，非账单；服务失败的用量可能未知",
+          "currency": null
+        },
+        "reviser": {
+          "calls": 51,
+          "input_tokens": 31786,
+          "output_tokens": 16596,
+          "latency_s": 1242.988,
+          "returned_models": [
+            "gpt-6-astra"
+          ],
+          "errors": {},
+          "retried_calls": 0,
+          "http_retries": 4,
+          "cost": null,
+          "known_cost_estimate": null,
+          "usage_complete": true,
+          "cost_basis": "配置单价估算，非账单；服务失败的用量可能未知",
+          "currency": null
+        }
+      }
+    },
+    {
+      "path": "docs/verification/kb-model-review/20261021-live/bazi-rereview-1",
+      "entries": 49,
+      "metrics": {
+        "pass_rate": 0.9592,
+        "detection": {
+          "reviewer_a": 1.0,
+          "reviewer_b": 1.0
+        },
+        "detection_merged": 1.0,
+        "rerun": {
+          "reviewer_a": 1.0,
+          "reviewer_b": 1.0
+        },
+        "kappa": 0.6573,
+        "observed_agreement": 0.9796,
+        "verdict_counts": {
+          "reviewer_a": {
+            "pass": 48,
+            "revise": 1
+          },
+          "reviewer_b": {
+            "pass": 47,
+            "revise": 2
+          }
+        }
+      },
+      "gates": {
+        "pass_rate": true,
+        "detection_merged": true,
+        "detection_single": true,
+        "rerun": true,
+        "kappa": true,
+        "complete": true
+      },
+      "errors": 0,
+      "usage": {
+        "reviewer_a": {
+          "calls": 12,
+          "input_tokens": 36758,
+          "output_tokens": 5500,
+          "latency_s": 32.145,
+          "returned_models": [
+            "deepseek-flash"
+          ],
+          "errors": {},
+          "retried_calls": 0,
+          "http_retries": 0,
+          "cost": null,
+          "known_cost_estimate": null,
+          "usage_complete": true,
+          "cost_basis": "配置单价估算，非账单；服务失败的用量可能未知",
+          "currency": null
+        },
+        "reviewer_b": {
+          "calls": 12,
+          "input_tokens": 41200,
+          "output_tokens": 8688,
+          "latency_s": 242.199,
+          "returned_models": [
+            "gpt-6.1-sol"
+          ],
+          "errors": {},
+          "retried_calls": 0,
+          "http_retries": 0,
+          "cost": null,
+          "known_cost_estimate": null,
+          "usage_complete": true,
+          "cost_basis": "配置单价估算，非账单；服务失败的用量可能未知",
+          "currency": null
+        },
+        "reviser": {
+          "calls": 2,
+          "input_tokens": 1770,
+          "output_tokens": 741,
+          "latency_s": 28.969,
+          "returned_models": [
+            "gpt-6-astra"
+          ],
+          "errors": {},
+          "retried_calls": 0,
+          "http_retries": 0,
+          "cost": null,
+          "known_cost_estimate": null,
+          "usage_complete": true,
+          "cost_basis": "配置单价估算，非账单；服务失败的用量可能未知",
+          "currency": null
+        }
+      }
+    },
+    {
+      "path": "docs/verification/kb-model-review/20261021-live/bazi-rereview-2",
+      "entries": 2,
+      "metrics": {
+        "pass_rate": 1.0,
+        "detection": {
+          "reviewer_a": 1.0,
+          "reviewer_b": 1.0
+        },
+        "detection_merged": 1.0,
+        "rerun": {
+          "reviewer_a": 1.0,
+          "reviewer_b": 1.0
+        },
+        "kappa": null,
+        "observed_agreement": 1.0,
+        "verdict_counts": {
+          "reviewer_a": {
+            "pass": 2
+          },
+          "reviewer_b": {
+            "pass": 2
+          }
+        }
+      },
+      "gates": {
+        "pass_rate": true,
+        "detection_merged": true,
+        "detection_single": true,
+        "rerun": true,
+        "kappa": false,
+        "complete": true
+      },
+      "errors": 0,
+      "usage": {
+        "reviewer_a": {
+          "calls": 4,
+          "input_tokens": 4762,
+          "output_tokens": 696,
+          "latency_s": 8.687,
+          "returned_models": [
+            "deepseek-flash"
+          ],
+          "errors": {},
+          "retried_calls": 0,
+          "http_retries": 0,
+          "cost": null,
+          "known_cost_estimate": null,
+          "usage_complete": true,
+          "cost_basis": "配置单价估算，非账单；服务失败的用量可能未知",
+          "currency": null
+        },
+        "reviewer_b": {
+          "calls": 4,
+          "input_tokens": 5440,
+          "output_tokens": 1008,
+          "latency_s": 39.136,
+          "returned_models": [
+            "gpt-6.1-sol"
+          ],
+          "errors": {},
+          "retried_calls": 0,
+          "http_retries": 0,
+          "cost": null,
+          "known_cost_estimate": null,
+          "usage_complete": true,
+          "cost_basis": "配置单价估算，非账单；服务失败的用量可能未知",
+          "currency": null
+        }
+      }
+    }
+  ],
+  "thresholds": {
+    "pass_rate": 0.95,
+    "detection_merged": 0.9,
+    "detection_single": 0.8,
+    "rerun": 0.9,
+    "kappa": 0.6
+  },
+  "acceptance_basis": "负责人确认：按体系汇总全部初审及复审样本；通过率按当前内容哈希；kappa按全部真实及埋错样本的放行二分类计算，原三分类指标保留",
+  "kappa_basis": {
+    "scope": "全部批次第一轮真实及埋错样本；第二轮另计重跑一致率",
+    "classes": {
+      "pass": "放行",
+      "revise": "不通过",
+      "reject": "不通过"
+    },
+    "limitation": "埋错样本改变类别分布，不能与仅真实条目的三分类kappa直接比较",
+    "owner_reply": "同意：全部样本、放行二分类（推荐）"
+  },
+  "human_reviewed_rate": 0.0,
+  "current_content_evidence": {
+    "kb:bazi:branch:丑": {
+      "content_sha256": "117a42359d4fc89346a0a32a7af722c7794c76a57ead9828d77c024170c1cd06",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/bazi-rereview-1"
+    },
+    "kb:bazi:branch:亥": {
+      "content_sha256": "20651565bc2dc6df6130c0dc962da5885bc111ca4586b924b7326d02b70cc643",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/bazi-rereview-1"
+    },
+    "kb:bazi:branch:午": {
+      "content_sha256": "196e6809941c18735e03ad6582652108abcfd0ea8b7fd604cb93058b73fe8c7d",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/bazi-rereview-1"
+    },
+    "kb:bazi:branch:卯": {
+      "content_sha256": "5833c84a39ad650e4eca265a454fccf68d0ba206293c943740a0156a72b1f5e2",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/bazi-rereview-1"
+    },
+    "kb:bazi:branch:子": {
+      "content_sha256": "e7c04c4c6febe0de047a1b91f94f5cf28d9d0b3d3707aacd75813bc237d30092",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/bazi-rereview-1"
+    },
+    "kb:bazi:branch:寅": {
+      "content_sha256": "3eea4e5dbe148600dfd7f05ec1dd53e10da9db3837f2c21756fa03595bbc9502",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/bazi-rereview-1"
+    },
+    "kb:bazi:branch:巳": {
+      "content_sha256": "287253d4f2d80d2ba877d39018d2c6bd9d14fd41ee32f7aa949122ab267f06ca",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/bazi-rereview-1"
+    },
+    "kb:bazi:branch:戌": {
+      "content_sha256": "2090b00de095b4ab3e91cfbdd75352f75fe27219bbd4abf2f9f4d2bcffde3b14",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/bazi-rereview-1"
+    },
+    "kb:bazi:branch:未": {
+      "content_sha256": "cb238f3e55d5fa9c54c5514d29c5c98389848a26d29ff8e0b8123f6b0d30bc3e",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/bazi-rereview-1"
+    },
+    "kb:bazi:branch:申": {
+      "content_sha256": "cdc22c7b358a38121e5cd75623650c16da10e4e1f944c94106491305f70257d1",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/bazi-rereview-1"
+    },
+    "kb:bazi:branch:辰": {
+      "content_sha256": "4817e67520edf5eec89df134c230d48911777c5a80162798a8a18b22ef54bb8c",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/bazi-initial"
+    },
+    "kb:bazi:branch:酉": {
+      "content_sha256": "6684802dbcd3e11249e6b5600ab994e513c8ca5c6a8e3c6f64ce781ef990a254",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/bazi-initial"
+    },
+    "kb:bazi:convention:day_master": {
+      "content_sha256": "9615dd94002c0f0b16b97badac94037e79aa509154541fa9a52e40c8d4428b45",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/bazi-initial"
+    },
+    "kb:bazi:convention:dayun": {
+      "content_sha256": "1e9fc903f3326b4fb785493a4970b265c20d7629ae60b54642d09f75f7c4d100",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/bazi-rereview-1"
+    },
+    "kb:bazi:convention:true_solar_time": {
+      "content_sha256": "475e3f34795f8ebf0d3f5dabd219d1fda0838d299fd1c7a1c603e5e34fee1646",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/bazi-rereview-1"
+    },
+    "kb:bazi:convention:unknown_time": {
+      "content_sha256": "f4d62383e0d7d400fe73668e89e529db4f8b35998538cd7690e4778843b01d34",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/bazi-initial"
+    },
+    "kb:bazi:convention:year_month_boundary": {
+      "content_sha256": "ef8856f8352acb58a29ad81b2394551e677cde56d39501e2b8bee36c4cee0482",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/bazi-initial"
+    },
+    "kb:bazi:convention:zishi_next_day": {
+      "content_sha256": "06be91b0cf124a65366088d3acd688218f6baf5a513e25e790e8d364254c274c",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/bazi-rereview-2"
+    },
+    "kb:bazi:convention:zishi_same_day": {
+      "content_sha256": "5491e57f07123c18d721612d385746e885991bcd887f856f816a0f26a62da325",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/bazi-rereview-1"
+    },
+    "kb:bazi:element:土": {
+      "content_sha256": "c51d475faa4f965c4117d6df43dd7f8d67cc3196d7ab518f3f82f06edec7ed10",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/bazi-initial"
+    },
+    "kb:bazi:element:木": {
+      "content_sha256": "2993887c4dd6c8c4fec15ec4f1dcfd9f3d273096f9545531d4c1b4bb5ffd775f",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/bazi-initial"
+    },
+    "kb:bazi:element:水": {
+      "content_sha256": "6163c2072dab2489ef79bbbffdfa9c472b6de7c6c61ff64d34d72224bda5d093",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/bazi-initial"
+    },
+    "kb:bazi:element:火": {
+      "content_sha256": "88cb232fb1cd14aceedb5412fcdbf9ca54a62ce5b69ac557863e137d0cd95f54",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/bazi-initial"
+    },
+    "kb:bazi:element:金": {
+      "content_sha256": "eb98d4cd0528ae4c821a462487babe263bba88f50e8f463b774ee04e0c32f88b",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/bazi-initial"
+    },
+    "kb:bazi:element_relation:克": {
+      "content_sha256": "a4baecfa491aa04dd83629328fb5946c5096869d948e68cdd46ec3a73e81bb7f",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/bazi-rereview-1"
+    },
+    "kb:bazi:element_relation:同类": {
+      "content_sha256": "4c77831e348c2e93db56a03312903e1fea8e127a42e9783d1da8d7e90e3c8a22",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/bazi-rereview-1"
+    },
+    "kb:bazi:element_relation:泄": {
+      "content_sha256": "57ae06adad183cb7e1c8fe9c353d5549b997a18d8769999ddbed7ad44998a521",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/bazi-rereview-1"
+    },
+    "kb:bazi:element_relation:生": {
+      "content_sha256": "649bfeae4a21e07d6102dfbca8e6559d1b4600337d20f3a07c1a595b4e92c747",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/bazi-rereview-1"
+    },
+    "kb:bazi:element_relation:耗": {
+      "content_sha256": "9690e0d2d5ac693ea87415a74bf792b15d5e3bc0e42736c2e248f1c91ba23314",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/bazi-rereview-1"
+    },
+    "kb:bazi:god_pillar:七杀:day": {
+      "content_sha256": "3c4621b92dffdcd6d2722412c58433e1707a9444d3f9304be2754378fb6c3b41",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/bazi-initial"
+    },
+    "kb:bazi:god_pillar:七杀:month": {
+      "content_sha256": "bee3e0f06f4dc49081234c1e90eb72aa792331745dab1d55a4504c40b3e8643e",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/bazi-initial"
+    },
+    "kb:bazi:god_pillar:七杀:time": {
+      "content_sha256": "1dd1549ce647d6bb71eccde00846ed07838f06146beef785b8cb24074d8b80b2",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/bazi-initial"
+    },
+    "kb:bazi:god_pillar:七杀:year": {
+      "content_sha256": "981273f87e06d9490204eb18bf177ee76f4c6bfabd7ebb896135d3427f4abc19",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/bazi-initial"
+    },
+    "kb:bazi:god_pillar:伤官:day": {
+      "content_sha256": "94c7b309379dd9ec14b880adc18b407dc2835212fda8898026a62738f89004c9",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/bazi-initial"
+    },
+    "kb:bazi:god_pillar:伤官:month": {
+      "content_sha256": "62cfb93ceef812219093f77134570c5d12f2223d3ff0a1850e4f983933649050",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/bazi-initial"
+    },
+    "kb:bazi:god_pillar:伤官:time": {
+      "content_sha256": "e954fcf76058ec8b2a8cfd63b33ee4cc8092ac0f2f27eeddebb83d27c0bd9910",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/bazi-initial"
+    },
+    "kb:bazi:god_pillar:伤官:year": {
+      "content_sha256": "4d060b64ed30d3f54cac187ce05a6f5cde1e3c88c34f541de9827f6806a0f6a9",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/bazi-initial"
+    },
+    "kb:bazi:god_pillar:偏印:day": {
+      "content_sha256": "f977a3631f112a1236f21c620d6f43e375c475637db80be0299f8ca9ff429844",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/bazi-initial"
+    },
+    "kb:bazi:god_pillar:偏印:month": {
+      "content_sha256": "0a5cfe611ad4193bef3fb3b43c279a705d79d12e1918d1b9b8d5fbd44a299a43",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/bazi-initial"
+    },
+    "kb:bazi:god_pillar:偏印:time": {
+      "content_sha256": "328ed0c51ddc4c4f0b762d21283be853eabb2922d426021e9a3a84b7c71477fe",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/bazi-initial"
+    },
+    "kb:bazi:god_pillar:偏印:year": {
+      "content_sha256": "2f101056437d5df5c56a3dcd8ebcb65d41a9d9d31983c97428df03f9d1e023f5",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/bazi-initial"
+    },
+    "kb:bazi:god_pillar:偏财:day": {
+      "content_sha256": "ae84d54558bb3543e6382ade10de69a7be6f41d6390a0c56ca524221a8370f33",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/bazi-initial"
+    },
+    "kb:bazi:god_pillar:偏财:month": {
+      "content_sha256": "529145f54b6a160512e669bd1acd1b3145c261d23dfd0791fb5dbaf2ee7862f7",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/bazi-initial"
+    },
+    "kb:bazi:god_pillar:偏财:time": {
+      "content_sha256": "41b2e389ba83286bffcc92dacf2f121b968c7988986341203e0c691a13a87f58",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/bazi-initial"
+    },
+    "kb:bazi:god_pillar:偏财:year": {
+      "content_sha256": "7e0abbec0e65c4c37788fe6024a8339f6e59b9d83067bedb3451f0f625969515",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/bazi-initial"
+    },
+    "kb:bazi:god_pillar:劫财:day": {
+      "content_sha256": "c87ff039ae74cab0271c23c2a30a73184788e91f6a2e7bc92a2cb0162ed41087",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/bazi-initial"
+    },
+    "kb:bazi:god_pillar:劫财:month": {
+      "content_sha256": "9aef8a90e53a52180dc8163f3d336bc7d7d3cf21ed5a097e11e1066b3bcb0230",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/bazi-initial"
+    },
+    "kb:bazi:god_pillar:劫财:time": {
+      "content_sha256": "f2d8987ca7795e4bc976cffaf3bd3f370caf95100d78682ad04e114b9fa4f681",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/bazi-initial"
+    },
+    "kb:bazi:god_pillar:劫财:year": {
+      "content_sha256": "766adba7499b1f2eefa729021d2b8ceb7e36c8c0771f54a599907f9d462b39b4",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/bazi-initial"
+    },
+    "kb:bazi:god_pillar:正印:day": {
+      "content_sha256": "a89ae8067827603b1f9422609a9a970202a01c9f3088d5deb15c5287176fa6c1",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/bazi-initial"
+    },
+    "kb:bazi:god_pillar:正印:month": {
+      "content_sha256": "77c922deb8c7f5026b04680322a1ec0a88e143a6f8140c0f0ce56bec4a9aba50",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/bazi-initial"
+    },
+    "kb:bazi:god_pillar:正印:time": {
+      "content_sha256": "50a48f234b9b8d4bf1830ef76792a7a5d51cf1269f77a681c2ceb76941bde985",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/bazi-initial"
+    },
+    "kb:bazi:god_pillar:正印:year": {
+      "content_sha256": "00440e343fe8a0a1fb2559e4160f691b3cbed6ec62fdb81bb4532b8fc979c9b6",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/bazi-initial"
+    },
+    "kb:bazi:god_pillar:正官:day": {
+      "content_sha256": "d40a3d891b9c898fa736901fa94f45cecccd366b018a7cdac8d73a670aec0381",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/bazi-initial"
+    },
+    "kb:bazi:god_pillar:正官:month": {
+      "content_sha256": "a4854839a23f09dc93fd45efc1a2d01071a13041cc1868e30f38f5982a3808f7",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/bazi-initial"
+    },
+    "kb:bazi:god_pillar:正官:time": {
+      "content_sha256": "3b8b2bc1f753a8d633e5251649518c93ae8420d599aa765b416dabd9d6b1d164",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/bazi-initial"
+    },
+    "kb:bazi:god_pillar:正官:year": {
+      "content_sha256": "4c0ccfd6728fc075529b56d32bdce745ffc1f04f9d80d178a6a94e3202c28591",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/bazi-initial"
+    },
+    "kb:bazi:god_pillar:正财:day": {
+      "content_sha256": "fb26daa64afb5b1ef0248b8aba15c0e34fd857c0ed72b8a38b68bde7a06e355c",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/bazi-initial"
+    },
+    "kb:bazi:god_pillar:正财:month": {
+      "content_sha256": "cc9d10b671d397304db5b9b3be21b67de79ede8cd6f67728040604b0ab91302e",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/bazi-initial"
+    },
+    "kb:bazi:god_pillar:正财:time": {
+      "content_sha256": "aaeb6dd593e2b067cf2595761e779d19bd0355e9a5bb1a358e08d5fcb5a116f0",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/bazi-initial"
+    },
+    "kb:bazi:god_pillar:正财:year": {
+      "content_sha256": "8a60d2ed5f206770101e9b9789cfc9c6dec77168446ae76044e85cfc2dcde466",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/bazi-initial"
+    },
+    "kb:bazi:god_pillar:比肩:day": {
+      "content_sha256": "8a3b9ce5d87d2c0016dd9c17a48a603a1572b4f00ebff523901206d31ffe72b7",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/bazi-initial"
+    },
+    "kb:bazi:god_pillar:比肩:month": {
+      "content_sha256": "f5c8ed1542563902ff88026962050440552104712b259d245f72784ef853a890",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/bazi-initial"
+    },
+    "kb:bazi:god_pillar:比肩:time": {
+      "content_sha256": "8f7fc1abbabab6d44cb71c5b5f55bb1403bb674bc9823ddfa690046f889bcec4",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/bazi-initial"
+    },
+    "kb:bazi:god_pillar:比肩:year": {
+      "content_sha256": "7c63c56223558a09ff2731715ca950932b7fa0c7f42942ae3a31f970bcf29cdd",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/bazi-initial"
+    },
+    "kb:bazi:god_pillar:食神:day": {
+      "content_sha256": "41e8a4a62806ef91d07856c8bc441b4f6a4c0be6d3b348c4b26f4776e79745bf",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/bazi-initial"
+    },
+    "kb:bazi:god_pillar:食神:month": {
+      "content_sha256": "7a4489cc7b9d78e4b3a37b56d7f08e1ac768accd1e359fcfb9fb89aad3e96a1a",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/bazi-initial"
+    },
+    "kb:bazi:god_pillar:食神:time": {
+      "content_sha256": "ea4576854756bcbe5b168c24f5bfb387164e45de695d248df983e93eb68eae71",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/bazi-initial"
+    },
+    "kb:bazi:god_pillar:食神:year": {
+      "content_sha256": "5a3ca297a2d53e7ebcb33c20c5b8846e2c48ad94a77c782e834948bd4597bc55",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/bazi-initial"
+    },
+    "kb:bazi:hidden:丑": {
+      "content_sha256": "a54884a20a03879f530ec26afb28206abd2edd22b6a5e8ae4edc15588e960c1d",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/bazi-rereview-1"
+    },
+    "kb:bazi:hidden:亥": {
+      "content_sha256": "698b9aca49075b6a26c813206db12bdd7e021af80d79488439f05c9887a80ef8",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/bazi-rereview-1"
+    },
+    "kb:bazi:hidden:午": {
+      "content_sha256": "caaeef093438fbc3838d103c2c13cafe6409420b6661f7c0c24da392242b9113",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/bazi-rereview-1"
+    },
+    "kb:bazi:hidden:卯": {
+      "content_sha256": "e5559ddb6fe25aefbb32b7d4bf32326ec23f22a368e22928b514f56b5d091f16",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/bazi-rereview-1"
+    },
+    "kb:bazi:hidden:子": {
+      "content_sha256": "60d94acbe7212e694c2f42325347be514bef3c024daccc3cd6e6b75c0fba1556",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/bazi-rereview-1"
+    },
+    "kb:bazi:hidden:寅": {
+      "content_sha256": "8c433bc6a5cc446293bdf2cd016364ffb9511e7834c9b954af04ad4b41ac0bd9",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/bazi-rereview-1"
+    },
+    "kb:bazi:hidden:巳": {
+      "content_sha256": "e64a0b675d7cb0ad6c4342512ad6e61a35be86ca80294b892022b5b2c4c0a630",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/bazi-rereview-1"
+    },
+    "kb:bazi:hidden:戌": {
+      "content_sha256": "9185b53342cdbc383e3375c49934bf261a7893c185bdd69ce6c2ec1dc59a277d",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/bazi-rereview-1"
+    },
+    "kb:bazi:hidden:未": {
+      "content_sha256": "f4bff65f7de4b2d6bbf8d92393bd2ed8e5e944f0939afd0129516fc34535f390",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/bazi-rereview-1"
+    },
+    "kb:bazi:hidden:申": {
+      "content_sha256": "a9306fe1ad06413870d1bf12cf6950b4c69c61ee6cdd1115b82d42ddf2a51cd7",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/bazi-rereview-1"
+    },
+    "kb:bazi:hidden:辰": {
+      "content_sha256": "c8cc833c6ab2614e014d52623d9bc4b8b8639e3533d5e26b905a96c25d6e0c18",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/bazi-initial"
+    },
+    "kb:bazi:hidden:酉": {
+      "content_sha256": "39a03f2708f608d4dc470967a0b6f5ccb3471d2a15ac2f2e9a6c4747368e3042",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/bazi-initial"
+    },
+    "kb:bazi:nayin:剑锋金": {
+      "content_sha256": "9c88290d4f86a8e1ff78d373c50a059120be64e6b7573931bbf5a1d1ae852f93",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/bazi-initial"
+    },
+    "kb:bazi:nayin:城头土": {
+      "content_sha256": "2c3077b2a17f8c20b495b9922b090c5d5349d599fd9040a980d7b2e01dac960e",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/bazi-initial"
+    },
+    "kb:bazi:nayin:壁上土": {
+      "content_sha256": "fb54a7ec1f87668e58b191c10938ac884cb71000898afcf2408aadaf7ed7f368",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/bazi-initial"
+    },
+    "kb:bazi:nayin:大林木": {
+      "content_sha256": "ae1c6c82cb25f195438c6eedb97c64af9b554abdb9046344ce53d0bd791abec9",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/bazi-initial"
+    },
+    "kb:bazi:nayin:大海水": {
+      "content_sha256": "08cd227d822260325a27385b171e0847436253b40be9a7899a90138944760ee8",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/bazi-initial"
+    },
+    "kb:bazi:nayin:大溪水": {
+      "content_sha256": "6c9cb557ffc0183fd730a6e0c17d2ae49dcb5699d297a7c9dbaa39877a71376c",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/bazi-initial"
+    },
+    "kb:bazi:nayin:大驿土": {
+      "content_sha256": "e67cfa9729efcc85c10c0810b76224b1936b5b908240ed121be5a234b5959509",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/bazi-initial"
+    },
+    "kb:bazi:nayin:天上火": {
+      "content_sha256": "b89ade1a7b835402e936228ac282375e1dc2a65091433d45981097463ad67a47",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/bazi-initial"
+    },
+    "kb:bazi:nayin:天河水": {
+      "content_sha256": "e703bcf794bd2f860e2a2fb81b8e1ccf7532aeebecd689a7b65a91b024a97256",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/bazi-initial"
+    },
+    "kb:bazi:nayin:屋上土": {
+      "content_sha256": "a3fc39545c58e6b014e9c4868e163dacd62d9d0d45eb08a333131928c1d5d35e",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/bazi-initial"
+    },
+    "kb:bazi:nayin:山下火": {
+      "content_sha256": "a069b6877a5a0cdcdad370c6aa7a518972524a3d472920b16abec25e0c950cfc",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/bazi-initial"
+    },
+    "kb:bazi:nayin:山头火": {
+      "content_sha256": "12d51e85f3dcecdf93cb1a5b4076d20e8fdf1ee487f498bd9892e1df88836296",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/bazi-initial"
+    },
+    "kb:bazi:nayin:平地木": {
+      "content_sha256": "539b223edc02d456fa2cf582ee70a052f3298f80fdbe15dfd6d02c0c2d123a1b",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/bazi-initial"
+    },
+    "kb:bazi:nayin:杨柳木": {
+      "content_sha256": "9df7574b425bd9766c31e627910ff718a07c97e9c84720812e2ca3d20a45fec8",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/bazi-initial"
+    },
+    "kb:bazi:nayin:松柏木": {
+      "content_sha256": "889e2e492e44c15ccf9edc9095e271e5e8c2cb972fc5f1738f6c59748ce4371d",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/bazi-initial"
+    },
+    "kb:bazi:nayin:桑柘木": {
+      "content_sha256": "54186d6b609e5025ee3efa1a7492ff3935f49fea74d02df5c8f4f81932598e0a",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/bazi-initial"
+    },
+    "kb:bazi:nayin:沙中土": {
+      "content_sha256": "6ee6b399e869c11698f0a1261dfa5d3ccc553a72792300bbc32f2386bd33e09d",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/bazi-initial"
+    },
+    "kb:bazi:nayin:沙中金": {
+      "content_sha256": "6b1220df8ad29a5e5eb0ef9f266c21cc41a8e8a45e9fb604442565d5777c6a66",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/bazi-initial"
+    },
+    "kb:bazi:nayin:泉中水": {
+      "content_sha256": "f30fbf67eb29ad40a7f65d72240d731eef4fb6599a19c129110836137b857692",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/bazi-initial"
+    },
+    "kb:bazi:nayin:海中金": {
+      "content_sha256": "d5a5d9e7e0f52918ceed3838931055cfce83e9753a27b585733c079e0cead650",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/bazi-initial"
+    },
+    "kb:bazi:nayin:涧下水": {
+      "content_sha256": "fc80873ab0d351f687902ad2c01edff1b91315dcde6b9bc4f335d72a90f66e40",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/bazi-initial"
+    },
+    "kb:bazi:nayin:炉中火": {
+      "content_sha256": "31cb895fd2489aa342012606125344fcead1c1343eed425032cd2d50b7db9a71",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/bazi-initial"
+    },
+    "kb:bazi:nayin:白蜡金": {
+      "content_sha256": "cb814e9a7be07d0a72f000c88676960a37ad9c61ddcc77dfce939e949ffd78db",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/bazi-initial"
+    },
+    "kb:bazi:nayin:石榴木": {
+      "content_sha256": "dacd3401c6f2037793c887bbd5df8d083245a7bacc36c0680ce1a984ba80967b",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/bazi-initial"
+    },
+    "kb:bazi:nayin:覆灯火": {
+      "content_sha256": "b9a704b2bb0999ab92d4f7a7533ed98fef4154d569d75e6e89897c219482a2ad",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/bazi-initial"
+    },
+    "kb:bazi:nayin:路旁土": {
+      "content_sha256": "3036907f300a24ef91340ba3175e6aba9c5f8011ec3d653647513263604a3bc2",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/bazi-initial"
+    },
+    "kb:bazi:nayin:金箔金": {
+      "content_sha256": "9d6f27b1304524bb1e84f61fbf0197df2e5339b8fcbec9c67b05d4fbfd848392",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/bazi-initial"
+    },
+    "kb:bazi:nayin:钗钏金": {
+      "content_sha256": "8d0b713e347f837fcd078e6a2e1e1cd7f9f7d2bc53e906fbdb65eaa02746e4d5",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/bazi-initial"
+    },
+    "kb:bazi:nayin:长流水": {
+      "content_sha256": "9c6dd363f77e16437cc3f066d32254fa2e1fe1113dc115b981d09510a0874a2b",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/bazi-initial"
+    },
+    "kb:bazi:nayin:霹雳火": {
+      "content_sha256": "2162386f0ce2a8abac0abd9fd37a5337d066b55fcec44e8c9a96e08a166691d2",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/bazi-initial"
+    },
+    "kb:bazi:relation:三会": {
+      "content_sha256": "0601639d67bb6c50384a8a018ea06cd9e0f60b9bd9bb3392e91fac1106d031b6",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/bazi-rereview-1"
+    },
+    "kb:bazi:relation:三合": {
+      "content_sha256": "c9042ef2b1c01e87b13953b047f0f136f892a49e4aceb7e0395a04dcc007377b",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/bazi-rereview-1"
+    },
+    "kb:bazi:relation:地支六合": {
+      "content_sha256": "d532f090c10394e15659b73a462de298b20b1d3cfbf062278a964940661627c3",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/bazi-rereview-1"
+    },
+    "kb:bazi:relation:地支冲": {
+      "content_sha256": "fe1d71567a928c3027cfcfa126b7a34039c3201c1da877206a7936572c1d7d04",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/bazi-rereview-1"
+    },
+    "kb:bazi:relation:地支刑": {
+      "content_sha256": "6dd8827a263cd9752f216f80ae5454406261c12be085eb733bfecf45daa907d7",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/bazi-rereview-1"
+    },
+    "kb:bazi:relation:地支害": {
+      "content_sha256": "34ab2d5d0585b937347eaf561a4204066acb4813888bf9c633f0bfa5fa3752b8",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/bazi-rereview-1"
+    },
+    "kb:bazi:relation:地支破": {
+      "content_sha256": "154fa92a8d7baa3fc800aca68eac3e9837495acadd9b2226be85f0d26d95cf92",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/bazi-rereview-2"
+    },
+    "kb:bazi:relation:天干冲": {
+      "content_sha256": "e4a5b75c5d6bb08369b606213ea49389d07d18bc6718b49f3f4446b1632b81d7",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/bazi-rereview-1"
+    },
+    "kb:bazi:relation:天干合": {
+      "content_sha256": "90015de11b01a12ccee29ba5c752040c2efcf81728e977d36ae56db254ed90dd",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/bazi-rereview-1"
+    },
+    "kb:bazi:relation:自刑": {
+      "content_sha256": "c74f9041d1aa748f8a52bfc2cb82de258ecacb4799858158aaf6bdb48371d798",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/bazi-rereview-1"
+    },
+    "kb:bazi:stem:丁": {
+      "content_sha256": "0021e884ebebe5daa4de39ec5bc3481ce8ccf1caa7b725a963621cbdfe771e88",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/bazi-rereview-1"
+    },
+    "kb:bazi:stem:丙": {
+      "content_sha256": "d5719cfba430b1886c85d15a4860a60c99260df24f7adb4dd988d3267bde08ed",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/bazi-rereview-1"
+    },
+    "kb:bazi:stem:乙": {
+      "content_sha256": "acabeef66ab01808255a0c33f2dbb21cf6280f3e2b8fcc1af273a74da3ebb815",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/bazi-rereview-1"
+    },
+    "kb:bazi:stem:壬": {
+      "content_sha256": "199933c7cc4c194be28efd601ccae80e34ec712b90a50c6c4467dbfaeb5e1c16",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/bazi-rereview-1"
+    },
+    "kb:bazi:stem:己": {
+      "content_sha256": "98376109ee573c8f871f6e469041242d5184d006343281ff9d1b831dfe278341",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/bazi-rereview-1"
+    },
+    "kb:bazi:stem:庚": {
+      "content_sha256": "ddc94a77f481b8a2235722fc89c3957125cd14a33fa151ef5c5b159484719535",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/bazi-rereview-1"
+    },
+    "kb:bazi:stem:戊": {
+      "content_sha256": "eb9a4bfc8b75e3227ce6da02ff691fdceb4c93f28a504c0e1443450a6b687b83",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/bazi-rereview-1"
+    },
+    "kb:bazi:stem:甲": {
+      "content_sha256": "8046b5d52d659a88e395d82b1d969b6f7ee700c54ff9d59358127286cee27d7e",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/bazi-rereview-1"
+    },
+    "kb:bazi:stem:癸": {
+      "content_sha256": "96d77ad45bc15eaaffed669d679ed8f2921284202ec4c5c62e09285732d2e508",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/bazi-rereview-1"
+    },
+    "kb:bazi:stem:辛": {
+      "content_sha256": "a99a487258b6e2031ed6441c74509adefc487bba2f5c2f30177b009bdf19112f",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/bazi-rereview-1"
+    },
+    "kb:bazi:ten_god:七杀": {
+      "content_sha256": "9213db3084098f02fdeeec649297503985970562a051f2b75b8e046c663b7ac7",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/bazi-initial"
+    },
+    "kb:bazi:ten_god:伤官": {
+      "content_sha256": "d75551b67b2f051af34e99fba938f897f561f166231ba9a84268587502f330c8",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/bazi-initial"
+    },
+    "kb:bazi:ten_god:偏印": {
+      "content_sha256": "ee85523dc20f83d1d12ee3c1263d4d756b547bc7bc2bf3dbe57b1dc12a1c249c",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/bazi-initial"
+    },
+    "kb:bazi:ten_god:偏财": {
+      "content_sha256": "dfe8956d2f30695cae48a05583229b328743504415c56918e43bc757bded40d9",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/bazi-initial"
+    },
+    "kb:bazi:ten_god:劫财": {
+      "content_sha256": "cb7a2d7385a0bdd578e5eb7c7d00c0918e1ac44f1fd33acaf79c92f2ab7c6d66",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/bazi-initial"
+    },
+    "kb:bazi:ten_god:正印": {
+      "content_sha256": "d52812edf28517ac9f7fdf6e846e86ba62f8feb3a9385001ed3d8f17c0036574",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/bazi-initial"
+    },
+    "kb:bazi:ten_god:正官": {
+      "content_sha256": "a0d516357722edac78479ae490754c0d87704fa910e339449dd50eb7c4e09944",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/bazi-initial"
+    },
+    "kb:bazi:ten_god:正财": {
+      "content_sha256": "f896a7d08bec046b31094fc5b2fc5f24509cf78904fc7e992975d8fc7096dcf2",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/bazi-initial"
+    },
+    "kb:bazi:ten_god:比肩": {
+      "content_sha256": "68ad33e39b8bd56c20522cf2503a710e2a8171dfe6776a61eeec3c249e63f37f",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/bazi-initial"
+    },
+    "kb:bazi:ten_god:食神": {
+      "content_sha256": "15e622520cfca8bdf9e38e9bd7d9e98ec3c399da5d7b58af51e417e35482baa7",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/bazi-initial"
+    }
+  },
+  "ledger_changes": {
+    "written": 0,
+    "revoked": []
+  },
+  "model_reviewed_count": 0,
+  "effective_draft_count": 141
+}

@@ -1,0 +1,72 @@
+{
+  "schema": 1,
+  "system": "dream",
+  "seed": 1,
+  "batch_size": 10,
+  "plant_rate": 0,
+  "min_planted": 5,
+  "passes": 2,
+  "only_ids": [
+    "kb:dream:symbol:房子",
+    "kb:dream:symbol:房间"
+  ],
+  "calibrated_by": null,
+  "rubric_version": 1,
+  "rubric_sha256": "a33bd07bd2299376f88d6cf1c958b26990685099797e78272054352ff7557b0d",
+  "script_sha256": "cca3a7b203f9186b0a82f3a4b78b50b3fad3228f869377cc3d113099cad88ec5",
+  "runtime_vendor": "deepseek",
+  "drafter_vendors": [
+    "anthropic"
+  ],
+  "runtime_vendor_exception": {
+    "vendor": "deepseek",
+    "model": "deepseek-flash",
+    "reason": "2026-10-21 项目负责人明确要求第一审核方使用本机.env的DeepSeek配置"
+  },
+  "pricing": {
+    "reviewer_a": {
+      "input_per_mtok": null,
+      "output_per_mtok": null,
+      "currency": null
+    },
+    "reviewer_b": {
+      "input_per_mtok": null,
+      "output_per_mtok": null,
+      "currency": null
+    }
+  },
+  "reviewers": {
+    "reviewer_a": {
+      "vendor": "deepseek",
+      "api": "openai",
+      "model": "deepseek-flash",
+      "api_key_env": "DEEPSEEK_API_KEY",
+      "temperature": null,
+      "max_tokens": 4096,
+      "base_url_host": "api.deepseek.com"
+    },
+    "reviewer_b": {
+      "vendor": "openai",
+      "api": "openai",
+      "model": "gpt-6.1-sol",
+      "api_key_env": "OPENAI_REVIEW_API_KEY",
+      "temperature": null,
+      "max_tokens": 4096,
+      "base_url_host": "codegoai.com"
+    }
+  },
+  "source_files": {
+    "knowledge/sources/dream/entries.yaml": "6a45f53f43b3237d7b5480a1ba396ab9bcd535acafcd1c3774b2be6cf0bbeed8"
+  },
+  "entry_hashes": {
+    "kb:dream:symbol:房子": "042e30b42a6b76465ca5d1920ae6b9297e4d384b1656d8c9af80b93604116120",
+    "kb:dream:symbol:房间": "bb6909011a2ba18803e11d0963111e58cdbf9cc26c99149d8be97ad9d9f18598"
+  },
+  "planted_count": 0,
+  "batch_count": 1,
+  "prompt_sha256": {
+    "b001": "f147c48492dabb813cc107c012299a3e2e0897f623010eb54bfb711e8d5faf17"
+  },
+  "purpose": "revision_only_constraint_repair",
+  "created_at": "2026-10-21T16:46:32+00:00"
+}

@@ -1,0 +1,150 @@
+{
+  "system": "daily",
+  "entries": 9,
+  "planted": 5,
+  "metrics": {
+    "pass_rate": 0.8889,
+    "detection": {
+      "reviewer_a": 1.0,
+      "reviewer_b": 1.0
+    },
+    "detection_merged": 1.0,
+    "rerun": {
+      "reviewer_a": 0.9286,
+      "reviewer_b": 1.0
+    },
+    "kappa": 0.0,
+    "observed_agreement": 0.8889,
+    "verdict_counts": {
+      "reviewer_a": {
+        "pass": 9
+      },
+      "reviewer_b": {
+        "pass": 8,
+        "revise": 1
+      }
+    }
+  },
+  "gates": {
+    "pass_rate": false,
+    "detection_merged": true,
+    "detection_single": true,
+    "rerun": true,
+    "kappa": false,
+    "complete": true
+  },
+  "thresholds": {
+    "pass_rate": 0.95,
+    "detection_merged": 0.9,
+    "detection_single": 0.8,
+    "rerun": 0.9,
+    "kappa": 0.6
+  },
+  "calibrated": false,
+  "passed": false,
+  "approved": 8,
+  "queued": 1,
+  "incomplete": [],
+  "planted_detail": [
+    {
+      "ref": "planted-001",
+      "original": "kb:daily:convention:no_exact_events",
+      "mutation": "foreign_text",
+      "reviewer_a": "revise",
+      "reviewer_b": "reject"
+    },
+    {
+      "ref": "planted-002",
+      "original": "kb:daily:convention:moment_only",
+      "mutation": "fatalistic",
+      "reviewer_a": "reject",
+      "reviewer_b": "revise"
+    },
+    {
+      "ref": "planted-003",
+      "original": "kb:daily:day_element:金",
+      "mutation": "medical",
+      "reviewer_a": "reject",
+      "reviewer_b": "reject"
+    },
+    {
+      "ref": "planted-004",
+      "original": "kb:daily:convention:daily_seed",
+      "mutation": "medical",
+      "reviewer_a": "reject",
+      "reviewer_b": "reject"
+    },
+    {
+      "ref": "planted-005",
+      "original": "kb:daily:convention:unknown_time",
+      "mutation": "fatalistic",
+      "reviewer_a": "reject",
+      "reviewer_b": "revise"
+    }
+  ],
+  "detection_by_mutation": {
+    "foreign_text": {
+      "total": 1,
+      "reviewer_a": 1,
+      "reviewer_b": 1
+    },
+    "fatalistic": {
+      "total": 2,
+      "reviewer_a": 2,
+      "reviewer_b": 2
+    },
+    "medical": {
+      "total": 2,
+      "reviewer_a": 2,
+      "reviewer_b": 2
+    }
+  },
+  "usage": {
+    "reviewer_a": {
+      "calls": 4,
+      "input_tokens": 6440,
+      "output_tokens": 1821,
+      "latency_s": 14.938,
+      "returned_models": [
+        "deepseek-flash"
+      ],
+      "errors": {},
+      "retried_calls": 0,
+      "http_retries": 0,
+      "cost": null,
+      "known_cost_estimate": null,
+      "usage_complete": true,
+      "cost_basis": "配置单价估算，非账单；服务失败的用量可能未知",
+      "currency": null
+    },
+    "reviewer_b": {
+      "calls": 4,
+      "input_tokens": 6896,
+      "output_tokens": 3380,
+      "latency_s": 78.795,
+      "returned_models": [
+        "gpt-6.1-sol"
+      ],
+      "errors": {},
+      "retried_calls": 0,
+      "http_retries": 0,
+      "cost": null,
+      "known_cost_estimate": null,
+      "usage_complete": true,
+      "cost_basis": "配置单价估算，非账单；服务失败的用量可能未知",
+      "currency": null
+    }
+  },
+  "code_findings": [],
+  "human_reviewed_rate": 0.0,
+  "approved_ids": [
+    "kb:daily:convention:daily_seed",
+    "kb:daily:convention:moment_only",
+    "kb:daily:convention:unknown_time",
+    "kb:daily:day_element:土",
+    "kb:daily:day_element:木",
+    "kb:daily:day_element:水",
+    "kb:daily:day_element:火",
+    "kb:daily:day_element:金"
+  ]
+}

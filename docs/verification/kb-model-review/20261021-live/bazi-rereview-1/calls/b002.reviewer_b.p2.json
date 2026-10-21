@@ -1,0 +1,90 @@
+{
+  "batch": "b002",
+  "reviewer": "reviewer_b",
+  "run_pass": 2,
+  "attempt": 1,
+  "vendor": "openai",
+  "requested_model": "gpt-6.1-sol",
+  "returned_model": "gpt-6.1-sol",
+  "api": "openai",
+  "started_at": "2026-10-21T16:40:19+00:00",
+  "finished_at": "2026-10-21T16:41:01+00:00",
+  "latency_s": 42.233,
+  "http_attempts": 1,
+  "finish_reason": "stop",
+  "prompt_sha256": "de89532f57a833d1d71357db6206b863a089a91fc9010cb1d8a73a5ef67c9349",
+  "input_tokens": 3150,
+  "output_tokens": 792,
+  "cached_input_tokens": 3147,
+  "usage_available": true,
+  "raw_text": "{\n  \"items\": [\n    {\n      \"item\": \"i01\",\n      \"verdict\": \"reject\",\n      \"issues\": [\n        {\n          \"dimension\": \"tradition\",\n          \"detail\": \"对象为“天干冲”，正文却完整解释“天干五合”，未说明甲庚、乙辛、丙壬、丁癸相冲。\"\n        },\n        {\n          \"dimension\": \"consistency\",\n          \"detail\": \"正文与 key、同义词及相冲关键词不符。\"\n        }\n      ],\n      \"reason\": \"正文写成了天干合的释义，核心对象错误。\"\n    },\n    {\n      \"item\": \"i02\",\n      \"verdict\": \"reject\",\n      \"issues\": [\n        {\n          \"dimension\": \"tradition\",\n          \"detail\": \"“泄”指相生关系中生出一方的力量输出，如木生火、火泄木；正文却解释五行相克。\"\n        },\n        {\n          \"dimension\": \"consistency\",\n          \"detail\": \"正文与 key“泄”、同义词“泄气”及“我生者”等关键词不符。\"\n        }\n      ],\n      \"reason\": \"以相克的释义替代泄的释义，核心关系写错。\"\n    },\n    {\n      \"item\": \"i03\",\n      \"verdict\": \"revise\",\n      \"issues\": [\n        {\n          \"dimension\": \"consistency\",\n          \"detail\": \"两处将午夜换日口径引用为 i02，但 i02 并非换日约定；应改为 i07，或直接使用口径名称，避免依赖条目编号。\"\n        }\n      ],\n      \"reason\": \"子初换日规则本身合理，但对照条目的引用错误。\"\n    },\n    {\n      \"item\": \"i04\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"真太阳时公式、均时差符号及时间基准说明一致，未赋予吉凶方向。\"\n    },\n    {\n      \"item\": \"i05\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"大运顺逆、节令取法及起运折算符合所声明的常见传统口径，且无确定性预测。\"\n    },\n    {\n      \"item\": \"i06\",\n      \"verdict\": \"reject\",\n      \"issues\": [\n        {\n          \"dimension\": \"tradition\",\n          \"detail\": \"丁的五行属火，不属金；未藏己、丁、乙，对应土、火、木。\"\n        },\n        {\n          \"dimension\": \"plain_language\",\n          \"detail\": \"“分别属土、金、木”及“丁金”会误导藏干五行的理解与统计，应分别为“土、火、木”及“丁火”。\"\n        }\n      ],\n      \"reason\": \"将藏干丁的五行写为金，属于基础属性错误。\"\n    },\n    {\n      \"item\": \"i07\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"清楚界定了一种早晚子时分日及起时干口径，并说明流派差异，无吉凶断言。\"\n    }\n  ]\n}",
+  "verdicts": {
+    "i01": {
+      "verdict": "reject",
+      "issues": [
+        {
+          "dimension": "tradition",
+          "detail": "对象为“天干冲”，正文却完整解释“天干五合”，未说明甲庚、乙辛、丙壬、丁癸相冲。"
+        },
+        {
+          "dimension": "consistency",
+          "detail": "正文与 key、同义词及相冲关键词不符。"
+        }
+      ],
+      "reason": "正文写成了天干合的释义，核心对象错误。"
+    },
+    "i02": {
+      "verdict": "reject",
+      "issues": [
+        {
+          "dimension": "tradition",
+          "detail": "“泄”指相生关系中生出一方的力量输出，如木生火、火泄木；正文却解释五行相克。"
+        },
+        {
+          "dimension": "consistency",
+          "detail": "正文与 key“泄”、同义词“泄气”及“我生者”等关键词不符。"
+        }
+      ],
+      "reason": "以相克的释义替代泄的释义，核心关系写错。"
+    },
+    "i03": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "consistency",
+          "detail": "两处将午夜换日口径引用为 i02，但 i02 并非换日约定；应改为 i07，或直接使用口径名称，避免依赖条目编号。"
+        }
+      ],
+      "reason": "子初换日规则本身合理，但对照条目的引用错误。"
+    },
+    "i04": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "真太阳时公式、均时差符号及时间基准说明一致，未赋予吉凶方向。"
+    },
+    "i05": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "大运顺逆、节令取法及起运折算符合所声明的常见传统口径，且无确定性预测。"
+    },
+    "i06": {
+      "verdict": "reject",
+      "issues": [
+        {
+          "dimension": "tradition",
+          "detail": "丁的五行属火，不属金；未藏己、丁、乙，对应土、火、木。"
+        },
+        {
+          "dimension": "plain_language",
+          "detail": "“分别属土、金、木”及“丁金”会误导藏干五行的理解与统计，应分别为“土、火、木”及“丁火”。"
+        }
+      ],
+      "reason": "将藏干丁的五行写为金，属于基础属性错误。"
+    },
+    "i07": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "清楚界定了一种早晚子时分日及起时干口径，并说明流派差异，无吉凶断言。"
+    }
+  }
+}

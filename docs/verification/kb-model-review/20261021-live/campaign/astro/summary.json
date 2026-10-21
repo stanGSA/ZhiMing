@@ -1,0 +1,1757 @@
+{
+  "system": "astro",
+  "entries": 280,
+  "candidate_count": 280,
+  "draft_count": 0,
+  "metrics": {
+    "detection": {
+      "reviewer_a": 1.0,
+      "reviewer_b": 1.0
+    },
+    "detection_merged": 1.0,
+    "rerun": {
+      "reviewer_a": 0.9556213017751479,
+      "reviewer_b": 1.0
+    },
+    "kappa": 0.8336,
+    "kappa_real_three_class": -0.0151,
+    "kappa_all_three_class": 0.7716,
+    "observed_agreement": 0.9644970414201184,
+    "observed_agreement_real_three_class": 0.9603960396039604,
+    "pass_rate": 1.0
+  },
+  "gates": {
+    "complete": true,
+    "detection_merged": true,
+    "detection_single": true,
+    "rerun": true,
+    "kappa": true,
+    "pass_rate": true
+  },
+  "calibrated": true,
+  "passed": true,
+  "samples": {
+    "detection": {
+      "reviewer_a": [
+        35,
+        35
+      ],
+      "reviewer_b": [
+        35,
+        35
+      ]
+    },
+    "detection_merged": [
+      35,
+      35
+    ],
+    "rerun": {
+      "reviewer_a": [
+        323,
+        338
+      ],
+      "reviewer_b": [
+        338,
+        338
+      ]
+    },
+    "kappa_pairs": 338,
+    "kappa_real_pairs": 303,
+    "verdict_pairs": {
+      "pass/pass": 291,
+      "pass/revise": 9,
+      "revise/pass": 3,
+      "reject/reject": 24,
+      "revise/reject": 1,
+      "reject/revise": 4,
+      "revise/revise": 6
+    },
+    "verdict_pairs_real": {
+      "pass/pass": 291,
+      "pass/revise": 9,
+      "revise/pass": 3
+    }
+  },
+  "batches": [
+    {
+      "path": "docs/verification/kb-model-review/20261021-live/astro-initial",
+      "entries": 280,
+      "metrics": {
+        "pass_rate": 0.925,
+        "detection": {
+          "reviewer_a": 1.0,
+          "reviewer_b": 1.0
+        },
+        "detection_merged": 1.0,
+        "rerun": {
+          "reviewer_a": 0.961,
+          "reviewer_b": 1.0
+        },
+        "kappa": -0.0116,
+        "observed_agreement": 0.9643,
+        "verdict_counts": {
+          "reviewer_a": {
+            "pass": 278,
+            "revise": 2
+          },
+          "reviewer_b": {
+            "pass": 272,
+            "revise": 8
+          }
+        }
+      },
+      "gates": {
+        "pass_rate": false,
+        "detection_merged": true,
+        "detection_single": true,
+        "rerun": true,
+        "kappa": false,
+        "complete": true
+      },
+      "errors": 1,
+      "usage": {
+        "reviewer_a": {
+          "calls": 62,
+          "input_tokens": 137548,
+          "output_tokens": 30411,
+          "latency_s": 159.978,
+          "returned_models": [
+            "deepseek-flash"
+          ],
+          "errors": {
+            "service_error": 1
+          },
+          "retried_calls": 0,
+          "http_retries": 0,
+          "cost": null,
+          "known_cost_estimate": null,
+          "usage_complete": false,
+          "cost_basis": "配置单价估算，非账单；服务失败的用量可能未知",
+          "currency": null
+        },
+        "reviewer_b": {
+          "calls": 62,
+          "input_tokens": 148222,
+          "output_tokens": 48183,
+          "latency_s": 2311.808,
+          "returned_models": [
+            "gpt-6.1-sol"
+          ],
+          "errors": {},
+          "retried_calls": 0,
+          "http_retries": 7,
+          "cost": null,
+          "known_cost_estimate": null,
+          "usage_complete": true,
+          "cost_basis": "配置单价估算，非账单；服务失败的用量可能未知",
+          "currency": null
+        },
+        "reviser": {
+          "calls": 21,
+          "input_tokens": 10643,
+          "output_tokens": 6202,
+          "latency_s": 362.162,
+          "returned_models": [
+            "gpt-6-astra"
+          ],
+          "errors": {},
+          "retried_calls": 0,
+          "http_retries": 1,
+          "cost": null,
+          "known_cost_estimate": null,
+          "usage_complete": true,
+          "cost_basis": "配置单价估算，非账单；服务失败的用量可能未知",
+          "currency": null
+        }
+      }
+    },
+    {
+      "path": "docs/verification/kb-model-review/20261021-live/astro-rereview-1",
+      "entries": 21,
+      "metrics": {
+        "pass_rate": 0.9048,
+        "detection": {
+          "reviewer_a": 1.0,
+          "reviewer_b": 1.0
+        },
+        "detection_merged": 1.0,
+        "rerun": {
+          "reviewer_a": 0.8846,
+          "reviewer_b": 1.0
+        },
+        "kappa": -0.05,
+        "observed_agreement": 0.9048,
+        "verdict_counts": {
+          "reviewer_a": {
+            "pass": 20,
+            "revise": 1
+          },
+          "reviewer_b": {
+            "pass": 20,
+            "revise": 1
+          }
+        }
+      },
+      "gates": {
+        "pass_rate": false,
+        "detection_merged": true,
+        "detection_single": true,
+        "rerun": false,
+        "kappa": false,
+        "complete": true
+      },
+      "errors": 0,
+      "usage": {
+        "reviewer_a": {
+          "calls": 8,
+          "input_tokens": 17430,
+          "output_tokens": 3021,
+          "latency_s": 21.336,
+          "returned_models": [
+            "deepseek-flash"
+          ],
+          "errors": {},
+          "retried_calls": 0,
+          "http_retries": 0,
+          "cost": null,
+          "known_cost_estimate": null,
+          "usage_complete": true,
+          "cost_basis": "配置单价估算，非账单；服务失败的用量可能未知",
+          "currency": null
+        },
+        "reviewer_b": {
+          "calls": 8,
+          "input_tokens": 19614,
+          "output_tokens": 5080,
+          "latency_s": 254.827,
+          "returned_models": [
+            "gpt-6.1-sol"
+          ],
+          "errors": {},
+          "retried_calls": 0,
+          "http_retries": 0,
+          "cost": null,
+          "known_cost_estimate": null,
+          "usage_complete": true,
+          "cost_basis": "配置单价估算，非账单；服务失败的用量可能未知",
+          "currency": null
+        },
+        "reviser": {
+          "calls": 2,
+          "input_tokens": 1389,
+          "output_tokens": 697,
+          "latency_s": 25.234,
+          "returned_models": [
+            "gpt-6-astra"
+          ],
+          "errors": {},
+          "retried_calls": 0,
+          "http_retries": 0,
+          "cost": null,
+          "known_cost_estimate": null,
+          "usage_complete": true,
+          "cost_basis": "配置单价估算，非账单；服务失败的用量可能未知",
+          "currency": null
+        }
+      }
+    },
+    {
+      "path": "docs/verification/kb-model-review/20261021-live/astro-rereview-2",
+      "entries": 2,
+      "metrics": {
+        "pass_rate": 1.0,
+        "detection": {
+          "reviewer_a": 1.0,
+          "reviewer_b": 1.0
+        },
+        "detection_merged": 1.0,
+        "rerun": {
+          "reviewer_a": 1.0,
+          "reviewer_b": 1.0
+        },
+        "kappa": null,
+        "observed_agreement": 1.0,
+        "verdict_counts": {
+          "reviewer_a": {
+            "pass": 2
+          },
+          "reviewer_b": {
+            "pass": 2
+          }
+        }
+      },
+      "gates": {
+        "pass_rate": true,
+        "detection_merged": true,
+        "detection_single": true,
+        "rerun": true,
+        "kappa": false,
+        "complete": true
+      },
+      "errors": 0,
+      "usage": {
+        "reviewer_a": {
+          "calls": 4,
+          "input_tokens": 4476,
+          "output_tokens": 638,
+          "latency_s": 9.194,
+          "returned_models": [
+            "deepseek-flash"
+          ],
+          "errors": {},
+          "retried_calls": 0,
+          "http_retries": 0,
+          "cost": null,
+          "known_cost_estimate": null,
+          "usage_complete": true,
+          "cost_basis": "配置单价估算，非账单；服务失败的用量可能未知",
+          "currency": null
+        },
+        "reviewer_b": {
+          "calls": 4,
+          "input_tokens": 5088,
+          "output_tokens": 1043,
+          "latency_s": 36.914,
+          "returned_models": [
+            "gpt-6.1-sol"
+          ],
+          "errors": {},
+          "retried_calls": 0,
+          "http_retries": 0,
+          "cost": null,
+          "known_cost_estimate": null,
+          "usage_complete": true,
+          "cost_basis": "配置单价估算，非账单；服务失败的用量可能未知",
+          "currency": null
+        }
+      }
+    }
+  ],
+  "thresholds": {
+    "pass_rate": 0.95,
+    "detection_merged": 0.9,
+    "detection_single": 0.8,
+    "rerun": 0.9,
+    "kappa": 0.6
+  },
+  "acceptance_basis": "负责人确认：按体系汇总全部初审及复审样本；通过率按当前内容哈希；kappa按全部真实及埋错样本的放行二分类计算，原三分类指标保留",
+  "kappa_basis": {
+    "scope": "全部批次第一轮真实及埋错样本；第二轮另计重跑一致率",
+    "classes": {
+      "pass": "放行",
+      "revise": "不通过",
+      "reject": "不通过"
+    },
+    "limitation": "埋错样本改变类别分布，不能与仅真实条目的三分类kappa直接比较",
+    "owner_reply": "同意：全部样本、放行二分类（推荐）"
+  },
+  "human_reviewed_rate": 0.0,
+  "current_content_evidence": {
+    "kb:astro:aspect:conjunction": {
+      "content_sha256": "613b9b96b0c1b0f5a2cac04d11f7e9c855f94f2cb423ec6fdab522736b03050b",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/astro-initial"
+    },
+    "kb:astro:aspect:opposition": {
+      "content_sha256": "96f9a780bfbefd9dc3db3add0213841bb1f58e12b3cfc4f586a8c881623ef7e6",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/astro-initial"
+    },
+    "kb:astro:aspect:sextile": {
+      "content_sha256": "7edd5831afd553f5e481e0a1730ee7180e8827378e1c3ff45917f19165705164",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/astro-initial"
+    },
+    "kb:astro:aspect:square": {
+      "content_sha256": "b48a274478e23b9b7d20cee331b54b5b0379daf15374e70f80455af62989da23",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/astro-initial"
+    },
+    "kb:astro:aspect:trine": {
+      "content_sha256": "dfa71b19e7526cf2578b4202256f590eb7be98da3dc21830296e06fe255f4dde",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/astro-initial"
+    },
+    "kb:astro:house:1": {
+      "content_sha256": "428db4ea8c77084ed1442b8fdac06508e01b2e113930ce2bf5791e7b3a8bcddb",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/astro-initial"
+    },
+    "kb:astro:house:10": {
+      "content_sha256": "d3a70ab7b371853f201ee05f1ea5f21545946c42b92a3ed897d7cc3d5f3a32c5",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/astro-initial"
+    },
+    "kb:astro:house:11": {
+      "content_sha256": "59c061a92da9821c6dc0641059755cd694d0ec274dd19c9fdc2f3508d2aa8e72",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/astro-initial"
+    },
+    "kb:astro:house:12": {
+      "content_sha256": "557b80455ea270403a4f806afc0fe61666da65c4fc62e46571d43d63f36b124a",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/astro-initial"
+    },
+    "kb:astro:house:2": {
+      "content_sha256": "585c74a170b5b12e980878e5497a7d64ac75d77308a58faa290915c71e1349c7",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/astro-initial"
+    },
+    "kb:astro:house:3": {
+      "content_sha256": "060fb5eea56a02173419dae1dc8e98df463770cda49778e9cee960b61380cd3c",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/astro-initial"
+    },
+    "kb:astro:house:4": {
+      "content_sha256": "73036928885688a2ea6ce7e929ef33509cd05307da84496a3c97a2af73bc416c",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/astro-initial"
+    },
+    "kb:astro:house:5": {
+      "content_sha256": "d7f96c0ae898e2aaa58558e62484b62f7068658504d95efb701ee919894372cf",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/astro-initial"
+    },
+    "kb:astro:house:6": {
+      "content_sha256": "74185ac8a43597471087179ce471ddbbc27f1e2d76c14f386ab8a17d7bfabeb5",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/astro-initial"
+    },
+    "kb:astro:house:7": {
+      "content_sha256": "9e345fbc0439a845353685516ac7c35593f8c08e5d539bef4919b201f1175414",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/astro-initial"
+    },
+    "kb:astro:house:8": {
+      "content_sha256": "04769b35aa2d2b27f8cdd03670b0e0d2d0a70735e9e67d38bec7919c30274969",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/astro-initial"
+    },
+    "kb:astro:house:9": {
+      "content_sha256": "384a9c01be48717d7997eb394020dab41d414d2277f7c9ed752c32d709f8ba5b",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/astro-initial"
+    },
+    "kb:astro:planet:Jupiter": {
+      "content_sha256": "064f2ace306395ddda63cc47802b9a211d9572fdc11811b984c55796db366fba",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/astro-initial"
+    },
+    "kb:astro:planet:Mars": {
+      "content_sha256": "2249c159507f1485f09ebb32a0e4ace59ceb584dcabe4d9800689da8c904bf87",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/astro-initial"
+    },
+    "kb:astro:planet:Mercury": {
+      "content_sha256": "3f8d4a32dec9774ba5f9e29ef716ff545d84871f5a0a59526890867a622d7d24",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/astro-initial"
+    },
+    "kb:astro:planet:Moon": {
+      "content_sha256": "144e570f1a5c7742df9e29d88fcffca28624b382a18f10002b621e6589dca9ed",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/astro-initial"
+    },
+    "kb:astro:planet:Neptune": {
+      "content_sha256": "416a20e745708119e2e73fc0977b16f2555a22b6c11b67d64ed881ac50b02f90",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/astro-rereview-1"
+    },
+    "kb:astro:planet:Pluto": {
+      "content_sha256": "2a42da3141881c14bcbbf4ea09b0cb98a8b8052ad22018e03b4d617addcf1e85",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/astro-rereview-1"
+    },
+    "kb:astro:planet:Saturn": {
+      "content_sha256": "75a6ed158f4be911e9a64b8ff7caf06f4bb79b7fa64ad91d75940ceb11d81c99",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/astro-initial"
+    },
+    "kb:astro:planet:Sun": {
+      "content_sha256": "ecffe14263d4ec41f1a8dcdbdb1be3db91fbadf47b62d0611c509c03256f1498",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/astro-initial"
+    },
+    "kb:astro:planet:Uranus": {
+      "content_sha256": "b6ee135c1b9fda434ffd68406d7e710b3795739b14c297c4f2e47c7692edc64d",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/astro-rereview-1"
+    },
+    "kb:astro:planet:Venus": {
+      "content_sha256": "2c299710b67243f720562ce9c16f981d000341197f8fd58684e84aa8b9176664",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/astro-initial"
+    },
+    "kb:astro:planet_house:Jupiter:1": {
+      "content_sha256": "938a031e74eddb2c48f84bc311303361aa566b890ab6b25c11be7232b9733907",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/astro-initial"
+    },
+    "kb:astro:planet_house:Jupiter:10": {
+      "content_sha256": "a0ac79030d0df81e36e77bd912fdda2995dee2341f9fbad407b22d0fa0056e7c",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/astro-initial"
+    },
+    "kb:astro:planet_house:Jupiter:11": {
+      "content_sha256": "4150c8915211959c6e1f4c7f87f0e36af146638c2bcf994908476fd9699abebd",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/astro-initial"
+    },
+    "kb:astro:planet_house:Jupiter:12": {
+      "content_sha256": "23344634fbd9cb958c0a8dbb19b682c259c74bbd7ce02f5dde0f381296d5f59c",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/astro-initial"
+    },
+    "kb:astro:planet_house:Jupiter:2": {
+      "content_sha256": "61b5516588ed360f078c1a591995be2e3c94fc9fb47b103501e21ceb473fb28c",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/astro-initial"
+    },
+    "kb:astro:planet_house:Jupiter:3": {
+      "content_sha256": "920222b39df73cf53125f45de5ab969227a27cd6449d772335d699215f9c10ea",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/astro-initial"
+    },
+    "kb:astro:planet_house:Jupiter:4": {
+      "content_sha256": "33322cf6c5e7d9fd905c1bceebfc002d36fbaba1f92eff505cbfb5f144533d0b",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/astro-initial"
+    },
+    "kb:astro:planet_house:Jupiter:5": {
+      "content_sha256": "21c8cac72dd065da602245dd8ef83132e91c21b2a3de1442643452838a51bb02",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/astro-initial"
+    },
+    "kb:astro:planet_house:Jupiter:6": {
+      "content_sha256": "eeaee6222214c54c1a54ef63b5b1bad92010ac8c23897d57861a53281a439f55",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/astro-initial"
+    },
+    "kb:astro:planet_house:Jupiter:7": {
+      "content_sha256": "cd6cb0e7adfa9bab1e8872e86b959cc465ebd36b61650cac1be024b8e3eee560",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/astro-initial"
+    },
+    "kb:astro:planet_house:Jupiter:8": {
+      "content_sha256": "d9e59249a723053897bde99f4cf5850b30efed8f58cc92fd92e2f7cae5f1be38",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/astro-rereview-1"
+    },
+    "kb:astro:planet_house:Jupiter:9": {
+      "content_sha256": "134c734476863dd128f0a1184c74d9fbe8a3c20163c72ef1a1c375c6f52656fb",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/astro-rereview-1"
+    },
+    "kb:astro:planet_house:Mars:1": {
+      "content_sha256": "68529b88c15070d782acd1b819564356f0bc6c5b48c00cfe520a249764b08f84",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/astro-rereview-1"
+    },
+    "kb:astro:planet_house:Mars:10": {
+      "content_sha256": "97d59d1a667a8b919d5b5b9dc06e9629442e67cf925b1fcc373203057da78f42",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/astro-rereview-1"
+    },
+    "kb:astro:planet_house:Mars:11": {
+      "content_sha256": "116bc81b91d067a5c4b104f8ff386b1bc4df29fcf2463b982de80e90ff4c8b1d",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/astro-rereview-1"
+    },
+    "kb:astro:planet_house:Mars:12": {
+      "content_sha256": "3368b8aa5fefd8bae198fc1b05af60287106b0174a41d6c11850640954734add",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/astro-rereview-1"
+    },
+    "kb:astro:planet_house:Mars:2": {
+      "content_sha256": "24a4917743620b09805bab4cfb56023a2a2889025e42641169bb8ad3803e6e19",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/astro-initial"
+    },
+    "kb:astro:planet_house:Mars:3": {
+      "content_sha256": "abc856ded5d9e2b14981451f153cb4dc7bd5d0603b7369da24b0d3ba88067da7",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/astro-rereview-1"
+    },
+    "kb:astro:planet_house:Mars:4": {
+      "content_sha256": "9176793fa444ff99d4516e27d83fd0a06220035eeb211c090b4a01c4765c735f",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/astro-rereview-1"
+    },
+    "kb:astro:planet_house:Mars:5": {
+      "content_sha256": "58dec3766b4dc6708f6b5d429462369a7015ab2cd6f0bb0cbb5cf1f00f077017",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/astro-initial"
+    },
+    "kb:astro:planet_house:Mars:6": {
+      "content_sha256": "b7e9876a4d23eb50c76d3ef941b229282beb9b7cd7272a6bb654af224f2201a6",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/astro-initial"
+    },
+    "kb:astro:planet_house:Mars:7": {
+      "content_sha256": "1627c55a9d1ebd2a438a8d4245ca0f1679d0a1fe771f134be062db04cd1ffea8",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/astro-initial"
+    },
+    "kb:astro:planet_house:Mars:8": {
+      "content_sha256": "3f0a16a46adfcc19424ae63c4d234dee58e295f2cb0fdda0b60737972eb8ce0f",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/astro-initial"
+    },
+    "kb:astro:planet_house:Mars:9": {
+      "content_sha256": "08636f9016560e07c1ed20ff0333b1a1f29fcd1eb8a0df29aecd56290d2ef6e5",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/astro-initial"
+    },
+    "kb:astro:planet_house:Mercury:1": {
+      "content_sha256": "320144657d828f4c58268f3cc746fe2eef7e57517c19245c2f612bec599e591f",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/astro-initial"
+    },
+    "kb:astro:planet_house:Mercury:10": {
+      "content_sha256": "2c877a3ede3510629b200e0b5c5e926e5b946b20d630dbd7a0e0430217a84857",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/astro-initial"
+    },
+    "kb:astro:planet_house:Mercury:11": {
+      "content_sha256": "8a2fceb44579d1a2d194fd36efba1c77d34022fd152938e4a52a331bfedc2a6f",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/astro-initial"
+    },
+    "kb:astro:planet_house:Mercury:12": {
+      "content_sha256": "1cb9691b42d361780bd2ef876d6a392bd176a6e23e371fabf447f8a25f429703",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/astro-initial"
+    },
+    "kb:astro:planet_house:Mercury:2": {
+      "content_sha256": "3d6474131d6d19a221dd4926fb05cf0b1b7c1a3b2351790fe90908c12573f000",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/astro-rereview-1"
+    },
+    "kb:astro:planet_house:Mercury:3": {
+      "content_sha256": "269276d78ca84c69d2139a4f1b4e18deab68ce254d7e43a8cc7bcc4beb6c8053",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/astro-initial"
+    },
+    "kb:astro:planet_house:Mercury:4": {
+      "content_sha256": "daffb860f892ace027d40f39074ca2447636af88095b8589956f988829fd01a0",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/astro-initial"
+    },
+    "kb:astro:planet_house:Mercury:5": {
+      "content_sha256": "beb0a1ce909ca10dbfb991edb5861e28269176b994cc7e6d2e00d6be0d40d102",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/astro-initial"
+    },
+    "kb:astro:planet_house:Mercury:6": {
+      "content_sha256": "067c93538e210fb23c6dc1dc270323b7edcdcd9dd1921a6f8a56945918a9e5a3",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/astro-initial"
+    },
+    "kb:astro:planet_house:Mercury:7": {
+      "content_sha256": "08f0f512106876ede3933b10d87ece729ee39ed878d658a805932d8f9be58b82",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/astro-initial"
+    },
+    "kb:astro:planet_house:Mercury:8": {
+      "content_sha256": "b99a986bc0a4f451d027c0a801dfbbb60495fa77415551df02bbadb9658eb43b",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/astro-initial"
+    },
+    "kb:astro:planet_house:Mercury:9": {
+      "content_sha256": "ad12970825eb645fcb887d1f49641d17216cda5cfdfdf7729a6d61e2f25e9e5c",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/astro-initial"
+    },
+    "kb:astro:planet_house:Moon:1": {
+      "content_sha256": "9c06e83ccf7c4249b0475736e013a271ccf3b6f00cae63ffc86b219ac0122e84",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/astro-initial"
+    },
+    "kb:astro:planet_house:Moon:10": {
+      "content_sha256": "6a057b80e2526dfec05d98da32c6932f0b1ad9ca39cb5a78f8d6b87684415aee",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/astro-initial"
+    },
+    "kb:astro:planet_house:Moon:11": {
+      "content_sha256": "94d200afb95b74c32667111463d7a5fcef7a72fa3138b7697096544cca6dc6a9",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/astro-initial"
+    },
+    "kb:astro:planet_house:Moon:12": {
+      "content_sha256": "3c704907eb4032d07130a0c26960a8063322ce85b2705712472d85690a45ea00",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/astro-initial"
+    },
+    "kb:astro:planet_house:Moon:2": {
+      "content_sha256": "f4ae1f3b8c802bb1ae2a2855e5beffd1633ab0183d4232af25d38ac470dd5dc0",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/astro-initial"
+    },
+    "kb:astro:planet_house:Moon:3": {
+      "content_sha256": "f7ecfb052c4239cbe3055e92c14a0d8bc15b706a72c0779394758e94bd04a972",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/astro-initial"
+    },
+    "kb:astro:planet_house:Moon:4": {
+      "content_sha256": "bb5964771c5b9b23b2cf2c1877e4613918d029eea0558654fa572567f09d059c",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/astro-initial"
+    },
+    "kb:astro:planet_house:Moon:5": {
+      "content_sha256": "2acbbe518e394fbfe75d62f30d84de31d1a39be1f10ee97c3e954661e744d19c",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/astro-initial"
+    },
+    "kb:astro:planet_house:Moon:6": {
+      "content_sha256": "87bf1d12151b1d64354d8da5c012a0ca8bb2e574d6657512e1fb00ca68db4227",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/astro-initial"
+    },
+    "kb:astro:planet_house:Moon:7": {
+      "content_sha256": "c116d07d578feecf2659275f315acc28e587ae4669ad7235b712d5557f6387c6",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/astro-initial"
+    },
+    "kb:astro:planet_house:Moon:8": {
+      "content_sha256": "94efd2fcb4b815cfe67f5708c5652f3a5ec53635d2c741f2fad96fe5b48a39a7",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/astro-initial"
+    },
+    "kb:astro:planet_house:Moon:9": {
+      "content_sha256": "bd271704a7c58e98bbce05287ccba2d5163f4ecae9d1117a39e3d3ede17767d1",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/astro-initial"
+    },
+    "kb:astro:planet_house:Neptune:1": {
+      "content_sha256": "4361c48c973b9629c0662ce2c6f8d486bc402a8411f1f7e0d76251053290e5f8",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/astro-initial"
+    },
+    "kb:astro:planet_house:Neptune:10": {
+      "content_sha256": "b52bd1811ab0f7773a06085752c5ccacd246e2443256438fd13ba76aa4c5606a",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/astro-initial"
+    },
+    "kb:astro:planet_house:Neptune:11": {
+      "content_sha256": "af9c71388dbadcaadac17fdfc34c4ffa5d60c1aeba2d349edd8be686d38a5b63",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/astro-initial"
+    },
+    "kb:astro:planet_house:Neptune:12": {
+      "content_sha256": "6bbc81db92e26527b8e8fb1114c27a0396011fd689ffe6263673f3ff18cc1b6e",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/astro-initial"
+    },
+    "kb:astro:planet_house:Neptune:2": {
+      "content_sha256": "8b93233b770fb650cbe086af309493c6572d414c259d2676622b60ef0bf6eaa5",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/astro-initial"
+    },
+    "kb:astro:planet_house:Neptune:3": {
+      "content_sha256": "057a65973fc47939124f49788ecff8d182a8cfbd457b78c9b6c1b7a84f8f9d7b",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/astro-initial"
+    },
+    "kb:astro:planet_house:Neptune:4": {
+      "content_sha256": "53f5a0254de416123567d144587addbbb4fbee190cf8c9c604e24a7726dc4f42",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/astro-initial"
+    },
+    "kb:astro:planet_house:Neptune:5": {
+      "content_sha256": "a77b070bf64f5931f00341d7e9cb41add2317cff4b45aaa559a29dfe6c52eccf",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/astro-initial"
+    },
+    "kb:astro:planet_house:Neptune:6": {
+      "content_sha256": "d93a2e9a9a23c2d64d32b53cedf892e4afdd0a9d970bb4e71f3cc9100b047ab6",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/astro-initial"
+    },
+    "kb:astro:planet_house:Neptune:7": {
+      "content_sha256": "4ae7415c0b94a70d27005ed7b877f9b9fedd5c4d422a9081a51df1b60723a337",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/astro-initial"
+    },
+    "kb:astro:planet_house:Neptune:8": {
+      "content_sha256": "573702b715144485f6904fcfd404f97841fa7f451aa2a8e8cee09b22e528abe9",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/astro-initial"
+    },
+    "kb:astro:planet_house:Neptune:9": {
+      "content_sha256": "3c268e2fa05fd98ce485609364b821709fcb87a33184a2d3c457699fbe971498",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/astro-initial"
+    },
+    "kb:astro:planet_house:Pluto:1": {
+      "content_sha256": "f48a29553a29330b05a08de6c0fe633025eec4bc4a371e67abcce418a6797f6c",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/astro-initial"
+    },
+    "kb:astro:planet_house:Pluto:10": {
+      "content_sha256": "a5b266c5d842f32b340876480d5787e19f34eeb7cf049458d4721e5812567198",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/astro-initial"
+    },
+    "kb:astro:planet_house:Pluto:11": {
+      "content_sha256": "8b0d85ff8a1760f22e39377fafba666bfc2b319a5247661f076e464cb7c52d0d",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/astro-initial"
+    },
+    "kb:astro:planet_house:Pluto:12": {
+      "content_sha256": "7c78b90fa548bc6253127ba47ff21d614676011c8809fda67e6a76e2a9ba817d",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/astro-initial"
+    },
+    "kb:astro:planet_house:Pluto:2": {
+      "content_sha256": "c7b2a97aeb2a07b8032fc7af1814fb8a63fe8c47d940cc11145691f98684db7f",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/astro-initial"
+    },
+    "kb:astro:planet_house:Pluto:3": {
+      "content_sha256": "d9eba045c532edbe82711e86a6777db108d2fb6349c5a847c3daade7f4b63a00",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/astro-initial"
+    },
+    "kb:astro:planet_house:Pluto:4": {
+      "content_sha256": "e52e92e1d3036793874bb3d1dbd2ee8abb638058c27b768de14a4cf352d25df8",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/astro-initial"
+    },
+    "kb:astro:planet_house:Pluto:5": {
+      "content_sha256": "81e3a9056797bd67327cc92a5f1da84ca1b577ac4b3d6cc201b6f04b1f86b248",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/astro-initial"
+    },
+    "kb:astro:planet_house:Pluto:6": {
+      "content_sha256": "f636e342e28334cc4de53b99fa4b2a6210a47da295bfc3c46c9ffd0e3174734f",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/astro-initial"
+    },
+    "kb:astro:planet_house:Pluto:7": {
+      "content_sha256": "d675815c246ccf6770600e18083234abf7b6b89946de6f1bf085f5a4170986a1",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/astro-initial"
+    },
+    "kb:astro:planet_house:Pluto:8": {
+      "content_sha256": "f72350e9c51fd1c294072afaea3edfe97268f8b5724b0fb1e4e525796911be4c",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/astro-initial"
+    },
+    "kb:astro:planet_house:Pluto:9": {
+      "content_sha256": "5064feeb64ea13c78ebdd8d5e0127369bd2000d1808a68295bf064f4fbef77ce",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/astro-initial"
+    },
+    "kb:astro:planet_house:Saturn:1": {
+      "content_sha256": "bdbba558f551c8e5e0778f4f38d751b2a57d95a5ab7176f8eb20d116a464235a",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/astro-initial"
+    },
+    "kb:astro:planet_house:Saturn:10": {
+      "content_sha256": "41d20bc054faa8e38031f06f1a7ad1bee7902e1dcbd6ffe2e1aabf2e1b7b075b",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/astro-initial"
+    },
+    "kb:astro:planet_house:Saturn:11": {
+      "content_sha256": "956e95e8c357b23a43e6eb09bf1bd20684c437f9b2319c2a4a512672228130df",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/astro-initial"
+    },
+    "kb:astro:planet_house:Saturn:12": {
+      "content_sha256": "7ba4bb3b8c22bd30dfd365cef4fefa441e7c46099868188b4206bd25b7b26b8d",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/astro-initial"
+    },
+    "kb:astro:planet_house:Saturn:2": {
+      "content_sha256": "a3982e95c639ad1f9825a84a030b69fb4fb3050f3984ec3625e4d323acc1b332",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/astro-initial"
+    },
+    "kb:astro:planet_house:Saturn:3": {
+      "content_sha256": "8e363dabd6754e1a6a466b55d4b214b0e5e73a088b2150cfe9732ee95c8d41c3",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/astro-initial"
+    },
+    "kb:astro:planet_house:Saturn:4": {
+      "content_sha256": "5a3b3a84ab7c2ee7e467b353b48d17b97528e63ba7499f62f2f91759acff65bd",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/astro-initial"
+    },
+    "kb:astro:planet_house:Saturn:5": {
+      "content_sha256": "a7b1279443d578ac9cea482e2610b7ef65513830c5a106a3b9316bc9cae22371",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/astro-initial"
+    },
+    "kb:astro:planet_house:Saturn:6": {
+      "content_sha256": "40743e5c2ac8ca39c2dfa8d001811d8aad461f2f2e4a3a649e45690ec3b6c77c",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/astro-initial"
+    },
+    "kb:astro:planet_house:Saturn:7": {
+      "content_sha256": "595c64d3e3504c64b9d1f901c4f6bf3d565e9cf4f00f71d0bfd61c3f98183763",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/astro-initial"
+    },
+    "kb:astro:planet_house:Saturn:8": {
+      "content_sha256": "1b4500ff1a546344feb9e0351038a78c6aaeedfe25e99c3a8d26640066c2ef15",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/astro-initial"
+    },
+    "kb:astro:planet_house:Saturn:9": {
+      "content_sha256": "f4e6d39e01c6bac226a65b793527ac1a300b6709fb733ac8b0b5bb152a1dd621",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/astro-initial"
+    },
+    "kb:astro:planet_house:Sun:1": {
+      "content_sha256": "cf295d22da2435c800cd65f87632ebfaf6acae106805d1cddc40ad70be298c87",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/astro-initial"
+    },
+    "kb:astro:planet_house:Sun:10": {
+      "content_sha256": "262984c3dadabc928039b01f11f4ae4045348412a93778914cb8f6c9f5421893",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/astro-initial"
+    },
+    "kb:astro:planet_house:Sun:11": {
+      "content_sha256": "05efeef91968bc818991895416bbab07366db05d2626bf56490e935035fa15a9",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/astro-initial"
+    },
+    "kb:astro:planet_house:Sun:12": {
+      "content_sha256": "da873d024a8ff32c0223a19e54bb3b11d165708a58e1b0e4784d48c3d8df9931",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/astro-initial"
+    },
+    "kb:astro:planet_house:Sun:2": {
+      "content_sha256": "8a153056bb27fbe104acae03128f4e08c23b4ad1441a887fb61de8dbd51d96b7",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/astro-initial"
+    },
+    "kb:astro:planet_house:Sun:3": {
+      "content_sha256": "3ca3580ad3195518139edc0f7fa17877225d9c4e5a0a2cd4fcdd2c460f426344",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/astro-initial"
+    },
+    "kb:astro:planet_house:Sun:4": {
+      "content_sha256": "f260ca99c5d08d59356aada62cffd3d01de8ce801b65ca71316b7f501b541ff8",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/astro-initial"
+    },
+    "kb:astro:planet_house:Sun:5": {
+      "content_sha256": "54c34f5d2999c41bd8b62024f089a9915dba2ec2f76b741d965e658b63f28850",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/astro-rereview-2"
+    },
+    "kb:astro:planet_house:Sun:6": {
+      "content_sha256": "429a056bfb64ede3c5ffa62f3e2da17be213f5aed7501b2e84bf49e8602601ae",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/astro-initial"
+    },
+    "kb:astro:planet_house:Sun:7": {
+      "content_sha256": "4d10438981653bbe94d26e3bb111a23caa306e0d4e67458255e19a8079c69c17",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/astro-rereview-1"
+    },
+    "kb:astro:planet_house:Sun:8": {
+      "content_sha256": "2f5911d714c74a9ec167190c7941032de623d79e7a24a378ea21e39740f7ef5c",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/astro-rereview-1"
+    },
+    "kb:astro:planet_house:Sun:9": {
+      "content_sha256": "1e861873aecf93f2bc7a473194a6c484467c183ef5e1849c020f410a7d1b9ec6",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/astro-initial"
+    },
+    "kb:astro:planet_house:Uranus:1": {
+      "content_sha256": "a427f03e3a4e5d3b2874eae48ce7b1ef33c5a118a0237077b8823960f80415cf",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/astro-initial"
+    },
+    "kb:astro:planet_house:Uranus:10": {
+      "content_sha256": "a74abf4644f44c6e10d8bc4b31761dc51ef9502ad326f3413f5f4c31a0182ad4",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/astro-initial"
+    },
+    "kb:astro:planet_house:Uranus:11": {
+      "content_sha256": "0c1044e425feaf05bcfa65652f5a583b3c024b2716498eec6a9a2f453b7ae915",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/astro-initial"
+    },
+    "kb:astro:planet_house:Uranus:12": {
+      "content_sha256": "81ace1bcf89c1db8f0d4f2b07f42f1bb1e9f4de68e9b2050e88c2330ef5c7993",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/astro-initial"
+    },
+    "kb:astro:planet_house:Uranus:2": {
+      "content_sha256": "a0e6aff6b20fe44e1a052bd0dd08e297da71fa233a68e2fa5996bec7fbfff569",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/astro-initial"
+    },
+    "kb:astro:planet_house:Uranus:3": {
+      "content_sha256": "d8c53435238378d087990b3294333892b1645048fc0499ec68383c6d7d7c01c8",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/astro-initial"
+    },
+    "kb:astro:planet_house:Uranus:4": {
+      "content_sha256": "ee20e7338534385160cf1701746a2fb2c1c4c9ed82c387424829a12d94efd90f",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/astro-initial"
+    },
+    "kb:astro:planet_house:Uranus:5": {
+      "content_sha256": "5526c238bb607884bae47d844f433515ae4326e93d66788730fee649f097a778",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/astro-initial"
+    },
+    "kb:astro:planet_house:Uranus:6": {
+      "content_sha256": "26eb2d6e59f3eb64a71e66ebb2909105f0644178ae7792db9b89f77ebe825854",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/astro-initial"
+    },
+    "kb:astro:planet_house:Uranus:7": {
+      "content_sha256": "6e909c37dcbaf611caae6fae1d83e1f33fdcad705efce82038e22ff47d71476d",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/astro-initial"
+    },
+    "kb:astro:planet_house:Uranus:8": {
+      "content_sha256": "aba688ea972824fe019321f8c39aa87622a05d992f3cbd59947bce2c1f4bdda1",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/astro-initial"
+    },
+    "kb:astro:planet_house:Uranus:9": {
+      "content_sha256": "f5fdf40a409ac07dba0404314105a5c13a71fe0441a4d20978ac5e70d9ae4a7a",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/astro-initial"
+    },
+    "kb:astro:planet_house:Venus:1": {
+      "content_sha256": "dd1cd3e07e3910d0627eaefecdc8832551e084cfa7d1caea69c01f8b1e164360",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/astro-initial"
+    },
+    "kb:astro:planet_house:Venus:10": {
+      "content_sha256": "748452af6fb40302f09b4a8094f7446d846b58be2579dd0e3959de3387e2fd2b",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/astro-initial"
+    },
+    "kb:astro:planet_house:Venus:11": {
+      "content_sha256": "1607c88c8449416efd26043000d9fdf0f589d0a6501c75caea23b2c3a6ba93d2",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/astro-initial"
+    },
+    "kb:astro:planet_house:Venus:12": {
+      "content_sha256": "b1459e5e3fda4a556bf57c44a1ea6119e472c4660197fca273f5b1535016f01d",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/astro-initial"
+    },
+    "kb:astro:planet_house:Venus:2": {
+      "content_sha256": "9a5c52ee5a34ea8ecc14d4e519ace5626668d4abcad7f1a2c28b026121e918f1",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/astro-initial"
+    },
+    "kb:astro:planet_house:Venus:3": {
+      "content_sha256": "33755ac79e6ac14ed39b9cd661a3fd23489f39b0761b3359170dc8577f75311e",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/astro-initial"
+    },
+    "kb:astro:planet_house:Venus:4": {
+      "content_sha256": "970e9e249c217aab16e5399dcbda177b4b3d6094fbf2b091a7be3790ff6370ae",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/astro-initial"
+    },
+    "kb:astro:planet_house:Venus:5": {
+      "content_sha256": "71ef2efa5c30c54183449f5e679cd26602d43176c8b2c576cc2eb38e7b5588e3",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/astro-initial"
+    },
+    "kb:astro:planet_house:Venus:6": {
+      "content_sha256": "def57856e1874d3cd27f4b2273adfc19e8896ffffc3d9015dacac2c8094c9250",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/astro-initial"
+    },
+    "kb:astro:planet_house:Venus:7": {
+      "content_sha256": "0ad0e04cc37ec3ebe69cf8a8e8717e3d50d0834e8094ab9504a6b1a7b3c41dfe",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/astro-initial"
+    },
+    "kb:astro:planet_house:Venus:8": {
+      "content_sha256": "43368af0e69fdf0c2aad6bd26a3b951390d7fc169cf0b03035e3db0aa2190ab9",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/astro-initial"
+    },
+    "kb:astro:planet_house:Venus:9": {
+      "content_sha256": "89a54d0c0c5ed1d4677ed9452caaea4fe3fb93fdaf8ca27e9fd1695d72c8f401",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/astro-initial"
+    },
+    "kb:astro:planet_sign:Jupiter:Aquarius": {
+      "content_sha256": "58533f37fad956a00aae080ce1d20e89dc68ffedf1683a218c9c31137ab88795",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/astro-initial"
+    },
+    "kb:astro:planet_sign:Jupiter:Aries": {
+      "content_sha256": "fa65efa347e94776dacb3b65f55c72e9e61c667f3831f6c4db849ae138c819e5",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/astro-initial"
+    },
+    "kb:astro:planet_sign:Jupiter:Cancer": {
+      "content_sha256": "3895970dd662780b3805b259daa4015c8fa799b658a18f80dc754bc098bf2bbb",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/astro-initial"
+    },
+    "kb:astro:planet_sign:Jupiter:Capricorn": {
+      "content_sha256": "4a100de7ec9e583be792da19adda74ca9e2654772ee17c026ac6bfc04226282c",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/astro-rereview-2"
+    },
+    "kb:astro:planet_sign:Jupiter:Gemini": {
+      "content_sha256": "ed231885a8402fd06925a4e0ef9e23bc22b093e74f681966c4f7a179efe7e977",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/astro-initial"
+    },
+    "kb:astro:planet_sign:Jupiter:Leo": {
+      "content_sha256": "b68e3ce762d4dee95b3c9fcbebd4a718f8d22e5f5740672723c559832fdbe75f",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/astro-initial"
+    },
+    "kb:astro:planet_sign:Jupiter:Libra": {
+      "content_sha256": "c2ff2fdc00829c8b9dabee07c0752d45431d438881c0bcd3720b4aae7c93e5d5",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/astro-initial"
+    },
+    "kb:astro:planet_sign:Jupiter:Pisces": {
+      "content_sha256": "520bd2592d4d7e719ecce5d8c3354df0ada7f35e361bf6f5b21857c7333f2923",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/astro-initial"
+    },
+    "kb:astro:planet_sign:Jupiter:Sagittarius": {
+      "content_sha256": "9b7f363999becdccd2366f6d502650ee29845e114f88dc2653d16876d108c4fa",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/astro-initial"
+    },
+    "kb:astro:planet_sign:Jupiter:Scorpio": {
+      "content_sha256": "b3c8a616a676e7bc9e371419d8d7763f8fa5dd5487125af79d73011916d22e0a",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/astro-initial"
+    },
+    "kb:astro:planet_sign:Jupiter:Taurus": {
+      "content_sha256": "0c2d421bd4075800bfecd3de14e09ccf985d9ed724396da09244b793da8bfdb3",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/astro-initial"
+    },
+    "kb:astro:planet_sign:Jupiter:Virgo": {
+      "content_sha256": "8ba738f856ed184815d8a0c1021c4a192255d4077391e2d21c6efb9bb3843d55",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/astro-rereview-1"
+    },
+    "kb:astro:planet_sign:Mars:Aquarius": {
+      "content_sha256": "61f16b3791a054466f638c2d0a543a6ae94c58be6a1459fa2e5d8665c729c896",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/astro-initial"
+    },
+    "kb:astro:planet_sign:Mars:Aries": {
+      "content_sha256": "9817db407a08ee10a9395ce10bcfa14521183322bf85a64b76c4c98c98aab1f8",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/astro-initial"
+    },
+    "kb:astro:planet_sign:Mars:Cancer": {
+      "content_sha256": "8371a2c7b0ed9db0ff7f91117feac3e2fe78f02b7dad9e140dd0beaad80bfe94",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/astro-initial"
+    },
+    "kb:astro:planet_sign:Mars:Capricorn": {
+      "content_sha256": "92808251f5eb70826f322e167a4bbec85cd557bb6529d87ca6cc3c95abdc49ea",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/astro-rereview-1"
+    },
+    "kb:astro:planet_sign:Mars:Gemini": {
+      "content_sha256": "15581b9bdab5a57268f4fa8e4b46a6a80ee391b53b691d40aa339d1e9c7499b7",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/astro-initial"
+    },
+    "kb:astro:planet_sign:Mars:Leo": {
+      "content_sha256": "6a5bc1f4c399917c6c2e7e99bcde236c850f99239fee67628dbfa7bfbda3d4f7",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/astro-initial"
+    },
+    "kb:astro:planet_sign:Mars:Libra": {
+      "content_sha256": "f1fd041465f1b75a66760747ea53bc788e0825feead2f4029ef0519e6fd66504",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/astro-initial"
+    },
+    "kb:astro:planet_sign:Mars:Pisces": {
+      "content_sha256": "6ff28e6712171de50c0d5e8f00046fa70f969b6f24020e1f9f5456bed49429e8",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/astro-initial"
+    },
+    "kb:astro:planet_sign:Mars:Sagittarius": {
+      "content_sha256": "b62acd6dbf466d10f43abdf78ad4e1721cbf12d98da1b65fb360a285382203eb",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/astro-initial"
+    },
+    "kb:astro:planet_sign:Mars:Scorpio": {
+      "content_sha256": "1a517b191d33a8a6e963fda13dfff41d3e4b8aeb7d59767b582dbbf0df2ddd67",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/astro-initial"
+    },
+    "kb:astro:planet_sign:Mars:Taurus": {
+      "content_sha256": "6f5bf6d7a9ce8015b8433d9f30fb37527814961c722df2ec502fdf0e7e4c763a",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/astro-rereview-1"
+    },
+    "kb:astro:planet_sign:Mars:Virgo": {
+      "content_sha256": "db7d913f1c43d8cabaa8686289618262178fb53351c50f2d2aa31eace43d63f4",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/astro-initial"
+    },
+    "kb:astro:planet_sign:Mercury:Aquarius": {
+      "content_sha256": "15f3479e6c0872737c422ea0d536d58763e0fbd7123d4a65317dee5875148a22",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/astro-initial"
+    },
+    "kb:astro:planet_sign:Mercury:Aries": {
+      "content_sha256": "2c2431ed029c38b4cf2f6ce5bccce3d547482980c4d3fc49bf9ce7fb637e1724",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/astro-initial"
+    },
+    "kb:astro:planet_sign:Mercury:Cancer": {
+      "content_sha256": "76a54d2da4eca14e2cb36a302f79ac228275b1b98231435e6ba9055a686d4e25",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/astro-initial"
+    },
+    "kb:astro:planet_sign:Mercury:Capricorn": {
+      "content_sha256": "efdea909ae1135641dfaab63fb54bfec8da039bb987db3e6d93ae28be171532d",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/astro-initial"
+    },
+    "kb:astro:planet_sign:Mercury:Gemini": {
+      "content_sha256": "b13b2cd9eaadab13a9c5d62b8da6cf3fe93ad0d1faa64fdf3d1a0a751277db5b",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/astro-initial"
+    },
+    "kb:astro:planet_sign:Mercury:Leo": {
+      "content_sha256": "6dcd1b83b5b2115392d5e2ab3e889e21c7981b5de0449371ccd713a1f69dcc83",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/astro-initial"
+    },
+    "kb:astro:planet_sign:Mercury:Libra": {
+      "content_sha256": "0266892d3429db5f08e33d171ae4e6c03683f3726cbeec242f69a1a4c8f28792",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/astro-initial"
+    },
+    "kb:astro:planet_sign:Mercury:Pisces": {
+      "content_sha256": "18ca6f0392ecad8eb11be92c80da08d255776bfca48ad9e6b30390a10859b6f5",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/astro-initial"
+    },
+    "kb:astro:planet_sign:Mercury:Sagittarius": {
+      "content_sha256": "3da03ebbbf87bfa0ac861a10559db594261a15e61dc63564c5f4f8972639ebff",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/astro-initial"
+    },
+    "kb:astro:planet_sign:Mercury:Scorpio": {
+      "content_sha256": "b4f67284ea95d7220df1dbff7311248552b66b3a641964483c8da5cf936e4554",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/astro-initial"
+    },
+    "kb:astro:planet_sign:Mercury:Taurus": {
+      "content_sha256": "798150d61d1073159d00cdad0efb00a5dceed975becee85c43d2ce4351fc6351",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/astro-initial"
+    },
+    "kb:astro:planet_sign:Mercury:Virgo": {
+      "content_sha256": "1fc4d503d9896599a79519721e512f5da82c1348702a6c182938f8609c172b71",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/astro-initial"
+    },
+    "kb:astro:planet_sign:Moon:Aquarius": {
+      "content_sha256": "ebbe1c72a4ee42c3112d34fb332466e59f754f5a5e52f4d1b487e90273b84cba",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/astro-initial"
+    },
+    "kb:astro:planet_sign:Moon:Aries": {
+      "content_sha256": "40da00da8d73e4e3d2af67e83ebcd895cf8fda5d1e067f85e5c4b497c72d5bb9",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/astro-initial"
+    },
+    "kb:astro:planet_sign:Moon:Cancer": {
+      "content_sha256": "0eec61274df3f71303440b067578867c482342a4d73373df400ce479b000305d",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/astro-initial"
+    },
+    "kb:astro:planet_sign:Moon:Capricorn": {
+      "content_sha256": "d6cf761fcbeb942610a321ac01d3cbedabc2d06a543339d68e9032b5978ebc2c",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/astro-initial"
+    },
+    "kb:astro:planet_sign:Moon:Gemini": {
+      "content_sha256": "addf6f4e3825943662923986f466887741cd2572279d2abd47a8ad2ed9042a44",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/astro-initial"
+    },
+    "kb:astro:planet_sign:Moon:Leo": {
+      "content_sha256": "c5314d5ffe0226627bd14c0ee5268d44cf42877b44da80c3c1f7402142c4e537",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/astro-initial"
+    },
+    "kb:astro:planet_sign:Moon:Libra": {
+      "content_sha256": "34271d2b8bc3a0035742c57cf3f830e79374fb9db42cd52155bbadcd47e9009f",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/astro-initial"
+    },
+    "kb:astro:planet_sign:Moon:Pisces": {
+      "content_sha256": "be4e84925c3578ddc6373ee5ed072db5b5ff8a10d32ec6a6ea99940b958d849d",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/astro-initial"
+    },
+    "kb:astro:planet_sign:Moon:Sagittarius": {
+      "content_sha256": "66c08cd5d0d2d814ef4071427e898de2328fbd69bcf18b8cdc79c80188da1cda",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/astro-initial"
+    },
+    "kb:astro:planet_sign:Moon:Scorpio": {
+      "content_sha256": "8b923def962f8d8eff574927b0333fa60e504d8695b1fee1d8797373dda95d0d",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/astro-initial"
+    },
+    "kb:astro:planet_sign:Moon:Taurus": {
+      "content_sha256": "e019d391bbf3d76600a448c65ac918005c952725ef70041e66bc5289c4a5d4e8",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/astro-initial"
+    },
+    "kb:astro:planet_sign:Moon:Virgo": {
+      "content_sha256": "59df82d293526eab8dc44a79c23fe296c6933dea7bf4294e5e70f9dfb5aaa1b6",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/astro-initial"
+    },
+    "kb:astro:planet_sign:Neptune:Aquarius": {
+      "content_sha256": "85acced04a9638d1779423f0012c04e13cab89a37ef18972b1c2c8f69961886a",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/astro-initial"
+    },
+    "kb:astro:planet_sign:Neptune:Aries": {
+      "content_sha256": "6f61ce27e0de71f16b457a11d9a4752c703113b441210297c8d50140acb2ca44",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/astro-initial"
+    },
+    "kb:astro:planet_sign:Neptune:Cancer": {
+      "content_sha256": "9c318beedc5d09d64bde472222a8c65dae880a09ba60611d3e54079210923253",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/astro-initial"
+    },
+    "kb:astro:planet_sign:Neptune:Capricorn": {
+      "content_sha256": "ace895c841e0514b1244688254714f52542b73bf2e7cf7075be9fb3f4a146bde",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/astro-initial"
+    },
+    "kb:astro:planet_sign:Neptune:Gemini": {
+      "content_sha256": "e8ea617347dc668ccfe5bbd19f600057bbcbc6b0534f18e6d3afeb5764c736c8",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/astro-initial"
+    },
+    "kb:astro:planet_sign:Neptune:Leo": {
+      "content_sha256": "92ba637b8b2c1fe86cf0fc64614f75103031dc3fd31ae1645f379c0f5497ecfa",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/astro-initial"
+    },
+    "kb:astro:planet_sign:Neptune:Libra": {
+      "content_sha256": "eecf9546e9ee893cfc9b96823d104c10fc4a410be28bf2859d5e9f423a3a39a6",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/astro-initial"
+    },
+    "kb:astro:planet_sign:Neptune:Pisces": {
+      "content_sha256": "01c02f53ee7f4f7afba9a15719d082e041517a6bcde17a22b0faa6e66c27467f",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/astro-initial"
+    },
+    "kb:astro:planet_sign:Neptune:Sagittarius": {
+      "content_sha256": "85b72046a6b35e7891d3d2e0c7cbbd816f4cc288cd0d0539cb74b1be0e84fc62",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/astro-initial"
+    },
+    "kb:astro:planet_sign:Neptune:Scorpio": {
+      "content_sha256": "da775c2fac194e6eb2be2b91157cd6cb345c2fc4280a3b7151e88c5f88b419a2",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/astro-initial"
+    },
+    "kb:astro:planet_sign:Neptune:Taurus": {
+      "content_sha256": "ea90a939a26b3a0a7e49d6e9d53b719836bf1e388aaf2d5d20f59a37b31fefae",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/astro-initial"
+    },
+    "kb:astro:planet_sign:Neptune:Virgo": {
+      "content_sha256": "edb7a76a16c91295f5bf53fe9097226ccbedf8b39706cd626912317681ed446f",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/astro-initial"
+    },
+    "kb:astro:planet_sign:Pluto:Aquarius": {
+      "content_sha256": "d9b064e7597cf3652c0ad5792b1baef38038e7cbe64be2747f6c179842c2d044",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/astro-initial"
+    },
+    "kb:astro:planet_sign:Pluto:Aries": {
+      "content_sha256": "43da945f80213aa74f913bac39a917eae434c184402be514c11572525058492b",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/astro-initial"
+    },
+    "kb:astro:planet_sign:Pluto:Cancer": {
+      "content_sha256": "f5fc4787c58dbd33270df5978d971f8dfcabb35e29eddcdf2bc6d8c61787c0d2",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/astro-initial"
+    },
+    "kb:astro:planet_sign:Pluto:Capricorn": {
+      "content_sha256": "fdafa37ae0e6565783aec087884606e1ecfe12db9d1a8f4f376e671c9fd7b366",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/astro-initial"
+    },
+    "kb:astro:planet_sign:Pluto:Gemini": {
+      "content_sha256": "a87ec6f02cfa4fd0988652c67e5eacf06532a56767ab178b93b3d956884cf94c",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/astro-initial"
+    },
+    "kb:astro:planet_sign:Pluto:Leo": {
+      "content_sha256": "d219dcb56a817118de41cfc9358db97da0aea93efd82c7a7ef5d7c7f7694cab7",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/astro-initial"
+    },
+    "kb:astro:planet_sign:Pluto:Libra": {
+      "content_sha256": "f4782f418fc5a82558f01f1fffd2ca88448791a307e4a2097df0b4416064a6f9",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/astro-initial"
+    },
+    "kb:astro:planet_sign:Pluto:Pisces": {
+      "content_sha256": "dfe244c712a14163a70176cfa9e58e39b4bf136e5595ce2d9349a03f306dc09a",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/astro-initial"
+    },
+    "kb:astro:planet_sign:Pluto:Sagittarius": {
+      "content_sha256": "dd2037c9089a60ef052be5802a30960bf961a36bcca6f85c2a39a68e41eb11ac",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/astro-initial"
+    },
+    "kb:astro:planet_sign:Pluto:Scorpio": {
+      "content_sha256": "9e908e9c535a6cd50312b5f44f3fdce121fd4e7d1e0e6325b571ec6fdc931bd5",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/astro-initial"
+    },
+    "kb:astro:planet_sign:Pluto:Taurus": {
+      "content_sha256": "5f84964dd01a0c96fce40378a8dfc94377eff22d6729e5cf0a1690f67a07f028",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/astro-initial"
+    },
+    "kb:astro:planet_sign:Pluto:Virgo": {
+      "content_sha256": "fecc17d48701ce024b847266d0636f66057d81d099741a5e182f1d25fdee1011",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/astro-initial"
+    },
+    "kb:astro:planet_sign:Saturn:Aquarius": {
+      "content_sha256": "842ebce16e6629c26e36544da8fa66fa34c2fc24343c387e31ce9235727e0267",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/astro-initial"
+    },
+    "kb:astro:planet_sign:Saturn:Aries": {
+      "content_sha256": "191052ea1d7e7e02a58d915cf1a2ba463923a70c4c3bb3fc5c02b52f49206025",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/astro-initial"
+    },
+    "kb:astro:planet_sign:Saturn:Cancer": {
+      "content_sha256": "eb7cf7064e6da8d0489b5c54229427f5698d462b5603a3acbd42a485ceec1c14",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/astro-initial"
+    },
+    "kb:astro:planet_sign:Saturn:Capricorn": {
+      "content_sha256": "e90aedaf63ffd69b213c65e72fa5da6771b294942791caefae1f7b69310a0201",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/astro-initial"
+    },
+    "kb:astro:planet_sign:Saturn:Gemini": {
+      "content_sha256": "973688e6a7dcbf89c3600c932b66a8c8731b43df8b24ca60d6690dcb2c75cfc5",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/astro-initial"
+    },
+    "kb:astro:planet_sign:Saturn:Leo": {
+      "content_sha256": "a5fffa966e4bb8c88e1af3f55eb095302b668c02fc84ddf7ef29c8a1bda85029",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/astro-initial"
+    },
+    "kb:astro:planet_sign:Saturn:Libra": {
+      "content_sha256": "c394ab9da4cbb0f1a4cda1309729d3a5b515cdc23b5deff7346621a669d6568e",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/astro-initial"
+    },
+    "kb:astro:planet_sign:Saturn:Pisces": {
+      "content_sha256": "6d09ee9902ab3a11f96079a86adc387f876016b1b5fa9f4a158785283b330f03",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/astro-initial"
+    },
+    "kb:astro:planet_sign:Saturn:Sagittarius": {
+      "content_sha256": "6a2ff93a63be3b98211c2a95adf63827540178e8c423e94c3bb9c4790bb61ef8",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/astro-initial"
+    },
+    "kb:astro:planet_sign:Saturn:Scorpio": {
+      "content_sha256": "a8c120b65783b8d70f4bf3433ca50ab2ea5ec078054d4e7d732a82729e7b2e71",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/astro-initial"
+    },
+    "kb:astro:planet_sign:Saturn:Taurus": {
+      "content_sha256": "4fd1b8a0b3036fd8478823748e50fcd519e16737404865cd983ea9367c40cb1a",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/astro-initial"
+    },
+    "kb:astro:planet_sign:Saturn:Virgo": {
+      "content_sha256": "57cb2eef97a05d9c193175b03adcf77d26f686f90ae86502c41f0cad0f0035a1",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/astro-initial"
+    },
+    "kb:astro:planet_sign:Sun:Aquarius": {
+      "content_sha256": "48dae96024486892658b34d960f5d0c4b5a2cab5be3a93c46ec18acbfdf287d5",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/astro-initial"
+    },
+    "kb:astro:planet_sign:Sun:Aries": {
+      "content_sha256": "ce5713f5b9fd05ffaffede1f763f56bd4adf7aa6a4ef01e3b18f2a682d29de41",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/astro-initial"
+    },
+    "kb:astro:planet_sign:Sun:Cancer": {
+      "content_sha256": "7b31a0fb68a366490c56eb2725286106445c6f1b77cb81a03ad08af2fb8cbb0c",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/astro-initial"
+    },
+    "kb:astro:planet_sign:Sun:Capricorn": {
+      "content_sha256": "90463e90ce3accd7ebe5f3a3a23249be3a57076bb14b31b42e9edf600c3fa9d2",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/astro-initial"
+    },
+    "kb:astro:planet_sign:Sun:Gemini": {
+      "content_sha256": "dd9fd04e2be9782a495e045db462a0baa35e3af95c6654130037d3972bc8066e",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/astro-initial"
+    },
+    "kb:astro:planet_sign:Sun:Leo": {
+      "content_sha256": "82cc58b206d28b745f5f95f075afbb1aa92ff10278f7e1439776b01f1aeae8ec",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/astro-initial"
+    },
+    "kb:astro:planet_sign:Sun:Libra": {
+      "content_sha256": "3644a5f2ea9c8e36d5a601119c3c243a49dfb61adaab1c03d605f84f5fb988ab",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/astro-initial"
+    },
+    "kb:astro:planet_sign:Sun:Pisces": {
+      "content_sha256": "e1877b1a98a8f382fc8d5b0cc11e973b9e2a47ca638f96af9907738d680a1e60",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/astro-initial"
+    },
+    "kb:astro:planet_sign:Sun:Sagittarius": {
+      "content_sha256": "419b0a9fa0df67d3443c6cb2b69c698ab11aaea6eb0e2d64af4e8b96d87894e1",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/astro-initial"
+    },
+    "kb:astro:planet_sign:Sun:Scorpio": {
+      "content_sha256": "22904ee1158443127ed8027220c133bdf5cb13ce69b9e31c90b43ad1041bb9ca",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/astro-initial"
+    },
+    "kb:astro:planet_sign:Sun:Taurus": {
+      "content_sha256": "61b0582668289598c1abccbed00392619cbe162d5ec2bfe303d1665992c5c937",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/astro-initial"
+    },
+    "kb:astro:planet_sign:Sun:Virgo": {
+      "content_sha256": "3f5084cfbf6fd382acb0a5cc3a30e4f35b4b060d59aabbbd55ea0a48a694f34c",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/astro-initial"
+    },
+    "kb:astro:planet_sign:Uranus:Aquarius": {
+      "content_sha256": "be4e1b7f62bdb33ac6b3bda1d806709ddc15fec177028bbba17912c1d29118ec",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/astro-initial"
+    },
+    "kb:astro:planet_sign:Uranus:Aries": {
+      "content_sha256": "890ee75d1fcacf2f193ecb8add459fb95a47b54a3aafe5aec41d87d576a0f385",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/astro-initial"
+    },
+    "kb:astro:planet_sign:Uranus:Cancer": {
+      "content_sha256": "e64dffbcc3a2c578e8d20f60d912abeee0ace334a01febeddb10f2a60bf236fd",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/astro-initial"
+    },
+    "kb:astro:planet_sign:Uranus:Capricorn": {
+      "content_sha256": "1204d8143cfcfae17b96c1d310eba348c504b97fe57ab51b1fd8d2c74711275a",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/astro-initial"
+    },
+    "kb:astro:planet_sign:Uranus:Gemini": {
+      "content_sha256": "2f91a5043e212b6b4eadb6e0ba52fbfab988eee95660c35d57b2c51f14843e57",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/astro-initial"
+    },
+    "kb:astro:planet_sign:Uranus:Leo": {
+      "content_sha256": "171f5b591462a93392dacb58e2d602624b14523cb41e63b54b75786968227bd1",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/astro-initial"
+    },
+    "kb:astro:planet_sign:Uranus:Libra": {
+      "content_sha256": "04ac439c33e942a47c2dd8a2a88f92ec10c1b6c187fe6cc5d24008a3ed81aa10",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/astro-initial"
+    },
+    "kb:astro:planet_sign:Uranus:Pisces": {
+      "content_sha256": "a3a3c89b9c1c295d103e43b0438b9e17aca7a677f47344dac68d7f9e3d3ae8e9",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/astro-initial"
+    },
+    "kb:astro:planet_sign:Uranus:Sagittarius": {
+      "content_sha256": "5c54e0346dcc4565106a92f355d8d4ff423e0ca28a50a3bf1c7fadaf60b63cea",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/astro-initial"
+    },
+    "kb:astro:planet_sign:Uranus:Scorpio": {
+      "content_sha256": "f8879907fac9b67d8f3fcbf770d348ad69a7abecb2a7d88485fea1eccbf45843",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/astro-initial"
+    },
+    "kb:astro:planet_sign:Uranus:Taurus": {
+      "content_sha256": "a52f4490f5f3b58874a7d51fb41712cb398ee5f5bcef9329915aefb0e5708175",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/astro-initial"
+    },
+    "kb:astro:planet_sign:Uranus:Virgo": {
+      "content_sha256": "ad9b4a62ddc2da92806c006b9133894c7efb732b5e20d8a3f4794f9d83573ffa",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/astro-initial"
+    },
+    "kb:astro:planet_sign:Venus:Aquarius": {
+      "content_sha256": "6723467c1319fe263aeafd09e9986824313a5295db7407f6669ba9b96a50aa51",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/astro-initial"
+    },
+    "kb:astro:planet_sign:Venus:Aries": {
+      "content_sha256": "9ffda4e4d69f3ef508686ad594da3c108f6495ca5735710f01d9b6f7f65169a0",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/astro-initial"
+    },
+    "kb:astro:planet_sign:Venus:Cancer": {
+      "content_sha256": "634f77e463f31b7bafe0917508c4e9bc0cb181d03fc81a6fd62b0ac9b6dcc12f",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/astro-initial"
+    },
+    "kb:astro:planet_sign:Venus:Capricorn": {
+      "content_sha256": "99a4e9377d67a6ef6d6532ea5c741f2f7554db3d3547fb0d5e46a9f37ffe56ce",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/astro-initial"
+    },
+    "kb:astro:planet_sign:Venus:Gemini": {
+      "content_sha256": "71fa929251218180186b6a348b78c37b1c0bc47e07cc0424c23d18b9a2c21f54",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/astro-initial"
+    },
+    "kb:astro:planet_sign:Venus:Leo": {
+      "content_sha256": "947359bd3c7c0bdc3dedfc653e8d579d480e6e9899a018c3a1635767a75833ba",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/astro-initial"
+    },
+    "kb:astro:planet_sign:Venus:Libra": {
+      "content_sha256": "46989d992c6dbd4fa99495c30df8c7042db01c5eb4344141d66b4a1c96f5b484",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/astro-initial"
+    },
+    "kb:astro:planet_sign:Venus:Pisces": {
+      "content_sha256": "0ef698a0b84e2c931a453629d18761a823a889c2dc9c4475ec6fc20b463d56b4",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/astro-rereview-1"
+    },
+    "kb:astro:planet_sign:Venus:Sagittarius": {
+      "content_sha256": "b6db043a0994d1e85cad42488808191f29043c7999e3b01194f9d77642b9f4a9",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/astro-initial"
+    },
+    "kb:astro:planet_sign:Venus:Scorpio": {
+      "content_sha256": "879e13679a5ab64e63821e60cdfcc322b18018612501598ab3a86e5ef2bc7f5d",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/astro-initial"
+    },
+    "kb:astro:planet_sign:Venus:Taurus": {
+      "content_sha256": "b56a5870b8943b9415707ed11444568af890e02dc351c33048949e0eb5182c01",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/astro-initial"
+    },
+    "kb:astro:planet_sign:Venus:Virgo": {
+      "content_sha256": "49d7ebbe07ef25cdb8fa1fef28ebb940a2af66b454f7d1fdb25ca704207635c2",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/astro-rereview-1"
+    },
+    "kb:astro:sign:Aquarius": {
+      "content_sha256": "1ba34b0a8715855ec6bf656b544449e6791a7b0f3277a2d45001bba61e982725",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/astro-initial"
+    },
+    "kb:astro:sign:Aries": {
+      "content_sha256": "2b6574f70922ac374e31dbece0ee27803058f80d239215fed951d582320016d2",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/astro-initial"
+    },
+    "kb:astro:sign:Cancer": {
+      "content_sha256": "80bae46cce373c494e2c87dd3fcccc90025c880da612d013ab40080c4712f980",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/astro-initial"
+    },
+    "kb:astro:sign:Capricorn": {
+      "content_sha256": "96c60dc9b450bcf994c4e9a1cebe778353304e361759be8609a491987ee405e4",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/astro-initial"
+    },
+    "kb:astro:sign:Gemini": {
+      "content_sha256": "03f84850c5ed15142c35b98951dc235b991de2a86ab21f331664df6e8b6d9268",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/astro-initial"
+    },
+    "kb:astro:sign:Leo": {
+      "content_sha256": "543f68d05d5780181e6d6c92e85018153f6b12877d5e272e92d3b0f16cf13f30",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/astro-initial"
+    },
+    "kb:astro:sign:Libra": {
+      "content_sha256": "9191bd240c3066e04e5f6393bf46369caf0f9553d406db14c1b07d3248519b2e",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/astro-initial"
+    },
+    "kb:astro:sign:Pisces": {
+      "content_sha256": "09443947479ce9ba3eca796e542e7258b2aac7d4da2ac58e45a02b4dd5797824",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/astro-initial"
+    },
+    "kb:astro:sign:Sagittarius": {
+      "content_sha256": "4b0ebaa06f49bd4d364d23d18ed563c8d8c531ba72d3f782c051920f0cd532c7",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/astro-initial"
+    },
+    "kb:astro:sign:Scorpio": {
+      "content_sha256": "e1289a0a11c9d5d2c1129334f3afea00a426117601f9fbc4ee55f6228ec280cb",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/astro-initial"
+    },
+    "kb:astro:sign:Taurus": {
+      "content_sha256": "38b16725c3a67e7aadb5be759563f686ece07fcec819ce783c010b8bc5cb0ce0",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/astro-initial"
+    },
+    "kb:astro:sign:Virgo": {
+      "content_sha256": "8fbab97e667860948e9bd6236315c7e4987b9df1cb7bbf6be5f4d585fe42c970",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/astro-initial"
+    },
+    "kb:astro:transit:no_exact_events": {
+      "content_sha256": "f08d2f53ab50453628dce123b9e5fba02864d791159f8918a832ba477bb96390",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/astro-initial"
+    }
+  },
+  "ledger_changes": {
+    "written": 280,
+    "revoked": []
+  },
+  "model_reviewed_count": 280,
+  "effective_draft_count": 0
+}

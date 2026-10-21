@@ -1,0 +1,87 @@
+{
+  "batch": "b023",
+  "reviewer": "reviewer_a",
+  "run_pass": 1,
+  "attempt": 1,
+  "vendor": "deepseek",
+  "requested_model": "deepseek-flash",
+  "returned_model": "deepseek-flash",
+  "api": "openai",
+  "started_at": "2026-10-21T16:01:12+00:00",
+  "finished_at": "2026-10-21T16:01:15+00:00",
+  "latency_s": 2.836,
+  "http_attempts": 1,
+  "finish_reason": "stop",
+  "prompt_sha256": "a31f232f0a2ce449f810ef5ad01b38a720665af95c2b5145bb700831be8a229b",
+  "input_tokens": 2468,
+  "output_tokens": 461,
+  "cached_input_tokens": 384,
+  "usage_available": true,
+  "raw_text": "{\"items\":[{\"item\":\"i01\",\"verdict\":\"pass\",\"issues\":[],\"reason\":\"竹子象征坚韧成长符合传统联想，主题方向为正且文字未宿命化，无敏感结论。\"},{\"item\":\"i02\",\"verdict\":\"pass\",\"issues\":[],\"reason\":\"笑反映轻松与被接纳，主题方向为正，措辞为心理层面且不预示事件。\"},{\"item\":\"i03\",\"verdict\":\"pass\",\"issues\":[],\"reason\":\"箱子与隐藏、出发的联想合理，主题全为0与中性描述一致。\"},{\"item\":\"i04\",\"verdict\":\"pass\",\"issues\":[],\"reason\":\"糖果与奖励、甜蜜、童年相关，self微正与文字一致，措辞平和。\"},{\"item\":\"i05\",\"verdict\":\"pass\",\"issues\":[],\"reason\":\"穿越反映怀念与好奇，主题全0与中性释义一致，无预兆断言。\"},{\"item\":\"i06\",\"verdict\":\"revise\",\"issues\":[{\"dimension\":\"certainty\",\"detail\":\"结尾“这说明你今年一定会遭遇重大失败”是宿命化的确定性断言，与全条免责口吻自相矛盾。\"},{\"dimension\":\"medical_legal_finance\",\"detail\":\"该断言涉及对现实重大负面事件的确定性预测，应删除。\"}],\"reason\":\"末句为宿命化负面断言，需删除，其余释义可保留。\"},{\"item\":\"i07\",\"verdict\":\"pass\",\"issues\":[],\"reason\":\"等待与期待焦虑相关，self/career微负与文字一致，措辞非宿命。\"},{\"item\":\"i08\",\"verdict\":\"pass\",\"issues\":[],\"reason\":\"种树象征为长期目标打基础，主题微正与文字一致。\"},{\"item\":\"i09\",\"verdict\":\"pass\",\"issues\":[],\"reason\":\"窗户象征视角与联系，self微正一致，无确定性结论。\"},{\"item\":\"i10\",\"verdict\":\"pass\",\"issues\":[],\"reason\":\"米饭与基本生活、安稳相关，self与finance微正与文字相符。\"},{\"item\":\"i11\",\"verdict\":\"pass\",\"issues\":[],\"reason\":\"签约与承诺、合作相关，career微正一致，且明确不预示现实。\"}]}",
+  "verdicts": {
+    "i01": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "竹子象征坚韧成长符合传统联想，主题方向为正且文字未宿命化，无敏感结论。"
+    },
+    "i02": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "笑反映轻松与被接纳，主题方向为正，措辞为心理层面且不预示事件。"
+    },
+    "i03": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "箱子与隐藏、出发的联想合理，主题全为0与中性描述一致。"
+    },
+    "i04": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "糖果与奖励、甜蜜、童年相关，self微正与文字一致，措辞平和。"
+    },
+    "i05": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "穿越反映怀念与好奇，主题全0与中性释义一致，无预兆断言。"
+    },
+    "i06": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "certainty",
+          "detail": "结尾“这说明你今年一定会遭遇重大失败”是宿命化的确定性断言，与全条免责口吻自相矛盾。"
+        },
+        {
+          "dimension": "medical_legal_finance",
+          "detail": "该断言涉及对现实重大负面事件的确定性预测，应删除。"
+        }
+      ],
+      "reason": "末句为宿命化负面断言，需删除，其余释义可保留。"
+    },
+    "i07": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "等待与期待焦虑相关，self/career微负与文字一致，措辞非宿命。"
+    },
+    "i08": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "种树象征为长期目标打基础，主题微正与文字一致。"
+    },
+    "i09": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "窗户象征视角与联系，self微正一致，无确定性结论。"
+    },
+    "i10": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "米饭与基本生活、安稳相关，self与finance微正与文字相符。"
+    },
+    "i11": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "签约与承诺、合作相关，career微正一致，且明确不预示现实。"
+    }
+  }
+}

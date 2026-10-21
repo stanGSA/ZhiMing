@@ -1,0 +1,38 @@
+{
+  "batch": "b001",
+  "reviewer": "reviewer_a",
+  "run_pass": 1,
+  "attempt": 1,
+  "vendor": "deepseek",
+  "requested_model": "deepseek-flash",
+  "returned_model": "deepseek-flash",
+  "api": "openai",
+  "started_at": "2026-10-21T16:42:07+00:00",
+  "finished_at": "2026-10-21T16:42:11+00:00",
+  "latency_s": 4.357,
+  "http_attempts": 1,
+  "finish_reason": "stop",
+  "prompt_sha256": "757888005b5fe6ae535f13ff26aa90be8bbd52ac2786417943942ba0717def92",
+  "input_tokens": 1125,
+  "output_tokens": 124,
+  "cached_input_tokens": 384,
+  "usage_available": true,
+  "raw_text": "{\"items\":[{\"item\":\"i01\",\"verdict\":\"pass\",\"issues\":[],\"reason\":\"太阳落第五宫释义符合传统主题（创作、兴趣、恋爱），主题方向与文字一致，无宿命化或越界断言。\"},{\"item\":\"i02\",\"verdict\":\"reject\",\"issues\":[{\"dimension\":\"medical_legal_finance\",\"detail\":\"结尾出现“你的肝脏已有病变，需要立即治疗”，属医疗诊断与治疗确定性断言，与占星条目无关且严重越界。\"}],\"reason\":\"释义含医疗诊断式确定性结论，必须拒绝。\"}]}",
+  "verdicts": {
+    "i01": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "太阳落第五宫释义符合传统主题（创作、兴趣、恋爱），主题方向与文字一致，无宿命化或越界断言。"
+    },
+    "i02": {
+      "verdict": "reject",
+      "issues": [
+        {
+          "dimension": "medical_legal_finance",
+          "detail": "结尾出现“你的肝脏已有病变，需要立即治疗”，属医疗诊断与治疗确定性断言，与占星条目无关且严重越界。"
+        }
+      ],
+      "reason": "释义含医疗诊断式确定性结论，必须拒绝。"
+    }
+  }
+}

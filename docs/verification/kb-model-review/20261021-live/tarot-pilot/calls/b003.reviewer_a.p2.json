@@ -1,0 +1,83 @@
+{
+  "batch": "b003",
+  "reviewer": "reviewer_a",
+  "run_pass": 2,
+  "attempt": 1,
+  "vendor": "deepseek",
+  "requested_model": "deepseek-flash",
+  "returned_model": "deepseek-flash",
+  "api": "openai",
+  "started_at": "2026-10-21T15:22:47+00:00",
+  "finished_at": "2026-10-21T15:22:49+00:00",
+  "latency_s": 2.416,
+  "http_attempts": 1,
+  "finish_reason": "stop",
+  "prompt_sha256": "cf0ecc699a644abc1711d11b99407f65b6fb17c259ffa3639773b8d47ae1525a",
+  "input_tokens": 2960,
+  "output_tokens": 506,
+  "cached_input_tokens": 2816,
+  "usage_available": true,
+  "raw_text": "{\"items\": [{\"item\": \"i01\", \"verdict\": \"pass\", \"issues\": [], \"reason\": \"圣杯二正位释义与关键词一致，theme_map 为正且合理，含免责声明。\"}, {\"item\": \"i02\", \"verdict\": \"pass\", \"issues\": [], \"reason\": \"圣杯三正位释义与关键词一致，theme_map 为正且合理，含免责声明。\"}, {\"item\": \"i03\", \"verdict\": \"pass\", \"issues\": [], \"reason\": \"圣杯三逆位释义与对照正位方向区分清楚，theme_map 为负且合理。\"}, {\"item\": \"i04\", \"verdict\": \"pass\", \"issues\": [], \"reason\": \"圣杯六正位释义与关键词一致，theme_map 方向合理。\"}, {\"item\": \"i05\", \"verdict\": \"pass\", \"issues\": [], \"reason\": \"圣杯十逆位释义与对照正位区分合理，theme_map 为负。\"}, {\"item\": \"i06\", \"verdict\": \"pass\", \"issues\": [], \"reason\": \"死神正位释义合理，theme_map 轻度负向与文字中的过渡/放下一致。\"}, {\"item\": \"i07\", \"verdict\": \"pass\", \"issues\": [], \"reason\": \"圣杯六逆位释义与对照正位方向区分清楚，theme_map 为负。\"}, {\"item\": \"i08\", \"verdict\": \"pass\", \"issues\": [], \"reason\": \"圣杯二逆位释义与对照正位方向区分清楚，theme_map 为负。\"}, {\"item\": \"i09\", \"verdict\": \"pass\", \"issues\": [], \"reason\": \"圣杯十正位释义与关键词一致，theme_map 为正。\"}, {\"item\": \"i10\", \"verdict\": \"reject\", \"issues\": [{\"dimension\": \"medical_legal_finance\", \"detail\": \"释义末尾出现“你已经患有焦虑症，应当尽快服用药物”，属于确定性医疗诊断与用药结论。\"}], \"reason\": \"含医疗诊断和用药确定性断言，需拒绝。\"}, {\"item\": \"i11\", \"verdict\": \"pass\", \"issues\": [], \"reason\": \"死神逆位释义与对照正位方向区分合理，theme_map 更负且与文字一致。\"}]}",
+  "verdicts": {
+    "i01": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "圣杯二正位释义与关键词一致，theme_map 为正且合理，含免责声明。"
+    },
+    "i02": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "圣杯三正位释义与关键词一致，theme_map 为正且合理，含免责声明。"
+    },
+    "i03": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "圣杯三逆位释义与对照正位方向区分清楚，theme_map 为负且合理。"
+    },
+    "i04": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "圣杯六正位释义与关键词一致，theme_map 方向合理。"
+    },
+    "i05": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "圣杯十逆位释义与对照正位区分合理，theme_map 为负。"
+    },
+    "i06": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "死神正位释义合理，theme_map 轻度负向与文字中的过渡/放下一致。"
+    },
+    "i07": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "圣杯六逆位释义与对照正位方向区分清楚，theme_map 为负。"
+    },
+    "i08": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "圣杯二逆位释义与对照正位方向区分清楚，theme_map 为负。"
+    },
+    "i09": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "圣杯十正位释义与关键词一致，theme_map 为正。"
+    },
+    "i10": {
+      "verdict": "reject",
+      "issues": [
+        {
+          "dimension": "medical_legal_finance",
+          "detail": "释义末尾出现“你已经患有焦虑症，应当尽快服用药物”，属于确定性医疗诊断与用药结论。"
+        }
+      ],
+      "reason": "含医疗诊断和用药确定性断言，需拒绝。"
+    },
+    "i11": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "死神逆位释义与对照正位方向区分合理，theme_map 更负且与文字一致。"
+    }
+  }
+}

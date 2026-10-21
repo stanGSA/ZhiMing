@@ -1,0 +1,137 @@
+{
+  "batch": "b006",
+  "reviewer": "reviewer_a",
+  "run_pass": 2,
+  "attempt": 1,
+  "vendor": "deepseek",
+  "requested_model": "deepseek-flash",
+  "returned_model": "deepseek-flash",
+  "api": "openai",
+  "started_at": "2026-10-21T16:09:43+00:00",
+  "finished_at": "2026-10-21T16:09:48+00:00",
+  "latency_s": 4.521,
+  "http_attempts": 1,
+  "finish_reason": "stop",
+  "prompt_sha256": "504a755c7c57e73f807b914de47fb08a4b60b64b2cdea674982d8ef782524681",
+  "input_tokens": 2057,
+  "output_tokens": 990,
+  "cached_input_tokens": 1920,
+  "usage_available": true,
+  "raw_text": "{\"items\": [{\"item\": \"i01\", \"verdict\": \"revise\", \"issues\": [{\"dimension\": \"consistency\", \"detail\": \"theme_map 四项全为 0，但释义文字提到'行动与竞争的表达'，未给出任何主题倾向；若意在保持中性可接受，但'社群与长期愿景'对应 self/career/relationship 至少应有方向，当前留空导致与文字方向不匹配\"}], \"reason\": \"文字含有可对应主题的取向，但 theme_map 全为 0，方向与文字不一致。\"}, {\"item\": \"i02\", \"verdict\": \"revise\", \"issues\": [{\"dimension\": \"plain_language\", \"detail\": \"'学习与扩展'与前半句'远行、学习与视野'重复且表述生硬，白话解释不够清楚\"}, {\"dimension\": \"consistency\", \"detail\": \"theme_map 全为 0，但'学习与扩展'暗示正向，方向与文字不一致\"}], \"reason\": \"措辞重复且 theme_map 全为 0 与文字的正向暗示不符。\"}, {\"item\": \"i03\", \"verdict\": \"revise\", \"issues\": [{\"dimension\": \"tradition\", \"detail\": \"火星落第4宫传统上侧重家庭冲突或内在动力，释义仅泛写'行动与竞争的表达'，未体现第4宫的家庭主题方向\"}, {\"dimension\": \"consistency\", \"detail\": \"theme_map 全为 0，但文字暗示可观察的主题，方向未体现\"}], \"reason\": \"第4宫主题未在 theme_map 中体现方向，文字过于笼统。\"}, {\"item\": \"i04\", \"verdict\": \"revise\", \"issues\": [{\"dimension\": \"consistency\", \"detail\": \"theme_map 全为 0，但'学习和日常沟通'通常对应 self/career 有方向，未体现\"}, {\"dimension\": \"plain_language\", \"detail\": \"'学习和日常沟通'表述不够顺畅\"}], \"reason\": \"theme_map 全为 0 与文字暗示的主题方向不一致。\"}, {\"item\": \"i05\", \"verdict\": \"revise\", \"issues\": [{\"dimension\": \"tradition\", \"detail\": \"木星落第8宫传统上强调他人资源、继承与借贷，释义'共享资源与信任'尚可，但'较容易从合作、共享资源或他人支持中受益'接近受益断言，宿命化风险\"}, {\"dimension\": \"certainty\", \"detail\": \"'较容易……受益'易被读作确定受益，建议改为倾向性表述\"}], \"reason\": \"财务受益表述偏确定性，需要弱化为倾向描述。\"}, {\"item\": \"i06\", \"verdict\": \"pass\", \"issues\": [], \"reason\": \"火星5宫感情方向 -0.15 与'容易急躁起冲突'一致，措辞为可能性描述，可原样使用。\"}, {\"item\": \"i07\", \"verdict\": \"revise\", \"issues\": [{\"dimension\": \"consistency\", \"detail\": \"theme_map 全为 0，但'自我呈现'对应 self，未给出方向\"}, {\"dimension\": \"plain_language\", \"detail\": \"'自我呈现'较笼统，缺少对火星1宫冲劲的白话说明\"}], \"reason\": \"theme_map 全为 0 与文字暗示的 self 主题不符。\"}, {\"item\": \"i08\", \"verdict\": \"revise\", \"issues\": [{\"dimension\": \"consistency\", \"detail\": \"theme_map 全为 0，但'职业与公共责任'应对应 career 方向，未体现\"}], \"reason\": \"文字涉及事业主题，但 theme_map 全为 0，方向不一致。\"}, {\"item\": \"i09\", \"verdict\": \"pass\", \"issues\": [], \"reason\": \"火星2宫财务方向 -0.15 与'冲动支出'一致，有冷静提醒，可原样使用。\"}, {\"item\": \"i10\", \"verdict\": \"revise\", \"issues\": [{\"dimension\": \"tradition\", \"detail\": \"火星落12宫传统上侧重隐藏的冲动或压抑的行动力，释义只说'休整与内在反思'，未体现火星的行动特质\"}, {\"dimension\": \"consistency\", \"detail\": \"theme_map 全为 0，文字暗示 self 主题却无方向\"}], \"reason\": \"未体现火星在12宫的传统张力，theme_map 也未给方向。\"}]}",
+  "verdicts": {
+    "i01": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "consistency",
+          "detail": "theme_map 四项全为 0，但释义文字提到'行动与竞争的表达'，未给出任何主题倾向；若意在保持中性可接受，但'社群与长期愿景'对应 self/career/relationship 至少应有方向，当前留空导致与文字方向不匹配"
+        }
+      ],
+      "reason": "文字含有可对应主题的取向，但 theme_map 全为 0，方向与文字不一致。"
+    },
+    "i02": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "plain_language",
+          "detail": "'学习与扩展'与前半句'远行、学习与视野'重复且表述生硬，白话解释不够清楚"
+        },
+        {
+          "dimension": "consistency",
+          "detail": "theme_map 全为 0，但'学习与扩展'暗示正向，方向与文字不一致"
+        }
+      ],
+      "reason": "措辞重复且 theme_map 全为 0 与文字的正向暗示不符。"
+    },
+    "i03": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "tradition",
+          "detail": "火星落第4宫传统上侧重家庭冲突或内在动力，释义仅泛写'行动与竞争的表达'，未体现第4宫的家庭主题方向"
+        },
+        {
+          "dimension": "consistency",
+          "detail": "theme_map 全为 0，但文字暗示可观察的主题，方向未体现"
+        }
+      ],
+      "reason": "第4宫主题未在 theme_map 中体现方向，文字过于笼统。"
+    },
+    "i04": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "consistency",
+          "detail": "theme_map 全为 0，但'学习和日常沟通'通常对应 self/career 有方向，未体现"
+        },
+        {
+          "dimension": "plain_language",
+          "detail": "'学习和日常沟通'表述不够顺畅"
+        }
+      ],
+      "reason": "theme_map 全为 0 与文字暗示的主题方向不一致。"
+    },
+    "i05": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "tradition",
+          "detail": "木星落第8宫传统上强调他人资源、继承与借贷，释义'共享资源与信任'尚可，但'较容易从合作、共享资源或他人支持中受益'接近受益断言，宿命化风险"
+        },
+        {
+          "dimension": "certainty",
+          "detail": "'较容易……受益'易被读作确定受益，建议改为倾向性表述"
+        }
+      ],
+      "reason": "财务受益表述偏确定性，需要弱化为倾向描述。"
+    },
+    "i06": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "火星5宫感情方向 -0.15 与'容易急躁起冲突'一致，措辞为可能性描述，可原样使用。"
+    },
+    "i07": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "consistency",
+          "detail": "theme_map 全为 0，但'自我呈现'对应 self，未给出方向"
+        },
+        {
+          "dimension": "plain_language",
+          "detail": "'自我呈现'较笼统，缺少对火星1宫冲劲的白话说明"
+        }
+      ],
+      "reason": "theme_map 全为 0 与文字暗示的 self 主题不符。"
+    },
+    "i08": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "consistency",
+          "detail": "theme_map 全为 0，但'职业与公共责任'应对应 career 方向，未体现"
+        }
+      ],
+      "reason": "文字涉及事业主题，但 theme_map 全为 0，方向不一致。"
+    },
+    "i09": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "火星2宫财务方向 -0.15 与'冲动支出'一致，有冷静提醒，可原样使用。"
+    },
+    "i10": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "tradition",
+          "detail": "火星落12宫传统上侧重隐藏的冲动或压抑的行动力，释义只说'休整与内在反思'，未体现火星的行动特质"
+        },
+        {
+          "dimension": "consistency",
+          "detail": "theme_map 全为 0，文字暗示 self 主题却无方向"
+        }
+      ],
+      "reason": "未体现火星在12宫的传统张力，theme_map 也未给方向。"
+    }
+  }
+}

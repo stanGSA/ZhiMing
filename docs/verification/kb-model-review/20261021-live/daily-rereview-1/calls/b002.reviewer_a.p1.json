@@ -1,0 +1,41 @@
+{
+  "batch": "b002",
+  "reviewer": "reviewer_a",
+  "run_pass": 1,
+  "attempt": 1,
+  "vendor": "deepseek",
+  "requested_model": "deepseek-flash",
+  "returned_model": "deepseek-flash",
+  "api": "openai",
+  "started_at": "2026-10-21T16:04:36+00:00",
+  "finished_at": "2026-10-21T16:04:37+00:00",
+  "latency_s": 1.91,
+  "http_attempts": 1,
+  "finish_reason": "stop",
+  "prompt_sha256": "901da510831dfb8e83cf4f653ac8f3fc6f3e55fa35b0121bfa8d460a0c835a13",
+  "input_tokens": 707,
+  "output_tokens": 176,
+  "cached_input_tokens": 384,
+  "usage_available": true,
+  "raw_text": "{\"items\": [{\"item\": \"i01\", \"verdict\": \"reject\", \"issues\": [{\"dimension\": \"medical_legal_finance\", \"detail\": \"释义末尾出现“你已经患有焦虑症，应当尽快服用药物”，属于无依据的医疗诊断并给出用药结论。\"}, {\"dimension\": \"tradition\", \"detail\": \"该段与条目核心“无精确相位事件”的说明无关，且内容是医疗断言，与占卜/自我反思功能不符。\"}, {\"dimension\": \"consistency\", \"detail\": \"text 首句为相位免责说明，末句却转为疾病诊断，前后内容与 key 不协调、自相矛盾。\"}], \"reason\": \"条目夹带无依据的焦虑症诊断与服药建议，属医疗确定性结论，须拒绝。\"}]}",
+  "verdicts": {
+    "i01": {
+      "verdict": "reject",
+      "issues": [
+        {
+          "dimension": "medical_legal_finance",
+          "detail": "释义末尾出现“你已经患有焦虑症，应当尽快服用药物”，属于无依据的医疗诊断并给出用药结论。"
+        },
+        {
+          "dimension": "tradition",
+          "detail": "该段与条目核心“无精确相位事件”的说明无关，且内容是医疗断言，与占卜/自我反思功能不符。"
+        },
+        {
+          "dimension": "consistency",
+          "detail": "text 首句为相位免责说明，末句却转为疾病诊断，前后内容与 key 不协调、自相矛盾。"
+        }
+      ],
+      "reason": "条目夹带无依据的焦虑症诊断与服药建议，属医疗确定性结论，须拒绝。"
+    }
+  }
+}

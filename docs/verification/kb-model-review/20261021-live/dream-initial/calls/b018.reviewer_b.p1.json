@@ -1,0 +1,116 @@
+{
+  "batch": "b018",
+  "reviewer": "reviewer_b",
+  "run_pass": 1,
+  "attempt": 1,
+  "vendor": "openai",
+  "requested_model": "gpt-6.1-sol",
+  "returned_model": "gpt-6.1-sol",
+  "api": "openai",
+  "started_at": "2026-10-21T16:06:05+00:00",
+  "finished_at": "2026-10-21T16:06:49+00:00",
+  "latency_s": 44.04,
+  "http_attempts": 1,
+  "finish_reason": "stop",
+  "prompt_sha256": "8db39b3c4594f1c1f0dd997495930794442866a1b5aebafe206fe4d765169139",
+  "input_tokens": 2786,
+  "output_tokens": 1286,
+  "cached_input_tokens": null,
+  "usage_available": true,
+  "raw_text": "{\n  \"items\": [\n    {\n      \"item\": \"i01\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"释义平和且无健康诊断，轻微负向的自我倾向与精力消耗、情绪受伤的文字一致。\"\n    },\n    {\n      \"item\": \"i02\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"友善、灵动与轻松交流的联想合理，自我及关系的正向倾向与文字一致。\"\n    },\n    {\n      \"item\": \"i03\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"释义兼顾放松、逃避与规则感，没有单一顺阻方向，中性主题设置合理。\"\n    },\n    {\n      \"item\": \"i04\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"可控范围内体验情绪的解释合理，与轻微正向的自我倾向相容。\"\n    },\n    {\n      \"item\": \"i05\",\n      \"verdict\": \"revise\",\n      \"issues\": [\n        {\n          \"dimension\": \"theme_direction\",\n          \"detail\": \"文字讨论处理情绪的方式、自在程度及压力，并未明确偏向适应良好或状态改善，self 却设为正向；建议改为中性，或补充支持正向倾向的描述。\"\n        }\n      ],\n      \"reason\": \"释义整体中性，尚不足以支持自我主题的正向设置。\"\n    },\n    {\n      \"item\": \"i06\",\n      \"verdict\": \"revise\",\n      \"issues\": [\n        {\n          \"dimension\": \"consistency\",\n          \"detail\": \"“洗头”可作为独立梦境动作，不等同于洗澡，列为同义词可能将仅洗头的梦误匹配到本条；建议移除或单独设条。\"\n        }\n      ],\n      \"reason\": \"核心释义合理，但同义词包含不等同于洗澡的独立意象。\"\n    },\n    {\n      \"item\": \"i07\",\n      \"verdict\": \"reject\",\n      \"issues\": [\n        {\n          \"dimension\": \"medical_legal_finance\",\n          \"detail\": \"“说明你的肝脏已有病变，需要立即治疗”依据梦境作出确定性疾病判断及治疗要求，属于无依据的医疗结论。\"\n        },\n        {\n          \"dimension\": \"certainty\",\n          \"detail\": \"将梦中意象直接断言为现实器官病变的证据，属于确定性断言。\"\n        },\n        {\n          \"dimension\": \"consistency\",\n          \"detail\": \"泥石流、山体滑坡与塌方是不同现象，不能直接互作同义词，否则可能误匹配其他灾害意象。\"\n        }\n      ],\n      \"reason\": \"条目含依据梦境诊断肝脏病变的确定性医疗结论，不能作为用户释义使用。\"\n    },\n    {\n      \"item\": \"i08\",\n      \"verdict\": \"revise\",\n      \"issues\": [\n        {\n          \"dimension\": \"consistency\",\n          \"detail\": \"“海啸”是不同于一般海浪的灾害意象，不宜直接作为同义词；单字“浪”也有歧义，建议使用明确的海浪表达并按语境匹配。\"\n        }\n      ],\n      \"reason\": \"释义及负向倾向合理，但同义词范围过宽，可能混入其他意象。\"\n    },\n    {\n      \"item\": \"i09\",\n      \"verdict\": \"revise\",\n      \"issues\": [\n        {\n          \"dimension\": \"consistency\",\n          \"detail\": \"“涨水”仅表示水位上升，不一定构成洪水；作为无条件同义词可能把普通水位变化误判为洪灾，建议移除或增加灾害语境限制。\"\n        }\n      ],\n      \"reason\": \"释义与负向主题一致，但“涨水”的匹配范围宽于洪水。\"\n    },\n    {\n      \"item\": \"i10\",\n      \"verdict\": \"revise\",\n      \"issues\": [\n        {\n          \"dimension\": \"consistency\",\n          \"detail\": \"屋顶、房屋漏水通常属于居住环境或设施问题，关键词“自然”及“自然景象”的套用不贴切；建议改为居住环境类表述。\"\n        }\n      ],\n      \"reason\": \"核心心理联想与负向倾向一致，但意象分类及配套说明不准确。\"\n    },\n    {\n      \"item\": \"i11\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"平静与内省的联想合理，轻微正向的自我倾向与文字一致，且未作预兆性断言。\"\n    }\n  ]\n}",
+  "verdicts": {
+    "i01": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "释义平和且无健康诊断，轻微负向的自我倾向与精力消耗、情绪受伤的文字一致。"
+    },
+    "i02": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "友善、灵动与轻松交流的联想合理，自我及关系的正向倾向与文字一致。"
+    },
+    "i03": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "释义兼顾放松、逃避与规则感，没有单一顺阻方向，中性主题设置合理。"
+    },
+    "i04": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "可控范围内体验情绪的解释合理，与轻微正向的自我倾向相容。"
+    },
+    "i05": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "theme_direction",
+          "detail": "文字讨论处理情绪的方式、自在程度及压力，并未明确偏向适应良好或状态改善，self 却设为正向；建议改为中性，或补充支持正向倾向的描述。"
+        }
+      ],
+      "reason": "释义整体中性，尚不足以支持自我主题的正向设置。"
+    },
+    "i06": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "consistency",
+          "detail": "“洗头”可作为独立梦境动作，不等同于洗澡，列为同义词可能将仅洗头的梦误匹配到本条；建议移除或单独设条。"
+        }
+      ],
+      "reason": "核心释义合理，但同义词包含不等同于洗澡的独立意象。"
+    },
+    "i07": {
+      "verdict": "reject",
+      "issues": [
+        {
+          "dimension": "medical_legal_finance",
+          "detail": "“说明你的肝脏已有病变，需要立即治疗”依据梦境作出确定性疾病判断及治疗要求，属于无依据的医疗结论。"
+        },
+        {
+          "dimension": "certainty",
+          "detail": "将梦中意象直接断言为现实器官病变的证据，属于确定性断言。"
+        },
+        {
+          "dimension": "consistency",
+          "detail": "泥石流、山体滑坡与塌方是不同现象，不能直接互作同义词，否则可能误匹配其他灾害意象。"
+        }
+      ],
+      "reason": "条目含依据梦境诊断肝脏病变的确定性医疗结论，不能作为用户释义使用。"
+    },
+    "i08": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "consistency",
+          "detail": "“海啸”是不同于一般海浪的灾害意象，不宜直接作为同义词；单字“浪”也有歧义，建议使用明确的海浪表达并按语境匹配。"
+        }
+      ],
+      "reason": "释义及负向倾向合理，但同义词范围过宽，可能混入其他意象。"
+    },
+    "i09": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "consistency",
+          "detail": "“涨水”仅表示水位上升，不一定构成洪水；作为无条件同义词可能把普通水位变化误判为洪灾，建议移除或增加灾害语境限制。"
+        }
+      ],
+      "reason": "释义与负向主题一致，但“涨水”的匹配范围宽于洪水。"
+    },
+    "i10": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "consistency",
+          "detail": "屋顶、房屋漏水通常属于居住环境或设施问题，关键词“自然”及“自然景象”的套用不贴切；建议改为居住环境类表述。"
+        }
+      ],
+      "reason": "核心心理联想与负向倾向一致，但意象分类及配套说明不准确。"
+    },
+    "i11": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "平静与内省的联想合理，轻微正向的自我倾向与文字一致，且未作预兆性断言。"
+    }
+  }
+}

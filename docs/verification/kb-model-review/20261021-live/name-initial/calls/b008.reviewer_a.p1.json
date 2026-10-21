@@ -1,0 +1,83 @@
+{
+  "batch": "b008",
+  "reviewer": "reviewer_a",
+  "run_pass": 1,
+  "attempt": 1,
+  "vendor": "deepseek",
+  "requested_model": "deepseek-flash",
+  "returned_model": "deepseek-flash",
+  "api": "openai",
+  "started_at": "2026-10-21T16:00:48+00:00",
+  "finished_at": "2026-10-21T16:00:51+00:00",
+  "latency_s": 2.774,
+  "http_attempts": 1,
+  "finish_reason": "stop",
+  "prompt_sha256": "0d9cdec25d9c833be852524d7fcbe17429d9eb5250c86b7f066dee6bc35595e3",
+  "input_tokens": 2975,
+  "output_tokens": 482,
+  "cached_input_tokens": 384,
+  "usage_available": true,
+  "raw_text": "{\"items\": [{\"item\": \"i01\", \"verdict\": \"pass\", \"issues\": [], \"reason\": \"三才配置与五行生克描述一致，主题方向为温和负值/中性，无宿命化断言。\"}, {\"item\": \"i02\", \"verdict\": \"pass\", \"issues\": [], \"reason\": \"五行关系描述正确，方向与文字相符，措辞留有余地。\"}, {\"item\": \"i03\", \"verdict\": \"pass\", \"issues\": [], \"reason\": \"三才关系与文字一致，主题方向合理，无确定性断言。\"}, {\"item\": \"i04\", \"verdict\": \"pass\", \"issues\": [], \"reason\": \"生克描述与key一致，方向与文字相符。\"}, {\"item\": \"i05\", \"verdict\": \"pass\", \"issues\": [], \"reason\": \"五行关系准确，主题方向与文字一致。\"}, {\"item\": \"i06\", \"verdict\": \"pass\", \"issues\": [], \"reason\": \"张力较多的判断与两处被克关系一致，方向均为负值。\"}, {\"item\": \"i07\", \"verdict\": \"pass\", \"issues\": [], \"reason\": \"两处相生关系支撑较顺判断，方向均为正值。\"}, {\"item\": \"i08\", \"verdict\": \"pass\", \"issues\": [], \"reason\": \"被克与克的关系对应张力较多，方向一致。\"}, {\"item\": \"i09\", \"verdict\": \"revise\", \"issues\": [{\"dimension\": \"consistency\", \"detail\": \"key为“金水土”，但正文首句写成“金木水（金木水）的释义”，天格却写金、人格木、地格水，与key金水土不符，疑为复制残留。\"}], \"reason\": \"正文首句牌名与key不一致，含多余重复文字，需修正。\"}, {\"item\": \"i10\", \"verdict\": \"pass\", \"issues\": [], \"reason\": \"生与同的关系对应较顺，方向一致。\"}, {\"item\": \"i11\", \"verdict\": \"pass\", \"issues\": [], \"reason\": \"两处相生关系与较顺判断一致，方向合理。\"}]}",
+  "verdicts": {
+    "i01": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "三才配置与五行生克描述一致，主题方向为温和负值/中性，无宿命化断言。"
+    },
+    "i02": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "五行关系描述正确，方向与文字相符，措辞留有余地。"
+    },
+    "i03": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "三才关系与文字一致，主题方向合理，无确定性断言。"
+    },
+    "i04": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "生克描述与key一致，方向与文字相符。"
+    },
+    "i05": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "五行关系准确，主题方向与文字一致。"
+    },
+    "i06": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "张力较多的判断与两处被克关系一致，方向均为负值。"
+    },
+    "i07": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "两处相生关系支撑较顺判断，方向均为正值。"
+    },
+    "i08": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "被克与克的关系对应张力较多，方向一致。"
+    },
+    "i09": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "consistency",
+          "detail": "key为“金水土”，但正文首句写成“金木水（金木水）的释义”，天格却写金、人格木、地格水，与key金水土不符，疑为复制残留。"
+        }
+      ],
+      "reason": "正文首句牌名与key不一致，含多余重复文字，需修正。"
+    },
+    "i10": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "生与同的关系对应较顺，方向一致。"
+    },
+    "i11": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "两处相生关系与较顺判断一致，方向合理。"
+    }
+  }
+}

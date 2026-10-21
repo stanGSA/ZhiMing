@@ -1,0 +1,93 @@
+{
+  "batch": "b014",
+  "reviewer": "reviewer_b",
+  "run_pass": 2,
+  "attempt": 1,
+  "vendor": "openai",
+  "requested_model": "gpt-6.1-sol",
+  "returned_model": "gpt-6.1-sol",
+  "api": "openai",
+  "started_at": "2026-10-21T16:19:37+00:00",
+  "finished_at": "2026-10-21T16:20:01+00:00",
+  "latency_s": 24.231,
+  "http_attempts": 1,
+  "finish_reason": "stop",
+  "prompt_sha256": "78b69fe580c37db9bbd0c4e0f452a9068557faf8250f1f3dfe32b94db65ce250",
+  "input_tokens": 2699,
+  "output_tokens": 944,
+  "cached_input_tokens": 2696,
+  "usage_available": true,
+  "raw_text": "{\n  \"items\": [\n    {\n      \"item\": \"i01\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"释义符合明星意象的常见心理联想，主题倾向温和且无预兆性断言。\"\n    },\n    {\n      \"item\": \"i02\",\n      \"verdict\": \"revise\",\n      \"issues\": [\n        {\n          \"dimension\": \"consistency\",\n          \"detail\": \"同义词“满天星”也指花卉，可能误命中植物意象；“流星”是具有独立特征的意象，不宜直接作为“星星”的同义词，建议移除或单独区分。\"\n        }\n      ],\n      \"reason\": \"释义本身可用，但同义词设置可能混淆不同梦境意象。\"\n    },\n    {\n      \"item\": \"i03\",\n      \"verdict\": \"reject\",\n      \"issues\": [\n        {\n          \"dimension\": \"consistency\",\n          \"detail\": \"key、同义词和关键词均指向“草”，正文却明确解释“高山（山）”，条目对象与释义完全不符。\"\n        }\n      ],\n      \"reason\": \"正文写成了山的释义，需重新撰写草的释义。\"\n    },\n    {\n      \"item\": \"i04\",\n      \"verdict\": \"revise\",\n      \"issues\": [\n        {\n          \"dimension\": \"consistency\",\n          \"detail\": \"“新娘”不是“新郎”的同义词，会将不同人物角色误匹配到本条，建议移除或另设条目。\"\n        }\n      ],\n      \"reason\": \"释义与新郎意象基本一致，但同义词混淆了新郎和新娘。\"\n    },\n    {\n      \"item\": \"i05\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"责任感与助人愿望的解释合理，自我和关系的轻度正向倾向与正文一致。\"\n    },\n    {\n      \"item\": \"i06\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"旅行与转换视角、探索可能性的联想合理，自我主题的正向倾向与文字一致。\"\n    },\n    {\n      \"item\": \"i07\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"旗帜与信念、归属和目标的联系合理，主题倾向与措辞相容且保留了情境空间。\"\n    },\n    {\n      \"item\": \"i08\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"日落与结束、怀旧或休息的联想平和，中性主题设置与正文一致。\"\n    },\n    {\n      \"item\": \"i09\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"春天象征新生与希望符合常见理解，自我主题正向且不涉及现实预兆。\"\n    },\n    {\n      \"item\": \"i10\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"教堂与仪式、承诺及安慰的联系合理，自我和关系的轻度正向倾向与文字相容。\"\n    },\n    {\n      \"item\": \"i11\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"时钟与时间压力、截止期限的联想合理，自我和事业的轻度负向倾向与正文一致。\"\n    }\n  ]\n}",
+  "verdicts": {
+    "i01": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "释义符合明星意象的常见心理联想，主题倾向温和且无预兆性断言。"
+    },
+    "i02": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "consistency",
+          "detail": "同义词“满天星”也指花卉，可能误命中植物意象；“流星”是具有独立特征的意象，不宜直接作为“星星”的同义词，建议移除或单独区分。"
+        }
+      ],
+      "reason": "释义本身可用，但同义词设置可能混淆不同梦境意象。"
+    },
+    "i03": {
+      "verdict": "reject",
+      "issues": [
+        {
+          "dimension": "consistency",
+          "detail": "key、同义词和关键词均指向“草”，正文却明确解释“高山（山）”，条目对象与释义完全不符。"
+        }
+      ],
+      "reason": "正文写成了山的释义，需重新撰写草的释义。"
+    },
+    "i04": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "consistency",
+          "detail": "“新娘”不是“新郎”的同义词，会将不同人物角色误匹配到本条，建议移除或另设条目。"
+        }
+      ],
+      "reason": "释义与新郎意象基本一致，但同义词混淆了新郎和新娘。"
+    },
+    "i05": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "责任感与助人愿望的解释合理，自我和关系的轻度正向倾向与正文一致。"
+    },
+    "i06": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "旅行与转换视角、探索可能性的联想合理，自我主题的正向倾向与文字一致。"
+    },
+    "i07": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "旗帜与信念、归属和目标的联系合理，主题倾向与措辞相容且保留了情境空间。"
+    },
+    "i08": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "日落与结束、怀旧或休息的联想平和，中性主题设置与正文一致。"
+    },
+    "i09": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "春天象征新生与希望符合常见理解，自我主题正向且不涉及现实预兆。"
+    },
+    "i10": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "教堂与仪式、承诺及安慰的联系合理，自我和关系的轻度正向倾向与文字相容。"
+    },
+    "i11": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "时钟与时间压力、截止期限的联想合理，自我和事业的轻度负向倾向与正文一致。"
+    }
+  }
+}

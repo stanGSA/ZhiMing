@@ -27,6 +27,16 @@ NORMALISATIONS = {
 }
 
 
+# Heads that end with, or are spelt with, other symbols' aliases but name a different thing:
+# 熊猫 is neither a bear nor a cat, 电动车 is not a 动车 train, 雪花 is not a flower. The 2026-10
+# review removed them as synonyms (stage1 acceptance, dream-alias-regression.json); without
+# this they fell through to containment and were interpreted as the wrong symbol. They stay
+# unmatched, and so are never interpreted, until the knowledge base gives them an alias.
+DISTINCT_HEADS = ("熊猫", "雪花", "电动车", "鬼压床", "冰山")
+# A fragment that drops the object of the alias it belongs to (丢了 is not 钥匙丢了).
+BARE_FRAGMENTS = frozenset({"丢了"})
+
+
 def bigrams(text: str) -> list[str]:
     text = re.sub(r"\s+", "", text)
     return [text[i : i + 2] for i in range(len(text) - 1)] or ([text] if text else [])
@@ -78,6 +88,13 @@ class DreamMatcher:
         if stripped and stripped in self.aliases:
             key = self.aliases[stripped]
             return dict(query=query, key=key, alias=stripped, method="synonym", score=1.0)
+        if query in BARE_FRAGMENTS or any(
+            text.endswith(head)
+            for text in (query, stripped)
+            for head in DISTINCT_HEADS
+            if head not in self.aliases
+        ):
+            return dict(query=query, key=None, method="unmatched", score=0.0)
         best = None
         for alias, key in self.aliases.items():
             score = containment(query, alias)
@@ -107,6 +124,13 @@ class DreamMatcher:
         """Longest non-overlapping alias occurrences: (start, end, alias, key)."""
         taken = [False] * len(text)
         found = []
+        # A distinct head is one object: 熊猫 yields neither 熊 nor 猫.
+        for head in DISTINCT_HEADS:
+            start = -1 if head in self.aliases else text.find(head)
+            while start != -1:
+                for i in range(start, start + len(head)):
+                    taken[i] = True
+                start = text.find(head, start + 1)
         for alias in sorted(self.aliases, key=len, reverse=True):
             start = text.find(alias)
             while start != -1:

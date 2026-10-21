@@ -1,0 +1,314 @@
+{
+  "ok": true,
+  "checks": [
+    {
+      "name": "python_3_11",
+      "ok": true,
+      "detail": "3.11.17",
+      "required": true
+    },
+    {
+      "name": "sqlite_fts5",
+      "ok": true,
+      "required": true,
+      "sqlite_version": "3.53.1"
+    },
+    {
+      "name": "iana_timezone",
+      "ok": true,
+      "required": true,
+      "detail": "系统IANA数据或锁定tzdata；出生时间通过历史规则解析"
+    },
+    {
+      "name": "swisseph",
+      "ok": true,
+      "required": true,
+      "detail": "第二周星盘插件依赖"
+    },
+    {
+      "name": "tarot_kb",
+      "ok": true,
+      "detail": {
+        "kb_version": "v1-c0c1725272723b2e",
+        "entries": 1171,
+        "card_states": 156,
+        "positions": 7,
+        "coverage": 1.0,
+        "reviewed_count": 0,
+        "reviewed_rate": 0.0,
+        "review_status": {
+          "counts": {
+            "draft": 720,
+            "model_reviewed": 451,
+            "human_reviewed": 0
+          },
+          "rates": {
+            "draft": 0.6149,
+            "model_reviewed": 0.3851,
+            "human_reviewed": 0.0
+          }
+        },
+        "review_ledger": {
+          "current": 451,
+          "stale": 0,
+          "orphan": 0
+        },
+        "checks": {
+          "count": 17,
+          "by_check": {
+            "tarot_same_direction": 17
+          }
+        },
+        "missing": [],
+        "partitions": {
+          "astro": {
+            "entries": 280,
+            "expected": 280,
+            "coverage": 1.0,
+            "reviewed_rate": 0.0,
+            "review_status": {
+              "counts": {
+                "draft": 0,
+                "model_reviewed": 280,
+                "human_reviewed": 0
+              },
+              "rates": {
+                "draft": 0.0,
+                "model_reviewed": 1.0,
+                "human_reviewed": 0.0
+              }
+            }
+          },
+          "bazi": {
+            "entries": 141,
+            "expected": 141,
+            "coverage": 1.0,
+            "reviewed_rate": 0.0,
+            "review_status": {
+              "counts": {
+                "draft": 141,
+                "model_reviewed": 0,
+                "human_reviewed": 0
+              },
+              "rates": {
+                "draft": 1.0,
+                "model_reviewed": 0.0,
+                "human_reviewed": 0.0
+              }
+            }
+          },
+          "daily": {
+            "entries": 9,
+            "expected": 9,
+            "coverage": 1.0,
+            "reviewed_rate": 0.0,
+            "review_status": {
+              "counts": {
+                "draft": 0,
+                "model_reviewed": 9,
+                "human_reviewed": 0
+              },
+              "rates": {
+                "draft": 0.0,
+                "model_reviewed": 1.0,
+                "human_reviewed": 0.0
+              }
+            }
+          },
+          "dream": {
+            "entries": 358,
+            "expected": 358,
+            "coverage": 1.0,
+            "reviewed_rate": 0.0,
+            "review_status": {
+              "counts": {
+                "draft": 358,
+                "model_reviewed": 0,
+                "human_reviewed": 0
+              },
+              "rates": {
+                "draft": 1.0,
+                "model_reviewed": 0.0,
+                "human_reviewed": 0.0
+              }
+            }
+          },
+          "name": {
+            "entries": 220,
+            "expected": 220,
+            "coverage": 1.0,
+            "reviewed_rate": 0.0,
+            "review_status": {
+              "counts": {
+                "draft": 220,
+                "model_reviewed": 0,
+                "human_reviewed": 0
+              },
+              "rates": {
+                "draft": 1.0,
+                "model_reviewed": 0.0,
+                "human_reviewed": 0.0
+              }
+            }
+          },
+          "tarot": {
+            "entries": 163,
+            "expected": 163,
+            "coverage": 1.0,
+            "reviewed_rate": 0.0,
+            "review_status": {
+              "counts": {
+                "draft": 1,
+                "model_reviewed": 162,
+                "human_reviewed": 0
+              },
+              "rates": {
+                "draft": 0.0061,
+                "model_reviewed": 0.9939,
+                "human_reviewed": 0.0
+              }
+            }
+          }
+        }
+      },
+      "required": true
+    },
+    {
+      "name": "pydantic",
+      "ok": true,
+      "required": true
+    },
+    {
+      "name": "yaml",
+      "ok": true,
+      "required": true
+    },
+    {
+      "name": "httpx",
+      "ok": true,
+      "required": true
+    },
+    {
+      "name": "typer",
+      "ok": true,
+      "required": true
+    },
+    {
+      "name": "openai",
+      "ok": true,
+      "required": false
+    },
+    {
+      "name": "anthropic",
+      "ok": true,
+      "required": false
+    },
+    {
+      "name": "skyfield",
+      "ok": true,
+      "required": true
+    },
+    {
+      "name": "lunar_python",
+      "ok": true,
+      "required": true
+    },
+    {
+      "name": "DEEPSEEK_API_KEY",
+      "ok": true,
+      "required": false,
+      "detail": "只报告是否配置，不输出密钥；离线演示无需密钥"
+    },
+    {
+      "name": "OPENAI_API_KEY",
+      "ok": false,
+      "required": false,
+      "detail": "只报告是否配置，不输出密钥；离线演示无需密钥"
+    },
+    {
+      "name": "ANTHROPIC_API_KEY",
+      "ok": false,
+      "required": false,
+      "detail": "只报告是否配置，不输出密钥；离线演示无需密钥"
+    },
+    {
+      "name": "data/ephe",
+      "ok": true,
+      "required": false,
+      "detail": "ephe/geo为第二周数据，unihan为第六周姓名笔画数据（三者由清单哈希强制核验）；models（embedding）尚未使用，缺少不阻断验收"
+    },
+    {
+      "name": "data/geo",
+      "ok": true,
+      "required": false,
+      "detail": "ephe/geo为第二周数据，unihan为第六周姓名笔画数据（三者由清单哈希强制核验）；models（embedding）尚未使用，缺少不阻断验收"
+    },
+    {
+      "name": "data/unihan",
+      "ok": true,
+      "required": false,
+      "detail": "ephe/geo为第二周数据，unihan为第六周姓名笔画数据（三者由清单哈希强制核验）；models（embedding）尚未使用，缺少不阻断验收"
+    },
+    {
+      "name": "data/models",
+      "ok": false,
+      "required": false,
+      "detail": "ephe/geo为第二周数据，unihan为第六周姓名笔画数据（三者由清单哈希强制核验）；models（embedding）尚未使用，缺少不阻断验收"
+    },
+    {
+      "name": "data:ephe/sepl_18.se1",
+      "ok": true,
+      "required": true,
+      "version": "aacf962d19d79f8bc921dbcdaacf306d85be1917",
+      "license": "AGPL-3.0 / commercial"
+    },
+    {
+      "name": "data:ephe/semo_18.se1",
+      "ok": true,
+      "required": true,
+      "version": "aacf962d19d79f8bc921dbcdaacf306d85be1917",
+      "license": "AGPL-3.0 / commercial"
+    },
+    {
+      "name": "data:ephe/de440s.bsp",
+      "ok": true,
+      "required": true,
+      "version": "DE440s",
+      "license": "US government public data"
+    },
+    {
+      "name": "data:geo/geonamescache-3.0.2.whl",
+      "ok": true,
+      "required": true,
+      "version": "geonamescache-3.0.2-cities15000",
+      "license": "GeoNames data CC BY 4.0; geonamescache code MIT (archive read as data, never installed/executed)"
+    },
+    {
+      "name": "data:unihan/kRSUnicode.txt",
+      "ok": true,
+      "required": true,
+      "version": "unihan-18.0.0@00f0361448458162dda247f7a2a77c439147f753",
+      "license": "Unicode License v3"
+    },
+    {
+      "name": "data:unihan/kTraditionalVariant.txt",
+      "ok": true,
+      "required": true,
+      "version": "unihan-18.0.0@00f0361448458162dda247f7a2a77c439147f753",
+      "license": "Unicode License v3"
+    },
+    {
+      "name": "data:unihan/kTotalStrokes.txt",
+      "ok": true,
+      "required": true,
+      "version": "unihan-18.0.0@00f0361448458162dda247f7a2a77c439147f753",
+      "license": "Unicode License v3"
+    },
+    {
+      "name": "tzdata_version",
+      "ok": true,
+      "required": true,
+      "version": "2026.5"
+    }
+  ]
+}

@@ -1,0 +1,110 @@
+{
+  "schema": 1,
+  "system": "name",
+  "seed": 1,
+  "batch_size": 10,
+  "plant_rate": 0.1,
+  "min_planted": 5,
+  "passes": 2,
+  "only_ids": [
+    "kb:name:sancai:土水木",
+    "kb:name:sancai:土水水",
+    "kb:name:sancai:土水金",
+    "kb:name:sancai:土火水",
+    "kb:name:sancai:土火金",
+    "kb:name:sancai:木火水",
+    "kb:name:sancai:火木土",
+    "kb:name:sancai:火木水",
+    "kb:name:sancai:金水土",
+    "kb:name:sancai:金火土",
+    "kb:name:sancai:金火木",
+    "kb:name:sancai:金火火",
+    "kb:name:sancai:金金水",
+    "kb:name:shuli:26",
+    "kb:name:shuli:4",
+    "kb:name:shuli:49",
+    "kb:name:shuli:51",
+    "kb:name:shuli:53"
+  ],
+  "calibrated_by": null,
+  "rubric_version": 1,
+  "rubric_sha256": "a33bd07bd2299376f88d6cf1c958b26990685099797e78272054352ff7557b0d",
+  "script_sha256": "cca3a7b203f9186b0a82f3a4b78b50b3fad3228f869377cc3d113099cad88ec5",
+  "runtime_vendor": "deepseek",
+  "drafter_vendors": [
+    "anthropic"
+  ],
+  "runtime_vendor_exception": {
+    "vendor": "deepseek",
+    "model": "deepseek-flash",
+    "reason": "2026-10-21 项目负责人明确要求第一审核方使用本机.env的DeepSeek配置"
+  },
+  "pricing": {
+    "reviewer_a": {
+      "input_per_mtok": null,
+      "output_per_mtok": null,
+      "currency": null
+    },
+    "reviewer_b": {
+      "input_per_mtok": null,
+      "output_per_mtok": null,
+      "currency": null
+    }
+  },
+  "reviewers": {
+    "reviewer_a": {
+      "vendor": "deepseek",
+      "api": "openai",
+      "model": "deepseek-flash",
+      "api_key_env": "DEEPSEEK_API_KEY",
+      "temperature": null,
+      "max_tokens": 4096,
+      "base_url_host": "api.deepseek.com"
+    },
+    "reviewer_b": {
+      "vendor": "openai",
+      "api": "openai",
+      "model": "gpt-6.1-sol",
+      "api_key_env": "OPENAI_REVIEW_API_KEY",
+      "temperature": null,
+      "max_tokens": 4096,
+      "base_url_host": "codegoai.com"
+    }
+  },
+  "source_files": {
+    "knowledge/sources/name/entries.yaml": "35f8b9a3db541186368755c805ca9edc28769532e6d95be649f24fd4b59bf66b"
+  },
+  "entry_hashes": {
+    "kb:name:sancai:土水木": "195ec421c0f0a5d8d18ecd57dd9a5f43da0b5b26f4a01d86a49e37cf6b32f9d7",
+    "kb:name:sancai:土水水": "fad96964f37aad2bfe717568d2d48b9757598651943a8c4bdf53e9447006a672",
+    "kb:name:sancai:土水金": "70e666fefdc8f09b837ed6d5ba18a2f7ae9a6d827c96a8bf8818bbd67565b63f",
+    "kb:name:sancai:土火水": "d2fe1b8b57523fb1d7e33db6324a7ad319b82c111d2195fe9dc643444724d2db",
+    "kb:name:sancai:土火金": "9e3e8d0ed8fb5c318dafe420e034a2fdf439adf58221847f11b4617bd2398b49",
+    "kb:name:sancai:木火水": "f7ab247bee7e774d6688ae9200a54dd40c6a547e59ffe786de6d9d4b75fa798d",
+    "kb:name:sancai:火木土": "06c74d6db2fc33f6faf032aa99b35170b584fd323fcb4d715bd8f8d035bf1ac8",
+    "kb:name:sancai:火木水": "89303556c972e193091f965f462ec11428936ba24d1fdfb49eabbd736b296fb2",
+    "kb:name:sancai:金水土": "6604bd6d0cb49d3c8c9bb17c4af2ce1e93ea23b7aee66b7463bda569be718bc4",
+    "kb:name:sancai:金火土": "15a47d6b5fda25ca0689bc454558e1c28f2470761b8118db7ba40f6f47b58520",
+    "kb:name:sancai:金火木": "f43c642ddcb2d7f561d5d406bebb6ab33ff0d7fbd638b5991934761c63282be3",
+    "kb:name:sancai:金火火": "807972afbf2a6d7f017559e0962e3ae3693ddbb0b8bcabdea432420f95de2373",
+    "kb:name:sancai:金金水": "4d85ace544971e9227b3010864c30e4ca33ed9c44e0fce29f514dac055c48ba2",
+    "kb:name:shuli:26": "c525e1cb4ee61cd6bdf9cda6605a7b0abf43a52bbf5e71f93f1677cf55512dab",
+    "kb:name:shuli:4": "3432d0dcef81c78f010add7472c87b6c771eea938a3024776f08547765140bfb",
+    "kb:name:shuli:49": "37294d6f9a26e9818bf780a8dd757ec5ed106d9dcf2cadcc756e28e9a4da6197",
+    "kb:name:shuli:51": "c1f2644432d7ae8098f8cbd6dcff0dc3289e006c644b9c4d10156fa5710f8619",
+    "kb:name:shuli:53": "1fd951af121391c23b6e5bb3862078d498fdc616429c75a46f8680cc2f4c06cc"
+  },
+  "planted_count": 5,
+  "batch_count": 3,
+  "prompt_sha256": {
+    "b001": "76809d4bda67c4075a8a0d4bdb420b4f3eee8d7cc9fc52ad249b4b2697a1b4ab",
+    "b002": "2edd176f45396fb45074655490e9ed85fe810e2e3a1c89494c6ae2a99121bbe2",
+    "b003": "e4c2dc9c2cde9b6f85c2171ac16829316c5b5c346b529024324528739126abf9"
+  },
+  "created_at": "2026-10-21T16:49:42+00:00",
+  "git": {
+    "head": "e8dae18cd2dae8139bcec667242c7169ebadaf13",
+    "dirty": true
+  },
+  "kb_version": "v1-cd5cb4525f94c631"
+}

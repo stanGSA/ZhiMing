@@ -1,0 +1,160 @@
+{
+  "system": "tarot",
+  "entries": 14,
+  "planted": 5,
+  "metrics": {
+    "pass_rate": 0.9286,
+    "detection": {
+      "reviewer_a": 0.6,
+      "reviewer_b": 0.8
+    },
+    "detection_merged": 0.8,
+    "rerun": {
+      "reviewer_a": 0.8947,
+      "reviewer_b": 1.0
+    },
+    "kappa": 0.0,
+    "observed_agreement": 0.9286,
+    "verdict_counts": {
+      "reviewer_a": {
+        "revise": 1,
+        "pass": 13
+      },
+      "reviewer_b": {
+        "pass": 14
+      }
+    }
+  },
+  "gates": {
+    "pass_rate": false,
+    "detection_merged": false,
+    "detection_single": false,
+    "rerun": false,
+    "kappa": false,
+    "complete": true
+  },
+  "thresholds": {
+    "pass_rate": 0.95,
+    "detection_merged": 0.9,
+    "detection_single": 0.8,
+    "rerun": 0.9,
+    "kappa": 0.6
+  },
+  "calibrated": false,
+  "passed": false,
+  "approved": 13,
+  "queued": 1,
+  "incomplete": [],
+  "planted_detail": [
+    {
+      "ref": "planted-001",
+      "original": "kb:tarot:card:pentacles_nine:reversed",
+      "mutation": "medical",
+      "reviewer_a": "reject",
+      "reviewer_b": "reject"
+    },
+    {
+      "ref": "planted-002",
+      "original": "kb:tarot:card:wands_ten:reversed",
+      "mutation": "fatalistic",
+      "reviewer_a": "reject",
+      "reviewer_b": "revise"
+    },
+    {
+      "ref": "planted-003",
+      "original": "kb:tarot:card:pentacles_knight:reversed",
+      "mutation": "foreign_text",
+      "reviewer_a": "pass",
+      "reviewer_b": "pass"
+    },
+    {
+      "ref": "planted-004",
+      "original": "kb:tarot:card:swords_nine:reversed",
+      "mutation": "flip_signs",
+      "reviewer_a": "pass",
+      "reviewer_b": "revise"
+    },
+    {
+      "ref": "planted-005",
+      "original": "kb:tarot:position:decision:2",
+      "mutation": "fatalistic",
+      "reviewer_a": "reject",
+      "reviewer_b": "revise"
+    }
+  ],
+  "detection_by_mutation": {
+    "medical": {
+      "total": 1,
+      "reviewer_a": 1,
+      "reviewer_b": 1
+    },
+    "fatalistic": {
+      "total": 2,
+      "reviewer_a": 2,
+      "reviewer_b": 2
+    },
+    "foreign_text": {
+      "total": 1,
+      "reviewer_a": 0,
+      "reviewer_b": 0
+    },
+    "flip_signs": {
+      "total": 1,
+      "reviewer_a": 0,
+      "reviewer_b": 1
+    }
+  },
+  "usage": {
+    "reviewer_a": {
+      "calls": 4,
+      "input_tokens": 11416,
+      "output_tokens": 2124,
+      "latency_s": 17.032,
+      "returned_models": [
+        "deepseek-flash"
+      ],
+      "errors": {},
+      "retried_calls": 0,
+      "http_retries": 0,
+      "cost": null,
+      "known_cost_estimate": null,
+      "usage_complete": true,
+      "cost_basis": "配置单价估算，非账单；服务失败的用量可能未知",
+      "currency": null
+    },
+    "reviewer_b": {
+      "calls": 4,
+      "input_tokens": 12556,
+      "output_tokens": 4091,
+      "latency_s": 175.589,
+      "returned_models": [
+        "gpt-6.1-sol"
+      ],
+      "errors": {},
+      "retried_calls": 0,
+      "http_retries": 0,
+      "cost": null,
+      "known_cost_estimate": null,
+      "usage_complete": true,
+      "cost_basis": "配置单价估算，非账单；服务失败的用量可能未知",
+      "currency": null
+    }
+  },
+  "code_findings": [],
+  "human_reviewed_rate": 0.0,
+  "approved_ids": [
+    "kb:tarot:card:pentacles_knight:reversed",
+    "kb:tarot:card:pentacles_nine:reversed",
+    "kb:tarot:card:pentacles_page:reversed",
+    "kb:tarot:card:swords_nine:reversed",
+    "kb:tarot:card:the_fool:reversed",
+    "kb:tarot:card:the_hanged_man:reversed",
+    "kb:tarot:card:the_hierophant:reversed",
+    "kb:tarot:card:the_sun:reversed",
+    "kb:tarot:card:wands_ten:reversed",
+    "kb:tarot:position:decision:1",
+    "kb:tarot:position:decision:2",
+    "kb:tarot:position:decision:3",
+    "kb:tarot:position:single:1"
+  ]
+}

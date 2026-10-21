@@ -1,0 +1,88 @@
+{
+  "batch": "b013",
+  "reviewer": "reviewer_a",
+  "run_pass": 1,
+  "attempt": 1,
+  "vendor": "deepseek",
+  "requested_model": "deepseek-flash",
+  "returned_model": "deepseek-flash",
+  "api": "openai",
+  "started_at": "2026-10-21T16:00:56+00:00",
+  "finished_at": "2026-10-21T16:00:59+00:00",
+  "latency_s": 2.942,
+  "http_attempts": 1,
+  "finish_reason": "stop",
+  "prompt_sha256": "1630cedc08dabcc3833fd4985634cec97a5a09f4526c0953d6ed6a9ac5d6fddc",
+  "input_tokens": 2500,
+  "output_tokens": 569,
+  "cached_input_tokens": 384,
+  "usage_available": true,
+  "raw_text": "{\"items\": [{\"item\": \"i01\", \"verdict\": \"pass\", \"issues\": [], \"reason\": \"释义符合传统心理联想，theme_map 方向与文字一致，措辞为免责表述。\"}, {\"item\": \"i02\", \"verdict\": \"pass\", \"issues\": [], \"reason\": \"排队与进度缓慢、耐心相关，career 略负方向与文字一致，无宿命化断言。\"}, {\"item\": \"i03\", \"verdict\": \"pass\", \"issues\": [], \"reason\": \"找东西与寻找答案、方向相关，theme_map 全零与方向模糊相符，措辞克制。\"}, {\"item\": \"i04\", \"verdict\": \"pass\", \"issues\": [], \"reason\": \"拍照与留住时刻、在意形象相关，self 略正方向合理，免责措辞到位。\"}, {\"item\": \"i05\", \"verdict\": \"pass\", \"issues\": [], \"reason\": \"投票与选择权、公平相关，theme_map 全零无明显方向，符合文字。\"}, {\"item\": \"i06\", \"verdict\": \"pass\", \"issues\": [], \"reason\": \"接吻与亲密感、认同相关，relationship 略正方向一致，无确定性断言。\"}, {\"item\": \"i07\", \"verdict\": \"pass\", \"issues\": [], \"reason\": \"掉牙释义涉及掌控与形象，self 略负方向一致，且明确不代表健康状况并提示就医。\"}, {\"item\": \"i08\", \"verdict\": \"pass\", \"issues\": [], \"reason\": \"拥抱与亲近、安慰相关，relationship 正方向一致，措辞平和。\"}, {\"item\": \"i09\", \"verdict\": \"revise\", \"issues\": [{\"dimension\": \"consistency\", \"detail\": \"同义词“电动车”“电瓶车”与“摩托车”并非同一意象，可能误命中其他车辆意象\"}], \"reason\": \"摩托车释义本身无问题，但把电动车、电瓶车列为同义词会误命中。\"}, {\"item\": \"i10\", \"verdict\": \"revise\", \"issues\": [{\"dimension\": \"theme_direction\", \"detail\": \"文字“坚韧、灵活与节节成长”偏积极，但 self 与 career 均为 -0.1 负向，方向与文字不一致\"}], \"reason\": \"竹子释义正面，theme_map 却为负值，方向与文字相反。\"}, {\"item\": \"i11\", \"verdict\": \"pass\", \"issues\": [], \"reason\": \"打雷与觉醒、愤怒相关，self 略负方向一致，措辞为免责表述。\"}]}",
+  "verdicts": {
+    "i01": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "释义符合传统心理联想，theme_map 方向与文字一致，措辞为免责表述。"
+    },
+    "i02": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "排队与进度缓慢、耐心相关，career 略负方向与文字一致，无宿命化断言。"
+    },
+    "i03": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "找东西与寻找答案、方向相关，theme_map 全零与方向模糊相符，措辞克制。"
+    },
+    "i04": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "拍照与留住时刻、在意形象相关，self 略正方向合理，免责措辞到位。"
+    },
+    "i05": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "投票与选择权、公平相关，theme_map 全零无明显方向，符合文字。"
+    },
+    "i06": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "接吻与亲密感、认同相关，relationship 略正方向一致，无确定性断言。"
+    },
+    "i07": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "掉牙释义涉及掌控与形象，self 略负方向一致，且明确不代表健康状况并提示就医。"
+    },
+    "i08": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "拥抱与亲近、安慰相关，relationship 正方向一致，措辞平和。"
+    },
+    "i09": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "consistency",
+          "detail": "同义词“电动车”“电瓶车”与“摩托车”并非同一意象，可能误命中其他车辆意象"
+        }
+      ],
+      "reason": "摩托车释义本身无问题，但把电动车、电瓶车列为同义词会误命中。"
+    },
+    "i10": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "theme_direction",
+          "detail": "文字“坚韧、灵活与节节成长”偏积极，但 self 与 career 均为 -0.1 负向，方向与文字不一致"
+        }
+      ],
+      "reason": "竹子释义正面，theme_map 却为负值，方向与文字相反。"
+    },
+    "i11": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "打雷与觉醒、愤怒相关，self 略负方向一致，措辞为免责表述。"
+    }
+  }
+}

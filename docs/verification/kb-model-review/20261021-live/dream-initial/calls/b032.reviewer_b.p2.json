@@ -1,0 +1,108 @@
+{
+  "batch": "b032",
+  "reviewer": "reviewer_b",
+  "run_pass": 2,
+  "attempt": 1,
+  "vendor": "openai",
+  "requested_model": "gpt-6.1-sol",
+  "returned_model": "gpt-6.1-sol",
+  "api": "openai",
+  "started_at": "2026-10-21T16:26:43+00:00",
+  "finished_at": "2026-10-21T16:27:11+00:00",
+  "latency_s": 27.584,
+  "http_attempts": 1,
+  "finish_reason": "stop",
+  "prompt_sha256": "2b8e74f85cf4c4cb07cd8bd38663535c8f7f3e048a9e19bdf8a1731cd68b25c5",
+  "input_tokens": 2728,
+  "output_tokens": 1180,
+  "cached_input_tokens": 2725,
+  "usage_available": true,
+  "raw_text": "{\n  \"items\": [\n    {\n      \"item\": \"i01\",\n      \"verdict\": \"revise\",\n      \"issues\": [\n        {\n          \"dimension\": \"theme_direction\",\n          \"detail\": \"文字涉及耐心、机会与内心探索，未表达财务方面偏顺的含义，finance 的正向倾向缺少文字支持；可设为中性。\"\n        }\n      ],\n      \"reason\": \"心理联想基本合理，但财务倾向与释义内容不够一致。\"\n    },\n    {\n      \"item\": \"i02\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"释义兼顾放松、逃避与社交等不同联想，中性主题设置合理，未作预兆判断。\"\n    },\n    {\n      \"item\": \"i03\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"释义与邻居意象相符，方向中性，也明确避免推断他人的现实状况。\"\n    },\n    {\n      \"item\": \"i04\",\n      \"verdict\": \"revise\",\n      \"issues\": [\n        {\n          \"dimension\": \"consistency\",\n          \"detail\": \"同义词“拼命跑”也可能描述赶路、比赛或追赶，并不必然表示逃跑，容易误命中其他意象；建议删除或增加逃离情境的限定。\"\n        }\n      ],\n      \"reason\": \"正文与自我状态的轻微负向倾向一致，但同义词范围过宽。\"\n    },\n    {\n      \"item\": \"i05\",\n      \"verdict\": \"reject\",\n      \"issues\": [\n        {\n          \"dimension\": \"consistency\",\n          \"detail\": \"key、同义词和关键词均指向机场场所，正文却完整解释陌生人人物意象，与条目对象不符。\"\n        }\n      ],\n      \"reason\": \"正文属于陌生人条目，需替换为机场相关释义。\"\n    },\n    {\n      \"item\": \"i06\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"修复关系的意愿支持关系主题轻微正向，且未将梦境解释为现实事件预告。\"\n    },\n    {\n      \"item\": \"i07\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"暂时停留与过渡阶段符合酒店的常见象征联想，中性主题设置与文字一致。\"\n    },\n    {\n      \"item\": \"i08\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"提醒、时间与警醒能够涵盖钟的常见联想，措辞平和且没有方向冲突。\"\n    },\n    {\n      \"item\": \"i09\",\n      \"verdict\": \"revise\",\n      \"issues\": [\n        {\n          \"dimension\": \"consistency\",\n          \"detail\": \"“梦中梦”指梦境中又出现一层梦境，不等同于想醒却醒不过来，也不一定伴随受困感；建议移出同义词或单独设条目。\"\n        }\n      ],\n      \"reason\": \"正文与自我状态的负向倾向一致，但“梦中梦”会误命中不同的梦境体验。\"\n    },\n    {\n      \"item\": \"i10\",\n      \"verdict\": \"revise\",\n      \"issues\": [\n        {\n          \"dimension\": \"theme_direction\",\n          \"detail\": \"正文的正向含义落在个人价值与能力获得肯定，未说明财务方面的正向含义；finance 与 self 同为正向缺少充分的文字对应，建议将 finance 设为中性。\"\n        }\n      ],\n      \"reason\": \"金子的价值象征合理，但现有文字不足以支持财务主题偏顺。\"\n    },\n    {\n      \"item\": \"i11\",\n      \"verdict\": \"revise\",\n      \"issues\": [\n        {\n          \"dimension\": \"consistency\",\n          \"detail\": \"“打针”是注射事件，不等同于针这一物品意象，可能涉及治疗、恐惧或身体边界等不同体验；建议移出同义词并单独解释。\"\n        }\n      ],\n      \"reason\": \"正文对针的联想基本合理，但将打针直接作为同义词容易混淆意象。\"\n    }\n  ]\n}",
+  "verdicts": {
+    "i01": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "theme_direction",
+          "detail": "文字涉及耐心、机会与内心探索，未表达财务方面偏顺的含义，finance 的正向倾向缺少文字支持；可设为中性。"
+        }
+      ],
+      "reason": "心理联想基本合理，但财务倾向与释义内容不够一致。"
+    },
+    "i02": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "释义兼顾放松、逃避与社交等不同联想，中性主题设置合理，未作预兆判断。"
+    },
+    "i03": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "释义与邻居意象相符，方向中性，也明确避免推断他人的现实状况。"
+    },
+    "i04": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "consistency",
+          "detail": "同义词“拼命跑”也可能描述赶路、比赛或追赶，并不必然表示逃跑，容易误命中其他意象；建议删除或增加逃离情境的限定。"
+        }
+      ],
+      "reason": "正文与自我状态的轻微负向倾向一致，但同义词范围过宽。"
+    },
+    "i05": {
+      "verdict": "reject",
+      "issues": [
+        {
+          "dimension": "consistency",
+          "detail": "key、同义词和关键词均指向机场场所，正文却完整解释陌生人人物意象，与条目对象不符。"
+        }
+      ],
+      "reason": "正文属于陌生人条目，需替换为机场相关释义。"
+    },
+    "i06": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "修复关系的意愿支持关系主题轻微正向，且未将梦境解释为现实事件预告。"
+    },
+    "i07": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "暂时停留与过渡阶段符合酒店的常见象征联想，中性主题设置与文字一致。"
+    },
+    "i08": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "提醒、时间与警醒能够涵盖钟的常见联想，措辞平和且没有方向冲突。"
+    },
+    "i09": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "consistency",
+          "detail": "“梦中梦”指梦境中又出现一层梦境，不等同于想醒却醒不过来，也不一定伴随受困感；建议移出同义词或单独设条目。"
+        }
+      ],
+      "reason": "正文与自我状态的负向倾向一致，但“梦中梦”会误命中不同的梦境体验。"
+    },
+    "i10": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "theme_direction",
+          "detail": "正文的正向含义落在个人价值与能力获得肯定，未说明财务方面的正向含义；finance 与 self 同为正向缺少充分的文字对应，建议将 finance 设为中性。"
+        }
+      ],
+      "reason": "金子的价值象征合理，但现有文字不足以支持财务主题偏顺。"
+    },
+    "i11": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "consistency",
+          "detail": "“打针”是注射事件，不等同于针这一物品意象，可能涉及治疗、恐惧或身体边界等不同体验；建议移出同义词并单独解释。"
+        }
+      ],
+      "reason": "正文对针的联想基本合理，但将打针直接作为同义词容易混淆意象。"
+    }
+  }
+}

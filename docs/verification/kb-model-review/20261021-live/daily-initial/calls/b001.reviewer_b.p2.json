@@ -1,0 +1,62 @@
+{
+  "batch": "b001",
+  "reviewer": "reviewer_b",
+  "run_pass": 2,
+  "attempt": 1,
+  "vendor": "openai",
+  "requested_model": "gpt-6.1-sol",
+  "returned_model": "gpt-6.1-sol",
+  "api": "openai",
+  "started_at": "2026-10-21T16:01:04+00:00",
+  "finished_at": "2026-10-21T16:01:20+00:00",
+  "latency_s": 15.37,
+  "http_attempts": 1,
+  "finish_reason": "stop",
+  "prompt_sha256": "de0e879be2b6002d105ab1913de45e24b1bc8c444f36336000c25e12ce438e55",
+  "input_tokens": 1377,
+  "output_tokens": 599,
+  "cached_input_tokens": 1374,
+  "usage_available": true,
+  "raw_text": "{\n  \"items\": [\n    {\n      \"item\": \"i01\",\n      \"verdict\": \"reject\",\n      \"issues\": [\n        {\n          \"dimension\": \"medical_legal_finance\",\n          \"detail\": \"以流日五行为依据断言肝脏已有病变并要求立即治疗，属于无依据的确定性医疗结论。\"\n        },\n        {\n          \"dimension\": \"certainty\",\n          \"detail\": \"“说明你的肝脏已有病变”将象征性信息写成确定事实。\"\n        }\n      ],\n      \"reason\": \"虽然配色约定已作澄清，但末句包含不可接受的确定性医疗诊断。\"\n    },\n    {\n      \"item\": \"i02\",\n      \"verdict\": \"revise\",\n      \"issues\": [\n        {\n          \"dimension\": \"plain_language\",\n          \"detail\": \"月亮与快行星没有精确相位，不能概括为当天没有突出的行运节点，还可能存在慢行星相位或容许度内的重要相位；宜改为“在本功能所检查的月亮与快行星精确相位中，今天未发现节点”。\"\n        }\n      ],\n      \"reason\": \"中性方向合理，但将有限的相位检查结果扩大为整体行运判断，需要限定范围。\"\n    },\n    {\n      \"item\": \"i03\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"明确说明中午时间仅为计算代理，并提示月亮位置及相位时刻的不确定性。\"\n    },\n    {\n      \"item\": \"i04\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"清楚区分每日提示与长期解读的范围，未作具体事件的确定性预言。\"\n    },\n    {\n      \"item\": \"i05\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"仅说明每日抽牌的种子计算及结果复现规则，没有暗示其能带来实际运气。\"\n    }\n  ]\n}",
+  "verdicts": {
+    "i01": {
+      "verdict": "reject",
+      "issues": [
+        {
+          "dimension": "medical_legal_finance",
+          "detail": "以流日五行为依据断言肝脏已有病变并要求立即治疗，属于无依据的确定性医疗结论。"
+        },
+        {
+          "dimension": "certainty",
+          "detail": "“说明你的肝脏已有病变”将象征性信息写成确定事实。"
+        }
+      ],
+      "reason": "虽然配色约定已作澄清，但末句包含不可接受的确定性医疗诊断。"
+    },
+    "i02": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "plain_language",
+          "detail": "月亮与快行星没有精确相位，不能概括为当天没有突出的行运节点，还可能存在慢行星相位或容许度内的重要相位；宜改为“在本功能所检查的月亮与快行星精确相位中，今天未发现节点”。"
+        }
+      ],
+      "reason": "中性方向合理，但将有限的相位检查结果扩大为整体行运判断，需要限定范围。"
+    },
+    "i03": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "明确说明中午时间仅为计算代理，并提示月亮位置及相位时刻的不确定性。"
+    },
+    "i04": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "清楚区分每日提示与长期解读的范围，未作具体事件的确定性预言。"
+    },
+    "i05": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "仅说明每日抽牌的种子计算及结果复现规则，没有暗示其能带来实际运气。"
+    }
+  }
+}

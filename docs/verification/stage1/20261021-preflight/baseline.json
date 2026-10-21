@@ -1,0 +1,40 @@
+{
+  "date": "2026-10-21",
+  "timezone": "Asia/Shanghai",
+  "base_commit": "931c8f264f36734f1dbe954531753133936af152",
+  "local_head": "931c8f264f36734f1dbe954531753133936af152",
+  "python": "3.11.17",
+  "plan_source": "原项目根目录未跟踪的项目完善计划书.md",
+  "plan_sha256": "114d4eacf3f968acf986a2e022b978dcb32c2ee6329d94b7a45aae8ec5830a14",
+  "user_decisions": {
+    "reviewers": {
+      "reviewer_a": {
+        "vendor": "deepseek",
+        "api": "openai",
+        "model": "deepseek-flash",
+        "api_key_env": "DEEPSEEK_API_KEY",
+        "temperature": null,
+        "max_tokens": 4096,
+        "base_url_host": "api.deepseek.com"
+      },
+      "reviewer_b": {
+        "vendor": "openai",
+        "api": "openai",
+        "model": "gpt-6.1-sol",
+        "api_key_env": "OPENAI_REVIEW_API_KEY",
+        "temperature": null,
+        "max_tokens": 4096,
+        "base_url_host": "codegoai.com"
+      }
+    },
+    "runtime_vendor_exception": {
+      "vendor": "deepseek",
+      "model": "deepseek-flash",
+      "reason": "2026-10-21 项目负责人明确要求第一审核方使用本机.env的DeepSeek配置"
+    },
+    "confidence_cap": "medium",
+    "budget": "用户明确没有预算上限",
+    "reviser": null
+  },
+  "note": "未复制密钥、画像、用户历史数据库"
+}

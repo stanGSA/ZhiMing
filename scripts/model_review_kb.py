@@ -45,6 +45,7 @@ from knowledge.build import build
 from knowledge.review import approval, content_hash, load_ledgers, write_ledger
 from knowledge.schema import SourceEntry
 from plugins.tarot.catalogue import SPREADS
+from scripts.kb_review_budget import BudgetExceeded, BudgetModel, ReviewBudget
 
 ROOT = Path(__file__).resolve().parents[1]
 RUN_ROOT = ROOT / "docs/verification/kb-model-review"
@@ -57,6 +58,10 @@ GATES = dict(pass_rate=0.95, detection_merged=0.9, detection_single=0.8, rerun=0
 # Code findings that block an approval whatever the models say. A same-direction tarot pair
 # is shown to the reviewers (with the other orientation) and judged by them.
 BLOCKING_CHECKS = {"certainty"}
+# Written by scripts.kb_review_campaign into a run root it accepts system by system. Its
+# batches never write the ledger one at a time: a small batch can be calibrated on its own
+# while the whole system is not.
+CAMPAIGN_MARKER = "campaign-acceptance.json"
 
 RUBRIC_VERSION = 1
 RUBRIC = """你是知识库释义的审核员。项目是一个占卜/自我反思应用，释义是项目自写的草稿，面向普通用户。
@@ -198,18 +203,58 @@ def check_roles(roles: dict, config: dict, needed: tuple[str, ...]) -> None:
     if len(reviewers) == 2 and reviewers[0] == reviewers[1]:
         raise ValueError("两个审核模型必须来自不同厂商")
     if runtime_vendor(config) in reviewers:
-        raise ValueError("审核模型不能与运行时模型同一厂商")
+        exception = (config.get("kb_review") or {}).get("runtime_vendor_exception") or {}
+        for name in REVIEWERS:
+            spec = roles.get(name)
+            if (
+                spec
+                and spec.vendor.strip().lower() == runtime_vendor(config)
+                and not (
+                    exception.get("vendor") == spec.vendor.strip().lower()
+                    and exception.get("model") == spec.model
+                    and str(exception.get("reason") or "").strip()
+                )
+            ):
+                raise ValueError("审核模型不能与运行时模型同一厂商")
     if drafter_vendors(config) & set(reviewers):
         raise ValueError("审核模型不能与起草条目的模型同一厂商，否则会审自己写的内容")
-    if "reviser" in vendors and vendors["reviser"] in reviewers:
+    configured_reviewers = {name: public_spec(roles[name]) for name in REVIEWERS if roles.get(name)}
+    exception = (config.get("kb_review") or {}).get("reviser_vendor_exception")
+    if (
+        "reviser" in vendors
+        and vendors["reviser"] in reviewers
+        and not reviser_exception_matches(roles["reviser"], configured_reviewers, exception)
+    ):
         raise ValueError("修改模型不能与审核模型同一厂商，否则会自审自改")
+
+
+def require_endpoints(roles: dict, needed: tuple[str, ...]) -> None:
+    """Fail before a run directory exists, not as one logged service error per call."""
+    for name in needed:
+        roles[name].endpoint()
+
+
+def reviser_exception_matches(spec, reviewers, exception):
+    exception = exception or {}
+    identity = {name: {k: r[k] for k in ("vendor", "model")} for name, r in reviewers.items()}
+    return (
+        exception.get("vendor") == spec.vendor.strip().lower()
+        and exception.get("model") == spec.model
+        and exception.get("reviewers") == identity
+        and bool(str(exception.get("reason") or "").strip())
+    )
 
 
 def public_spec(spec: RoleConfig) -> dict:
     """What a run is bound to about a role: identity and settings, never a key or a price."""
-    data = spec.model_dump(exclude={"input_per_mtok", "output_per_mtok", "currency"})
-    data["base_url_host"] = urlparse(spec.base_url).hostname if spec.base_url else None
-    data.pop("base_url")
+    data = spec.model_dump(
+        exclude={"input_per_mtok", "output_per_mtok", "currency", "base_url", "base_url_env"}
+    )
+    try:
+        url = spec.endpoint()
+    except ValueError:
+        url = None  # Only a plan can be made: role_model refuses to call without it.
+    data["base_url_host"] = urlparse(url).hostname if url else None
     return data
 
 
@@ -244,6 +289,10 @@ def replace_term(text: str, terms: tuple[str, ...], rng: random.Random) -> str |
     return None if other is None else text.replace(term, other)
 
 
+def names_itself(entry: dict) -> bool:
+    return any(len(n) >= 2 and n in entry["text"] for n in (entry["key"], *entry["synonyms"]))
+
+
 def mutations(entry: dict, by_id: dict[str, dict], rng: random.Random) -> dict[str, dict]:
     """Every planted variant applicable to one entry, each with exactly one defect."""
     found = {}
@@ -265,7 +314,12 @@ def mutations(entry: dict, by_id: dict[str, dict], rng: random.Random) -> dict[s
         and e["id"] != f"kb:tarot:card:{other_key}"
     ]
     if peers:
-        found["foreign_text"] = dict(entry, text=rng.choice(peers)["text"])
+        # A planted copy must look like an entry. The PR #17 runs prefixed the donor as
+        # “Moon:7（Moon:7）的释义：”, a wrapper no real entry carries, which gave the answer
+        # away. Generic advice can fit several objects, so prefer a donor whose own text names
+        # its object: the substitution is then an actual mismatch, in the entries' own words.
+        named = [e for e in peers if names_itself(e)]
+        found["foreign_text"] = dict(entry, text=rng.choice(named or peers)["text"])
     if entry["system"] == "dream" and entry["kind"] == "symbol":
         keys = sorted(
             e["key"] for e in by_id.values() if e["kind"] == "symbol" and e["key"] != entry["key"]
@@ -451,6 +505,16 @@ def prepare(
         rubric_sha256=sha256_bytes((RUBRIC + canonical(SYSTEM_RUBRIC) + REVISE_PROMPT).encode()),
         script_sha256=sha256_bytes(Path(__file__).read_bytes()),
         runtime_vendor=runtime_vendor(config),
+        drafter_vendors=sorted(drafter_vendors(config)),
+        runtime_vendor_exception=(config.get("kb_review") or {}).get("runtime_vendor_exception"),
+        pricing={
+            name: (
+                roles[name].model_dump(include={"input_per_mtok", "output_per_mtok", "currency"})
+                if roles[name]
+                else None
+            )
+            for name in REVIEWERS
+        },
         reviewers={name: public_spec(roles[name]) if roles[name] else None for name in REVIEWERS},
         source_files={
             p.relative_to(workspace.root).as_posix(): sha256_bytes(
@@ -554,6 +618,16 @@ def open_run(path: Path, plan: dict, facts: dict | None = None) -> RunDir:
     for key, name in PLAN_FILES.items():
         if not (path / name).is_file():
             write_json(path / name, plan[key])
+    for source in (
+        Path(__file__),
+        ROOT / "harness/llm.py",
+        ROOT / "scripts/kb_review_budget.py",
+        ROOT / "knowledge/checks.py",
+    ):
+        target = path / "runner_source" / source.name
+        if not target.exists():
+            target.parent.mkdir(parents=True, exist_ok=True)
+            target.write_bytes(source.read_bytes())
     return RunDir(path)
 
 
@@ -621,6 +695,8 @@ async def review_call(model, spec, messages, batch, role, number, attempts) -> d
         base = dict(batch=batch["batch"], reviewer=role, run_pass=number, attempt=attempt)
         try:
             response = await model.chat(messages, [])
+        except BudgetExceeded:
+            raise
         except Exception as exc:  # noqa: BLE001 - any service failure is logged, not a verdict
             # Transient errors were already retried by the adapter; resume later.
             failures.append(
@@ -649,7 +725,9 @@ async def review_call(model, spec, messages, batch, role, number, attempts) -> d
                     at=now(),
                     message=str(exc)[:300],
                     returned_model=response.model,
-                    raw_text=response.text[:4000],
+                    raw_text=response.text,
+                    latency_s=round(time.perf_counter() - began, 3),
+                    http_attempts=getattr(model, "request_attempts", 0) - before,
                     **usage,
                 )
             )
@@ -865,9 +943,18 @@ def usage_summary(run: RunDir, roles: dict) -> dict:
     summary = {}
     calls = run.calls()
     errors = run.errors()
-    for role in REVIEWERS:
+    if (run.path / "revisions.json").exists():
+        for proposal in read_json(run.path / "revisions.json"):
+            calls.extend(
+                dict(p, reviewer="reviser", attempt=1)
+                for p in [*proposal.get("previous_invalid", []), proposal]
+            )
+    manifest = read_json(run.path / "manifest.json")
+    for role in (*REVIEWERS, "reviser"):
         own = [c for c in calls if c["reviewer"] == role]
         failed = [e for e in errors if e["reviewer"] == role]
+        if role == "reviser" and not own and not failed:
+            continue
         tokens_in = sum(c["input_tokens"] for c in own) + sum(
             e.get("input_tokens", 0) for e in failed
         )
@@ -875,22 +962,35 @@ def usage_summary(run: RunDir, roles: dict) -> dict:
             e.get("output_tokens", 0) for e in failed
         )
         spec = roles.get(role)
+        prices = (manifest.get("pricing") or {}).get(role)
+        if prices is None and spec:
+            prices = spec.model_dump(include={"input_per_mtok", "output_per_mtok", "currency"})
         cost = None
-        if spec and spec.input_per_mtok is not None and spec.output_per_mtok is not None:
+        if prices and all(prices.get(k) is not None for k in ("input_per_mtok", "output_per_mtok")):
             cost = round(
-                tokens_in / 1e6 * spec.input_per_mtok + tokens_out / 1e6 * spec.output_per_mtok, 4
+                tokens_in / 1e6 * prices["input_per_mtok"]
+                + tokens_out / 1e6 * prices["output_per_mtok"],
+                6,
             )
+        complete_usage = all(c.get("usage_available", True) for c in own) and all(
+            e.get("usage_available", False) for e in failed
+        )
         summary[role] = dict(
             calls=len(own),
             input_tokens=tokens_in,
             output_tokens=tokens_out,
-            latency_s=round(sum(c["latency_s"] for c in own), 3),
+            latency_s=round(
+                sum(c["latency_s"] for c in own) + sum(e.get("latency_s", 0) for e in failed), 3
+            ),
             returned_models=sorted({c["returned_model"] for c in own if c["returned_model"]}),
             errors=dict(Counter(e["kind"] for e in failed)),
             retried_calls=sum(c["attempt"] > 1 for c in own),
             http_retries=sum(max(0, c.get("http_attempts", 1) - 1) for c in own),
-            cost=cost,
-            currency=spec.currency if spec else None,
+            cost=cost if complete_usage else None,
+            known_cost_estimate=cost,
+            usage_complete=complete_usage,
+            cost_basis="配置单价估算，非账单；服务失败的用量可能未知",
+            currency=prices.get("currency") if prices else None,
         )
     return summary
 
@@ -970,6 +1070,7 @@ def render_report(summary: dict, run: RunDir) -> str:
         return "未测" if value is None else f"{value:.2%}" if isinstance(value, float) else value
 
     m, g = summary["metrics"], summary["gates"]
+    manifest = read_json(run.path / "manifest.json")
     rows = [
         ("双模型交叉审核通过率", show(m["pass_rate"]), "≥ 95%", g["pass_rate"]),
         ("埋错检出率（合并）", show(m["detection_merged"]), "≥ 90%", g["detection_merged"]),
@@ -989,6 +1090,7 @@ def render_report(summary: dict, run: RunDir) -> str:
         f"# 模型交叉审核：{summary['system']}",
         "",
         "结论只表示“经模型交叉审核”，不是人工审核；人工审核率仍为 0%。",
+        f"运行时厂商例外：{json.dumps(manifest.get('runtime_vendor_exception'), ensure_ascii=False)}。",
         "",
         f"- 条目 {summary['entries']}，埋错 {summary['planted']}；两家都通过 {summary['approved']}，"
         f"进入修改队列 {summary['queued']}，未完成 {len(summary['incomplete'])}",
@@ -1054,7 +1156,14 @@ def valid_proposal(entry: dict, proposal: dict) -> str | None:
 
 
 async def revise(
-    run: RunDir, plan: dict, roles: dict, *, make_model=None, timeout: float = 120
+    run: RunDir,
+    plan: dict,
+    roles: dict,
+    *,
+    make_model=None,
+    timeout: float = 120,
+    vendor_exception: dict | None = None,
+    concurrency: int = 1,
 ) -> list[dict]:
     """Proposals from a third model; saved for review, never applied or approved here."""
     make_model = make_model or (lambda role, spec: role_model(spec, timeout))
@@ -1063,20 +1172,64 @@ async def revise(
         raise ValueError("config.yaml 的 kb_review.roles 未配置：reviser")
     # Historical runs keep their reviewers even when today's configuration changes.
     reviewers = plan["manifest"]["reviewers"]
-    if any(spec.vendor.strip().lower() == r["vendor"].strip().lower() for r in reviewers.values()):
+    exception = vendor_exception or {}
+    allowed = reviser_exception_matches(spec, reviewers, exception)
+    if (
+        any(spec.vendor.strip().lower() == r["vendor"].strip().lower() for r in reviewers.values())
+        and not allowed
+    ):
         raise ValueError("修改模型不能与本批审核模型同一厂商，否则会自审自改")
+    execution = run.path / "revision_runner_source" / sha256_bytes(Path(__file__).read_bytes())
+    execution.mkdir(parents=True, exist_ok=True)
+    for source in (
+        Path(__file__),
+        ROOT / "harness/llm.py",
+        ROOT / "scripts/kb_review_budget.py",
+        ROOT / "knowledge/checks.py",
+    ):
+        target = execution / source.name
+        if source.is_file() and not target.exists():
+            target.write_bytes(source.read_bytes())
+    if not (execution / "execution.json").exists():
+        write_json(
+            execution / "execution.json",
+            dict(
+                role=public_spec(spec),
+                vendor_exception=exception if allowed else None,
+                at=now(),
+                script_sha256=sha256_bytes(Path(__file__).read_bytes()),
+            ),
+        )
+    if concurrency < 1:
+        raise ValueError("concurrency必须大于0")
     model = make_model("reviser", spec)
     queue = read_json(run.path / "revision_queue.json")
     by_id = {e["id"]: e for e in plan["entries"]}
     path = run.path / "revisions.json"
     proposals = {p["id"]: p for p in (read_json(path) if path.is_file() else [])}
-    try:
-        for item in queue:
+    gate = asyncio.Semaphore(concurrency)
+
+    async def one(item):
+        async with gate:
             earlier = proposals.get(item["id"])
+            entry = by_id[item["id"]]
+            if earlier is not None and earlier["invalid"] is not None:
+                current_invalid = valid_proposal(entry, earlier["proposal"])
+                if current_invalid != earlier["invalid"]:
+                    earlier.setdefault("validation_history", []).append(
+                        dict(
+                            at=now(),
+                            previous_invalid=earlier["invalid"],
+                            checker_sha256=sha256_bytes((ROOT / "knowledge/checks.py").read_bytes())
+                            if (ROOT / "knowledge/checks.py").exists()
+                            else None,
+                        )
+                    )
+                    earlier["invalid"] = current_invalid
+                    write_json(path, sorted(proposals.values(), key=lambda p: p["id"]))
             # A valid proposal is kept; an invalid one is asked for again on the next run.
             if earlier is not None and earlier["invalid"] is None:
-                continue
-            entry = by_id[item["id"]]
+                return
             issues = [
                 dict(reviewer=k, verdict=v["verdict"], issues=v["issues"], reason=v["reason"])
                 for k, v in item["verdicts"].items()
@@ -1095,15 +1248,30 @@ async def revise(
                 ),
             ]
             started = time.perf_counter()
+            before = getattr(model, "request_attempts", 0)
+            response = None
             try:
                 response = await model.chat(messages, [])
                 proposal = parse_json_object(response.text)
+            except BudgetExceeded:
+                raise
             except Exception as exc:  # noqa: BLE001 - logged and retried on the next invocation
                 run.log_error(
                     dict(reviewer="reviser", batch=item["id"], kind="revise_error", at=now())
+                    | dict(
+                        vendor=spec.vendor,
+                        requested_model=spec.model,
+                        returned_model=response.model if response else None,
+                        raw_text=response.text if response else None,
+                        input_tokens=response.input_tokens if response else 0,
+                        output_tokens=response.output_tokens if response else 0,
+                        usage_available=response.usage_available if response else False,
+                        latency_s=round(time.perf_counter() - started, 3),
+                        http_attempts=getattr(model, "request_attempts", 0) - before,
+                    )
                     | describe_error(exc)
                 )
-                continue
+                return
             proposals[item["id"]] = dict(
                 id=item["id"],
                 before_sha256=content_hash(entry),
@@ -1113,8 +1281,16 @@ async def revise(
                 note=str(proposal.get("note") or ""),
                 invalid=valid_proposal(entry, proposal),
                 vendor=spec.vendor,
+                vendor_exception=exception if allowed else None,
                 requested_model=spec.model,
                 returned_model=response.model,
+                raw_text=response.text,
+                prompt_sha256=sha256_bytes(canonical(messages).encode()),
+                pricing=spec.model_dump(include={"input_per_mtok", "output_per_mtok", "currency"}),
+                usage_available=response.usage_available,
+                cached_input_tokens=response.cached_input_tokens,
+                finish_reason=response.finish_reason,
+                http_attempts=getattr(model, "request_attempts", 0) - before,
                 input_tokens=response.input_tokens,
                 output_tokens=response.output_tokens,
                 latency_s=round(time.perf_counter() - started, 3),
@@ -1125,6 +1301,15 @@ async def revise(
                 ),
             )
             write_json(path, sorted(proposals.values(), key=lambda p: p["id"]))
+
+    tasks = [asyncio.ensure_future(one(item)) for item in queue]
+    try:
+        await asyncio.gather(*tasks)
+    except BaseException:
+        for task in tasks:
+            task.cancel()
+        await asyncio.gather(*tasks, return_exceptions=True)
+        raise
     finally:
         close = getattr(model, "close", None)
         if close:
@@ -1142,8 +1327,12 @@ def apply_revisions(workspace: Workspace, run: RunDir, ids: list[str] | None = N
     wanted = {p["id"]: p for p in proposals}
     applied = []
     system = read_json(run.path / "manifest.json")["system"]
-    for path in source_paths(workspace.sources, system):
-        data = yaml.safe_load(path.read_text(encoding="utf-8"))
+    documents = [
+        (path, yaml.safe_load(path.read_text(encoding="utf-8")))
+        for path in source_paths(workspace.sources, system)
+    ]
+    pending = []
+    for path, data in documents:
         changed = False
         for entry in data["entries"]:
             proposal = wanted.get(entry["id"])
@@ -1160,9 +1349,21 @@ def apply_revisions(workspace: Workspace, run: RunDir, ids: list[str] | None = N
             applied.append(entry["id"])
             changed = True
         if changed:
-            path.write_text(
-                yaml.safe_dump(data, allow_unicode=True, sort_keys=False), encoding="utf-8"
-            )
+            pending.append((path, data))
+    # Per-entry proposals cannot detect an alias collision with another entry.
+    # Validate the full candidate system before changing any source file.
+    candidates = [SourceEntry.model_validate(e) for _, doc in documents for e in doc["entries"]]
+    owners = {(e.kind, e.key): e.id for e in candidates}
+    for entry in candidates:
+        for alias in entry.synonyms:
+            key = (entry.kind, alias)
+            if key in owners and owners[key] != entry.id:
+                raise ValueError(
+                    f"修改稿同义词冲突：{alias}（{owners[key]}、{entry.id}）；未写入源文件"
+                )
+            owners[key] = entry.id
+    for path, data in pending:
+        path.write_text(yaml.safe_dump(data, allow_unicode=True, sort_keys=False), encoding="utf-8")
     return sorted(applied)
 
 
@@ -1191,12 +1392,25 @@ def calibration_of(run_path: Path, root: Path) -> tuple[dict, dict]:
     return manifest, merged
 
 
+def report_reference(report: Path, root: Path) -> str:
+    """The report a ledger record cites, in POSIX form: the ledger is hashed into the KB
+    version, so the same evidence must give the same bytes on every platform."""
+    report, root = report.resolve(), root.resolve()
+    return (report.relative_to(root) if report.is_relative_to(root) else report).as_posix()
+
+
 def record_ledger(workspace: Workspace, run_paths: list[Path], root: Path = ROOT) -> dict:
     """Update approvals and revoke rejected content, preserving unrelated versions."""
     written: dict[str, list[str]] = {}
     stale = []
     for run_path in run_paths:
-        manifest, merged = calibration_of(run_path, root)
+        if (run_path.parent / CAMPAIGN_MARKER).is_file():
+            raise ValueError(
+                f"{run_path.parent.as_posix()} 按体系汇总验收，"
+                "须用 scripts.kb_review_campaign --write-ledger 写账本，不能逐批写入"
+            )
+    for run_path in run_paths:
+        manifest = read_json(run_path / "manifest.json")
         system = manifest["system"]
         existing = {
             record.id: record.model_dump()
@@ -1219,6 +1433,17 @@ def record_ledger(workspace: Workspace, run_paths: list[Path], root: Path = ROOT
             # A rejection of older content cannot revoke a newer content approval.
             if record and record["content_sha256"] == manifest["entry_hashes"].get(entry_id):
                 del existing[entry_id]
+        # Revocation is conservative: it must survive failed calibration, incomplete
+        # service calls and undefined kappa. Calibration only authorizes NEW approvals.
+        if existing != before:
+            write_ledger(workspace.reviews, system, list(existing.values()))
+            write_json(
+                run_path / "ledger_revocations.json",
+                dict(
+                    at=now(), records=[before[i] for i in sorted(before.keys() - existing.keys())]
+                ),
+            )
+        manifest, merged = calibration_of(run_path, root)
         if merged["approved_ids"]:
             current = {e["id"]: e for e in load_entries(workspace.sources, system)}
             calls = run.calls()
@@ -1237,10 +1462,7 @@ def record_ledger(workspace: Workspace, run_paths: list[Path], root: Path = ROOT
                     )
                 )
             day = min(c["started_at"] for c in calls)[:10]
-            report = run_path / "report.md"
-            report = (
-                report.relative_to(root).as_posix() if report.is_relative_to(root) else str(report)
-            )
+            report = report_reference(run_path / "report.md", root)
             for entry_id in merged["approved_ids"]:
                 entry = current.get(entry_id)
                 if entry is None or content_hash(entry) != manifest["entry_hashes"][entry_id]:
@@ -1283,6 +1505,8 @@ def main(argv: list[str] | None = None) -> Any:
         command.add_argument("--run-dir", type=Path, required=True)
         if name == "apply":
             command.add_argument("--ids", nargs="*")
+        if name == "revise":
+            command.add_argument("--concurrency", type=int, default=1)
     ledger = commands.add_parser("ledger")
     ledger.add_argument("--run-dir", type=Path, nargs="+", required=True)
     args = parser.parse_args(argv)
@@ -1291,6 +1515,16 @@ def main(argv: list[str] | None = None) -> Any:
     config = load_config(ROOT)
     roles = load_roles(config)
     timeout = float((config.get("kb_review") or {}).get("timeout_s", 120))
+
+    def paid_model(role, spec):
+        return BudgetModel(
+            None,
+            role,
+            spec,
+            ReviewBudget(config, ROOT),
+            make_model=lambda: role_model(spec, timeout),
+        )
+
     if args.command in ("plan", "run"):
         plan = prepare(
             workspace,
@@ -1320,6 +1554,7 @@ def main(argv: list[str] | None = None) -> Any:
             )
         else:
             check_roles(roles, config, REVIEWERS)
+            require_endpoints(roles, REVIEWERS)
             facts = dict(
                 created_at=now(),
                 git=git_state(ROOT),
@@ -1335,6 +1570,7 @@ def main(argv: list[str] | None = None) -> Any:
                     attempts=args.attempts,
                     concurrency=args.concurrency,
                     batches=args.batches,
+                    make_model=paid_model,
                 )
             )
     elif args.command == "merge":
@@ -1342,8 +1578,19 @@ def main(argv: list[str] | None = None) -> Any:
         output = {k: v for k, v in output.items() if k not in ("planted_detail", "code_findings")}
     elif args.command == "revise":
         check_roles(roles, config, ("reviser",))
+        require_endpoints(roles, ("reviser",))
         plan = load_plan(args.run_dir)
-        output = asyncio.run(revise(RunDir(args.run_dir), plan, roles, timeout=timeout))
+        output = asyncio.run(
+            revise(
+                RunDir(args.run_dir),
+                plan,
+                roles,
+                timeout=timeout,
+                make_model=paid_model,
+                vendor_exception=(config.get("kb_review") or {}).get("reviser_vendor_exception"),
+                concurrency=args.concurrency,
+            )
+        )
     elif args.command == "apply":
         output = apply_revisions(workspace, RunDir(args.run_dir), args.ids)
     else:

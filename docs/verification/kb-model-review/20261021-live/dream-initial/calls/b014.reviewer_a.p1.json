@@ -1,0 +1,88 @@
+{
+  "batch": "b014",
+  "reviewer": "reviewer_a",
+  "run_pass": 1,
+  "attempt": 1,
+  "vendor": "deepseek",
+  "requested_model": "deepseek-flash",
+  "returned_model": "deepseek-flash",
+  "api": "openai",
+  "started_at": "2026-10-21T16:00:59+00:00",
+  "finished_at": "2026-10-21T16:01:02+00:00",
+  "latency_s": 3.212,
+  "http_attempts": 1,
+  "finish_reason": "stop",
+  "prompt_sha256": "78b69fe580c37db9bbd0c4e0f452a9068557faf8250f1f3dfe32b94db65ce250",
+  "input_tokens": 2432,
+  "output_tokens": 520,
+  "cached_input_tokens": 384,
+  "usage_available": true,
+  "raw_text": "{\"items\": [{\"item\": \"i01\", \"verdict\": \"pass\", \"issues\": [], \"reason\": \"释义与明星意象的心理联想一致，措辞非宿命化，主题方向中性合理。\"}, {\"item\": \"i02\", \"verdict\": \"pass\", \"issues\": [], \"reason\": \"星星象征愿望与指引符合常见心理联想，无预兆化表述。\"}, {\"item\": \"i03\", \"verdict\": \"reject\", \"issues\": [{\"dimension\": \"consistency\", \"detail\": \"key 为“草”，释义开头却写“高山（山）的释义”，文字与条目对象不符\"}], \"reason\": \"释义内容写的是山而非草，与 key 完全错配。\"}, {\"item\": \"i04\", \"verdict\": \"revise\", \"issues\": [{\"dimension\": \"consistency\", \"detail\": \"synonyms 含“新娘”，但释义只写新郎，新娘并非新郎的同义意象，会误命中\"}], \"reason\": \"同义词“新娘”与 key“新郎”不是同一意象，需移除或拆分。\"}, {\"item\": \"i05\", \"verdict\": \"pass\", \"issues\": [], \"reason\": \"救人释义反映责任感与助人愿望，措辞平和且非宿命化。\"}, {\"item\": \"i06\", \"verdict\": \"pass\", \"issues\": [], \"reason\": \"旅行释义与探索新可能相符，同义词准确，无预兆表述。\"}, {\"item\": \"i07\", \"verdict\": \"pass\", \"issues\": [], \"reason\": \"旗帜与信念、归属、目标关联合理，主题方向一致。\"}, {\"item\": \"i08\", \"verdict\": \"pass\", \"issues\": [], \"reason\": \"日落象征告一段落与休息，符合常见心理联想，无预兆化。\"}, {\"item\": \"i09\", \"verdict\": \"pass\", \"issues\": [], \"reason\": \"春天象征新生与希望贴切，措辞非宿命化。\"}, {\"item\": \"i10\", \"verdict\": \"pass\", \"issues\": [], \"reason\": \"教堂与仪式、承诺、安慰的联想合理，主题方向一致。\"}, {\"item\": \"i11\", \"verdict\": \"pass\", \"issues\": [], \"reason\": \"时钟与时间压力关联合理，self/career 轻微负向与文字一致。\"}]}",
+  "verdicts": {
+    "i01": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "释义与明星意象的心理联想一致，措辞非宿命化，主题方向中性合理。"
+    },
+    "i02": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "星星象征愿望与指引符合常见心理联想，无预兆化表述。"
+    },
+    "i03": {
+      "verdict": "reject",
+      "issues": [
+        {
+          "dimension": "consistency",
+          "detail": "key 为“草”，释义开头却写“高山（山）的释义”，文字与条目对象不符"
+        }
+      ],
+      "reason": "释义内容写的是山而非草，与 key 完全错配。"
+    },
+    "i04": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "consistency",
+          "detail": "synonyms 含“新娘”，但释义只写新郎，新娘并非新郎的同义意象，会误命中"
+        }
+      ],
+      "reason": "同义词“新娘”与 key“新郎”不是同一意象，需移除或拆分。"
+    },
+    "i05": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "救人释义反映责任感与助人愿望，措辞平和且非宿命化。"
+    },
+    "i06": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "旅行释义与探索新可能相符，同义词准确，无预兆表述。"
+    },
+    "i07": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "旗帜与信念、归属、目标关联合理，主题方向一致。"
+    },
+    "i08": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "日落象征告一段落与休息，符合常见心理联想，无预兆化。"
+    },
+    "i09": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "春天象征新生与希望贴切，措辞非宿命化。"
+    },
+    "i10": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "教堂与仪式、承诺、安慰的联想合理，主题方向一致。"
+    },
+    "i11": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "时钟与时间压力关联合理，self/career 轻微负向与文字一致。"
+    }
+  }
+}

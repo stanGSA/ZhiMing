@@ -14,7 +14,7 @@ from knowledge.build import build
 from knowledge.kb import KnowledgeBase
 from plugins.astro.calculator import BODY_ZH
 from plugins.daily.tools import daily_seed
-from plugins.dream.match import DreamMatcher
+from plugins.dream.match import BARE_FRAGMENTS, DISTINCT_HEADS, DreamMatcher
 from plugins.name.strokes import UnihanMissing, char_strokes, unihan
 from plugins.name.wuge import analyze, element, grids, relation, shuli
 from signals.merge import merge_signals
@@ -235,8 +235,31 @@ def test_dream_kb_covers_seed_vocabulary_and_excludes_probes(project):
         oov = {o for item in DREAMS["items"] for o in item["out_of_vocabulary"]}
         assert not oov & set(matcher.aliases)
         for key, synonyms in DREAMS["vocabulary_used"]["synonym_examples"].items():
-            assert all(matcher.match(s)["key"] == key for s in synonyms)
+            for synonym in synonyms:
+                # Live review found that a venue alone does not imply taking an exam.
+                # Keep the older draft dataset intact; assert the corrected boundary.
+                expected = None if (key, synonym) == ("考试", "考场") else key
+                assert matcher.match(synonym)["key"] == expected
         assert kb.db.execute("SELECT count(*) FROM dream_fts").fetchone()[0] > 300
+    finally:
+        kb.close()
+
+
+def test_distinct_heads_are_never_read_as_another_symbol(project):
+    """Review removed 熊猫→熊 etc.; containment must not then interpret 猫, 火车 or 花."""
+    kb = KnowledgeBase(project / "data/kb.sqlite")
+    try:
+        matcher = DreamMatcher(kb.db, kb.version)
+        for query in (*DISTINCT_HEADS, "大熊猫", "一只熊猫", *BARE_FRAGMENTS):
+            assert matcher.match(query)["key"] is None, query
+        assert matcher.scan("梦见一只大熊猫踩着雪花，骑着电动车，旁边有一只黑猫") == ["猫"]
+        assert matcher.match("黑猫")["key"] == "猫"
+        assert matcher.match("钥匙丢了")["key"] == "钥匙"
+        assert matcher.match("动车")["key"] == "火车"
+        # An alias for the head itself, once the knowledge base has one, wins.
+        matcher.aliases["熊猫"] = "熊"
+        assert matcher.match("熊猫")["key"] == matcher.match("大熊猫")["key"] == "熊"
+        assert matcher.scan("梦见熊猫") == ["熊"]
     finally:
         kb.close()
 

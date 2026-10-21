@@ -1,0 +1,68 @@
+{
+  "batch": "b003",
+  "reviewer": "reviewer_a",
+  "run_pass": 2,
+  "attempt": 1,
+  "vendor": "deepseek",
+  "requested_model": "deepseek-flash",
+  "returned_model": "deepseek-flash",
+  "api": "openai",
+  "started_at": "2026-10-21T16:05:25+00:00",
+  "finished_at": "2026-10-21T16:05:28+00:00",
+  "latency_s": 2.478,
+  "http_attempts": 1,
+  "finish_reason": "stop",
+  "prompt_sha256": "8370393f58ff77d3e8526b13375de394e1207df1c38b81faaf8b998938978ed4",
+  "input_tokens": 1804,
+  "output_tokens": 425,
+  "cached_input_tokens": 1664,
+  "usage_available": true,
+  "raw_text": "{\"items\": [{\"item\": \"i01\", \"verdict\": \"pass\", \"issues\": [], \"reason\": \"日主定义准确，明确不作人格断言，无方向偏差。\"}, {\"item\": \"i02\", \"verdict\": \"revise\", \"issues\": [{\"dimension\": \"tradition\", \"detail\": \"“23–24点日柱属于当天，时柱用次日日干起子时”与条目i03的“23:00起日柱换为次日”互相矛盾，两派不能同时成立；且“0–1点为当天早子时”表述含糊，未说明日柱归属。\"}], \"reason\": \"早晚子时规则内部自相矛盾且表述含糊。\"}, {\"item\": \"i03\", \"verdict\": \"pass\", \"issues\": [], \"reason\": \"23点换日柱、子时干由次日日干推、年月柱按节气，表述自洽传统。\"}, {\"item\": \"i04\", \"verdict\": \"pass\", \"issues\": [], \"reason\": \"大运顺逆、三天折一年、首运从月柱移一位均符合传统，且声明不代表现实事件。\"}, {\"item\": \"i05\", \"verdict\": \"pass\", \"issues\": [], \"reason\": \"立春换年、十二节换月表述准确。\"}, {\"item\": \"i06\", \"verdict\": \"revise\", \"issues\": [{\"dimension\": \"plain_language\", \"detail\": \"“视太阳时减平太阳时的均时差”易被误读为均时差=视太阳时−平太阳时，方向表述可更清楚；且未明确均时差公式以平太阳时为正方向加减。\"}], \"reason\": \"均时差加减方向的表述易产生误导。\"}, {\"item\": \"i07\", \"verdict\": \"pass\", \"issues\": [], \"reason\": \"时辰未知时只给三柱并标明不确定，处理合理。\"}]}",
+  "verdicts": {
+    "i01": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "日主定义准确，明确不作人格断言，无方向偏差。"
+    },
+    "i02": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "tradition",
+          "detail": "“23–24点日柱属于当天，时柱用次日日干起子时”与条目i03的“23:00起日柱换为次日”互相矛盾，两派不能同时成立；且“0–1点为当天早子时”表述含糊，未说明日柱归属。"
+        }
+      ],
+      "reason": "早晚子时规则内部自相矛盾且表述含糊。"
+    },
+    "i03": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "23点换日柱、子时干由次日日干推、年月柱按节气，表述自洽传统。"
+    },
+    "i04": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "大运顺逆、三天折一年、首运从月柱移一位均符合传统，且声明不代表现实事件。"
+    },
+    "i05": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "立春换年、十二节换月表述准确。"
+    },
+    "i06": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "plain_language",
+          "detail": "“视太阳时减平太阳时的均时差”易被误读为均时差=视太阳时−平太阳时，方向表述可更清楚；且未明确均时差公式以平太阳时为正方向加减。"
+        }
+      ],
+      "reason": "均时差加减方向的表述易产生误导。"
+    },
+    "i07": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "时辰未知时只给三柱并标明不确定，处理合理。"
+    }
+  }
+}

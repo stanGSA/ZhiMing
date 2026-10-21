@@ -1,0 +1,96 @@
+{
+  "batch": "b008",
+  "reviewer": "reviewer_a",
+  "run_pass": 2,
+  "attempt": 1,
+  "vendor": "deepseek",
+  "requested_model": "deepseek-flash",
+  "returned_model": "deepseek-flash",
+  "api": "openai",
+  "started_at": "2026-10-21T16:14:55+00:00",
+  "finished_at": "2026-10-21T16:14:58+00:00",
+  "latency_s": 3.018,
+  "http_attempts": 1,
+  "finish_reason": "stop",
+  "prompt_sha256": "9c9bd64e5edbee3add36c122005102fae87335a3192f9b556d7a07b2464b9f5b",
+  "input_tokens": 2491,
+  "output_tokens": 509,
+  "cached_input_tokens": 2304,
+  "usage_available": true,
+  "raw_text": "{\"items\":[{\"item\":\"i01\",\"verdict\":\"pass\",\"issues\":[],\"reason\":\"释义温和、非宿命，主题方向全为0与文字中性一致，无明显问题。\"},{\"item\":\"i02\",\"verdict\":\"pass\",\"issues\":[],\"reason\":\"象征稳重与支持，self与relationship略偏正与文字一致，无宿命化。\"},{\"item\":\"i03\",\"verdict\":\"revise\",\"issues\":[{\"dimension\":\"medical_legal_finance\",\"detail\":\"“这代表身体已有慢性疾病，不必就医也会自愈”是对健康状况的确定性断言，且与免责话术矛盾\"},{\"dimension\":\"certainty\",\"detail\":\"以“代表”作确定性医学结论，属宿命化/确定性表述\"}],\"reason\":\"末尾含医疗确定性结论，需删除或改为非诊断性表述。\"},{\"item\":\"i04\",\"verdict\":\"pass\",\"issues\":[],\"reason\":\"天空象征开阔与可能性，self微正一致，无预兆化表述。\"},{\"item\":\"i05\",\"verdict\":\"pass\",\"issues\":[],\"reason\":\"天鹅象征优雅忠贞，self与relationship微正一致，措辞平和。\"},{\"item\":\"i06\",\"verdict\":\"revise\",\"issues\":[{\"dimension\":\"consistency\",\"detail\":\"key为“声音”，但释义只讲表达受阻，synonyms全为失声/说不出话，与“声音”意象不完全对应，易误导\"},{\"dimension\":\"plain_language\",\"detail\":\"将“声音”直接等同“表达受阻”未说明依据，白话解释略偏\"}],\"reason\":\"释义与“声音”这一key及失声类同义词的对应不够一致。\"},{\"item\":\"i07\",\"verdict\":\"pass\",\"issues\":[],\"reason\":\"城市释义中性、心理化，主题全0一致。\"},{\"item\":\"i08\",\"verdict\":\"pass\",\"issues\":[],\"reason\":\"大海联系情绪与未知，self微正，无灾害断言。\"},{\"item\":\"i09\",\"verdict\":\"pass\",\"issues\":[],\"reason\":\"墓地措辞平和，明确不预示死亡，self微负一致。\"},{\"item\":\"i10\",\"verdict\":\"pass\",\"issues\":[],\"reason\":\"复活释义积极但克制，self微正，未宿命化。\"},{\"item\":\"i11\",\"verdict\":\"pass\",\"issues\":[],\"reason\":\"墙象征界限与保护，self/relationship微负与阻隔含义一致。\"}]}",
+  "verdicts": {
+    "i01": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "释义温和、非宿命，主题方向全为0与文字中性一致，无明显问题。"
+    },
+    "i02": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "象征稳重与支持，self与relationship略偏正与文字一致，无宿命化。"
+    },
+    "i03": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "medical_legal_finance",
+          "detail": "“这代表身体已有慢性疾病，不必就医也会自愈”是对健康状况的确定性断言，且与免责话术矛盾"
+        },
+        {
+          "dimension": "certainty",
+          "detail": "以“代表”作确定性医学结论，属宿命化/确定性表述"
+        }
+      ],
+      "reason": "末尾含医疗确定性结论，需删除或改为非诊断性表述。"
+    },
+    "i04": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "天空象征开阔与可能性，self微正一致，无预兆化表述。"
+    },
+    "i05": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "天鹅象征优雅忠贞，self与relationship微正一致，措辞平和。"
+    },
+    "i06": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "consistency",
+          "detail": "key为“声音”，但释义只讲表达受阻，synonyms全为失声/说不出话，与“声音”意象不完全对应，易误导"
+        },
+        {
+          "dimension": "plain_language",
+          "detail": "将“声音”直接等同“表达受阻”未说明依据，白话解释略偏"
+        }
+      ],
+      "reason": "释义与“声音”这一key及失声类同义词的对应不够一致。"
+    },
+    "i07": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "城市释义中性、心理化，主题全0一致。"
+    },
+    "i08": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "大海联系情绪与未知，self微正，无灾害断言。"
+    },
+    "i09": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "墓地措辞平和，明确不预示死亡，self微负一致。"
+    },
+    "i10": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "复活释义积极但克制，self微正，未宿命化。"
+    },
+    "i11": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "墙象征界限与保护，self/relationship微负与阻隔含义一致。"
+    }
+  }
+}

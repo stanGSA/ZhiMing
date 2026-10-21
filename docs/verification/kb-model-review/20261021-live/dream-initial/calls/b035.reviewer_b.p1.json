@@ -1,0 +1,107 @@
+{
+  "batch": "b035",
+  "reviewer": "reviewer_b",
+  "run_pass": 1,
+  "attempt": 1,
+  "vendor": "openai",
+  "requested_model": "gpt-6.1-sol",
+  "returned_model": "gpt-6.1-sol",
+  "api": "openai",
+  "started_at": "2026-10-21T16:13:06+00:00",
+  "finished_at": "2026-10-21T16:13:39+00:00",
+  "latency_s": 32.889,
+  "http_attempts": 1,
+  "finish_reason": "stop",
+  "prompt_sha256": "407ba624a18afb8aa927afec9a6583fac6393992450fdba26c1578c6ddb339b5",
+  "input_tokens": 2776,
+  "output_tokens": 1326,
+  "cached_input_tokens": null,
+  "usage_available": true,
+  "raw_text": "{\n  \"items\": [\n    {\n      \"item\": \"i01\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"飞机与目标、变化及方向感的联想合理，主题倾向中性，且明确不预示出行安全。\"\n    },\n    {\n      \"item\": \"i02\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"风与变化、难以把握的力量等联想相符，文字中性，没有灾害预兆式表述。\"\n    },\n    {\n      \"item\": \"i03\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"马与活力、行动及前进愿望的联想合理，自我和事业的轻微正向倾向与文字一致。\"\n    },\n    {\n      \"item\": \"i04\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"饺子与团圆、家庭及照顾的联想符合常见文化理解，关系主题略偏正向合理。\"\n    },\n    {\n      \"item\": \"i05\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"飞翔与自由、摆脱限制及自信的联想合理，自我主题偏正向与文字一致。\"\n    },\n    {\n      \"item\": \"i06\",\n      \"verdict\": \"revise\",\n      \"issues\": [\n        {\n          \"dimension\": \"plain_language\",\n          \"detail\": \"“只反映心理状态”排除了实际饥饿等身体感受进入梦境的可能；建议改为“可能与未满足的心理需求或实际饥饿感有关”。\"\n        }\n      ],\n      \"reason\": \"未满足需求的解释合理，但不能将饥饿梦限定为心理状态的反映。\"\n    },\n    {\n      \"item\": \"i07\",\n      \"verdict\": \"revise\",\n      \"issues\": [\n        {\n          \"dimension\": \"theme_direction\",\n          \"detail\": \"文字仅涉及权威、责任和对认可的在意，没有明确表达事业受阻或压力，career 的负向倾向缺少文字支持；建议设为中性，或补充可能存在的工作压力。\"\n        }\n      ],\n      \"reason\": \"核心联想合理，但事业负向倾向与当前中性表述不够一致。\"\n    },\n    {\n      \"item\": \"i08\",\n      \"verdict\": \"reject\",\n      \"issues\": [\n        {\n          \"dimension\": \"tradition\",\n          \"detail\": \"条目对象为乐器，正文却解释高山及自然景象，解释对象错误。\"\n        },\n        {\n          \"dimension\": \"consistency\",\n          \"detail\": \"正文与 key“乐器”、同义词“钢琴、吉他、弹琴”及关键词不符，需要替换为乐器相关释义。\"\n        }\n      ],\n      \"reason\": \"正文误用了山的释义，与条目对象完全不符。\"\n    },\n    {\n      \"item\": \"i09\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"骆驼与耐力、负重前行的联想合理，自我和事业的轻微正向倾向可由坚持与承受能力支持。\"\n    },\n    {\n      \"item\": \"i10\",\n      \"verdict\": \"revise\",\n      \"issues\": [\n        {\n          \"dimension\": \"theme_direction\",\n          \"detail\": \"“根本结构”“被掩藏的旧事”本身不明确偏负向，正文也强调结合情绪理解，self 的负向倾向缺少依据；建议设为中性，或明确补充不安、旧事负担等可能感受。\"\n        }\n      ],\n      \"reason\": \"意象解释平和且合理，但自我主题的负向标注未得到正文支持。\"\n    },\n    {\n      \"item\": \"i11\",\n      \"verdict\": \"revise\",\n      \"issues\": [\n        {\n          \"dimension\": \"theme_direction\",\n          \"detail\": \"正文中的“自我价值”“被欣赏”和“价值感”主要指心理体验，并未表达财务偏顺；建议将 finance 设为中性，避免将心理价值感等同于财务利好。\"\n        }\n      ],\n      \"reason\": \"自我主题的正向倾向合理，但财务正向倾向超出了文字表达的范围。\"\n    }\n  ]\n}",
+  "verdicts": {
+    "i01": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "飞机与目标、变化及方向感的联想合理，主题倾向中性，且明确不预示出行安全。"
+    },
+    "i02": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "风与变化、难以把握的力量等联想相符，文字中性，没有灾害预兆式表述。"
+    },
+    "i03": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "马与活力、行动及前进愿望的联想合理，自我和事业的轻微正向倾向与文字一致。"
+    },
+    "i04": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "饺子与团圆、家庭及照顾的联想符合常见文化理解，关系主题略偏正向合理。"
+    },
+    "i05": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "飞翔与自由、摆脱限制及自信的联想合理，自我主题偏正向与文字一致。"
+    },
+    "i06": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "plain_language",
+          "detail": "“只反映心理状态”排除了实际饥饿等身体感受进入梦境的可能；建议改为“可能与未满足的心理需求或实际饥饿感有关”。"
+        }
+      ],
+      "reason": "未满足需求的解释合理，但不能将饥饿梦限定为心理状态的反映。"
+    },
+    "i07": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "theme_direction",
+          "detail": "文字仅涉及权威、责任和对认可的在意，没有明确表达事业受阻或压力，career 的负向倾向缺少文字支持；建议设为中性，或补充可能存在的工作压力。"
+        }
+      ],
+      "reason": "核心联想合理，但事业负向倾向与当前中性表述不够一致。"
+    },
+    "i08": {
+      "verdict": "reject",
+      "issues": [
+        {
+          "dimension": "tradition",
+          "detail": "条目对象为乐器，正文却解释高山及自然景象，解释对象错误。"
+        },
+        {
+          "dimension": "consistency",
+          "detail": "正文与 key“乐器”、同义词“钢琴、吉他、弹琴”及关键词不符，需要替换为乐器相关释义。"
+        }
+      ],
+      "reason": "正文误用了山的释义，与条目对象完全不符。"
+    },
+    "i09": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "骆驼与耐力、负重前行的联想合理，自我和事业的轻微正向倾向可由坚持与承受能力支持。"
+    },
+    "i10": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "theme_direction",
+          "detail": "“根本结构”“被掩藏的旧事”本身不明确偏负向，正文也强调结合情绪理解，self 的负向倾向缺少依据；建议设为中性，或明确补充不安、旧事负担等可能感受。"
+        }
+      ],
+      "reason": "意象解释平和且合理，但自我主题的负向标注未得到正文支持。"
+    },
+    "i11": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "theme_direction",
+          "detail": "正文中的“自我价值”“被欣赏”和“价值感”主要指心理体验，并未表达财务偏顺；建议将 finance 设为中性，避免将心理价值感等同于财务利好。"
+        }
+      ],
+      "reason": "自我主题的正向倾向合理，但财务正向倾向超出了文字表达的范围。"
+    }
+  }
+}

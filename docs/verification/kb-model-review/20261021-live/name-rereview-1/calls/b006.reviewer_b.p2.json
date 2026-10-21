@@ -1,0 +1,92 @@
+{
+  "batch": "b006",
+  "reviewer": "reviewer_b",
+  "run_pass": 2,
+  "attempt": 1,
+  "vendor": "openai",
+  "requested_model": "gpt-6.1-sol",
+  "returned_model": "gpt-6.1-sol",
+  "api": "openai",
+  "started_at": "2026-10-21T16:45:45+00:00",
+  "finished_at": "2026-10-21T16:46:09+00:00",
+  "latency_s": 24.015,
+  "http_attempts": 1,
+  "finish_reason": "stop",
+  "prompt_sha256": "621d6ad7dd9660c70231a6b412057b6633e9080908463180f75a4087d7ff2273",
+  "input_tokens": 3750,
+  "output_tokens": 1038,
+  "cached_input_tokens": 3747,
+  "usage_available": true,
+  "raw_text": "{\n  \"items\": [\n    {\n      \"item\": \"i01\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"五行生克关系准确，自我状态略偏阻的映射与协调、精力分配的提示一致，且未作命运断言。\"\n    },\n    {\n      \"item\": \"i02\",\n      \"verdict\": \"reject\",\n      \"issues\": [\n        {\n          \"dimension\": \"consistency\",\n          \"detail\": \"key 为“火水土”，正文却全篇解释“土土土”，条目对象明显错位。\"\n        },\n        {\n          \"dimension\": \"theme_direction\",\n          \"detail\": \"正文以“协调”“较顺”为主要倾向，theme_map 却将自我、事业和关系均标为负向，与文字不一致。\"\n        }\n      ],\n      \"reason\": \"正文解释了另一组三才配置，核心内容与 key 不符。\"\n    },\n    {\n      \"item\": \"i03\",\n      \"verdict\": \"revise\",\n      \"issues\": [\n        {\n          \"dimension\": \"theme_direction\",\n          \"detail\": \"文字呈现外部支持与自我需求受牵制并存，整体强调“需要协调”，不足以支持 self 单独偏正；relationship 偏负也缺少明确的人际关系层面的文字依据，建议调整映射或补足相应表述。\"\n        }\n      ],\n      \"reason\": \"生克解释准确且措辞审慎，但主题映射未充分对应正文所述的支持与协调结构。\"\n    },\n    {\n      \"item\": \"i04\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"生克关系准确，正文明确不预设各主题的正负走向，与全中性的映射一致。\"\n    },\n    {\n      \"item\": \"i05\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"火克金、土生金的解释准确，压力与支持均作为开放的观察线索，中性映射合理。\"\n    },\n    {\n      \"item\": \"i06\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"两组水克火关系表述正确，略偏阻的主题倾向与“张力较多”一致，且明确限定为民间象征解读。\"\n    },\n    {\n      \"item\": \"i07\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"相克与同五行关系解释准确，自我略偏阻对应外部要求与个人边界的张力，没有确定性断言。\"\n    },\n    {\n      \"item\": \"i08\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"五行关系与条目对象一致，自我及关系略偏阻与个人意愿、外部要求之间需要协调的提示相符。\"\n    },\n    {\n      \"item\": \"i09\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"准确区分比和与整体吉凶，兼述积极和过旺的象征，以中性映射表达混合倾向合理。\"\n    },\n    {\n      \"item\": \"i10\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"土生金、土克水的方向准确，关系略偏阻与对身边人事的要求需要沟通协调相符。\"\n    },\n    {\n      \"item\": \"i11\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"水克火、金生水的解释准确，略偏阻的自我与关系倾向对应个人意愿和外部期待的协调议题。\"\n    }\n  ]\n}",
+  "verdicts": {
+    "i01": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "五行生克关系准确，自我状态略偏阻的映射与协调、精力分配的提示一致，且未作命运断言。"
+    },
+    "i02": {
+      "verdict": "reject",
+      "issues": [
+        {
+          "dimension": "consistency",
+          "detail": "key 为“火水土”，正文却全篇解释“土土土”，条目对象明显错位。"
+        },
+        {
+          "dimension": "theme_direction",
+          "detail": "正文以“协调”“较顺”为主要倾向，theme_map 却将自我、事业和关系均标为负向，与文字不一致。"
+        }
+      ],
+      "reason": "正文解释了另一组三才配置，核心内容与 key 不符。"
+    },
+    "i03": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "theme_direction",
+          "detail": "文字呈现外部支持与自我需求受牵制并存，整体强调“需要协调”，不足以支持 self 单独偏正；relationship 偏负也缺少明确的人际关系层面的文字依据，建议调整映射或补足相应表述。"
+        }
+      ],
+      "reason": "生克解释准确且措辞审慎，但主题映射未充分对应正文所述的支持与协调结构。"
+    },
+    "i04": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "生克关系准确，正文明确不预设各主题的正负走向，与全中性的映射一致。"
+    },
+    "i05": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "火克金、土生金的解释准确，压力与支持均作为开放的观察线索，中性映射合理。"
+    },
+    "i06": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "两组水克火关系表述正确，略偏阻的主题倾向与“张力较多”一致，且明确限定为民间象征解读。"
+    },
+    "i07": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "相克与同五行关系解释准确，自我略偏阻对应外部要求与个人边界的张力，没有确定性断言。"
+    },
+    "i08": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "五行关系与条目对象一致，自我及关系略偏阻与个人意愿、外部要求之间需要协调的提示相符。"
+    },
+    "i09": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "准确区分比和与整体吉凶，兼述积极和过旺的象征，以中性映射表达混合倾向合理。"
+    },
+    "i10": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "土生金、土克水的方向准确，关系略偏阻与对身边人事的要求需要沟通协调相符。"
+    },
+    "i11": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "水克火、金生水的解释准确，略偏阻的自我与关系倾向对应个人意愿和外部期待的协调议题。"
+    }
+  }
+}

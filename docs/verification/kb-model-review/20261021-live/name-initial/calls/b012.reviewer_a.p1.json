@@ -1,0 +1,98 @@
+{
+  "batch": "b012",
+  "reviewer": "reviewer_a",
+  "run_pass": 1,
+  "attempt": 1,
+  "vendor": "deepseek",
+  "requested_model": "deepseek-flash",
+  "returned_model": "deepseek-flash",
+  "api": "openai",
+  "started_at": "2026-10-21T16:00:54+00:00",
+  "finished_at": "2026-10-21T16:00:58+00:00",
+  "latency_s": 3.989,
+  "http_attempts": 1,
+  "finish_reason": "stop",
+  "prompt_sha256": "30b68c8428cec66d2d8c238821835f848df97cc0bd434e5fd8f35b485dc802b2",
+  "input_tokens": 2748,
+  "output_tokens": 797,
+  "cached_input_tokens": 384,
+  "usage_available": true,
+  "raw_text": "{\"items\": [{\"item\": \"i01\", \"verdict\": \"pass\", \"issues\": [], \"reason\": \"三才火木水为天生人、水生木，整体偏顺，theme_map 方向与文字一致，措辞为非宿命化的观察线索。\"}, {\"item\": \"i02\", \"verdict\": \"pass\", \"issues\": [], \"reason\": \"火水火为水克火、火克水，张力判断与文字及主题负向一致，措辞未宿命化。\"}, {\"item\": \"i03\", \"verdict\": \"revise\", \"issues\": [{\"dimension\": \"tradition\", \"detail\": \"人格水与地格木应为“生”（水生木）而非“被生”？原文标“生”正确，但 theme_map 中 relationship 为 0.1、self 为 -0.1，与“需协调”及“愿意投入”的整体略不统一；另外“生”关系写为“愿意为……投入”，与 i09 一致，问题不在传统义。实际可接受的偏差在于 theme_map 的 relationship 正向而关键词为“需要协调”，方向不一致。\"}], \"reason\": \"theme_map 中 relationship 为正向 0.1，但关键词与文字整体为“需要协调”，方向不一致，需修正。\"}, {\"item\": \"i04\", \"verdict\": \"revise\", \"issues\": [{\"dimension\": \"theme_direction\", \"detail\": \"self 为 +0.1，但天格火生人格木属“被生”，且整体关键词为“需要协调”，self 正向与整体张力不符。\"}], \"reason\": \"self 的正向值与“需要协调”的整体基调不一致。\"}, {\"item\": \"i05\", \"verdict\": \"revise\", \"issues\": [{\"dimension\": \"theme_direction\", \"detail\": \"self 为 +0.1，但整体关键词为“需要协调”，人格木被地格金克且天格火生木，self 正向与整体张力基调不统一。\"}], \"reason\": \"self 的正向值与整体“需要协调”的基调不一致。\"}, {\"item\": \"i06\", \"verdict\": \"pass\", \"issues\": [], \"reason\": \"火水土为水克火、土克水，张力判断与主题负向一致，措辞非宿命化。\"}, {\"item\": \"i07\", \"verdict\": \"pass\", \"issues\": [], \"reason\": \"火木木为天生人、木木比和，整体较顺，theme_map 正向一致，措辞为观察线索。\"}, {\"item\": \"i08\", \"verdict\": \"revise\", \"issues\": [{\"dimension\": \"theme_direction\", \"detail\": \"relationship 为 +0.1，但人格水与地格水为“同”关系，整体关键词为“需要协调”，relationship 正向与张力基调不符。\"}], \"reason\": \"relationship 的正向值与整体“需要协调”的基调不一致。\"}, {\"item\": \"i09\", \"verdict\": \"pass\", \"issues\": [], \"reason\": \"火木火为天生人、木生火，整体较顺，theme_map 正向一致，措辞非宿命化。\"}, {\"item\": \"i10\", \"verdict\": \"revise\", \"issues\": [{\"dimension\": \"theme_direction\", \"detail\": \"relationship 为 +0.1，但人格水与地格金为“被生”，且整体关键词为“需要协调”，relationship 正向与整体张力基调不一致。\"}], \"reason\": \"relationship 的正向值与整体“需要协调”的基调不一致。\"}]}",
+  "verdicts": {
+    "i01": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "三才火木水为天生人、水生木，整体偏顺，theme_map 方向与文字一致，措辞为非宿命化的观察线索。"
+    },
+    "i02": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "火水火为水克火、火克水，张力判断与文字及主题负向一致，措辞未宿命化。"
+    },
+    "i03": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "tradition",
+          "detail": "人格水与地格木应为“生”（水生木）而非“被生”？原文标“生”正确，但 theme_map 中 relationship 为 0.1、self 为 -0.1，与“需协调”及“愿意投入”的整体略不统一；另外“生”关系写为“愿意为……投入”，与 i09 一致，问题不在传统义。实际可接受的偏差在于 theme_map 的 relationship 正向而关键词为“需要协调”，方向不一致。"
+        }
+      ],
+      "reason": "theme_map 中 relationship 为正向 0.1，但关键词与文字整体为“需要协调”，方向不一致，需修正。"
+    },
+    "i04": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "theme_direction",
+          "detail": "self 为 +0.1，但天格火生人格木属“被生”，且整体关键词为“需要协调”，self 正向与整体张力不符。"
+        }
+      ],
+      "reason": "self 的正向值与“需要协调”的整体基调不一致。"
+    },
+    "i05": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "theme_direction",
+          "detail": "self 为 +0.1，但整体关键词为“需要协调”，人格木被地格金克且天格火生木，self 正向与整体张力基调不统一。"
+        }
+      ],
+      "reason": "self 的正向值与整体“需要协调”的基调不一致。"
+    },
+    "i06": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "火水土为水克火、土克水，张力判断与主题负向一致，措辞非宿命化。"
+    },
+    "i07": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "火木木为天生人、木木比和，整体较顺，theme_map 正向一致，措辞为观察线索。"
+    },
+    "i08": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "theme_direction",
+          "detail": "relationship 为 +0.1，但人格水与地格水为“同”关系，整体关键词为“需要协调”，relationship 正向与张力基调不符。"
+        }
+      ],
+      "reason": "relationship 的正向值与整体“需要协调”的基调不一致。"
+    },
+    "i09": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "火木火为天生人、木生火，整体较顺，theme_map 正向一致，措辞非宿命化。"
+    },
+    "i10": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "theme_direction",
+          "detail": "relationship 为 +0.1，但人格水与地格金为“被生”，且整体关键词为“需要协调”，relationship 正向与整体张力基调不一致。"
+        }
+      ],
+      "reason": "relationship 的正向值与整体“需要协调”的基调不一致。"
+    }
+  }
+}

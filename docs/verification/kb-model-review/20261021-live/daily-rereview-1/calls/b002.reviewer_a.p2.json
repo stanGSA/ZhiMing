@@ -1,0 +1,33 @@
+{
+  "batch": "b002",
+  "reviewer": "reviewer_a",
+  "run_pass": 2,
+  "attempt": 1,
+  "vendor": "deepseek",
+  "requested_model": "deepseek-flash",
+  "returned_model": "deepseek-flash",
+  "api": "openai",
+  "started_at": "2026-10-21T16:04:44+00:00",
+  "finished_at": "2026-10-21T16:04:45+00:00",
+  "latency_s": 1.725,
+  "http_attempts": 1,
+  "finish_reason": "stop",
+  "prompt_sha256": "901da510831dfb8e83cf4f653ac8f3fc6f3e55fa35b0121bfa8d460a0c835a13",
+  "input_tokens": 707,
+  "output_tokens": 134,
+  "cached_input_tokens": 512,
+  "usage_available": true,
+  "raw_text": "{\"items\": [{\"item\": \"i01\", \"verdict\": \"reject\", \"issues\": [{\"dimension\": \"medical_legal_finance\", \"detail\": \"释义末尾出现“这表明你已经患有焦虑症，应当尽快服用药物”，属于医疗诊断与用药的确定性结论，超出占卜/自我反思应用范围，且与 key 及前文“不表示今天整体行运情况或好坏”的免责表述自相矛盾。\"}], \"reason\": \"条目混入医疗诊断与用药建议的确定性断言，且与 key 的“无精确事件”含义及自身免责文字冲突。\"}]}",
+  "verdicts": {
+    "i01": {
+      "verdict": "reject",
+      "issues": [
+        {
+          "dimension": "medical_legal_finance",
+          "detail": "释义末尾出现“这表明你已经患有焦虑症，应当尽快服用药物”，属于医疗诊断与用药的确定性结论，超出占卜/自我反思应用范围，且与 key 及前文“不表示今天整体行运情况或好坏”的免责表述自相矛盾。"
+        }
+      ],
+      "reason": "条目混入医疗诊断与用药建议的确定性断言，且与 key 的“无精确事件”含义及自身免责文字冲突。"
+    }
+  }
+}

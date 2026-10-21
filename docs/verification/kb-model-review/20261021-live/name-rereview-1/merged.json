@@ -1,0 +1,279 @@
+{
+  "system": "name",
+  "entries": 106,
+  "planted": 11,
+  "metrics": {
+    "pass_rate": 0.8302,
+    "detection": {
+      "reviewer_a": 0.9091,
+      "reviewer_b": 1.0
+    },
+    "detection_merged": 1.0,
+    "rerun": {
+      "reviewer_a": 0.9145,
+      "reviewer_b": 0.9829
+    },
+    "kappa": 0.3205,
+    "observed_agreement": 0.8774,
+    "verdict_counts": {
+      "reviewer_a": {
+        "pass": 97,
+        "revise": 9
+      },
+      "reviewer_b": {
+        "pass": 94,
+        "revise": 10,
+        "reject": 2
+      }
+    }
+  },
+  "gates": {
+    "pass_rate": false,
+    "detection_merged": true,
+    "detection_single": true,
+    "rerun": true,
+    "kappa": false,
+    "complete": true
+  },
+  "thresholds": {
+    "pass_rate": 0.95,
+    "detection_merged": 0.9,
+    "detection_single": 0.8,
+    "rerun": 0.9,
+    "kappa": 0.6
+  },
+  "calibrated": false,
+  "passed": false,
+  "approved": 88,
+  "queued": 18,
+  "incomplete": [],
+  "planted_detail": [
+    {
+      "ref": "planted-001",
+      "original": "kb:name:sancai:土水火",
+      "mutation": "medical",
+      "reviewer_a": "reject",
+      "reviewer_b": "reject"
+    },
+    {
+      "ref": "planted-002",
+      "original": "kb:name:shuli:35",
+      "mutation": "foreign_text",
+      "reviewer_a": "reject",
+      "reviewer_b": "reject"
+    },
+    {
+      "ref": "planted-003",
+      "original": "kb:name:shuli:62",
+      "mutation": "flip_signs",
+      "reviewer_a": "revise",
+      "reviewer_b": "revise"
+    },
+    {
+      "ref": "planted-004",
+      "original": "kb:name:shuli:58",
+      "mutation": "fatalistic",
+      "reviewer_a": "reject",
+      "reviewer_b": "revise"
+    },
+    {
+      "ref": "planted-005",
+      "original": "kb:name:sancai:土土金",
+      "mutation": "fatalistic",
+      "reviewer_a": "reject",
+      "reviewer_b": "revise"
+    },
+    {
+      "ref": "planted-006",
+      "original": "kb:name:sancai:火水土",
+      "mutation": "foreign_text",
+      "reviewer_a": "reject",
+      "reviewer_b": "reject"
+    },
+    {
+      "ref": "planted-007",
+      "original": "kb:name:sancai:土水木",
+      "mutation": "flip_signs",
+      "reviewer_a": "pass",
+      "reviewer_b": "revise"
+    },
+    {
+      "ref": "planted-008",
+      "original": "kb:name:shuli:27",
+      "mutation": "medical",
+      "reviewer_a": "reject",
+      "reviewer_b": "reject"
+    },
+    {
+      "ref": "planted-009",
+      "original": "kb:name:shuli:21",
+      "mutation": "foreign_text",
+      "reviewer_a": "reject",
+      "reviewer_b": "reject"
+    },
+    {
+      "ref": "planted-010",
+      "original": "kb:name:shuli:24",
+      "mutation": "flip_signs",
+      "reviewer_a": "revise",
+      "reviewer_b": "revise"
+    },
+    {
+      "ref": "planted-011",
+      "original": "kb:name:shuli:45",
+      "mutation": "fatalistic",
+      "reviewer_a": "reject",
+      "reviewer_b": "revise"
+    }
+  ],
+  "detection_by_mutation": {
+    "medical": {
+      "total": 2,
+      "reviewer_a": 2,
+      "reviewer_b": 2
+    },
+    "foreign_text": {
+      "total": 3,
+      "reviewer_a": 3,
+      "reviewer_b": 3
+    },
+    "flip_signs": {
+      "total": 3,
+      "reviewer_a": 2,
+      "reviewer_b": 3
+    },
+    "fatalistic": {
+      "total": 3,
+      "reviewer_a": 3,
+      "reviewer_b": 3
+    }
+  },
+  "usage": {
+    "reviewer_a": {
+      "calls": 26,
+      "input_tokens": 74366,
+      "output_tokens": 12367,
+      "latency_s": 68.985,
+      "returned_models": [
+        "deepseek-flash"
+      ],
+      "errors": {},
+      "retried_calls": 0,
+      "http_retries": 0,
+      "cost": null,
+      "known_cost_estimate": null,
+      "usage_complete": true,
+      "cost_basis": "配置单价估算，非账单；服务失败的用量可能未知",
+      "currency": null
+    },
+    "reviewer_b": {
+      "calls": 26,
+      "input_tokens": 82514,
+      "output_tokens": 23937,
+      "latency_s": 585.816,
+      "returned_models": [
+        "gpt-6.1-sol"
+      ],
+      "errors": {},
+      "retried_calls": 0,
+      "http_retries": 0,
+      "cost": null,
+      "known_cost_estimate": null,
+      "usage_complete": true,
+      "cost_basis": "配置单价估算，非账单；服务失败的用量可能未知",
+      "currency": null
+    }
+  },
+  "code_findings": [],
+  "human_reviewed_rate": 0.0,
+  "approved_ids": [
+    "kb:name:convention:ambiguous_form",
+    "kb:name:grid:地格",
+    "kb:name:grid:外格",
+    "kb:name:grid:总格",
+    "kb:name:sancai:土土土",
+    "kb:name:sancai:土土木",
+    "kb:name:sancai:土土水",
+    "kb:name:sancai:土土火",
+    "kb:name:sancai:土土金",
+    "kb:name:sancai:土木土",
+    "kb:name:sancai:土木木",
+    "kb:name:sancai:土木水",
+    "kb:name:sancai:土木火",
+    "kb:name:sancai:土木金",
+    "kb:name:sancai:土水土",
+    "kb:name:sancai:土水火",
+    "kb:name:sancai:土火土",
+    "kb:name:sancai:土火木",
+    "kb:name:sancai:土火火",
+    "kb:name:sancai:水水水",
+    "kb:name:sancai:水金火",
+    "kb:name:sancai:火木木",
+    "kb:name:sancai:火木火",
+    "kb:name:sancai:火木金",
+    "kb:name:sancai:火水土",
+    "kb:name:sancai:火水木",
+    "kb:name:sancai:火水水",
+    "kb:name:sancai:火水火",
+    "kb:name:sancai:火水金",
+    "kb:name:sancai:火火火",
+    "kb:name:sancai:火金土",
+    "kb:name:sancai:火金水",
+    "kb:name:sancai:火金金",
+    "kb:name:sancai:金土木",
+    "kb:name:sancai:金土水",
+    "kb:name:sancai:金水木",
+    "kb:name:sancai:金水水",
+    "kb:name:sancai:金水火",
+    "kb:name:sancai:金水金",
+    "kb:name:sancai:金火水",
+    "kb:name:sancai:金火金",
+    "kb:name:shuli:19",
+    "kb:name:shuli:2",
+    "kb:name:shuli:20",
+    "kb:name:shuli:21",
+    "kb:name:shuli:22",
+    "kb:name:shuli:23",
+    "kb:name:shuli:24",
+    "kb:name:shuli:25",
+    "kb:name:shuli:27",
+    "kb:name:shuli:28",
+    "kb:name:shuli:29",
+    "kb:name:shuli:3",
+    "kb:name:shuli:30",
+    "kb:name:shuli:31",
+    "kb:name:shuli:32",
+    "kb:name:shuli:33",
+    "kb:name:shuli:34",
+    "kb:name:shuli:35",
+    "kb:name:shuli:36",
+    "kb:name:shuli:37",
+    "kb:name:shuli:38",
+    "kb:name:shuli:39",
+    "kb:name:shuli:40",
+    "kb:name:shuli:41",
+    "kb:name:shuli:42",
+    "kb:name:shuli:43",
+    "kb:name:shuli:44",
+    "kb:name:shuli:45",
+    "kb:name:shuli:46",
+    "kb:name:shuli:47",
+    "kb:name:shuli:48",
+    "kb:name:shuli:5",
+    "kb:name:shuli:50",
+    "kb:name:shuli:52",
+    "kb:name:shuli:54",
+    "kb:name:shuli:55",
+    "kb:name:shuli:56",
+    "kb:name:shuli:57",
+    "kb:name:shuli:58",
+    "kb:name:shuli:59",
+    "kb:name:shuli:6",
+    "kb:name:shuli:60",
+    "kb:name:shuli:61",
+    "kb:name:shuli:62",
+    "kb:name:shuli:63",
+    "kb:name:shuli:7",
+    "kb:name:shuli:8"
+  ]
+}

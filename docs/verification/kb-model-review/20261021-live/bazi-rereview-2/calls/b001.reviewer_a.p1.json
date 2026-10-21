@@ -1,0 +1,38 @@
+{
+  "batch": "b001",
+  "reviewer": "reviewer_a",
+  "run_pass": 1,
+  "attempt": 1,
+  "vendor": "deepseek",
+  "requested_model": "deepseek-flash",
+  "returned_model": "deepseek-flash",
+  "api": "openai",
+  "started_at": "2026-10-21T16:48:22+00:00",
+  "finished_at": "2026-10-21T16:48:26+00:00",
+  "latency_s": 4.366,
+  "http_attempts": 1,
+  "finish_reason": "stop",
+  "prompt_sha256": "78cd9c0e695428e6dcedbaa22b18758f0a525ed30bee289c15d064b2366e7a18",
+  "input_tokens": 1185,
+  "output_tokens": 180,
+  "cached_input_tokens": 384,
+  "usage_available": true,
+  "raw_text": "{\"items\": [{\"item\": \"i01\", \"verdict\": \"pass\", \"issues\": [], \"reason\": \"该条准确说明了子初换日这一可选排盘口径的规则与适用边界，与命理常识一致，表述限定，且不涉及宿命断言或医疗、法律、投资结论。\"}, {\"item\": \"i02\", \"verdict\": \"revise\", \"issues\": [{\"dimension\": \"theme_direction\", \"detail\": \"释义文字明确说事业协作与人际配合“呈轻度偏阻倾向”，但 theme_map 中 career 与 relationship 均为 +0.2（正向偏顺），正负方向与文字相反。\"}], \"reason\": \"地支破的核心释义准确，但事业与关系两个主题的数值方向与文字所述的“偏阻倾向”不一致，需要修正。\"}]}",
+  "verdicts": {
+    "i01": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "该条准确说明了子初换日这一可选排盘口径的规则与适用边界，与命理常识一致，表述限定，且不涉及宿命断言或医疗、法律、投资结论。"
+    },
+    "i02": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "theme_direction",
+          "detail": "释义文字明确说事业协作与人际配合“呈轻度偏阻倾向”，但 theme_map 中 career 与 relationship 均为 +0.2（正向偏顺），正负方向与文字相反。"
+        }
+      ],
+      "reason": "地支破的核心释义准确，但事业与关系两个主题的数值方向与文字所述的“偏阻倾向”不一致，需要修正。"
+    }
+  }
+}

@@ -1,0 +1,42 @@
+{
+  "batch": "b002",
+  "reviewer": "reviewer_a",
+  "run_pass": 2,
+  "attempt": 1,
+  "vendor": "deepseek",
+  "requested_model": "deepseek-flash",
+  "returned_model": "deepseek-flash",
+  "api": "openai",
+  "started_at": "2026-10-21T16:42:13+00:00",
+  "finished_at": "2026-10-21T16:42:14+00:00",
+  "latency_s": 1.553,
+  "http_attempts": 1,
+  "finish_reason": "stop",
+  "prompt_sha256": "38d880d47447091e2bd078c9b4ff3a1cdbf27c2da96978716655e4752ea71ccf",
+  "input_tokens": 1113,
+  "output_tokens": 191,
+  "cached_input_tokens": 896,
+  "usage_available": true,
+  "raw_text": "{\"items\": [{\"item\": \"i01\", \"verdict\": \"reject\", \"issues\": [{\"dimension\": \"tradition\", \"detail\": \"key 是 Sun:5（太阳落第5宫），释义却写成“处女在第5宫”，把行星对象写成了星座处女座，属于对象错误。\"}, {\"dimension\": \"consistency\", \"detail\": \"文字主体讲的是处女座而非太阳，与 key、同义词“太阳在第5宫”不一致。\"}], \"reason\": \"条目对象是太阳落第5宫，释义却写成“处女在第5宫”，核心对象写错。\"}, {\"item\": \"i02\", \"verdict\": \"pass\", \"issues\": [], \"reason\": \"木星摩羯为落陷（fall）的表述准确，方向中性、有免责说明，无宿命化或投资结论，白话解释无误。\"}]}",
+  "verdicts": {
+    "i01": {
+      "verdict": "reject",
+      "issues": [
+        {
+          "dimension": "tradition",
+          "detail": "key 是 Sun:5（太阳落第5宫），释义却写成“处女在第5宫”，把行星对象写成了星座处女座，属于对象错误。"
+        },
+        {
+          "dimension": "consistency",
+          "detail": "文字主体讲的是处女座而非太阳，与 key、同义词“太阳在第5宫”不一致。"
+        }
+      ],
+      "reason": "条目对象是太阳落第5宫，释义却写成“处女在第5宫”，核心对象写错。"
+    },
+    "i02": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "木星摩羯为落陷（fall）的表述准确，方向中性、有免责说明，无宿命化或投资结论，白话解释无误。"
+    }
+  }
+}

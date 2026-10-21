@@ -1,0 +1,107 @@
+{
+  "batch": "b023",
+  "reviewer": "reviewer_b",
+  "run_pass": 2,
+  "attempt": 1,
+  "vendor": "openai",
+  "requested_model": "gpt-6.1-sol",
+  "returned_model": "gpt-6.1-sol",
+  "api": "openai",
+  "started_at": "2026-10-21T16:23:41+00:00",
+  "finished_at": "2026-10-21T16:24:12+00:00",
+  "latency_s": 31.052,
+  "http_attempts": 1,
+  "finish_reason": "stop",
+  "prompt_sha256": "a31f232f0a2ce449f810ef5ad01b38a720665af95c2b5145bb700831be8a229b",
+  "input_tokens": 2736,
+  "output_tokens": 1186,
+  "cached_input_tokens": 2733,
+  "usage_available": true,
+  "raw_text": "{\n  \"items\": [\n    {\n      \"item\": \"i01\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"坚韧与成长的联想合理，主题倾向与文字一致，未作预兆断言。\"\n    },\n    {\n      \"item\": \"i02\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"对轻松、接纳和快乐需求的解释平和，自我与关系的轻微正向倾向合理。\"\n    },\n    {\n      \"item\": \"i03\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"箱子的收纳与出发联想合理，中性主题设置与结合情绪理解的表述一致。\"\n    },\n    {\n      \"item\": \"i04\",\n      \"verdict\": \"revise\",\n      \"issues\": [\n        {\n          \"dimension\": \"consistency\",\n          \"detail\": \"“糖”也可指烹饪用糖，“巧克力”也不等同于糖果，作为同义词可能误命中其他饮食意象；建议改用“糖块”“水果糖”等明确的糖果称谓。\"\n        }\n      ],\n      \"reason\": \"释义及主题倾向基本合理，但同义词范围需要收窄。\"\n    },\n    {\n      \"item\": \"i05\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"以怀念过去和探索其他可能解释时空穿越意象合理，中性设置与非预言表述一致。\"\n    },\n    {\n      \"item\": \"i06\",\n      \"verdict\": \"revise\",\n      \"issues\": [\n        {\n          \"dimension\": \"certainty\",\n          \"detail\": \"“你今年一定会遭遇重大失败”是明确的宿命化断言，也将梦境写成现实预兆，应删除。\"\n        },\n        {\n          \"dimension\": \"theme_direction\",\n          \"detail\": \"末句断言重大失败，与全部为零的中性主题设置不一致；应删除该预兆断言，而非据此调整主题值。\"\n        }\n      ],\n      \"reason\": \"前半段联想可用，但末句加入确定性的负面预兆，需删除后使用。\"\n    },\n    {\n      \"item\": \"i07\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"等待所伴随的期待、焦虑与压力联想合理，轻微负向倾向与文字相符。\"\n    },\n    {\n      \"item\": \"i08\",\n      \"verdict\": \"revise\",\n      \"issues\": [\n        {\n          \"dimension\": \"consistency\",\n          \"detail\": \"“种花”是不同于种树的具体意象，“栽种”则可涵盖多种植物，作为同义词会扩大命中范围；建议改为“栽树”“植树”。\"\n        }\n      ],\n      \"reason\": \"长期投入的解释和正向倾向合理，但同义词会混入其他种植意象。\"\n    },\n    {\n      \"item\": \"i09\",\n      \"verdict\": \"revise\",\n      \"issues\": [\n        {\n          \"dimension\": \"consistency\",\n          \"detail\": \"“窗外”指窗外的场景而非窗户本身，“窗口”还可指办事窗口或软件窗口；建议删除或增加语境限定，避免误命中其他意象。\"\n        }\n      ],\n      \"reason\": \"窗户与视角、希望的联想合理，但同义词存在对象和语境歧义。\"\n    },\n    {\n      \"item\": \"i10\",\n      \"verdict\": \"revise\",\n      \"issues\": [\n        {\n          \"dimension\": \"consistency\",\n          \"detail\": \"“大米”通常指未煮熟的米粒，不等同于“米饭”，会误命中食材意象；建议移除或另设条目。\"\n        }\n      ],\n      \"reason\": \"基本生活与安稳的解释及主题倾向合理，但需区分大米与米饭。\"\n    },\n    {\n      \"item\": \"i11\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"承诺、责任与合作的联想符合签约意象，事业轻微正向合理，未作法律或现实结果的确定性判断。\"\n    }\n  ]\n}",
+  "verdicts": {
+    "i01": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "坚韧与成长的联想合理，主题倾向与文字一致，未作预兆断言。"
+    },
+    "i02": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "对轻松、接纳和快乐需求的解释平和，自我与关系的轻微正向倾向合理。"
+    },
+    "i03": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "箱子的收纳与出发联想合理，中性主题设置与结合情绪理解的表述一致。"
+    },
+    "i04": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "consistency",
+          "detail": "“糖”也可指烹饪用糖，“巧克力”也不等同于糖果，作为同义词可能误命中其他饮食意象；建议改用“糖块”“水果糖”等明确的糖果称谓。"
+        }
+      ],
+      "reason": "释义及主题倾向基本合理，但同义词范围需要收窄。"
+    },
+    "i05": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "以怀念过去和探索其他可能解释时空穿越意象合理，中性设置与非预言表述一致。"
+    },
+    "i06": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "certainty",
+          "detail": "“你今年一定会遭遇重大失败”是明确的宿命化断言，也将梦境写成现实预兆，应删除。"
+        },
+        {
+          "dimension": "theme_direction",
+          "detail": "末句断言重大失败，与全部为零的中性主题设置不一致；应删除该预兆断言，而非据此调整主题值。"
+        }
+      ],
+      "reason": "前半段联想可用，但末句加入确定性的负面预兆，需删除后使用。"
+    },
+    "i07": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "等待所伴随的期待、焦虑与压力联想合理，轻微负向倾向与文字相符。"
+    },
+    "i08": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "consistency",
+          "detail": "“种花”是不同于种树的具体意象，“栽种”则可涵盖多种植物，作为同义词会扩大命中范围；建议改为“栽树”“植树”。"
+        }
+      ],
+      "reason": "长期投入的解释和正向倾向合理，但同义词会混入其他种植意象。"
+    },
+    "i09": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "consistency",
+          "detail": "“窗外”指窗外的场景而非窗户本身，“窗口”还可指办事窗口或软件窗口；建议删除或增加语境限定，避免误命中其他意象。"
+        }
+      ],
+      "reason": "窗户与视角、希望的联想合理，但同义词存在对象和语境歧义。"
+    },
+    "i10": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "consistency",
+          "detail": "“大米”通常指未煮熟的米粒，不等同于“米饭”，会误命中食材意象；建议移除或另设条目。"
+        }
+      ],
+      "reason": "基本生活与安稳的解释及主题倾向合理，但需区分大米与米饭。"
+    },
+    "i11": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "承诺、责任与合作的联想符合签约意象，事业轻微正向合理，未作法律或现实结果的确定性判断。"
+    }
+  }
+}

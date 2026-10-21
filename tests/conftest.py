@@ -26,7 +26,9 @@ def project(tmp_path):
     config_path.write_text(yaml.safe_dump(config), encoding="utf-8")
     shutil.copytree(ROOT / "knowledge/sources", tmp_path / "sources")
     shutil.copytree(ROOT / "knowledge/rules", tmp_path / "rules")
-    shutil.copytree(ROOT / "knowledge/reviews", tmp_path / "reviews")
+    # Unit tests explicitly add the approvals they need; real release approvals
+    # must not silently change their all-draft starting point.
+    (tmp_path / "reviews").mkdir()
     build(
         tmp_path / "sources", tmp_path / "data/kb.sqlite", tmp_path / "rules", tmp_path / "reviews"
     )

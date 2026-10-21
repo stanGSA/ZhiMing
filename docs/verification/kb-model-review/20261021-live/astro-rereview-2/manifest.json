@@ -1,0 +1,77 @@
+{
+  "schema": 1,
+  "system": "astro",
+  "seed": 1,
+  "batch_size": 10,
+  "plant_rate": 0.1,
+  "min_planted": 5,
+  "passes": 2,
+  "only_ids": [
+    "kb:astro:planet_house:Sun:5",
+    "kb:astro:planet_sign:Jupiter:Capricorn"
+  ],
+  "calibrated_by": null,
+  "rubric_version": 1,
+  "rubric_sha256": "a33bd07bd2299376f88d6cf1c958b26990685099797e78272054352ff7557b0d",
+  "script_sha256": "cca3a7b203f9186b0a82f3a4b78b50b3fad3228f869377cc3d113099cad88ec5",
+  "runtime_vendor": "deepseek",
+  "drafter_vendors": [
+    "anthropic"
+  ],
+  "runtime_vendor_exception": {
+    "vendor": "deepseek",
+    "model": "deepseek-flash",
+    "reason": "2026-10-21 项目负责人明确要求第一审核方使用本机.env的DeepSeek配置"
+  },
+  "pricing": {
+    "reviewer_a": {
+      "input_per_mtok": null,
+      "output_per_mtok": null,
+      "currency": null
+    },
+    "reviewer_b": {
+      "input_per_mtok": null,
+      "output_per_mtok": null,
+      "currency": null
+    }
+  },
+  "reviewers": {
+    "reviewer_a": {
+      "vendor": "deepseek",
+      "api": "openai",
+      "model": "deepseek-flash",
+      "api_key_env": "DEEPSEEK_API_KEY",
+      "temperature": null,
+      "max_tokens": 4096,
+      "base_url_host": "api.deepseek.com"
+    },
+    "reviewer_b": {
+      "vendor": "openai",
+      "api": "openai",
+      "model": "gpt-6.1-sol",
+      "api_key_env": "OPENAI_REVIEW_API_KEY",
+      "temperature": null,
+      "max_tokens": 4096,
+      "base_url_host": "codegoai.com"
+    }
+  },
+  "source_files": {
+    "knowledge/sources/astro/entries.yaml": "2af4383e2209a9f1fb1f1468445db111a3946e5fdda4de0ae98408be290556db"
+  },
+  "entry_hashes": {
+    "kb:astro:planet_house:Sun:5": "54c34f5d2999c41bd8b62024f089a9915dba2ec2f76b741d965e658b63f28850",
+    "kb:astro:planet_sign:Jupiter:Capricorn": "4a100de7ec9e583be792da19adda74ca9e2654772ee17c026ac6bfc04226282c"
+  },
+  "planted_count": 2,
+  "batch_count": 2,
+  "prompt_sha256": {
+    "b001": "757888005b5fe6ae535f13ff26aa90be8bbd52ac2786417943942ba0717def92",
+    "b002": "38d880d47447091e2bd078c9b4ff3a1cdbf27c2da96978716655e4752ea71ccf"
+  },
+  "created_at": "2026-10-21T16:42:05+00:00",
+  "git": {
+    "head": "e8dae18cd2dae8139bcec667242c7169ebadaf13",
+    "dirty": true
+  },
+  "kb_version": "v1-16faae4122996521"
+}

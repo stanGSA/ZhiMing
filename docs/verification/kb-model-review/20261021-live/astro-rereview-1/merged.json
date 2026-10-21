@@ -1,0 +1,172 @@
+{
+  "system": "astro",
+  "entries": 21,
+  "planted": 5,
+  "metrics": {
+    "pass_rate": 0.9048,
+    "detection": {
+      "reviewer_a": 1.0,
+      "reviewer_b": 1.0
+    },
+    "detection_merged": 1.0,
+    "rerun": {
+      "reviewer_a": 0.8846,
+      "reviewer_b": 1.0
+    },
+    "kappa": -0.05,
+    "observed_agreement": 0.9048,
+    "verdict_counts": {
+      "reviewer_a": {
+        "pass": 20,
+        "revise": 1
+      },
+      "reviewer_b": {
+        "pass": 20,
+        "revise": 1
+      }
+    }
+  },
+  "gates": {
+    "pass_rate": false,
+    "detection_merged": true,
+    "detection_single": true,
+    "rerun": false,
+    "kappa": false,
+    "complete": true
+  },
+  "thresholds": {
+    "pass_rate": 0.95,
+    "detection_merged": 0.9,
+    "detection_single": 0.8,
+    "rerun": 0.9,
+    "kappa": 0.6
+  },
+  "calibrated": false,
+  "passed": false,
+  "approved": 19,
+  "queued": 2,
+  "incomplete": [],
+  "planted_detail": [
+    {
+      "ref": "planted-001",
+      "original": "kb:astro:planet_house:Jupiter:9",
+      "mutation": "fatalistic",
+      "reviewer_a": "reject",
+      "reviewer_b": "revise"
+    },
+    {
+      "ref": "planted-002",
+      "original": "kb:astro:planet_sign:Mars:Taurus",
+      "mutation": "foreign_text",
+      "reviewer_a": "reject",
+      "reviewer_b": "reject"
+    },
+    {
+      "ref": "planted-003",
+      "original": "kb:astro:planet:Uranus",
+      "mutation": "medical",
+      "reviewer_a": "reject",
+      "reviewer_b": "reject"
+    },
+    {
+      "ref": "planted-004",
+      "original": "kb:astro:planet_house:Mars:12",
+      "mutation": "flip_signs",
+      "reviewer_a": "revise",
+      "reviewer_b": "revise"
+    },
+    {
+      "ref": "planted-005",
+      "original": "kb:astro:planet_house:Jupiter:8",
+      "mutation": "wrong_term",
+      "reviewer_a": "reject",
+      "reviewer_b": "reject"
+    }
+  ],
+  "detection_by_mutation": {
+    "fatalistic": {
+      "total": 1,
+      "reviewer_a": 1,
+      "reviewer_b": 1
+    },
+    "foreign_text": {
+      "total": 1,
+      "reviewer_a": 1,
+      "reviewer_b": 1
+    },
+    "medical": {
+      "total": 1,
+      "reviewer_a": 1,
+      "reviewer_b": 1
+    },
+    "flip_signs": {
+      "total": 1,
+      "reviewer_a": 1,
+      "reviewer_b": 1
+    },
+    "wrong_term": {
+      "total": 1,
+      "reviewer_a": 1,
+      "reviewer_b": 1
+    }
+  },
+  "usage": {
+    "reviewer_a": {
+      "calls": 8,
+      "input_tokens": 17430,
+      "output_tokens": 3021,
+      "latency_s": 21.336,
+      "returned_models": [
+        "deepseek-flash"
+      ],
+      "errors": {},
+      "retried_calls": 0,
+      "http_retries": 0,
+      "cost": null,
+      "known_cost_estimate": null,
+      "usage_complete": true,
+      "cost_basis": "配置单价估算，非账单；服务失败的用量可能未知",
+      "currency": null
+    },
+    "reviewer_b": {
+      "calls": 8,
+      "input_tokens": 19614,
+      "output_tokens": 5080,
+      "latency_s": 254.827,
+      "returned_models": [
+        "gpt-6.1-sol"
+      ],
+      "errors": {},
+      "retried_calls": 0,
+      "http_retries": 0,
+      "cost": null,
+      "known_cost_estimate": null,
+      "usage_complete": true,
+      "cost_basis": "配置单价估算，非账单；服务失败的用量可能未知",
+      "currency": null
+    }
+  },
+  "code_findings": [],
+  "human_reviewed_rate": 0.0,
+  "approved_ids": [
+    "kb:astro:planet:Neptune",
+    "kb:astro:planet:Pluto",
+    "kb:astro:planet:Uranus",
+    "kb:astro:planet_house:Jupiter:8",
+    "kb:astro:planet_house:Jupiter:9",
+    "kb:astro:planet_house:Mars:1",
+    "kb:astro:planet_house:Mars:10",
+    "kb:astro:planet_house:Mars:11",
+    "kb:astro:planet_house:Mars:12",
+    "kb:astro:planet_house:Mars:3",
+    "kb:astro:planet_house:Mars:4",
+    "kb:astro:planet_house:Mercury:2",
+    "kb:astro:planet_house:Sun:7",
+    "kb:astro:planet_house:Sun:8",
+    "kb:astro:planet_sign:Jupiter:Virgo",
+    "kb:astro:planet_sign:Mars:Capricorn",
+    "kb:astro:planet_sign:Mars:Taurus",
+    "kb:astro:planet_sign:Venus:Pisces",
+    "kb:astro:planet_sign:Venus:Virgo"
+  ]
+}

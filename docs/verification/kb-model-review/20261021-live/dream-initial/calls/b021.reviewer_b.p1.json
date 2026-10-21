@@ -1,0 +1,97 @@
+{
+  "batch": "b021",
+  "reviewer": "reviewer_b",
+  "run_pass": 1,
+  "attempt": 1,
+  "vendor": "openai",
+  "requested_model": "gpt-6.1-sol",
+  "returned_model": "gpt-6.1-sol",
+  "api": "openai",
+  "started_at": "2026-10-21T16:07:42+00:00",
+  "finished_at": "2026-10-21T16:10:12+00:00",
+  "latency_s": 149.939,
+  "http_attempts": 2,
+  "finish_reason": "stop",
+  "prompt_sha256": "80aed426a52f51e4ff7f748db7cbc046f4e4c6fb0a675ea0aefaae14b4542757",
+  "input_tokens": 2590,
+  "output_tokens": 1065,
+  "cached_input_tokens": 2587,
+  "usage_available": true,
+  "raw_text": "{\n  \"items\": [\n    {\n      \"item\": \"i01\",\n      \"verdict\": \"revise\",\n      \"issues\": [\n        {\n          \"dimension\": \"consistency\",\n          \"detail\": \"“画画”是创作行为，不等同于作为物品的“画”；当前释义以物品意象概括，容易混淆创作过程与观看画作。建议拆分或补充行为层面的说明。\"\n        }\n      ],\n      \"reason\": \"核心联想合理，但同义词混入了不同类型的梦境意象。\"\n    },\n    {\n      \"item\": \"i02\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"释义贴合生日的常见心理联想，主题倾向温和一致，且明确不作现实预兆。\"\n    },\n    {\n      \"item\": \"i03\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"爱意、浪漫与情感中的刺痛符合玫瑰的常见象征，关系主题的轻微正向倾向合理。\"\n    },\n    {\n      \"item\": \"i04\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"以创造和新成果解释分娩意象，措辞平和且不预示现实生育，主题倾向与文字相符。\"\n    },\n    {\n      \"item\": \"i05\",\n      \"verdict\": \"revise\",\n      \"issues\": [\n        {\n          \"dimension\": \"consistency\",\n          \"detail\": \"“电脑坏了”包含故障、任务受阻等额外情境，不是“电脑”的等义表达；当前泛指工作与信息处理的释义未覆盖这一差别，建议拆分或补充条件说明。\"\n        }\n      ],\n      \"reason\": \"一般电脑意象的解释合理，但故障情境不宜直接作为同义词合并。\"\n    },\n    {\n      \"item\": \"i06\",\n      \"verdict\": \"revise\",\n      \"issues\": [\n        {\n          \"dimension\": \"consistency\",\n          \"detail\": \"“全身无力”不等于瘫痪，“动不了”也可能指受困或受束缚；“鬼压床”通常指睡眠瘫痪体验，不应不加区分地匹配为梦见瘫痪。建议收窄同义词并区分梦境内容与睡眠体验。\"\n        }\n      ],\n      \"reason\": \"正文温和且未作诊断，但同义词范围过宽，容易误命中其他体验。\"\n    },\n    {\n      \"item\": \"i07\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"压力、操心与成熟感均是合理联想，轻微负向自我倾向与文字一致，未将白发解释为健康预兆。\"\n    },\n    {\n      \"item\": \"i08\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"以历练后的珍贵作比喻符合珍珠的常见象征，自我主题的轻微正向倾向合理。\"\n    },\n    {\n      \"item\": \"i09\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"对疾病梦境的表述平和，以疲惫及照顾需求作心理联想，没有诊断或预兆式结论。\"\n    },\n    {\n      \"item\": \"i10\",\n      \"verdict\": \"revise\",\n      \"issues\": [\n        {\n          \"dimension\": \"theme_direction\",\n          \"detail\": \"正文只描述进展快慢、起伏与掌控感，没有明确偏阻含义，不能充分支持 self 和 career 均为负向；建议改为中性，或在文字中说明失控、受阻等负向情境。\"\n        },\n        {\n          \"dimension\": \"consistency\",\n          \"detail\": \"“电梯下坠”是带有明显失控特征的特定情境，不等同于一般“电梯”意象，建议单列或增加条件化解释。\"\n        }\n      ],\n      \"reason\": \"一般电梯意象的解释合理，但负向映射缺乏文字支持，且混入了需单独解释的下坠情境。\"\n    }\n  ]\n}",
+  "verdicts": {
+    "i01": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "consistency",
+          "detail": "“画画”是创作行为，不等同于作为物品的“画”；当前释义以物品意象概括，容易混淆创作过程与观看画作。建议拆分或补充行为层面的说明。"
+        }
+      ],
+      "reason": "核心联想合理，但同义词混入了不同类型的梦境意象。"
+    },
+    "i02": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "释义贴合生日的常见心理联想，主题倾向温和一致，且明确不作现实预兆。"
+    },
+    "i03": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "爱意、浪漫与情感中的刺痛符合玫瑰的常见象征，关系主题的轻微正向倾向合理。"
+    },
+    "i04": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "以创造和新成果解释分娩意象，措辞平和且不预示现实生育，主题倾向与文字相符。"
+    },
+    "i05": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "consistency",
+          "detail": "“电脑坏了”包含故障、任务受阻等额外情境，不是“电脑”的等义表达；当前泛指工作与信息处理的释义未覆盖这一差别，建议拆分或补充条件说明。"
+        }
+      ],
+      "reason": "一般电脑意象的解释合理，但故障情境不宜直接作为同义词合并。"
+    },
+    "i06": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "consistency",
+          "detail": "“全身无力”不等于瘫痪，“动不了”也可能指受困或受束缚；“鬼压床”通常指睡眠瘫痪体验，不应不加区分地匹配为梦见瘫痪。建议收窄同义词并区分梦境内容与睡眠体验。"
+        }
+      ],
+      "reason": "正文温和且未作诊断，但同义词范围过宽，容易误命中其他体验。"
+    },
+    "i07": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "压力、操心与成熟感均是合理联想，轻微负向自我倾向与文字一致，未将白发解释为健康预兆。"
+    },
+    "i08": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "以历练后的珍贵作比喻符合珍珠的常见象征，自我主题的轻微正向倾向合理。"
+    },
+    "i09": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "对疾病梦境的表述平和，以疲惫及照顾需求作心理联想，没有诊断或预兆式结论。"
+    },
+    "i10": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "theme_direction",
+          "detail": "正文只描述进展快慢、起伏与掌控感，没有明确偏阻含义，不能充分支持 self 和 career 均为负向；建议改为中性，或在文字中说明失控、受阻等负向情境。"
+        },
+        {
+          "dimension": "consistency",
+          "detail": "“电梯下坠”是带有明显失控特征的特定情境，不等同于一般“电梯”意象，建议单列或增加条件化解释。"
+        }
+      ],
+      "reason": "一般电梯意象的解释合理，但负向映射缺乏文字支持，且混入了需单独解释的下坠情境。"
+    }
+  }
+}

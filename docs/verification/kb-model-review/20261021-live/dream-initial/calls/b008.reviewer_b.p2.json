@@ -1,0 +1,116 @@
+{
+  "batch": "b008",
+  "reviewer": "reviewer_b",
+  "run_pass": 2,
+  "attempt": 1,
+  "vendor": "openai",
+  "requested_model": "gpt-6.1-sol",
+  "returned_model": "gpt-6.1-sol",
+  "api": "openai",
+  "started_at": "2026-10-21T16:17:46+00:00",
+  "finished_at": "2026-10-21T16:18:13+00:00",
+  "latency_s": 26.965,
+  "http_attempts": 1,
+  "finish_reason": "stop",
+  "prompt_sha256": "9c9bd64e5edbee3add36c122005102fae87335a3192f9b556d7a07b2464b9f5b",
+  "input_tokens": 2794,
+  "output_tokens": 1232,
+  "cached_input_tokens": 2791,
+  "usage_available": true,
+  "raw_text": "{\n  \"items\": [\n    {\n      \"item\": \"i01\",\n      \"verdict\": \"revise\",\n      \"issues\": [\n        {\n          \"dimension\": \"consistency\",\n          \"detail\": \"“蜥蜴”范围大于“壁虎”，并非等义词，会将其他蜥蜴意象误匹配到壁虎；建议移除该同义词。\"\n        }\n      ],\n      \"reason\": \"释义本身平和，但同义词范围过宽。\"\n    },\n    {\n      \"item\": \"i02\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"稳重、记忆与支持的联想合理，主题倾向与文字一致。\"\n    },\n    {\n      \"item\": \"i03\",\n      \"verdict\": \"reject\",\n      \"issues\": [\n        {\n          \"dimension\": \"medical_legal_finance\",\n          \"detail\": \"根据梦境断言身体已有慢性疾病，并声称不必就医也会自愈，属于无依据的医疗诊断与康复保证。\"\n        },\n        {\n          \"dimension\": \"certainty\",\n          \"detail\": \"“这代表身体已有慢性疾病”“不必就医也会自愈”均为确定性断言。\"\n        }\n      ],\n      \"reason\": \"含有基于梦境的确定性医疗结论及可能延误就医的表述。\"\n    },\n    {\n      \"item\": \"i04\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"天空与开阔、理想的联想合理，措辞及主题方向一致。\"\n    },\n    {\n      \"item\": \"i05\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"优雅、忠贞与蜕变符合常见象征联想，正向主题设置合理。\"\n    },\n    {\n      \"item\": \"i06\",\n      \"verdict\": \"reject\",\n      \"issues\": [\n        {\n          \"dimension\": \"consistency\",\n          \"detail\": \"key 为一般性的“声音”，正文与同义词却都针对“失声、喊不出声”，将听见声音与无法发声两种不同意象混为一谈。\"\n        }\n      ],\n      \"reason\": \"正文实际解释的是失声，而非 key 所指的一般声音意象。\"\n    },\n    {\n      \"item\": \"i07\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"城市与节奏、机会及归属的联想合理，整体不限定顺阻方向。\"\n    },\n    {\n      \"item\": \"i08\",\n      \"verdict\": \"revise\",\n      \"issues\": [\n        {\n          \"dimension\": \"consistency\",\n          \"detail\": \"“海边”“大海边”指向岸边场所，不等同于大海本身，可能误命中具有边界、停留等不同含义的意象；建议移除或另设条目。\"\n        },\n        {\n          \"dimension\": \"theme_direction\",\n          \"detail\": \"正文仅描述情绪、潜意识与未知，未表达偏顺倾向，self 的正向设置缺乏文字支持，宜设为中性或补充相应表述。\"\n        }\n      ],\n      \"reason\": \"同义词混入岸边场所，且自我主题的正向倾向未在正文中体现。\"\n    },\n    {\n      \"item\": \"i09\",\n      \"verdict\": \"revise\",\n      \"issues\": [\n        {\n          \"dimension\": \"consistency\",\n          \"detail\": \"“墓碑”是具体物件，不等同于“墓地”这一场所，可能将碑文、姓名等不同意象误匹配到本条；建议移除或单列。\"\n        }\n      ],\n      \"reason\": \"敏感意象的措辞平和，但墓碑不宜直接作为墓地的同义词。\"\n    },\n    {\n      \"item\": \"i10\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"重新振作与旧事重提的联想合理，且明确避免现实预兆式解释。\"\n    },\n    {\n      \"item\": \"i11\",\n      \"verdict\": \"revise\",\n      \"issues\": [\n        {\n          \"dimension\": \"consistency\",\n          \"detail\": \"“墙倒了”是墙倒塌的事件，不是“墙”的同义词，可能涉及阻隔解除或保护失去，不能直接套用静态墙体的释义与倾向。\"\n        }\n      ],\n      \"reason\": \"墙体释义基本合理，但同义词混入含义可能不同的倒塌事件。\"\n    }\n  ]\n}",
+  "verdicts": {
+    "i01": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "consistency",
+          "detail": "“蜥蜴”范围大于“壁虎”，并非等义词，会将其他蜥蜴意象误匹配到壁虎；建议移除该同义词。"
+        }
+      ],
+      "reason": "释义本身平和，但同义词范围过宽。"
+    },
+    "i02": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "稳重、记忆与支持的联想合理，主题倾向与文字一致。"
+    },
+    "i03": {
+      "verdict": "reject",
+      "issues": [
+        {
+          "dimension": "medical_legal_finance",
+          "detail": "根据梦境断言身体已有慢性疾病，并声称不必就医也会自愈，属于无依据的医疗诊断与康复保证。"
+        },
+        {
+          "dimension": "certainty",
+          "detail": "“这代表身体已有慢性疾病”“不必就医也会自愈”均为确定性断言。"
+        }
+      ],
+      "reason": "含有基于梦境的确定性医疗结论及可能延误就医的表述。"
+    },
+    "i04": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "天空与开阔、理想的联想合理，措辞及主题方向一致。"
+    },
+    "i05": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "优雅、忠贞与蜕变符合常见象征联想，正向主题设置合理。"
+    },
+    "i06": {
+      "verdict": "reject",
+      "issues": [
+        {
+          "dimension": "consistency",
+          "detail": "key 为一般性的“声音”，正文与同义词却都针对“失声、喊不出声”，将听见声音与无法发声两种不同意象混为一谈。"
+        }
+      ],
+      "reason": "正文实际解释的是失声，而非 key 所指的一般声音意象。"
+    },
+    "i07": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "城市与节奏、机会及归属的联想合理，整体不限定顺阻方向。"
+    },
+    "i08": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "consistency",
+          "detail": "“海边”“大海边”指向岸边场所，不等同于大海本身，可能误命中具有边界、停留等不同含义的意象；建议移除或另设条目。"
+        },
+        {
+          "dimension": "theme_direction",
+          "detail": "正文仅描述情绪、潜意识与未知，未表达偏顺倾向，self 的正向设置缺乏文字支持，宜设为中性或补充相应表述。"
+        }
+      ],
+      "reason": "同义词混入岸边场所，且自我主题的正向倾向未在正文中体现。"
+    },
+    "i09": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "consistency",
+          "detail": "“墓碑”是具体物件，不等同于“墓地”这一场所，可能将碑文、姓名等不同意象误匹配到本条；建议移除或单列。"
+        }
+      ],
+      "reason": "敏感意象的措辞平和，但墓碑不宜直接作为墓地的同义词。"
+    },
+    "i10": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "重新振作与旧事重提的联想合理，且明确避免现实预兆式解释。"
+    },
+    "i11": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "consistency",
+          "detail": "“墙倒了”是墙倒塌的事件，不是“墙”的同义词，可能涉及阻隔解除或保护失去，不能直接套用静态墙体的释义与倾向。"
+        }
+      ],
+      "reason": "墙体释义基本合理，但同义词混入含义可能不同的倒塌事件。"
+    }
+  }
+}

@@ -1,0 +1,2218 @@
+{
+  "system": "dream",
+  "entries": 358,
+  "candidate_count": 358,
+  "draft_count": 0,
+  "metrics": {
+    "detection": {
+      "reviewer_a": 0.8909090909090909,
+      "reviewer_b": 1.0
+    },
+    "detection_merged": 1.0,
+    "rerun": {
+      "reviewer_a": 0.9481216457960644,
+      "reviewer_b": 0.9588550983899821
+    },
+    "kappa": 0.3854,
+    "kappa_real_three_class": 0.1114,
+    "kappa_all_three_class": 0.3587,
+    "observed_agreement": 0.7728085867620751,
+    "observed_agreement_real_three_class": 0.7579365079365079,
+    "pass_rate": 1.0
+  },
+  "gates": {
+    "complete": true,
+    "detection_merged": true,
+    "detection_single": true,
+    "rerun": true,
+    "kappa": false,
+    "pass_rate": true
+  },
+  "calibrated": false,
+  "passed": false,
+  "samples": {
+    "detection": {
+      "reviewer_a": [
+        49,
+        55
+      ],
+      "reviewer_b": [
+        55,
+        55
+      ]
+    },
+    "detection_merged": [
+      55,
+      55
+    ],
+    "rerun": {
+      "reviewer_a": [
+        530,
+        559
+      ],
+      "reviewer_b": [
+        536,
+        559
+      ]
+    },
+    "kappa_pairs": 559,
+    "kappa_real_pairs": 504,
+    "verdict_pairs": {
+      "pass/pass": 371,
+      "pass/revise": 124,
+      "revise/reject": 3,
+      "revise/revise": 28,
+      "revise/pass": 3,
+      "reject/reject": 21,
+      "reject/revise": 9
+    },
+    "verdict_pairs_real": {
+      "pass/pass": 371,
+      "pass/revise": 118,
+      "revise/reject": 1,
+      "revise/revise": 11,
+      "revise/pass": 3
+    }
+  },
+  "batches": [
+    {
+      "path": "docs/verification/kb-model-review/20261021-live/dream-initial",
+      "entries": 358,
+      "metrics": {
+        "pass_rate": 0.6341,
+        "detection": {
+          "reviewer_a": 0.9444,
+          "reviewer_b": 1.0
+        },
+        "detection_merged": 1.0,
+        "rerun": {
+          "reviewer_a": 0.9442,
+          "reviewer_b": 0.9492
+        },
+        "kappa": 0.1039,
+        "observed_agreement": 0.6872,
+        "verdict_counts": {
+          "reviewer_a": {
+            "pass": 343,
+            "revise": 15
+          },
+          "reviewer_b": {
+            "pass": 238,
+            "revise": 119,
+            "reject": 1
+          }
+        }
+      },
+      "gates": {
+        "pass_rate": false,
+        "detection_merged": true,
+        "detection_single": true,
+        "rerun": true,
+        "kappa": false,
+        "complete": true
+      },
+      "errors": 0,
+      "usage": {
+        "reviewer_a": {
+          "calls": 74,
+          "input_tokens": 179644,
+          "output_tokens": 37880,
+          "latency_s": 212.057,
+          "returned_models": [
+            "deepseek-flash"
+          ],
+          "errors": {},
+          "retried_calls": 0,
+          "http_retries": 0,
+          "cost": null,
+          "known_cost_estimate": null,
+          "usage_complete": true,
+          "cost_basis": "配置单价估算，非账单；服务失败的用量可能未知",
+          "currency": null
+        },
+        "reviewer_b": {
+          "calls": 74,
+          "input_tokens": 200586,
+          "output_tokens": 84079,
+          "latency_s": 3135.05,
+          "returned_models": [
+            "gpt-6.1-sol"
+          ],
+          "errors": {},
+          "retried_calls": 0,
+          "http_retries": 8,
+          "cost": null,
+          "known_cost_estimate": null,
+          "usage_complete": true,
+          "cost_basis": "配置单价估算，非账单；服务失败的用量可能未知",
+          "currency": null
+        },
+        "reviser": {
+          "calls": 131,
+          "input_tokens": 74951,
+          "output_tokens": 27944,
+          "latency_s": 2331.907,
+          "returned_models": [
+            "gpt-6-astra"
+          ],
+          "errors": {},
+          "retried_calls": 0,
+          "http_retries": 2,
+          "cost": null,
+          "known_cost_estimate": null,
+          "usage_complete": true,
+          "cost_basis": "配置单价估算，非账单；服务失败的用量可能未知",
+          "currency": null
+        }
+      }
+    },
+    {
+      "path": "docs/verification/kb-model-review/20261021-live/dream-rereview-1",
+      "entries": 131,
+      "metrics": {
+        "pass_rate": 0.8931,
+        "detection": {
+          "reviewer_a": 0.7692,
+          "reviewer_b": 1.0
+        },
+        "detection_merged": 1.0,
+        "rerun": {
+          "reviewer_a": 0.9583,
+          "reviewer_b": 0.9792
+        },
+        "kappa": 0.0,
+        "observed_agreement": 0.9237,
+        "verdict_counts": {
+          "reviewer_a": {
+            "pass": 131
+          },
+          "reviewer_b": {
+            "pass": 121,
+            "revise": 10
+          }
+        }
+      },
+      "gates": {
+        "pass_rate": false,
+        "detection_merged": true,
+        "detection_single": false,
+        "rerun": true,
+        "kappa": false,
+        "complete": true
+      },
+      "errors": 0,
+      "usage": {
+        "reviewer_a": {
+          "calls": 28,
+          "input_tokens": 69976,
+          "output_tokens": 13507,
+          "latency_s": 78.786,
+          "returned_models": [
+            "deepseek-flash"
+          ],
+          "errors": {},
+          "retried_calls": 0,
+          "http_retries": 0,
+          "cost": null,
+          "known_cost_estimate": null,
+          "usage_complete": true,
+          "cost_basis": "配置单价估算，非账单；服务失败的用量可能未知",
+          "currency": null
+        },
+        "reviewer_b": {
+          "calls": 28,
+          "input_tokens": 78894,
+          "output_tokens": 24217,
+          "latency_s": 599.762,
+          "returned_models": [
+            "gpt-6.1-sol"
+          ],
+          "errors": {},
+          "retried_calls": 0,
+          "http_retries": 0,
+          "cost": null,
+          "known_cost_estimate": null,
+          "usage_complete": true,
+          "cost_basis": "配置单价估算，非账单；服务失败的用量可能未知",
+          "currency": null
+        },
+        "reviser": {
+          "calls": 14,
+          "input_tokens": 8076,
+          "output_tokens": 3290,
+          "latency_s": 115.187,
+          "returned_models": [
+            "gpt-6-astra"
+          ],
+          "errors": {},
+          "retried_calls": 0,
+          "http_retries": 0,
+          "cost": null,
+          "known_cost_estimate": null,
+          "usage_complete": true,
+          "cost_basis": "配置单价估算，非账单；服务失败的用量可能未知",
+          "currency": null
+        }
+      }
+    },
+    {
+      "path": "docs/verification/kb-model-review/20261021-live/dream-rereview-2",
+      "entries": 14,
+      "metrics": {
+        "pass_rate": 1.0,
+        "detection": {
+          "reviewer_a": 0.8,
+          "reviewer_b": 1.0
+        },
+        "detection_merged": 1.0,
+        "rerun": {
+          "reviewer_a": 0.9474,
+          "reviewer_b": 1.0
+        },
+        "kappa": null,
+        "observed_agreement": 1.0,
+        "verdict_counts": {
+          "reviewer_a": {
+            "pass": 14
+          },
+          "reviewer_b": {
+            "pass": 14
+          }
+        }
+      },
+      "gates": {
+        "pass_rate": true,
+        "detection_merged": true,
+        "detection_single": true,
+        "rerun": true,
+        "kappa": false,
+        "complete": true
+      },
+      "errors": 0,
+      "usage": {
+        "reviewer_a": {
+          "calls": 4,
+          "input_tokens": 10054,
+          "output_tokens": 2259,
+          "latency_s": 14.663,
+          "returned_models": [
+            "deepseek-flash"
+          ],
+          "errors": {},
+          "retried_calls": 0,
+          "http_retries": 0,
+          "cost": null,
+          "known_cost_estimate": null,
+          "usage_complete": true,
+          "cost_basis": "配置单价估算，非账单；服务失败的用量可能未知",
+          "currency": null
+        },
+        "reviewer_b": {
+          "calls": 4,
+          "input_tokens": 11466,
+          "output_tokens": 3381,
+          "latency_s": 200.841,
+          "returned_models": [
+            "gpt-6.1-sol"
+          ],
+          "errors": {},
+          "retried_calls": 0,
+          "http_retries": 1,
+          "cost": null,
+          "known_cost_estimate": null,
+          "usage_complete": true,
+          "cost_basis": "配置单价估算，非账单；服务失败的用量可能未知",
+          "currency": null
+        }
+      }
+    },
+    {
+      "path": "docs/verification/kb-model-review/20261021-live/dream-rereview-3",
+      "entries": 1,
+      "metrics": {
+        "pass_rate": 1.0,
+        "detection": {
+          "reviewer_a": 1.0,
+          "reviewer_b": 1.0
+        },
+        "detection_merged": 1.0,
+        "rerun": {
+          "reviewer_a": 1.0,
+          "reviewer_b": 1.0
+        },
+        "kappa": null,
+        "observed_agreement": 1.0,
+        "verdict_counts": {
+          "reviewer_a": {
+            "pass": 1
+          },
+          "reviewer_b": {
+            "pass": 1
+          }
+        }
+      },
+      "gates": {
+        "pass_rate": true,
+        "detection_merged": true,
+        "detection_single": true,
+        "rerun": true,
+        "kappa": false,
+        "complete": true
+      },
+      "errors": 0,
+      "usage": {
+        "reviewer_a": {
+          "calls": 4,
+          "input_tokens": 2878,
+          "output_tokens": 372,
+          "latency_s": 7.115,
+          "returned_models": [
+            "deepseek-flash"
+          ],
+          "errors": {},
+          "retried_calls": 0,
+          "http_retries": 0,
+          "cost": null,
+          "known_cost_estimate": null,
+          "usage_complete": true,
+          "cost_basis": "配置单价估算，非账单；服务失败的用量可能未知",
+          "currency": null
+        },
+        "reviewer_b": {
+          "calls": 4,
+          "input_tokens": 3300,
+          "output_tokens": 453,
+          "latency_s": 23.719,
+          "returned_models": [
+            "gpt-6.1-sol"
+          ],
+          "errors": {},
+          "retried_calls": 0,
+          "http_retries": 0,
+          "cost": null,
+          "known_cost_estimate": null,
+          "usage_complete": true,
+          "cost_basis": "配置单价估算，非账单；服务失败的用量可能未知",
+          "currency": null
+        }
+      }
+    }
+  ],
+  "thresholds": {
+    "pass_rate": 0.95,
+    "detection_merged": 0.9,
+    "detection_single": 0.8,
+    "rerun": 0.9,
+    "kappa": 0.6
+  },
+  "acceptance_basis": "负责人确认：按体系汇总全部初审及复审样本；通过率按当前内容哈希；kappa按全部真实及埋错样本的放行二分类计算，原三分类指标保留",
+  "kappa_basis": {
+    "scope": "全部批次第一轮真实及埋错样本；第二轮另计重跑一致率",
+    "classes": {
+      "pass": "放行",
+      "revise": "不通过",
+      "reject": "不通过"
+    },
+    "limitation": "埋错样本改变类别分布，不能与仅真实条目的三分类kappa直接比较",
+    "owner_reply": "同意：全部样本、放行二分类（推荐）"
+  },
+  "human_reviewed_rate": 0.0,
+  "current_content_evidence": {
+    "kb:dream:convention:no_symbol": {
+      "content_sha256": "083d5b441dee2a3828871036a98d31ab9b42bfbb073943d5ac4f94ee5e203124",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-initial"
+    },
+    "kb:dream:convention:psyche_only": {
+      "content_sha256": "a897ebf666eb0648bbd0c4cce4964eb1722305deb46579a5be843fd6a66b67cf",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-initial"
+    },
+    "kb:dream:convention:unmatched": {
+      "content_sha256": "bfa4361cb4b0a40d730781078dd2d22386b5bbec3829a8b88246978a302ef5cc",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-initial"
+    },
+    "kb:dream:symbol:上台演讲": {
+      "content_sha256": "3e516d58b4b6e094d1bc2375a2c820a2b8e2c0622d654c92cca3f4392181a947",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-initial"
+    },
+    "kb:dream:symbol:下跪": {
+      "content_sha256": "2940b511bf7035db0356aba46b2c749e711bfd7ea9d5097492871a38a5780865",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-initial"
+    },
+    "kb:dream:symbol:下雨": {
+      "content_sha256": "bb86eaea661f68f675590302dcbf7d473ae785ffc5b00395ce016d1b8f0723ce",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-initial"
+    },
+    "kb:dream:symbol:下雪": {
+      "content_sha256": "9bd930335f79635845119d728a9d8c730b25d83d576678dce2a5d540fa615f60",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-rereview-1"
+    },
+    "kb:dream:symbol:丢东西": {
+      "content_sha256": "6327347c7a6b30cae2b4ca291826107a272df095e5eb9797d254cc5dd6a1c12b",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-rereview-2"
+    },
+    "kb:dream:symbol:中奖": {
+      "content_sha256": "ccb068713dd45112f04f22d3a53067a7781cf1c5742bbbf0c0558e0857a85d3f",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-initial"
+    },
+    "kb:dream:symbol:乌鸦": {
+      "content_sha256": "e6b89f60f331520b6b9cacafda7e482cfa0a09c7f5dd996a00a576cd346bef17",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-initial"
+    },
+    "kb:dream:symbol:乌龟": {
+      "content_sha256": "7b4a861ddffff1eecedf0177e5096bbaf36a9a8a5b99705fa7873c283db67be0",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-rereview-2"
+    },
+    "kb:dream:symbol:乐器": {
+      "content_sha256": "c167ce326975f5d5019667f59a06ba64a1ab037e1715619fb1c0c57305275a94",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-initial"
+    },
+    "kb:dream:symbol:书": {
+      "content_sha256": "760ad1d044aeca248aeb3d5515ac14342c8d8a7f6235fe6cbf0c304738b44cda",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-initial"
+    },
+    "kb:dream:symbol:云": {
+      "content_sha256": "5c706b6aa3cbf30562f4b8be83ffa118385c7d79e4cd6fc6b0e5fde19d798283",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-initial"
+    },
+    "kb:dream:symbol:井": {
+      "content_sha256": "06dc85943c40d53cb78ed32560f6f5e992d228487df9bff31ec486ed6b98fa8d",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-rereview-1"
+    },
+    "kb:dream:symbol:伞": {
+      "content_sha256": "1a462130379fdaadf98dcc8c75fd02801680fdfae32fa944602ebad9596d198a",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-rereview-1"
+    },
+    "kb:dream:symbol:信": {
+      "content_sha256": "5e736b45bd64974b93090f39ecb3306c064b7468dac922e775398b99eed10c8b",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-initial"
+    },
+    "kb:dream:symbol:做饭": {
+      "content_sha256": "9535912495fd3fe6beb8073f25d60a19ddccf14155e42c8e19575e0fac99abbd",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-initial"
+    },
+    "kb:dream:symbol:停电": {
+      "content_sha256": "e7c44f00e5923fa2ee99dc68029dfd1eee4c12089fa7f81cedc25bad0d60801c",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-rereview-1"
+    },
+    "kb:dream:symbol:偷东西": {
+      "content_sha256": "80f8710e5c993a9cd88626823c53bbcfe8ad8353d46c2e2f18573f930afb5be4",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-rereview-1"
+    },
+    "kb:dream:symbol:兄弟姐妹": {
+      "content_sha256": "61faaeacabc9b60003e7ac1180c9acc696914d537f0c6f0c466bd5395ffe64ef",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-initial"
+    },
+    "kb:dream:symbol:兔子": {
+      "content_sha256": "8db1fb089e04f34ce7f7142590653e28aae273c1dc78d33f87d5271254330cc3",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-initial"
+    },
+    "kb:dream:symbol:公交车": {
+      "content_sha256": "bda5fd80b7b3b43dc0a8ff0e053cde6fd5ba6c54ca57a5dc66f7e78c83eb94eb",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-rereview-1"
+    },
+    "kb:dream:symbol:公司": {
+      "content_sha256": "4a330cfa83825814701d0703c92e862b4909f584c87dbd4635bb97582d1667ad",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-rereview-1"
+    },
+    "kb:dream:symbol:公园": {
+      "content_sha256": "b6c385fc404958c9821d68da0f78f4a428932f4c8df22a45a18d3e9712e4ba88",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-rereview-1"
+    },
+    "kb:dream:symbol:写字": {
+      "content_sha256": "2ea74bb909204cc4d8a1c0f360b7a23c40efc679f960ade8c22102f0c04d80f0",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-rereview-1"
+    },
+    "kb:dream:symbol:军人": {
+      "content_sha256": "751ec58148af0ba0fb2fd6b731d6a2f7c62c5fd2d7d155b7e087cc3ae5ef2353",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-initial"
+    },
+    "kb:dream:symbol:冬天": {
+      "content_sha256": "4342bb0128ec1a5f904df507bd839f7253a6fcc724d18f6f6db914c9865893ab",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-initial"
+    },
+    "kb:dream:symbol:冰": {
+      "content_sha256": "7f6f94f5eeef72a2c935fe33a9bf346e3f62ff33d311a4412670b70c53ef28f2",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-initial"
+    },
+    "kb:dream:symbol:冰雹": {
+      "content_sha256": "7feb15a365213f648d9424106801a8f1c3da47bfb32acd67d33725cebdc36c73",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-initial"
+    },
+    "kb:dream:symbol:凤凰": {
+      "content_sha256": "defabc6c01ab615dcc4ebd8a25f4213f04efecc7259ff996dbbe27355e2d0fbd",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-initial"
+    },
+    "kb:dream:symbol:出租车": {
+      "content_sha256": "e93e4ba79c19712670e75efabf7f7d5116f0b8b167f441d05d7cd05630bab780",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-initial"
+    },
+    "kb:dream:symbol:刀": {
+      "content_sha256": "2e2ad753a12d57d7ac7d958d97782ebe4d4b986651e22b8a864b031ba1d4904a",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-initial"
+    },
+    "kb:dream:symbol:分手": {
+      "content_sha256": "c90a3acdc6a75e9b9223d76830bb6ccd8ae587812fb0968d04aafd64a1e6fb9f",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-initial"
+    },
+    "kb:dream:symbol:前任": {
+      "content_sha256": "afa8ee7ad4638c123619024094d18d26eba20d2c6bc41487ec9a44884d335ab6",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-initial"
+    },
+    "kb:dream:symbol:剪头发": {
+      "content_sha256": "e4778821ba27f7d8aa6d36066fcd488c348335afaf231f80454aeca36251a689",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-rereview-1"
+    },
+    "kb:dream:symbol:包": {
+      "content_sha256": "be81e010468ac4e374d5e5bd41b8bf2c8fc5c8de87ea018927e6f840cd2ec383",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-initial"
+    },
+    "kb:dream:symbol:化妆": {
+      "content_sha256": "ad522b6ef5eb34d8a9678ca5fe8e45e51062363f0b38aa7ed2c92d36cb07d804",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-rereview-1"
+    },
+    "kb:dream:symbol:医生": {
+      "content_sha256": "4dfe70b0377da4d9cca1a97a9af3ec7f9d33db389f3923a3aee285665bd483eb",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-rereview-1"
+    },
+    "kb:dream:symbol:医院": {
+      "content_sha256": "71f7eb3460dbccb0563688146a185d42fcdb7d7182232dc984d6e46a781e8fc0",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-initial"
+    },
+    "kb:dream:symbol:升职": {
+      "content_sha256": "9c86651398fb57450ee7d3a662ff43e2eaa29ab8b83bf976a49165139fa3b197",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-rereview-1"
+    },
+    "kb:dream:symbol:卧室": {
+      "content_sha256": "ca63fcb48a2e95ce7205f21d689f6855b1fbc9abbcd4ca1f3e9cd3320f89316e",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-initial"
+    },
+    "kb:dream:symbol:厕所": {
+      "content_sha256": "d9a436d6a628a557772d973b199a924d6bbbc76d7252eb8c18e6c18ddadb9a51",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-initial"
+    },
+    "kb:dream:symbol:厨房": {
+      "content_sha256": "f6c379ca3bc9224d1d6cd3533cd97b4adec14621ef9d73c04eb95cc3cacb289a",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-initial"
+    },
+    "kb:dream:symbol:去世的亲人": {
+      "content_sha256": "c63fe1a8a3973189339eb387275569d1684e35f05ffaaa31f449bc18844900d4",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-initial"
+    },
+    "kb:dream:symbol:双胞胎": {
+      "content_sha256": "6228b9f1c7d3a4afe5b0fcccc05d47033422a0e6e70e99de07600e4cce128e82",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-initial"
+    },
+    "kb:dream:symbol:受伤": {
+      "content_sha256": "0597ac20b01295403ddff7cf1bb325c1adab0c1582be939c6c9a69915bf7c03c",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-initial"
+    },
+    "kb:dream:symbol:变瘦": {
+      "content_sha256": "8b6ea3dc11fefc176b9735fd40e9180fe22de4f28c65c8cca79b2390dd4b2560",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-initial"
+    },
+    "kb:dream:symbol:变老": {
+      "content_sha256": "af7bab39cca9199bbab4cb7e632e5b09dfd7a35484a5fd7ab7e2c4011edeb99d",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-rereview-1"
+    },
+    "kb:dream:symbol:台风": {
+      "content_sha256": "5e88571047187f085d75a77fbafc84733c2b6ef01c1e2d61f11f6a27a190bae4",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-rereview-1"
+    },
+    "kb:dream:symbol:吃饭": {
+      "content_sha256": "278053c58520a5838a4b9a4bf8b941e32356ca49191268923f354e8225b95b68",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-rereview-1"
+    },
+    "kb:dream:symbol:同事": {
+      "content_sha256": "2af1680e1af09d3e120e544de734d3104890bcf0ba8eaa7782a996da9b8b0a94",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-rereview-1"
+    },
+    "kb:dream:symbol:同学": {
+      "content_sha256": "77da8d138a5354b782eb0eecbb7f3efe13f6d3660385ec20767d4fa56ceba411",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-initial"
+    },
+    "kb:dream:symbol:吵架": {
+      "content_sha256": "c98f5fac3f2425afc33591de3ff42c6c363956fad04ae40b9d51037945893362",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-initial"
+    },
+    "kb:dream:symbol:和好": {
+      "content_sha256": "c91a8726479748961808654680f4c5cedd56b628a3a5c3f5609616a1467cfb92",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-initial"
+    },
+    "kb:dream:symbol:哭": {
+      "content_sha256": "60c150e1516ecfa90c2219220071b66a6852b58937fa13ec2708d585db56ab01",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-initial"
+    },
+    "kb:dream:symbol:唱歌": {
+      "content_sha256": "99dc09093357641510d18d8c3c44742913ae9aaedadf7529c922306ccf40874c",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-initial"
+    },
+    "kb:dream:symbol:商场": {
+      "content_sha256": "3d416c191c5a6f881255c5ed0a3702cbe25bbb3daf79cff733be2a97b1ca443a",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-rereview-1"
+    },
+    "kb:dream:symbol:图书馆": {
+      "content_sha256": "d0ff6b72d9aec42fc394d48f66888dc46cf17c115e7eeea5b60f6c02dbba298b",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-rereview-2"
+    },
+    "kb:dream:symbol:地下室": {
+      "content_sha256": "c369c18d2f8390098b7402b91424da7ba9fcbffd72847c40fbf793ad3be8b645",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-initial"
+    },
+    "kb:dream:symbol:地震": {
+      "content_sha256": "16f3b58297e5b2f4800ccb77ef43dc4dde6d2bcaf196cf16ece66d736396a7eb",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-rereview-1"
+    },
+    "kb:dream:symbol:坏人": {
+      "content_sha256": "a251a2f25586c0e76b39a736db56903ad162ad512f5416bcebdfcbc7538841d3",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-initial"
+    },
+    "kb:dream:symbol:坠落": {
+      "content_sha256": "e3ed45745c6978ced138205bb71db9c3803f414478bf01456c4e7d770cd6770d",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-rereview-1"
+    },
+    "kb:dream:symbol:城市": {
+      "content_sha256": "5a60e01f2bdaa109dcf391885391098bd0e401a797c7d3b07cb3d8cd9fea4683",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-initial"
+    },
+    "kb:dream:symbol:墓地": {
+      "content_sha256": "746447135e4ee53695ecbcd74675946fa5ac980465fbac331345e532225d4e9e",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-rereview-1"
+    },
+    "kb:dream:symbol:墙": {
+      "content_sha256": "22331b3d3edd0533e605bb42037a7dc1525556dcdc5d42cdd6eeba15185ded2a",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-rereview-1"
+    },
+    "kb:dream:symbol:壁虎": {
+      "content_sha256": "27b3de8f84002b82aa2efda6025c596b16a768c3e010ca980eaf68695ebb1558",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-rereview-1"
+    },
+    "kb:dream:symbol:声音": {
+      "content_sha256": "c1e6e9209eae0914bcb33deda8dcd8da7f9b32111b388f241a658307a78681f3",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-rereview-1"
+    },
+    "kb:dream:symbol:复活": {
+      "content_sha256": "80fdae8881efb228dce28c7a435590d010cb4683f1eeb9d67c1ce093e735661d",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-initial"
+    },
+    "kb:dream:symbol:大海": {
+      "content_sha256": "6da1fae2aa00f1908dd338fed67a5f60a6273b947baa151b409fd4bc7a8215fd",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-rereview-1"
+    },
+    "kb:dream:symbol:大象": {
+      "content_sha256": "78ff67f3aa71c474890f569244a7b064fb159d2230688cc81742444868028eb3",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-initial"
+    },
+    "kb:dream:symbol:天空": {
+      "content_sha256": "371fc5aa87a4e01deeefbfb2a0b961bdb32893dc84bbedd0d36a658394eae98b",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-initial"
+    },
+    "kb:dream:symbol:天鹅": {
+      "content_sha256": "4b5fa5d4344e61524a33c82eacf8703105bc87b1e01df6b92cb975922ee10de4",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-initial"
+    },
+    "kb:dream:symbol:太阳": {
+      "content_sha256": "7d0cf608f68a1ba415763a4e42620a15816d714a59dd78cc38c267746c769723",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-initial"
+    },
+    "kb:dream:symbol:失业": {
+      "content_sha256": "a9053fa37bdb0acb69eb58263d83398c1a48125109fc96f7ea0e2cf42da8ba4a",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-rereview-1"
+    },
+    "kb:dream:symbol:头发": {
+      "content_sha256": "dfdf74fe78427c9ce35ee29c1911a9cba560dbfc7dc78098b30ce182f5e0ac42",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-rereview-1"
+    },
+    "kb:dream:symbol:奶": {
+      "content_sha256": "aabbd7d49f9107d7354a81beae23b9521fe7240112a332b174f9be21aede6ccf",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-rereview-1"
+    },
+    "kb:dream:symbol:婚礼现场": {
+      "content_sha256": "f5c5b13d25f73a30bb97bc37848118f026b7a8155b5dbb3ef9ee1eb6b01e0a69",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-initial"
+    },
+    "kb:dream:symbol:婚纱": {
+      "content_sha256": "a8bcfda237272f0e657315ebbb303393a26ca02452d194429fd30a750d37b024",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-initial"
+    },
+    "kb:dream:symbol:婴儿": {
+      "content_sha256": "f669fe2a37c729cc184767a7159d22a076dbbc4356033e75315d585bddab1d9f",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-initial"
+    },
+    "kb:dream:symbol:孔雀": {
+      "content_sha256": "18ff104ca35a8ee12146213bafa84cebf675c9a06fc7a7297cb2a6c54f9f6cfb",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-initial"
+    },
+    "kb:dream:symbol:学校": {
+      "content_sha256": "8da9d9c72c418becd37361b5c5a47d326defb3a4b054ae9c636f3cad693a9410",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-initial"
+    },
+    "kb:dream:symbol:孩子": {
+      "content_sha256": "6cc6632e2f70f950e008bfe58f4c32a48bc852b61da618f237ff7909e82f3a61",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-initial"
+    },
+    "kb:dream:symbol:宝石": {
+      "content_sha256": "38b666da7c225a53da851e3dae8595d828eb508639f1f75817169dc788772dc2",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-rereview-2"
+    },
+    "kb:dream:symbol:宠物": {
+      "content_sha256": "49a0716efd296537c9bda0f8154c8753b807ddfc199ccf3bd3bba7bd0638443e",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-rereview-1"
+    },
+    "kb:dream:symbol:客户": {
+      "content_sha256": "72e54eb5e302ad23b7ab7b365f8ef35c1f26cb9efa6967009c941e20fe463ce9",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-initial"
+    },
+    "kb:dream:symbol:寺庙": {
+      "content_sha256": "4632f0573161ee0fc1a0c5f52aa2e5b042a0db2cf06c9a1b1665c3d957d6ddc4",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-rereview-1"
+    },
+    "kb:dream:symbol:小偷": {
+      "content_sha256": "96c433c0e0129e58be1d78b7cd146e06b1ca254228e8f93215765345a92c01b3",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-initial"
+    },
+    "kb:dream:symbol:屋顶": {
+      "content_sha256": "93daaadc8406de08d1738cfd17d0a4911ccd255c1b12e181f10a6507ce3bc05b",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-initial"
+    },
+    "kb:dream:symbol:山": {
+      "content_sha256": "71d2d568e19110a77a14dc11391a17a8c86890565e037eb7a818ae58269e3dcb",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-initial"
+    },
+    "kb:dream:symbol:岛": {
+      "content_sha256": "7b9218a1706ac433b151dd97eefe0b2c09de9dba9879f6b73a4407f17983d71c",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-initial"
+    },
+    "kb:dream:symbol:工作": {
+      "content_sha256": "b8045ca6559ab50f5142fa5951645205a97b5eda148c7f8985de82611f330ebd",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-initial"
+    },
+    "kb:dream:symbol:帽子": {
+      "content_sha256": "c28bd199af961deb8063f312bb7c4fb2ff2177956dda64486ff954e00d538184",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-initial"
+    },
+    "kb:dream:symbol:床": {
+      "content_sha256": "4b0d11da61c1011fea07b546a4727e8d317595fe07d731138da490986a8fd9c6",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-initial"
+    },
+    "kb:dream:symbol:废墟": {
+      "content_sha256": "b1d8c1acf2f65208bfae6588a472a74497102782def129874238e7220d3e8c28",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-rereview-1"
+    },
+    "kb:dream:symbol:开车": {
+      "content_sha256": "25eff7c52c4179baf2d40d640c2a9e2e6c77fff840120142c1a21c052d68e06d",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-rereview-2"
+    },
+    "kb:dream:symbol:彩票": {
+      "content_sha256": "0b5ab06244c739e63056c9b81cbf0eba330524e5bcd7e27c4bcff086206b190d",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-initial"
+    },
+    "kb:dream:symbol:彩虹": {
+      "content_sha256": "1826517f9676ceb24a9f53b433aa8d42d6920063e7449192a65466e5d43905f4",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-initial"
+    },
+    "kb:dream:symbol:怀孕": {
+      "content_sha256": "e3f2e4b11f8d5095c8fd2a06a8767a5ebe5b21d6b95d22bcaee24d4bae1e2389",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-initial"
+    },
+    "kb:dream:symbol:恋人": {
+      "content_sha256": "ed3e075eab26aa58bb634d61baf2e0861400c830fc821fe29dc0b816f8fb45c4",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-rereview-2"
+    },
+    "kb:dream:symbol:恐龙": {
+      "content_sha256": "fde7c0e1e5c18a39949517ae38d7d1f79b365813ed3f7a8e50d7a3ba3a483fe0",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-initial"
+    },
+    "kb:dream:symbol:戒指": {
+      "content_sha256": "3ef18d50f5b6a2fdd4ee0a0185cc67e89f11438567ab218a98bc5d8c74329482",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-initial"
+    },
+    "kb:dream:symbol:战争": {
+      "content_sha256": "b727e52fc58ec0c36fd36a9b3f517f0d6e8b9406188df9674a73e304b8147c1f",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-initial"
+    },
+    "kb:dream:symbol:战场": {
+      "content_sha256": "c4db5a8591812a887590f44eb57a3fe6e51c76c44fb5fa54f5820ef2b825e16d",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-rereview-1"
+    },
+    "kb:dream:symbol:房子": {
+      "content_sha256": "33f3fe264bbc56bc81a31e8289bdb16193b240d0515228d532f7574d95ac1107",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-rereview-3"
+    },
+    "kb:dream:symbol:房间": {
+      "content_sha256": "8df742988ed8d12a6a62ca5dbb218ff2d515525bf2bf312add206af0ceefc8f5",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-rereview-1"
+    },
+    "kb:dream:symbol:扇子": {
+      "content_sha256": "7c2ae63620c2cd7fb33c71770026f265eceeafa2c65b517b4ec72f59176f579d",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-initial"
+    },
+    "kb:dream:symbol:手": {
+      "content_sha256": "d0cd12747dd85f82ea328a8a865a721a78a480a98bc8ef5915fffd6afea8a0e1",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-rereview-1"
+    },
+    "kb:dream:symbol:手机": {
+      "content_sha256": "76a28b1a73866ab333566763e034add3b60a650bee721cdb6cfee5d35eca65bb",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-rereview-1"
+    },
+    "kb:dream:symbol:手表": {
+      "content_sha256": "6a87c2fb1804ccbd218e8cede01652ac6029bd15e288d6e9678c8927dd682e56",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-initial"
+    },
+    "kb:dream:symbol:打扫": {
+      "content_sha256": "985864cefa76a9e61065e4c95ce8481afaa49853ec7e51fb75596ff272754fe6",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-initial"
+    },
+    "kb:dream:symbol:打架": {
+      "content_sha256": "a5256964162b7456b03d8c0f00ea358bac77f61f8632b839f248a5bc8ab06b76",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-rereview-1"
+    },
+    "kb:dream:symbol:打电话": {
+      "content_sha256": "3bbd11e88e2e4444d79f45bdf7e48e5f981680423584019ebf226d3a9577e631",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-initial"
+    },
+    "kb:dream:symbol:打雷": {
+      "content_sha256": "dc643ff4b3024aa5f4c6b3755a659b4b938662c04736c6f02c50e0cfdeb29c15",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-rereview-1"
+    },
+    "kb:dream:symbol:找东西": {
+      "content_sha256": "91dcbc9906b0fae22b3a584db2817d2bca24ad121193060d442a1a1007e5eea4",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-rereview-1"
+    },
+    "kb:dream:symbol:投票": {
+      "content_sha256": "18f7c26ee3a575b9ee03c1e4cc6381f79977bcc68be672de23288156bcb8ed57",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-initial"
+    },
+    "kb:dream:symbol:拍照": {
+      "content_sha256": "7378a1519908b628fcb025782b2bc061053a66aa7a99d2956b580c992dff62f3",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-rereview-1"
+    },
+    "kb:dream:symbol:拥抱": {
+      "content_sha256": "b8b84d26259a4844dacf16f9ef1821e13e9a1b48404191fefbed5880f9f538c8",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-rereview-1"
+    },
+    "kb:dream:symbol:掉牙": {
+      "content_sha256": "739efca1303f464375b8cb0fcef6eb626d5e664a800a776e2eb22227044ed6b5",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-initial"
+    },
+    "kb:dream:symbol:排队": {
+      "content_sha256": "5434609a6e49edd66f0ef201f8833a93c7420fb8b533f92aab11ce6826da288c",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-initial"
+    },
+    "kb:dream:symbol:接吻": {
+      "content_sha256": "7a48e26a7673d84735075ba17bc99005ae486b48937f18d5b6f860db88dce34b",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-initial"
+    },
+    "kb:dream:symbol:搬家": {
+      "content_sha256": "12df87773da52318d5edb0cd0a6fa6084d683a1c3f2cb3281042171a4f4ee009",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-rereview-1"
+    },
+    "kb:dream:symbol:摩托车": {
+      "content_sha256": "45652a09b27335ac3b5b36cc1bae51889e72ade6956cace1a0e4a33ce4e8fa76",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-rereview-1"
+    },
+    "kb:dream:symbol:救人": {
+      "content_sha256": "c5b96dc2f1774747e13520ddd871ecebfda1fba69048b7650ec2f73c4ab49d16",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-initial"
+    },
+    "kb:dream:symbol:教堂": {
+      "content_sha256": "de9b9d2df594e600b298f561cbcd4c8601c27123b0b24cd59a0cb6655a0659ed",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-initial"
+    },
+    "kb:dream:symbol:新郎": {
+      "content_sha256": "f22ae226c933a6129c8a88a4898704a6e1f283ed763996e941162116c692783c",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-rereview-1"
+    },
+    "kb:dream:symbol:旅行": {
+      "content_sha256": "b23ad74f911aacda7a0577ad9d2ed154a9cd3810255349b9fa089235b4548984",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-initial"
+    },
+    "kb:dream:symbol:旗帜": {
+      "content_sha256": "849bf8d4d675ba48ea03abaef81cda253cb1e79fb95b7f6c905f3aac44ab9c9f",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-initial"
+    },
+    "kb:dream:symbol:日落": {
+      "content_sha256": "39e6e8c845f6a36f40a79c2d82e485243935a1f8c140aab2fd92a811e5a1ebd3",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-initial"
+    },
+    "kb:dream:symbol:时钟": {
+      "content_sha256": "84ed1efd736006aad754ae232e8648b767472b1489299bfbc0c54a51bf1b42d7",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-initial"
+    },
+    "kb:dream:symbol:明星": {
+      "content_sha256": "7865504adf9c6b98b21a15a6b2621403945dfca29dc86d918f82b3c92ed5a83e",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-initial"
+    },
+    "kb:dream:symbol:星星": {
+      "content_sha256": "f42f4b13fc2ca2adcae82728fcd6d2cb65344f7b15f8ea5f0760e058fee59233",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-rereview-1"
+    },
+    "kb:dream:symbol:春天": {
+      "content_sha256": "307847bde88c49410e863ffb584d62fdac312fd3d1538d107ed2246e7f948d7b",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-initial"
+    },
+    "kb:dream:symbol:春节": {
+      "content_sha256": "3b1dac182b4e21a67fd5c1dd5603a12ba0b57a26948415319d39bca3c928b81a",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-initial"
+    },
+    "kb:dream:symbol:月亮": {
+      "content_sha256": "d509f92cabb4277236b3a521a5430a5a31dd0d30b44f89b627ac1dd60670dbdb",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-initial"
+    },
+    "kb:dream:symbol:朋友": {
+      "content_sha256": "aff5b42d4c71535b0eafbc9dffa7af7de9e61e7a6118f63e653d845980a5f4b1",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-rereview-1"
+    },
+    "kb:dream:symbol:机场": {
+      "content_sha256": "6cc961c4a4541842de4327810cf1d96b91b2d782fd865b44c3decf37c38b6f9d",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-initial"
+    },
+    "kb:dream:symbol:村庄": {
+      "content_sha256": "a9db16cc3c6ee3f1445d732bf0b30bafb5a06f9fa75dd589c66a45a580ae4ff7",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-initial"
+    },
+    "kb:dream:symbol:杯子": {
+      "content_sha256": "488cbf7008a8b2a502f7053f3cd7bcc857843f6d77db7ad74eb0180c40c63aa7",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-rereview-1"
+    },
+    "kb:dream:symbol:果树": {
+      "content_sha256": "4312210be08436771171de26173de1739d2f0efea274754a468167433713c361",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-rereview-1"
+    },
+    "kb:dream:symbol:枪": {
+      "content_sha256": "4d5364cc297df9f4331d414eb946c37ef5920a4be2284dccc0bce95100497016",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-initial"
+    },
+    "kb:dream:symbol:树": {
+      "content_sha256": "30014727c6a2a4a97e97c2b83ad5bf5b72ada0aa9061bb6b30123ea48f7713d9",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-initial"
+    },
+    "kb:dream:symbol:桥": {
+      "content_sha256": "fa57cd873d7acf196ec16c4f54f146efcb42bbbde945d7e21ba3fd3f419abae5",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-rereview-1"
+    },
+    "kb:dream:symbol:梳子": {
+      "content_sha256": "5b7fbdcf85624fb3da46b63ff0e2341154b4408d5e799f894f4db5641f973312",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-initial"
+    },
+    "kb:dream:symbol:森林": {
+      "content_sha256": "fb4933d3d66ad36f6bc4ea942715ae6f6f535123b917365ce70b6dbc1cff8b69",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-initial"
+    },
+    "kb:dream:symbol:棺材": {
+      "content_sha256": "3eb764733b083696db035f6f838bd0424a81bb55f80d68d1fbd412604c9ad8be",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-initial"
+    },
+    "kb:dream:symbol:椅子": {
+      "content_sha256": "2caa524f236fac1b627ada16fa6bf72a9ef6fa20325cc7885fe2617510ea15ef",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-initial"
+    },
+    "kb:dream:symbol:楼梯": {
+      "content_sha256": "643f563b9353335731b215b357a53084dd9fba089892f0f9155ce03676c2c674",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-initial"
+    },
+    "kb:dream:symbol:死亡": {
+      "content_sha256": "5ce15b16afd4d70590e5790ea1c3b4851851229cfba4572ca9277b1f3b0e0bee",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-initial"
+    },
+    "kb:dream:symbol:比赛": {
+      "content_sha256": "e690559d89416edfe697dd395eb763cec5bd23fb130a4b0d63743b66e6838f63",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-initial"
+    },
+    "kb:dream:symbol:毕业": {
+      "content_sha256": "275ea3b5489132e73637a974f4ca609c82da359055055d01270b040b6bb38d37",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-initial"
+    },
+    "kb:dream:symbol:气球": {
+      "content_sha256": "05c819a437baa8c9d70732ade6600cb18f71930ddadb511cc6f0e14225acb5a2",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-initial"
+    },
+    "kb:dream:symbol:水": {
+      "content_sha256": "ef73e346ae1fb5609e9e0e23dfbdb8a684fecbfb5b52556756bf237d05799b5a",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-initial"
+    },
+    "kb:dream:symbol:水晶": {
+      "content_sha256": "e9715dd0841c11e4ac825eeb206c919d55c9f9fcae1811cb4b1d47738cb73e48",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-rereview-1"
+    },
+    "kb:dream:symbol:水果": {
+      "content_sha256": "72bb63945333f9e98e55916038cb8dda2799ad042b66da6f17c51cf3711dcb18",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-initial"
+    },
+    "kb:dream:symbol:求婚": {
+      "content_sha256": "1e8d11c583f923f63a3794281fe84df7d2a8e83d3d36a2244547946ce1057bb7",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-initial"
+    },
+    "kb:dream:symbol:汽车": {
+      "content_sha256": "70af62ef39dcedf150f861ad5186100e64560c22e078ee71ef0a406bb9ae053a",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-initial"
+    },
+    "kb:dream:symbol:沙滩": {
+      "content_sha256": "533c85ab200a7a2cf7de436f25a000b138ca1cf7ea4f9aae0090e67e55e8cee6",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-initial"
+    },
+    "kb:dream:symbol:沙漠": {
+      "content_sha256": "577a7ce71f9cc1dfeabeb8c69bbf5b0ff4dfd23dd1213aa8a1bf756de265b3ee",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-rereview-1"
+    },
+    "kb:dream:symbol:没穿衣服": {
+      "content_sha256": "c4a04da5afd9beb2dfd1f8d9fd510643445a5466a7a738c4b2194e89ea872710",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-rereview-1"
+    },
+    "kb:dream:symbol:河": {
+      "content_sha256": "3048ebe9409de100f0e2d5610fef80e037ecb8523cf00d52b784833a0214f3b9",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-rereview-1"
+    },
+    "kb:dream:symbol:泥土": {
+      "content_sha256": "c0222b0718f1a419e4b6abd60c5b74a91992a6f1eb026148efbbca95e987ad92",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-initial"
+    },
+    "kb:dream:symbol:泥石流": {
+      "content_sha256": "b3f0228eb4b89b7aff959a03eb024206ef2d39da8d36958f27272475c024797d",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-rereview-1"
+    },
+    "kb:dream:symbol:洗澡": {
+      "content_sha256": "bbfe795782c063edcfcf2703ee40e4119d38b8662f9a59cf2bbcd35591d4121a",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-rereview-1"
+    },
+    "kb:dream:symbol:洪水": {
+      "content_sha256": "3afbd31425ccee5b660f4fd85c6a017290572276fcca337cfee4e260d4659fea",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-rereview-1"
+    },
+    "kb:dream:symbol:流血": {
+      "content_sha256": "f60f6e0150dd35ec31f438b53a69e587cf6b167b5f2b95a0d8a827b29add32e8",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-initial"
+    },
+    "kb:dream:symbol:海浪": {
+      "content_sha256": "b9815d660d351a89fe9d6e492bf7fd388a937d8305bcd4c4d0c99ddf4c21468f",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-rereview-2"
+    },
+    "kb:dream:symbol:海豚": {
+      "content_sha256": "d51aefaf7096cfe4b92adebd116f2712065fd792bedc6e953695ed12b11af1b6",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-initial"
+    },
+    "kb:dream:symbol:游戏": {
+      "content_sha256": "774479f5f9f5609b8d58e6e6380eb7a398946865ab5871ab87b89f12435f9750",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-initial"
+    },
+    "kb:dream:symbol:游泳": {
+      "content_sha256": "2a0307d4bc265f831c0489a6c14212734630a5c853751c64657a98e4a60853d9",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-rereview-1"
+    },
+    "kb:dream:symbol:游泳池": {
+      "content_sha256": "2d134258a8dbfae2ee35f33954317f642e8b1396fb8e4d9fc8dea7ebaf4c9d44",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-initial"
+    },
+    "kb:dream:symbol:湖": {
+      "content_sha256": "92a90709aace5fb03f1661bc9cd88d92276d73c0a030f533aa142eacf02a2204",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-initial"
+    },
+    "kb:dream:symbol:漏水": {
+      "content_sha256": "7fdc18bb77e107ac0e6d6d9ceb54daeb31947d1abc60abfd671452eafd738c3c",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-rereview-1"
+    },
+    "kb:dream:symbol:瀑布": {
+      "content_sha256": "ecbcab375c0485849d78314b566b3920af013441b7a051e5a8f77c0df8a08740",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-initial"
+    },
+    "kb:dream:symbol:火": {
+      "content_sha256": "9db8ce97ec2267aeca5fa2ccf365cbfafa90e630d46e48c60224de6f53f8987f",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-initial"
+    },
+    "kb:dream:symbol:火山": {
+      "content_sha256": "e9fba9e8802553dba224f91334f3f2323521edc65e1bc52944230af82396bf64",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-initial"
+    },
+    "kb:dream:symbol:火车": {
+      "content_sha256": "ac179535c47306b49ac704cd0c68d3b33538df7dd01c1a836d694ecf5206afb2",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-rereview-1"
+    },
+    "kb:dream:symbol:灯": {
+      "content_sha256": "d1a0e5560499ec9e4c8fb7f0c2dd61d5a77a55871d7ff47c59f87e1d73d66411",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-rereview-1"
+    },
+    "kb:dream:symbol:照片": {
+      "content_sha256": "f84f1f44c7043b63c1f73b8c140f1917034b5d3ec2ee887bd6a8d3a0ef4c1493",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-initial"
+    },
+    "kb:dream:symbol:熊": {
+      "content_sha256": "d8bc2e63ee30d6a16feb9565fdebe1c29f705798692e2912d98ce9bb1186687a",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-rereview-1"
+    },
+    "kb:dream:symbol:爆炸": {
+      "content_sha256": "48d0c13989d5af7d3f377dc28533f3507253e1995e3a79db3d0935c4dffac895",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-initial"
+    },
+    "kb:dream:symbol:爬山": {
+      "content_sha256": "ce6211577438b9b61f4bb5bc6e3024c0b214ce3fa1409e962e63ba26fa9e4002",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-initial"
+    },
+    "kb:dream:symbol:父母": {
+      "content_sha256": "bae10482d56992cb16540ffbad16bfd08a4c2b2f2864e566362ea87df695f7fd",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-initial"
+    },
+    "kb:dream:symbol:牙齿": {
+      "content_sha256": "ed744c00b575b8e8c4df189bc7586676524b730e8964d225edf17649ced983a0",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-rereview-2"
+    },
+    "kb:dream:symbol:牛": {
+      "content_sha256": "ad89d27fc7bad172079d7ea268289e4ae6d58811652bed75fcf95a0daf8324e8",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-rereview-1"
+    },
+    "kb:dream:symbol:狐狸": {
+      "content_sha256": "cdb93bebd1f41c5d7e40964d14e9c661dd60767064cbf0d534d627e7f59da754",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-rereview-1"
+    },
+    "kb:dream:symbol:狗": {
+      "content_sha256": "9769d75dd6040e9642b713b4d37720ada395f176c56426789010ec0afce3250a",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-initial"
+    },
+    "kb:dream:symbol:狮子": {
+      "content_sha256": "d734e4dd084865a64479def2dcd66e9b356bd081b49a730fb197abdcbf3fa4c9",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-initial"
+    },
+    "kb:dream:symbol:狼": {
+      "content_sha256": "7149283787559ef91f85390809fce0afb8c2f62b02c8a152dd765c8a61312a3f",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-initial"
+    },
+    "kb:dream:symbol:猪": {
+      "content_sha256": "428c431b8256fef13deb89b5cc1b69502436b5d597f2d2dbb57e059e557a92c6",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-rereview-1"
+    },
+    "kb:dream:symbol:猫": {
+      "content_sha256": "4f6ea9528e2e1dac12786a0cfdf01de25119939e18433f04d09e6c1916970e8b",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-initial"
+    },
+    "kb:dream:symbol:猫头鹰": {
+      "content_sha256": "ec6932601d58a068bd1197b2d3878b4d5f874708c64504d89183d442603376ea",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-rereview-1"
+    },
+    "kb:dream:symbol:猴子": {
+      "content_sha256": "d32547446d49787460410551bfb1e650aabf3e2678a7284730b5baac2254325b",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-initial"
+    },
+    "kb:dream:symbol:玫瑰": {
+      "content_sha256": "2023c91f0cbaf3fdc2661af520abcff946899ae5eea1a8291ad629ee14d2eafe",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-initial"
+    },
+    "kb:dream:symbol:珍珠": {
+      "content_sha256": "b1ede096d3a30522c064795d67c4e5acdb4d7122736e7d2b1fd96d00b129e6af",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-initial"
+    },
+    "kb:dream:symbol:生孩子": {
+      "content_sha256": "5abea296924fcd320ae396b2fe064b7e2605c9470c33d422f12996355b8603eb",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-initial"
+    },
+    "kb:dream:symbol:生日": {
+      "content_sha256": "e849f4ddd7e1fac883f5030f964366bb5eda7386b895ba37a9b8f3049ea550d6",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-initial"
+    },
+    "kb:dream:symbol:生病": {
+      "content_sha256": "23b366964e43a835d7b29efd54f46182756624a4629816fa6d18616cd96ce1b2",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-initial"
+    },
+    "kb:dream:symbol:电梯": {
+      "content_sha256": "aa744edee64ea99fb6cb2499b853049721a1d369bb20c4a25732fb9f052f7886",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-rereview-1"
+    },
+    "kb:dream:symbol:电脑": {
+      "content_sha256": "fd9c93d68dc6fc926e33e1fda632ddac2b9812c30627927ef10e53454356d0ac",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-rereview-1"
+    },
+    "kb:dream:symbol:画": {
+      "content_sha256": "359a1386465da5654993ce58e2b4589ccdf9bad1f6e0e13d2bb597e4a6efad11",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-rereview-1"
+    },
+    "kb:dream:symbol:瘫痪": {
+      "content_sha256": "1598de7582fb66e2ff499c6ad88f489b96973fbdd6b8751edf0b00c7cc3443cd",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-rereview-1"
+    },
+    "kb:dream:symbol:白头发": {
+      "content_sha256": "108093cc237bb4555ca26b2c094d37b00dfab8cf7cea1a06e2edefd2fbd28517",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-initial"
+    },
+    "kb:dream:symbol:监狱": {
+      "content_sha256": "ff7500d77e5f6d9b1d1af3c3bfee2401198ed76ebb1be0dd6da4c41c141cb5d8",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-initial"
+    },
+    "kb:dream:symbol:眼睛": {
+      "content_sha256": "e64bc3891cb8fca228a5f0e9b9b55d99d0c8b104a705308f20aa97623338fbec",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-rereview-1"
+    },
+    "kb:dream:symbol:眼镜": {
+      "content_sha256": "8327b1bcb956829bc539c7f091005cfcc21d45b0ef2d484d56616eff62876b39",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-initial"
+    },
+    "kb:dream:symbol:睡觉": {
+      "content_sha256": "4356838c6c25f2c8fa4b633305e5b3cd2b8801ca7a8e621ec95f440ebf0f9b00",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-initial"
+    },
+    "kb:dream:symbol:石头": {
+      "content_sha256": "fe70a03ced33825986fefb815625f569416c3f208d29059bae3f3934b3ec1b29",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-initial"
+    },
+    "kb:dream:symbol:碗": {
+      "content_sha256": "e5581cf6b6ece20e7a747a7d0f79dec4d8b3f99d38322e10da715a18b9051f92",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-rereview-1"
+    },
+    "kb:dream:symbol:礼物": {
+      "content_sha256": "f1556e326778752bd0551e6745d9ce423e944ea61ac6f579e69cd0242e4d173c",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-initial"
+    },
+    "kb:dream:symbol:祖父母": {
+      "content_sha256": "e0c0cfb7b2ed4cdd014aa5801c5156414ca2e5a4221aa3f922eb3c6747711a2a",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-initial"
+    },
+    "kb:dream:symbol:神仙": {
+      "content_sha256": "cd143b260f445e94150e5b6f1d77f53f3b5dd057d0fc4e401b5a7875498af668",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-rereview-1"
+    },
+    "kb:dream:symbol:离婚": {
+      "content_sha256": "c3631d3a25cde2c0df2ec9cf955a7b3de89e9545b517e89b3ebaa38b1e35b1f1",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-initial"
+    },
+    "kb:dream:symbol:种树": {
+      "content_sha256": "916ed205e44ca984ef774e928c9667952c6eb016c1aa0b823e911c69bf10e112",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-rereview-1"
+    },
+    "kb:dream:symbol:穿越": {
+      "content_sha256": "dc3a28aee3dc242cb5b08dd46e94a3ba18f67beaf036d3d650b77acb29c2a7e4",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-initial"
+    },
+    "kb:dream:symbol:窗户": {
+      "content_sha256": "935d75f9355e948aecd45d7056c4ead36478d0bafb57a9d391548ac25ff171cf",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-rereview-1"
+    },
+    "kb:dream:symbol:竹子": {
+      "content_sha256": "9d3488111c717cf2653e272528c9bb3f582275cf35f5f8ce19f293024f19d784",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-initial"
+    },
+    "kb:dream:symbol:笑": {
+      "content_sha256": "e39faf8b7270c36b81f469305a5548e3c71bad3c6d731abfb6ae7b40f07889d1",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-initial"
+    },
+    "kb:dream:symbol:等待": {
+      "content_sha256": "cd5c1a81e42d5fc52ec0c11c64a310895f0acb4e064170dfd39df7ba0dcfe64d",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-initial"
+    },
+    "kb:dream:symbol:签约": {
+      "content_sha256": "2961ea37c84bce306091146b34c1180c5b7edc99d8533abe2ef55c14876969c2",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-initial"
+    },
+    "kb:dream:symbol:箱子": {
+      "content_sha256": "d4f5ddb020aa061f22edd760653ee9ec4b2e1f5ced66dd85aa45b5c165015709",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-initial"
+    },
+    "kb:dream:symbol:米饭": {
+      "content_sha256": "0f0b29b79108cf4ef8b8bbfcd1ed00b49bfa2b459fb249aa758e50fad1da89f4",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-rereview-1"
+    },
+    "kb:dream:symbol:糖果": {
+      "content_sha256": "3e5fb276eb856513bfdb751a86191b735734eb5d72470bb741358c5b89a4c107",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-rereview-1"
+    },
+    "kb:dream:symbol:红包": {
+      "content_sha256": "f6b0f83f2742c582cda41872415d0f0edb02572cb273edced44831d899281754",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-initial"
+    },
+    "kb:dream:symbol:约会": {
+      "content_sha256": "badb967b12df6bd97092bfc91a558363d746a3526a474cecdd784cc04cbdf038",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-initial"
+    },
+    "kb:dream:symbol:纹身": {
+      "content_sha256": "0fc3434df3e0d6ccfcb326b0b4c7aebc8ddfbf369342929d7f198a1a5d7358b4",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-initial"
+    },
+    "kb:dream:symbol:结婚": {
+      "content_sha256": "062dfb0a65f7bfee252f544ebb30ba8f64be8011ef41240900570247ecb9413e",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-initial"
+    },
+    "kb:dream:symbol:绳子": {
+      "content_sha256": "f09f5673985f2822338720b3fded9eb047299a5da91fbf130062564d4a15ad13",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-rereview-1"
+    },
+    "kb:dream:symbol:羊": {
+      "content_sha256": "4675b7f731a9d1772c3901bea0e25e53fc60a94ea0033d7426820f080721b9ab",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-initial"
+    },
+    "kb:dream:symbol:老人": {
+      "content_sha256": "5b29f7711bebdd76e910f650508801b4f9c0101efb837a6679fddd20396c9400",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-initial"
+    },
+    "kb:dream:symbol:老公": {
+      "content_sha256": "e3f61b2484dc9e581851ebfb824237c33756f58f41d6eb78f9029d1e59ed80ad",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-rereview-1"
+    },
+    "kb:dream:symbol:老婆": {
+      "content_sha256": "de77bfaad0257f44c8c1d925f62cf2bd311c223a2bf6c6a4d88041713d18c854",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-rereview-1"
+    },
+    "kb:dream:symbol:老家": {
+      "content_sha256": "44c7462c7103c07e4bf93c6962c3ddff5a654acbb59eeeeb2e40403c6f986b58",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-initial"
+    },
+    "kb:dream:symbol:老师": {
+      "content_sha256": "531d28b2acf527889d606a98fd34976c0f422527abc3f59d4518e2c93b7f00d4",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-initial"
+    },
+    "kb:dream:symbol:老虎": {
+      "content_sha256": "57ba15f20dfda537f1a38142e236e6f8d9f4b66c216321b33f26a04d1449be4f",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-initial"
+    },
+    "kb:dream:symbol:老鼠": {
+      "content_sha256": "8f5608309ad50d19ca6ed879bb6958acbe8fdd8b891b0faa1af778b757c3ec7a",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-rereview-1"
+    },
+    "kb:dream:symbol:考上": {
+      "content_sha256": "65c7d396db591e5914717c33833554f39c29c2ae489f91ab44a9bb110d74d2ae",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-initial"
+    },
+    "kb:dream:symbol:考试": {
+      "content_sha256": "5628034b8e4f3393d0b2b405ac19f4a11bb2c84134773a2ef7c4c02592ceba3e",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-rereview-1"
+    },
+    "kb:dream:symbol:聚会": {
+      "content_sha256": "86316d38f27f88acc80b15c2a1c502d39e5295aa025e44af1604aa27a8c95249",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-initial"
+    },
+    "kb:dream:symbol:肉": {
+      "content_sha256": "53ffa4906efa2ada63ae97d40db17268d322df351136f1885ef714dc1735ee77",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-initial"
+    },
+    "kb:dream:symbol:背叛": {
+      "content_sha256": "cb3b9f57af318784c5e6a48d3e3c767adc749d24554c3392dac53b9f5e33678f",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-initial"
+    },
+    "kb:dream:symbol:脚": {
+      "content_sha256": "5f800bdd07915b79c1e663686a51b0cbfd857422e8f076ff2e32b33f5d0d7bb8",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-initial"
+    },
+    "kb:dream:symbol:自杀": {
+      "content_sha256": "613e3f95ccb3ddf160f37bd2bb01bf960ff514b78e7eac0fa24994f5ae94f41e",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-rereview-1"
+    },
+    "kb:dream:symbol:自行车": {
+      "content_sha256": "db8ecc27fe75a658b5d5063c18a9e79e071ee219a897199669edb61287bcecbb",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-rereview-1"
+    },
+    "kb:dream:symbol:舞台": {
+      "content_sha256": "9f8149e8af123edd05d2a73c135a94f7ab04c52ed863dd6d4c5f713359d59029",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-initial"
+    },
+    "kb:dream:symbol:船": {
+      "content_sha256": "70eab087dc58826433b2818aec2869797fd4045610eec5490f1e2f1cfef5d7e6",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-initial"
+    },
+    "kb:dream:symbol:花": {
+      "content_sha256": "2fa6bca2376fed087dd3f34ec0c984c2651df3f24f5ad41c350719b3b8e2db5e",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-rereview-1"
+    },
+    "kb:dream:symbol:苹果": {
+      "content_sha256": "91e35dbc349538449b6bd36a8252f38ddc9fd70c35b801beceab0b15c15a3b33",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-initial"
+    },
+    "kb:dream:symbol:茶": {
+      "content_sha256": "68cb4160986168160438bd34fce9247808e2318a6db639452ae385b2fa5b5cae",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-initial"
+    },
+    "kb:dream:symbol:草": {
+      "content_sha256": "6fae76db97a3a994907cab9696763b8c6fd18a3345e51a6c9d049ea6d1e2ad94",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-initial"
+    },
+    "kb:dream:symbol:草原": {
+      "content_sha256": "d4674bb38ac9ee6e28dd25d7997b90f24d1fafd16ee6f7ab287060f9c6ecd61c",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-rereview-1"
+    },
+    "kb:dream:symbol:药": {
+      "content_sha256": "f7dea12ea5b54496177a972f5d896ad604a8acd0c63b63f7783cb1e77003c9d0",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-initial"
+    },
+    "kb:dream:symbol:荷花": {
+      "content_sha256": "f6bd6e267dbe2b0269947765b6292bf31022a15af248b89daae049a4227df95f",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-initial"
+    },
+    "kb:dream:symbol:落叶": {
+      "content_sha256": "79c071d66b98e4d6351a77fdcafdf17f8e9d739700767ba398221285bf33096b",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-initial"
+    },
+    "kb:dream:symbol:葡萄": {
+      "content_sha256": "3286bf53b57407e6bc99894f3c76252dd2564a9895fdd1794c732c813957c45d",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-initial"
+    },
+    "kb:dream:symbol:葬礼": {
+      "content_sha256": "2786e50de425e0433098ff21ea94008c02a9db7b308b053c939ff0c4b86b4f51",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-initial"
+    },
+    "kb:dream:symbol:虫子": {
+      "content_sha256": "f1937591e5454fe66dc2d41001c90927db23220ab60b0ae031b91b71ed2cfda3",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-rereview-1"
+    },
+    "kb:dream:symbol:虾": {
+      "content_sha256": "bf36989e49ae52ac6001ebab26e5bfa5cab612a922e7a1be9fb2495b7bff389b",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-initial"
+    },
+    "kb:dream:symbol:蚂蚁": {
+      "content_sha256": "a8496fca82807285e1db289f57a2c08221f0a1bae5e51f11f876e09993533ca1",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-initial"
+    },
+    "kb:dream:symbol:蚊子": {
+      "content_sha256": "333b65525f3639353eed7bbec001962fd58c79e140f8b267bcd5f72aaa2f7cc7",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-initial"
+    },
+    "kb:dream:symbol:蚯蚓": {
+      "content_sha256": "926d859d1e78d2ca584e0139047e7045798c100bc3fc1992af4ee2f3cfa306ad",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-rereview-1"
+    },
+    "kb:dream:symbol:蛇": {
+      "content_sha256": "47af19896e36687486bc7c3db87b63f8ac099c16856573cbf97d2304da02970c",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-rereview-1"
+    },
+    "kb:dream:symbol:蛋糕": {
+      "content_sha256": "ce4f2e108a9e1e8ee5051331d0bc640704763efffac9de97775dc8271521a6c8",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-initial"
+    },
+    "kb:dream:symbol:蜘蛛": {
+      "content_sha256": "c19cc76556221bd8645f8631c5cdbaa7b9ec4f8d73f65256e83ac8394a8e66b2",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-rereview-1"
+    },
+    "kb:dream:symbol:蜜蜂": {
+      "content_sha256": "cfef3b3b5e27f86e6c8afc1da12b52827a92702cedde4f295db1bc2415031424",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-rereview-1"
+    },
+    "kb:dream:symbol:蜡烛": {
+      "content_sha256": "b59531665825064946f10b9824a9cdcdce262726a7ee1dddb6c3f587f31b3fc3",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-initial"
+    },
+    "kb:dream:symbol:蝎子": {
+      "content_sha256": "d4c0128e2889205bb1f8cb659864a5f32b6e851ad0caaaaabe6b039e5f905d4f",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-initial"
+    },
+    "kb:dream:symbol:蝙蝠": {
+      "content_sha256": "d352ca1029c4e6b373fecde848f8bbc4100596fcefef0cf406462bc488b43a69",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-initial"
+    },
+    "kb:dream:symbol:蝴蝶": {
+      "content_sha256": "40eaa5c99e9b5caaa5676ee46d42c995c3967b943bda8b0cc93f355cdb3033f1",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-initial"
+    },
+    "kb:dream:symbol:螃蟹": {
+      "content_sha256": "4ccb6c2c0f5babb19f261117f8aa1bd93a8daaac3e762d1b17e0d60bf2a24a23",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-initial"
+    },
+    "kb:dream:symbol:蟑螂": {
+      "content_sha256": "19dbdc7438f24585a15f7611effd2605ef782a50d5703a4a7071fbf4ac764d90",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-rereview-1"
+    },
+    "kb:dream:symbol:衣服": {
+      "content_sha256": "25a49a281a418836bf3ac383977bb4b858d465c03cbaf0952e20fb420116eea2",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-initial"
+    },
+    "kb:dream:symbol:表白": {
+      "content_sha256": "941e64018cfb7ce3f320917015e61074e46426a454c0ac9a15cf5da301d7dce6",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-initial"
+    },
+    "kb:dream:symbol:被偷": {
+      "content_sha256": "e646229228a4842ec20014abda141663def76fc3ee38e3bf9748068ac81b6745",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-initial"
+    },
+    "kb:dream:symbol:被冤枉": {
+      "content_sha256": "02216fee207821fa304520f017202b6eafe19dcf8244f6e791b55d40d9e6f6ea",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-rereview-1"
+    },
+    "kb:dream:symbol:被困": {
+      "content_sha256": "a3f5eef03848052b9e1897159775cd5cc2fbd7fe6eb1f7e716ecf1427ac1f807",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-initial"
+    },
+    "kb:dream:symbol:被子": {
+      "content_sha256": "390c129db5d4e86b4757a4b8f2a4f2108f58b6763a82406d8df3848d5a68bd84",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-initial"
+    },
+    "kb:dream:symbol:被打": {
+      "content_sha256": "4809834f98af0bdfca3c920f75b2a2a9fd3c5a41d936e13725ef801502a7dd38",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-initial"
+    },
+    "kb:dream:symbol:被抢劫": {
+      "content_sha256": "abf92dec3f7825f9c0ff9bc547574ca7d1b774e3fa3dacaa4aa5a9870482557b",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-initial"
+    },
+    "kb:dream:symbol:被救": {
+      "content_sha256": "d4b58dced98497a21a4fe3f31c136ba79599c75f90f64e8faa58ddac3381017c",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-initial"
+    },
+    "kb:dream:symbol:被绑架": {
+      "content_sha256": "23757e587d79bc34fffba8c4927731e9a9fe18356c55e3b7326c5995634ff149",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-rereview-1"
+    },
+    "kb:dream:symbol:被表扬": {
+      "content_sha256": "84f898cf9fe2a06710cc6bb58b80257e9911069f937b1643485721a9f6ae5eba",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-rereview-1"
+    },
+    "kb:dream:symbol:被追": {
+      "content_sha256": "da3fb8009882c89ace73680be8c234924409bb21bc8d33043640cbea9230c20a",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-rereview-1"
+    },
+    "kb:dream:symbol:被骂": {
+      "content_sha256": "fbf096cc3aba3fa896f8f55b279ce4760bfc4897efe27347309c7b744fdf709d",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-initial"
+    },
+    "kb:dream:symbol:西瓜": {
+      "content_sha256": "5d5ab0b00afaaccc26b4038e8b052e25e3cdc3bfc90e6d733e15d481a6d51e81",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-initial"
+    },
+    "kb:dream:symbol:警察": {
+      "content_sha256": "3f60ead302fb80c1abe733f99c61834de6a2765055199c8cf1cf695d47500307",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-initial"
+    },
+    "kb:dream:symbol:证件": {
+      "content_sha256": "168b89dc39258d8484a15b18f8f3f8eaf36b56ca0e313417d6b54cfad15e232b",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-initial"
+    },
+    "kb:dream:symbol:豹子": {
+      "content_sha256": "aa5357fe315f017388fb31d33d7ec365f6a9e9953880c66010237c9d806b54d6",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-rereview-1"
+    },
+    "kb:dream:symbol:购物": {
+      "content_sha256": "7a8f69dae774d78431f86944b1f941dcd4e751082bd172365e885da1ec7a0ab0",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-rereview-2"
+    },
+    "kb:dream:symbol:走廊": {
+      "content_sha256": "cd19581d16f606c257e5e5efdefacb1a6a67cd08200084c74f119d26cc090a1a",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-initial"
+    },
+    "kb:dream:symbol:赶不上车": {
+      "content_sha256": "f0e1c478dc5bbd6f288bba0c3b933924cbb6a0c81ba92da386c482641e022569",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-rereview-2"
+    },
+    "kb:dream:symbol:跑步": {
+      "content_sha256": "08ec4a56dc4da69670404455ecd51086bd4e1c95e2e4fbd95c7c0d9f21de5730",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-initial"
+    },
+    "kb:dream:symbol:跳下": {
+      "content_sha256": "624656bb8edd1247f9ac4aefaad99ae09ef976b70d4536b79ef4e1588ae5cd9d",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-rereview-1"
+    },
+    "kb:dream:symbol:跳舞": {
+      "content_sha256": "70c8dd3ddacf36a1e01764457dd1afcaa795d7f91d51d4e00eea01bd4b3132c5",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-initial"
+    },
+    "kb:dream:symbol:躲藏": {
+      "content_sha256": "8f4e9ef75477b9c080edc1804d8ea08c84ed2e380719756c10aebd5b17d7665e",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-rereview-1"
+    },
+    "kb:dream:symbol:车祸": {
+      "content_sha256": "ee886aaa82b290eb7775c73fca5cdcabe18752fcddddcf4eda95d11daed52dd6",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-initial"
+    },
+    "kb:dream:symbol:车站": {
+      "content_sha256": "1dcd2169016813943fb8b5c1b7e674cfe919c6e99a039b9206c60c36fcb40967",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-initial"
+    },
+    "kb:dream:symbol:轮椅": {
+      "content_sha256": "8f34b284f9a36dacbba4d126ce7c440109ce7242f285c5f2a25c5f062d875de2",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-initial"
+    },
+    "kb:dream:symbol:迁徙": {
+      "content_sha256": "2a0d24f6f15d9bfdb43c3382a4cee9cc024c3781d310fb7d0abb4c3e5c9fa7a3",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-initial"
+    },
+    "kb:dream:symbol:迟到": {
+      "content_sha256": "aeb042e7c422650d0697da2c1b7ada3c9f5531b999094bcb72b9848e147ab1c5",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-rereview-2"
+    },
+    "kb:dream:symbol:迷失": {
+      "content_sha256": "ecd5ed3b8bbe31b511e5c1cf61ae45889c5e7fe91485b5eec92e408d4bac5479",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-rereview-1"
+    },
+    "kb:dream:symbol:迷宫": {
+      "content_sha256": "18b79b97353fbd135bdc1fb9d9ea14dfb0755710c8fce916e3202fcab2ec1f8c",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-initial"
+    },
+    "kb:dream:symbol:迷路": {
+      "content_sha256": "c25b3439b0f246f488f1e699e79e6c743a83ca48876d031350003279f6bc6f6f",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-rereview-2"
+    },
+    "kb:dream:symbol:逃跑": {
+      "content_sha256": "717cf6e5e857cac587b18b7e216734a6bf9c46d4f639fa7ce8f53fa6bb6a999a",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-rereview-1"
+    },
+    "kb:dream:symbol:道歉": {
+      "content_sha256": "cfc970690851c8a224c7d2e18248b87182a1442c430542ecc2f25fff7f3ea5aa",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-initial"
+    },
+    "kb:dream:symbol:邻居": {
+      "content_sha256": "3632b48ccbeeac4a2342330d614e8cf1cd4bee5c500cabd8f61ef8b23774323e",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-initial"
+    },
+    "kb:dream:symbol:酒": {
+      "content_sha256": "0fce7d580dc1ca18761be646aad162cdf01fe0ff22ea0a5815da9683ee9547ea",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-initial"
+    },
+    "kb:dream:symbol:酒店": {
+      "content_sha256": "23944f44d8fc9886af8f9c491e1393eb0fb6d0c7f7d4f0ac94dc389194a37450",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-initial"
+    },
+    "kb:dream:symbol:醒不过来": {
+      "content_sha256": "fb1cab0a0c45032534ce6e80acd75ee59bfe437403ccbd0fcbb26c8fe085be48",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-rereview-1"
+    },
+    "kb:dream:symbol:金子": {
+      "content_sha256": "b184e5d7da82fb116791c298536f703900ef25a2cedbccdda60d4498a0e019d7",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-rereview-2"
+    },
+    "kb:dream:symbol:针": {
+      "content_sha256": "1472c2c228e3e2f8dd3209931bca7bd800ba28e3d541b5458c746e9f84d5712a",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-rereview-1"
+    },
+    "kb:dream:symbol:钓鱼": {
+      "content_sha256": "ce2a627ad7e1e265cd4433c421ad2a0b5c365b99928adee12923f6bf49d7d7cc",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-rereview-1"
+    },
+    "kb:dream:symbol:钟": {
+      "content_sha256": "a3dee6a6c96de9f60a1b1d2582f1f8303a54cc40db85fb1eafc2bd6a27833514",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-initial"
+    },
+    "kb:dream:symbol:钥匙": {
+      "content_sha256": "6de2b4cb0257b30f41556f1fa4a2de48704cc8a9b10aa9554e1ee8c3e6d9f5b4",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-initial"
+    },
+    "kb:dream:symbol:钱": {
+      "content_sha256": "638ac7b4df8a74fdf28c2cd3ab59c0fd083ba92e25928612be3862cbffaf0ae6",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-rereview-1"
+    },
+    "kb:dream:symbol:钱包": {
+      "content_sha256": "ae32b276f208ab07f20ac268818b697612dc4157e611d854f1601efd45c383b8",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-initial"
+    },
+    "kb:dream:symbol:银行": {
+      "content_sha256": "c6b896ec1c23aa256d44af0ca9cbd626249fd02bc4bef931e89f522a5b719b5e",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-rereview-1"
+    },
+    "kb:dream:symbol:锁": {
+      "content_sha256": "693c36308a621921a8c05a62a489be15a0c47ba08b24620a17203f6d01556409",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-initial"
+    },
+    "kb:dream:symbol:镜子": {
+      "content_sha256": "3ce5cca129a9499e948f2c6f9851b82b2267146d414f08859373f8455c46026b",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-initial"
+    },
+    "kb:dream:symbol:长胖": {
+      "content_sha256": "86ab81dcd07ca3f65ceb43120b82f6009e492fe92675e2160776540f5fbc3fe1",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-initial"
+    },
+    "kb:dream:symbol:门": {
+      "content_sha256": "954fb2119ae5b3264d4c9fe75c4c8988f05fbd91037397f193103c4b95ef2519",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-rereview-1"
+    },
+    "kb:dream:symbol:门票": {
+      "content_sha256": "ebb8c95766bf80f7ae83247f6d0ba5881c1217d9bea8be4b7dc355b5dd222040",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-rereview-2"
+    },
+    "kb:dream:symbol:阳台": {
+      "content_sha256": "384ab6ae8a1ce01d41825c08d190c94c92bb563d30d6384d987cb7af183a20db",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-initial"
+    },
+    "kb:dream:symbol:陌生人": {
+      "content_sha256": "444108df7d81f615c8e5adf184091cf27f06fa0f4056319fb4f7a1f065564e54",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-initial"
+    },
+    "kb:dream:symbol:隐身": {
+      "content_sha256": "83c6e24c8f82f8892e4a516aa75c66d73436cdb79b91334e817db1f16b6e8775",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-initial"
+    },
+    "kb:dream:symbol:隧道": {
+      "content_sha256": "2f1b412cff841d6b596a1344dd3b6c0df719b55558a2cf24b83eed9f9959e0cd",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-rereview-1"
+    },
+    "kb:dream:symbol:雪山": {
+      "content_sha256": "b30b6a7b498f22710f99f1bde9be1119aa919f19f79818e639bf6d1bf50ece69",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-rereview-1"
+    },
+    "kb:dream:symbol:雾": {
+      "content_sha256": "06b8797f5e76c3fd8a0e48eae1f5bf05bbb104ae425edd05f660b863e3c14a5f",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-initial"
+    },
+    "kb:dream:symbol:青蛙": {
+      "content_sha256": "111528b963ee8102927335ff7a98227ca0a18b3089a7489d505eb0e34927e41d",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-rereview-1"
+    },
+    "kb:dream:symbol:面条": {
+      "content_sha256": "24c0e22fb135fda752f7a62171075f64b1f7afdba877090f59d2946ca66fde8f",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-initial"
+    },
+    "kb:dream:symbol:面试": {
+      "content_sha256": "aee32387a06a3b11eba18683565facd5dcb84160ed8981028d36112b6733feaa",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-initial"
+    },
+    "kb:dream:symbol:鞋子": {
+      "content_sha256": "1c51174636d502be00b2935f568ac0cb6732e1784a5e7767e07d5974e5c1b300",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-rereview-1"
+    },
+    "kb:dream:symbol:项链": {
+      "content_sha256": "90cc3f82a65ed793d1f5edf29bb75a63354a924a0559a858a1d29e10c9b1e8d9",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-initial"
+    },
+    "kb:dream:symbol:领导": {
+      "content_sha256": "2c220a29dffa9bb8f703f1652daca41f9b97ac84643617913e5dff44921746a1",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-rereview-1"
+    },
+    "kb:dream:symbol:风": {
+      "content_sha256": "da1c6a7ab0d91a2c44f5779fed468e071a00d0e020d9c09f95bd82f6e008015d",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-initial"
+    },
+    "kb:dream:symbol:飞": {
+      "content_sha256": "e2f18bfb2af730a6cf2783b1360980eb27b7b843b333346a1d241a936544e6e2",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-initial"
+    },
+    "kb:dream:symbol:飞机": {
+      "content_sha256": "f49171e9aa6b9a4b6fdcb7bf1b7c7fe843bcd0123fe2a4e3f95ffda5f59f522b",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-initial"
+    },
+    "kb:dream:symbol:饺子": {
+      "content_sha256": "430c9249e32d13378ccb145a5d9bcefa7e8b28dc026e741490e1138e9c49c9b3",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-initial"
+    },
+    "kb:dream:symbol:饿": {
+      "content_sha256": "fbb9ad8c2b9a495c12a385d44709b56a32fbd50f64157a1f069ed94cf447ad63",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-rereview-1"
+    },
+    "kb:dream:symbol:首饰": {
+      "content_sha256": "2bcc8bddf71083ef08e521d4aea272d907691bf907d7034e9e52fbcce96dadc2",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-rereview-1"
+    },
+    "kb:dream:symbol:马": {
+      "content_sha256": "ba4d894166e5a5fc4b4427f357efa9d001d48de140ebe10aedacdcc4aea9b3b5",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-initial"
+    },
+    "kb:dream:symbol:骆驼": {
+      "content_sha256": "7b0f58d5842c2779e067c79c5b22f00127d50e26793cf4bb19d29d6789e16424",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-initial"
+    },
+    "kb:dream:symbol:骨头": {
+      "content_sha256": "5dda9d15cf54c7a67d9c2903a6bdbf3ab19af4cfa9c5b03a216f959591d69a1c",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-rereview-1"
+    },
+    "kb:dream:symbol:高楼": {
+      "content_sha256": "6336956563f282a664fb4935c17dbe2a09dd38723ca38bc0ac9b9c81275382c9",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-rereview-1"
+    },
+    "kb:dream:symbol:鬼": {
+      "content_sha256": "c8b0ad9cf5aab7e9261983247161e88eed5d9314ead5804563bf021658d4cd53",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-initial"
+    },
+    "kb:dream:symbol:鱼": {
+      "content_sha256": "1ad9f42674822247ce6104d272c17b922aeb1efb174694f7f89d898b8f56eb22",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-initial"
+    },
+    "kb:dream:symbol:鲨鱼": {
+      "content_sha256": "602d6e904e43dcd8ae5e59db2907183e2b0dc5b6642b7f12c2b113601b44d952",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-initial"
+    },
+    "kb:dream:symbol:鳄鱼": {
+      "content_sha256": "0aa26086b6f852b5f6ed03daca3ff741f56f64e46c7d7602e7386f9cb6be67dd",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-initial"
+    },
+    "kb:dream:symbol:鸟": {
+      "content_sha256": "b719e79c8ca1706a7fa8aadb1a48cc87755736a1ec4737f1b342fba94e84fe9f",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-initial"
+    },
+    "kb:dream:symbol:鸡": {
+      "content_sha256": "c2f0704a64c14653ab371e8741cffb8c14ef0a26a4d9c5768c2999c689a26684",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-initial"
+    },
+    "kb:dream:symbol:鸡蛋": {
+      "content_sha256": "cab6e6080f3ffe421e6826f33453945947022d6be8b538b0504d58f81dc141a3",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-rereview-1"
+    },
+    "kb:dream:symbol:鸭子": {
+      "content_sha256": "800e2dd87d40ab6bede08bc11ef317d6592c6b2ab9f37421f4273215c5248b49",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-initial"
+    },
+    "kb:dream:symbol:鸽子": {
+      "content_sha256": "1bcc5a9223b7ee0b29614c82bf22b247e1c3a9468230b9f465c4037a865b2a58",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-initial"
+    },
+    "kb:dream:symbol:鹰": {
+      "content_sha256": "da796ece13906f6d28559dbda4139b75c2566cbbef78004a0763b4b8565e071f",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-initial"
+    },
+    "kb:dream:symbol:鹿": {
+      "content_sha256": "82111d94ea0d35d669e2870bd542bd7ad5d3bdb91e886a420022b036f38d92b9",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-initial"
+    },
+    "kb:dream:symbol:麒麟": {
+      "content_sha256": "5d8eadc2601314c47176721fee06f5a272087993d282b0596e99f5d746b03f02",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-rereview-1"
+    },
+    "kb:dream:symbol:黑暗": {
+      "content_sha256": "17371f160bf5d30c8fe462aecf6803e89ad63b44a96ab449f2aa31019e41f4dc",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-rereview-1"
+    },
+    "kb:dream:symbol:龙": {
+      "content_sha256": "4cc93ff20a0005c0da84bc1c07dd0b9a745fa58020de49ee4bbcfe84024badce",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/dream-initial"
+    }
+  },
+  "ledger_changes": {
+    "written": 0,
+    "revoked": []
+  },
+  "model_reviewed_count": 0,
+  "effective_draft_count": 358
+}

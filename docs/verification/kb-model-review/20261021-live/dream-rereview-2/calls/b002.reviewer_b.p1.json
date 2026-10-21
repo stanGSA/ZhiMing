@@ -1,0 +1,95 @@
+{
+  "batch": "b002",
+  "reviewer": "reviewer_b",
+  "run_pass": 1,
+  "attempt": 1,
+  "vendor": "openai",
+  "requested_model": "gpt-6.1-sol",
+  "returned_model": "gpt-6.1-sol",
+  "api": "openai",
+  "started_at": "2026-10-21T16:53:06+00:00",
+  "finished_at": "2026-10-21T16:55:30+00:00",
+  "latency_s": 143.318,
+  "http_attempts": 2,
+  "finish_reason": "stop",
+  "prompt_sha256": "1f4c30b7040a8764df80815d89981de0f2d169e5a9a817d7e5c9a6320472b49a",
+  "input_tokens": 2521,
+  "output_tokens": 895,
+  "cached_input_tokens": 2518,
+  "usage_available": true,
+  "raw_text": "{\n  \"items\": [\n    {\n      \"item\": \"i01\",\n      \"verdict\": \"revise\",\n      \"issues\": [\n        {\n          \"dimension\": \"certainty\",\n          \"detail\": \"“预示着你注定会失去现在的感情，一定会发生”是宿命化的确定性预言，违反解梦不写预兆的要求。\"\n        },\n        {\n          \"dimension\": \"consistency\",\n          \"detail\": \"末句的感情丧失预言与前文“不是吉凶预兆”直接矛盾。\"\n        },\n        {\n          \"dimension\": \"theme_direction\",\n          \"detail\": \"末句明确指向感情受损，与 relationship 为 0 的无方向设置不一致。\"\n        }\n      ],\n      \"reason\": \"主体联想可以保留，但应删除末尾的确定性感情预言，以消除宿命化和内部矛盾。\"\n    },\n    {\n      \"item\": \"i02\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"释义明确限定空间寻路意象，联想温和且不作预兆判断，与自我状态轻微偏阻的方向一致。\"\n    },\n    {\n      \"item\": \"i03\",\n      \"verdict\": \"reject\",\n      \"issues\": [\n        {\n          \"dimension\": \"medical_legal_finance\",\n          \"detail\": \"“说明你的肝脏已有病变，需要立即治疗”仅凭梦境作出确定性医疗诊断和治疗要求。\"\n        },\n        {\n          \"dimension\": \"certainty\",\n          \"detail\": \"将图书馆梦境直接断定为现实疾病的证据，缺乏依据且属于确定性断言。\"\n        }\n      ],\n      \"reason\": \"条目含有依据梦境诊断肝脏病变并要求立即治疗的确定性医疗结论。\"\n    },\n    {\n      \"item\": \"i04\",\n      \"verdict\": \"revise\",\n      \"issues\": [\n        {\n          \"dimension\": \"consistency\",\n          \"detail\": \"同义词“丢东西”属于物品遗失意象，并不等同于“赶不上车”，会误命中其他梦境。\"\n        }\n      ],\n      \"reason\": \"正文和主题方向合理，但需删除会误命中物品遗失情境的同义词“丢东西”。\"\n    },\n    {\n      \"item\": \"i05\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"释义围绕入场资格和参与机会作中性探索，同义词准确，且没有预测现实结果。\"\n    },\n    {\n      \"item\": \"i06\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"时间压力与节奏紧张的联想符合迟到意象，自我状态轻微偏阻的方向与文字一致。\"\n    },\n    {\n      \"item\": \"i07\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"以价值感和自我认同为主要联想，同时容纳不同情绪，不预示财富变化，主题方向合理。\"\n    },\n    {\n      \"item\": \"i08\",\n      \"verdict\": \"reject\",\n      \"issues\": [\n        {\n          \"dimension\": \"consistency\",\n          \"detail\": \"key、同义词及关键词均指向“开车”，正文却完整解释“男朋友（恋人）”，条目对象明显错配。\"\n        }\n      ],\n      \"reason\": \"正文解释的是恋人而非开车，文字与 key 不符。\"\n    }\n  ]\n}",
+  "verdicts": {
+    "i01": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "certainty",
+          "detail": "“预示着你注定会失去现在的感情，一定会发生”是宿命化的确定性预言，违反解梦不写预兆的要求。"
+        },
+        {
+          "dimension": "consistency",
+          "detail": "末句的感情丧失预言与前文“不是吉凶预兆”直接矛盾。"
+        },
+        {
+          "dimension": "theme_direction",
+          "detail": "末句明确指向感情受损，与 relationship 为 0 的无方向设置不一致。"
+        }
+      ],
+      "reason": "主体联想可以保留，但应删除末尾的确定性感情预言，以消除宿命化和内部矛盾。"
+    },
+    "i02": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "释义明确限定空间寻路意象，联想温和且不作预兆判断，与自我状态轻微偏阻的方向一致。"
+    },
+    "i03": {
+      "verdict": "reject",
+      "issues": [
+        {
+          "dimension": "medical_legal_finance",
+          "detail": "“说明你的肝脏已有病变，需要立即治疗”仅凭梦境作出确定性医疗诊断和治疗要求。"
+        },
+        {
+          "dimension": "certainty",
+          "detail": "将图书馆梦境直接断定为现实疾病的证据，缺乏依据且属于确定性断言。"
+        }
+      ],
+      "reason": "条目含有依据梦境诊断肝脏病变并要求立即治疗的确定性医疗结论。"
+    },
+    "i04": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "consistency",
+          "detail": "同义词“丢东西”属于物品遗失意象，并不等同于“赶不上车”，会误命中其他梦境。"
+        }
+      ],
+      "reason": "正文和主题方向合理，但需删除会误命中物品遗失情境的同义词“丢东西”。"
+    },
+    "i05": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "释义围绕入场资格和参与机会作中性探索，同义词准确，且没有预测现实结果。"
+    },
+    "i06": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "时间压力与节奏紧张的联想符合迟到意象，自我状态轻微偏阻的方向与文字一致。"
+    },
+    "i07": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "以价值感和自我认同为主要联想，同时容纳不同情绪，不预示财富变化，主题方向合理。"
+    },
+    "i08": {
+      "verdict": "reject",
+      "issues": [
+        {
+          "dimension": "consistency",
+          "detail": "key、同义词及关键词均指向“开车”，正文却完整解释“男朋友（恋人）”，条目对象明显错配。"
+        }
+      ],
+      "reason": "正文解释的是恋人而非开车，文字与 key 不符。"
+    }
+  }
+}

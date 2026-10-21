@@ -1,0 +1,42 @@
+{
+  "batch": "b001",
+  "reviewer": "reviewer_b",
+  "run_pass": 2,
+  "attempt": 1,
+  "vendor": "openai",
+  "requested_model": "gpt-6.1-sol",
+  "returned_model": "gpt-6.1-sol",
+  "api": "openai",
+  "started_at": "2026-10-21T16:42:14+00:00",
+  "finished_at": "2026-10-21T16:42:22+00:00",
+  "latency_s": 7.952,
+  "http_attempts": 1,
+  "finish_reason": "stop",
+  "prompt_sha256": "757888005b5fe6ae535f13ff26aa90be8bbd52ac2786417943942ba0717def92",
+  "input_tokens": 1279,
+  "output_tokens": 258,
+  "cached_input_tokens": 1276,
+  "usage_available": true,
+  "raw_text": "{\n  \"items\": [\n    {\n      \"item\": \"i01\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"释义符合太阳落第五宫的自我表达、创作与恋爱主题，倾向值与文字一致，措辞无确定性断言。\"\n    },\n    {\n      \"item\": \"i02\",\n      \"verdict\": \"reject\",\n      \"issues\": [\n        {\n          \"dimension\": \"medical_legal_finance\",\n          \"detail\": \"末句依据占星落座断言用户肝脏已有病变并要求立即治疗，属于无医学依据的确定性诊断与治疗指示。\"\n        },\n        {\n          \"dimension\": \"certainty\",\n          \"detail\": \"“出现它说明你的肝脏已有病变”将象征性占星配置表述为确定的健康事实，与前文的非决定性说明矛盾。\"\n        }\n      ],\n      \"reason\": \"木星在摩羯座落陷的传统说明基本准确，但末句包含确定性医疗诊断，不能作为面向用户的释义使用。\"\n    }\n  ]\n}",
+  "verdicts": {
+    "i01": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "释义符合太阳落第五宫的自我表达、创作与恋爱主题，倾向值与文字一致，措辞无确定性断言。"
+    },
+    "i02": {
+      "verdict": "reject",
+      "issues": [
+        {
+          "dimension": "medical_legal_finance",
+          "detail": "末句依据占星落座断言用户肝脏已有病变并要求立即治疗，属于无医学依据的确定性诊断与治疗指示。"
+        },
+        {
+          "dimension": "certainty",
+          "detail": "“出现它说明你的肝脏已有病变”将象征性占星配置表述为确定的健康事实，与前文的非决定性说明矛盾。"
+        }
+      ],
+      "reason": "木星在摩羯座落陷的传统说明基本准确，但末句包含确定性医疗诊断，不能作为面向用户的释义使用。"
+    }
+  }
+}

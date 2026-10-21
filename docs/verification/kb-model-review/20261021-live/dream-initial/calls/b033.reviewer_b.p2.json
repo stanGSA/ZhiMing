@@ -1,0 +1,107 @@
+{
+  "batch": "b033",
+  "reviewer": "reviewer_b",
+  "run_pass": 2,
+  "attempt": 1,
+  "vendor": "openai",
+  "requested_model": "gpt-6.1-sol",
+  "returned_model": "gpt-6.1-sol",
+  "api": "openai",
+  "started_at": "2026-10-21T16:27:10+00:00",
+  "finished_at": "2026-10-21T16:27:40+00:00",
+  "latency_s": 29.976,
+  "http_attempts": 1,
+  "finish_reason": "stop",
+  "prompt_sha256": "7610ea2083716ef96eeeea51875d0ef7d9a2f869a5e086503d342d9936be1afd",
+  "input_tokens": 2784,
+  "output_tokens": 1217,
+  "cached_input_tokens": 2781,
+  "usage_available": true,
+  "raw_text": "{\n  \"items\": [\n    {\n      \"item\": \"i01\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"钱包与资源、身份和安全感的联想合理，中性倾向与文字一致。\"\n    },\n    {\n      \"item\": \"i02\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"释义聚焦自我形象与评价压力，轻微负向倾向合理，且未将梦境作为健康诊断。\"\n    },\n    {\n      \"item\": \"i03\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"镜子与自我审视的联想贴合意象，释义保留情境差异，没有预兆或确定性断言。\"\n    },\n    {\n      \"item\": \"i04\",\n      \"verdict\": \"revise\",\n      \"issues\": [\n        {\n          \"dimension\": \"consistency\",\n          \"detail\": \"“取钱”是行为，不等同于银行场所，也可能发生在其他场景；作为同义词可能把取钱意象误匹配为银行，建议移除或单独设置行为条目。\"\n        }\n      ],\n      \"reason\": \"正文含义合理，但同义词混淆了行为与场所。\"\n    },\n    {\n      \"item\": \"i05\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"钥匙与解决办法、权限和机会的象征联系合理，轻微正向倾向与正文一致，并提示结合梦中情绪理解。\"\n    },\n    {\n      \"item\": \"i06\",\n      \"verdict\": \"revise\",\n      \"issues\": [\n        {\n          \"dimension\": \"consistency\",\n          \"detail\": \"“车票”“机票”不等同于“门票”，容易将旅行、出发等意象误匹配为入场资格；建议拆分条目，或将对象调整为涵盖这些类型的“票证”并相应修改释义。\"\n        }\n      ],\n      \"reason\": \"正文可以用于门票，但同义词覆盖了不同用途的票证。\"\n    },\n    {\n      \"item\": \"i07\",\n      \"verdict\": \"revise\",\n      \"issues\": [\n        {\n          \"dimension\": \"consistency\",\n          \"detail\": \"“门锁”是锁具，不是门的同义词，可能把锁具意象误匹配为门；建议从同义词中移除。\"\n        }\n      ],\n      \"reason\": \"门与机会、界限和选择的联想合理，但同义词混入了不同对象。\"\n    },\n    {\n      \"item\": \"i08\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"阳台与内外过渡、透气空间的联想自然，中性倾向和心理参考定位一致。\"\n    },\n    {\n      \"item\": \"i09\",\n      \"verdict\": \"reject\",\n      \"issues\": [\n        {\n          \"dimension\": \"medical_legal_finance\",\n          \"detail\": \"“你已经患有焦虑症”直接依据梦境作出医疗诊断，“应当尽快服用药物”又据此给出用药建议，均缺乏医学评估依据。\"\n        },\n        {\n          \"dimension\": \"certainty\",\n          \"detail\": \"“这表明你已经患有焦虑症”把梦境与疾病建立确定性联系，不符合反思性释义的边界。\"\n        }\n      ],\n      \"reason\": \"条目包含依据梦境确诊焦虑症并要求服药的医疗确定性结论。\"\n    },\n    {\n      \"item\": \"i10\",\n      \"verdict\": \"revise\",\n      \"issues\": [\n        {\n          \"dimension\": \"consistency\",\n          \"detail\": \"“付款”是支付行为，不是钱的同义词，也可能通过非现金方式完成；建议移除或另设行为条目，避免将支付情境直接归为钱的意象。\"\n        }\n      ],\n      \"reason\": \"正文克制且与中性倾向一致，但同义词混淆了资源对象与支付行为。\"\n    },\n    {\n      \"item\": \"i11\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"锁与保护、封闭和心结的联想合理，轻微自我负向倾向与受阻含义相符。\"\n    }\n  ]\n}",
+  "verdicts": {
+    "i01": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "钱包与资源、身份和安全感的联想合理，中性倾向与文字一致。"
+    },
+    "i02": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "释义聚焦自我形象与评价压力，轻微负向倾向合理，且未将梦境作为健康诊断。"
+    },
+    "i03": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "镜子与自我审视的联想贴合意象，释义保留情境差异，没有预兆或确定性断言。"
+    },
+    "i04": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "consistency",
+          "detail": "“取钱”是行为，不等同于银行场所，也可能发生在其他场景；作为同义词可能把取钱意象误匹配为银行，建议移除或单独设置行为条目。"
+        }
+      ],
+      "reason": "正文含义合理，但同义词混淆了行为与场所。"
+    },
+    "i05": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "钥匙与解决办法、权限和机会的象征联系合理，轻微正向倾向与正文一致，并提示结合梦中情绪理解。"
+    },
+    "i06": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "consistency",
+          "detail": "“车票”“机票”不等同于“门票”，容易将旅行、出发等意象误匹配为入场资格；建议拆分条目，或将对象调整为涵盖这些类型的“票证”并相应修改释义。"
+        }
+      ],
+      "reason": "正文可以用于门票，但同义词覆盖了不同用途的票证。"
+    },
+    "i07": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "consistency",
+          "detail": "“门锁”是锁具，不是门的同义词，可能把锁具意象误匹配为门；建议从同义词中移除。"
+        }
+      ],
+      "reason": "门与机会、界限和选择的联想合理，但同义词混入了不同对象。"
+    },
+    "i08": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "阳台与内外过渡、透气空间的联想自然，中性倾向和心理参考定位一致。"
+    },
+    "i09": {
+      "verdict": "reject",
+      "issues": [
+        {
+          "dimension": "medical_legal_finance",
+          "detail": "“你已经患有焦虑症”直接依据梦境作出医疗诊断，“应当尽快服用药物”又据此给出用药建议，均缺乏医学评估依据。"
+        },
+        {
+          "dimension": "certainty",
+          "detail": "“这表明你已经患有焦虑症”把梦境与疾病建立确定性联系，不符合反思性释义的边界。"
+        }
+      ],
+      "reason": "条目包含依据梦境确诊焦虑症并要求服药的医疗确定性结论。"
+    },
+    "i10": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "consistency",
+          "detail": "“付款”是支付行为，不是钱的同义词，也可能通过非现金方式完成；建议移除或另设行为条目，避免将支付情境直接归为钱的意象。"
+        }
+      ],
+      "reason": "正文克制且与中性倾向一致，但同义词混淆了资源对象与支付行为。"
+    },
+    "i11": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "锁与保护、封闭和心结的联想合理，轻微自我负向倾向与受阻含义相符。"
+    }
+  }
+}

@@ -1,0 +1,92 @@
+{
+  "batch": "b008",
+  "reviewer": "reviewer_b",
+  "run_pass": 2,
+  "attempt": 1,
+  "vendor": "openai",
+  "requested_model": "gpt-6.1-sol",
+  "returned_model": "gpt-6.1-sol",
+  "api": "openai",
+  "started_at": "2026-10-21T16:10:56+00:00",
+  "finished_at": "2026-10-21T16:11:23+00:00",
+  "latency_s": 27.614,
+  "http_attempts": 1,
+  "finish_reason": "stop",
+  "prompt_sha256": "0d9cdec25d9c833be852524d7fcbe17429d9eb5250c86b7f066dee6bc35595e3",
+  "input_tokens": 3207,
+  "output_tokens": 1217,
+  "cached_input_tokens": 3204,
+  "usage_available": true,
+  "raw_text": "{\n  \"items\": [\n    {\n      \"item\": \"i01\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"五行生克关系与白话解释相符，主题倾向合理，且保留了自我观察的非宿命化定位。\"\n    },\n    {\n      \"item\": \"i02\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"木生火、火克金的关系准确，自我获支持与关系需协调的主题方向与文字一致。\"\n    },\n    {\n      \"item\": \"i03\",\n      \"verdict\": \"revise\",\n      \"issues\": [\n        {\n          \"dimension\": \"theme_direction\",\n          \"detail\": \"文字中的阻力是日常琐事牵扯个人精力，未明确涉及感情或人际关系受阻，relationship 的负向缺乏直接依据；宜调为无方向，或补充关系层面的协调含义。\"\n        }\n      ],\n      \"reason\": \"五行关系正确，但关系主题的负向标注未得到释义文字的充分支持。\"\n    },\n    {\n      \"item\": \"i04\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"金克木与金金同类的关系表述准确，协调压力与生活基础步调一致的解释可支持主题倾向。\"\n    },\n    {\n      \"item\": \"i05\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"五行关系准确，自我需协调、愿意为身边人投入的描述与主题方向相符。\"\n    },\n    {\n      \"item\": \"i06\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"金克木、火克金的双重张力解释成立，各主题的轻度负向与文字整体一致。\"\n    },\n    {\n      \"item\": \"i07\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"上下两木生人格火的关系解释准确，支持性文字与整体轻度正向一致。\"\n    },\n    {\n      \"item\": \"i08\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"人格金分别克天格木与地格木，相关协调压力和沟通提醒与负向主题一致。\"\n    },\n    {\n      \"item\": \"i09\",\n      \"verdict\": \"reject\",\n      \"issues\": [\n        {\n          \"dimension\": \"consistency\",\n          \"detail\": \"key 与关键词为“金水土”，正文却完整解释“金木水”，人格、地格及相应生克关系均属于另一条目。\"\n        },\n        {\n          \"dimension\": \"theme_direction\",\n          \"detail\": \"按现有正文，外部压力指向自我受阻，家庭支持指向关系偏顺，与 self 为正、relationship 为负的标注不一致。\"\n        }\n      ],\n      \"reason\": \"正文解释了另一组三才配置，与条目 key 不符，不能作为当前条目的释义使用。\"\n    },\n    {\n      \"item\": \"i10\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"木生火与火火同类的解释正确，整体支持和协调的描述与正向主题一致。\"\n    },\n    {\n      \"item\": \"i11\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"木生火、火生土的顺生关系准确，主题轻度正向与支持、投入的文字相符。\"\n    }\n  ]\n}",
+  "verdicts": {
+    "i01": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "五行生克关系与白话解释相符，主题倾向合理，且保留了自我观察的非宿命化定位。"
+    },
+    "i02": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "木生火、火克金的关系准确，自我获支持与关系需协调的主题方向与文字一致。"
+    },
+    "i03": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "theme_direction",
+          "detail": "文字中的阻力是日常琐事牵扯个人精力，未明确涉及感情或人际关系受阻，relationship 的负向缺乏直接依据；宜调为无方向，或补充关系层面的协调含义。"
+        }
+      ],
+      "reason": "五行关系正确，但关系主题的负向标注未得到释义文字的充分支持。"
+    },
+    "i04": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "金克木与金金同类的关系表述准确，协调压力与生活基础步调一致的解释可支持主题倾向。"
+    },
+    "i05": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "五行关系准确，自我需协调、愿意为身边人投入的描述与主题方向相符。"
+    },
+    "i06": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "金克木、火克金的双重张力解释成立，各主题的轻度负向与文字整体一致。"
+    },
+    "i07": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "上下两木生人格火的关系解释准确，支持性文字与整体轻度正向一致。"
+    },
+    "i08": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "人格金分别克天格木与地格木，相关协调压力和沟通提醒与负向主题一致。"
+    },
+    "i09": {
+      "verdict": "reject",
+      "issues": [
+        {
+          "dimension": "consistency",
+          "detail": "key 与关键词为“金水土”，正文却完整解释“金木水”，人格、地格及相应生克关系均属于另一条目。"
+        },
+        {
+          "dimension": "theme_direction",
+          "detail": "按现有正文，外部压力指向自我受阻，家庭支持指向关系偏顺，与 self 为正、relationship 为负的标注不一致。"
+        }
+      ],
+      "reason": "正文解释了另一组三才配置，与条目 key 不符，不能作为当前条目的释义使用。"
+    },
+    "i10": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "木生火与火火同类的解释正确，整体支持和协调的描述与正向主题一致。"
+    },
+    "i11": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "木生火、火生土的顺生关系准确，主题轻度正向与支持、投入的文字相符。"
+    }
+  }
+}

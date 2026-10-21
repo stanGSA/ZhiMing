@@ -1,0 +1,93 @@
+{
+  "batch": "b019",
+  "reviewer": "reviewer_b",
+  "run_pass": 1,
+  "attempt": 1,
+  "vendor": "openai",
+  "requested_model": "gpt-6.1-sol",
+  "returned_model": "gpt-6.1-sol",
+  "api": "openai",
+  "started_at": "2026-10-21T16:06:49+00:00",
+  "finished_at": "2026-10-21T16:07:11+00:00",
+  "latency_s": 21.688,
+  "http_attempts": 1,
+  "finish_reason": "stop",
+  "prompt_sha256": "124d94c5c63f2ccc9e71e5a0f436731467c0bdc6eb6f12162901a605da1ef251",
+  "input_tokens": 2814,
+  "output_tokens": 949,
+  "cached_input_tokens": null,
+  "usage_available": true,
+  "raw_text": "{\n  \"items\": [\n    {\n      \"item\": \"i01\",\n      \"verdict\": \"revise\",\n      \"issues\": [\n        {\n          \"dimension\": \"consistency\",\n          \"detail\": \"“熊猫”不是“熊”的等义表达，容易将具有不同常见联想的熊猫意象误命中本条；建议移除或单设条目。\"\n        }\n      ],\n      \"reason\": \"释义本身平和且无预兆断言，但同义词混入了应区分的动物意象。\"\n    },\n    {\n      \"item\": \"i02\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"轨道与集体节奏的联想适用于所列铁路交通工具，主题中性且不预示出行安全。\"\n    },\n    {\n      \"item\": \"i03\",\n      \"verdict\": \"revise\",\n      \"issues\": [\n        {\n          \"dimension\": \"consistency\",\n          \"detail\": \"“台风”与“迷路”无同义关系，会将自然灾害意象误命中处境条目，应从同义词中删除。\"\n        }\n      ],\n      \"reason\": \"正文及主题方向合理，但存在明确错误的同义词。\"\n    },\n    {\n      \"item\": \"i04\",\n      \"verdict\": \"revise\",\n      \"issues\": [\n        {\n          \"dimension\": \"consistency\",\n          \"detail\": \"“灯灭了”包含光亮消失的关键情境，不能直接等同于一般的“灯”；当前仅强调指引、清晰与希望，未涵盖熄灭情境，建议拆分或补充分情境说明。\"\n        }\n      ],\n      \"reason\": \"一般灯光的释义与正向倾向一致，但同义词将方向可能不同的情境合并。\"\n    },\n    {\n      \"item\": \"i05\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"火山与情绪积压、爆发的常见联想相符，自我主题略偏阻且明确不预示灾害。\"\n    },\n    {\n      \"item\": \"i06\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"爆炸与情绪突然释放的联想合理，主题方向及非预兆措辞均无明显问题。\"\n    },\n    {\n      \"item\": \"i07\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"照片与回忆、留恋的联系自然，主题保持中性且措辞有情境余地。\"\n    },\n    {\n      \"item\": \"i08\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"情绪释放与能量涌动支持轻微正向的自我倾向，且未作现实预兆断言。\"\n    },\n    {\n      \"item\": \"i09\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"父母与支持、期待及成长影响的联想合理，关系主题轻微正向与正文一致。\"\n    },\n    {\n      \"item\": \"i10\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"释义兼顾热情与紧急感，轻微偏阻的自我倾向可由紧急感支持，且未预示灾害。\"\n    },\n    {\n      \"item\": \"i11\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"爬山与努力接近目标的联想一致，支持自我及事业的正向倾向而不承诺现实结果。\"\n    }\n  ]\n}",
+  "verdicts": {
+    "i01": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "consistency",
+          "detail": "“熊猫”不是“熊”的等义表达，容易将具有不同常见联想的熊猫意象误命中本条；建议移除或单设条目。"
+        }
+      ],
+      "reason": "释义本身平和且无预兆断言，但同义词混入了应区分的动物意象。"
+    },
+    "i02": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "轨道与集体节奏的联想适用于所列铁路交通工具，主题中性且不预示出行安全。"
+    },
+    "i03": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "consistency",
+          "detail": "“台风”与“迷路”无同义关系，会将自然灾害意象误命中处境条目，应从同义词中删除。"
+        }
+      ],
+      "reason": "正文及主题方向合理，但存在明确错误的同义词。"
+    },
+    "i04": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "consistency",
+          "detail": "“灯灭了”包含光亮消失的关键情境，不能直接等同于一般的“灯”；当前仅强调指引、清晰与希望，未涵盖熄灭情境，建议拆分或补充分情境说明。"
+        }
+      ],
+      "reason": "一般灯光的释义与正向倾向一致，但同义词将方向可能不同的情境合并。"
+    },
+    "i05": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "火山与情绪积压、爆发的常见联想相符，自我主题略偏阻且明确不预示灾害。"
+    },
+    "i06": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "爆炸与情绪突然释放的联想合理，主题方向及非预兆措辞均无明显问题。"
+    },
+    "i07": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "照片与回忆、留恋的联系自然，主题保持中性且措辞有情境余地。"
+    },
+    "i08": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "情绪释放与能量涌动支持轻微正向的自我倾向，且未作现实预兆断言。"
+    },
+    "i09": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "父母与支持、期待及成长影响的联想合理，关系主题轻微正向与正文一致。"
+    },
+    "i10": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "释义兼顾热情与紧急感，轻微偏阻的自我倾向可由紧急感支持，且未预示灾害。"
+    },
+    "i11": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "爬山与努力接近目标的联想一致，支持自我及事业的正向倾向而不承诺现实结果。"
+    }
+  }
+}

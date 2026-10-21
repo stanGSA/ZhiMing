@@ -1,0 +1,1552 @@
+{
+  "system": "name",
+  "entries": 220,
+  "candidate_count": 219,
+  "draft_count": 1,
+  "metrics": {
+    "detection": {
+      "reviewer_a": 0.9487179487179487,
+      "reviewer_b": 1.0
+    },
+    "detection_merged": 1.0,
+    "rerun": {
+      "reviewer_a": 0.8984375,
+      "reviewer_b": 0.8802083333333334
+    },
+    "kappa": 0.3067,
+    "kappa_real_three_class": 0.0198,
+    "kappa_all_three_class": 0.2873,
+    "observed_agreement": 0.7291666666666666,
+    "observed_agreement_real_three_class": 0.7014492753623188,
+    "pass_rate": 0.9954545454545455
+  },
+  "gates": {
+    "complete": true,
+    "detection_merged": true,
+    "detection_single": true,
+    "rerun": false,
+    "kappa": false,
+    "pass_rate": true
+  },
+  "calibrated": false,
+  "passed": false,
+  "samples": {
+    "detection": {
+      "reviewer_a": [
+        37,
+        39
+      ],
+      "reviewer_b": [
+        39,
+        39
+      ]
+    },
+    "detection_merged": [
+      39,
+      39
+    ],
+    "rerun": {
+      "reviewer_a": [
+        345,
+        384
+      ],
+      "reviewer_b": [
+        338,
+        384
+      ]
+    },
+    "kappa_pairs": 384,
+    "kappa_real_pairs": 345,
+    "verdict_pairs": {
+      "pass/pass": 230,
+      "pass/revise": 55,
+      "pass/reject": 3,
+      "revise/revise": 22,
+      "revise/pass": 46,
+      "revise/reject": 2,
+      "reject/reject": 18,
+      "reject/revise": 8
+    },
+    "verdict_pairs_real": {
+      "pass/pass": 230,
+      "pass/revise": 53,
+      "pass/reject": 3,
+      "revise/revise": 12,
+      "revise/pass": 46,
+      "revise/reject": 1
+    }
+  },
+  "batches": [
+    {
+      "path": "docs/verification/kb-model-review/20261021-live/name-initial",
+      "entries": 220,
+      "metrics": {
+        "pass_rate": 0.5182,
+        "detection": {
+          "reviewer_a": 0.9545,
+          "reviewer_b": 1.0
+        },
+        "detection_merged": 1.0,
+        "rerun": {
+          "reviewer_a": 0.8967,
+          "reviewer_b": 0.8182
+        },
+        "kappa": -0.098,
+        "observed_agreement": 0.5955,
+        "verdict_counts": {
+          "reviewer_a": {
+            "pass": 171,
+            "revise": 49
+          },
+          "reviewer_b": {
+            "pass": 163,
+            "revise": 55,
+            "reject": 2
+          }
+        }
+      },
+      "gates": {
+        "pass_rate": false,
+        "detection_merged": true,
+        "detection_single": true,
+        "rerun": false,
+        "kappa": false,
+        "complete": true
+      },
+      "errors": 2,
+      "usage": {
+        "reviewer_a": {
+          "calls": 50,
+          "input_tokens": 133008,
+          "output_tokens": 29989,
+          "latency_s": 160.287,
+          "returned_models": [
+            "deepseek-flash"
+          ],
+          "errors": {
+            "parse_error": 2
+          },
+          "retried_calls": 2,
+          "http_retries": 0,
+          "cost": null,
+          "known_cost_estimate": null,
+          "usage_complete": true,
+          "cost_basis": "配置单价估算，非账单；服务失败的用量可能未知",
+          "currency": null
+        },
+        "reviewer_b": {
+          "calls": 50,
+          "input_tokens": 138216,
+          "output_tokens": 53574,
+          "latency_s": 1672.717,
+          "returned_models": [
+            "gpt-6.1-sol"
+          ],
+          "errors": {},
+          "retried_calls": 0,
+          "http_retries": 3,
+          "cost": null,
+          "known_cost_estimate": null,
+          "usage_complete": true,
+          "cost_basis": "配置单价估算，非账单；服务失败的用量可能未知",
+          "currency": null
+        },
+        "reviser": {
+          "calls": 106,
+          "input_tokens": 58733,
+          "output_tokens": 30623,
+          "latency_s": 1806.796,
+          "returned_models": [
+            "gpt-6-astra"
+          ],
+          "errors": {},
+          "retried_calls": 0,
+          "http_retries": 3,
+          "cost": null,
+          "known_cost_estimate": null,
+          "usage_complete": true,
+          "cost_basis": "配置单价估算，非账单；服务失败的用量可能未知",
+          "currency": null
+        }
+      }
+    },
+    {
+      "path": "docs/verification/kb-model-review/20261021-live/name-rereview-1",
+      "entries": 106,
+      "metrics": {
+        "pass_rate": 0.8302,
+        "detection": {
+          "reviewer_a": 0.9091,
+          "reviewer_b": 1.0
+        },
+        "detection_merged": 1.0,
+        "rerun": {
+          "reviewer_a": 0.9145,
+          "reviewer_b": 0.9829
+        },
+        "kappa": 0.3205,
+        "observed_agreement": 0.8774,
+        "verdict_counts": {
+          "reviewer_a": {
+            "pass": 97,
+            "revise": 9
+          },
+          "reviewer_b": {
+            "pass": 94,
+            "revise": 10,
+            "reject": 2
+          }
+        }
+      },
+      "gates": {
+        "pass_rate": false,
+        "detection_merged": true,
+        "detection_single": true,
+        "rerun": true,
+        "kappa": false,
+        "complete": true
+      },
+      "errors": 0,
+      "usage": {
+        "reviewer_a": {
+          "calls": 26,
+          "input_tokens": 74366,
+          "output_tokens": 12367,
+          "latency_s": 68.985,
+          "returned_models": [
+            "deepseek-flash"
+          ],
+          "errors": {},
+          "retried_calls": 0,
+          "http_retries": 0,
+          "cost": null,
+          "known_cost_estimate": null,
+          "usage_complete": true,
+          "cost_basis": "配置单价估算，非账单；服务失败的用量可能未知",
+          "currency": null
+        },
+        "reviewer_b": {
+          "calls": 26,
+          "input_tokens": 82514,
+          "output_tokens": 23937,
+          "latency_s": 585.816,
+          "returned_models": [
+            "gpt-6.1-sol"
+          ],
+          "errors": {},
+          "retried_calls": 0,
+          "http_retries": 0,
+          "cost": null,
+          "known_cost_estimate": null,
+          "usage_complete": true,
+          "cost_basis": "配置单价估算，非账单；服务失败的用量可能未知",
+          "currency": null
+        },
+        "reviser": {
+          "calls": 18,
+          "input_tokens": 11607,
+          "output_tokens": 5635,
+          "latency_s": 189.193,
+          "returned_models": [
+            "gpt-6-astra"
+          ],
+          "errors": {},
+          "retried_calls": 0,
+          "http_retries": 0,
+          "cost": null,
+          "known_cost_estimate": null,
+          "usage_complete": true,
+          "cost_basis": "配置单价估算，非账单；服务失败的用量可能未知",
+          "currency": null
+        }
+      }
+    },
+    {
+      "path": "docs/verification/kb-model-review/20261021-live/name-rereview-2",
+      "entries": 18,
+      "metrics": {
+        "pass_rate": 0.9444,
+        "detection": {
+          "reviewer_a": 1.0,
+          "reviewer_b": 1.0
+        },
+        "detection_merged": 1.0,
+        "rerun": {
+          "reviewer_a": 0.8696,
+          "reviewer_b": 1.0
+        },
+        "kappa": 0.0,
+        "observed_agreement": 0.9444,
+        "verdict_counts": {
+          "reviewer_a": {
+            "pass": 17,
+            "revise": 1
+          },
+          "reviewer_b": {
+            "pass": 18
+          }
+        }
+      },
+      "gates": {
+        "pass_rate": false,
+        "detection_merged": true,
+        "detection_single": true,
+        "rerun": false,
+        "kappa": false,
+        "complete": true
+      },
+      "errors": 0,
+      "usage": {
+        "reviewer_a": {
+          "calls": 6,
+          "input_tokens": 15816,
+          "output_tokens": 2766,
+          "latency_s": 18.475,
+          "returned_models": [
+            "deepseek-flash"
+          ],
+          "errors": {},
+          "retried_calls": 0,
+          "http_retries": 0,
+          "cost": null,
+          "known_cost_estimate": null,
+          "usage_complete": true,
+          "cost_basis": "配置单价估算，非账单；服务失败的用量可能未知",
+          "currency": null
+        },
+        "reviewer_b": {
+          "calls": 6,
+          "input_tokens": 17564,
+          "output_tokens": 4510,
+          "latency_s": 117.608,
+          "returned_models": [
+            "gpt-6.1-sol"
+          ],
+          "errors": {},
+          "retried_calls": 0,
+          "http_retries": 0,
+          "cost": null,
+          "known_cost_estimate": null,
+          "usage_complete": true,
+          "cost_basis": "配置单价估算，非账单；服务失败的用量可能未知",
+          "currency": null
+        },
+        "reviser": {
+          "calls": 1,
+          "input_tokens": 628,
+          "output_tokens": 388,
+          "latency_s": 18.135,
+          "returned_models": [
+            "gpt-6-astra"
+          ],
+          "errors": {},
+          "retried_calls": 0,
+          "http_retries": 0,
+          "cost": null,
+          "known_cost_estimate": null,
+          "usage_complete": true,
+          "cost_basis": "配置单价估算，非账单；服务失败的用量可能未知",
+          "currency": null
+        }
+      }
+    },
+    {
+      "path": "docs/verification/kb-model-review/20261021-live/name-rereview-3",
+      "entries": 1,
+      "metrics": {
+        "pass_rate": 0.0,
+        "detection": {
+          "reviewer_a": 1.0,
+          "reviewer_b": 1.0
+        },
+        "detection_merged": 1.0,
+        "rerun": {
+          "reviewer_a": 0.5,
+          "reviewer_b": 1.0
+        },
+        "kappa": null,
+        "observed_agreement": 1.0,
+        "verdict_counts": {
+          "reviewer_a": {
+            "pass": 1
+          },
+          "reviewer_b": {
+            "pass": 1
+          }
+        }
+      },
+      "gates": {
+        "pass_rate": false,
+        "detection_merged": true,
+        "detection_single": true,
+        "rerun": false,
+        "kappa": false,
+        "complete": true
+      },
+      "errors": 0,
+      "usage": {
+        "reviewer_a": {
+          "calls": 4,
+          "input_tokens": 3476,
+          "output_tokens": 656,
+          "latency_s": 10.239,
+          "returned_models": [
+            "deepseek-flash"
+          ],
+          "errors": {},
+          "retried_calls": 0,
+          "http_retries": 0,
+          "cost": null,
+          "known_cost_estimate": null,
+          "usage_complete": true,
+          "cost_basis": "配置单价估算，非账单；服务失败的用量可能未知",
+          "currency": null
+        },
+        "reviewer_b": {
+          "calls": 4,
+          "input_tokens": 3936,
+          "output_tokens": 802,
+          "latency_s": 34.14,
+          "returned_models": [
+            "gpt-6.1-sol"
+          ],
+          "errors": {},
+          "retried_calls": 0,
+          "http_retries": 0,
+          "cost": null,
+          "known_cost_estimate": null,
+          "usage_complete": true,
+          "cost_basis": "配置单价估算，非账单；服务失败的用量可能未知",
+          "currency": null
+        }
+      }
+    }
+  ],
+  "thresholds": {
+    "pass_rate": 0.95,
+    "detection_merged": 0.9,
+    "detection_single": 0.8,
+    "rerun": 0.9,
+    "kappa": 0.6
+  },
+  "acceptance_basis": "负责人确认：按体系汇总全部初审及复审样本；通过率按当前内容哈希；kappa按全部真实及埋错样本的放行二分类计算，原三分类指标保留",
+  "kappa_basis": {
+    "scope": "全部批次第一轮真实及埋错样本；第二轮另计重跑一致率",
+    "classes": {
+      "pass": "放行",
+      "revise": "不通过",
+      "reject": "不通过"
+    },
+    "limitation": "埋错样本改变类别分布，不能与仅真实条目的三分类kappa直接比较",
+    "owner_reply": "同意：全部样本、放行二分类（推荐）"
+  },
+  "human_reviewed_rate": 0.0,
+  "current_content_evidence": {
+    "kb:name:convention:ambiguous_form": {
+      "content_sha256": "954d91bd3afa13724c1cb4926db1aa57b31b6fdc09fe893dd7ba42cc03f3cd34",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/name-rereview-1"
+    },
+    "kb:name:convention:bazi_compare": {
+      "content_sha256": "2c8b5af07213a30c5c9ae0da9ed0d944b71b0cb5ffe46f14b2cd9e6941cec173",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/name-initial"
+    },
+    "kb:name:convention:compound_surname": {
+      "content_sha256": "d48f630f6759885a1924467eac56c90e17f88d60a3780e55670514cb05eac3f5",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/name-initial"
+    },
+    "kb:name:convention:stroke_rule": {
+      "content_sha256": "b56bd4bbdb167a8a11ffae88b87accaafc5fbadf5f15df41b33dd32aa3548817",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/name-initial"
+    },
+    "kb:name:element:土": {
+      "content_sha256": "1c808b124ff6ab551a3c18cbe0884e87432b6adf1377cc0b558c8e324b342157",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/name-initial"
+    },
+    "kb:name:element:木": {
+      "content_sha256": "687c1d00a055dfc7d9c3063c966a22d8a66501bd6554f32d38977b3cd277acf8",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/name-initial"
+    },
+    "kb:name:element:水": {
+      "content_sha256": "e8fed94d893c0dc399382e680b77b94d3011dcaa8cfc84499bb0994726392a54",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/name-initial"
+    },
+    "kb:name:element:火": {
+      "content_sha256": "a3bdf486b25469c6a9ccd43a2b182afa4ca3c98dc15970d53a70d4d53e899e35",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/name-initial"
+    },
+    "kb:name:element:金": {
+      "content_sha256": "c76d657b20a046c204184c3b5b9a3d9018d07f2e1974a3713ac3868bd624ac6d",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/name-initial"
+    },
+    "kb:name:grid:人格": {
+      "content_sha256": "5cdbcd277c8c602f0c910d0abcaed094da38ea64d9f400572f84bfa116ee626d",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/name-initial"
+    },
+    "kb:name:grid:地格": {
+      "content_sha256": "d13c6f69c964b27740a11876250387b6cf9ff95e201593e34b10d7d7c29015db",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/name-rereview-1"
+    },
+    "kb:name:grid:外格": {
+      "content_sha256": "58371d9452e5a4407ce635c9889cddc62401c98491644288e7f9a2c2d6218abf",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/name-rereview-1"
+    },
+    "kb:name:grid:天格": {
+      "content_sha256": "7fc60c0eedca41f045914c218bf91d187525369f808a0d6c55e9fb22e273c604",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/name-initial"
+    },
+    "kb:name:grid:总格": {
+      "content_sha256": "814210572dfb53c7c6c5f32a118b1accee010fdc30366fd25c332926b708b68f",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/name-rereview-1"
+    },
+    "kb:name:sancai:土土土": {
+      "content_sha256": "dacb8c00716a2319e1a72f1ab2e7c59a402f965620f78cc29ceda7a38c54f227",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/name-rereview-1"
+    },
+    "kb:name:sancai:土土木": {
+      "content_sha256": "626c02961770279a1fbfdb1c323b325350a409298623cc443d857eb0970b470f",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/name-rereview-1"
+    },
+    "kb:name:sancai:土土水": {
+      "content_sha256": "728fb2704854fde2a193f9b84dc25d468042eb54e58401c9fd071b12d82920be",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/name-rereview-1"
+    },
+    "kb:name:sancai:土土火": {
+      "content_sha256": "31f1b98fa596c4d2d58ff374bdddad990befdb95e4fb7e15709a751a285356c1",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/name-rereview-1"
+    },
+    "kb:name:sancai:土土金": {
+      "content_sha256": "9787be433c44505fb20f9cf4b47b9d49a58abf16504477099b249073e1922423",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/name-rereview-1"
+    },
+    "kb:name:sancai:土木土": {
+      "content_sha256": "a16afbac5264ce8c22c61b3c0f4ae63602881bc12f3e4aacc086e906a3dae965",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/name-rereview-1"
+    },
+    "kb:name:sancai:土木木": {
+      "content_sha256": "75e964b1b5a4b7f04a5f059869590620ba809ddf7454698bb100e85f27402087",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/name-rereview-1"
+    },
+    "kb:name:sancai:土木水": {
+      "content_sha256": "34b3de42449edfa45c2d49d14da262d255dfbdf697d8e3585ca9711722b8904a",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/name-rereview-1"
+    },
+    "kb:name:sancai:土木火": {
+      "content_sha256": "9a56a67a6f6fb710e4b8a3ccb54d5d61e1790a1b1fdb8bebae7e638c42d614af",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/name-rereview-1"
+    },
+    "kb:name:sancai:土木金": {
+      "content_sha256": "1ca348394cff8ad67508bf16d96461832d70005173546c5932bf5d6e29fe3560",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/name-rereview-1"
+    },
+    "kb:name:sancai:土水土": {
+      "content_sha256": "afe0bd6dbdc6f0854ee2b7310d18a513faac5358654337b9fb426eec9e43b1a3",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/name-rereview-1"
+    },
+    "kb:name:sancai:土水木": {
+      "content_sha256": "195ec421c0f0a5d8d18ecd57dd9a5f43da0b5b26f4a01d86a49e37cf6b32f9d7",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/name-rereview-2"
+    },
+    "kb:name:sancai:土水水": {
+      "content_sha256": "fad96964f37aad2bfe717568d2d48b9757598651943a8c4bdf53e9447006a672",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/name-rereview-2"
+    },
+    "kb:name:sancai:土水火": {
+      "content_sha256": "85a89f80e7aed62af6355b22c7515ea379bd32901d5b6757ea0f60dedf78482d",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/name-rereview-1"
+    },
+    "kb:name:sancai:土水金": {
+      "content_sha256": "70e666fefdc8f09b837ed6d5ba18a2f7ae9a6d827c96a8bf8818bbd67565b63f",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/name-rereview-2"
+    },
+    "kb:name:sancai:土火土": {
+      "content_sha256": "33ce4f9a8c9d2bed3d973e8bef20a5df4836f43b68341f3b1aae99fc8aa6e63f",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/name-rereview-1"
+    },
+    "kb:name:sancai:土火木": {
+      "content_sha256": "a3a63441fefa008d60141a485e5da5cb7888e66e83e5f1223426502dc0fe05ff",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/name-rereview-1"
+    },
+    "kb:name:sancai:土火水": {
+      "content_sha256": "d2fe1b8b57523fb1d7e33db6324a7ad319b82c111d2195fe9dc643444724d2db",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/name-rereview-2"
+    },
+    "kb:name:sancai:土火火": {
+      "content_sha256": "42b19bc4d07c9de80af1fb8ba19a4f4d82b3a3d03d377e52c61ca394e412986c",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/name-rereview-1"
+    },
+    "kb:name:sancai:土火金": {
+      "content_sha256": "9e3e8d0ed8fb5c318dafe420e034a2fdf439adf58221847f11b4617bd2398b49",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/name-rereview-2"
+    },
+    "kb:name:sancai:土金土": {
+      "content_sha256": "355b64a934414a767a749baf18a2f17abb03225a79eb8afd146a07f5c0a81989",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/name-initial"
+    },
+    "kb:name:sancai:土金木": {
+      "content_sha256": "a85876a45192f5d57a3d860f1751ae99c8bf284c95352bb7d834925f08e4ca7d",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/name-initial"
+    },
+    "kb:name:sancai:土金水": {
+      "content_sha256": "910e6ca4b5c3dc38cd328680bbc4cf181c6009595b3ba77186e9920dc977ddb9",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/name-initial"
+    },
+    "kb:name:sancai:土金火": {
+      "content_sha256": "8eb1a61a73097243e113a2a58f1d28ec21a8215647f81cf4004831e34e0f437e",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/name-initial"
+    },
+    "kb:name:sancai:土金金": {
+      "content_sha256": "71dc4fc2442fc986d6d4f51d655b9dee0ca40bbc56080c6aa2c5f879db8926cf",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/name-initial"
+    },
+    "kb:name:sancai:木土土": {
+      "content_sha256": "4a2ffacdf34ffa543f8c5695a19f31b6d185aab4320f86767c7eeeeb9b1d6ae5",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/name-initial"
+    },
+    "kb:name:sancai:木土木": {
+      "content_sha256": "7fc6506c2491bd72a4420ed57ed9ce050654b3d56f15be0c4891b4acab7e2111",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/name-initial"
+    },
+    "kb:name:sancai:木土水": {
+      "content_sha256": "6b035818f151d7777f748134864d998f72387bdd9effa9836773e715afff5dd1",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/name-initial"
+    },
+    "kb:name:sancai:木土火": {
+      "content_sha256": "28f0cc9fff934651feec455f24d13416c714e2429565ed9c742d9981abdef0e6",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/name-initial"
+    },
+    "kb:name:sancai:木土金": {
+      "content_sha256": "d88e603f2c1ead68991cb8222b877988591c4f83aef30ade331abbe59c3f5b24",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/name-initial"
+    },
+    "kb:name:sancai:木木土": {
+      "content_sha256": "53558c1325892a91d708a1258acb2cd2534c898f628e1ff95213eca31dddbf9b",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/name-initial"
+    },
+    "kb:name:sancai:木木木": {
+      "content_sha256": "33da439b3cd0ea7a48ffa03be5f50f25ead6c5adb1705b24be05632aba495b30",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/name-initial"
+    },
+    "kb:name:sancai:木木水": {
+      "content_sha256": "3c3d9effd1b444df9a126f65dda2ca9123c159f40e2e9001c12934645985ef96",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/name-initial"
+    },
+    "kb:name:sancai:木木火": {
+      "content_sha256": "2e28d207cefb000047fb69ce6dec107bcefe2337f321414ff08fead9e4f2a9da",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/name-initial"
+    },
+    "kb:name:sancai:木木金": {
+      "content_sha256": "8193ea850aaeac7fa6584e7428a66ab9136b077c3a8e563cc89cbad06ee927a8",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/name-initial"
+    },
+    "kb:name:sancai:木水土": {
+      "content_sha256": "6f693d004db2127d05e7bf348802e4d838742c8b133f7a6f8ea33e2c7c139633",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/name-initial"
+    },
+    "kb:name:sancai:木水木": {
+      "content_sha256": "70c126e431818c646bae729aaa2fea31177dd57dfd775f92b4f2dbf912c158a1",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/name-initial"
+    },
+    "kb:name:sancai:木水水": {
+      "content_sha256": "4680a22388f8524979f4c0a9cf0f09ff64e773201f3b0bb515eb95e7e4316a1b",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/name-initial"
+    },
+    "kb:name:sancai:木水火": {
+      "content_sha256": "3895d30d7bcd77d178bc94eb10245b14ea3a612a26388bf81745bdc736fc2c8f",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/name-initial"
+    },
+    "kb:name:sancai:木水金": {
+      "content_sha256": "1566fdb4dca097913a7330acde36945170029f2be0dce8d6e1ff47518b3e1849",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/name-initial"
+    },
+    "kb:name:sancai:木火土": {
+      "content_sha256": "77c5390ae19b14e677895baf6433d29c2edb4313af675cd6f70ef6c118ec1676",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/name-initial"
+    },
+    "kb:name:sancai:木火木": {
+      "content_sha256": "758f3c222f405575f2f56fd09e7c7aeda3278a2be69b1cdc6d5fc493c8697f92",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/name-initial"
+    },
+    "kb:name:sancai:木火水": {
+      "content_sha256": "f7ab247bee7e774d6688ae9200a54dd40c6a547e59ffe786de6d9d4b75fa798d",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/name-rereview-2"
+    },
+    "kb:name:sancai:木火火": {
+      "content_sha256": "2763e03302129dd1d12e360b9d31f066f003a7eda93417333e4b74c81a3155c0",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/name-initial"
+    },
+    "kb:name:sancai:木火金": {
+      "content_sha256": "6fe4e0227a26da157040a9176d94b07c16e385f2a51c35a4cf60d32d41746b5c",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/name-initial"
+    },
+    "kb:name:sancai:木金土": {
+      "content_sha256": "9c132940442fedc59ce2e10137c28e6e98228c68e15fa38a0e14d2d238e101bc",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/name-initial"
+    },
+    "kb:name:sancai:木金木": {
+      "content_sha256": "744eab4d1d05085622ba93fffb558aa55362eb1783582dfdd8e8017ceba9fc98",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/name-initial"
+    },
+    "kb:name:sancai:木金水": {
+      "content_sha256": "cdc0a9fa7ebdcaef01b5e0a84190def1f3a4546d8c9ae3822b88a2784253ba45",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/name-initial"
+    },
+    "kb:name:sancai:木金火": {
+      "content_sha256": "75a7b053c34fb078cba2f11dbecdfdaed01b1bf639a461848cf021406192b08b",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/name-initial"
+    },
+    "kb:name:sancai:木金金": {
+      "content_sha256": "5f2d824a36b62252bace070ce7dfbfae3b4c3dc40fe06c12aa321e32f23b4a84",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/name-initial"
+    },
+    "kb:name:sancai:水土土": {
+      "content_sha256": "02f3d9588df27590dff6e387b2a45c06b21137badc1c43b87cfb0fcd6b3d68a2",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/name-initial"
+    },
+    "kb:name:sancai:水土木": {
+      "content_sha256": "b44c383c7c08c64ca6cbe5b9b6c7cc1f855460dfdf9f01e4d07affbf8ffedf35",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/name-initial"
+    },
+    "kb:name:sancai:水土水": {
+      "content_sha256": "894c3c147c9a93d474e18423b4fdf8f7463ee71d00b5714cd37c28993d92db72",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/name-initial"
+    },
+    "kb:name:sancai:水土火": {
+      "content_sha256": "10c080a4f8452ca55a5d45169c86967ede6dc7b0e80ee501668d68224ccd3c22",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/name-initial"
+    },
+    "kb:name:sancai:水土金": {
+      "content_sha256": "8c04b1a1ac78b19ba892f8802b73472272dfad8d18eebd65afdb76d04edb6adb",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/name-initial"
+    },
+    "kb:name:sancai:水木土": {
+      "content_sha256": "d0333cbcd2255045163aac865346a9f98af427cdfeab97761de119b8034075fa",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/name-initial"
+    },
+    "kb:name:sancai:水木木": {
+      "content_sha256": "2b1015194e8aa14b8a7be052384b0ac11875fe9eeda42c9f37596f8fe71fb612",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/name-initial"
+    },
+    "kb:name:sancai:水木水": {
+      "content_sha256": "be3c2b2f1fe834814827053c4179bd2c4f14eeda1b474118e9604d3bbc98522f",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/name-initial"
+    },
+    "kb:name:sancai:水木火": {
+      "content_sha256": "9979c03389db86bfc0b3a97b571bc793242b3a59b6e61458ab4964aacf2e3864",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/name-initial"
+    },
+    "kb:name:sancai:水木金": {
+      "content_sha256": "3344fa4f4aa3ab2c69ad82acbf310ed53960801f53a2175bf864b9b4ff76f9ce",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/name-initial"
+    },
+    "kb:name:sancai:水水土": {
+      "content_sha256": "db444cb5986046f07a2909dcd23908a369207a4c9cc00535ae88f4eaa8a0f3ad",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/name-initial"
+    },
+    "kb:name:sancai:水水木": {
+      "content_sha256": "90074edbd9b48729728e3314ed14f24cb16614e18ad0db120a057e2690bdb61f",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/name-initial"
+    },
+    "kb:name:sancai:水水水": {
+      "content_sha256": "e1c058dbb59f9f6a5ee5931f7ca4c67f5b5a642066c75f2ff03785154ddf7541",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/name-rereview-1"
+    },
+    "kb:name:sancai:水水火": {
+      "content_sha256": "f8f056c033bd4b9ac23ec27b9619da608fe7034655608ec460285e4fe1f476a0",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/name-initial"
+    },
+    "kb:name:sancai:水水金": {
+      "content_sha256": "ac33ad164cf2ef42f388ac51afd2eaee60b854469fd312b191af5ab2a9b49558",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/name-initial"
+    },
+    "kb:name:sancai:水火土": {
+      "content_sha256": "06ff496038a1a3dc8c1af6c7ce89373d4c3ded32a96d8c9dda2e789f34be3d0a",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/name-initial"
+    },
+    "kb:name:sancai:水火木": {
+      "content_sha256": "0bde2e3bff84d4811dba529221cb4f1729853c093998a10978956dc0d74847b9",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/name-initial"
+    },
+    "kb:name:sancai:水火水": {
+      "content_sha256": "2197f27e8c405f672ce8b6d9046af306aa39b8175062fedc95289a50017ca5ac",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/name-initial"
+    },
+    "kb:name:sancai:水火火": {
+      "content_sha256": "01592ef19f8cb8e282931a7e344d0bd8e2ffdbcfd01dc80167f155fdd91a4672",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/name-initial"
+    },
+    "kb:name:sancai:水火金": {
+      "content_sha256": "f8d8678544f5f6bec89c3d7f6dea8801596c962786ba0668662e661a248f3faf",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/name-initial"
+    },
+    "kb:name:sancai:水金土": {
+      "content_sha256": "38a07d9865873812e14f1b45e8584c55141e560f5e3912aecb9f5306590f4a88",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/name-initial"
+    },
+    "kb:name:sancai:水金木": {
+      "content_sha256": "85f80a08bc9e683d4992ed5b5e58f2f12b4d46f117140708599827fc3393aeaa",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/name-initial"
+    },
+    "kb:name:sancai:水金水": {
+      "content_sha256": "49791dacb2053b02bcfb33904ae7ec67ad5f833f2ca2e2c3071bb28c69711316",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/name-initial"
+    },
+    "kb:name:sancai:水金火": {
+      "content_sha256": "ef0e550aca0e3c4c46aa9c3f65630e49e1dbcdc5bdadd14031124e24201fadfa",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/name-rereview-1"
+    },
+    "kb:name:sancai:水金金": {
+      "content_sha256": "c9709093cef15ad9c2c654a3867bf4ab65dd122b9eb6ae249b5559f57c480c3a",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/name-initial"
+    },
+    "kb:name:sancai:火土土": {
+      "content_sha256": "39d38fcf8798fd6e8af19458b4ef68148503f6d11a895692f9780c60c05123a5",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/name-initial"
+    },
+    "kb:name:sancai:火土木": {
+      "content_sha256": "9a5e4579bad885bf4a61827e23c1245b8b98763e218b7e30eaf5bcccab8d3a29",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/name-initial"
+    },
+    "kb:name:sancai:火土水": {
+      "content_sha256": "54fa62af46994457853cdaf4b63a2998898b19ce392801ee8e04bae57ed8cc20",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/name-initial"
+    },
+    "kb:name:sancai:火土火": {
+      "content_sha256": "057146cd63288ab304f1bc0f1f763e3080b297a44f9ff937f81332f5cee35944",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/name-initial"
+    },
+    "kb:name:sancai:火土金": {
+      "content_sha256": "880ba15130df1e2da797606a6a41b37b3c07d4b627a2003cc8ddfd24b5ee4e6a",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/name-initial"
+    },
+    "kb:name:sancai:火木土": {
+      "content_sha256": "06c74d6db2fc33f6faf032aa99b35170b584fd323fcb4d715bd8f8d035bf1ac8",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/name-rereview-2"
+    },
+    "kb:name:sancai:火木木": {
+      "content_sha256": "7e235e2b90240a80fd6e30928c5957662b6e8f3ba40f4ae47b70e8b951faf288",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/name-rereview-1"
+    },
+    "kb:name:sancai:火木水": {
+      "content_sha256": "4fc723d3945232ff20e524df625ef16c8dfcbca666deca227e5a9b4bdb2d02fc",
+      "approved": false,
+      "run": "docs/verification/kb-model-review/20261021-live/name-rereview-3"
+    },
+    "kb:name:sancai:火木火": {
+      "content_sha256": "f1f3e86155e25e4b06d6b6b36588f924503a8aac5b6de12aa7f8eb0a0f3b9197",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/name-rereview-1"
+    },
+    "kb:name:sancai:火木金": {
+      "content_sha256": "2f74e7a851d0ae9a4ad99d6630dd4f9a8def082bee3739663464ef419b7be27b",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/name-rereview-1"
+    },
+    "kb:name:sancai:火水土": {
+      "content_sha256": "9d1bd2255cae81f6fa86f07a399697254717eb56542fa9c898a951839d755851",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/name-rereview-1"
+    },
+    "kb:name:sancai:火水木": {
+      "content_sha256": "dbaec4b1f2689828297bdd6f890f2a34c79028528ebb8da787501be61b1f049c",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/name-rereview-1"
+    },
+    "kb:name:sancai:火水水": {
+      "content_sha256": "cead9afd2196155a7d8e5d83c785f66b4aff5351b399cfc7bc36bb7168a02450",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/name-rereview-1"
+    },
+    "kb:name:sancai:火水火": {
+      "content_sha256": "50fe1a3e55b2ff2cb9f2a3ea002813c3a40262fff79b1bacdb6ed89695fb3613",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/name-rereview-1"
+    },
+    "kb:name:sancai:火水金": {
+      "content_sha256": "2dd66cb8f8f09a9b0b793482185494537448db7ec7d1fe3e2aacf2aef4240789",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/name-rereview-1"
+    },
+    "kb:name:sancai:火火土": {
+      "content_sha256": "c751d467d8449b454b4774c78b924409e2dca09fcad1e00ad31ec4a65786aab4",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/name-initial"
+    },
+    "kb:name:sancai:火火木": {
+      "content_sha256": "d0c0f0370e801bb377e85a8a6ed43281b1825dd99726d3448efea512b2147b80",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/name-initial"
+    },
+    "kb:name:sancai:火火水": {
+      "content_sha256": "508809b802db23ef16ccf1ba1b546097ba3ef4aec54e8d5ecb9ddf86d9b10658",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/name-initial"
+    },
+    "kb:name:sancai:火火火": {
+      "content_sha256": "c53c643fe4b5908c93068ab56227452e44aea8517a7991b90b9f48a369015b03",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/name-rereview-1"
+    },
+    "kb:name:sancai:火火金": {
+      "content_sha256": "79655ce5c83b3da2a93c38aad85986e418ef504f0d9caac5415c7b939b54adb5",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/name-initial"
+    },
+    "kb:name:sancai:火金土": {
+      "content_sha256": "3035e4dfb4023d3ade3034263013ebe6a4c11e9ae206e9cc4333053a8c4f1364",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/name-rereview-1"
+    },
+    "kb:name:sancai:火金木": {
+      "content_sha256": "532008760283af0b8f2fcef60e68a27a8b54e6229d9b3461b292fd16d77013f3",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/name-initial"
+    },
+    "kb:name:sancai:火金水": {
+      "content_sha256": "6cc292eefb0f62158246ec5217c4a6f207fe249cd9b287a5cfa977fd339fcc92",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/name-rereview-1"
+    },
+    "kb:name:sancai:火金火": {
+      "content_sha256": "066eff9d678915dc98f67f9a70f4f0ad57a7c55c191a82f79117e05fbe6c1d60",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/name-initial"
+    },
+    "kb:name:sancai:火金金": {
+      "content_sha256": "b83a50743d22fc881b9570229473225c1579b8c058a33664baae8d270c8cfada",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/name-rereview-1"
+    },
+    "kb:name:sancai:金土土": {
+      "content_sha256": "6110175f65377cb245d7cf08c3f18417c6b7dabc5a6b2f900945a89a1cf8225c",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/name-initial"
+    },
+    "kb:name:sancai:金土木": {
+      "content_sha256": "9c2219ca4fe40fddfcb0f5ce6a3a53bf13f12b4a401126b3071f2b1c1a16cc88",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/name-rereview-1"
+    },
+    "kb:name:sancai:金土水": {
+      "content_sha256": "84a604a6b0be1f8807e6b42c2177ba449de48a7e36c78a1fdaedba67209254ed",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/name-rereview-1"
+    },
+    "kb:name:sancai:金土火": {
+      "content_sha256": "d01d64a893e0d68fb902386fea0cc4edba9a4678ce94b30167c13aa6975989c7",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/name-initial"
+    },
+    "kb:name:sancai:金土金": {
+      "content_sha256": "a5196b723d57da9dfa957517d464877feb4e6e58fe5b7ddc290aeedb6b27a6c3",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/name-initial"
+    },
+    "kb:name:sancai:金木土": {
+      "content_sha256": "0f42ab59ef19d0bda7d4baf35094a372fb52fb0403329eebefeefce873ea8e22",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/name-initial"
+    },
+    "kb:name:sancai:金木木": {
+      "content_sha256": "c9d6dc1f52fc129231267d91e8c80dd3ea79a8d9cb613cd456e9c9234456d814",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/name-initial"
+    },
+    "kb:name:sancai:金木水": {
+      "content_sha256": "86483565078c04d827a9340a441eb9f03adac9c174259a6e282c2f033a1ca55e",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/name-initial"
+    },
+    "kb:name:sancai:金木火": {
+      "content_sha256": "cbf05fbfbc676817131b4dcde47c475e473c8ca89dc1bb94c45f2ffada7d2fdb",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/name-initial"
+    },
+    "kb:name:sancai:金木金": {
+      "content_sha256": "e100a16b913759846ebc19855b2ab095936cfdd13144f0b37e64bb18cc17cab0",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/name-initial"
+    },
+    "kb:name:sancai:金水土": {
+      "content_sha256": "6604bd6d0cb49d3c8c9bb17c4af2ce1e93ea23b7aee66b7463bda569be718bc4",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/name-rereview-2"
+    },
+    "kb:name:sancai:金水木": {
+      "content_sha256": "bb97737f26a2ed1ff1bafd69c2f1a191a23e05bee40cc6a33fe46c50a56c19e7",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/name-rereview-1"
+    },
+    "kb:name:sancai:金水水": {
+      "content_sha256": "4c3901f62fea22b182a63810aa4cdc3ed06fb6c2c686b0d192649ff34e5edf4f",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/name-rereview-1"
+    },
+    "kb:name:sancai:金水火": {
+      "content_sha256": "b4452a2ef08794fcf18e28dcb40342d4d8e439a70076f9f11dcf53165c776744",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/name-rereview-1"
+    },
+    "kb:name:sancai:金水金": {
+      "content_sha256": "52b8240cbb363b97c801f7333b9a529d727eb32cbc09b64d4a4ba135155b4d7e",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/name-rereview-1"
+    },
+    "kb:name:sancai:金火土": {
+      "content_sha256": "15a47d6b5fda25ca0689bc454558e1c28f2470761b8118db7ba40f6f47b58520",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/name-rereview-2"
+    },
+    "kb:name:sancai:金火木": {
+      "content_sha256": "f43c642ddcb2d7f561d5d406bebb6ab33ff0d7fbd638b5991934761c63282be3",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/name-rereview-2"
+    },
+    "kb:name:sancai:金火水": {
+      "content_sha256": "e14c377984034727c91b809642cb53b488cc7f46f6ce81700931d67043ea0a4f",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/name-rereview-1"
+    },
+    "kb:name:sancai:金火火": {
+      "content_sha256": "807972afbf2a6d7f017559e0962e3ae3693ddbb0b8bcabdea432420f95de2373",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/name-rereview-2"
+    },
+    "kb:name:sancai:金火金": {
+      "content_sha256": "4da7c0b469b6b79258e77a546f85f9ff318c7a88782bb5e53178eb2b410d0625",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/name-rereview-1"
+    },
+    "kb:name:sancai:金金土": {
+      "content_sha256": "2c8263a10113bd6c3dffc2b64e31256cef2b2d3e56b967c5e85ec2e5843f0c96",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/name-initial"
+    },
+    "kb:name:sancai:金金木": {
+      "content_sha256": "7b9d38438beb8a56d08d0ac520d896a5e4ee18e7292b1715e0c27d73a1234c3c",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/name-initial"
+    },
+    "kb:name:sancai:金金水": {
+      "content_sha256": "4d85ace544971e9227b3010864c30e4ca33ed9c44e0fce29f514dac055c48ba2",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/name-rereview-2"
+    },
+    "kb:name:sancai:金金火": {
+      "content_sha256": "267dafcae15bb2b08d68847ec5a132a5840c6c51b85d1e41f8ce77041ae7bebc",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/name-initial"
+    },
+    "kb:name:sancai:金金金": {
+      "content_sha256": "8911e5d16faca6c3eba8280383ed28d401e66839c4549fae4fcbfd6715a5f5bc",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/name-initial"
+    },
+    "kb:name:shuli:1": {
+      "content_sha256": "a2bf31c7ec10785a570fd6e51098f26b78008ff5f7a0ea9e476bef0fda570856",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/name-initial"
+    },
+    "kb:name:shuli:10": {
+      "content_sha256": "f8ffc0dd47d6059e2d8e94761dd78ddd68dd3370b1784f961093203a25f7bb33",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/name-initial"
+    },
+    "kb:name:shuli:11": {
+      "content_sha256": "5dc4786f677d1aa11a703592aaf9fad5c2133c15697b34a0878ea51ac9b67601",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/name-initial"
+    },
+    "kb:name:shuli:12": {
+      "content_sha256": "034f5a75bcced11dd7a56ee4625fccadfe861f9a17637f72aeb5f7a613f3fb58",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/name-initial"
+    },
+    "kb:name:shuli:13": {
+      "content_sha256": "e315668245b81d3218daebf577866ce9a52bddf9a4f0361fb6d63eea453102f1",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/name-initial"
+    },
+    "kb:name:shuli:14": {
+      "content_sha256": "29557c851c44d2a20b7fda41c26bd19986add6091b1933db9975c7bd829fee88",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/name-initial"
+    },
+    "kb:name:shuli:15": {
+      "content_sha256": "56229134a6130255b010db1305040c34192e5416768e218bed40eb6b2d33a8d6",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/name-initial"
+    },
+    "kb:name:shuli:16": {
+      "content_sha256": "20990143d0cf345500fd41137fe8706144c1315ce061ac96ef893d128bd7af0a",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/name-initial"
+    },
+    "kb:name:shuli:17": {
+      "content_sha256": "13d1c23ec8ad1bf191ba9d0c27a9a712eea104dcf919007ebe46ed262dc8487e",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/name-initial"
+    },
+    "kb:name:shuli:18": {
+      "content_sha256": "fe3fb6462ca47417d5a38d00bca3058620c3f916fceca12831123d7a3abc4d0d",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/name-initial"
+    },
+    "kb:name:shuli:19": {
+      "content_sha256": "88e02db9010496ca8c9ff564f1193dc4a6d65755d144ff7a3553d6b55ca13def",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/name-rereview-1"
+    },
+    "kb:name:shuli:2": {
+      "content_sha256": "a285dea060eb1fc71c3b1a3aaae7023c3d63d76979db0b65e742aacf964f9f03",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/name-rereview-1"
+    },
+    "kb:name:shuli:20": {
+      "content_sha256": "e3ded46aa39f3822eb16a712c59a8bc34fa3e0069fcc6df136da78c6efc9ac4c",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/name-rereview-1"
+    },
+    "kb:name:shuli:21": {
+      "content_sha256": "cceb08cfd47dffec59ca9fb40bcbbffeb860281f4d9dbdd6662b7d67b1143e77",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/name-rereview-1"
+    },
+    "kb:name:shuli:22": {
+      "content_sha256": "8b4620eaf7184c4fa3b31f0ec1676d50d03408d9226fd3261a3f6e093dac5fab",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/name-rereview-1"
+    },
+    "kb:name:shuli:23": {
+      "content_sha256": "0a0e427df887f1cbce481b97f76cefa64503b73d75477f9f62f4bd338f4ddd42",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/name-rereview-1"
+    },
+    "kb:name:shuli:24": {
+      "content_sha256": "26e80b254b64aaa3c253e1f68bcd4a69e30eb892be271fa4eb83f86328f6e814",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/name-rereview-1"
+    },
+    "kb:name:shuli:25": {
+      "content_sha256": "f9f59ba84df00b846135d980cba2d4fccb48091a831ebf72211f1bf48aa0d7ba",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/name-rereview-1"
+    },
+    "kb:name:shuli:26": {
+      "content_sha256": "c525e1cb4ee61cd6bdf9cda6605a7b0abf43a52bbf5e71f93f1677cf55512dab",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/name-rereview-2"
+    },
+    "kb:name:shuli:27": {
+      "content_sha256": "cc542b83c19e2fc6fe58c71153ef7919a515dd1065258798f4580c38c6fbf9be",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/name-rereview-1"
+    },
+    "kb:name:shuli:28": {
+      "content_sha256": "93db99d28a3814fa4b8a1467e02ebb3c64f85b46ab36d443617722654b67fc57",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/name-rereview-1"
+    },
+    "kb:name:shuli:29": {
+      "content_sha256": "d5536ed0754c7897741653d033210f2b27b8dc06f6181b12820cbd8a291acda6",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/name-rereview-1"
+    },
+    "kb:name:shuli:3": {
+      "content_sha256": "377751e3030e2b6821bdbe2305ea30e94c88efb71751968f0abd287f230e7361",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/name-rereview-1"
+    },
+    "kb:name:shuli:30": {
+      "content_sha256": "6eb6ed740bc44f465b6b4cd760bf7891065de175d848bb37eb1a82f35b0474ee",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/name-rereview-1"
+    },
+    "kb:name:shuli:31": {
+      "content_sha256": "f4863d924eceba0cf149ab9adf507bf520814724a2a5714e397ec8c44d7ae273",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/name-rereview-1"
+    },
+    "kb:name:shuli:32": {
+      "content_sha256": "244828f017eb4c09bc61b0fbcd5db9d497b3c190bc8ce820c6dc1389ef51f23e",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/name-rereview-1"
+    },
+    "kb:name:shuli:33": {
+      "content_sha256": "92d2272e7baca7b549684a2f0611334744e225833b83d7d5e350688738901ce4",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/name-rereview-1"
+    },
+    "kb:name:shuli:34": {
+      "content_sha256": "d4ec9f8cb4e1966f242d66df200935afa2c504fc25b4b0d1ceea358705c7e43a",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/name-rereview-1"
+    },
+    "kb:name:shuli:35": {
+      "content_sha256": "8a24a857c452b2b42192557fd49214d6ee7e338c421c93097fe2622c8f8925a0",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/name-rereview-1"
+    },
+    "kb:name:shuli:36": {
+      "content_sha256": "0305a788a1f39369482d93c3ff30058001e4a2d0fd3b384cd4457850373216aa",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/name-rereview-1"
+    },
+    "kb:name:shuli:37": {
+      "content_sha256": "a41787b67fba508e0d810ea36e7e1e8fa4ee73ff37acb2e37be91b2e64efedf4",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/name-rereview-1"
+    },
+    "kb:name:shuli:38": {
+      "content_sha256": "6bf1ca59cdb63c21e68f1f3edc4fd1eb46c91fada524a66058c4622785141231",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/name-rereview-1"
+    },
+    "kb:name:shuli:39": {
+      "content_sha256": "5b9c2aba36cca918e15528d154f2a2f59c30fcc8c5902b4c8446f86637f72c46",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/name-rereview-1"
+    },
+    "kb:name:shuli:4": {
+      "content_sha256": "3432d0dcef81c78f010add7472c87b6c771eea938a3024776f08547765140bfb",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/name-rereview-2"
+    },
+    "kb:name:shuli:40": {
+      "content_sha256": "25f8395088b33d6656a72c6f24232239d96f800ee805c4afa78e150da0ca7d03",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/name-rereview-1"
+    },
+    "kb:name:shuli:41": {
+      "content_sha256": "8db8506a877d4b44cc41397ddaae9b371a3be649aa996e24df6e28a42403607d",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/name-rereview-1"
+    },
+    "kb:name:shuli:42": {
+      "content_sha256": "687a1fb8b0b1f98b7a061d12c1a2b3870dcba06079ba2badbbce7ece3659f7f3",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/name-rereview-1"
+    },
+    "kb:name:shuli:43": {
+      "content_sha256": "a0385f904924d2727d8ad658cb08bf1fb1573b567e7d8191cf261118366171f6",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/name-rereview-1"
+    },
+    "kb:name:shuli:44": {
+      "content_sha256": "13580c1b461d8b13195e35d7624c5cb14b250481a843976f42e4a3bfe35a1839",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/name-rereview-1"
+    },
+    "kb:name:shuli:45": {
+      "content_sha256": "85e2da910f5346b82e7c2404ea39dd9c87a0635c5a5d4230dfe16cba39609d15",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/name-rereview-1"
+    },
+    "kb:name:shuli:46": {
+      "content_sha256": "0f6e0eaf5031bb5ad5eab768acc3fc999d4f1f22e69b749760591cc28d66896c",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/name-rereview-1"
+    },
+    "kb:name:shuli:47": {
+      "content_sha256": "e22f33f9921fb8cfe96a330e83f60ededfbc7afdbc79509612ebcce656a1b38e",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/name-rereview-1"
+    },
+    "kb:name:shuli:48": {
+      "content_sha256": "4549ee2aad8fcb00a36170ff8c7401e9ac230006fae34774b47d5a02af587634",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/name-rereview-1"
+    },
+    "kb:name:shuli:49": {
+      "content_sha256": "37294d6f9a26e9818bf780a8dd757ec5ed106d9dcf2cadcc756e28e9a4da6197",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/name-rereview-2"
+    },
+    "kb:name:shuli:5": {
+      "content_sha256": "70e254200d84f8b358ece01227ba8d43dc3a51d92642a71e937d0da897564a1b",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/name-rereview-1"
+    },
+    "kb:name:shuli:50": {
+      "content_sha256": "80c7115c271adb5aac049f5c7480a285e16da1ee5f25ac4d2dd1ccb571cfc21f",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/name-rereview-1"
+    },
+    "kb:name:shuli:51": {
+      "content_sha256": "c1f2644432d7ae8098f8cbd6dcff0dc3289e006c644b9c4d10156fa5710f8619",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/name-rereview-2"
+    },
+    "kb:name:shuli:52": {
+      "content_sha256": "6c60cc64c2a164c53aa68910d717469c74fa53a0c045a3e52aa383dbd6177795",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/name-rereview-1"
+    },
+    "kb:name:shuli:53": {
+      "content_sha256": "1fd951af121391c23b6e5bb3862078d498fdc616429c75a46f8680cc2f4c06cc",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/name-rereview-2"
+    },
+    "kb:name:shuli:54": {
+      "content_sha256": "11c921ad30f8891470f8aa9501975ab3760542ec09fe1903c95bf017f73414d6",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/name-rereview-1"
+    },
+    "kb:name:shuli:55": {
+      "content_sha256": "e88c8acd7abbe3c11210d4c91c3510b7ab9396b163c70218d67e62f2f8944334",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/name-rereview-1"
+    },
+    "kb:name:shuli:56": {
+      "content_sha256": "3b6301e29a32491331f70d58ee9c0f4ab2dbbd2db61856979d5de782c4c2da6e",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/name-rereview-1"
+    },
+    "kb:name:shuli:57": {
+      "content_sha256": "7f1751b798b4879fbcfa3b56773598858558a903003c77d98a1cde6a7e5a6f7f",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/name-rereview-1"
+    },
+    "kb:name:shuli:58": {
+      "content_sha256": "e8f244f2630f2db9e6f3bc43238314976637d5c065644bd4102cd727a7e07ff3",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/name-rereview-1"
+    },
+    "kb:name:shuli:59": {
+      "content_sha256": "701b7d2fc2034c96f94d8cd284426d8171cb4f883eb0261dbef9abd7770681fc",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/name-rereview-1"
+    },
+    "kb:name:shuli:6": {
+      "content_sha256": "4c98c3adacb0d25d14551259cae8b07ef7c5f022d0909f229f669168c4728044",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/name-rereview-1"
+    },
+    "kb:name:shuli:60": {
+      "content_sha256": "b1282912f00bd37767de391f377c8b745c851a59a832fe661e9e41729bd14d3c",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/name-rereview-1"
+    },
+    "kb:name:shuli:61": {
+      "content_sha256": "5b885ba98253e4c3c5986d9c22635eb125b37311e2b9db3531c55c3118791747",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/name-rereview-1"
+    },
+    "kb:name:shuli:62": {
+      "content_sha256": "a40eeb8637ae79ffe03b9795b534ba2d3ec89971e1a5404cbbc48e5313b1b116",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/name-rereview-1"
+    },
+    "kb:name:shuli:63": {
+      "content_sha256": "d620540ca36a82a9725f3185edfe8cd606522090f8bd2fb2d2704f2d47c7b5e4",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/name-rereview-1"
+    },
+    "kb:name:shuli:64": {
+      "content_sha256": "b81ca61828f70d276d8ac4931c433567725f5790eb4f8861a507950de1b2c6ae",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/name-initial"
+    },
+    "kb:name:shuli:65": {
+      "content_sha256": "3a18767e38d9c557e65a82a32f5c8747f6e615f3af655166c3d58660f9672a85",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/name-initial"
+    },
+    "kb:name:shuli:66": {
+      "content_sha256": "a7cdc3b696a8cb1f5f0270c95c99cc000973ddda617801f89994c5eb828ce483",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/name-initial"
+    },
+    "kb:name:shuli:67": {
+      "content_sha256": "0cebe95e918721e21e7cbcdfff0d14895993703494cf0faefb3c15e6c5e7aa20",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/name-initial"
+    },
+    "kb:name:shuli:68": {
+      "content_sha256": "65e13bb641ced400d5ef8f7a48efca0c481b2656e107dee6321033aaedf184a6",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/name-initial"
+    },
+    "kb:name:shuli:69": {
+      "content_sha256": "416d06edd8f902bed938416dcb5e434b2eec674ef1e7482d154b29ae407f8ae0",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/name-initial"
+    },
+    "kb:name:shuli:7": {
+      "content_sha256": "00b5def34c81d5ac085c650c32b61e97e4791d24efe24a3e7b11aac83b13cfd9",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/name-rereview-1"
+    },
+    "kb:name:shuli:70": {
+      "content_sha256": "c34548ba6a33c66924be3f894da82f4fedc9aa5e9f41d71490d99622eda76507",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/name-initial"
+    },
+    "kb:name:shuli:71": {
+      "content_sha256": "6a7e28fd8edbbc4b4a2de49fe3e2c8ba1f9ac5d209ba7ffb80f9f1baf76d7e66",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/name-initial"
+    },
+    "kb:name:shuli:72": {
+      "content_sha256": "c0cfd5e693675bfd2775465e5498f2f3151677d85763c337a1953fe3d9941cba",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/name-initial"
+    },
+    "kb:name:shuli:73": {
+      "content_sha256": "afb053a7cc60bba457ae9c5761d57fd319210a4a0bf96d4f5aabc9ead060bbcf",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/name-initial"
+    },
+    "kb:name:shuli:74": {
+      "content_sha256": "3a08965a5fca0de7b8c834f24a6582c572b489401ee439a329cfe4221b4a3a3e",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/name-initial"
+    },
+    "kb:name:shuli:75": {
+      "content_sha256": "e298968447826726da4b6f02007e26ac682405effc3f878216a1221feecd6833",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/name-initial"
+    },
+    "kb:name:shuli:76": {
+      "content_sha256": "5435012ed0f0b6eeebb037d508fdf2c3f3b73f9cc5cae42d566fdc00bcd2afcd",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/name-initial"
+    },
+    "kb:name:shuli:77": {
+      "content_sha256": "6599d555f4b2bad99446f36e4a7ae76a7ba9cb0e3afc9e20e3d63588b9cb8778",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/name-initial"
+    },
+    "kb:name:shuli:78": {
+      "content_sha256": "d5a5fdf91f412ee3929cbc0db9de24ef5e3d799a71581377e6beb82d35bfb7ab",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/name-initial"
+    },
+    "kb:name:shuli:79": {
+      "content_sha256": "87ec2969a038f9a948ad41667dc14c17359ed5f49410defd9fdfab8810f11c48",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/name-initial"
+    },
+    "kb:name:shuli:8": {
+      "content_sha256": "adef07220d4ab3e681c8a5d44ee5957f486de4a80dc6b07a3ad830b80d3e064a",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/name-rereview-1"
+    },
+    "kb:name:shuli:80": {
+      "content_sha256": "f78f033ad8fa717be1e72b93075b5ee9d9977c71e1e94347d83d8d8826431278",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/name-initial"
+    },
+    "kb:name:shuli:81": {
+      "content_sha256": "9145e065176ca3fada4802720d054204a9b42e981214ed5f6d39fc675b509daf",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/name-initial"
+    },
+    "kb:name:shuli:9": {
+      "content_sha256": "1a72cb3f1756dd60c5abe50a07f2372ab6defac3deee7abab7eb234081daa439",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/name-initial"
+    }
+  },
+  "ledger_changes": {
+    "written": 0,
+    "revoked": []
+  },
+  "model_reviewed_count": 0,
+  "effective_draft_count": 220
+}

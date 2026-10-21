@@ -6,10 +6,9 @@ Running this script regenerates knowledge/sources/{name,dream,daily}/entries.yam
 
 from pathlib import Path
 
-import yaml
-
 from plugins.dream.symbols import CATEGORIES, SYMBOLS
 from plugins.name.wuge import ELEMENTS, GRIDS, relation
+from scripts.draft_sources import write_drafts
 
 ROOT = Path(__file__).resolve().parents[1]
 LICENSE = "本项目自写"
@@ -221,15 +220,7 @@ def main():
         ("daily", daily_entries()),
     ):
         target = ROOT / f"knowledge/sources/{system}/entries.yaml"
-        target.parent.mkdir(parents=True, exist_ok=True)
-        target.write_text(
-            yaml.safe_dump(
-                dict(status="draft_needs_human_review", entries=entries),
-                allow_unicode=True,
-                sort_keys=False,
-            ),
-            encoding="utf-8",
-        )
+        write_drafts(target, entries)
         print(system, len(entries))
 
 

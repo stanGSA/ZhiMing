@@ -1,0 +1,34 @@
+........................................................................ [  8%]
+........................................................................ [ 17%]
+........................................................................ [ 26%]
+........................................................................ [ 35%]
+........................................................................ [ 44%]
+........................................................................ [ 53%]
+........................................................................ [ 62%]
+........................................................................ [ 70%]
+........................................................................ [ 79%]
+........................................................................ [ 88%]
+..................................F..................................... [ 97%]
+....................                                                     [100%]
+================================== FAILURES ===================================
+__________ test_dream_kb_covers_seed_vocabulary_and_excludes_probes ___________
+
+project = WindowsPath('C:/Users/Stan/Desktop/知命/reports/test_tmp/4331465630f64d08a6b56f09825dcde4/test_dream_kb_covers_seed_voca0')
+
+    def test_dream_kb_covers_seed_vocabulary_and_excludes_probes(project):
+        kb = KnowledgeBase(project / "data/kb.sqlite")
+        try:
+            matcher = DreamMatcher(kb.db, kb.version)
+            assert len(matcher.entries) >= 300
+            assert set(DREAMS["vocabulary_used"]["keys"]) <= set(matcher.entries)
+            oov = {o for item in DREAMS["items"] for o in item["out_of_vocabulary"]}
+            assert not oov & set(matcher.aliases)
+            for key, synonyms in DREAMS["vocabulary_used"]["synonym_examples"].items():
+>               assert all(matcher.match(s)["key"] == key for s in synonyms)
+E               assert False
+E                +  where False = all(<generator object test_dream_kb_covers_seed_vocabulary_and_excludes_probes.<locals>.<genexpr> at 0x0000019898F01300>)
+
+tests\test_week6.py:238: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_week6.py::test_dream_kb_covers_seed_vocabulary_and_excludes_probes
+1 failed, 811 passed in 604.09s (0:10:04)

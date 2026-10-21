@@ -1,0 +1,96 @@
+{
+  "batch": "b002",
+  "reviewer": "reviewer_b",
+  "run_pass": 1,
+  "attempt": 1,
+  "vendor": "openai",
+  "requested_model": "gpt-6.1-sol",
+  "returned_model": "gpt-6.1-sol",
+  "api": "openai",
+  "started_at": "2026-10-21T16:49:49+00:00",
+  "finished_at": "2026-10-21T16:50:11+00:00",
+  "latency_s": 22.663,
+  "http_attempts": 1,
+  "finish_reason": "stop",
+  "prompt_sha256": "2edd176f45396fb45074655490e9ed85fe810e2e3a1c89494c6ae2a99121bbe2",
+  "input_tokens": 3149,
+  "output_tokens": 1070,
+  "cached_input_tokens": null,
+  "usage_available": true,
+  "raw_text": "{\n  \"items\": [\n    {\n      \"item\": \"i01\",\n      \"verdict\": \"revise\",\n      \"issues\": [\n        {\n          \"dimension\": \"certainty\",\n          \"detail\": \"末句“必然破财，结局已经注定，无法避免”是宿命化断言，且与前文不预测实际结果的说明矛盾，应删除。\"\n        },\n        {\n          \"dimension\": \"theme_direction\",\n          \"detail\": \"末句明确将财务描述为负向结果，与 finance 为 0 不一致；建议删除该断言，而非据此调整倾向值。\"\n        }\n      ],\n      \"reason\": \"五行关系与象征性解释基本准确，但末句加入了确定性的破财预言。\"\n    },\n    {\n      \"item\": \"i02\",\n      \"verdict\": \"reject\",\n      \"issues\": [\n        {\n          \"dimension\": \"consistency\",\n          \"detail\": \"key 为“金水土”，正文却全篇解释“金火木”，天格、人格、地格及生克关系均对应另一组合。\"\n        }\n      ],\n      \"reason\": \"正文解释的对象与 key 不符，不能作为金水土的释义使用。\"\n    },\n    {\n      \"item\": \"i03\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"五行关系准确，协调需求与轻微负向的自我倾向一致，且明确限定为民间象征提示。\"\n    },\n    {\n      \"item\": \"i04\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"生克关系、条目对象与主题方向一致，未将民间象征解释写成现实断言。\"\n    },\n    {\n      \"item\": \"i05\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"准确区分五行相生与三才整体评价，以中性倾向呈现民间解释中的利弊并存，措辞审慎。\"\n    },\n    {\n      \"item\": \"i06\",\n      \"verdict\": \"revise\",\n      \"issues\": [\n        {\n          \"dimension\": \"certainty\",\n          \"detail\": \"末句“今年一定会遭遇重大失败”将民间象征评价变成有明确时间范围的确定性预言，并与前文的限制说明矛盾，应删除。\"\n        }\n      ],\n      \"reason\": \"主体解释保留了民俗评价的边界，但末句作出了确定性的失败预言。\"\n    },\n    {\n      \"item\": \"i07\",\n      \"verdict\": \"revise\",\n      \"issues\": [\n        {\n          \"dimension\": \"theme_direction\",\n          \"detail\": \"正文侧重“土克水”“需要协调”及个人边界的磨合，没有明确的顺遂含义，self 为正向缺乏文字支持，宜改为中性或轻微负向。\"\n        }\n      ],\n      \"reason\": \"释义本身审慎且生克关系正确，但自我主题的正向倾向与正文不一致。\"\n    },\n    {\n      \"item\": \"i08\",\n      \"verdict\": \"reject\",\n      \"issues\": [\n        {\n          \"dimension\": \"medical_legal_finance\",\n          \"detail\": \"末句依据三才组合断言“肝脏已有病变”，并要求立即治疗，属于无依据的确定性医疗诊断及治疗指示。\"\n        },\n        {\n          \"dimension\": \"certainty\",\n          \"detail\": \"“出现它说明你的肝脏已有病变”把象征解读写成现实健康事实，与前文的限制说明矛盾。\"\n        }\n      ],\n      \"reason\": \"条目包含依据民俗符号作出的确定性医疗诊断，不能面向用户使用。\"\n    }\n  ]\n}",
+  "verdicts": {
+    "i01": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "certainty",
+          "detail": "末句“必然破财，结局已经注定，无法避免”是宿命化断言，且与前文不预测实际结果的说明矛盾，应删除。"
+        },
+        {
+          "dimension": "theme_direction",
+          "detail": "末句明确将财务描述为负向结果，与 finance 为 0 不一致；建议删除该断言，而非据此调整倾向值。"
+        }
+      ],
+      "reason": "五行关系与象征性解释基本准确，但末句加入了确定性的破财预言。"
+    },
+    "i02": {
+      "verdict": "reject",
+      "issues": [
+        {
+          "dimension": "consistency",
+          "detail": "key 为“金水土”，正文却全篇解释“金火木”，天格、人格、地格及生克关系均对应另一组合。"
+        }
+      ],
+      "reason": "正文解释的对象与 key 不符，不能作为金水土的释义使用。"
+    },
+    "i03": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "五行关系准确，协调需求与轻微负向的自我倾向一致，且明确限定为民间象征提示。"
+    },
+    "i04": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "生克关系、条目对象与主题方向一致，未将民间象征解释写成现实断言。"
+    },
+    "i05": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "准确区分五行相生与三才整体评价，以中性倾向呈现民间解释中的利弊并存，措辞审慎。"
+    },
+    "i06": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "certainty",
+          "detail": "末句“今年一定会遭遇重大失败”将民间象征评价变成有明确时间范围的确定性预言，并与前文的限制说明矛盾，应删除。"
+        }
+      ],
+      "reason": "主体解释保留了民俗评价的边界，但末句作出了确定性的失败预言。"
+    },
+    "i07": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "theme_direction",
+          "detail": "正文侧重“土克水”“需要协调”及个人边界的磨合，没有明确的顺遂含义，self 为正向缺乏文字支持，宜改为中性或轻微负向。"
+        }
+      ],
+      "reason": "释义本身审慎且生克关系正确，但自我主题的正向倾向与正文不一致。"
+    },
+    "i08": {
+      "verdict": "reject",
+      "issues": [
+        {
+          "dimension": "medical_legal_finance",
+          "detail": "末句依据三才组合断言“肝脏已有病变”，并要求立即治疗，属于无依据的确定性医疗诊断及治疗指示。"
+        },
+        {
+          "dimension": "certainty",
+          "detail": "“出现它说明你的肝脏已有病变”把象征解读写成现实健康事实，与前文的限制说明矛盾。"
+        }
+      ],
+      "reason": "条目包含依据民俗符号作出的确定性医疗诊断，不能面向用户使用。"
+    }
+  }
+}
