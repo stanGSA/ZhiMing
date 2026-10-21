@@ -2,10 +2,9 @@
 
 from pathlib import Path
 
-import yaml
-
 from knowledge.catalogues import expected_keys
 from plugins.astro.calculator import BODY_ZH, SIGN_ZH, SIGNS
+from scripts.draft_sources import write_drafts
 
 ROOT = Path(__file__).resolve().parents[1]
 PLANET_THEMES = {
@@ -372,15 +371,7 @@ def main():
     for system in ("astro", "bazi"):
         entries = [draft(*key) for key in sorted(expected_keys(system))]
         target = ROOT / f"knowledge/sources/{system}/entries.yaml"
-        target.parent.mkdir(parents=True, exist_ok=True)
-        target.write_text(
-            yaml.safe_dump(
-                dict(status="draft_needs_human_review", entries=entries),
-                allow_unicode=True,
-                sort_keys=False,
-            ),
-            encoding="utf-8",
-        )
+        write_drafts(target, entries)
         print(system, len(entries))
 
 

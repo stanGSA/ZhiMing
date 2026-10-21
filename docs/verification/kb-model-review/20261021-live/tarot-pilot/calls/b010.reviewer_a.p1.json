@@ -1,0 +1,83 @@
+{
+  "batch": "b010",
+  "reviewer": "reviewer_a",
+  "run_pass": 1,
+  "attempt": 1,
+  "vendor": "deepseek",
+  "requested_model": "deepseek-flash",
+  "returned_model": "deepseek-flash",
+  "api": "openai",
+  "started_at": "2026-10-21T15:17:14+00:00",
+  "finished_at": "2026-10-21T15:17:18+00:00",
+  "latency_s": 4.698,
+  "http_attempts": 1,
+  "finish_reason": "stop",
+  "prompt_sha256": "02e001fa582d8ef2c90e73d9dd23e561c914974fc69290233fb41f49ae3ab829",
+  "input_tokens": 3115,
+  "output_tokens": 544,
+  "cached_input_tokens": 384,
+  "usage_available": true,
+  "raw_text": "{\"items\": [{\"item\": \"i01\", \"verdict\": \"pass\", \"issues\": [], \"reason\": \"正位战车释义符合传统（方向、执行力、协调对立），主题方向为正且措辞非宿命化。\"}, {\"item\": \"i02\", \"verdict\": \"pass\", \"issues\": [], \"reason\": \"逆位战车释义（失控、方向不一）与正位区分清楚，主题方向为负与文字一致。\"}, {\"item\": \"i03\", \"verdict\": \"pass\", \"issues\": [], \"reason\": \"逆位节制释义（失衡、过量）与正位对照合理，主题方向为负。\"}, {\"item\": \"i04\", \"verdict\": \"pass\", \"issues\": [], \"reason\": \"正位皇帝释义（秩序、责任、规则）符合传统，主题方向为正。\"}, {\"item\": \"i05\", \"verdict\": \"pass\", \"issues\": [], \"reason\": \"正位恶魔释义（束缚、依赖）符合传统，主题方向为负与文字一致。\"}, {\"item\": \"i06\", \"verdict\": \"pass\", \"issues\": [], \"reason\": \"逆位皇帝释义（僵化控制）与正位区分清楚，主题方向为负。\"}, {\"item\": \"i07\", \"verdict\": \"pass\", \"issues\": [], \"reason\": \"正位宝剑二释义（两难、停顿）符合传统，主题方向略负且非宿命化。\"}, {\"item\": \"i08\", \"verdict\": \"pass\", \"issues\": [], \"reason\": \"逆位恶魔释义（松动束缚但仍有风险）与正位对照合理，主题方向略正且文字含风险提示。\"}, {\"item\": \"i09\", \"verdict\": \"revise\", \"issues\": [{\"dimension\": \"theme_direction\", \"detail\": \"正位魔术师文字积极（能力资源可转化行动），但 theme_map 三个主题均为 -0.5，方向与文字相反。\"}], \"reason\": \"魔术师正位主题方向应为正，现为负值，与积极文字矛盾。\"}, {\"item\": \"i10\", \"verdict\": \"pass\", \"issues\": [], \"reason\": \"正位节制释义（协调、可持续节奏）符合传统，主题方向为正。\"}, {\"item\": \"i11\", \"verdict\": \"pass\", \"issues\": [], \"reason\": \"逆位宝剑二释义（无法回避、需处理分歧）与正位对照合理，主题方向为负。\"}]}",
+  "verdicts": {
+    "i01": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "正位战车释义符合传统（方向、执行力、协调对立），主题方向为正且措辞非宿命化。"
+    },
+    "i02": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "逆位战车释义（失控、方向不一）与正位区分清楚，主题方向为负与文字一致。"
+    },
+    "i03": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "逆位节制释义（失衡、过量）与正位对照合理，主题方向为负。"
+    },
+    "i04": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "正位皇帝释义（秩序、责任、规则）符合传统，主题方向为正。"
+    },
+    "i05": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "正位恶魔释义（束缚、依赖）符合传统，主题方向为负与文字一致。"
+    },
+    "i06": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "逆位皇帝释义（僵化控制）与正位区分清楚，主题方向为负。"
+    },
+    "i07": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "正位宝剑二释义（两难、停顿）符合传统，主题方向略负且非宿命化。"
+    },
+    "i08": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "逆位恶魔释义（松动束缚但仍有风险）与正位对照合理，主题方向略正且文字含风险提示。"
+    },
+    "i09": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "theme_direction",
+          "detail": "正位魔术师文字积极（能力资源可转化行动），但 theme_map 三个主题均为 -0.5，方向与文字相反。"
+        }
+      ],
+      "reason": "魔术师正位主题方向应为正，现为负值，与积极文字矛盾。"
+    },
+    "i10": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "正位节制释义（协调、可持续节奏）符合传统，主题方向为正。"
+    },
+    "i11": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "逆位宝剑二释义（无法回避、需处理分歧）与正位对照合理，主题方向为负。"
+    }
+  }
+}

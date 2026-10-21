@@ -1,0 +1,78 @@
+{
+  "batch": "b017",
+  "reviewer": "reviewer_a",
+  "run_pass": 2,
+  "attempt": 1,
+  "vendor": "deepseek",
+  "requested_model": "deepseek-flash",
+  "returned_model": "deepseek-flash",
+  "api": "openai",
+  "started_at": "2026-10-21T15:23:18+00:00",
+  "finished_at": "2026-10-21T15:23:24+00:00",
+  "latency_s": 5.885,
+  "http_attempts": 1,
+  "finish_reason": "stop",
+  "prompt_sha256": "d733059804305af21116915ffe299e0fd9b4397d1bbf085ed4567e0cc5040396",
+  "input_tokens": 1400,
+  "output_tokens": 481,
+  "cached_input_tokens": 1152,
+  "usage_available": true,
+  "raw_text": "{\"items\":[{\"item\":\"i01\",\"verdict\":\"revise\",\"issues\":[{\"dimension\":\"consistency\",\"detail\":\"牌阵为“现状/选A/选B”三张，并非过去现在未来结构，释义中“未来牌位”的说明与该牌阵不符，属于套用模板话术。\"}],\"reason\":\"牌位描述本身对应正确，但附加的“未来牌位”说明与本牌阵结构不一致，宜改写或删除。\"},{\"item\":\"i02\",\"verdict\":\"pass\",\"issues\":[],\"reason\":\"牌位2对应“现在”，方向与牌阵定义一致，未来牌位免责说明与三张牌阵结构相符。\"},{\"item\":\"i03\",\"verdict\":\"revise\",\"issues\":[{\"dimension\":\"consistency\",\"detail\":\"单张牌阵只有“当下提示”一个位置，并无“未来”牌位，释义中提及的“未来牌位”与本牌阵结构不符。\"}],\"reason\":\"牌位对应正确，但附加的“未来牌位”说明不适用于单张牌阵。\"},{\"item\":\"i04\",\"verdict\":\"pass\",\"issues\":[],\"reason\":\"牌位3对应“未来”，方向与牌阵定义一致，并保留非确定性免责表述。\"},{\"item\":\"i05\",\"verdict\":\"pass\",\"issues\":[],\"reason\":\"牌位1对应“过去”，方向与牌阵定义一致，未来牌位免责说明与三张牌阵结构相符。\"},{\"item\":\"i06\",\"verdict\":\"revise\",\"issues\":[{\"dimension\":\"consistency\",\"detail\":\"牌阵为现状/选A/选B结构，无“未来”牌位，释义中附加的“未来牌位”说明与该牌阵不符。\"}],\"reason\":\"牌位3对应“选B”正确，但附加的“未来牌位”说明不适用于该牌阵。\"},{\"item\":\"i07\",\"verdict\":\"revise\",\"issues\":[{\"dimension\":\"consistency\",\"detail\":\"牌阵为现状/选A/选B结构，无“未来”牌位，释义中附加的“未来牌位”说明与该牌阵不符。\"}],\"reason\":\"牌位2对应“选A”正确，但附加的“未来牌位”说明不适用于该牌阵。\"}]}",
+  "verdicts": {
+    "i01": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "consistency",
+          "detail": "牌阵为“现状/选A/选B”三张，并非过去现在未来结构，释义中“未来牌位”的说明与该牌阵不符，属于套用模板话术。"
+        }
+      ],
+      "reason": "牌位描述本身对应正确，但附加的“未来牌位”说明与本牌阵结构不一致，宜改写或删除。"
+    },
+    "i02": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "牌位2对应“现在”，方向与牌阵定义一致，未来牌位免责说明与三张牌阵结构相符。"
+    },
+    "i03": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "consistency",
+          "detail": "单张牌阵只有“当下提示”一个位置，并无“未来”牌位，释义中提及的“未来牌位”与本牌阵结构不符。"
+        }
+      ],
+      "reason": "牌位对应正确，但附加的“未来牌位”说明不适用于单张牌阵。"
+    },
+    "i04": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "牌位3对应“未来”，方向与牌阵定义一致，并保留非确定性免责表述。"
+    },
+    "i05": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "牌位1对应“过去”，方向与牌阵定义一致，未来牌位免责说明与三张牌阵结构相符。"
+    },
+    "i06": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "consistency",
+          "detail": "牌阵为现状/选A/选B结构，无“未来”牌位，释义中附加的“未来牌位”说明与该牌阵不符。"
+        }
+      ],
+      "reason": "牌位3对应“选B”正确，但附加的“未来牌位”说明不适用于该牌阵。"
+    },
+    "i07": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "consistency",
+          "detail": "牌阵为现状/选A/选B结构，无“未来”牌位，释义中附加的“未来牌位”说明与该牌阵不符。"
+        }
+      ],
+      "reason": "牌位2对应“选A”正确，但附加的“未来牌位”说明不适用于该牌阵。"
+    }
+  }
+}

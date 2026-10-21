@@ -2,7 +2,6 @@
 
 import asyncio
 import json
-import shutil
 from collections import Counter
 
 import httpx
@@ -15,6 +14,7 @@ from knowledge.build import build
 from knowledge.kb import KnowledgeBase
 from knowledge.review import content_hash
 from scripts import model_review_kb as review
+from tests.knowledge_fixture import copy_draft_knowledge
 
 ROLES = dict(
     reviewer_a=dict(
@@ -52,7 +52,7 @@ DOUBTFUL = {"the_tower:upright", "death:reversed"}
 
 @pytest.fixture
 def workspace(tmp_path, monkeypatch):
-    shutil.copytree(ROOT / "knowledge", tmp_path / "knowledge")
+    copy_draft_knowledge(ROOT / "knowledge", tmp_path / "knowledge")
     config = yaml.safe_load((ROOT / "config.yaml").read_text(encoding="utf-8"))
     config["kb_review"] = dict(timeout_s=10, roles=ROLES)
     for name in ("TEST_REVIEW_A_KEY", "TEST_REVIEW_B_KEY", "TEST_REVIEW_C_KEY"):

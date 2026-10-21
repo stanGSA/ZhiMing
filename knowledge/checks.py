@@ -14,10 +14,15 @@ import re
 
 from common.output_policy import certainty_claim
 
-# "不代表/不表示/并不意味着" + a short subject + 必然/一定/注定 + 发生: the disclaimer template.
+# Only a short noun subject is allowed here, never an intervening predicate or contrast.
+DISCLAIMER_CLAIM = (
+    r"(?:现实事件|事件|困扰|状态|负担)?(?:必然|一定会?|注定)(?:会)?"
+    r"(?:发生|出现|如此|成立|消退|好转|减轻)"
+)
 DISCLAIMER = re.compile(
     r"(?:并不|并非|不)(?:代表|表示|意味着?|等于|预示|说明)"
-    r"[^，,。；;！!？?\n]{0,8}?(?:必然|一定会?|注定)(?:会)?(?:发生|出现|如此|成立)"
+    + DISCLAIMER_CLAIM
+    + rf"(?:(?:或|以及){DISCLAIMER_CLAIM})*"
 )
 
 

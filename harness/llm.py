@@ -296,6 +296,7 @@ def role_model(spec: RoleModelSpec, timeout: float = 120, http_client=None) -> C
     return OpenAIModel(
         spec.model,
         timeout,
+        provider="deepseek" if spec.vendor.strip().lower() == "deepseek" else "openai",
         max_tokens=spec.max_tokens,
         api_key_env=spec.api_key_env,
         base_url=spec.base_url,

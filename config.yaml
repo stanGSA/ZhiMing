@@ -46,6 +46,12 @@ safety:
     US: [美国988自杀与危机生命线（拨打或发短信988）]
 kb_review:                    # 知识库模型交叉审核（scripts.model_review_kb）；不是人工审核
   timeout_s: 120
+  # 总预算由所有 run / revise / 续跑共享；失败、缺失 usage 和重试保留保守预留。
+  # 金额按确认的单价估算，不等于服务账单；所有角色须提供同币种单价。
+  # 确认后填：{limit: <总额>, currency: <币种>, state_path: docs/verification/kb-model-review/<本次会话>/budget.json}
+  budget:
+    unlimited: true  # 2026-10-21 项目负责人明确回复“没有预算上限”；费率未知不填成0。
+    state_path: docs/verification/kb-model-review/20261021-live/budget.json
   # 两家审核方须为不同厂商，且都不能与运行时模型（llm.provider）同一厂商；修改方不能与审核方同厂商。
   # 待项目负责人确认厂商与模型后填写，例如：
   # reviewer_a: {vendor: <厂商>, api: openai, model: <模型名>, api_key_env: <密钥环境变量名>,
@@ -54,10 +60,38 @@ kb_review:                    # 知识库模型交叉审核（scripts.model_revi
   # 起草条目内容的厂商，审核方不能与之同厂商（4.3）：阶段1 B1 的感情、财务方向与对应文字由
   # Anthropic Claude 起草；更早草稿的起草模型没有记录。
   drafter_vendors: [anthropic]
+  # 2026-10-21 项目负责人明确指定 DeepSeek 审核；仅为此模型放行运行时厂商限制。
+  # 两家审核仍须不同厂商，且不能是起草方 Anthropic；不宣称符合原4.3的运行时独立性。
+  runtime_vendor_exception:
+    vendor: deepseek
+    model: deepseek-flash
+    reason: 2026-10-21 项目负责人明确要求第一审核方使用本机.env的DeepSeek配置
+  reviser_vendor_exception:
+    vendor: openai
+    model: gpt-6-astra
+    reviewers:
+      reviewer_a: {vendor: deepseek, model: deepseek-flash}
+      reviewer_b: {vendor: openai, model: gpt-6.1-sol}
+    reason: 2026-10-21 项目负责人在知晓同厂商限制后明确要求第三方使用OpenAI
   roles:
-    reviewer_a: null
-    reviewer_b: null
-    reviser: null
+    reviewer_a:
+      vendor: deepseek
+      api: openai
+      model: deepseek-flash
+      api_key_env: DEEPSEEK_API_KEY
+      base_url: https://api.deepseek.com
+    reviewer_b:
+      vendor: openai
+      api: openai
+      model: gpt-6.1-sol
+      api_key_env: OPENAI_REVIEW_API_KEY
+      base_url: https://codegoai.com/v1
+    reviser:
+      vendor: openai
+      api: openai
+      model: gpt-6-astra
+      api_key_env: OPENAI_REVIEW_API_KEY
+      base_url: https://codegoai.com/v1
 kb:
   path: data/kb.sqlite
   dream_match_threshold: 0.75   # 解梦意象BM25候选的相似度阈值；首次评估后再调
