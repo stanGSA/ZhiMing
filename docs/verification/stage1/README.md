@@ -10,6 +10,8 @@ B1修订后占星55条、八字52条有感情或财务方向，十神10/10及七
 
 完整逐体系计数、四项指标、模型身份、费用限制、兼容性及未过关原因见[本次验收报告](20261022-acceptance/report.md)和[全部真实证据](../kb-model-review/20261021-live/campaign/summary.json)。代码/CI结果见[PR #17](https://github.com/stanGSA/ZhiMing/pull/17)，不自动合并。阶段2真实回答质量未在本次开展。
 
+最终本地全量814项、专项66项通过；最终Ubuntu/Windows CI因GitHub账户付款或支出额度问题未启动，不能记作通过，原始诊断见[CI平台阻塞](20261022-acceptance/ci-platform-block.json)。
+
 以下为此前轮次历史记录，待确认项与“未运行”描述以本节最新记录为准。
 
 日期：2026-10-20（Asia/Shanghai）。基线：main `7d43641`（含阶段0 `753ac8f`、复核修复 `f8d52d2`、时区证据修复 `7d99c8d`）。任务编号与验收口径取自《项目完善计划书》第四节与 5.4；架构约束参照[《占卜Agent项目计划书》](../../占卜Agent项目计划书.md)。

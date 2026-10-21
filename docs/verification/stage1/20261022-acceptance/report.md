@@ -70,6 +70,8 @@ Ruff检查及146个文件格式检查通过，最终专项66项通过；实际�
 
 提交前检查1025个暂存文件，未发现本机密钥值；34份归档执行源码均与记录哈希匹配，见[证据完整性检查](evidence-integrity.json)。执行源码快照按原始字节保存，避免Git换行转换使证据哈希失效。
 
+最终代码提交`15646e23eef8980f8c3620714ff0532da4832514`的Ubuntu及Windows CI均未启动：GitHub注释明确提示账户付款失败或Actions支出额度不足（另一个矩阵任务被取消），见[平台诊断原文及检查链接](ci-platform-block.json)。这是未运行，不能记为最终CI通过；较早提交的成功也不能替代最终代码的矩阵检查。需负责人恢复GitHub Actions账户可用状态后重跑，本次未修改账户计费设置。
+
 修改稿全局同义词约束现在在写源文件之前检查，冲突时不写任何源文件；修复了“屋子”同时被两个对象使用的问题。生成脚本遇到源文件与旧模板不一致会拒绝覆盖，源文件是审核修订的内容依据。
 
 三态覆盖率见[coverage.json](coverage.json)：451 model_reviewed、720 draft、0 human_reviewed，账本全部current、无stale/orphan。draft仍受low上限约束，model_reviewed上限medium；模型记录从不写reviewed:true。旧reading、旧每日缓存的兼容性回归保留；旧知识快照v1-db9e5019df128abc仍存在且对应条目仍为draft，同条目在新版为model_reviewed，见[实际快照核验](../../kb-model-review/20261021-live/compatibility-snapshot-check.json)。
