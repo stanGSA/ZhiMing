@@ -58,6 +58,10 @@ GATES = dict(pass_rate=0.95, detection_merged=0.9, detection_single=0.8, rerun=0
 # Code findings that block an approval whatever the models say. A same-direction tarot pair
 # is shown to the reviewers (with the other orientation) and judged by them.
 BLOCKING_CHECKS = {"certainty"}
+# Written by scripts.kb_review_campaign into a run root it accepts system by system. Its
+# batches never write the ledger one at a time: a small batch can be calibrated on its own
+# while the whole system is not.
+CAMPAIGN_MARKER = "campaign-acceptance.json"
 
 RUBRIC_VERSION = 1
 RUBRIC = """你是知识库释义的审核员。项目是一个占卜/自我反思应用，释义是项目自写的草稿，面向普通用户。
@@ -224,6 +228,12 @@ def check_roles(roles: dict, config: dict, needed: tuple[str, ...]) -> None:
         raise ValueError("修改模型不能与审核模型同一厂商，否则会自审自改")
 
 
+def require_endpoints(roles: dict, needed: tuple[str, ...]) -> None:
+    """Fail before a run directory exists, not as one logged service error per call."""
+    for name in needed:
+        roles[name].endpoint()
+
+
 def reviser_exception_matches(spec, reviewers, exception):
     exception = exception or {}
     identity = {name: {k: r[k] for k in ("vendor", "model")} for name, r in reviewers.items()}
@@ -237,9 +247,14 @@ def reviser_exception_matches(spec, reviewers, exception):
 
 def public_spec(spec: RoleConfig) -> dict:
     """What a run is bound to about a role: identity and settings, never a key or a price."""
-    data = spec.model_dump(exclude={"input_per_mtok", "output_per_mtok", "currency"})
-    data["base_url_host"] = urlparse(spec.base_url).hostname if spec.base_url else None
-    data.pop("base_url")
+    data = spec.model_dump(
+        exclude={"input_per_mtok", "output_per_mtok", "currency", "base_url", "base_url_env"}
+    )
+    try:
+        url = spec.endpoint()
+    except ValueError:
+        url = None  # Only a plan can be made: role_model refuses to call without it.
+    data["base_url_host"] = urlparse(url).hostname if url else None
     return data
 
 
@@ -274,6 +289,10 @@ def replace_term(text: str, terms: tuple[str, ...], rng: random.Random) -> str |
     return None if other is None else text.replace(term, other)
 
 
+def names_itself(entry: dict) -> bool:
+    return any(len(n) >= 2 and n in entry["text"] for n in (entry["key"], *entry["synonyms"]))
+
+
 def mutations(entry: dict, by_id: dict[str, dict], rng: random.Random) -> dict[str, dict]:
     """Every planted variant applicable to one entry, each with exactly one defect."""
     found = {}
@@ -295,11 +314,12 @@ def mutations(entry: dict, by_id: dict[str, dict], rng: random.Random) -> dict[s
         and e["id"] != f"kb:tarot:card:{other_key}"
     ]
     if peers:
-        peer = rng.choice(peers)
-        # Generic advice can fit several objects. Retain the donor's identity so
-        # object substitution is an actual mismatch, not a debatable synonym.
-        label = next(iter(peer["synonyms"]), peer["key"])
-        found["foreign_text"] = dict(entry, text=f"{label}（{peer['key']}）的释义：{peer['text']}")
+        # A planted copy must look like an entry. The PR #17 runs prefixed the donor as
+        # “Moon:7（Moon:7）的释义：”, a wrapper no real entry carries, which gave the answer
+        # away. Generic advice can fit several objects, so prefer a donor whose own text names
+        # its object: the substitution is then an actual mismatch, in the entries' own words.
+        named = [e for e in peers if names_itself(e)]
+        found["foreign_text"] = dict(entry, text=rng.choice(named or peers)["text"])
     if entry["system"] == "dream" and entry["kind"] == "symbol":
         keys = sorted(
             e["key"] for e in by_id.values() if e["kind"] == "symbol" and e["key"] != entry["key"]
@@ -1372,10 +1392,23 @@ def calibration_of(run_path: Path, root: Path) -> tuple[dict, dict]:
     return manifest, merged
 
 
+def report_reference(report: Path, root: Path) -> str:
+    """The report a ledger record cites, in POSIX form: the ledger is hashed into the KB
+    version, so the same evidence must give the same bytes on every platform."""
+    report, root = report.resolve(), root.resolve()
+    return (report.relative_to(root) if report.is_relative_to(root) else report).as_posix()
+
+
 def record_ledger(workspace: Workspace, run_paths: list[Path], root: Path = ROOT) -> dict:
     """Update approvals and revoke rejected content, preserving unrelated versions."""
     written: dict[str, list[str]] = {}
     stale = []
+    for run_path in run_paths:
+        if (run_path.parent / CAMPAIGN_MARKER).is_file():
+            raise ValueError(
+                f"{run_path.parent.as_posix()} 按体系汇总验收，"
+                "须用 scripts.kb_review_campaign --write-ledger 写账本，不能逐批写入"
+            )
     for run_path in run_paths:
         manifest = read_json(run_path / "manifest.json")
         system = manifest["system"]
@@ -1429,10 +1462,7 @@ def record_ledger(workspace: Workspace, run_paths: list[Path], root: Path = ROOT
                     )
                 )
             day = min(c["started_at"] for c in calls)[:10]
-            report = run_path / "report.md"
-            report = (
-                report.relative_to(root).as_posix() if report.is_relative_to(root) else str(report)
-            )
+            report = report_reference(run_path / "report.md", root)
             for entry_id in merged["approved_ids"]:
                 entry = current.get(entry_id)
                 if entry is None or content_hash(entry) != manifest["entry_hashes"][entry_id]:
@@ -1524,6 +1554,7 @@ def main(argv: list[str] | None = None) -> Any:
             )
         else:
             check_roles(roles, config, REVIEWERS)
+            require_endpoints(roles, REVIEWERS)
             facts = dict(
                 created_at=now(),
                 git=git_state(ROOT),
@@ -1547,6 +1578,7 @@ def main(argv: list[str] | None = None) -> Any:
         output = {k: v for k, v in output.items() if k not in ("planted_detail", "code_findings")}
     elif args.command == "revise":
         check_roles(roles, config, ("reviser",))
+        require_endpoints(roles, ("reviser",))
         plan = load_plan(args.run_dir)
         output = asyncio.run(
             revise(

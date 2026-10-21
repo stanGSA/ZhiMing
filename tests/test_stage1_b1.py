@@ -103,14 +103,21 @@ def test_dignity_terms_in_the_text(key, stated):
 @pytest.mark.parametrize("system", ["astro", "bazi"])
 def test_directions_are_stated_in_the_text_and_attributed(system):
     for entry in source(system):
+        # The narrowest wording the reviewed sources use; vaguer words (合作, 资源) are not a
+        # stated direction.
         for theme, words in (
-            ("relationship", r"感情|关系|伴侣|相处|亲密|社群|团队|合作|社交|同伴|人际|协作|家庭"),
-            ("finance", r"财务|消费|资源|预算|金钱|收支"),
+            ("relationship", r"感情|关系|伴侣|亲密|人际|社群|同伴|家庭"),
+            ("finance", r"财务|金钱|收支|预算|消费"),
         ):
             assert not entry["theme_map"][theme] or re.search(words, entry["text"]), entry["id"]
         baseline = draft(entry["system"], entry["kind"], entry["key"])
         if directed(baseline):
             assert "Anthropic Claude" in entry["source"], entry["id"]
+        # Unchanged content keeps its version; every revision raised it.
+        same = {k: v for k, v in entry.items() if k != "version"} == {
+            k: v for k, v in baseline.items() if k != "version"
+        }
+        assert (entry["version"] == baseline["version"]) == same, entry["id"]
         assert entry["version"] >= baseline["version"] and entry["reviewed"] is False
 
 
@@ -195,3 +202,8 @@ def test_initial_b1_baseline_counts():
     astro = [draft(*k) for k in sorted(expected_keys("astro")) if directed(draft(*k))]
     bazi = [draft(*k) for k in sorted(expected_keys("bazi")) if directed(draft(*k))]
     assert (len(astro), len(bazi)) == (60, 50)
+
+
+def test_reviewed_b1_counts_quoted_in_the_report():
+    # Net of review: astro 60 → 55 (directions the text did not support), bazi 50 → 52.
+    assert (sum(map(directed, source("astro"))), sum(map(directed, source("bazi")))) == (55, 52)

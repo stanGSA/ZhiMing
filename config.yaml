@@ -73,6 +73,8 @@ kb_review:                    # 知识库模型交叉审核（scripts.model_revi
       reviewer_a: {vendor: deepseek, model: deepseek-flash}
       reviewer_b: {vendor: openai, model: gpt-6.1-sol}
     reason: 2026-10-21 项目负责人在知晓同厂商限制后明确要求第三方使用OpenAI
+  # 第三方中转站地址不入库：reviewer_b与reviser从本机 .env 的 OPENAI_REVIEW_BASE_URL 读取；
+  # 未设置时拒绝调用，不回退到官方地址（密钥属于该中转站）。2026-10-21 批次实际为 codegoai.com。
   roles:
     reviewer_a:
       vendor: deepseek
@@ -85,13 +87,13 @@ kb_review:                    # 知识库模型交叉审核（scripts.model_revi
       api: openai
       model: gpt-6.1-sol
       api_key_env: OPENAI_REVIEW_API_KEY
-      base_url: https://codegoai.com/v1
+      base_url_env: OPENAI_REVIEW_BASE_URL
     reviser:
       vendor: openai
       api: openai
       model: gpt-6-astra
       api_key_env: OPENAI_REVIEW_API_KEY
-      base_url: https://codegoai.com/v1
+      base_url_env: OPENAI_REVIEW_BASE_URL
 kb:
   path: data/kb.sqlite
   dream_match_threshold: 0.75   # 解梦意象BM25候选的相似度阈值；首次评估后再调

@@ -7,6 +7,7 @@ import json
 import pytest
 import yaml
 
+from harness.llm import RoleModelSpec, role_model
 from harness.models import ModelResponse
 from knowledge.checks import certainty_finding
 from knowledge.review import load_ledgers
@@ -149,6 +150,37 @@ def test_runtime_vendor_exception_is_scoped_to_exact_model():
     config["kb_review"]["roles"]["reviewer_a"]["model"] = "another-deepseek-model"
     with pytest.raises(ValueError, match="运行时模型"):
         review.check_roles(review.load_roles(config), config, review.REVIEWERS)
+
+
+async def test_relay_address_is_read_from_the_environment(monkeypatch):
+    roles = review.load_roles(review.load_config(review.ROOT))
+    spec = roles["reviewer_b"]
+    assert spec.base_url is None and spec.base_url_env == "OPENAI_REVIEW_BASE_URL"
+    monkeypatch.delenv("OPENAI_REVIEW_BASE_URL", raising=False)
+    with pytest.raises(ValueError, match="未设置 OPENAI_REVIEW_BASE_URL"):
+        review.require_endpoints(roles, ("reviewer_b", "reviser"))
+    with pytest.raises(ValueError, match="未设置 OPENAI_REVIEW_BASE_URL"):
+        role_model(spec)  # never the vendor's default endpoint with the relay's key
+    assert review.public_spec(spec)["base_url_host"] is None
+    # With the address used on 2026-10-21 a run binds to exactly the archived identity.
+    monkeypatch.setenv("OPENAI_REVIEW_BASE_URL", "https://codegoai.com/v1")
+    monkeypatch.setenv(spec.api_key_env, "offline-placeholder")
+    historical = review.read_json(
+        review.ROOT / "docs/verification/kb-model-review/20261021-live/astro-initial/manifest.json"
+    )
+    assert review.public_spec(spec) == historical["reviewers"]["reviewer_b"]
+    model = role_model(spec)
+    try:
+        assert str(model.client.base_url).startswith("https://codegoai.com/v1")
+    finally:
+        await model.close()
+    with pytest.raises(ValueError, match="只能配置一个"):
+        RoleModelSpec(
+            **dict(
+                spec.model_dump(include=RoleModelSpec.model_fields.keys()),
+                base_url="https://x.example",
+            )
+        )
 
 
 def test_reviser_exception_is_bound_to_historical_reviewers():

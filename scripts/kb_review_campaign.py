@@ -177,10 +177,16 @@ def record(workspace, summary, outcomes, entries, report, root):
         if ref.startswith(f"kb:{system}:")
     }
     before = records.copy()
+    reasons = {}
+
+    def revoke(ref, reason):
+        if ref in records and records[ref]["content_sha256"] == content_hash(entries[ref]):
+            del records[ref]
+            reasons[ref] = reason
+
     for ref, result in outcomes.items():
         if not result["approved"]:
-            if ref in records and records[ref]["content_sha256"] == content_hash(entries[ref]):
-                del records[ref]
+            revoke(ref, "同哈希内容被否决")
             continue
         if not summary["calibrated"]:
             continue
@@ -203,12 +209,21 @@ def record(workspace, summary, outcomes, entries, report, root):
                     verdict="pass",
                 )
             )
-        reference = (
-            report.relative_to(root).as_posix() if report.is_relative_to(root) else str(report)
-        )
         records[ref] = approval(
-            entries[ref], reviewers, min(c["started_at"] for c in calls)[:10], reference
+            entries[ref],
+            reviewers,
+            min(c["started_at"] for c in calls)[:10],
+            review.report_reference(report, root),
         )
+        previous = before.get(ref)
+        if records[ref] != previous:
+            same = previous and previous["content_sha256"] == records[ref]["content_sha256"]
+            reasons[ref] = "同一内容的批准记录更新" if same else "体系汇总批准"
+    if not summary["calibrated"]:
+        # An uncalibrated system keeps no approval of its current content, whichever
+        # command wrote it: `model_review_kb ledger` accepts a single calibrated batch.
+        for ref in sorted(records.keys() & entries.keys()):
+            revoke(ref, "体系校准未达标")
     if before != records:
         report.parent.mkdir(parents=True, exist_ok=True)
         with (report.parent / "ledger-events.jsonl").open("a", encoding="utf-8") as stream:
@@ -221,7 +236,10 @@ def record(workspace, summary, outcomes, entries, report, root):
                                 id=ref,
                                 previous=before.get(ref),
                                 current=records.get(ref),
-                                evidence=outcomes[ref]["path"].as_posix(),
+                                reason=reasons[ref],
+                                evidence=(
+                                    outcomes[ref]["path"].as_posix() if ref in outcomes else None
+                                ),
                             ),
                             ensure_ascii=False,
                         )
@@ -234,12 +252,25 @@ def record(workspace, summary, outcomes, entries, report, root):
     )
 
 
+def bind(run_root, output):
+    """Close the per-batch ledger path for this run root; only this script approves it."""
+    review.write_json(
+        run_root / review.CAMPAIGN_MARKER,
+        dict(
+            acceptance="按体系汇总全部初审及复审批次（scripts.kb_review_campaign）",
+            output=output.as_posix(),
+            per_batch_ledger="拒绝：单个小批次校准达标不代表体系校准达标",
+        ),
+    )
+
+
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--run-root", type=Path, required=True)
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--write-ledger", action="store_true")
     args = parser.parse_args(argv)
+    bind(args.run_root, args.output)
     paths = sorted(
         (p.parent for p in args.run_root.glob("*/manifest.json")),
         key=lambda p: (review.read_json(p / "manifest.json").get("created_at", ""), p.name),

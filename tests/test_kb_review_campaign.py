@@ -1,7 +1,9 @@
 """System acceptance keeps failures, incomplete work, and content identity visible."""
 
 import copy
+import json
 import random
+from pathlib import Path
 
 import pytest
 
@@ -57,6 +59,50 @@ async def test_incomplete_rejection_revokes_same_hash_approval(workspace, tmp_pa
     assert TARGET not in load_ledgers(work.reviews)
 
 
+async def test_uncalibrated_system_revokes_approvals_written_batch_by_batch(workspace, tmp_path):
+    """A calibrated batch written with `model_review_kb ledger` (as bazi-rereview-1 could be)
+    must not outlive a failed system gate."""
+    work, config = workspace
+    _, first, _ = await tower_run(work, config, tmp_path / "root/first", "pass")
+    review.record_ledger(work, [first.path], root=tmp_path)
+    approved = set(load_ledgers(work.reviews))
+    assert approved
+    _, later, _ = await tower_run(work, config, tmp_path / "root/later", "pass", passes=1)
+    summary, outcomes, entries = campaign.summarize(work, [first.path, later.path], "tarot")
+    assert not summary["calibrated"]
+    assert all(outcomes[ref]["approved"] for ref in approved)
+    report = tmp_path / "campaign/tarot/report.md"
+    changes = campaign.record(work, summary, outcomes, entries, report, tmp_path)
+    assert not load_ledgers(work.reviews)
+    assert changes["revoked"] == sorted(approved)
+    events = (report.parent / "ledger-events.jsonl").read_text(encoding="utf-8").splitlines()
+    assert {json.loads(line)["reason"] for line in events} == {"体系校准未达标"}
+
+
+async def test_campaign_run_root_refuses_per_batch_ledger(workspace, tmp_path):
+    work, config = workspace
+    _, run, _ = await tower_run(work, config, tmp_path / "root/first", "pass")
+    campaign.bind(tmp_path / "root", tmp_path / "root/campaign")
+    with pytest.raises(ValueError, match="按体系汇总验收"):
+        review.record_ledger(work, [run.path], root=tmp_path)
+    assert not load_ledgers(work.reviews)
+
+
+def test_report_reference_is_posix_relative(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
+    # A relative --output was once written with Windows separators into every record.
+    assert review.report_reference(Path("campaign") / "report.md", tmp_path) == (
+        "campaign/report.md"
+    )
+    assert review.report_reference(tmp_path / "a" / "report.md", tmp_path) == "a/report.md"
+
+
+def test_committed_ledgers_cite_posix_reports():
+    records = load_ledgers(review.ROOT / "knowledge/reviews").values()
+    assert records and all("\\" not in r.report for r in records)
+    assert all((review.ROOT / r.report).is_file() for r in records)
+
+
 async def test_changed_content_cannot_reuse_approval(workspace, tmp_path, monkeypatch):
     work, config = workspace
     _, run, _ = await tower_run(work, config, tmp_path / "first", "pass")
@@ -95,17 +141,19 @@ async def test_unanimous_single_category_kappa_is_not_accepted(workspace, tmp_pa
     assert not summary["calibrated"]
 
 
-def test_foreign_text_contains_donor_identity(workspace):
+@pytest.mark.parametrize("system", ["tarot", "astro", "dream", "name"])
+def test_foreign_text_is_a_self_named_donor_without_a_wrapper(workspace, system):
     work, _ = workspace
-    entries = review.load_entries(work.sources, "tarot")
+    entries = review.load_entries(work.sources, system)
     by_id = {e["id"]: e for e in entries}
-    target = entries[0]
-    mutated = review.mutations(target, by_id, random.Random(1))["foreign_text"]
-    donors = [e for e in entries if e["text"] in mutated["text"]]
-    assert any(
-        e["id"] != target["id"] and f"（{e['key']}）的释义：" in mutated["text"] for e in donors
-    )
-    assert mutated["key"] == target["key"]
+    for seed, target in enumerate(entries[::25]):
+        mutated = review.mutations(target, by_id, random.Random(seed))["foreign_text"]
+        # Exactly a real entry's text: no wrapper the real entries never carry.
+        donor = next(e for e in entries if e["text"] == mutated["text"])
+        assert donor["id"] != target["id"] and mutated["key"] == target["key"]
+        peers = [e for e in entries if e["kind"] == target["kind"] and e["text"] != target["text"]]
+        if any(review.names_itself(e) for e in peers):
+            assert review.names_itself(donor)
 
 
 async def test_binary_kappa_retains_control_verdict_disagreements(workspace, tmp_path):
