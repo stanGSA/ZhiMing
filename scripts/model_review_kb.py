@@ -1155,6 +1155,15 @@ def calibration_of(run_path: Path, root: Path) -> tuple[dict, dict]:
             raise ValueError("校准来源的审核模型、rubric或体系与本次不同")
         if not read_json(source / "merged.json")["calibrated"]:
             raise ValueError("校准来源未达到埋错、重跑与kappa指标")
+        # Borrowed rates do not excuse this run's own misses: every planted copy in it must
+        # have been flagged by at least one reviewer (so none of them would have passed).
+        planted = merged["planted_detail"]
+        if not planted or not all(
+            all(item[role] is not None for role in REVIEWERS)
+            and any(item[role] != "pass" for role in REVIEWERS)
+            for item in planted
+        ):
+            raise ValueError("借用校准的批次须检出本批全部埋错，不能记为模型交叉审核")
     elif not merged["calibrated"]:
         raise ValueError("本次审核未达到埋错、重跑与kappa指标，不能记为模型交叉审核")
     return manifest, merged
@@ -1166,6 +1175,8 @@ def record_ledger(workspace: Workspace, run_paths: list[Path], root: Path = ROOT
     stale = []
     for run_path in run_paths:
         manifest, merged = calibration_of(run_path, root)
+        if not merged["approved_ids"]:
+            continue
         system = manifest["system"]
         current = {e["id"]: e for e in load_entries(workspace.sources, system)}
         calls = RunDir(run_path).calls()

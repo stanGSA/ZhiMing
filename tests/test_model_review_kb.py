@@ -625,3 +625,73 @@ async def test_rerun_of_revise_asks_again_for_invalid_proposals_only(workspace, 
     death = next(p for p in second if p["id"].endswith("death:reversed"))
     assert [old["invalid"] for old in death["previous_invalid"]] == ["修改稿含确定性说法“注定”"]
     assert len(review.apply_revisions(workspace, run)) == 3
+
+
+# ---- borrowed calibration (follow-up to the review) ---------------------------------------
+
+MISS_ALL = {"flip_signs", "swap_orientation", "fatalistic", "medical", "foreign_text"}
+SMALL = dict(only_ids=IDS[:2], calibrated_by="main", plant_rate=0.1, batch_size=10)
+
+
+async def calibrated_main(workspace, config, tmp_path):
+    entries = real_entries(workspace)
+    good = dict(reviewer_a=Reviewer(entries, "a"), reviewer_b=Reviewer(entries, "b"))
+    plan, run, roles, _, _ = await complete_run(workspace, config, tmp_path / "main", good)
+    assert review.merge(run, plan, roles)["calibrated"]
+    return entries
+
+
+@pytest.mark.parametrize(
+    "missed_by_a, missed_by_b, allowed",
+    [
+        (set(), set(), True),
+        (MISS_ALL, set(), True),  # one vendor flagging every copy is enough
+        ("first", "first", False),  # one copy passed by both vendors
+        (MISS_ALL, MISS_ALL, False),
+    ],
+)
+async def test_borrowed_calibration_needs_every_planted_copy_flagged(
+    workspace, tmp_path, missed_by_a, missed_by_b, allowed
+):
+    workspace, config = workspace
+    entries = await calibrated_main(workspace, config, tmp_path)
+    first = plan_for(workspace, config, **SMALL)["planted"][0]["mutation"]
+
+    def misses(value):
+        return {first} if value == "first" else value
+
+    reviewers = dict(
+        reviewer_a=Reviewer(entries, "a", misses=misses(missed_by_a)),
+        reviewer_b=Reviewer(entries, "b", misses=misses(missed_by_b)),
+    )
+    plan, run, roles, _, _ = await complete_run(
+        workspace, config, tmp_path / "small", reviewers, **SMALL
+    )
+    assert not review.merge(run, plan, roles)["calibrated"]  # too few items to calibrate
+    if allowed:
+        result = review.record_ledger(workspace, [run.path], root=tmp_path)
+        assert result == dict(written={"tarot": 2}, stale=[])
+    else:
+        with pytest.raises(ValueError, match="全部埋错"):
+            review.record_ledger(workspace, [run.path], root=tmp_path)
+        assert not (workspace.reviews / "tarot.yaml").exists()
+
+
+async def test_ledger_refuses_an_empty_run_and_skips_one_with_nothing_approved(workspace, tmp_path):
+    workspace, config = workspace
+    entries = await calibrated_main(workspace, config, tmp_path)
+    plan = plan_for(workspace, config, **SMALL)
+    empty = review.open_run(tmp_path / "empty", plan, dict(created_at="x"))
+    review.merge(empty, plan, review.load_roles(config))
+    # No call finished: a refusal that names the reason, not a crash in min().
+    with pytest.raises(ValueError, match="全部埋错"):
+        review.record_ledger(workspace, [empty.path], root=tmp_path)
+    doubtful = [f"kb:tarot:card:{key}" for key in sorted(DOUBTFUL)]
+    good = dict(reviewer_a=Reviewer(entries, "a"), reviewer_b=Reviewer(entries, "b"))
+    plan, run, roles, _, _ = await complete_run(
+        workspace, config, tmp_path / "queued", good, **dict(SMALL, only_ids=doubtful)
+    )
+    review.merge(run, plan, roles)
+    assert review.record_ledger(workspace, [run.path], root=tmp_path) == dict(written={}, stale=[])
+    # Nothing approved: no ledger file, so the knowledge version does not change.
+    assert not (workspace.reviews / "tarot.yaml").exists()

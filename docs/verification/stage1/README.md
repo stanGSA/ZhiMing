@@ -46,12 +46,12 @@
 | B2-17 | 指标：双模型通过率、埋错检出率（单家与合并，按改法分列）、同一模型两轮一致率、未改动条目上的 Cohen's kappa 与观察一致率；阈值固定在脚本里（95%、90%/80%、90%、0.6） | `test_cohen_kappa`、`test_merge_metrics_and_queue`、`test_metrics_rules_on_hand_written_verdicts` |
 | B2-18 | 合并：两家在所有轮次都判 `pass` 且没有阻断性代码检查（确定性说法）才算通过；任一方 `revise`/`reject` 或缺任一轮结论都进入修改队列或“未完成”。塔罗同号不阻断，交给看得到对照的审核模型判断（见“需要决定”） | 同上 |
 | B2-19 | 修改：第三方模型调用给出修改建议，校验主题与数值范围、确定性说法；`apply` 写回源文件（版本号加1，`reviewed` 保持 false），不写账本，必须新开批次让两家重审 | `test_revisions_are_proposals_that_need_a_new_review` |
-| B2-20 | 账本：只有校准达标（埋错、重跑、kappa）的批次能写入；条目内容在批次之后变化的不写（记为 stale）；记录两家厂商、请求与返回的模型名、日期、报告路径 | `test_ledger_needs_calibration_and_current_content` |
+| B2-20 | 账本：只有校准达标（埋错、重跑、kappa）的批次能写入；借用其他批次校准（`--calibrated-by`）的复审批次另须检出本批全部埋错（见 R4）；条目内容在批次之后变化的不写（记为 stale）；记录两家厂商、请求与返回的模型名、日期、报告路径 | `test_ledger_needs_calibration_and_current_content` |
 | B2-21 | 存档到 `docs/verification/kb-model-review/<批次目录>/`：manifest（源文件 SHA256、条目内容哈希、知识库版本、git 提交与是否有未提交改动、脚本与 rubric 哈希、审核方设置但不含密钥与单价、种子）、输入、埋错清单、每次调用原始输出与 token/耗时/返回模型、合并结论、修改队列、`report.md`。服务错误、JSON 解析错误、中断与重试写入 `errors.jsonl`，不计入结论；SDK 错误只记类别与状态码。目录与 manifest 绑定，换计划必须换新目录 | `test_run_directory_is_bound_to_its_plan` 及上述测试 |
 
 测试中的两家“服务”是 `httpx.MockTransport`：reviewer_a 走 OpenAI 兼容协议，reviewer_b 走 Anthropic 协议，返回与请求不同的模型名以验证身份记录；覆盖 JSON 解析失败后重试、HTTP 400 后续跑只补缺失调用、中途取消后不重复已完成调用。
 
-## 复核修复（PR #15 审查 R1–R3）
+## 复核修复（PR #15 审查 R1–R3，自查 R4–R5）
 
 项目负责人审查 `a26741d` 时离线复现了三个 P2 问题，均在审核脚本内修复，各有回归测试：
 
@@ -62,6 +62,15 @@
 | R3 | `--only-ids` 只选一两条（或同类少量）条目时只有一批，排除原条目所在批次后没有可放埋错副本的批次，`min()` 抛 `ValueError` | 没有可放的批次时为埋错副本新建独立批次，仍保证副本不与原条目同批 | `test_small_re_review_gives_planted_copies_their_own_batch`（1、2、6 条） |
 
 父提交对照：在 `a26741d` 的独立工作树中放入新测试文件，这 6 项全部失败（R3：`ValueError: min() arg is an empty sequence` ×3；R2：`DID NOT RAISE ValueError`，以及账本照常写入；R1：续跑没有发起任何修改调用）；修复后全部通过。
+
+按同类问题自查后，又在 `cce95f3` 上复现两个问题，按项目负责人的决定（借用校准的批次须检出本批全部埋错）修复：
+
+| 编号 | 问题 | 修复 | 回归测试 |
+| --- | --- | --- | --- |
+| R4 | `--calibrated-by` 的复审批次完全借用主批次的校准，不看本批自己的埋错结果：两家漏掉本批全部埋错（检出率 0%）时仍写入了 2 条审核记录 | 借用校准时，本批每条埋错副本都要有两家结论，且至少一家没有判 pass（即本批没有任何埋错会被放行）；否则拒绝写账本。本批太少、不能单独校准，所以只要求全部检出，不套检出率阈值 | `test_borrowed_calibration_needs_every_planted_copy_flagged`（两家都检出、只一家检出：允许；两家都漏同一条、全部漏：拒绝） |
+| R5 | 借用校准的批次一次调用都没完成时，`ledger` 取日期时对空列表调用 `min()` 崩溃；没有可批准条目时也会写出空账本文件，使知识库版本无谓变化 | 空批次在 R4 的检查里被明确拒绝；没有可批准条目的批次直接跳过，不写账本 | `test_ledger_refuses_an_empty_run_and_skips_one_with_nothing_approved` |
+
+父提交对照：在 `cce95f3` 的独立工作树中运行这 5 项，3 项失败（R4 两例 `DID NOT RAISE ValueError`；R5 抛的是 `min() arg is an empty sequence` 而不是拒绝说明），另 2 项是允许写入的对照，在父提交上也通过；修复后 5 项全部通过。
 
 ## 对模型可见内容的影响
 
@@ -92,16 +101,16 @@
 
 | 检查 | 命令 | 结果 |
 | --- | --- | --- |
-| 新增定向测试 | `uv run pytest -q tests/test_stage1_review.py tests/test_model_review_kb.py` | 29 + 20 = 49 通过（复核修复前为 29 + 14） |
+| 新增定向测试 | `uv run pytest -q tests/test_stage1_review.py tests/test_model_review_kb.py` | 29 + 25 = 54 通过（复核修复前为 29 + 14） |
 | 相关原有测试 | `uv run pytest -q tests/test_kb.py tests/test_tarot.py tests/test_expression_policy.py tests/test_week5.py` | 98 通过 |
-| 全量（单次） | `uv run --extra web pytest -q -p no:cacheprovider -rfE` | 733 项：721 通过，12 项缺 de440s.bsp |
+| 全量（单次） | `uv run --extra web pytest -q -p no:cacheprovider -rfE` | 738 项：726 通过，12 项缺 de440s.bsp |
 | Lint | `uv run ruff check harness agents common plugins knowledge memory signals scripts tests app.py cli.py web.py evals` | 通过 |
 | 格式 | `uv run ruff format --check`（范围同上） | 138 个文件已格式化 |
 | 空白 | `git diff --check` | 通过 |
 | 构建 | `uv run python -m knowledge.build` | 见下表 |
 | 审核计划 | `uv run python -m scripts.model_review_kb plan --system tarot` | 见“塔罗试点计划” |
 
-**全量单次运行**（`uv run --extra web pytest -q -p no:cacheprovider -rfE`，在含复核修复的最终文件上运行）：收集 733 项，**721 通过、1 失败、11 错误**。这 12 项全部因为缺少 `de440s.bsp`（见“失败与限制”），其余全部通过；其中新增 49 项（`test_stage1_review.py` 29、`test_model_review_kb.py` 20）。复核修复前的 `a26741d` 单次全量为 727 项、715 通过、同样 12 项缺数据；GitHub Actions 在 `a26741d` 上（含 de440s.bsp）Ubuntu 与 Windows 均通过。以上均为单次全量运行，不是多次运行去重合并。
+**全量单次运行**（`uv run --extra web pytest -q -p no:cacheprovider -rfE`，在含复核修复 R1–R5 的最终文件上运行）：收集 738 项，**726 通过、1 失败、11 错误**。这 12 项全部因为缺少 `de440s.bsp`（见“失败与限制”），其余全部通过；其中新增 54 项（`test_stage1_review.py` 29、`test_model_review_kb.py` 25）。之前的单次全量：`a26741d` 为 727 项、715 通过，`cce95f3` 为 733 项、721 通过，均同样 12 项缺数据；GitHub Actions 在 `a26741d` 与 `cce95f3` 上（含 de440s.bsp）Ubuntu 与 Windows 均通过。以上均为单次全量运行，不是多次运行去重合并。
 
 **父提交对照。** 在 `7d43641` 的独立工作树中放入两份新测试文件：两份都在收集阶段失败（`ModuleNotFoundError: No module named 'knowledge.review'`），即新功能在父提交上不存在。B2-7 修正的错误说法保留问题在父提交上直接复现：`mark_unreviewed` 收到 `level=medium, reason="牌面清楚，释义已经人工审核，可以参考。"` 与草稿信号时，父提交输出 `low / 牌面清楚，释义已经人工审核，可以参考。`（错误说法保留）；修复后输出 `low / 牌面清楚，可以参考；释义未经审核。`。
 
