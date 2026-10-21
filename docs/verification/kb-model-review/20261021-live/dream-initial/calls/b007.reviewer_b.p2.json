@@ -1,0 +1,106 @@
+{
+  "batch": "b007",
+  "reviewer": "reviewer_b",
+  "run_pass": 2,
+  "attempt": 1,
+  "vendor": "openai",
+  "requested_model": "gpt-6.1-sol",
+  "returned_model": "gpt-6.1-sol",
+  "api": "openai",
+  "started_at": "2026-10-21T16:17:23+00:00",
+  "finished_at": "2026-10-21T16:17:46+00:00",
+  "latency_s": 22.344,
+  "http_attempts": 1,
+  "finish_reason": "stop",
+  "prompt_sha256": "8397cdb6e499a22dfb67208f0e796d756dd3da96740dbfda88c7ac78ceabfb24",
+  "input_tokens": 2810,
+  "output_tokens": 1055,
+  "cached_input_tokens": 2807,
+  "usage_available": true,
+  "raw_text": "{\n  \"items\": [\n    {\n      \"item\": \"i01\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"释义符合地下室的常见心理联想，倾向值与措辞一致，未作预兆断言。\"\n    },\n    {\n      \"item\": \"i02\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"选择、欲望与资源的联想贴合购物场所，中性倾向与文字一致。\"\n    },\n    {\n      \"item\": \"i03\",\n      \"verdict\": \"revise\",\n      \"issues\": [\n        {\n          \"dimension\": \"consistency\",\n          \"detail\": \"“房子在晃”“楼在晃”不一定表示地震，也可能是建筑不稳或其他情境，作为同义词容易误命中；建议删除或增加地震语境限制。\"\n        }\n      ],\n      \"reason\": \"释义和倾向值基本合适，但部分同义词不能准确指向地震。\"\n    },\n    {\n      \"item\": \"i04\",\n      \"verdict\": \"revise\",\n      \"issues\": [\n        {\n          \"dimension\": \"consistency\",\n          \"detail\": \"“书店”与“图书馆”是不同场所，前者还可能涉及购买与选择，不宜直接作为同义词；建议移除或另设条目。\"\n        }\n      ],\n      \"reason\": \"求知与整理思绪的释义合理，但同义词会混淆不同场所意象。\"\n    },\n    {\n      \"item\": \"i05\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"自我表达的联想贴合唱歌，自我主题轻度正向与文字一致。\"\n    },\n    {\n      \"item\": \"i06\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"积压不满与分歧的释义贴合吵架，关系主题负向合理且无预兆化表述。\"\n    },\n    {\n      \"item\": \"i07\",\n      \"verdict\": \"reject\",\n      \"issues\": [\n        {\n          \"dimension\": \"tradition\",\n          \"detail\": \"条目对象是“领导”，正文却解释“公鸡（鸡）”，写错了释义对象。\"\n        },\n        {\n          \"dimension\": \"consistency\",\n          \"detail\": \"正文的动物意象与 key“领导”、人物关键词及老板、上司等同义词完全不符。\"\n        },\n        {\n          \"dimension\": \"theme_direction\",\n          \"detail\": \"正文未涉及工作权威、职场压力等内容，无法支持事业主题的负向倾向。\"\n        }\n      ],\n      \"reason\": \"正文解释的是鸡而非领导，属于核心对象错配。\"\n    },\n    {\n      \"item\": \"i08\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"释义围绕和解与关系修复，关系主题正向一致，并明确区分梦境与现实事件。\"\n    },\n    {\n      \"item\": \"i09\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"威胁感与不愿承认的情绪属于合理心理联想，自我主题轻度负向与文字一致。\"\n    },\n    {\n      \"item\": \"i10\",\n      \"verdict\": \"revise\",\n      \"issues\": [\n        {\n          \"dimension\": \"consistency\",\n          \"detail\": \"“掉进”缺少对象，可能误命中“掉进陷阱”等其他意象；“失足”也不必然表示坠落。建议删除这些宽泛词，或限定为“从高处失足坠落”等明确表达。\"\n        }\n      ],\n      \"reason\": \"坠落的心理释义与负向倾向合理，但部分同义词过于宽泛。\"\n    },\n    {\n      \"item\": \"i11\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"释义兼顾情绪释放与需要照顾的感受，轻度负向倾向可与之相容，措辞平和。\"\n    }\n  ]\n}",
+  "verdicts": {
+    "i01": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "释义符合地下室的常见心理联想，倾向值与措辞一致，未作预兆断言。"
+    },
+    "i02": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "选择、欲望与资源的联想贴合购物场所，中性倾向与文字一致。"
+    },
+    "i03": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "consistency",
+          "detail": "“房子在晃”“楼在晃”不一定表示地震，也可能是建筑不稳或其他情境，作为同义词容易误命中；建议删除或增加地震语境限制。"
+        }
+      ],
+      "reason": "释义和倾向值基本合适，但部分同义词不能准确指向地震。"
+    },
+    "i04": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "consistency",
+          "detail": "“书店”与“图书馆”是不同场所，前者还可能涉及购买与选择，不宜直接作为同义词；建议移除或另设条目。"
+        }
+      ],
+      "reason": "求知与整理思绪的释义合理，但同义词会混淆不同场所意象。"
+    },
+    "i05": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "自我表达的联想贴合唱歌，自我主题轻度正向与文字一致。"
+    },
+    "i06": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "积压不满与分歧的释义贴合吵架，关系主题负向合理且无预兆化表述。"
+    },
+    "i07": {
+      "verdict": "reject",
+      "issues": [
+        {
+          "dimension": "tradition",
+          "detail": "条目对象是“领导”，正文却解释“公鸡（鸡）”，写错了释义对象。"
+        },
+        {
+          "dimension": "consistency",
+          "detail": "正文的动物意象与 key“领导”、人物关键词及老板、上司等同义词完全不符。"
+        },
+        {
+          "dimension": "theme_direction",
+          "detail": "正文未涉及工作权威、职场压力等内容，无法支持事业主题的负向倾向。"
+        }
+      ],
+      "reason": "正文解释的是鸡而非领导，属于核心对象错配。"
+    },
+    "i08": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "释义围绕和解与关系修复，关系主题正向一致，并明确区分梦境与现实事件。"
+    },
+    "i09": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "威胁感与不愿承认的情绪属于合理心理联想，自我主题轻度负向与文字一致。"
+    },
+    "i10": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "consistency",
+          "detail": "“掉进”缺少对象，可能误命中“掉进陷阱”等其他意象；“失足”也不必然表示坠落。建议删除这些宽泛词，或限定为“从高处失足坠落”等明确表达。"
+        }
+      ],
+      "reason": "坠落的心理释义与负向倾向合理，但部分同义词过于宽泛。"
+    },
+    "i11": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "释义兼顾情绪释放与需要照顾的感受，轻度负向倾向可与之相容，措辞平和。"
+    }
+  }
+}

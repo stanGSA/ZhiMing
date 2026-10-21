@@ -1,0 +1,83 @@
+{
+  "batch": "b035",
+  "reviewer": "reviewer_a",
+  "run_pass": 2,
+  "attempt": 1,
+  "vendor": "deepseek",
+  "requested_model": "deepseek-flash",
+  "returned_model": "deepseek-flash",
+  "api": "openai",
+  "started_at": "2026-10-21T16:15:37+00:00",
+  "finished_at": "2026-10-21T16:15:40+00:00",
+  "latency_s": 2.922,
+  "http_attempts": 1,
+  "finish_reason": "stop",
+  "prompt_sha256": "407ba624a18afb8aa927afec9a6583fac6393992450fdba26c1578c6ddb339b5",
+  "input_tokens": 2492,
+  "output_tokens": 493,
+  "cached_input_tokens": 2304,
+  "usage_available": true,
+  "raw_text": "{\"items\": [{\"item\": \"i01\", \"verdict\": \"pass\", \"issues\": [], \"reason\": \"飞机释义符合传统心理联想，主题无方向且文字未做吉凶断言。\"}, {\"item\": \"i02\", \"verdict\": \"pass\", \"issues\": [], \"reason\": \"风象征变化与情绪起伏，主题无方向，措辞平和无预兆化。\"}, {\"item\": \"i03\", \"verdict\": \"pass\", \"issues\": [], \"reason\": \"马对应活力与行动，theme_map 微正与文字一致，无宿命化表达。\"}, {\"item\": \"i04\", \"verdict\": \"pass\", \"issues\": [], \"reason\": \"饺子对应团圆与家庭，relationship 微正与文字相符，无误导。\"}, {\"item\": \"i05\", \"verdict\": \"pass\", \"issues\": [], \"reason\": \"飞象征自由与自信提升，self 微正与文字一致，免责声明得当。\"}, {\"item\": \"i06\", \"verdict\": \"pass\", \"issues\": [], \"reason\": \"饿反映未被满足的需求，self 微负与文字方向一致。\"}, {\"item\": \"i07\", \"verdict\": \"pass\", \"issues\": [], \"reason\": \"领导联系权威与认可，career 微负与文字中的压力倾向一致。\"}, {\"item\": \"i08\", \"verdict\": \"reject\", \"issues\": [{\"dimension\": \"consistency\", \"detail\": \"key 为『乐器』，释义却写成『高山（山）』，文字与条目对象完全不符。\"}], \"reason\": \"释义内容与 key『乐器』不匹配，疑似错位粘贴。\"}, {\"item\": \"i09\", \"verdict\": \"pass\", \"issues\": [], \"reason\": \"骆驼象征耐力与负重，self/career 微正与文字一致。\"}, {\"item\": \"i10\", \"verdict\": \"pass\", \"issues\": [], \"reason\": \"骨头对应根本结构与旧事，self 微负与文字隐含的沉重感一致。\"}, {\"item\": \"i11\", \"verdict\": \"pass\", \"issues\": [], \"reason\": \"首饰对应自我价值与被欣赏，self/finance 微正与文字相符。\"}]}",
+  "verdicts": {
+    "i01": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "飞机释义符合传统心理联想，主题无方向且文字未做吉凶断言。"
+    },
+    "i02": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "风象征变化与情绪起伏，主题无方向，措辞平和无预兆化。"
+    },
+    "i03": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "马对应活力与行动，theme_map 微正与文字一致，无宿命化表达。"
+    },
+    "i04": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "饺子对应团圆与家庭，relationship 微正与文字相符，无误导。"
+    },
+    "i05": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "飞象征自由与自信提升，self 微正与文字一致，免责声明得当。"
+    },
+    "i06": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "饿反映未被满足的需求，self 微负与文字方向一致。"
+    },
+    "i07": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "领导联系权威与认可，career 微负与文字中的压力倾向一致。"
+    },
+    "i08": {
+      "verdict": "reject",
+      "issues": [
+        {
+          "dimension": "consistency",
+          "detail": "key 为『乐器』，释义却写成『高山（山）』，文字与条目对象完全不符。"
+        }
+      ],
+      "reason": "释义内容与 key『乐器』不匹配，疑似错位粘贴。"
+    },
+    "i09": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "骆驼象征耐力与负重，self/career 微正与文字一致。"
+    },
+    "i10": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "骨头对应根本结构与旧事，self 微负与文字隐含的沉重感一致。"
+    },
+    "i11": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "首饰对应自我价值与被欣赏，self/finance 微正与文字相符。"
+    }
+  }
+}

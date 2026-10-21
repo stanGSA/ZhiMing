@@ -1,0 +1,88 @@
+{
+  "batch": "b027",
+  "reviewer": "reviewer_a",
+  "run_pass": 2,
+  "attempt": 1,
+  "vendor": "deepseek",
+  "requested_model": "deepseek-flash",
+  "returned_model": "deepseek-flash",
+  "api": "openai",
+  "started_at": "2026-10-21T16:15:26+00:00",
+  "finished_at": "2026-10-21T16:15:29+00:00",
+  "latency_s": 3.154,
+  "http_attempts": 1,
+  "finish_reason": "stop",
+  "prompt_sha256": "c40149dbf34bec12a5c709682fb9a65a487388bb4edfa9fe312514fad9830f8c",
+  "input_tokens": 2312,
+  "output_tokens": 580,
+  "cached_input_tokens": 2176,
+  "usage_available": true,
+  "raw_text": "{\"items\": [{\"item\": \"i01\", \"verdict\": \"pass\", \"issues\": [], \"reason\": \"释义与蚊子象征琐碎烦恼的传统心理联想一致，方向为轻微负面，无宿命化或敏感表述。\"}, {\"item\": \"i02\", \"verdict\": \"revise\", \"issues\": [{\"dimension\": \"consistency\", \"detail\": \"同义词包含“小蛇”“小龙”，其中“小龙”在某些语境中单独指代别的对象（如属相或别称），可能误命中其他意象，建议删除或限缩。\"}], \"reason\": \"核心释义无误，但同义词“小龙”存在误命中风险。\"}, {\"item\": \"i03\", \"verdict\": \"pass\", \"issues\": [], \"reason\": \"蚂蚁象征勤劳与琐碎焦虑符合常识，theme_map 全为 0 与中性表述一致。\"}, {\"item\": \"i04\", \"verdict\": \"pass\", \"issues\": [], \"reason\": \"蛋糕象征庆祝与被关心合理，self 与 relationship 为轻微正向，与文字一致。\"}, {\"item\": \"i05\", \"verdict\": \"pass\", \"issues\": [], \"reason\": \"葬礼象征告别与结束，且明确否预示死亡，措辞平和，方向轻微负面合理。\"}, {\"item\": \"i06\", \"verdict\": \"pass\", \"issues\": [], \"reason\": \"虾象征具体收获与适应，finance 轻微正向，符合文字方向。\"}, {\"item\": \"i07\", \"verdict\": \"pass\", \"issues\": [], \"reason\": \"葡萄象征积累与丰收，finance 轻微正向，与文字一致。\"}, {\"item\": \"i08\", \"verdict\": \"pass\", \"issues\": [], \"reason\": \"落叶象征放下与阶段结束，self 轻微负面合理，无预兆化断言。\"}, {\"item\": \"i09\", \"verdict\": \"revise\", \"issues\": [{\"dimension\": \"consistency\", \"detail\": \"同义词“泥鳅”是另一种生物，与“蚯蚓”并非同一意象，会误命中其他意象。\"}], \"reason\": \"蚯蚓释义本身合理，但同义词“泥鳅”误命中，应删除。\"}, {\"item\": \"i10\", \"verdict\": \"revise\", \"issues\": [{\"dimension\": \"consistency\", \"detail\": \"同义词“毛毛虫”是特定昆虫，且与条目 i03 蚂蚁、i09 蚯蚓存在意象重叠，可能造成条目间重复与误命中。\"}], \"reason\": \"虫子释义合理，但同义词“毛毛虫”可能误命中且与同类条目重复。\"}]}",
+  "verdicts": {
+    "i01": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "释义与蚊子象征琐碎烦恼的传统心理联想一致，方向为轻微负面，无宿命化或敏感表述。"
+    },
+    "i02": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "consistency",
+          "detail": "同义词包含“小蛇”“小龙”，其中“小龙”在某些语境中单独指代别的对象（如属相或别称），可能误命中其他意象，建议删除或限缩。"
+        }
+      ],
+      "reason": "核心释义无误，但同义词“小龙”存在误命中风险。"
+    },
+    "i03": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "蚂蚁象征勤劳与琐碎焦虑符合常识，theme_map 全为 0 与中性表述一致。"
+    },
+    "i04": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "蛋糕象征庆祝与被关心合理，self 与 relationship 为轻微正向，与文字一致。"
+    },
+    "i05": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "葬礼象征告别与结束，且明确否预示死亡，措辞平和，方向轻微负面合理。"
+    },
+    "i06": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "虾象征具体收获与适应，finance 轻微正向，符合文字方向。"
+    },
+    "i07": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "葡萄象征积累与丰收，finance 轻微正向，与文字一致。"
+    },
+    "i08": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "落叶象征放下与阶段结束，self 轻微负面合理，无预兆化断言。"
+    },
+    "i09": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "consistency",
+          "detail": "同义词“泥鳅”是另一种生物，与“蚯蚓”并非同一意象，会误命中其他意象。"
+        }
+      ],
+      "reason": "蚯蚓释义本身合理，但同义词“泥鳅”误命中，应删除。"
+    },
+    "i10": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "consistency",
+          "detail": "同义词“毛毛虫”是特定昆虫，且与条目 i03 蚂蚁、i09 蚯蚓存在意象重叠，可能造成条目间重复与误命中。"
+        }
+      ],
+      "reason": "虫子释义合理，但同义词“毛毛虫”可能误命中且与同类条目重复。"
+    }
+  }
+}

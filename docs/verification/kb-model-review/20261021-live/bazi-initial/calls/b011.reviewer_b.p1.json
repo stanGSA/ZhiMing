@@ -1,0 +1,79 @@
+{
+  "batch": "b011",
+  "reviewer": "reviewer_b",
+  "run_pass": 1,
+  "attempt": 1,
+  "vendor": "openai",
+  "requested_model": "gpt-6.1-sol",
+  "returned_model": "gpt-6.1-sol",
+  "api": "openai",
+  "started_at": "2026-10-21T16:03:20+00:00",
+  "finished_at": "2026-10-21T16:03:52+00:00",
+  "latency_s": 31.621,
+  "http_attempts": 1,
+  "finish_reason": "stop",
+  "prompt_sha256": "19d9f9c4c51f912e518eb42486d363337e1a098591235831174ea8ead5788d6c",
+  "input_tokens": 1483,
+  "output_tokens": 738,
+  "cached_input_tokens": null,
+  "usage_available": true,
+  "raw_text": "{\n  \"items\": [\n    {\n      \"item\": \"i01\",\n      \"verdict\": \"revise\",\n      \"issues\": [\n        {\n          \"dimension\": \"certainty\",\n          \"detail\": \"“今年一定会遭遇重大失败”是宿命化的确定性断言，且不能由换年、换月规则推出，应删除。\"\n        },\n        {\n          \"dimension\": \"theme_direction\",\n          \"detail\": \"末句明确断言负面结果，与 theme_map 全部为中性的设置不一致。\"\n        }\n      ],\n      \"reason\": \"换年换月规则基本符合子平八字惯例，但附加了无依据的确定性负面预测。\"\n    },\n    {\n      \"item\": \"i02\",\n      \"verdict\": \"reject\",\n      \"issues\": [\n        {\n          \"dimension\": \"medical_legal_finance\",\n          \"detail\": \"“身体已有慢性疾病”构成确定性医疗判断，“不必就医也会自愈”还可能误导用户延误就医。\"\n        },\n        {\n          \"dimension\": \"certainty\",\n          \"detail\": \"将地支刑直接断为患病及必然自愈，属于无依据的确定性断言。\"\n        },\n        {\n          \"dimension\": \"tradition\",\n          \"detail\": \"地支刑应表述为地支之间的传统关系，而非笼统称为“干支之间”的关系。\"\n        }\n      ],\n      \"reason\": \"条目包含确定性疾病判断及无需就医的自愈承诺，不能作为面向用户的释义使用。\"\n    },\n    {\n      \"item\": \"i03\",\n      \"verdict\": \"reject\",\n      \"issues\": [\n        {\n          \"dimension\": \"consistency\",\n          \"detail\": \"key 和关键词均为“壬”，正文却介绍“丁”，释义对象不符。\"\n        },\n        {\n          \"dimension\": \"tradition\",\n          \"detail\": \"壬与丁是不同天干，壬属阳水、丁属阴火，不能以丁的释义替代壬。\"\n        }\n      ],\n      \"reason\": \"正文写错了天干对象，与条目 key 不符。\"\n    },\n    {\n      \"item\": \"i04\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"藏干十神相对日主确定、不单凭藏干数量判断旺衰的说明合理，与中性主题方向一致。\"\n    },\n    {\n      \"item\": \"i05\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"正文所述藏干与十神的判断原则符合传统常识，且没有确定性预测或方向冲突。\"\n    }\n  ]\n}",
+  "verdicts": {
+    "i01": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "certainty",
+          "detail": "“今年一定会遭遇重大失败”是宿命化的确定性断言，且不能由换年、换月规则推出，应删除。"
+        },
+        {
+          "dimension": "theme_direction",
+          "detail": "末句明确断言负面结果，与 theme_map 全部为中性的设置不一致。"
+        }
+      ],
+      "reason": "换年换月规则基本符合子平八字惯例，但附加了无依据的确定性负面预测。"
+    },
+    "i02": {
+      "verdict": "reject",
+      "issues": [
+        {
+          "dimension": "medical_legal_finance",
+          "detail": "“身体已有慢性疾病”构成确定性医疗判断，“不必就医也会自愈”还可能误导用户延误就医。"
+        },
+        {
+          "dimension": "certainty",
+          "detail": "将地支刑直接断为患病及必然自愈，属于无依据的确定性断言。"
+        },
+        {
+          "dimension": "tradition",
+          "detail": "地支刑应表述为地支之间的传统关系，而非笼统称为“干支之间”的关系。"
+        }
+      ],
+      "reason": "条目包含确定性疾病判断及无需就医的自愈承诺，不能作为面向用户的释义使用。"
+    },
+    "i03": {
+      "verdict": "reject",
+      "issues": [
+        {
+          "dimension": "consistency",
+          "detail": "key 和关键词均为“壬”，正文却介绍“丁”，释义对象不符。"
+        },
+        {
+          "dimension": "tradition",
+          "detail": "壬与丁是不同天干，壬属阳水、丁属阴火，不能以丁的释义替代壬。"
+        }
+      ],
+      "reason": "正文写错了天干对象，与条目 key 不符。"
+    },
+    "i04": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "藏干十神相对日主确定、不单凭藏干数量判断旺衰的说明合理，与中性主题方向一致。"
+    },
+    "i05": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "正文所述藏干与十神的判断原则符合传统常识，且没有确定性预测或方向冲突。"
+    }
+  }
+}

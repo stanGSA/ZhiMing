@@ -1,0 +1,102 @@
+{
+  "batch": "b005",
+  "reviewer": "reviewer_b",
+  "run_pass": 1,
+  "attempt": 1,
+  "vendor": "openai",
+  "requested_model": "gpt-6.1-sol",
+  "returned_model": "gpt-6.1-sol",
+  "api": "openai",
+  "started_at": "2026-10-21T16:02:09+00:00",
+  "finished_at": "2026-10-21T16:02:39+00:00",
+  "latency_s": 30.147,
+  "http_attempts": 1,
+  "finish_reason": "stop",
+  "prompt_sha256": "5b46cf0cf0b0f3490666ec1f59c86aca63cb56563eac591e458de057ba7cb54f",
+  "input_tokens": 2796,
+  "output_tokens": 1225,
+  "cached_input_tokens": null,
+  "usage_available": true,
+  "raw_text": "{\n  \"items\": [\n    {\n      \"item\": \"i01\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"释义采用平和的心理联想，中性主题方向与文字一致。\"\n    },\n    {\n      \"item\": \"i02\",\n      \"verdict\": \"revise\",\n      \"issues\": [\n        {\n          \"dimension\": \"consistency\",\n          \"detail\": \"“加薪”不等于“升职”，可能把仅涉及薪酬变化的梦误归为职位晋升，建议从同义词中移除。\"\n        },\n        {\n          \"dimension\": \"theme_direction\",\n          \"detail\": \"正文仅涉及认可、成长及压力，没有财务改善的倾向依据，finance 宜设为中性或补充相应释义。\"\n        }\n      ],\n      \"reason\": \"需区分职位晋升与薪酬变化，并使财务方向与正文一致。\"\n    },\n    {\n      \"item\": \"i03\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"对包的负担与资源联想合理，保留情境差异且未赋予吉凶方向。\"\n    },\n    {\n      \"item\": \"i04\",\n      \"verdict\": \"revise\",\n      \"issues\": [\n        {\n          \"dimension\": \"consistency\",\n          \"detail\": \"“护士”与“医生”是不同职业，不宜作为同义词，否则会把护士意象误命中为医生；建议移除或另设条目。\"\n        }\n      ],\n      \"reason\": \"正文温和且不构成医疗判断，但同义词混淆了不同职业。\"\n    },\n    {\n      \"item\": \"i05\",\n      \"verdict\": \"revise\",\n      \"issues\": [\n        {\n          \"dimension\": \"theme_direction\",\n          \"detail\": \"正文描述形象呈现、社交角色及对掌控感的在意，并未体现自我状态或关系偏顺，self 和 relationship 的正向值缺少文字依据，宜改为中性或补充正向表述。\"\n        }\n      ],\n      \"reason\": \"心理联想本身合理，但中性文字不足以支持两个主题的正向倾向。\"\n    },\n    {\n      \"item\": \"i06\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"释义平和地呈现照顾需求与健康关注，轻微受阻的自我方向可与之对应，且没有疾病预兆或诊断。\"\n    },\n    {\n      \"item\": \"i07\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"卧室与私密、休息及亲密关系的联想合理，提及主题但不判定顺逆，与中性映射一致。\"\n    },\n    {\n      \"item\": \"i08\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"改变形象与告别旧状态的联想可支持轻微的自我更新倾向，同义词及健康措辞无明显问题。\"\n    },\n    {\n      \"item\": \"i09\",\n      \"verdict\": \"revise\",\n      \"issues\": [\n        {\n          \"dimension\": \"theme_direction\",\n          \"detail\": \"正文仅提及对伴侣关系与支持的感受，没有关系受阻、冲突或担忧的表述，relationship 的负向值缺少依据，宜改为中性。\"\n        }\n      ],\n      \"reason\": \"释义没有负面关系含义，不应仅因梦见伴侣而赋予感情受阻方向。\"\n    },\n    {\n      \"item\": \"i10\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"对关系变化的担心可支持轻微负向的关系倾向，且明确避免将梦境写成现实预兆。\"\n    },\n    {\n      \"item\": \"i11\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"未消化的情绪与旧关系模式可支持轻微的关系阻滞倾向，措辞没有推断前任现状或预示复合。\"\n    }\n  ]\n}",
+  "verdicts": {
+    "i01": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "释义采用平和的心理联想，中性主题方向与文字一致。"
+    },
+    "i02": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "consistency",
+          "detail": "“加薪”不等于“升职”，可能把仅涉及薪酬变化的梦误归为职位晋升，建议从同义词中移除。"
+        },
+        {
+          "dimension": "theme_direction",
+          "detail": "正文仅涉及认可、成长及压力，没有财务改善的倾向依据，finance 宜设为中性或补充相应释义。"
+        }
+      ],
+      "reason": "需区分职位晋升与薪酬变化，并使财务方向与正文一致。"
+    },
+    "i03": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "对包的负担与资源联想合理，保留情境差异且未赋予吉凶方向。"
+    },
+    "i04": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "consistency",
+          "detail": "“护士”与“医生”是不同职业，不宜作为同义词，否则会把护士意象误命中为医生；建议移除或另设条目。"
+        }
+      ],
+      "reason": "正文温和且不构成医疗判断，但同义词混淆了不同职业。"
+    },
+    "i05": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "theme_direction",
+          "detail": "正文描述形象呈现、社交角色及对掌控感的在意，并未体现自我状态或关系偏顺，self 和 relationship 的正向值缺少文字依据，宜改为中性或补充正向表述。"
+        }
+      ],
+      "reason": "心理联想本身合理，但中性文字不足以支持两个主题的正向倾向。"
+    },
+    "i06": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "释义平和地呈现照顾需求与健康关注，轻微受阻的自我方向可与之对应，且没有疾病预兆或诊断。"
+    },
+    "i07": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "卧室与私密、休息及亲密关系的联想合理，提及主题但不判定顺逆，与中性映射一致。"
+    },
+    "i08": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "改变形象与告别旧状态的联想可支持轻微的自我更新倾向，同义词及健康措辞无明显问题。"
+    },
+    "i09": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "theme_direction",
+          "detail": "正文仅提及对伴侣关系与支持的感受，没有关系受阻、冲突或担忧的表述，relationship 的负向值缺少依据，宜改为中性。"
+        }
+      ],
+      "reason": "释义没有负面关系含义，不应仅因梦见伴侣而赋予感情受阻方向。"
+    },
+    "i10": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "对关系变化的担心可支持轻微负向的关系倾向，且明确避免将梦境写成现实预兆。"
+    },
+    "i11": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "未消化的情绪与旧关系模式可支持轻微的关系阻滞倾向，措辞没有推断前任现状或预示复合。"
+    }
+  }
+}

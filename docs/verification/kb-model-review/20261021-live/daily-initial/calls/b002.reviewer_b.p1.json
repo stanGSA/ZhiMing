@@ -1,0 +1,112 @@
+{
+  "batch": "b002",
+  "reviewer": "reviewer_b",
+  "run_pass": 1,
+  "attempt": 1,
+  "vendor": "openai",
+  "requested_model": "gpt-6.1-sol",
+  "returned_model": "gpt-6.1-sol",
+  "api": "openai",
+  "started_at": "2026-10-21T16:00:43+00:00",
+  "finished_at": "2026-10-21T16:01:05+00:00",
+  "latency_s": 22.81,
+  "http_attempts": 1,
+  "finish_reason": "stop",
+  "prompt_sha256": "11f81b4a894471d5afac07aa712484caff2057e80aba4d8011f095ba3e8302b1",
+  "input_tokens": 2071,
+  "output_tokens": 1091,
+  "cached_input_tokens": null,
+  "usage_available": true,
+  "raw_text": "{\n  \"items\": [\n    {\n      \"item\": \"i01\",\n      \"verdict\": \"revise\",\n      \"issues\": [\n        {\n          \"dimension\": \"certainty\",\n          \"detail\": \"“必然破财”“结局已经注定，无法避免”属于宿命化的确定性断言，应删除。\"\n        },\n        {\n          \"dimension\": \"theme_direction\",\n          \"detail\": \"文字断言破财，财务方向明显偏负，与 finance 为 0 不一致。\"\n        },\n        {\n          \"dimension\": \"consistency\",\n          \"detail\": \"破财预言与 moment_only 所说明的每日提示时效约定无关。\"\n        }\n      ],\n      \"reason\": \"时效约定本身可用，但附加的破财预言宿命化且与条目用途、财务方向不符。\"\n    },\n    {\n      \"item\": \"i02\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"土的象征与配色符合常见传统，并明确配色不带来实际运气。\"\n    },\n    {\n      \"item\": \"i03\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"金的象征与配色符合常见用法，且已明确其仅为配色约定。\"\n    },\n    {\n      \"item\": \"i04\",\n      \"verdict\": \"reject\",\n      \"issues\": [\n        {\n          \"dimension\": \"medical_legal_finance\",\n          \"detail\": \"“身体已有慢性疾病”构成无依据的医疗诊断，“不必就医也会自愈”构成确定性疗效判断并可能误导用户延误就医。\"\n        },\n        {\n          \"dimension\": \"certainty\",\n          \"detail\": \"对患病及自愈作出确定性断言，没有保留不确定性。\"\n        },\n        {\n          \"dimension\": \"consistency\",\n          \"detail\": \"疾病判断与 daily_seed 所说明的每日抽牌种子计算约定无关。\"\n        }\n      ],\n      \"reason\": \"条目夹带明确的医疗诊断与无需就医即可自愈的结论，不可面向用户使用。\"\n    },\n    {\n      \"item\": \"i05\",\n      \"verdict\": \"reject\",\n      \"issues\": [\n        {\n          \"dimension\": \"consistency\",\n          \"detail\": \"key 为 no_exact_events，正文却明确解释 unknown_time，条目对象与文字不符。\"\n        }\n      ],\n      \"reason\": \"正文解释的是出生时间未知的处理方式，而不是不预测具体事件的约定。\"\n    },\n    {\n      \"item\": \"i06\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"木对应生长及青绿配色符合常见传统，且没有暗示配色能改变运气。\"\n    },\n    {\n      \"item\": \"i07\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"水对应流动及黑蓝配色符合常见用法，且明确仅作传统配色说明。\"\n    },\n    {\n      \"item\": \"i08\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"火对应热情及红紫配色符合常见用法，且没有赋予配色实际转运效果。\"\n    },\n    {\n      \"item\": \"i09\",\n      \"verdict\": \"revise\",\n      \"issues\": [\n        {\n          \"dimension\": \"certainty\",\n          \"detail\": \"“必然破财”“结局已经注定，无法避免”属于宿命化的确定性断言，应删除。\"\n        },\n        {\n          \"dimension\": \"theme_direction\",\n          \"detail\": \"文字断言破财，财务方向明显偏负，与 finance 为 0 不一致。\"\n        },\n        {\n          \"dimension\": \"consistency\",\n          \"detail\": \"破财预言与 unknown_time 所说明的出生时间未知及计算不确定性无关。\"\n        }\n      ],\n      \"reason\": \"出生时间未知的说明基本可用，但附加的破财预言宿命化且偏离条目用途。\"\n    }\n  ]\n}",
+  "verdicts": {
+    "i01": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "certainty",
+          "detail": "“必然破财”“结局已经注定，无法避免”属于宿命化的确定性断言，应删除。"
+        },
+        {
+          "dimension": "theme_direction",
+          "detail": "文字断言破财，财务方向明显偏负，与 finance 为 0 不一致。"
+        },
+        {
+          "dimension": "consistency",
+          "detail": "破财预言与 moment_only 所说明的每日提示时效约定无关。"
+        }
+      ],
+      "reason": "时效约定本身可用，但附加的破财预言宿命化且与条目用途、财务方向不符。"
+    },
+    "i02": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "土的象征与配色符合常见传统，并明确配色不带来实际运气。"
+    },
+    "i03": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "金的象征与配色符合常见用法，且已明确其仅为配色约定。"
+    },
+    "i04": {
+      "verdict": "reject",
+      "issues": [
+        {
+          "dimension": "medical_legal_finance",
+          "detail": "“身体已有慢性疾病”构成无依据的医疗诊断，“不必就医也会自愈”构成确定性疗效判断并可能误导用户延误就医。"
+        },
+        {
+          "dimension": "certainty",
+          "detail": "对患病及自愈作出确定性断言，没有保留不确定性。"
+        },
+        {
+          "dimension": "consistency",
+          "detail": "疾病判断与 daily_seed 所说明的每日抽牌种子计算约定无关。"
+        }
+      ],
+      "reason": "条目夹带明确的医疗诊断与无需就医即可自愈的结论，不可面向用户使用。"
+    },
+    "i05": {
+      "verdict": "reject",
+      "issues": [
+        {
+          "dimension": "consistency",
+          "detail": "key 为 no_exact_events，正文却明确解释 unknown_time，条目对象与文字不符。"
+        }
+      ],
+      "reason": "正文解释的是出生时间未知的处理方式，而不是不预测具体事件的约定。"
+    },
+    "i06": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "木对应生长及青绿配色符合常见传统，且没有暗示配色能改变运气。"
+    },
+    "i07": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "水对应流动及黑蓝配色符合常见用法，且明确仅作传统配色说明。"
+    },
+    "i08": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "火对应热情及红紫配色符合常见用法，且没有赋予配色实际转运效果。"
+    },
+    "i09": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "certainty",
+          "detail": "“必然破财”“结局已经注定，无法避免”属于宿命化的确定性断言，应删除。"
+        },
+        {
+          "dimension": "theme_direction",
+          "detail": "文字断言破财，财务方向明显偏负，与 finance 为 0 不一致。"
+        },
+        {
+          "dimension": "consistency",
+          "detail": "破财预言与 unknown_time 所说明的出生时间未知及计算不确定性无关。"
+        }
+      ],
+      "reason": "出生时间未知的说明基本可用，但附加的破财预言宿命化且偏离条目用途。"
+    }
+  }
+}

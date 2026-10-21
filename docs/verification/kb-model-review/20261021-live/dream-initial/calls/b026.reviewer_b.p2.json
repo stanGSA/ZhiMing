@@ -1,0 +1,101 @@
+{
+  "batch": "b026",
+  "reviewer": "reviewer_b",
+  "run_pass": 2,
+  "attempt": 1,
+  "vendor": "openai",
+  "requested_model": "gpt-6.1-sol",
+  "returned_model": "gpt-6.1-sol",
+  "api": "openai",
+  "started_at": "2026-10-21T16:24:13+00:00",
+  "finished_at": "2026-10-21T16:24:44+00:00",
+  "latency_s": 30.616,
+  "http_attempts": 1,
+  "finish_reason": "stop",
+  "prompt_sha256": "cf547845c59e4cdb52882cea1342e8a9c31ad51dc9cc218334fd8e14940c0f67",
+  "input_tokens": 2738,
+  "output_tokens": 1132,
+  "cached_input_tokens": 2735,
+  "usage_available": true,
+  "raw_text": "{\n  \"items\": [\n    {\n      \"item\": \"i01\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"舞台与展示、自我表达的联想合理，主题倾向与文字基本一致。\"\n    },\n    {\n      \"item\": \"i02\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"平静、思考与待客的联想贴合茶的常见意象，自我与关系的轻微正向倾向合理。\"\n    },\n    {\n      \"item\": \"i03\",\n      \"verdict\": \"revise\",\n      \"issues\": [\n        {\n          \"dimension\": \"consistency\",\n          \"detail\": \"同义词“骑车”也可能指骑摩托车或电动车，会误命中其他交通工具意象，建议改为“骑自行车”。\"\n        }\n      ],\n      \"reason\": \"释义与主题方向合理，但“骑车”作为同义词范围过宽。\"\n    },\n    {\n      \"item\": \"i04\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"将苹果联系到健康愿望、诱惑和满足属于合理联想，未作健康诊断或预兆断言。\"\n    },\n    {\n      \"item\": \"i05\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"花与美好、绽放及关系萌生的联想合理，自我与关系的正向倾向与文字一致。\"\n    },\n    {\n      \"item\": \"i06\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"兼顾生命力与待清理琐事等不同联想，主题不设固定方向与文字一致。\"\n    },\n    {\n      \"item\": \"i07\",\n      \"verdict\": \"revise\",\n      \"issues\": [\n        {\n          \"dimension\": \"consistency\",\n          \"detail\": \"“草地”不一定是开阔的草原，也可能指庭院草坪或小片草地，作为同义词可能误命中不同场景；建议移除或限定为“辽阔草地”。\"\n        }\n      ],\n      \"reason\": \"草原的释义与主题倾向合理，但同义词“草地”的范围过宽。\"\n    },\n    {\n      \"item\": \"i08\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"以修复、调整和求助作心理联想，明确不构成用药建议，措辞平和且无医疗结论。\"\n    },\n    {\n      \"item\": \"i09\",\n      \"verdict\": \"revise\",\n      \"issues\": [\n        {\n          \"dimension\": \"certainty\",\n          \"detail\": \"“必然破财”“结局已经注定，无法避免”将梦境写成确定的现实预兆，应删除这类宿命化断言。\"\n        },\n        {\n          \"dimension\": \"theme_direction\",\n          \"detail\": \"末句明确断言财务损失，但 finance 为 0，与文字方向不一致；建议删除破财预言，而不是据此调整主题值。\"\n        },\n        {\n          \"dimension\": \"consistency\",\n          \"detail\": \"前文“不预示现实事件”与末句断言必然破财直接矛盾。\"\n        }\n      ],\n      \"reason\": \"末句加入确定性的破财预言，与前文及财务主题方向冲突，删除后可保留心理联想部分。\"\n    },\n    {\n      \"item\": \"i10\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"船与情绪、漂泊及安定的象征联想合理，主题保持中性且未预示出行风险。\"\n    },\n    {\n      \"item\": \"i11\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"荷花与清净、困境中保持本心的联想符合常见文化意涵，自我正向倾向与文字一致。\"\n    }\n  ]\n}",
+  "verdicts": {
+    "i01": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "舞台与展示、自我表达的联想合理，主题倾向与文字基本一致。"
+    },
+    "i02": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "平静、思考与待客的联想贴合茶的常见意象，自我与关系的轻微正向倾向合理。"
+    },
+    "i03": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "consistency",
+          "detail": "同义词“骑车”也可能指骑摩托车或电动车，会误命中其他交通工具意象，建议改为“骑自行车”。"
+        }
+      ],
+      "reason": "释义与主题方向合理，但“骑车”作为同义词范围过宽。"
+    },
+    "i04": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "将苹果联系到健康愿望、诱惑和满足属于合理联想，未作健康诊断或预兆断言。"
+    },
+    "i05": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "花与美好、绽放及关系萌生的联想合理，自我与关系的正向倾向与文字一致。"
+    },
+    "i06": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "兼顾生命力与待清理琐事等不同联想，主题不设固定方向与文字一致。"
+    },
+    "i07": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "consistency",
+          "detail": "“草地”不一定是开阔的草原，也可能指庭院草坪或小片草地，作为同义词可能误命中不同场景；建议移除或限定为“辽阔草地”。"
+        }
+      ],
+      "reason": "草原的释义与主题倾向合理，但同义词“草地”的范围过宽。"
+    },
+    "i08": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "以修复、调整和求助作心理联想，明确不构成用药建议，措辞平和且无医疗结论。"
+    },
+    "i09": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "certainty",
+          "detail": "“必然破财”“结局已经注定，无法避免”将梦境写成确定的现实预兆，应删除这类宿命化断言。"
+        },
+        {
+          "dimension": "theme_direction",
+          "detail": "末句明确断言财务损失，但 finance 为 0，与文字方向不一致；建议删除破财预言，而不是据此调整主题值。"
+        },
+        {
+          "dimension": "consistency",
+          "detail": "前文“不预示现实事件”与末句断言必然破财直接矛盾。"
+        }
+      ],
+      "reason": "末句加入确定性的破财预言，与前文及财务主题方向冲突，删除后可保留心理联想部分。"
+    },
+    "i10": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "船与情绪、漂泊及安定的象征联想合理，主题保持中性且未预示出行风险。"
+    },
+    "i11": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "荷花与清净、困境中保持本心的联想符合常见文化意涵，自我正向倾向与文字一致。"
+    }
+  }
+}

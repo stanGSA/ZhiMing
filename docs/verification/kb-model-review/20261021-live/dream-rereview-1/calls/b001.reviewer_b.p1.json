@@ -1,0 +1,92 @@
+{
+  "batch": "b001",
+  "reviewer": "reviewer_b",
+  "run_pass": 1,
+  "attempt": 1,
+  "vendor": "openai",
+  "requested_model": "gpt-6.1-sol",
+  "returned_model": "gpt-6.1-sol",
+  "api": "openai",
+  "started_at": "2026-10-21T16:47:04+00:00",
+  "finished_at": "2026-10-21T16:47:29+00:00",
+  "latency_s": 24.935,
+  "http_attempts": 1,
+  "finish_reason": "stop",
+  "prompt_sha256": "942ee60e7903457d49b666974e09d0651f3e05281ebf063b35f21a4b64d87925",
+  "input_tokens": 3031,
+  "output_tokens": 1033,
+  "cached_input_tokens": null,
+  "usage_available": true,
+  "raw_text": "{\n  \"items\": [\n    {\n      \"item\": \"i01\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"平静、纯净与情绪停滞的联想措辞审慎，主题倾向与文字基本一致。\"\n    },\n    {\n      \"item\": \"i02\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"以渴望、内疚和压力作非确定性的心理联想，未将梦境等同于现实行为或事件。\"\n    },\n    {\n      \"item\": \"i03\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"对失去物品的担忧与自我、财务主题的轻微负向倾向基本一致，且明确不预测现实遗失。\"\n    },\n    {\n      \"item\": \"i04\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"能量不足和方向感暂失的联想符合意象，轻微负向的自我主题与文字一致。\"\n    },\n    {\n      \"item\": \"i05\",\n      \"verdict\": \"revise\",\n      \"issues\": [\n        {\n          \"dimension\": \"consistency\",\n          \"detail\": \"“海龟”与“乌龟”并非严格同义词，属于可区分的动物意象；将其列为同义词可能使海龟梦境误命中，建议移除或另设条目。\"\n        }\n      ],\n      \"reason\": \"释义本身平和合理，但同义词混用了不同动物意象。\"\n    },\n    {\n      \"item\": \"i06\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"兼顾获得保护与缺少支持等不同情境，中性主题设置与开放式释义一致。\"\n    },\n    {\n      \"item\": \"i07\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"日常节奏和与他人同行的联想合理，未赋予吉凶方向或出行预兆。\"\n    },\n    {\n      \"item\": \"i08\",\n      \"verdict\": \"reject\",\n      \"issues\": [\n        {\n          \"dimension\": \"medical_legal_finance\",\n          \"detail\": \"“身体已有慢性疾病，不必就医也会自愈”依据梦境作出疾病诊断和确定性的自愈结论，并可能误导用户延误就医。\"\n        },\n        {\n          \"dimension\": \"certainty\",\n          \"detail\": \"“这代表身体已有慢性疾病”及“会自愈”均为无依据的确定性断言，与前文的审慎表述不一致。\"\n        }\n      ],\n      \"reason\": \"末句包含明确的医疗诊断及无需就医即可自愈的确定性结论。\"\n    },\n    {\n      \"item\": \"i09\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"放松、休闲与安全感的联想合理，轻微正向的自我主题与文字一致。\"\n    },\n    {\n      \"item\": \"i10\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"工作角色、责任和归属感的解释与公司场景相符，未赋予事业明确的顺逆方向。\"\n    },\n    {\n      \"item\": \"i11\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"将井作为情绪与内在资源的开放联想，并区分掉井情节，未作现实事件预言。\"\n    }\n  ]\n}",
+  "verdicts": {
+    "i01": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "平静、纯净与情绪停滞的联想措辞审慎，主题倾向与文字基本一致。"
+    },
+    "i02": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "以渴望、内疚和压力作非确定性的心理联想，未将梦境等同于现实行为或事件。"
+    },
+    "i03": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "对失去物品的担忧与自我、财务主题的轻微负向倾向基本一致，且明确不预测现实遗失。"
+    },
+    "i04": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "能量不足和方向感暂失的联想符合意象，轻微负向的自我主题与文字一致。"
+    },
+    "i05": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "consistency",
+          "detail": "“海龟”与“乌龟”并非严格同义词，属于可区分的动物意象；将其列为同义词可能使海龟梦境误命中，建议移除或另设条目。"
+        }
+      ],
+      "reason": "释义本身平和合理，但同义词混用了不同动物意象。"
+    },
+    "i06": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "兼顾获得保护与缺少支持等不同情境，中性主题设置与开放式释义一致。"
+    },
+    "i07": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "日常节奏和与他人同行的联想合理，未赋予吉凶方向或出行预兆。"
+    },
+    "i08": {
+      "verdict": "reject",
+      "issues": [
+        {
+          "dimension": "medical_legal_finance",
+          "detail": "“身体已有慢性疾病，不必就医也会自愈”依据梦境作出疾病诊断和确定性的自愈结论，并可能误导用户延误就医。"
+        },
+        {
+          "dimension": "certainty",
+          "detail": "“这代表身体已有慢性疾病”及“会自愈”均为无依据的确定性断言，与前文的审慎表述不一致。"
+        }
+      ],
+      "reason": "末句包含明确的医疗诊断及无需就医即可自愈的确定性结论。"
+    },
+    "i09": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "放松、休闲与安全感的联想合理，轻微正向的自我主题与文字一致。"
+    },
+    "i10": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "工作角色、责任和归属感的解释与公司场景相符，未赋予事业明确的顺逆方向。"
+    },
+    "i11": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "将井作为情绪与内在资源的开放联想，并区分掉井情节，未作现实事件预言。"
+    }
+  }
+}

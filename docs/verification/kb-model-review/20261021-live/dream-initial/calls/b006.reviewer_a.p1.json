@@ -1,0 +1,87 @@
+{
+  "batch": "b006",
+  "reviewer": "reviewer_a",
+  "run_pass": 1,
+  "attempt": 1,
+  "vendor": "deepseek",
+  "requested_model": "deepseek-flash",
+  "returned_model": "deepseek-flash",
+  "api": "openai",
+  "started_at": "2026-10-21T16:00:46+00:00",
+  "finished_at": "2026-10-21T16:00:49+00:00",
+  "latency_s": 3.361,
+  "http_attempts": 1,
+  "finish_reason": "stop",
+  "prompt_sha256": "86ced6f5ea5d6aaa3a714250f380b678f07ea6e95d4e61006b876cbb9651c909",
+  "input_tokens": 2525,
+  "output_tokens": 609,
+  "cached_input_tokens": 384,
+  "usage_available": true,
+  "raw_text": "{\"items\": [{\"item\": \"i01\", \"verdict\": \"pass\", \"issues\": [], \"reason\": \"释义与受伤意象的心理联想一致，theme 方向为轻微负面，措辞平和并附就医提醒，无宿命化断言。\"}, {\"item\": \"i02\", \"verdict\": \"pass\", \"issues\": [], \"reason\": \"去世亲人的释义聚焦思念与情绪延续，措辞平和，明示不代表对方现实状况，同义词均指向同一意象。\"}, {\"item\": \"i03\", \"verdict\": \"revise\", \"issues\": [{\"dimension\": \"theme_direction\", \"detail\": \"文字强调对亲近、安慰与和解的渴望，属中性偏正向的心理需求，而 relationship 为 -0.15，方向与文字不一致。\"}, {\"dimension\": \"consistency\", \"detail\": \"theme_map 中 self/career/finance 写成 -0.0，属无意义符号，应写作 0。\"}], \"reason\": \"感情主题方向与文字不匹配，且负零数值需规范为 0。\"}, {\"item\": \"i04\", \"verdict\": \"pass\", \"issues\": [], \"reason\": \"吃饭释义与满足、分享相关，theme 微弱正向且方向一致，措辞无宿命化。\"}, {\"item\": \"i05\", \"verdict\": \"pass\", \"issues\": [], \"reason\": \"厨房释义围绕滋养、家庭与归属，relationship 微弱正向与文字相符，无预兆化表述。\"}, {\"item\": \"i06\", \"verdict\": \"pass\", \"issues\": [], \"reason\": \"台风释义指向失控变化与情绪，self 负向方向一致，并明确不预示天气或灾害。\"}, {\"item\": \"i07\", \"verdict\": \"pass\", \"issues\": [], \"reason\": \"双胞胎释义为内心两种并存想法，theme 全零与中性文字相符，措辞平和。\"}, {\"item\": \"i08\", \"verdict\": \"pass\", \"issues\": [], \"reason\": \"变老释义联系时间流逝与成长，self 轻微负向合理，含就医免责，无确定性断言。\"}, {\"item\": \"i09\", \"verdict\": \"pass\", \"issues\": [], \"reason\": \"变瘦释义双向平衡（轻装上阵/担心消耗），theme 全零与中性表述一致，含健康免责。\"}, {\"item\": \"i10\", \"verdict\": \"pass\", \"issues\": [], \"reason\": \"同事释义涉及合作、竞争与被评价，career 与 relationship 轻微负向与文字语气一致。\"}, {\"item\": \"i11\", \"verdict\": \"pass\", \"issues\": [], \"reason\": \"同学释义围绕回忆、比较与成长，theme 全零与中性文字相符，同义词无误命中。\"}]}",
+  "verdicts": {
+    "i01": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "释义与受伤意象的心理联想一致，theme 方向为轻微负面，措辞平和并附就医提醒，无宿命化断言。"
+    },
+    "i02": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "去世亲人的释义聚焦思念与情绪延续，措辞平和，明示不代表对方现实状况，同义词均指向同一意象。"
+    },
+    "i03": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "theme_direction",
+          "detail": "文字强调对亲近、安慰与和解的渴望，属中性偏正向的心理需求，而 relationship 为 -0.15，方向与文字不一致。"
+        },
+        {
+          "dimension": "consistency",
+          "detail": "theme_map 中 self/career/finance 写成 -0.0，属无意义符号，应写作 0。"
+        }
+      ],
+      "reason": "感情主题方向与文字不匹配，且负零数值需规范为 0。"
+    },
+    "i04": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "吃饭释义与满足、分享相关，theme 微弱正向且方向一致，措辞无宿命化。"
+    },
+    "i05": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "厨房释义围绕滋养、家庭与归属，relationship 微弱正向与文字相符，无预兆化表述。"
+    },
+    "i06": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "台风释义指向失控变化与情绪，self 负向方向一致，并明确不预示天气或灾害。"
+    },
+    "i07": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "双胞胎释义为内心两种并存想法，theme 全零与中性文字相符，措辞平和。"
+    },
+    "i08": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "变老释义联系时间流逝与成长，self 轻微负向合理，含就医免责，无确定性断言。"
+    },
+    "i09": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "变瘦释义双向平衡（轻装上阵/担心消耗），theme 全零与中性表述一致，含健康免责。"
+    },
+    "i10": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "同事释义涉及合作、竞争与被评价，career 与 relationship 轻微负向与文字语气一致。"
+    },
+    "i11": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "同学释义围绕回忆、比较与成长，theme 全零与中性文字相符，同义词无误命中。"
+    }
+  }
+}

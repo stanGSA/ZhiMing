@@ -1,0 +1,38 @@
+{
+  "batch": "b001",
+  "reviewer": "reviewer_b",
+  "run_pass": 1,
+  "attempt": 1,
+  "vendor": "openai",
+  "requested_model": "gpt-6.1-sol",
+  "returned_model": "gpt-6.1-sol",
+  "api": "openai",
+  "started_at": "2026-10-21T16:48:24+00:00",
+  "finished_at": "2026-10-21T16:48:34+00:00",
+  "latency_s": 9.908,
+  "http_attempts": 1,
+  "finish_reason": "stop",
+  "prompt_sha256": "78cd9c0e695428e6dcedbaa22b18758f0a525ed30bee289c15d064b2366e7a18",
+  "input_tokens": 1351,
+  "output_tokens": 233,
+  "cached_input_tokens": null,
+  "usage_available": true,
+  "raw_text": "{\n  \"items\": [\n    {\n      \"item\": \"i01\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"准确说明了子初换日的可选口径及其与午夜换日、节气划分的区别，主题值中性且无确定性断言。\"\n    },\n    {\n      \"item\": \"i02\",\n      \"verdict\": \"revise\",\n      \"issues\": [\n        {\n          \"dimension\": \"theme_direction\",\n          \"detail\": \"文字明确将事业协作与人际配合描述为轻度偏阻，但 career 和 relationship 均为正值，方向相反；应调整为轻度负向。\"\n        }\n      ],\n      \"reason\": \"相破的传统含义与白话说明基本合理，但事业、感情关系的主题方向与文字不一致。\"\n    }\n  ]\n}",
+  "verdicts": {
+    "i01": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "准确说明了子初换日的可选口径及其与午夜换日、节气划分的区别，主题值中性且无确定性断言。"
+    },
+    "i02": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "theme_direction",
+          "detail": "文字明确将事业协作与人际配合描述为轻度偏阻，但 career 和 relationship 均为正值，方向相反；应调整为轻度负向。"
+        }
+      ],
+      "reason": "相破的传统含义与白话说明基本合理，但事业、感情关系的主题方向与文字不一致。"
+    }
+  }
+}

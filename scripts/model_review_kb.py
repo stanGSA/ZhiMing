@@ -295,7 +295,11 @@ def mutations(entry: dict, by_id: dict[str, dict], rng: random.Random) -> dict[s
         and e["id"] != f"kb:tarot:card:{other_key}"
     ]
     if peers:
-        found["foreign_text"] = dict(entry, text=rng.choice(peers)["text"])
+        peer = rng.choice(peers)
+        # Generic advice can fit several objects. Retain the donor's identity so
+        # object substitution is an actual mismatch, not a debatable synonym.
+        label = next(iter(peer["synonyms"]), peer["key"])
+        found["foreign_text"] = dict(entry, text=f"{label}（{peer['key']}）的释义：{peer['text']}")
     if entry["system"] == "dream" and entry["kind"] == "symbol":
         keys = sorted(
             e["key"] for e in by_id.values() if e["kind"] == "symbol" and e["key"] != entry["key"]
@@ -1139,6 +1143,7 @@ async def revise(
     make_model=None,
     timeout: float = 120,
     vendor_exception: dict | None = None,
+    concurrency: int = 1,
 ) -> list[dict]:
     """Proposals from a third model; saved for review, never applied or approved here."""
     make_model = make_model or (lambda role, spec: role_model(spec, timeout))
@@ -1175,13 +1180,17 @@ async def revise(
                 script_sha256=sha256_bytes(Path(__file__).read_bytes()),
             ),
         )
+    if concurrency < 1:
+        raise ValueError("concurrency必须大于0")
     model = make_model("reviser", spec)
     queue = read_json(run.path / "revision_queue.json")
     by_id = {e["id"]: e for e in plan["entries"]}
     path = run.path / "revisions.json"
     proposals = {p["id"]: p for p in (read_json(path) if path.is_file() else [])}
-    try:
-        for item in queue:
+    gate = asyncio.Semaphore(concurrency)
+
+    async def one(item):
+        async with gate:
             earlier = proposals.get(item["id"])
             entry = by_id[item["id"]]
             if earlier is not None and earlier["invalid"] is not None:
@@ -1200,7 +1209,7 @@ async def revise(
                     write_json(path, sorted(proposals.values(), key=lambda p: p["id"]))
             # A valid proposal is kept; an invalid one is asked for again on the next run.
             if earlier is not None and earlier["invalid"] is None:
-                continue
+                return
             issues = [
                 dict(reviewer=k, verdict=v["verdict"], issues=v["issues"], reason=v["reason"])
                 for k, v in item["verdicts"].items()
@@ -1242,7 +1251,7 @@ async def revise(
                     )
                     | describe_error(exc)
                 )
-                continue
+                return
             proposals[item["id"]] = dict(
                 id=item["id"],
                 before_sha256=content_hash(entry),
@@ -1272,6 +1281,15 @@ async def revise(
                 ),
             )
             write_json(path, sorted(proposals.values(), key=lambda p: p["id"]))
+
+    tasks = [asyncio.ensure_future(one(item)) for item in queue]
+    try:
+        await asyncio.gather(*tasks)
+    except BaseException:
+        for task in tasks:
+            task.cancel()
+        await asyncio.gather(*tasks, return_exceptions=True)
+        raise
     finally:
         close = getattr(model, "close", None)
         if close:
@@ -1289,8 +1307,12 @@ def apply_revisions(workspace: Workspace, run: RunDir, ids: list[str] | None = N
     wanted = {p["id"]: p for p in proposals}
     applied = []
     system = read_json(run.path / "manifest.json")["system"]
-    for path in source_paths(workspace.sources, system):
-        data = yaml.safe_load(path.read_text(encoding="utf-8"))
+    documents = [
+        (path, yaml.safe_load(path.read_text(encoding="utf-8")))
+        for path in source_paths(workspace.sources, system)
+    ]
+    pending = []
+    for path, data in documents:
         changed = False
         for entry in data["entries"]:
             proposal = wanted.get(entry["id"])
@@ -1307,9 +1329,21 @@ def apply_revisions(workspace: Workspace, run: RunDir, ids: list[str] | None = N
             applied.append(entry["id"])
             changed = True
         if changed:
-            path.write_text(
-                yaml.safe_dump(data, allow_unicode=True, sort_keys=False), encoding="utf-8"
-            )
+            pending.append((path, data))
+    # Per-entry proposals cannot detect an alias collision with another entry.
+    # Validate the full candidate system before changing any source file.
+    candidates = [SourceEntry.model_validate(e) for _, doc in documents for e in doc["entries"]]
+    owners = {(e.kind, e.key): e.id for e in candidates}
+    for entry in candidates:
+        for alias in entry.synonyms:
+            key = (entry.kind, alias)
+            if key in owners and owners[key] != entry.id:
+                raise ValueError(
+                    f"修改稿同义词冲突：{alias}（{owners[key]}、{entry.id}）；未写入源文件"
+                )
+            owners[key] = entry.id
+    for path, data in pending:
+        path.write_text(yaml.safe_dump(data, allow_unicode=True, sort_keys=False), encoding="utf-8")
     return sorted(applied)
 
 
@@ -1441,6 +1475,8 @@ def main(argv: list[str] | None = None) -> Any:
         command.add_argument("--run-dir", type=Path, required=True)
         if name == "apply":
             command.add_argument("--ids", nargs="*")
+        if name == "revise":
+            command.add_argument("--concurrency", type=int, default=1)
     ledger = commands.add_parser("ledger")
     ledger.add_argument("--run-dir", type=Path, nargs="+", required=True)
     args = parser.parse_args(argv)
@@ -1520,6 +1556,7 @@ def main(argv: list[str] | None = None) -> Any:
                 timeout=timeout,
                 make_model=paid_model,
                 vendor_exception=(config.get("kb_review") or {}).get("reviser_vendor_exception"),
+                concurrency=args.concurrency,
             )
         )
     elif args.command == "apply":

@@ -1,0 +1,306 @@
+{
+  "system": "daily",
+  "entries": 9,
+  "candidate_count": 9,
+  "draft_count": 0,
+  "metrics": {
+    "detection": {
+      "reviewer_a": 1.0,
+      "reviewer_b": 1.0
+    },
+    "detection_merged": 1.0,
+    "rerun": {
+      "reviewer_a": 0.9375,
+      "reviewer_b": 1.0
+    },
+    "kappa": 0.871,
+    "kappa_real_three_class": 0.0,
+    "kappa_all_three_class": 0.5524,
+    "observed_agreement": 0.9375,
+    "observed_agreement_real_three_class": 0.9,
+    "pass_rate": 1.0
+  },
+  "gates": {
+    "complete": true,
+    "detection_merged": true,
+    "detection_single": true,
+    "rerun": true,
+    "kappa": true,
+    "pass_rate": true
+  },
+  "calibrated": true,
+  "passed": true,
+  "samples": {
+    "detection": {
+      "reviewer_a": [
+        6,
+        6
+      ],
+      "reviewer_b": [
+        6,
+        6
+      ]
+    },
+    "detection_merged": [
+      6,
+      6
+    ],
+    "rerun": {
+      "reviewer_a": [
+        15,
+        16
+      ],
+      "reviewer_b": [
+        16,
+        16
+      ]
+    },
+    "kappa_pairs": 16,
+    "kappa_real_pairs": 10,
+    "verdict_pairs": {
+      "pass/pass": 9,
+      "pass/revise": 1,
+      "revise/reject": 1,
+      "reject/revise": 2,
+      "reject/reject": 3
+    },
+    "verdict_pairs_real": {
+      "pass/pass": 9,
+      "pass/revise": 1
+    }
+  },
+  "batches": [
+    {
+      "path": "docs/verification/kb-model-review/20261021-live/daily-initial",
+      "entries": 9,
+      "metrics": {
+        "pass_rate": 0.8889,
+        "detection": {
+          "reviewer_a": 1.0,
+          "reviewer_b": 1.0
+        },
+        "detection_merged": 1.0,
+        "rerun": {
+          "reviewer_a": 0.9286,
+          "reviewer_b": 1.0
+        },
+        "kappa": 0.0,
+        "observed_agreement": 0.8889,
+        "verdict_counts": {
+          "reviewer_a": {
+            "pass": 9
+          },
+          "reviewer_b": {
+            "pass": 8,
+            "revise": 1
+          }
+        }
+      },
+      "gates": {
+        "pass_rate": false,
+        "detection_merged": true,
+        "detection_single": true,
+        "rerun": true,
+        "kappa": false,
+        "complete": true
+      },
+      "errors": 0,
+      "usage": {
+        "reviewer_a": {
+          "calls": 4,
+          "input_tokens": 6440,
+          "output_tokens": 1821,
+          "latency_s": 14.938,
+          "returned_models": [
+            "deepseek-flash"
+          ],
+          "errors": {},
+          "retried_calls": 0,
+          "http_retries": 0,
+          "cost": null,
+          "known_cost_estimate": null,
+          "usage_complete": true,
+          "cost_basis": "配置单价估算，非账单；服务失败的用量可能未知",
+          "currency": null
+        },
+        "reviewer_b": {
+          "calls": 4,
+          "input_tokens": 6896,
+          "output_tokens": 3380,
+          "latency_s": 78.795,
+          "returned_models": [
+            "gpt-6.1-sol"
+          ],
+          "errors": {},
+          "retried_calls": 0,
+          "http_retries": 0,
+          "cost": null,
+          "known_cost_estimate": null,
+          "usage_complete": true,
+          "cost_basis": "配置单价估算，非账单；服务失败的用量可能未知",
+          "currency": null
+        },
+        "reviser": {
+          "calls": 1,
+          "input_tokens": 574,
+          "output_tokens": 195,
+          "latency_s": 11.413,
+          "returned_models": [
+            "gpt-6-astra"
+          ],
+          "errors": {},
+          "retried_calls": 0,
+          "http_retries": 0,
+          "cost": null,
+          "known_cost_estimate": null,
+          "usage_complete": true,
+          "cost_basis": "配置单价估算，非账单；服务失败的用量可能未知",
+          "currency": null
+        }
+      }
+    },
+    {
+      "path": "docs/verification/kb-model-review/20261021-live/daily-rereview-1",
+      "entries": 1,
+      "metrics": {
+        "pass_rate": 1.0,
+        "detection": {
+          "reviewer_a": 1.0,
+          "reviewer_b": 1.0
+        },
+        "detection_merged": 1.0,
+        "rerun": {
+          "reviewer_a": 1.0,
+          "reviewer_b": 1.0
+        },
+        "kappa": null,
+        "observed_agreement": 1.0,
+        "verdict_counts": {
+          "reviewer_a": {
+            "pass": 1
+          },
+          "reviewer_b": {
+            "pass": 1
+          }
+        }
+      },
+      "gates": {
+        "pass_rate": true,
+        "detection_merged": true,
+        "detection_single": true,
+        "rerun": true,
+        "kappa": false,
+        "complete": true
+      },
+      "errors": 0,
+      "usage": {
+        "reviewer_a": {
+          "calls": 4,
+          "input_tokens": 2806,
+          "output_tokens": 423,
+          "latency_s": 8.22,
+          "returned_models": [
+            "deepseek-flash"
+          ],
+          "errors": {},
+          "retried_calls": 0,
+          "http_retries": 0,
+          "cost": null,
+          "known_cost_estimate": null,
+          "usage_complete": true,
+          "cost_basis": "配置单价估算，非账单；服务失败的用量可能未知",
+          "currency": null
+        },
+        "reviewer_b": {
+          "calls": 4,
+          "input_tokens": 3216,
+          "output_tokens": 553,
+          "latency_s": 32.34,
+          "returned_models": [
+            "gpt-6.1-sol"
+          ],
+          "errors": {},
+          "retried_calls": 0,
+          "http_retries": 0,
+          "cost": null,
+          "known_cost_estimate": null,
+          "usage_complete": true,
+          "cost_basis": "配置单价估算，非账单；服务失败的用量可能未知",
+          "currency": null
+        }
+      }
+    }
+  ],
+  "thresholds": {
+    "pass_rate": 0.95,
+    "detection_merged": 0.9,
+    "detection_single": 0.8,
+    "rerun": 0.9,
+    "kappa": 0.6
+  },
+  "acceptance_basis": "负责人确认：按体系汇总全部初审及复审样本；通过率按当前内容哈希；kappa按全部真实及埋错样本的放行二分类计算，原三分类指标保留",
+  "kappa_basis": {
+    "scope": "全部批次第一轮真实及埋错样本；第二轮另计重跑一致率",
+    "classes": {
+      "pass": "放行",
+      "revise": "不通过",
+      "reject": "不通过"
+    },
+    "limitation": "埋错样本改变类别分布，不能与仅真实条目的三分类kappa直接比较",
+    "owner_reply": "同意：全部样本、放行二分类（推荐）"
+  },
+  "human_reviewed_rate": 0.0,
+  "current_content_evidence": {
+    "kb:daily:convention:daily_seed": {
+      "content_sha256": "07ff0b90f515278af5c354785e5adfd69ea07f28ea6ae3b37a6d4c7dc261d98f",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/daily-initial"
+    },
+    "kb:daily:convention:moment_only": {
+      "content_sha256": "75c15f8396e7a69e1603ce83b81da29fb32b927d905e9c00fa95312a78ef139b",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/daily-initial"
+    },
+    "kb:daily:convention:no_exact_events": {
+      "content_sha256": "cf924653548487a037dbad7c3c8ed3f38e561844eacf97e437e80780ee8feb57",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/daily-rereview-1"
+    },
+    "kb:daily:convention:unknown_time": {
+      "content_sha256": "202fae7cb658e2ee8e6dd2b773e493c584729f17851c4a45ab98d49eb41d5383",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/daily-initial"
+    },
+    "kb:daily:day_element:土": {
+      "content_sha256": "7dddd8133d25ba22d73e2fba7778419a687e07725df438351afa33b91ff21678",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/daily-initial"
+    },
+    "kb:daily:day_element:木": {
+      "content_sha256": "698fc82d1cdcab3429dee87c0eb1a554635768479da926cd76657f98fa343345",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/daily-initial"
+    },
+    "kb:daily:day_element:水": {
+      "content_sha256": "3d38b8c163537e1523c493d998aa66001bc5433d36e91a47cda67062e6044cee",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/daily-initial"
+    },
+    "kb:daily:day_element:火": {
+      "content_sha256": "ea9b95f5ff47ae75bb76b5bbe494a02f95d494ad9aa382276381b6fa445977a4",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/daily-initial"
+    },
+    "kb:daily:day_element:金": {
+      "content_sha256": "6c07c5e586dd86adb85b028f9be96010f104f01fbcdd35614ce2dff7c9536ce2",
+      "approved": true,
+      "run": "docs/verification/kb-model-review/20261021-live/daily-initial"
+    }
+  },
+  "ledger_changes": {
+    "written": 0,
+    "revoked": []
+  },
+  "model_reviewed_count": 9,
+  "effective_draft_count": 0
+}

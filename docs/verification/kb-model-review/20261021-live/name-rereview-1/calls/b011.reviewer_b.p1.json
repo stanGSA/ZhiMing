@@ -1,0 +1,88 @@
+{
+  "batch": "b011",
+  "reviewer": "reviewer_b",
+  "run_pass": 1,
+  "attempt": 1,
+  "vendor": "openai",
+  "requested_model": "gpt-6.1-sol",
+  "returned_model": "gpt-6.1-sol",
+  "api": "openai",
+  "started_at": "2026-10-21T16:44:42+00:00",
+  "finished_at": "2026-10-21T16:45:09+00:00",
+  "latency_s": 27.056,
+  "http_attempts": 1,
+  "finish_reason": "stop",
+  "prompt_sha256": "fd11f54288064800ceb375a459671823ef23f8013508038a681cb3d7fbd1c373",
+  "input_tokens": 3111,
+  "output_tokens": 1037,
+  "cached_input_tokens": null,
+  "usage_available": true,
+  "raw_text": "{\n  \"items\": [\n    {\n      \"item\": \"i01\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"吉数分类符合常见民俗约定，正向寓意与主题倾向一致，且明确不作未来预测。\"\n    },\n    {\n      \"item\": \"i02\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"吉数及和谐、支持的表述符合常见解释，主题方向一致，未作命运断言。\"\n    },\n    {\n      \"item\": \"i03\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"吉数分类与正向寓意基本符合传统，主题倾向无明显冲突，民俗解释的边界清楚。\"\n    },\n    {\n      \"item\": \"i04\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"半吉及吉凶参半的表述属于常见民俗分类，与各主题中性设置一致。\"\n    },\n    {\n      \"item\": \"i05\",\n      \"verdict\": \"revise\",\n      \"issues\": [\n        {\n          \"dimension\": \"theme_direction\",\n          \"detail\": \"文字仅表达“吉凶参半”的中性评价；“稳住节奏”是应对建议，不表示自我状态偏顺，self 的正向设置缺少文字支持，宜改为中性。\"\n        }\n      ],\n      \"reason\": \"民俗分类已有适当限定，但自我主题的正向倾向与中性释义不一致。\"\n    },\n    {\n      \"item\": \"i06\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"凶数及波折、阻碍的意象符合常见传统分类，与负向主题设置一致，未据此预测命运。\"\n    },\n    {\n      \"item\": \"i07\",\n      \"verdict\": \"revise\",\n      \"issues\": [\n        {\n          \"dimension\": \"theme_direction\",\n          \"detail\": \"释义以“吉凶参半”为核心，没有表达四个主题整体偏顺；保持节奏、结合实际选择属于建议，不能作为四个主题均设正向的依据，宜改为中性或补充相应寓意。\"\n        }\n      ],\n      \"reason\": \"半吉的民俗表述可用，但四个主题均偏正向与文字的中性含义不一致。\"\n    },\n    {\n      \"item\": \"i08\",\n      \"verdict\": \"revise\",\n      \"issues\": [\n        {\n          \"dimension\": \"theme_direction\",\n          \"detail\": \"文字描述“吉凶参半”，并平衡提及顺境与困难，没有四个主题偏顺的依据；稳住节奏是行动建议，宜将主题倾向改为中性或补充对应的正向寓意。\"\n        }\n      ],\n      \"reason\": \"释义未作确定性预测，但四个主题的正向设置缺少文字支持。\"\n    },\n    {\n      \"item\": \"i09\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"吉数及获得助力的寓意符合常见民俗解释，主题方向一致，且明确不用于预测现实结果。\"\n    },\n    {\n      \"item\": \"i10\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"凶数分类及进展不顺的意象符合常见传统，负向主题设置一致，并清楚说明不具有预测依据。\"\n    }\n  ]\n}",
+  "verdicts": {
+    "i01": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "吉数分类符合常见民俗约定，正向寓意与主题倾向一致，且明确不作未来预测。"
+    },
+    "i02": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "吉数及和谐、支持的表述符合常见解释，主题方向一致，未作命运断言。"
+    },
+    "i03": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "吉数分类与正向寓意基本符合传统，主题倾向无明显冲突，民俗解释的边界清楚。"
+    },
+    "i04": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "半吉及吉凶参半的表述属于常见民俗分类，与各主题中性设置一致。"
+    },
+    "i05": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "theme_direction",
+          "detail": "文字仅表达“吉凶参半”的中性评价；“稳住节奏”是应对建议，不表示自我状态偏顺，self 的正向设置缺少文字支持，宜改为中性。"
+        }
+      ],
+      "reason": "民俗分类已有适当限定，但自我主题的正向倾向与中性释义不一致。"
+    },
+    "i06": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "凶数及波折、阻碍的意象符合常见传统分类，与负向主题设置一致，未据此预测命运。"
+    },
+    "i07": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "theme_direction",
+          "detail": "释义以“吉凶参半”为核心，没有表达四个主题整体偏顺；保持节奏、结合实际选择属于建议，不能作为四个主题均设正向的依据，宜改为中性或补充相应寓意。"
+        }
+      ],
+      "reason": "半吉的民俗表述可用，但四个主题均偏正向与文字的中性含义不一致。"
+    },
+    "i08": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "theme_direction",
+          "detail": "文字描述“吉凶参半”，并平衡提及顺境与困难，没有四个主题偏顺的依据；稳住节奏是行动建议，宜将主题倾向改为中性或补充对应的正向寓意。"
+        }
+      ],
+      "reason": "释义未作确定性预测，但四个主题的正向设置缺少文字支持。"
+    },
+    "i09": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "吉数及获得助力的寓意符合常见民俗解释，主题方向一致，且明确不用于预测现实结果。"
+    },
+    "i10": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "凶数分类及进展不顺的意象符合常见传统，负向主题设置一致，并清楚说明不具有预测依据。"
+    }
+  }
+}

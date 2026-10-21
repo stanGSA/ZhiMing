@@ -1,0 +1,103 @@
+{
+  "batch": "b006",
+  "reviewer": "reviewer_b",
+  "run_pass": 1,
+  "attempt": 1,
+  "vendor": "openai",
+  "requested_model": "gpt-6.1-sol",
+  "returned_model": "gpt-6.1-sol",
+  "api": "openai",
+  "started_at": "2026-10-21T16:02:29+00:00",
+  "finished_at": "2026-10-21T16:03:03+00:00",
+  "latency_s": 33.492,
+  "http_attempts": 1,
+  "finish_reason": "stop",
+  "prompt_sha256": "86ced6f5ea5d6aaa3a714250f380b678f07ea6e95d4e61006b876cbb9651c909",
+  "input_tokens": 2842,
+  "output_tokens": 1103,
+  "cached_input_tokens": null,
+  "usage_available": true,
+  "raw_text": "{\n  \"items\": [\n    {\n      \"item\": \"i01\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"释义温和、无预兆或诊断性结论，自我主题轻微偏阻与文字一致。\"\n    },\n    {\n      \"item\": \"i02\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"以思念和情绪延续解释已故亲人意象，措辞平和，中性主题设置合理。\"\n    },\n    {\n      \"item\": \"i03\",\n      \"verdict\": \"revise\",\n      \"issues\": [\n        {\n          \"dimension\": \"theme_direction\",\n          \"detail\": \"渴望亲近、安慰与和解不等于关系受阻，文中也未明确描述关系紧张；relationship 设为负向依据不足，宜改为中性，或补充相应的受阻感受。\"\n        }\n      ],\n      \"reason\": \"释义本身可用，但感情关系的负向设置缺少文字支持。\"\n    },\n    {\n      \"item\": \"i04\",\n      \"verdict\": \"revise\",\n      \"issues\": [\n        {\n          \"dimension\": \"consistency\",\n          \"detail\": \"“做饭给我吃”主要描述他人为自己做饭，不一定包含实际吃饭的情节，作为同义词可能误命中“做饭”意象，宜移除或另设关联词。\"\n        }\n      ],\n      \"reason\": \"正文与主题方向基本一致，但同义词混入了不同的梦境行为。\"\n    },\n    {\n      \"item\": \"i05\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"厨房与家庭、照顾及滋养的联想合理，关系主题轻微偏顺与文字相符。\"\n    },\n    {\n      \"item\": \"i06\",\n      \"verdict\": \"revise\",\n      \"issues\": [\n        {\n          \"dimension\": \"consistency\",\n          \"detail\": \"“龙卷风”与“台风”是不同的天气现象，不宜作为同义词，否则会误命中其他意象；可另设条目或作为相关意象处理。\"\n        }\n      ],\n      \"reason\": \"释义及主题方向合理，但同义词错误合并了龙卷风与台风。\"\n    },\n    {\n      \"item\": \"i07\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"以并存的想法或选择解释双胞胎意象，未作现实预测，中性主题设置一致。\"\n    },\n    {\n      \"item\": \"i08\",\n      \"verdict\": \"revise\",\n      \"issues\": [\n        {\n          \"dimension\": \"theme_direction\",\n          \"detail\": \"文字仅提到时间流逝、成长阶段及对形象和掌控感的在意，没有明确表达焦虑或受阻；self 的负向设置依据不足，宜改为中性，或补充担忧时间流逝等表述。\"\n        }\n      ],\n      \"reason\": \"正文整体中性，自我主题的负向倾向缺少明确支撑。\"\n    },\n    {\n      \"item\": \"i09\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"同时呈现轻装上阵与消耗担忧两种可能，中性设置合理，未将梦境当作健康诊断。\"\n    },\n    {\n      \"item\": \"i10\",\n      \"verdict\": \"revise\",\n      \"issues\": [\n        {\n          \"dimension\": \"theme_direction\",\n          \"detail\": \"合作、竞争和被评价均可有不同感受，正文未明确偏向压力或冲突，career 与 relationship 同时设为负向缺少充分依据；宜改为中性，或明确描述工作及人际压力。\"\n        }\n      ],\n      \"reason\": \"释义列出中性的多种联想，但主题设置单向偏阻。\"\n    },\n    {\n      \"item\": \"i11\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"同学与回忆、比较及成长经历的关联合理，同义词准确，主题方向与文字一致。\"\n    }\n  ]\n}",
+  "verdicts": {
+    "i01": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "释义温和、无预兆或诊断性结论，自我主题轻微偏阻与文字一致。"
+    },
+    "i02": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "以思念和情绪延续解释已故亲人意象，措辞平和，中性主题设置合理。"
+    },
+    "i03": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "theme_direction",
+          "detail": "渴望亲近、安慰与和解不等于关系受阻，文中也未明确描述关系紧张；relationship 设为负向依据不足，宜改为中性，或补充相应的受阻感受。"
+        }
+      ],
+      "reason": "释义本身可用，但感情关系的负向设置缺少文字支持。"
+    },
+    "i04": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "consistency",
+          "detail": "“做饭给我吃”主要描述他人为自己做饭，不一定包含实际吃饭的情节，作为同义词可能误命中“做饭”意象，宜移除或另设关联词。"
+        }
+      ],
+      "reason": "正文与主题方向基本一致，但同义词混入了不同的梦境行为。"
+    },
+    "i05": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "厨房与家庭、照顾及滋养的联想合理，关系主题轻微偏顺与文字相符。"
+    },
+    "i06": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "consistency",
+          "detail": "“龙卷风”与“台风”是不同的天气现象，不宜作为同义词，否则会误命中其他意象；可另设条目或作为相关意象处理。"
+        }
+      ],
+      "reason": "释义及主题方向合理，但同义词错误合并了龙卷风与台风。"
+    },
+    "i07": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "以并存的想法或选择解释双胞胎意象，未作现实预测，中性主题设置一致。"
+    },
+    "i08": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "theme_direction",
+          "detail": "文字仅提到时间流逝、成长阶段及对形象和掌控感的在意，没有明确表达焦虑或受阻；self 的负向设置依据不足，宜改为中性，或补充担忧时间流逝等表述。"
+        }
+      ],
+      "reason": "正文整体中性，自我主题的负向倾向缺少明确支撑。"
+    },
+    "i09": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "同时呈现轻装上阵与消耗担忧两种可能，中性设置合理，未将梦境当作健康诊断。"
+    },
+    "i10": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "theme_direction",
+          "detail": "合作、竞争和被评价均可有不同感受，正文未明确偏向压力或冲突，career 与 relationship 同时设为负向缺少充分依据；宜改为中性，或明确描述工作及人际压力。"
+        }
+      ],
+      "reason": "释义列出中性的多种联想，但主题设置单向偏阻。"
+    },
+    "i11": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "同学与回忆、比较及成长经历的关联合理，同义词准确，主题方向与文字一致。"
+    }
+  }
+}

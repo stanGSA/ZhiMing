@@ -1,0 +1,88 @@
+{
+  "batch": "b009",
+  "reviewer": "reviewer_a",
+  "run_pass": 1,
+  "attempt": 1,
+  "vendor": "deepseek",
+  "requested_model": "deepseek-flash",
+  "returned_model": "deepseek-flash",
+  "api": "openai",
+  "started_at": "2026-10-21T16:00:50+00:00",
+  "finished_at": "2026-10-21T16:00:53+00:00",
+  "latency_s": 3.0,
+  "http_attempts": 1,
+  "finish_reason": "stop",
+  "prompt_sha256": "45edc8562ac43fe71b21a131fcdbcf37ec94e29d7bdd2e64425bd425112b4185",
+  "input_tokens": 2494,
+  "output_tokens": 460,
+  "cached_input_tokens": 384,
+  "usage_available": true,
+  "raw_text": "{\"items\":[{\"item\":\"i01\",\"verdict\":\"pass\",\"issues\":[],\"reason\":\"释义符合传统心理联想，措辞平和、无宿命化，主题方向与文字一致。\"},{\"item\":\"i02\",\"verdict\":\"pass\",\"issues\":[],\"reason\":\"婴儿象征新想法与新阶段，方向与文字一致，无确定性断言。\"},{\"item\":\"i03\",\"verdict\":\"pass\",\"issues\":[],\"reason\":\"孔雀与展示自我、被欣赏相关，措辞非预兆化，方向一致。\"},{\"item\":\"i04\",\"verdict\":\"pass\",\"issues\":[],\"reason\":\"学校与学习、评价、成长经历相关，主题全为0与文字中性一致。\"},{\"item\":\"i05\",\"verdict\":\"pass\",\"issues\":[],\"reason\":\"太阳象征活力与希望，正向主题方向一致，且明确不预示灾害。\"},{\"item\":\"i06\",\"verdict\":\"pass\",\"issues\":[],\"reason\":\"头发与自我形象相关，包含就医免责，无健康确定性结论。\"},{\"item\":\"i07\",\"verdict\":\"pass\",\"issues\":[],\"reason\":\"奶与滋养、照顾相关，方向轻微正向且一致。\"},{\"item\":\"i08\",\"verdict\":\"revise\",\"issues\":[{\"dimension\":\"consistency\",\"detail\":\"关键词“处境”与“失业”作为具体事件类意象搭配略显笼统，但与 key 不矛盾；主要问题在 theme_direction\"}],\"reason\":\"释义写“担心工作稳定和价值感”，负向主题方向与文字一致，但作为处境梦措辞可更贴近心理层面；整体可修正后使用。\"},{\"item\":\"i09\",\"verdict\":\"revise\",\"issues\":[{\"dimension\":\"consistency\",\"detail\":\"同义词包含“蛇”，蛇是独立意象，会误命中黑暗条目\"}],\"reason\":\"同义词“蛇”与黑暗无关，会造成误命中，需删除。\"},{\"item\":\"i10\",\"verdict\":\"pass\",\"issues\":[],\"reason\":\"婚纱与承诺、理想关系想象相关，关系主题轻微正向一致。\"},{\"item\":\"i11\",\"verdict\":\"pass\",\"issues\":[],\"reason\":\"婚礼现场与承诺、关系感受相关，方向一致，措辞平和。\"}]}",
+  "verdicts": {
+    "i01": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "释义符合传统心理联想，措辞平和、无宿命化，主题方向与文字一致。"
+    },
+    "i02": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "婴儿象征新想法与新阶段，方向与文字一致，无确定性断言。"
+    },
+    "i03": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "孔雀与展示自我、被欣赏相关，措辞非预兆化，方向一致。"
+    },
+    "i04": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "学校与学习、评价、成长经历相关，主题全为0与文字中性一致。"
+    },
+    "i05": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "太阳象征活力与希望，正向主题方向一致，且明确不预示灾害。"
+    },
+    "i06": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "头发与自我形象相关，包含就医免责，无健康确定性结论。"
+    },
+    "i07": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "奶与滋养、照顾相关，方向轻微正向且一致。"
+    },
+    "i08": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "consistency",
+          "detail": "关键词“处境”与“失业”作为具体事件类意象搭配略显笼统，但与 key 不矛盾；主要问题在 theme_direction"
+        }
+      ],
+      "reason": "释义写“担心工作稳定和价值感”，负向主题方向与文字一致，但作为处境梦措辞可更贴近心理层面；整体可修正后使用。"
+    },
+    "i09": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "consistency",
+          "detail": "同义词包含“蛇”，蛇是独立意象，会误命中黑暗条目"
+        }
+      ],
+      "reason": "同义词“蛇”与黑暗无关，会造成误命中，需删除。"
+    },
+    "i10": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "婚纱与承诺、理想关系想象相关，关系主题轻微正向一致。"
+    },
+    "i11": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "婚礼现场与承诺、关系感受相关，方向一致，措辞平和。"
+    }
+  }
+}

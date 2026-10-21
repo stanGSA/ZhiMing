@@ -1,0 +1,83 @@
+{
+  "batch": "b005",
+  "reviewer": "reviewer_b",
+  "run_pass": 2,
+  "attempt": 1,
+  "vendor": "openai",
+  "requested_model": "gpt-6.1-sol",
+  "returned_model": "gpt-6.1-sol",
+  "api": "openai",
+  "started_at": "2026-10-21T16:10:13+00:00",
+  "finished_at": "2026-10-21T16:10:41+00:00",
+  "latency_s": 28.312,
+  "http_attempts": 1,
+  "finish_reason": "stop",
+  "prompt_sha256": "44f55e045c124e851feb51abad9aec9dfd239459412f9849632ca0cad8219d81",
+  "input_tokens": 2961,
+  "output_tokens": 1064,
+  "cached_input_tokens": 2958,
+  "usage_available": true,
+  "raw_text": "{\n  \"items\": [\n    {\n      \"item\": \"i01\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"两组生克关系准确，压力与精力受牵扯的描述符合偏阻方向，且限定为自我观察线索。\"\n    },\n    {\n      \"item\": \"i02\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"土克水、水克火的关系及白话解释一致，各主题的偏阻倾向与文字相符。\"\n    },\n    {\n      \"item\": \"i03\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"火生土、火火同类的关系准确，整体较顺的描述与主题倾向一致，无命运断言。\"\n    },\n    {\n      \"item\": \"i04\",\n      \"verdict\": \"revise\",\n      \"issues\": [\n        {\n          \"dimension\": \"theme_direction\",\n          \"detail\": \"self 为正，但文字仅描述向外付出、照顾外部期待及需要协调，未明确体现自我状态受到支持或改善；建议将 self 调为中性，或补充与正向自我状态相符的描述。\"\n        }\n      ],\n      \"reason\": \"生克关系正确，但自我主题的正向倾向缺少文字支撑。\"\n    },\n    {\n      \"item\": \"i05\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"外部压力与生活基础协调并存，能够支持自我偏阻、关系略顺的混合倾向。\"\n    },\n    {\n      \"item\": \"i06\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"火生土、木生火的关系及施受方向解释正确，整体支持性描述与正向主题一致。\"\n    },\n    {\n      \"item\": \"i07\",\n      \"verdict\": \"revise\",\n      \"issues\": [\n        {\n          \"dimension\": \"theme_direction\",\n          \"detail\": \"self 为正，但文字重点是向外付出、精力被琐事牵扯及需要休整，没有明确的自我受益描述；建议将 self 调为中性或偏负。\"\n        }\n      ],\n      \"reason\": \"五行关系准确，但精力受牵扯的描述不足以支持自我主题偏顺。\"\n    },\n    {\n      \"item\": \"i08\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"土克水、水生木的关系正确，外部压力与对身边人的投入分别对应自我偏阻和关系略顺。\"\n    },\n    {\n      \"item\": \"i09\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"土克水、金生水的关系解释准确，压力与家庭支持并存的描述符合主题倾向。\"\n    },\n    {\n      \"item\": \"i10\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"两处火生土的施受方向表述正确，整体较顺与正向主题一致，且未作确定性预测。\"\n    }\n  ]\n}",
+  "verdicts": {
+    "i01": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "两组生克关系准确，压力与精力受牵扯的描述符合偏阻方向，且限定为自我观察线索。"
+    },
+    "i02": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "土克水、水克火的关系及白话解释一致，各主题的偏阻倾向与文字相符。"
+    },
+    "i03": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "火生土、火火同类的关系准确，整体较顺的描述与主题倾向一致，无命运断言。"
+    },
+    "i04": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "theme_direction",
+          "detail": "self 为正，但文字仅描述向外付出、照顾外部期待及需要协调，未明确体现自我状态受到支持或改善；建议将 self 调为中性，或补充与正向自我状态相符的描述。"
+        }
+      ],
+      "reason": "生克关系正确，但自我主题的正向倾向缺少文字支撑。"
+    },
+    "i05": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "外部压力与生活基础协调并存，能够支持自我偏阻、关系略顺的混合倾向。"
+    },
+    "i06": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "火生土、木生火的关系及施受方向解释正确，整体支持性描述与正向主题一致。"
+    },
+    "i07": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "theme_direction",
+          "detail": "self 为正，但文字重点是向外付出、精力被琐事牵扯及需要休整，没有明确的自我受益描述；建议将 self 调为中性或偏负。"
+        }
+      ],
+      "reason": "五行关系准确，但精力受牵扯的描述不足以支持自我主题偏顺。"
+    },
+    "i08": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "土克水、水生木的关系正确，外部压力与对身边人的投入分别对应自我偏阻和关系略顺。"
+    },
+    "i09": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "土克水、金生水的关系解释准确，压力与家庭支持并存的描述符合主题倾向。"
+    },
+    "i10": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "两处火生土的施受方向表述正确，整体较顺与正向主题一致，且未作确定性预测。"
+    }
+  }
+}

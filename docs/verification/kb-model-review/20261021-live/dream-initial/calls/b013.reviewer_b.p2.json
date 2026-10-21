@@ -1,0 +1,113 @@
+{
+  "batch": "b013",
+  "reviewer": "reviewer_b",
+  "run_pass": 2,
+  "attempt": 1,
+  "vendor": "openai",
+  "requested_model": "gpt-6.1-sol",
+  "returned_model": "gpt-6.1-sol",
+  "api": "openai",
+  "started_at": "2026-10-21T16:19:14+00:00",
+  "finished_at": "2026-10-21T16:19:44+00:00",
+  "latency_s": 30.416,
+  "http_attempts": 1,
+  "finish_reason": "stop",
+  "prompt_sha256": "1630cedc08dabcc3833fd4985634cec97a5a09f4526c0953d6ed6a9ac5d6fddc",
+  "input_tokens": 2783,
+  "output_tokens": 1399,
+  "cached_input_tokens": 2780,
+  "usage_available": true,
+  "raw_text": "{\n  \"items\": [\n    {\n      \"item\": \"i01\",\n      \"verdict\": \"revise\",\n      \"issues\": [\n        {\n          \"dimension\": \"theme_direction\",\n          \"detail\": \"文字描述生活阶段转换与重新安顿，未体现感情关系偏顺，relationship 的正向倾向缺乏文字支持，宜设为中性或补充相应释义。\"\n        }\n      ],\n      \"reason\": \"核心联想合理，但感情主题的正向标注与文字依据不充分。\"\n    },\n    {\n      \"item\": \"i02\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"等待、进度缓慢与耐心的联想合理，轻微受阻的方向与文字一致，且未作现实预言。\"\n    },\n    {\n      \"item\": \"i03\",\n      \"verdict\": \"revise\",\n      \"issues\": [\n        {\n          \"dimension\": \"consistency\",\n          \"detail\": \"“到处找”“寻找”“在找”未限定寻找物品，可能误命中找人、找路等其他意象，宜改为“寻找物品”“到处找东西”等明确表达。\"\n        }\n      ],\n      \"reason\": \"释义本身平和合理，但同义词范围过宽，容易误匹配其他寻找类梦境。\"\n    },\n    {\n      \"item\": \"i04\",\n      \"verdict\": \"revise\",\n      \"issues\": [\n        {\n          \"dimension\": \"theme_direction\",\n          \"detail\": \"“想留住某个时刻”“在意形象”以及“期待或担心”均未明确体现自我状态偏顺，self 的正向倾向宜改为中性，或补充正向含义。\"\n        }\n      ],\n      \"reason\": \"拍照的心理联想合理，但文字总体中性，不足以支持自我主题偏顺。\"\n    },\n    {\n      \"item\": \"i05\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"投票与选择权、公平的关联贴切，中性主题设置与非预言性表达一致。\"\n    },\n    {\n      \"item\": \"i06\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"亲密、认同与靠近的联想符合接吻意象，关系主题的轻度正向倾向合理。\"\n    },\n    {\n      \"item\": \"i07\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"掉牙与失控、形象及表达担忧的联想合理，自我负向倾向一致，且未作健康诊断或不祥预言。\"\n    },\n    {\n      \"item\": \"i08\",\n      \"verdict\": \"revise\",\n      \"issues\": [\n        {\n          \"dimension\": \"consistency\",\n          \"detail\": \"“抱住”也可指抱住树干、柱子等物体，未必是人际拥抱，可能误命中其他意象，宜限定为“抱住某人”等表达。\"\n        }\n      ],\n      \"reason\": \"释义与关系主题方向基本一致，但“抱住”作为同义词缺少对象限制。\"\n    },\n    {\n      \"item\": \"i09\",\n      \"verdict\": \"revise\",\n      \"issues\": [\n        {\n          \"dimension\": \"consistency\",\n          \"detail\": \"“电动车”“电瓶车”不等同于摩托车，还可能指电动自行车、电动汽车等交通工具，不宜直接列为同义词。\"\n        }\n      ],\n      \"reason\": \"摩托车的联想合理，但同义词混入不同交通工具，存在误匹配风险。\"\n    },\n    {\n      \"item\": \"i10\",\n      \"verdict\": \"revise\",\n      \"issues\": [\n        {\n          \"dimension\": \"theme_direction\",\n          \"detail\": \"“坚韧、灵活与节节成长”明显偏正向，与 self、career 的负向倾向相反，应调整方向或修改释义。\"\n        }\n      ],\n      \"reason\": \"竹子的核心象征合理，但自我与事业主题的负向标注和文字相反。\"\n    },\n    {\n      \"item\": \"i11\",\n      \"verdict\": \"revise\",\n      \"issues\": [\n        {\n          \"dimension\": \"consistency\",\n          \"detail\": \"“闪电”“打闪”指发光现象，不等同于打雷；“雷电”则包含两者，直接作为同义词可能将仅有闪电的梦境误归为打雷，宜区分或明确合并意象范围。\"\n        }\n      ],\n      \"reason\": \"打雷的心理联想与方向基本合理，但同义词混淆了雷声与闪电意象。\"\n    }\n  ]\n}",
+  "verdicts": {
+    "i01": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "theme_direction",
+          "detail": "文字描述生活阶段转换与重新安顿，未体现感情关系偏顺，relationship 的正向倾向缺乏文字支持，宜设为中性或补充相应释义。"
+        }
+      ],
+      "reason": "核心联想合理，但感情主题的正向标注与文字依据不充分。"
+    },
+    "i02": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "等待、进度缓慢与耐心的联想合理，轻微受阻的方向与文字一致，且未作现实预言。"
+    },
+    "i03": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "consistency",
+          "detail": "“到处找”“寻找”“在找”未限定寻找物品，可能误命中找人、找路等其他意象，宜改为“寻找物品”“到处找东西”等明确表达。"
+        }
+      ],
+      "reason": "释义本身平和合理，但同义词范围过宽，容易误匹配其他寻找类梦境。"
+    },
+    "i04": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "theme_direction",
+          "detail": "“想留住某个时刻”“在意形象”以及“期待或担心”均未明确体现自我状态偏顺，self 的正向倾向宜改为中性，或补充正向含义。"
+        }
+      ],
+      "reason": "拍照的心理联想合理，但文字总体中性，不足以支持自我主题偏顺。"
+    },
+    "i05": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "投票与选择权、公平的关联贴切，中性主题设置与非预言性表达一致。"
+    },
+    "i06": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "亲密、认同与靠近的联想符合接吻意象，关系主题的轻度正向倾向合理。"
+    },
+    "i07": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "掉牙与失控、形象及表达担忧的联想合理，自我负向倾向一致，且未作健康诊断或不祥预言。"
+    },
+    "i08": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "consistency",
+          "detail": "“抱住”也可指抱住树干、柱子等物体，未必是人际拥抱，可能误命中其他意象，宜限定为“抱住某人”等表达。"
+        }
+      ],
+      "reason": "释义与关系主题方向基本一致，但“抱住”作为同义词缺少对象限制。"
+    },
+    "i09": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "consistency",
+          "detail": "“电动车”“电瓶车”不等同于摩托车，还可能指电动自行车、电动汽车等交通工具，不宜直接列为同义词。"
+        }
+      ],
+      "reason": "摩托车的联想合理，但同义词混入不同交通工具，存在误匹配风险。"
+    },
+    "i10": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "theme_direction",
+          "detail": "“坚韧、灵活与节节成长”明显偏正向，与 self、career 的负向倾向相反，应调整方向或修改释义。"
+        }
+      ],
+      "reason": "竹子的核心象征合理，但自我与事业主题的负向标注和文字相反。"
+    },
+    "i11": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "consistency",
+          "detail": "“闪电”“打闪”指发光现象，不等同于打雷；“雷电”则包含两者，直接作为同义词可能将仅有闪电的梦境误归为打雷，宜区分或明确合并意象范围。"
+        }
+      ],
+      "reason": "打雷的心理联想与方向基本合理，但同义词混淆了雷声与闪电意象。"
+    }
+  }
+}

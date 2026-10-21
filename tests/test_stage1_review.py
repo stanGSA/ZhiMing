@@ -7,7 +7,7 @@ import sqlite3
 import pytest
 import yaml
 
-from app import ROOT, create_runtime
+from app import create_runtime
 from common.output_policy import mark_unreviewed
 from common.schemas import Confidence
 from knowledge import checks
@@ -87,14 +87,20 @@ def test_editing_an_entry_voids_its_approval(project):
     assert report["review_ledger"] == {"current": 0, "stale": 1, "orphan": 0}
 
 
-def test_regenerated_drafts_keep_approvals():
-    """scripts/draft_*.py regenerate identical content, so ledger hashes still match."""
+def test_regenerated_drafts_keep_approvals(tmp_path):
+    """An unchanged authoring rerun keeps the content bytes bound to an approval."""
+    from scripts.draft_sources import write_drafts
     from scripts.draft_week6 import daily_entries
 
-    path = ROOT / "knowledge/sources/daily/entries.yaml"
+    path = tmp_path / "daily.yaml"
+    write_drafts(path, daily_entries())
     source = yaml.safe_load(path.read_text(encoding="utf-8"))
     current = {e["id"]: content_hash(e) for e in source["entries"]}
-    assert {e["id"]: content_hash(e) for e in daily_entries()} == current
+    records = [approval(e, REVIEWERS, "2026-10-21", REPORT) for e in source["entries"]]
+    before = path.read_bytes()
+    write_drafts(path, daily_entries())
+    assert path.read_bytes() == before
+    assert {r["id"]: r["content_sha256"] for r in records} == current
 
 
 @pytest.mark.parametrize("field", ["review_status", "model_review"])

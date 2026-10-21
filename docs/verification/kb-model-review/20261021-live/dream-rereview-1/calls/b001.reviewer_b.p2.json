@@ -1,0 +1,97 @@
+{
+  "batch": "b001",
+  "reviewer": "reviewer_b",
+  "run_pass": 2,
+  "attempt": 1,
+  "vendor": "openai",
+  "requested_model": "gpt-6.1-sol",
+  "returned_model": "gpt-6.1-sol",
+  "api": "openai",
+  "started_at": "2026-10-21T16:48:57+00:00",
+  "finished_at": "2026-10-21T16:49:23+00:00",
+  "latency_s": 26.027,
+  "http_attempts": 1,
+  "finish_reason": "stop",
+  "prompt_sha256": "942ee60e7903457d49b666974e09d0651f3e05281ebf063b35f21a4b64d87925",
+  "input_tokens": 3031,
+  "output_tokens": 1110,
+  "cached_input_tokens": 3028,
+  "usage_available": true,
+  "raw_text": "{\n  \"items\": [\n    {\n      \"item\": \"i01\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"释义以平静与停滞的可能联想为主，倾向轻微且无预兆式断言。\"\n    },\n    {\n      \"item\": \"i02\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"对渴望、内疚和压力的解释审慎，自我主题轻微偏负与文字一致。\"\n    },\n    {\n      \"item\": \"i03\",\n      \"verdict\": \"revise\",\n      \"issues\": [\n        {\n          \"dimension\": \"theme_direction\",\n          \"detail\": \"文字主要描述害怕失去、在意物品和生活压力，未明确涉及财务压力或财务处境；finance 偏负缺少直接文字依据，建议设为中性，或补充非预测性的财务担忧联想。\"\n        }\n      ],\n      \"reason\": \"自我主题偏负合理，但财务主题的负向倾向需要更明确的文字支持。\"\n    },\n    {\n      \"item\": \"i04\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"停电与精力不足、方向感暂失的联想合理，自我主题轻微偏负且未预测现实事件。\"\n    },\n    {\n      \"item\": \"i05\",\n      \"verdict\": \"revise\",\n      \"issues\": [\n        {\n          \"dimension\": \"consistency\",\n          \"detail\": \"“海龟”与“乌龟”并非严格同义词，作为同义词可能把独立的海龟意象直接匹配到乌龟条目；建议移除，或将条目明确改为涵盖不同龟类的上位类别。\"\n        }\n      ],\n      \"reason\": \"释义本身温和合理，但同义词范围需要收紧以避免误命中其他动物意象。\"\n    },\n    {\n      \"item\": \"i06\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"释义兼顾保护、支持与准备不足等不同情境，中性主题设置与探索性表达一致。\"\n    },\n    {\n      \"item\": \"i07\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"公交车与日常节奏、同行和方向感的联想合理，未赋予吉凶或出行安全预兆。\"\n    },\n    {\n      \"item\": \"i08\",\n      \"verdict\": \"reject\",\n      \"issues\": [\n        {\n          \"dimension\": \"medical_legal_finance\",\n          \"detail\": \"“这代表身体已有慢性疾病，不必就医也会自愈”依据梦境作出疾病判断，并断言无需就医即可自愈，属于不当的确定性医疗结论。\"\n        },\n        {\n          \"dimension\": \"certainty\",\n          \"detail\": \"末句直接断言已有疾病及未来会自愈，违背前文的可能性表达与非预测性定位。\"\n        }\n      ],\n      \"reason\": \"末句含无依据的疾病诊断和自愈保证，不能作为面向用户的释义使用。\"\n    },\n    {\n      \"item\": \"i09\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"公园与放松、休闲及安全感的联想自然，自我主题轻微偏正且措辞审慎。\"\n    },\n    {\n      \"item\": \"i10\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"释义围绕工作角色、责任与归属展开，未判断事业顺阻，中性主题设置合理。\"\n    },\n    {\n      \"item\": \"i11\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"井的情绪与资源联想采用探索性表达，并明确区分坠井情节，无现实预兆断言。\"\n    }\n  ]\n}",
+  "verdicts": {
+    "i01": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "释义以平静与停滞的可能联想为主，倾向轻微且无预兆式断言。"
+    },
+    "i02": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "对渴望、内疚和压力的解释审慎，自我主题轻微偏负与文字一致。"
+    },
+    "i03": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "theme_direction",
+          "detail": "文字主要描述害怕失去、在意物品和生活压力，未明确涉及财务压力或财务处境；finance 偏负缺少直接文字依据，建议设为中性，或补充非预测性的财务担忧联想。"
+        }
+      ],
+      "reason": "自我主题偏负合理，但财务主题的负向倾向需要更明确的文字支持。"
+    },
+    "i04": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "停电与精力不足、方向感暂失的联想合理，自我主题轻微偏负且未预测现实事件。"
+    },
+    "i05": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "consistency",
+          "detail": "“海龟”与“乌龟”并非严格同义词，作为同义词可能把独立的海龟意象直接匹配到乌龟条目；建议移除，或将条目明确改为涵盖不同龟类的上位类别。"
+        }
+      ],
+      "reason": "释义本身温和合理，但同义词范围需要收紧以避免误命中其他动物意象。"
+    },
+    "i06": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "释义兼顾保护、支持与准备不足等不同情境，中性主题设置与探索性表达一致。"
+    },
+    "i07": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "公交车与日常节奏、同行和方向感的联想合理，未赋予吉凶或出行安全预兆。"
+    },
+    "i08": {
+      "verdict": "reject",
+      "issues": [
+        {
+          "dimension": "medical_legal_finance",
+          "detail": "“这代表身体已有慢性疾病，不必就医也会自愈”依据梦境作出疾病判断，并断言无需就医即可自愈，属于不当的确定性医疗结论。"
+        },
+        {
+          "dimension": "certainty",
+          "detail": "末句直接断言已有疾病及未来会自愈，违背前文的可能性表达与非预测性定位。"
+        }
+      ],
+      "reason": "末句含无依据的疾病诊断和自愈保证，不能作为面向用户的释义使用。"
+    },
+    "i09": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "公园与放松、休闲及安全感的联想自然，自我主题轻微偏正且措辞审慎。"
+    },
+    "i10": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "释义围绕工作角色、责任与归属展开，未判断事业顺阻，中性主题设置合理。"
+    },
+    "i11": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "井的情绪与资源联想采用探索性表达，并明确区分坠井情节，无现实预兆断言。"
+    }
+  }
+}

@@ -1,0 +1,117 @@
+{
+  "system": "astro",
+  "entries": 2,
+  "planted": 2,
+  "metrics": {
+    "pass_rate": 1.0,
+    "detection": {
+      "reviewer_a": 1.0,
+      "reviewer_b": 1.0
+    },
+    "detection_merged": 1.0,
+    "rerun": {
+      "reviewer_a": 1.0,
+      "reviewer_b": 1.0
+    },
+    "kappa": null,
+    "observed_agreement": 1.0,
+    "verdict_counts": {
+      "reviewer_a": {
+        "pass": 2
+      },
+      "reviewer_b": {
+        "pass": 2
+      }
+    }
+  },
+  "gates": {
+    "pass_rate": true,
+    "detection_merged": true,
+    "detection_single": true,
+    "rerun": true,
+    "kappa": false,
+    "complete": true
+  },
+  "thresholds": {
+    "pass_rate": 0.95,
+    "detection_merged": 0.9,
+    "detection_single": 0.8,
+    "rerun": 0.9,
+    "kappa": 0.6
+  },
+  "calibrated": false,
+  "passed": false,
+  "approved": 2,
+  "queued": 0,
+  "incomplete": [],
+  "planted_detail": [
+    {
+      "ref": "planted-001",
+      "original": "kb:astro:planet_house:Sun:5",
+      "mutation": "wrong_term",
+      "reviewer_a": "reject",
+      "reviewer_b": "reject"
+    },
+    {
+      "ref": "planted-002",
+      "original": "kb:astro:planet_sign:Jupiter:Capricorn",
+      "mutation": "medical",
+      "reviewer_a": "reject",
+      "reviewer_b": "reject"
+    }
+  ],
+  "detection_by_mutation": {
+    "wrong_term": {
+      "total": 1,
+      "reviewer_a": 1,
+      "reviewer_b": 1
+    },
+    "medical": {
+      "total": 1,
+      "reviewer_a": 1,
+      "reviewer_b": 1
+    }
+  },
+  "usage": {
+    "reviewer_a": {
+      "calls": 4,
+      "input_tokens": 4476,
+      "output_tokens": 638,
+      "latency_s": 9.194,
+      "returned_models": [
+        "deepseek-flash"
+      ],
+      "errors": {},
+      "retried_calls": 0,
+      "http_retries": 0,
+      "cost": null,
+      "known_cost_estimate": null,
+      "usage_complete": true,
+      "cost_basis": "配置单价估算，非账单；服务失败的用量可能未知",
+      "currency": null
+    },
+    "reviewer_b": {
+      "calls": 4,
+      "input_tokens": 5088,
+      "output_tokens": 1043,
+      "latency_s": 36.914,
+      "returned_models": [
+        "gpt-6.1-sol"
+      ],
+      "errors": {},
+      "retried_calls": 0,
+      "http_retries": 0,
+      "cost": null,
+      "known_cost_estimate": null,
+      "usage_complete": true,
+      "cost_basis": "配置单价估算，非账单；服务失败的用量可能未知",
+      "currency": null
+    }
+  },
+  "code_findings": [],
+  "human_reviewed_rate": 0.0,
+  "approved_ids": [
+    "kb:astro:planet_house:Sun:5",
+    "kb:astro:planet_sign:Jupiter:Capricorn"
+  ]
+}

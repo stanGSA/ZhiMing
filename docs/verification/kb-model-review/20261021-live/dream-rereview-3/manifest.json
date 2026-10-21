@@ -1,0 +1,75 @@
+{
+  "schema": 1,
+  "system": "dream",
+  "seed": 1,
+  "batch_size": 10,
+  "plant_rate": 0.1,
+  "min_planted": 5,
+  "passes": 2,
+  "only_ids": [
+    "kb:dream:symbol:房子"
+  ],
+  "calibrated_by": null,
+  "rubric_version": 1,
+  "rubric_sha256": "a33bd07bd2299376f88d6cf1c958b26990685099797e78272054352ff7557b0d",
+  "script_sha256": "ddca15c97d6b175b8f747005853053eb56517197cfa483822c1436a3c237c587",
+  "runtime_vendor": "deepseek",
+  "drafter_vendors": [
+    "anthropic"
+  ],
+  "runtime_vendor_exception": {
+    "vendor": "deepseek",
+    "model": "deepseek-flash",
+    "reason": "2026-10-21 项目负责人明确要求第一审核方使用本机.env的DeepSeek配置"
+  },
+  "pricing": {
+    "reviewer_a": {
+      "input_per_mtok": null,
+      "output_per_mtok": null,
+      "currency": null
+    },
+    "reviewer_b": {
+      "input_per_mtok": null,
+      "output_per_mtok": null,
+      "currency": null
+    }
+  },
+  "reviewers": {
+    "reviewer_a": {
+      "vendor": "deepseek",
+      "api": "openai",
+      "model": "deepseek-flash",
+      "api_key_env": "DEEPSEEK_API_KEY",
+      "temperature": null,
+      "max_tokens": 4096,
+      "base_url_host": "api.deepseek.com"
+    },
+    "reviewer_b": {
+      "vendor": "openai",
+      "api": "openai",
+      "model": "gpt-6.1-sol",
+      "api_key_env": "OPENAI_REVIEW_API_KEY",
+      "temperature": null,
+      "max_tokens": 4096,
+      "base_url_host": "codegoai.com"
+    }
+  },
+  "source_files": {
+    "knowledge/sources/dream/entries.yaml": "ff6fe71e78e64ab1f0fd92ccfd364abb9258608b9b8f3d755a61a73280407f31"
+  },
+  "entry_hashes": {
+    "kb:dream:symbol:房子": "33f3fe264bbc56bc81a31e8289bdb16193b240d0515228d532f7574d95ac1107"
+  },
+  "planted_count": 1,
+  "batch_count": 2,
+  "prompt_sha256": {
+    "b001": "3e2050a1b965a90fcef1f5d4280a61b81a4a4eedee159cf7eb531411e7e54ae2",
+    "b002": "ae2310ea9c421d2d04ae36b2cdae3a91ce3473ac1d012462cc796186b670bc60"
+  },
+  "created_at": "2026-10-21T16:57:52+00:00",
+  "git": {
+    "head": "e8dae18cd2dae8139bcec667242c7169ebadaf13",
+    "dirty": true
+  },
+  "kb_version": "v1-bac48fbe859be33a"
+}

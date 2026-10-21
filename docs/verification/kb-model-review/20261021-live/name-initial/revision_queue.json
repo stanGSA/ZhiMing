@@ -1,0 +1,3845 @@
+[
+  {
+    "id": "kb:name:convention:ambiguous_form",
+    "content_sha256": "caa165ede4adb0e16c599cee4bc87a806a08622204c394f938aebab9731a19ed",
+    "verdicts": {
+      "reviewer_a.p1": {
+        "verdict": "pass",
+        "issues": [],
+        "reason": "说明异体字笔画差异并建议按实际写法确认，符合民间约定，无断言。"
+      },
+      "reviewer_a.p2": {
+        "verdict": "pass",
+        "issues": [],
+        "reason": "异体字笔画差异及按习惯写法确认的提示合理，无宿命化表述。"
+      },
+      "reviewer_b.p1": {
+        "verdict": "pass",
+        "issues": [],
+        "reason": "提示不同字形可能影响笔画计数，并要求先确认写法，表述清楚且无命运断言。"
+      },
+      "reviewer_b.p2": {
+        "verdict": "revise",
+        "issues": [
+          {
+            "dimension": "plain_language",
+            "detail": "将简繁转换与异体字选择混在一起，并称按证件或习惯写法计数，容易让用户直接采用简体笔画；应说明先按既定的康熙繁体计数规则转换，再对确有歧义的异体字确认采用的字形。"
+          }
+        ],
+        "reason": "字形确认的提醒合理，但需要区分简繁转换与异体字选择，避免误导计数。"
+      }
+    },
+    "code_findings": []
+  },
+  {
+    "id": "kb:name:grid:地格",
+    "content_sha256": "35dfd8c0673061d8c3d75fccf542a04dbd47fe010271a9d72c183ef9e9c5ddd4",
+    "verdicts": {
+      "reviewer_a.p1": {
+        "verdict": "pass",
+        "issues": [],
+        "reason": "地格释义符合五格民间约定，用词非宿命，主题方向为中性无冲突。"
+      },
+      "reviewer_a.p2": {
+        "verdict": "pass",
+        "issues": [],
+        "reason": "地格释义符合五格民间约定，主题全为0与说明性文字一致，措辞非宿命化。"
+      },
+      "reviewer_b.p1": {
+        "verdict": "pass",
+        "issues": [],
+        "reason": "对地格来源及其早年基础、亲近关系等传统象征的概括基本准确，且明确限定为五格约定。"
+      },
+      "reviewer_b.p2": {
+        "verdict": "revise",
+        "issues": [
+          {
+            "dimension": "plain_language",
+            "detail": "“由名字各字组成”未说明笔画相加及单字名补一的约定，容易使用户误解地格的计算方式。建议改为“地格通常按名字各字的笔画数相加，单字名另加一”。"
+          }
+        ],
+        "reason": "传统含义基本相符，但地格的计算说明需要补充单字名的规则。"
+      }
+    },
+    "code_findings": []
+  },
+  {
+    "id": "kb:name:grid:外格",
+    "content_sha256": "6cd94aa44c0c1254a8ebfbd22affa838662b981d5eaf717ee85c937149392014",
+    "verdicts": {
+      "reviewer_a.p1": {
+        "verdict": "pass",
+        "issues": [],
+        "reason": "外格计算方式与释义符合民间约定，方向中性一致。"
+      },
+      "reviewer_a.p2": {
+        "verdict": "revise",
+        "issues": [
+          {
+            "dimension": "tradition",
+            "detail": "外格算法表述有误：五格剖象法中单姓单名等情况下外格通常恒为2（单姓单名总格减人格），通用算法为‘总格减人格’（或天格加地格减人格在繁体笔画取整上并不总成立），此处写‘天格加地格减人格’易误导。"
+          }
+        ],
+        "reason": "外格计算方法与主流五格约定不符，需修正。"
+      },
+      "reviewer_b.p1": {
+        "verdict": "pass",
+        "issues": [],
+        "reason": "外格的计算关系及外部人际、社会支持的象征含义符合五格常见约定。"
+      },
+      "reviewer_b.p2": {
+        "verdict": "pass",
+        "issues": [],
+        "reason": "计算关系及外部人际、社会支持的传统解释相符，没有确定性断言。"
+      }
+    },
+    "code_findings": []
+  },
+  {
+    "id": "kb:name:grid:总格",
+    "content_sha256": "5098f0beb8eb0f300c7d6a891111bb1ab27ee0a1dde215254ce908b9c9826aba",
+    "verdicts": {
+      "reviewer_a.p1": {
+        "verdict": "pass",
+        "issues": [],
+        "reason": "总格释义符合约定且语言通俗非宿命。"
+      },
+      "reviewer_a.p2": {
+        "verdict": "pass",
+        "issues": [],
+        "reason": "总格释义符合五格约定，主题中性，措辞克制。"
+      },
+      "reviewer_b.p1": {
+        "verdict": "pass",
+        "issues": [],
+        "reason": "总格取全名笔画总和、象征整体及中后期状态的说明符合五格常见约定，主题值保持中性合理。"
+      },
+      "reviewer_b.p2": {
+        "verdict": "revise",
+        "issues": [
+          {
+            "dimension": "plain_language",
+            "detail": "“实际笔画”容易被理解为日常书写的笔画数，而传统五格通常采用康熙字典笔画等约定口径。建议改为“总格是全名各字按五格所用笔画规则计算后的总和，不另加虚数”。"
+          }
+        ],
+        "reason": "总格的核心解释正确，但笔画口径表述有歧义，需要澄清。"
+      }
+    },
+    "code_findings": []
+  },
+  {
+    "id": "kb:name:sancai:土土土",
+    "content_sha256": "ef108b0c5bcac41c4d1eb14bac945dc7c342fea70d6c29ac34bd1ae1f4194fa2",
+    "verdicts": {
+      "reviewer_a.p1": {
+        "verdict": "pass",
+        "issues": [],
+        "reason": "土土土为三同，释义与五行关系一致，整体较顺，主题方向与文字相符。"
+      },
+      "reviewer_a.p2": {
+        "verdict": "pass",
+        "issues": [],
+        "reason": "土土土同为一致关系，整体较顺表述合理，主题方向与文字相符。"
+      },
+      "reviewer_b.p1": {
+        "verdict": "revise",
+        "issues": [
+          {
+            "dimension": "plain_language",
+            "detail": "“较顺”未在正文中明确为三才姓名学的民间评价；建议改为“按民间约定，可象征性理解为较顺”，避免把同五行直接等同于现实顺利。"
+          }
+        ],
+        "reason": "配置、同五行关系与主题方向一致，但需明确吉凶评价不是客观推断。"
+      },
+      "reviewer_b.p2": {
+        "verdict": "revise",
+        "issues": [
+          {
+            "dimension": "tradition",
+            "detail": "三土比和的关系正确，但从比和推到“较顺”属于姓名三才的民间评价，正文应明确这一点，而非仅写“按五行生克规则”。"
+          }
+        ],
+        "reason": "正文与正向主题一致，需补充顺逆评价属于民间约定的说明。"
+      }
+    },
+    "code_findings": []
+  },
+  {
+    "id": "kb:name:sancai:土土木",
+    "content_sha256": "06e25c3fa61ed69095247c11203d2d039535483964455d3c8ea9162c0f5c27a3",
+    "verdicts": {
+      "reviewer_a.p1": {
+        "verdict": "pass",
+        "issues": [],
+        "reason": "土土木中土土为同、木克土即人格被地格克，描述正确，整体需协调，主题方向与文字相符。"
+      },
+      "reviewer_a.p2": {
+        "verdict": "pass",
+        "issues": [],
+        "reason": "木克土为被克，五行关系准确，主题方向与文字相符。"
+      },
+      "reviewer_b.p1": {
+        "verdict": "revise",
+        "issues": [
+          {
+            "dimension": "plain_language",
+            "detail": "正文应明确“需要协调”及精力受牵扯的解释属于三才姓名学的民间象征性解读，不能仅归于五行生克规则。"
+          }
+        ],
+        "reason": "土土同、木克土的关系和主题倾向基本一致，但民间评价性质尚需明示。"
+      },
+      "reviewer_b.p2": {
+        "verdict": "revise",
+        "issues": [
+          {
+            "dimension": "tradition",
+            "detail": "土土比和、人格土受地格木所克的关系正确，但“需要协调”及生活牵扯的解释应明确标为姓名三才的民间约定。"
+          }
+        ],
+        "reason": "自我偏顺、关系偏阻与正文基本相符，需明确其民间解释性质。"
+      }
+    },
+    "code_findings": []
+  },
+  {
+    "id": "kb:name:sancai:土土水",
+    "content_sha256": "0708d25afc98d54f59d9f1cf1bb74b6008c358399d41610affaa3c4d0bf2c423",
+    "verdicts": {
+      "reviewer_a.p1": {
+        "verdict": "pass",
+        "issues": [],
+        "reason": "土土水中土克水关系描述正确，整体需协调，主题方向与文字相符。"
+      },
+      "reviewer_a.p2": {
+        "verdict": "pass",
+        "issues": [],
+        "reason": "土克水为克、同关系表述准确，主题 direction 与文字相符。"
+      },
+      "reviewer_b.p1": {
+        "verdict": "revise",
+        "issues": [
+          {
+            "dimension": "plain_language",
+            "detail": "正文应说明“需要协调”是三才姓名学的民间评价，并将其与真实人际表现区分，不能仅以“按五行生克规则”作为现实倾向的依据。"
+          }
+        ],
+        "reason": "土土同、土克水及主题方向基本一致，但需明确象征性评价的民间性质。"
+      },
+      "reviewer_b.p2": {
+        "verdict": "revise",
+        "issues": [
+          {
+            "dimension": "tradition",
+            "detail": "土土比和、土克水的关系正确，但“需要协调”及人际解读应明确属于姓名三才的民间约定，而非五行生克规则直接说明的现实状态。"
+          }
+        ],
+        "reason": "自我偏顺、关系偏阻与正文相符，需明确评价的民间解释性质。"
+      }
+    },
+    "code_findings": []
+  },
+  {
+    "id": "kb:name:sancai:土土火",
+    "content_sha256": "15bdf7c2e5b4640c2afaef8667960ca72b50b2b6ca9032e6ee43e10c8207f81c",
+    "verdicts": {
+      "reviewer_a.p1": {
+        "verdict": "pass",
+        "issues": [],
+        "reason": "三才土土火释义与五行生克（同、火生土即被生）一致，整体较顺，主题方向与文字相符。"
+      },
+      "reviewer_a.p2": {
+        "verdict": "pass",
+        "issues": [],
+        "reason": "三才土土火配置与五行关系（同、被生）表述准确，主题方向与文字一致，无问题。"
+      },
+      "reviewer_b.p1": {
+        "verdict": "revise",
+        "issues": [
+          {
+            "dimension": "plain_language",
+            "detail": "正文将“较顺”直接归于五行生克规则，未明确这是三才姓名学的民间评价；应补充民间约定及象征性解读的限定。"
+          }
+        ],
+        "reason": "土与土同、火生土的关系准确，但需明确评价的民间约定性质。"
+      },
+      "reviewer_b.p2": {
+        "verdict": "revise",
+        "issues": [
+          {
+            "dimension": "tradition",
+            "detail": "土土比和、人格土受地格火所生的关系正确，但正文应明确“较顺”是姓名三才的民间解释，而非五行生克规则本身能够推出的现实评价。"
+          }
+        ],
+        "reason": "关系解释与倾向值相符，补充民间约定的限定后更适合面向用户。"
+      }
+    },
+    "code_findings": []
+  },
+  {
+    "id": "kb:name:sancai:土土金",
+    "content_sha256": "4805237fc602465dc64a569dd243ca163618707970a6058fb4d0f966baa54a90",
+    "verdicts": {
+      "reviewer_a.p1": {
+        "verdict": "pass",
+        "issues": [],
+        "reason": "三才土土金释义与五行生克（同、生）一致，整体较顺，主题方向与文字相符，且为民间约定说法。"
+      },
+      "reviewer_a.p2": {
+        "verdict": "pass",
+        "issues": [],
+        "reason": "三才土土金配置与五行关系（同比和、生为顺）表述准确，主题方向与文字一致，措辞限定为民间约定，无问题。"
+      },
+      "reviewer_b.p1": {
+        "verdict": "revise",
+        "issues": [
+          {
+            "dimension": "plain_language",
+            "detail": "面向用户的正文未说明“较顺”属于姓名学民间约定；建议改为“按三才姓名学的民间约定，可象征性理解为较顺”，避免将吉凶评价直接表述为五行规则的结论。"
+          }
+        ],
+        "reason": "生克关系与主题方向基本一致，但吉凶评价需在正文中明确为民间约定。"
+      },
+      "reviewer_b.p2": {
+        "verdict": "revise",
+        "issues": [
+          {
+            "dimension": "tradition",
+            "detail": "土土比和、土生金的关系正确，但面向用户的正文未明确说明“较顺”属于姓名三才的民间约定；建议将“按五行生克规则”改为“按姓名三才的民间解释”。"
+          }
+        ],
+        "reason": "生克关系与主题方向基本一致，需明确顺逆评价的民间约定性质。"
+      }
+    },
+    "code_findings": []
+  },
+  {
+    "id": "kb:name:sancai:土木土",
+    "content_sha256": "fe7b12ab92ab8b191ee8fe4fa47587b818d0d1c32da72e9c07e22be886fe7d71",
+    "verdicts": {
+      "reviewer_a.p1": {
+        "verdict": "pass",
+        "issues": [],
+        "reason": "土木土中土克木、木克土关系描述正确，整体张力较多，主题负向与文字相符。"
+      },
+      "reviewer_a.p2": {
+        "verdict": "pass",
+        "issues": [],
+        "reason": "木克土为克、土克木为被克，五行表述准确，主题整体偏负与张力较多一致。"
+      },
+      "reviewer_b.p1": {
+        "verdict": "revise",
+        "issues": [
+          {
+            "dimension": "plain_language",
+            "detail": "正文未将“张力较多”明确限定为三才姓名学的民间评价；建议以“按民间约定作象征性理解”引出，避免呈现为规则直接推导的现实状态。"
+          }
+        ],
+        "reason": "两处相克关系解释没有写反，但吉凶倾向需明确为民间约定。"
+      },
+      "reviewer_b.p2": {
+        "verdict": "revise",
+        "issues": [
+          {
+            "dimension": "tradition",
+            "detail": "两组关系均涉及木克土，解释未写错，但“张力较多”应明确标为姓名三才的民间评价，不宜仅归因于五行生克规则。"
+          }
+        ],
+        "reason": "文字与负向主题基本一致，需补足民间约定的说明。"
+      }
+    },
+    "code_findings": []
+  },
+  {
+    "id": "kb:name:sancai:土木木",
+    "content_sha256": "548e2d395adf1efe080321357a8995c8345b5e7822ff76c71e3c04fc7399f223",
+    "verdicts": {
+      "reviewer_a.p1": {
+        "verdict": "pass",
+        "issues": [],
+        "reason": "土木木中土克木、木木为同，关系描述正确，整体需协调，主题方向与文字相符。"
+      },
+      "reviewer_a.p2": {
+        "verdict": "pass",
+        "issues": [],
+        "reason": "木克土为被克、同关系表述准确，主题方向与文字一致。"
+      },
+      "reviewer_b.p1": {
+        "verdict": "revise",
+        "issues": [
+          {
+            "dimension": "plain_language",
+            "detail": "正文未明确“需要协调”及相关心理解释属于姓名学民间约定；建议补充这一限定，而不只说明“作自我观察的线索”。"
+          }
+        ],
+        "reason": "五行关系和主题倾向没有明显冲突，但评价来源需在用户可见正文中交代。"
+      },
+      "reviewer_b.p2": {
+        "verdict": "revise",
+        "issues": [
+          {
+            "dimension": "tradition",
+            "detail": "木克土、木木比和的关系正确，但正文应把“需要协调”明确表述为姓名三才的民间解释；仅说“自我观察的线索”尚未交代该评价的性质。"
+          }
+        ],
+        "reason": "核心关系与主题倾向基本一致，需补充民间约定的限定。"
+      }
+    },
+    "code_findings": []
+  },
+  {
+    "id": "kb:name:sancai:土木水",
+    "content_sha256": "ac9a88362f9bbaa085465250471b40b8a3248891ec97de4e14eda6e9226aba85",
+    "verdicts": {
+      "reviewer_a.p1": {
+        "verdict": "pass",
+        "issues": [],
+        "reason": "土木水中土克木、水生木即被生，描述正确，整体需协调，主题方向与文字相符。"
+      },
+      "reviewer_a.p2": {
+        "verdict": "pass",
+        "issues": [],
+        "reason": "水生木为被生，五行关系准确，主题方向与文字相符。"
+      },
+      "reviewer_b.p1": {
+        "verdict": "revise",
+        "issues": [
+          {
+            "dimension": "plain_language",
+            "detail": "应在正文中将“需要协调”明确写成姓名学民间约定，并说明家庭支持等描述是象征性反思提示，而非五行规则的现实结论。"
+          }
+        ],
+        "reason": "土被木克、水生木的关系准确，主要问题是未明确评价的民间约定性质。"
+      },
+      "reviewer_b.p2": {
+        "verdict": "revise",
+        "issues": [
+          {
+            "dimension": "tradition",
+            "detail": "木克土、水生木的关系正确，但正文未明确“需要协调”及家庭支持的解读属于姓名三才的民间约定，建议补充这一限定。"
+          }
+        ],
+        "reason": "生克关系和主题方向基本一致，需将生活化推演标为民间解释。"
+      }
+    },
+    "code_findings": []
+  },
+  {
+    "id": "kb:name:sancai:土木火",
+    "content_sha256": "86fd7fd092349f5458e6b831bd900ca6614d2e56654747725dcdc1e2a7af5ad7",
+    "verdicts": {
+      "reviewer_a.p1": {
+        "verdict": "pass",
+        "issues": [],
+        "reason": "土木火中土克木（人格被天格克，写作被克）符合规则，木生火为生，整体需协调，主题方向与文字相符。"
+      },
+      "reviewer_a.p2": {
+        "verdict": "pass",
+        "issues": [],
+        "reason": "土克木为被克、木生火为生，五行关系正确，主题方向与文字相符，措辞非宿命化。"
+      },
+      "reviewer_b.p1": {
+        "verdict": "revise",
+        "issues": [
+          {
+            "dimension": "plain_language",
+            "detail": "“需要协调”及其心理、关系解释属于姓名学的象征性解读，正文应明确其为民间约定，而非五行生克规则本身可以推出的现实判断。"
+          }
+        ],
+        "reason": "生克指向和主题倾向可对应，但民间解释与五行关系事实需区分。"
+      },
+      "reviewer_b.p2": {
+        "verdict": "revise",
+        "issues": [
+          {
+            "dimension": "tradition",
+            "detail": "木克土、木生火的关系正确，但正文未说明“需要协调”及相应生活解读属于姓名三才的民间约定，建议在总结中明确限定。"
+          }
+        ],
+        "reason": "核心关系和主题方向可成立，但顺逆评价需明确为民间解释。"
+      }
+    },
+    "code_findings": []
+  },
+  {
+    "id": "kb:name:sancai:土木金",
+    "content_sha256": "c5ac8baa771b7e202fe89edbf1f813039389ded533aded7e4de117d5fa8191f8",
+    "verdicts": {
+      "reviewer_a.p1": {
+        "verdict": "pass",
+        "issues": [],
+        "reason": "土木金中土克木、金克木即人格被地格克，描述正确，整体张力较多，主题负向与文字相符。"
+      },
+      "reviewer_a.p2": {
+        "verdict": "pass",
+        "issues": [],
+        "reason": "金克木为被克，五行关系表述准确，主题整体偏负与张力较多一致。"
+      },
+      "reviewer_b.p1": {
+        "verdict": "revise",
+        "issues": [
+          {
+            "dimension": "plain_language",
+            "detail": "“张力较多”应明确为三才姓名学的民间评价；五行相克关系本身不能直接证明现实中的精力消耗或关系阻力。"
+          }
+        ],
+        "reason": "两处“被克”分别以各组前一五行为参照，并未写反，但需补充民间象征性解读的限定。"
+      },
+      "reviewer_b.p2": {
+        "verdict": "revise",
+        "issues": [
+          {
+            "dimension": "tradition",
+            "detail": "天格土受人格木所克、人格木受地格金所克的关系正确，但“张力较多”应明确属于姓名三才的民间评价，不宜只写成五行生克规则的结论。"
+          }
+        ],
+        "reason": "负向主题与协调、休整的文字一致，需明确顺逆评价的民间性质。"
+      }
+    },
+    "code_findings": []
+  },
+  {
+    "id": "kb:name:sancai:土水土",
+    "content_sha256": "13d203698b2e11b548d6d4c9dfe5aef92886639e84f314f51c954a70a596772d",
+    "verdicts": {
+      "reviewer_a.p1": {
+        "verdict": "pass",
+        "issues": [],
+        "reason": "五行生克关系描述准确，主题方向与“张力较多”一致，措辞为观察线索而非断言。"
+      },
+      "reviewer_a.p2": {
+        "verdict": "pass",
+        "issues": [],
+        "reason": "三才五行克/被克关系描述准确，主题方向与“张力较多”的偏负表述一致，措辞留有余地。"
+      },
+      "reviewer_b.p1": {
+        "verdict": "revise",
+        "issues": [
+          {
+            "dimension": "plain_language",
+            "detail": "土克水的关系正确，但“外部要求形成压力”“日常琐事牵扯精力”及“张力较多”属于象征解读，不是五行生克规则本身的结论；用户可见文字应明确这是姓名学民间约定下的解读。"
+          }
+        ],
+        "reason": "生克关系与主题方向基本一致，但需区分五行关系和民间象征释义。"
+      },
+      "reviewer_b.p2": {
+        "verdict": "pass",
+        "issues": [],
+        "reason": "两组生克关系准确，压力与精力受牵扯的描述符合偏阻方向，且限定为自我观察线索。"
+      }
+    },
+    "code_findings": []
+  },
+  {
+    "id": "kb:name:sancai:土水木",
+    "content_sha256": "f89c70881223914082c234d609c0458d49bb9ada1a0ba18d630b1457e679c837",
+    "verdicts": {
+      "reviewer_a.p1": {
+        "verdict": "pass",
+        "issues": [],
+        "reason": "土克水、水生木描述准确，方向与“需要协调”一致。"
+      },
+      "reviewer_a.p2": {
+        "verdict": "pass",
+        "issues": [],
+        "reason": "土克水、水生木关系正确，自我偏负、感情偏正与文字相符。"
+      },
+      "reviewer_b.p1": {
+        "verdict": "revise",
+        "issues": [
+          {
+            "dimension": "plain_language",
+            "detail": "土克水、水生木的关系正确，但外部压力、为他人投入及“需要协调”属于象征解读；应明确这是姓名学民间约定下的解释，而非五行生克规则直接推导的个人表现。"
+          }
+        ],
+        "reason": "主题方向基本有文字依据，但需明确象征解释与五行关系之间的区别。"
+      },
+      "reviewer_b.p2": {
+        "verdict": "pass",
+        "issues": [],
+        "reason": "土克水、水生木的关系正确，外部压力与对身边人的投入分别对应自我偏阻和关系略顺。"
+      }
+    },
+    "code_findings": []
+  },
+  {
+    "id": "kb:name:sancai:土水水",
+    "content_sha256": "f31f8605eb455830aababf0d448176de5c00a22104677d7d15bd7a6161aaff83",
+    "verdicts": {
+      "reviewer_a.p1": {
+        "verdict": "pass",
+        "issues": [],
+        "reason": "土克水、水水为“同”描述准确，方向与“需要协调”一致。"
+      },
+      "reviewer_a.p2": {
+        "verdict": "pass",
+        "issues": [],
+        "reason": "土克水、水水同气正确，自我偏负、感情略偏正，方向与文字基本一致。"
+      },
+      "reviewer_b.p1": {
+        "verdict": "revise",
+        "issues": [
+          {
+            "dimension": "plain_language",
+            "detail": "土克水、水水同类的关系正确，但外部压力、生活步调及“需要协调”属于象征解读；应明确这是姓名学民间约定下的概括，不是五行关系直接推出的现实状态。"
+          }
+        ],
+        "reason": "主题方向与正文基本相符，但需明确三才倾向解释的民间约定性质。"
+      },
+      "reviewer_b.p2": {
+        "verdict": "pass",
+        "issues": [],
+        "reason": "外部压力与生活基础协调并存，能够支持自我偏阻、关系略顺的混合倾向。"
+      }
+    },
+    "code_findings": []
+  },
+  {
+    "id": "kb:name:sancai:土水火",
+    "content_sha256": "baf5bd0abdf1a18f64ad6645f863542a43180a589618972a1996dcc60751610a",
+    "verdicts": {
+      "reviewer_a.p1": {
+        "verdict": "pass",
+        "issues": [],
+        "reason": "水克火描述正确，整体方向与“张力较多”一致，无宿命化表述。"
+      },
+      "reviewer_a.p2": {
+        "verdict": "pass",
+        "issues": [],
+        "reason": "土克水、水克火关系正确，方向与文字一致且无宿命断言。"
+      },
+      "reviewer_b.p1": {
+        "verdict": "revise",
+        "issues": [
+          {
+            "dimension": "plain_language",
+            "detail": "土克水、水克火的关系正确，但对压力、沟通方式及整体阻力的解释属于象征解读；应明确“张力较多”是姓名学民间约定下的概括，而非五行规则直接推导的个人状态。"
+          }
+        ],
+        "reason": "五行关系没有写错，但对个人状态的延伸需标明民间象征解读性质。"
+      },
+      "reviewer_b.p2": {
+        "verdict": "pass",
+        "issues": [],
+        "reason": "土克水、水克火的关系及白话解释一致，各主题的偏阻倾向与文字相符。"
+      }
+    },
+    "code_findings": []
+  },
+  {
+    "id": "kb:name:sancai:土水金",
+    "content_sha256": "88c563bf8714eb9e4327b35e603c6ed6db60ecfb6ed9ecc24f44c69718d4a824",
+    "verdicts": {
+      "reviewer_a.p1": {
+        "verdict": "pass",
+        "issues": [],
+        "reason": "金生水为“被生”描述正确，方向与“需要协调”相符。"
+      },
+      "reviewer_a.p2": {
+        "verdict": "pass",
+        "issues": [],
+        "reason": "土克水、金生水（被生）关系正确，方向与文字一致。"
+      },
+      "reviewer_b.p1": {
+        "verdict": "revise",
+        "issues": [
+          {
+            "dimension": "plain_language",
+            "detail": "土克水、金生水的关系正确，但外部压力、家庭补充能量及“需要协调”属于象征解释；应明确这些是姓名学民间约定下的解读。"
+          }
+        ],
+        "reason": "生克关系与主题方向基本一致，但三才倾向应明确写成民间约定。"
+      },
+      "reviewer_b.p2": {
+        "verdict": "pass",
+        "issues": [],
+        "reason": "土克水、金生水的关系解释准确，压力与家庭支持并存的描述符合主题倾向。"
+      }
+    },
+    "code_findings": []
+  },
+  {
+    "id": "kb:name:sancai:土火土",
+    "content_sha256": "f8db6302f8e25ca0f9baab414eddd95ec3d879eb296cf6485ab5e54d6f658046",
+    "verdicts": {
+      "reviewer_a.p1": {
+        "verdict": "pass",
+        "issues": [],
+        "reason": "土生火、火生土描述准确，方向与“较顺”一致，措辞为观察线索。"
+      },
+      "reviewer_a.p2": {
+        "verdict": "revise",
+        "issues": [
+          {
+            "dimension": "tradition",
+            "detail": "人格火与地格土应为“生”而非“被生”，文字括号内天格土、人格火、地格土与关键“土火土”矛盾，且未写明天格火生土（被生）的准确关系"
+          }
+        ],
+        "reason": "地格关键与释义中的五行关系表述有误（火生土写成“被生”不准确且内部逻辑不一致）。"
+      },
+      "reviewer_b.p1": {
+        "verdict": "revise",
+        "issues": [
+          {
+            "dimension": "plain_language",
+            "detail": "两处火生土的关系正确，但付出习惯、对生活的投入及整体“较顺”不是五行规则本身的结论；应明确其为姓名学民间约定下的象征解读。"
+          }
+        ],
+        "reason": "关系标注和正向倾向基本一致，但需在正文中明确“较顺”的民间约定性质。"
+      },
+      "reviewer_b.p2": {
+        "verdict": "pass",
+        "issues": [],
+        "reason": "两处火生土的施受方向表述正确，整体较顺与正向主题一致，且未作确定性预测。"
+      }
+    },
+    "code_findings": []
+  },
+  {
+    "id": "kb:name:sancai:土火木",
+    "content_sha256": "12497058a243972b1fa5884fb4af79dd5f44d09d8ec18029221bb26ab84baa4e",
+    "verdicts": {
+      "reviewer_a.p1": {
+        "verdict": "pass",
+        "issues": [],
+        "reason": "土生火、木生火为“被生”描述正确，方向与“较顺”一致。"
+      },
+      "reviewer_a.p2": {
+        "verdict": "pass",
+        "issues": [],
+        "reason": "火生土、木生火关系描述正确，整体偏正与“较顺”相符。"
+      },
+      "reviewer_b.p1": {
+        "verdict": "revise",
+        "issues": [
+          {
+            "dimension": "plain_language",
+            "detail": "火生土、木生火的关系正确，但向外付出、家庭支持及整体“较顺”属于象征延伸；应在正文中说明这是姓名学民间约定下的解读。"
+          }
+        ],
+        "reason": "生克关系和正向主题基本一致，但不应把象征释义直接表述为五行规则的结论。"
+      },
+      "reviewer_b.p2": {
+        "verdict": "pass",
+        "issues": [],
+        "reason": "火生土、木生火的关系及施受方向解释正确，整体支持性描述与正向主题一致。"
+      }
+    },
+    "code_findings": []
+  },
+  {
+    "id": "kb:name:sancai:土火水",
+    "content_sha256": "350dba330c78028db6149d06d2e0c950ff217b06b1bcc5b58f1ded658758dbbb",
+    "verdicts": {
+      "reviewer_a.p1": {
+        "verdict": "pass",
+        "issues": [],
+        "reason": "水克火为“被克”描述正确，方向与“需要协调”相符。"
+      },
+      "reviewer_a.p2": {
+        "verdict": "pass",
+        "issues": [],
+        "reason": "火生土、水克火关系正确，感情偏负与日常琐事牵扯精力的文字一致。"
+      },
+      "reviewer_b.p1": {
+        "verdict": "revise",
+        "issues": [
+          {
+            "dimension": "plain_language",
+            "detail": "火生土、水克火的关系正确，但对外付出、琐事耗能及“需要协调”属于象征解释，应明确其姓名学民间约定性质。"
+          },
+          {
+            "dimension": "theme_direction",
+            "detail": "self 为正，但正文描述照顾外部期待、精力被牵扯及需要休整，自我状态整体更偏承压，缺少正向依据；宜调整方向或修改对应文字。"
+          }
+        ],
+        "reason": "除需标明民间解释性质外，自我主题正向值也与正文的承压描述不符。"
+      },
+      "reviewer_b.p2": {
+        "verdict": "revise",
+        "issues": [
+          {
+            "dimension": "theme_direction",
+            "detail": "self 为正，但文字重点是向外付出、精力被琐事牵扯及需要休整，没有明确的自我受益描述；建议将 self 调为中性或偏负。"
+          }
+        ],
+        "reason": "五行关系准确，但精力受牵扯的描述不足以支持自我主题偏顺。"
+      }
+    },
+    "code_findings": []
+  },
+  {
+    "id": "kb:name:sancai:土火火",
+    "content_sha256": "b08286fcbc6258534eac7e662e332bfdd3b9b3c70ee2f301e0aec1003994e0e0",
+    "verdicts": {
+      "reviewer_a.p1": {
+        "verdict": "pass",
+        "issues": [],
+        "reason": "土生火为“被生”、火火为“同”，方向与“较顺”一致，措辞谨慎。"
+      },
+      "reviewer_a.p2": {
+        "verdict": "pass",
+        "issues": [],
+        "reason": "火生土（天格被生）、火火同气描述准确，偏正方向与“较顺”一致。"
+      },
+      "reviewer_b.p1": {
+        "verdict": "revise",
+        "issues": [
+          {
+            "dimension": "plain_language",
+            "detail": "火生土、火火同类的关系正确，但“自我习惯向外付出”“步调一致”及“较顺”并非生克关系本身的含义；应明确这些是姓名学民间约定下的象征解释。"
+          }
+        ],
+        "reason": "关系标注及正向主题基本一致，但“较顺”的民间约定性质需在正文中说明。"
+      },
+      "reviewer_b.p2": {
+        "verdict": "pass",
+        "issues": [],
+        "reason": "火生土、火火同类的关系准确，整体较顺的描述与主题倾向一致，无命运断言。"
+      }
+    },
+    "code_findings": []
+  },
+  {
+    "id": "kb:name:sancai:土火金",
+    "content_sha256": "2a9e0e5c83a387979bf6647df7c4922f36e2aea3f81ebc196b4aa32131765997",
+    "verdicts": {
+      "reviewer_a.p1": {
+        "verdict": "pass",
+        "issues": [],
+        "reason": "火克金描述正确，主题方向与“需要协调”相符，无确定断言。"
+      },
+      "reviewer_a.p2": {
+        "verdict": "pass",
+        "issues": [],
+        "reason": "火生土、火克金关系正确，主题仅感情略偏负、其余中性，与“需要协调”文字不矛盾。"
+      },
+      "reviewer_b.p1": {
+        "verdict": "revise",
+        "issues": [
+          {
+            "dimension": "plain_language",
+            "detail": "生克关系正确，但付出习惯、对他人要求较多及“需要协调”属于象征解释，应明确其为姓名学民间约定，而非五行规则直接给出的性格结论。"
+          },
+          {
+            "dimension": "theme_direction",
+            "detail": "self 为正，但正文主要描述向外付出、照顾外部期待及需要协调，缺少自我状态偏顺的明确依据；宜调整为中性，或补充与正向自我状态相符的表述。"
+          }
+        ],
+        "reason": "需标明民间解释性质，并修正自我主题正向值缺少文字支持的问题。"
+      },
+      "reviewer_b.p2": {
+        "verdict": "revise",
+        "issues": [
+          {
+            "dimension": "theme_direction",
+            "detail": "self 为正，但文字仅描述向外付出、照顾外部期待及需要协调，未明确体现自我状态受到支持或改善；建议将 self 调为中性，或补充与正向自我状态相符的描述。"
+          }
+        ],
+        "reason": "生克关系正确，但自我主题的正向倾向缺少文字支撑。"
+      }
+    },
+    "code_findings": []
+  },
+  {
+    "id": "kb:name:sancai:木火水",
+    "content_sha256": "6f886ae0c8b501279884b8552318334ad0c86819d0224f7aac4d16838833c190",
+    "verdicts": {
+      "reviewer_a.p1": {
+        "verdict": "pass",
+        "issues": [],
+        "reason": "三才关系与文字一致，主题方向合理，无确定性断言。"
+      },
+      "reviewer_a.p2": {
+        "verdict": "pass",
+        "issues": [],
+        "reason": "生克关系与主题方向一致，措辞谨慎。"
+      },
+      "reviewer_b.p1": {
+        "verdict": "pass",
+        "issues": [],
+        "reason": "木生火、水克火的关系表述正确，支持与消耗并存的释义符合需要协调的定位。"
+      },
+      "reviewer_b.p2": {
+        "verdict": "revise",
+        "issues": [
+          {
+            "dimension": "theme_direction",
+            "detail": "文字中的阻力是日常琐事牵扯个人精力，未明确涉及感情或人际关系受阻，relationship 的负向缺乏直接依据；宜调为无方向，或补充关系层面的协调含义。"
+          }
+        ],
+        "reason": "五行关系正确，但关系主题的负向标注未得到释义文字的充分支持。"
+      }
+    },
+    "code_findings": []
+  },
+  {
+    "id": "kb:name:sancai:水水水",
+    "content_sha256": "9549b805946a44f0efec386024be3f45e5bce4de4c4b3baa77ca899c6c690674",
+    "verdicts": {
+      "reviewer_a.p1": {
+        "verdict": "pass",
+        "issues": [],
+        "reason": "同关系描述与偏顺主题一致，措辞谨慎。"
+      },
+      "reviewer_a.p2": {
+        "verdict": "pass",
+        "issues": [],
+        "reason": "三才同水描述准确，theme_map正向与“较顺”一致，措辞留有余地。"
+      },
+      "reviewer_b.p1": {
+        "verdict": "reject",
+        "issues": [
+          {
+            "dimension": "tradition",
+            "detail": "将“水水水”因五行相同而整体解释为“较顺”，不符合五格剖象法三才配置的常见民间判法；该配置通常列为凶，不能直接把同元素等同于整体顺遂。"
+          }
+        ],
+        "reason": "虽正确识别了同元素关系，但整体吉凶含义与所依据的三才传统存在核心偏差。"
+      },
+      "reviewer_b.p2": {
+        "verdict": "revise",
+        "issues": [
+          {
+            "dimension": "tradition",
+            "detail": "同属水的关系判断无误，但直接由两组“同”推出整体“较顺”，忽略了传统三才解释对水势过盛、流动不定等倾向的提醒；水水水通常并非单纯的顺遂配置。建议保留步调一致的反思角度，同时补充失衡风险，并调整整体倾向。"
+          }
+        ],
+        "reason": "五行对应正确，但对水水水的整体评价过于正向，不能仅凭同元素判为较顺。"
+      }
+    },
+    "code_findings": []
+  },
+  {
+    "id": "kb:name:sancai:水金火",
+    "content_sha256": "f6d5a7509b9c3e8515ffce11eb796d0b47bf0dbd914572b71e2ac2eb14365f63",
+    "verdicts": {
+      "reviewer_a.p1": {
+        "verdict": "pass",
+        "issues": [],
+        "reason": "生克关系描述准确，theme_map 方向与文字一致，措辞谨慎。"
+      },
+      "reviewer_a.p2": {
+        "verdict": "pass",
+        "issues": [],
+        "reason": "生克关系（水生金为被生、火克金为被克）描述准确，方向与文字一致，措辞为观察性线索。"
+      },
+      "reviewer_b.p1": {
+        "verdict": "revise",
+        "issues": [
+          {
+            "dimension": "theme_direction",
+            "detail": "文字强调向外付出、照顾外部期待及琐事牵扯精力，未体现自我状态偏顺的依据，self 却为正；建议调整为中性或偏阻，或补充明确的正向含义。"
+          }
+        ],
+        "reason": "生克关系与白话对应基本准确，但自我主题的正向倾向缺少文字支持。"
+      },
+      "reviewer_b.p2": {
+        "verdict": "revise",
+        "issues": [
+          {
+            "dimension": "theme_direction",
+            "detail": "文字对自我状态主要描述向外付出、精力受牵扯和需要休整，缺少偏顺的依据，self 却设为正向；建议调整为中性或偏负，或补充明确的正向释义。"
+          }
+        ],
+        "reason": "五行关系及其解释可以成立，但自我状态的正向标记与文字中的消耗倾向不一致。"
+      }
+    },
+    "code_findings": []
+  },
+  {
+    "id": "kb:name:sancai:火木土",
+    "content_sha256": "cf99e38a2349cc8a31c36abac7c1180f2cec0be1c9307118895b8252a2ee4714",
+    "verdicts": {
+      "reviewer_a.p1": {
+        "verdict": "revise",
+        "issues": [
+          {
+            "dimension": "theme_direction",
+            "detail": "self 为 +0.1，但天格火生人格木属“被生”，且整体关键词为“需要协调”，self 正向与整体张力不符。"
+          }
+        ],
+        "reason": "self 的正向值与“需要协调”的整体基调不一致。"
+      },
+      "reviewer_a.p2": {
+        "verdict": "pass",
+        "issues": [],
+        "reason": "火生木、木克土的关系正确，主题方向与“需要协调”相符。"
+      },
+      "reviewer_b.p1": {
+        "verdict": "revise",
+        "issues": [
+          {
+            "dimension": "plain_language",
+            "detail": "正文只称“按五行生克规则”，未明确“需要协调”属于姓名学的民间约定；建议补充这一限定。"
+          }
+        ],
+        "reason": "火受木生、木克土的解释没有明显错误，但顺阻评价应明确其民俗性质。"
+      },
+      "reviewer_b.p2": {
+        "verdict": "revise",
+        "issues": [
+          {
+            "dimension": "tradition",
+            "detail": "正文未明确“需要协调”属于民间姓名学对三才的象征性解读，建议将“按五行生克规则”改为“按民间姓名学对三才的约定”。"
+          }
+        ],
+        "reason": "火受木生、木克土的关系表述无误，但三才顺逆须明确为民间约定。"
+      }
+    },
+    "code_findings": []
+  },
+  {
+    "id": "kb:name:sancai:火木木",
+    "content_sha256": "c94ea60b4e2f1fda150923bc370282a659a35ed1fef9477ad33a7edb8324dba3",
+    "verdicts": {
+      "reviewer_a.p1": {
+        "verdict": "pass",
+        "issues": [],
+        "reason": "火木木为天生人、木木比和，整体较顺，theme_map 正向一致，措辞为观察线索。"
+      },
+      "reviewer_a.p2": {
+        "verdict": "pass",
+        "issues": [],
+        "reason": "火生木、木木同的关系正确，主题方向与“较顺”一致。"
+      },
+      "reviewer_b.p1": {
+        "verdict": "revise",
+        "issues": [
+          {
+            "dimension": "plain_language",
+            "detail": "应在用户可见正文中注明“较顺”属于姓名学民间约定，避免将三才顺阻评价直接等同于五行生克规则。"
+          }
+        ],
+        "reason": "相生与同属性的解释基本一致，仅需补充顺阻评价的民俗定位。"
+      },
+      "reviewer_b.p2": {
+        "verdict": "revise",
+        "issues": [
+          {
+            "dimension": "tradition",
+            "detail": "正文将“较顺”直接归为五行生克规则的结论，建议明确写为“按民间姓名学对三才的约定，可象征性理解为较顺”。"
+          }
+        ],
+        "reason": "相生、同五行的描述与偏顺方向基本一致，但三才顺逆须明确为民间约定。"
+      }
+    },
+    "code_findings": []
+  },
+  {
+    "id": "kb:name:sancai:火木水",
+    "content_sha256": "4e73b7d5f932e5cbe650326b16e6ff6036b136b8323b7b79368f2b52b900c862",
+    "verdicts": {
+      "reviewer_a.p1": {
+        "verdict": "pass",
+        "issues": [],
+        "reason": "三才火木水为天生人、水生木，整体偏顺，theme_map 方向与文字一致，措辞为非宿命化的观察线索。"
+      },
+      "reviewer_a.p2": {
+        "verdict": "pass",
+        "issues": [],
+        "reason": "三才火木水的生克关系描述正确，主题方向与“较顺”一致，措辞为民间约定且非宿命化。"
+      },
+      "reviewer_b.p1": {
+        "verdict": "revise",
+        "issues": [
+          {
+            "dimension": "plain_language",
+            "detail": "用户可见文字应将“较顺”明确写成姓名学的民间约定，而非仅表述为五行生克规则的结论；来源字段中的说明不能替代正文说明。"
+          }
+        ],
+        "reason": "生克关系与白话解释基本一致，但顺阻评价需补充民间约定的定位。"
+      },
+      "reviewer_b.p2": {
+        "verdict": "revise",
+        "issues": [
+          {
+            "dimension": "tradition",
+            "detail": "正文将“较顺”直接归为五行生克规则的结论，未明确这是民间姓名学的象征性约定；建议改为“按民间姓名学对三才的约定，可象征性理解为较顺”。source 中的说明不能替代面向用户的标注。"
+          }
+        ],
+        "reason": "生克关系及白话解释基本相符，但三才顺逆须在正文中明确为民间约定。"
+      }
+    },
+    "code_findings": []
+  },
+  {
+    "id": "kb:name:sancai:火木火",
+    "content_sha256": "c1f06a7ca52197c86c0ed44e8b52f157da6d8f5051b94d950a84baa9a847f574",
+    "verdicts": {
+      "reviewer_a.p1": {
+        "verdict": "pass",
+        "issues": [],
+        "reason": "火木火为天生人、木生火，整体较顺，theme_map 正向一致，措辞非宿命化。"
+      },
+      "reviewer_a.p2": {
+        "verdict": "pass",
+        "issues": [],
+        "reason": "火生木、木生火的关系正确，主题方向与“较顺”一致。"
+      },
+      "reviewer_b.p1": {
+        "verdict": "revise",
+        "issues": [
+          {
+            "dimension": "plain_language",
+            "detail": "正文应将“较顺”明确归于姓名学民间约定；仅有“按五行生克规则”和“只作自我观察”仍未交代其民俗性质。"
+          }
+        ],
+        "reason": "木生火的关系及付出含义基本一致，但需补充三才顺阻评价的民间约定说明。"
+      },
+      "reviewer_b.p2": {
+        "verdict": "revise",
+        "issues": [
+          {
+            "dimension": "tradition",
+            "detail": "正文将“较顺”直接归为五行生克规则的结论，建议明确写为“按民间姓名学对三才的约定，可象征性理解为较顺”。"
+          }
+        ],
+        "reason": "木生火的关系及投入的白话解释无明显错误，但三才顺逆须明确为民间约定。"
+      }
+    },
+    "code_findings": []
+  },
+  {
+    "id": "kb:name:sancai:火木金",
+    "content_sha256": "793789d5917dcff20f3b73cd928fbe958165de00f6569af658f7eab08ed67a60",
+    "verdicts": {
+      "reviewer_a.p1": {
+        "verdict": "revise",
+        "issues": [
+          {
+            "dimension": "theme_direction",
+            "detail": "self 为 +0.1，但整体关键词为“需要协调”，人格木被地格金克且天格火生木，self 正向与整体张力基调不统一。"
+          }
+        ],
+        "reason": "self 的正向值与整体“需要协调”的基调不一致。"
+      },
+      "reviewer_a.p2": {
+        "verdict": "pass",
+        "issues": [],
+        "reason": "火生木、金克木的关系描述正确，主题方向与文字一致。"
+      },
+      "reviewer_b.p1": {
+        "verdict": "revise",
+        "issues": [
+          {
+            "dimension": "plain_language",
+            "detail": "应说明“需要协调”及相关状态解读是姓名学民间约定下的象征性表达，而非五行关系本身能够证明的个人特征。"
+          }
+        ],
+        "reason": "生克关系基本正确，但正文需要明确三才解读的民间约定定位。"
+      },
+      "reviewer_b.p2": {
+        "verdict": "revise",
+        "issues": [
+          {
+            "dimension": "tradition",
+            "detail": "正文未明确“需要协调”属于民间姓名学对三才的象征性解读，建议将“按五行生克规则”改为“按民间姓名学对三才的约定”。"
+          }
+        ],
+        "reason": "生克关系与付出、牵扯精力的解释基本相符，但须补明民间约定的性质。"
+      }
+    },
+    "code_findings": []
+  },
+  {
+    "id": "kb:name:sancai:火水土",
+    "content_sha256": "d84e5f0f0cc3c38a9b4d4057a1204954c0bc48e8a84c02584c31f80164533d8d",
+    "verdicts": {
+      "reviewer_a.p1": {
+        "verdict": "pass",
+        "issues": [],
+        "reason": "火水土为水克火、土克水，张力判断与主题负向一致，措辞非宿命化。"
+      },
+      "reviewer_a.p2": {
+        "verdict": "pass",
+        "issues": [],
+        "reason": "火水克、水被土克的关系正确，主题方向与“张力较多”相符。"
+      },
+      "reviewer_b.p1": {
+        "verdict": "revise",
+        "issues": [
+          {
+            "dimension": "plain_language",
+            "detail": "“张力较多”应明确写成姓名学民间约定中的评价；“只作自我观察”说明了用途，但没有说明评价的民俗来源。"
+          }
+        ],
+        "reason": "两处被克关系分别以天格火和人格水为参照，描述成立，但民间约定说明不足。"
+      },
+      "reviewer_b.p2": {
+        "verdict": "revise",
+        "issues": [
+          {
+            "dimension": "tradition",
+            "detail": "正文未明确“张力较多”属于民间姓名学对三才的象征性解读，建议将“按五行生克规则”改为“按民间姓名学对三才的约定”。"
+          }
+        ],
+        "reason": "两组相克关系与整体偏阻方向一致，但须明确三才倾向属于民间约定。"
+      }
+    },
+    "code_findings": []
+  },
+  {
+    "id": "kb:name:sancai:火水木",
+    "content_sha256": "0035d01b126b05ae5ac77813c7df27fd35ae220580a408aa89a83ce639419e3e",
+    "verdicts": {
+      "reviewer_a.p1": {
+        "verdict": "revise",
+        "issues": [
+          {
+            "dimension": "tradition",
+            "detail": "人格水与地格木应为“生”（水生木）而非“被生”？原文标“生”正确，但 theme_map 中 relationship 为 0.1、self 为 -0.1，与“需协调”及“愿意投入”的整体略不统一；另外“生”关系写为“愿意为……投入”，与 i09 一致，问题不在传统义。实际可接受的偏差在于 theme_map 的 relationship 正向而关键词为“需要协调”，方向不一致。"
+          }
+        ],
+        "reason": "theme_map 中 relationship 为正向 0.1，但关键词与文字整体为“需要协调”，方向不一致，需修正。"
+      },
+      "reviewer_a.p2": {
+        "verdict": "pass",
+        "issues": [],
+        "reason": "火水克、木生水的五行关系正确，主题方向偏自我受阻而感情偏顺，与文字基本相符。"
+      },
+      "reviewer_b.p1": {
+        "verdict": "revise",
+        "issues": [
+          {
+            "dimension": "plain_language",
+            "detail": "应将“需要协调”的评价明确归于姓名学民间约定，区分五行生克关系与对个人状态的象征性解读。"
+          }
+        ],
+        "reason": "生克关系和主题倾向基本相符，仅需补足三才评价的民间约定说明。"
+      },
+      "reviewer_b.p2": {
+        "verdict": "revise",
+        "issues": [
+          {
+            "dimension": "tradition",
+            "detail": "正文未明确“需要协调”属于民间姓名学对三才的象征性解读，建议将“按五行生克规则”改为“按民间姓名学对三才的约定”。"
+          }
+        ],
+        "reason": "生克关系与协调、投入的描述基本一致，但须明确三才倾向属于民间约定。"
+      }
+    },
+    "code_findings": []
+  },
+  {
+    "id": "kb:name:sancai:火水水",
+    "content_sha256": "920d0e7d05c58d43e8ddbba94563ab4f799cfef7c9025d30423496623b6002ec",
+    "verdicts": {
+      "reviewer_a.p1": {
+        "verdict": "revise",
+        "issues": [
+          {
+            "dimension": "theme_direction",
+            "detail": "relationship 为 +0.1，但人格水与地格水为“同”关系，整体关键词为“需要协调”，relationship 正向与张力基调不符。"
+          }
+        ],
+        "reason": "relationship 的正向值与整体“需要协调”的基调不一致。"
+      },
+      "reviewer_a.p2": {
+        "verdict": "pass",
+        "issues": [],
+        "reason": "火被水克、水水同的关系正确，主题方向与“需要协调”基本一致。"
+      },
+      "reviewer_b.p1": {
+        "verdict": "revise",
+        "issues": [
+          {
+            "dimension": "plain_language",
+            "detail": "应明确“需要协调”是姓名学民间约定下的象征性评价，而非单凭五行规则推出的个人状态。"
+          }
+        ],
+        "reason": "生克与同属性关系描述成立，但三才评价尚未明确写成民间约定。"
+      },
+      "reviewer_b.p2": {
+        "verdict": "revise",
+        "issues": [
+          {
+            "dimension": "tradition",
+            "detail": "正文未明确“需要协调”属于民间姓名学对三才的象征性解读，建议将“按五行生克规则”改为“按民间姓名学对三才的约定”。"
+          }
+        ],
+        "reason": "相克与同五行的描述基本一致，但须补明三才倾向的民间约定性质。"
+      }
+    },
+    "code_findings": []
+  },
+  {
+    "id": "kb:name:sancai:火水火",
+    "content_sha256": "282e0d0e758a3d903d10357123bf4c08985ca7b8549a656ac072420f41bdd68e",
+    "verdicts": {
+      "reviewer_a.p1": {
+        "verdict": "pass",
+        "issues": [],
+        "reason": "火水火为水克火、火克水，张力判断与文字及主题负向一致，措辞未宿命化。"
+      },
+      "reviewer_a.p2": {
+        "verdict": "pass",
+        "issues": [],
+        "reason": "火水与火火的克克关系描述正确，主题方向与“张力较多”一致，未作宿命断言。"
+      },
+      "reviewer_b.p1": {
+        "verdict": "revise",
+        "issues": [
+          {
+            "dimension": "plain_language",
+            "detail": "应在正文中说明“张力较多”是姓名学民间约定下的象征性评价，不是仅凭五行生克规则就能得出的个人状态结论。"
+          }
+        ],
+        "reason": "火被水克、水克火的描述成立，但三才评价的民间约定性质尚未在正文中明确。"
+      },
+      "reviewer_b.p2": {
+        "verdict": "revise",
+        "issues": [
+          {
+            "dimension": "tradition",
+            "detail": "正文未明确“张力较多”属于民间姓名学对三才的象征性解读，建议将“按五行生克规则”改为“按民间姓名学对三才的约定”。"
+          }
+        ],
+        "reason": "火受水克、水克火的关系及偏阻方向一致，但须补明民间约定的性质。"
+      }
+    },
+    "code_findings": []
+  },
+  {
+    "id": "kb:name:sancai:火水金",
+    "content_sha256": "cd503b1b19dbd1cca794b01ef21a5534aa2b6acbe8269a3e18f7e72a5c5a69fc",
+    "verdicts": {
+      "reviewer_a.p1": {
+        "verdict": "revise",
+        "issues": [
+          {
+            "dimension": "theme_direction",
+            "detail": "relationship 为 +0.1，但人格水与地格金为“被生”，且整体关键词为“需要协调”，relationship 正向与整体张力基调不一致。"
+          }
+        ],
+        "reason": "relationship 的正向值与整体“需要协调”的基调不一致。"
+      },
+      "reviewer_a.p2": {
+        "verdict": "pass",
+        "issues": [],
+        "reason": "火被水克、金生水的关系正确，主题方向与“需要协调”相符。"
+      },
+      "reviewer_b.p1": {
+        "verdict": "revise",
+        "issues": [
+          {
+            "dimension": "plain_language",
+            "detail": "应在正文中说明“需要协调”及生活基础支持自我的解读属于姓名学民间约定下的象征性表达。"
+          }
+        ],
+        "reason": "火被水克、水受金生的关系正确，但评价需要明确限定为民间约定。"
+      },
+      "reviewer_b.p2": {
+        "verdict": "revise",
+        "issues": [
+          {
+            "dimension": "tradition",
+            "detail": "正文未明确“需要协调”属于民间姓名学对三才的象征性解读，建议将“按五行生克规则”改为“按民间姓名学对三才的约定”。"
+          }
+        ],
+        "reason": "火受水克、水受金生的关系与文字基本一致，但须明确三才倾向属于民间约定。"
+      }
+    },
+    "code_findings": []
+  },
+  {
+    "id": "kb:name:sancai:火火火",
+    "content_sha256": "d65bd5a9cf6fada486aa978b93b0cf7cb57f6530fe1f5228e010f44df91c4a10",
+    "verdicts": {
+      "reviewer_a.p1": {
+        "verdict": "pass",
+        "issues": [],
+        "reason": "火火火两个“同”关系描述准确，整体偏顺的正向主题与文字一致，措辞为观察线索。"
+      },
+      "reviewer_a.p2": {
+        "verdict": "pass",
+        "issues": [],
+        "reason": "火火火三同的表述准确，整体“较顺”与各主题正向一致。"
+      },
+      "reviewer_b.p1": {
+        "verdict": "revise",
+        "issues": [
+          {
+            "dimension": "tradition",
+            "detail": "将三火比和直接概括为整体“较顺”过于简化；传统三才解释通常还强调火势过旺、急躁及耐力不足，并不以三者同属火就一概论顺。应补充这一限制，并将整体评价明确表述为姓名学民间约定下的倾向。"
+          }
+        ],
+        "reason": "五行同属火的判断正确，但整体评价遗漏了传统三才对火性过旺的重要提示。"
+      },
+      "reviewer_b.p2": {
+        "verdict": "revise",
+        "issues": [
+          {
+            "dimension": "tradition",
+            "detail": "两组火火同类的关系无误，但不能仅据同类便将火火火概括为“较顺”；传统三才解释通常也强调火势过旺、急躁及稳定性不足。建议补充这一层张力，并相应调整整体倾向及主题方向。"
+          }
+        ],
+        "reason": "将三火同类直接解释为全面偏顺，遗漏了传统三才中火旺过度的重要含义。"
+      }
+    },
+    "code_findings": []
+  },
+  {
+    "id": "kb:name:sancai:火金土",
+    "content_sha256": "43602ea77356a837d81055a7c582135840761b9756e0d065fa24be5275a2e760",
+    "verdicts": {
+      "reviewer_a.p1": {
+        "verdict": "pass",
+        "issues": [],
+        "reason": "火金土“克、被生”关系描述准确，self 偏负、relationship 偏正与文字对应合理，措辞非宿命化。"
+      },
+      "reviewer_a.p2": {
+        "verdict": "revise",
+        "issues": [
+          {
+            "dimension": "tradition",
+            "detail": "人格金与地格土应为“地格土生人格金”，即人格“被生”，文字写“被生”方向正确但主语表述易误解；更关键的是整体定位“需要协调”与self负、relationship正的分布缺少文字说明"
+          },
+          {
+            "dimension": "theme_direction",
+            "detail": "relationship为+0.1，但文字中仅有“补充能量”的中性描述，且整体关键词为“需要协调”，正向方向缺少支撑"
+          }
+        ],
+        "reason": "整体定位与relationship正向之间缺少文字支撑，主题方向一致性不足。"
+      },
+      "reviewer_b.p1": {
+        "verdict": "pass",
+        "issues": [],
+        "reason": "火克金、土生金的关系正确，外部受压与基础支持并存的解释与主题倾向基本一致。"
+      },
+      "reviewer_b.p2": {
+        "verdict": "pass",
+        "issues": [],
+        "reason": "火克金及土生金的关系准确，外部承压与生活支持并存的描述符合主题设置。"
+      }
+    },
+    "code_findings": []
+  },
+  {
+    "id": "kb:name:sancai:火金水",
+    "content_sha256": "a9f1f80cf3f2202818821582b0d01a388cd54c2344829cd0a0aa540537dc5883",
+    "verdicts": {
+      "reviewer_a.p1": {
+        "verdict": "pass",
+        "issues": [],
+        "reason": "火金水“克、生”关系描述正确，主题方向与“需要协调”基调相符，措辞谨慎。"
+      },
+      "reviewer_a.p2": {
+        "verdict": "revise",
+        "issues": [
+          {
+            "dimension": "theme_direction",
+            "detail": "整体关键词为“需要协调”，self却为-0.1、relationship为+0.1，文字同时提到“压力”与“愿意投入”，但未说明为何整体中性偏协调；relationship正向与“需要协调”的基调缺少文字支撑"
+          }
+        ],
+        "reason": "生克描述正确，但整体定位“需要协调”与relationship正向之间缺少文字说明，方向一致性存疑。"
+      },
+      "reviewer_b.p1": {
+        "verdict": "pass",
+        "issues": [],
+        "reason": "火克金与金生水的关系正确，压力与投入并存的文字能够支持所列主题倾向。"
+      },
+      "reviewer_b.p2": {
+        "verdict": "pass",
+        "issues": [],
+        "reason": "火克金与金生水的关系准确，自我承压与关系投入分别对应主题的负向和正向。"
+      }
+    },
+    "code_findings": []
+  },
+  {
+    "id": "kb:name:sancai:火金金",
+    "content_sha256": "60a418235ebe9f57a34d84d634acc0860d64fa80862e55c4b82d6576a5620a14",
+    "verdicts": {
+      "reviewer_a.p1": {
+        "verdict": "pass",
+        "issues": [],
+        "reason": "火金金“克、同”关系描述准确，theme_map 方向与文字一致，无宿命化表述。"
+      },
+      "reviewer_a.p2": {
+        "verdict": "revise",
+        "issues": [
+          {
+            "dimension": "theme_direction",
+            "detail": "整体关键词为“需要协调”，但relationship为+0.1，文字中仅有“同”的中性描述，没有支持感情正向的内容"
+          }
+        ],
+        "reason": "文字未出现支持relationship正向的内容，主题方向与释义文字不一致。"
+      },
+      "reviewer_b.p1": {
+        "verdict": "pass",
+        "issues": [],
+        "reason": "火克金、金金比和的关系准确，外部压力与基础协调并存的解释没有确定性断言。"
+      },
+      "reviewer_b.p2": {
+        "verdict": "pass",
+        "issues": [],
+        "reason": "火克金及金金同类的关系准确，外部压力与生活基础协调的描述符合主题方向。"
+      }
+    },
+    "code_findings": []
+  },
+  {
+    "id": "kb:name:sancai:金土木",
+    "content_sha256": "260a4a0ca50c7b33f2765a6d25059d040c6fa465fc96f4006f5f44946d311e99",
+    "verdicts": {
+      "reviewer_a.p1": {
+        "verdict": "pass",
+        "issues": [],
+        "reason": "金生土（天格生人格）、木克土（地格克人格）的说明正确，整体“需要协调”与各主题值不矛盾。"
+      },
+      "reviewer_a.p2": {
+        "verdict": "pass",
+        "issues": [],
+        "reason": "三才金土木，金生土、木克土，自我为正向、关系为负向，主题方向与文字一致。"
+      },
+      "reviewer_b.p1": {
+        "verdict": "revise",
+        "issues": [
+          {
+            "dimension": "theme_direction",
+            "detail": "self 为正向，但文字主要描述向外付出、照顾外部期待及精力受牵扯，未体现自我状态偏顺的依据；建议调为中性或负向，或补充明确的正向含义。"
+          }
+        ],
+        "reason": "五行关系无误，但自我主题的正向标注缺少文字支持。"
+      },
+      "reviewer_b.p2": {
+        "verdict": "revise",
+        "issues": [
+          {
+            "dimension": "theme_direction",
+            "detail": "self 为正，但文字仅描述向外付出、照顾外部期待及精力受牵扯，未体现自我状态偏顺；宜将 self 调为中性或偏阻，或补充支持正向判断的文字。"
+          }
+        ],
+        "reason": "生克关系正确，但自我主题的正向倾向缺乏文字支持。"
+      }
+    },
+    "code_findings": []
+  },
+  {
+    "id": "kb:name:sancai:金土水",
+    "content_sha256": "76cd00f75758ea484f50e72d49b00505b1aff9d032019b2e01cba7133fffba07",
+    "verdicts": {
+      "reviewer_a.p1": {
+        "verdict": "pass",
+        "issues": [],
+        "reason": "土生金、土克水的生克表述与主题方向一致。"
+      },
+      "reviewer_a.p2": {
+        "verdict": "pass",
+        "issues": [],
+        "reason": "三才金土水，金生土使自我偏正，土克水使关系偏负，整体需要协调，主题方向与文字一致。"
+      },
+      "reviewer_b.p1": {
+        "verdict": "revise",
+        "issues": [
+          {
+            "dimension": "theme_direction",
+            "detail": "self 为正向，但文字描述的是向外付出、照顾外部期待以及对身边人事要求较多，没有明确的自我受益或状态偏顺内容；建议调整方向或补充相应说明。"
+          }
+        ],
+        "reason": "五行生克解释正确，但自我主题的正向倾向与现有文字不充分一致。"
+      },
+      "reviewer_b.p2": {
+        "verdict": "revise",
+        "issues": [
+          {
+            "dimension": "theme_direction",
+            "detail": "self 为正，但文字描述的是向外付出、照顾外部期待及对身边人事要求较多，没有明确的自我受益或状态偏顺依据；宜调整为中性或补充相应说明。"
+          }
+        ],
+        "reason": "生克解释无误，但自我主题的正向设置与现有文字不够一致。"
+      }
+    },
+    "code_findings": []
+  },
+  {
+    "id": "kb:name:sancai:金水土",
+    "content_sha256": "ca83f65057ccd52e06dab862bb23ca45b9f60baaac5d57408bd3b1882f638cbd",
+    "verdicts": {
+      "reviewer_a.p1": {
+        "verdict": "pass",
+        "issues": [],
+        "reason": "金水土释义符合生克关系，自身偏正、感情偏负与文字支持/牵扯呼应，措辞为观察线索不宿命。"
+      },
+      "reviewer_a.p2": {
+        "verdict": "pass",
+        "issues": [],
+        "reason": "生克关系描述正确，自我偏正、关系偏负与文字一致，措辞克制。"
+      },
+      "reviewer_b.p1": {
+        "verdict": "revise",
+        "issues": [
+          {
+            "dimension": "tradition",
+            "detail": "正文未明确说明三才评价属于姓名学的民间约定；应将“环境容易提供支持”“琐事容易牵扯精力”表述为这一民间体系中的象征解读，而非五行规则能推导的现实倾向。"
+          }
+        ],
+        "reason": "金生水、土克水的关系准确，主题方向可成立，但民间象征与现实判断的边界需要写清。"
+      },
+      "reviewer_b.p2": {
+        "verdict": "pass",
+        "issues": [],
+        "reason": "金生水、土克水的关系准确，外部支持与生活牵扯并存的描述符合主题倾向。"
+      }
+    },
+    "code_findings": []
+  },
+  {
+    "id": "kb:name:sancai:金水木",
+    "content_sha256": "a20452b6e8658e2e1a9eb2ea687ed41d212b16de9a6e28ff5d408ea5347a098a",
+    "verdicts": {
+      "reviewer_a.p1": {
+        "verdict": "pass",
+        "issues": [],
+        "reason": "金水木两段皆生，主题正向与“较顺”一致，无越界结论。"
+      },
+      "reviewer_a.p2": {
+        "verdict": "pass",
+        "issues": [],
+        "reason": "两处“生”关系描述正确，主题方向与“较顺”一致。"
+      },
+      "reviewer_b.p1": {
+        "verdict": "revise",
+        "issues": [
+          {
+            "dimension": "tradition",
+            "detail": "“较顺”应明确写成姓名学民间约定中的评价；外部支持和愿意投入等内容也宜标为象征性的反思角度，而非由姓名直接得出的个人特征。"
+          }
+        ],
+        "reason": "相生关系和正向主题基本匹配，需补充民间象征解读的明确限定。"
+      },
+      "reviewer_b.p2": {
+        "verdict": "pass",
+        "issues": [],
+        "reason": "金生水、水生木的相生关系解释准确，支持与投入的描述符合整体偏顺的设置。"
+      }
+    },
+    "code_findings": []
+  },
+  {
+    "id": "kb:name:sancai:金水水",
+    "content_sha256": "70c80d94ab24d7a1f977c0467afefca5030df5b1a661c107c40ebcd252d696f2",
+    "verdicts": {
+      "reviewer_a.p1": {
+        "verdict": "pass",
+        "issues": [],
+        "reason": "金水水生与同关系准确，主题正向与“较顺”一致。"
+      },
+      "reviewer_a.p2": {
+        "verdict": "pass",
+        "issues": [],
+        "reason": "“生”与“同”关系描述正确，主题方向与“较顺”一致。"
+      },
+      "reviewer_b.p1": {
+        "verdict": "revise",
+        "issues": [
+          {
+            "dimension": "tradition",
+            "detail": "按所注明的熊崎氏五格三才常见解释，金水水并非仅因相生、同类就整体偏顺，通常还包含基础不稳、变动等不利象征；直接归为“较顺”过度简化，应核对该体系的具体约定，并在正文明确其民间性质。"
+          }
+        ],
+        "reason": "单项五行关系正确，但整体评价忽略了该三才组合在所引传统体系中的不利含义，需要修正。"
+      },
+      "reviewer_b.p2": {
+        "verdict": "pass",
+        "issues": [],
+        "reason": "金生水与水水同类的基础关系准确，较顺的判断明确限定于五行生克层面，未作命运断言。"
+      }
+    },
+    "code_findings": []
+  },
+  {
+    "id": "kb:name:sancai:金水火",
+    "content_sha256": "59b413923197e32bbd939d40da9b1f8fb4370006aede6e21f2b7add800b59f96",
+    "verdicts": {
+      "reviewer_a.p1": {
+        "verdict": "pass",
+        "issues": [],
+        "reason": "金水火生与克并存，自身正、感情负与文字支持/要求多对应。"
+      },
+      "reviewer_a.p2": {
+        "verdict": "pass",
+        "issues": [],
+        "reason": "“生”与“克”关系描述正确，自我偏正、关系偏负与文字一致。"
+      },
+      "reviewer_b.p1": {
+        "verdict": "revise",
+        "issues": [
+          {
+            "dimension": "tradition",
+            "detail": "正文应明确“需要协调”是姓名学民间约定中的评价，外部支持、对他人要求较多等内容只是象征性的反思提示。"
+          }
+        ],
+        "reason": "金生水、水克火的关系准确，主题方向与文字一致，但需补足民间约定的限定。"
+      },
+      "reviewer_b.p2": {
+        "verdict": "pass",
+        "issues": [],
+        "reason": "金生水、水克火的关系及解释一致，自我获支持而关系需沟通的主题方向合理。"
+      }
+    },
+    "code_findings": []
+  },
+  {
+    "id": "kb:name:sancai:金水金",
+    "content_sha256": "6d0475f329349fa88bb11d67acadf9a339d2fad6ef9e4e9ad9671a089ed174ba",
+    "verdicts": {
+      "reviewer_a.p1": {
+        "verdict": "pass",
+        "issues": [],
+        "reason": "金水金生与被生关系准确，主题正向与“较顺”相符。"
+      },
+      "reviewer_a.p2": {
+        "verdict": "pass",
+        "issues": [],
+        "reason": "“生”与“被生”关系描述正确，主题方向与“较顺”一致。"
+      },
+      "reviewer_b.p1": {
+        "verdict": "revise",
+        "issues": [
+          {
+            "dimension": "tradition",
+            "detail": "正文需明确“较顺”属于姓名学的民间约定，并将“家庭与生活基础能给自我补充能量”限定为象征解读，避免被理解为姓名能说明实际家庭支持。"
+          }
+        ],
+        "reason": "金生水的关系及正向主题一致，但正文尚未明确交代民间约定的性质。"
+      },
+      "reviewer_b.p2": {
+        "verdict": "pass",
+        "issues": [],
+        "reason": "天格与地格的金均能生人格水，支持和补充能量的解释与主题偏顺一致。"
+      }
+    },
+    "code_findings": []
+  },
+  {
+    "id": "kb:name:sancai:金火土",
+    "content_sha256": "f2de501e09feac40476aedf87be4b8fb5400ef020b3567feef03a3909844afd7",
+    "verdicts": {
+      "reviewer_a.p1": {
+        "verdict": "pass",
+        "issues": [],
+        "reason": "金火土被克与生并存，方向与文字一致，措辞为自我观察。"
+      },
+      "reviewer_a.p2": {
+        "verdict": "pass",
+        "issues": [],
+        "reason": "“被克”与“生”关系描述正确，主题方向与“需要协调”一致。"
+      },
+      "reviewer_b.p1": {
+        "verdict": "revise",
+        "issues": [
+          {
+            "dimension": "tradition",
+            "detail": "正文需注明三才顺阻属于姓名学的民间约定，并把主动掌控、愿意投入等描述改为可供观察的象征角度，而非由五行关系推出的个人倾向。"
+          }
+        ],
+        "reason": "生克关系及主题方向基本协调，但民间约定的说明不能只放在来源字段。"
+      },
+      "reviewer_b.p2": {
+        "verdict": "pass",
+        "issues": [],
+        "reason": "火克金、火生土的关系准确，自我协调压力与对身边人的投入符合主题倾向。"
+      }
+    },
+    "code_findings": []
+  },
+  {
+    "id": "kb:name:sancai:金火木",
+    "content_sha256": "fdb5a66b67f000d5c8b091cc312fba938ded3c01e52baea1143064b44c687ef5",
+    "verdicts": {
+      "reviewer_a.p1": {
+        "verdict": "pass",
+        "issues": [],
+        "reason": "金火木被克与被生并存，自身负、感情正与文字呼应，无宿命化。"
+      },
+      "reviewer_a.p2": {
+        "verdict": "pass",
+        "issues": [],
+        "reason": "“被克”与“被生”关系描述正确，主题方向与“需要协调”一致。"
+      },
+      "reviewer_b.p1": {
+        "verdict": "revise",
+        "issues": [
+          {
+            "dimension": "tradition",
+            "detail": "应将“需要协调”及家庭支持等解释明确标为姓名学民间约定中的象征提示，不能仅以“按五行生克规则”作为现实状态解读的依据。"
+          }
+        ],
+        "reason": "火克金、木生火的关系正确，主题方向可成立，但需要明确民间象征定位。"
+      },
+      "reviewer_b.p2": {
+        "verdict": "pass",
+        "issues": [],
+        "reason": "火克金、木生火的关系准确，外部需协调而生活基础提供支持的描述与主题方向相符。"
+      }
+    },
+    "code_findings": []
+  },
+  {
+    "id": "kb:name:sancai:金火水",
+    "content_sha256": "879a89436fd9e914e784e34a877ed1ae491207e85f5d65bde267abaa0beb4e85",
+    "verdicts": {
+      "reviewer_a.p1": {
+        "verdict": "pass",
+        "issues": [],
+        "reason": "金火水两段皆被克，主题多为负向与“张力较多”一致，无确定性断言。"
+      },
+      "reviewer_a.p2": {
+        "verdict": "pass",
+        "issues": [],
+        "reason": "两处“被克”关系描述正确，主题方向与“张力较多”一致。"
+      },
+      "reviewer_b.p1": {
+        "verdict": "revise",
+        "issues": [
+          {
+            "dimension": "tradition",
+            "detail": "正文应明确“张力较多”是姓名学民间约定中的象征评价，而不是由五行关系确定个人处境；末尾的自我观察提示不能完全替代这一说明。"
+          }
+        ],
+        "reason": "两处相克关系及偏阻主题基本一致，但需明确三才评价的民间属性。"
+      },
+      "reviewer_b.p2": {
+        "verdict": "pass",
+        "issues": [],
+        "reason": "火克金、水克火的关系准确，整体张力较多与主题偏阻的设置一致。"
+      }
+    },
+    "code_findings": []
+  },
+  {
+    "id": "kb:name:sancai:金火火",
+    "content_sha256": "f120c4b99c74284d130f2a9d98f042d1a2fecbfea5582afddb6e931ad232ac86",
+    "verdicts": {
+      "reviewer_a.p1": {
+        "verdict": "pass",
+        "issues": [],
+        "reason": "金火火释义与五行生克关系一致，主题方向与“需要协调”的文字相符，无宿命化或越界断言。"
+      },
+      "reviewer_a.p2": {
+        "verdict": "pass",
+        "issues": [],
+        "reason": "三才关系描述与五行生克规则一致，theme_map方向与“需要协调”相符，措辞为民间约定且非宿命化。"
+      },
+      "reviewer_b.p1": {
+        "verdict": "revise",
+        "issues": [
+          {
+            "dimension": "tradition",
+            "detail": "正文未明确将三才的顺阻评价标为民间约定；建议把“按五行生克规则整体可看作”改为“按姓名学的民间象征约定，可作为……的反思提示”，避免将五行关系直接当作个人状态的依据。"
+          }
+        ],
+        "reason": "生克关系及主题方向基本一致，但面向用户的正文需补充民间约定的定位。"
+      },
+      "reviewer_b.p2": {
+        "verdict": "pass",
+        "issues": [],
+        "reason": "金受火克、火火同类的关系及白话解释一致，主题倾向与协调和步调一致的描述相符。"
+      }
+    },
+    "code_findings": []
+  },
+  {
+    "id": "kb:name:sancai:金火金",
+    "content_sha256": "11ed2eae57af40d737e5523651abddf78ce8e160541b533f021af6dac5cd60ea",
+    "verdicts": {
+      "reviewer_a.p1": {
+        "verdict": "pass",
+        "issues": [],
+        "reason": "金火金释义符合被克与克的关系，主题负向与张力一致，措辞留有余地。"
+      },
+      "reviewer_a.p2": {
+        "verdict": "pass",
+        "issues": [],
+        "reason": "“被克”与“克”关系描述正确，主题方向与“张力较多”一致。"
+      },
+      "reviewer_b.p1": {
+        "verdict": "revise",
+        "issues": [
+          {
+            "dimension": "tradition",
+            "detail": "应在正文中说明“张力较多”及相应性格、沟通解读属于姓名学民间象征约定，避免仅用“按五行生克规则”呈现为对现实状态的推导。"
+          }
+        ],
+        "reason": "五行关系没有写反，负向主题与文字相符，但民间约定的限定不足。"
+      },
+      "reviewer_b.p2": {
+        "verdict": "pass",
+        "issues": [],
+        "reason": "两组关系均正确体现火克金，协调与沟通方面的提醒符合整体偏阻的主题方向。"
+      }
+    },
+    "code_findings": []
+  },
+  {
+    "id": "kb:name:sancai:金金水",
+    "content_sha256": "d046bccc8b628767d516d30407fe703fc2e5fb67e01b68a3011128bc1840141e",
+    "verdicts": {
+      "reviewer_a.p1": {
+        "verdict": "revise",
+        "issues": [
+          {
+            "dimension": "tradition",
+            "detail": "人格金对地格水应为“金生水”，即人格“生”地格，文字写“人格金与地格水是‘生’的关系”尚可，但“愿意为身边的人与生活基础投入”把被生一方说成投入方，主客颠倒。"
+          }
+        ],
+        "reason": "生克方向的主客关系表述不准确，建议改为“自我对生活基础的付出”。"
+      },
+      "reviewer_a.p2": {
+        "verdict": "pass",
+        "issues": [],
+        "reason": "生克关系表述准确，整体较顺的方向与 theme_map 一致，措辞非宿命化。"
+      },
+      "reviewer_b.p1": {
+        "verdict": "pass",
+        "issues": [],
+        "reason": "金金同类、金生水的解释与条目对应，整体正向倾向与文字一致。"
+      },
+      "reviewer_b.p2": {
+        "verdict": "pass",
+        "issues": [],
+        "reason": "金金同类、金生水的说明与条目对应，白话解释及主题方向一致。"
+      }
+    },
+    "code_findings": []
+  },
+  {
+    "id": "kb:name:shuli:19",
+    "content_sha256": "449f40834fb60b8129aa753c7c9abec55885b0790364706b87879feba1f67fa9",
+    "verdicts": {
+      "reviewer_a.p1": {
+        "verdict": "revise",
+        "issues": [
+          {
+            "dimension": "plain_language",
+            "detail": "尾数9对应水的说法不准确，五格数理只论1-10的五行，尾数对应并不成立"
+          }
+        ],
+        "reason": "凶的倾向没问题，但“尾数9对应水”的白话解释有误。"
+      },
+      "reviewer_a.p2": {
+        "verdict": "pass",
+        "issues": [],
+        "reason": "19数归凶符合民间约定，尾数9属水、负向主题与文字一致，无误导。"
+      },
+      "reviewer_b.p1": {
+        "verdict": "pass",
+        "issues": [],
+        "reason": "19数归凶及尾数9属水符合常见民间约定，释义与负向主题一致，建议温和且不宿命化。"
+      },
+      "reviewer_b.p2": {
+        "verdict": "revise",
+        "issues": [
+          {
+            "dimension": "consistency",
+            "detail": "主体释义与其他凶数条目重复；可补充19数在民间解释中常见的才智与困阻并存、成事过程多受阻等象征，避免只保留通用风险提醒。"
+          }
+        ],
+        "reason": "基本归类正确且没有宿命化，但未呈现19数的特有解释。"
+      }
+    },
+    "code_findings": []
+  },
+  {
+    "id": "kb:name:shuli:2",
+    "content_sha256": "b29f35ae8a95a21b233483ebb2dd4cb5bf189bb4c6efd72617e310999a1979c3",
+    "verdicts": {
+      "reviewer_a.p1": {
+        "verdict": "revise",
+        "issues": [
+          {
+            "dimension": "plain_language",
+            "detail": "尾数2对应木的说法不准确，五格数理只论1-10的五行，尾数对应并不成立"
+          }
+        ],
+        "reason": "凶的倾向没问题，但“尾数2对应木”的白话解释有误。"
+      },
+      "reviewer_a.p2": {
+        "verdict": "pass",
+        "issues": [],
+        "reason": "2数归凶符合常见民间说法，尾数2属木、负向主题与文字一致，含免责说明。"
+      },
+      "reviewer_b.p1": {
+        "verdict": "pass",
+        "issues": [],
+        "reason": "2数归凶及尾数2属木符合常见民间约定，负向主题与波折提醒一致，并明确否定命运决定论。"
+      },
+      "reviewer_b.p2": {
+        "verdict": "revise",
+        "issues": [
+          {
+            "dimension": "consistency",
+            "detail": "主体释义与其他凶数条目重复；建议补充2数在民间解释中常见的分离、不稳定或基础薄弱等象征，并保持非命运断言的表达。"
+          }
+        ],
+        "reason": "凶数归类及木的对应无误，但泛化的波折提醒不足以区分2数。"
+      }
+    },
+    "code_findings": []
+  },
+  {
+    "id": "kb:name:shuli:20",
+    "content_sha256": "941f40278e3253154abb5d9ede52370c2db970a223b32c0c56fb66b8c64d852b",
+    "verdicts": {
+      "reviewer_a.p1": {
+        "verdict": "revise",
+        "issues": [
+          {
+            "dimension": "plain_language",
+            "detail": "尾数0对应水的说法不准确，五格数理只论1-10的五行，尾数对应并不成立"
+          }
+        ],
+        "reason": "凶的倾向没问题，但“尾数0对应水”的白话解释有误。"
+      },
+      "reviewer_a.p2": {
+        "verdict": "pass",
+        "issues": [],
+        "reason": "20数归凶符合民间说法，负向主题与文字一致，措辞非宿命化。"
+      },
+      "reviewer_b.p1": {
+        "verdict": "pass",
+        "issues": [],
+        "reason": "20数归凶及尾数0属水符合常见民间约定，负向释义与主题倾向一致，且明确不据此判定命运。"
+      },
+      "reviewer_b.p2": {
+        "verdict": "revise",
+        "issues": [
+          {
+            "dimension": "consistency",
+            "detail": "主体释义与其他凶数条目重复；可补充20数在民间解释中常见的空耗、基础不稳或推进困难等象征，并继续明确其不决定实际经历。"
+          }
+        ],
+        "reason": "凶数归类及水的对应正确，但通用表述未形成20数的独立释义。"
+      }
+    },
+    "code_findings": []
+  },
+  {
+    "id": "kb:name:shuli:21",
+    "content_sha256": "4b9527ac188548a7e06cf8534fd2854d9ba74395cbffc701d35e47078f3f040e",
+    "verdicts": {
+      "reviewer_a.p1": {
+        "verdict": "revise",
+        "issues": [
+          {
+            "dimension": "plain_language",
+            "detail": "尾数1对应木的说法不准确，五格数理只论1-10的五行，尾数对应并不成立"
+          }
+        ],
+        "reason": "吉凶倾向没问题，但“尾数1对应木”的白话解释有误。"
+      },
+      "reviewer_a.p2": {
+        "verdict": "pass",
+        "issues": [],
+        "reason": "21数归吉符合民间约定，尾数1属木、正向主题与文字一致，措辞非宿命化。"
+      },
+      "reviewer_b.p1": {
+        "verdict": "pass",
+        "issues": [],
+        "reason": "21数归吉及尾数1属木符合常见民间约定，正向释义与主题倾向一致，措辞无确定性承诺。"
+      },
+      "reviewer_b.p2": {
+        "verdict": "revise",
+        "issues": [
+          {
+            "dimension": "consistency",
+            "detail": "主体释义与其他吉数条目重复；建议以民间象征的方式补充21数常见的独立、领导与建立事业等特点，避免仅写成普遍的顺遂和受助。"
+          }
+        ],
+        "reason": "归类和免责声明妥当，但缺少21数的辨识性释义。"
+      }
+    },
+    "code_findings": []
+  },
+  {
+    "id": "kb:name:shuli:22",
+    "content_sha256": "245fd1203ecd171cedd3ba6bb72415a1cbeb3e804644d4c30db7c40a6df7b432",
+    "verdicts": {
+      "reviewer_a.p1": {
+        "verdict": "revise",
+        "issues": [
+          {
+            "dimension": "plain_language",
+            "detail": "尾数2对应木的说法不准确，五格数理只论1-10的五行，尾数对应并不成立"
+          }
+        ],
+        "reason": "凶的倾向没问题，但“尾数2对应木”的白话解释有误。"
+      },
+      "reviewer_a.p2": {
+        "verdict": "pass",
+        "issues": [],
+        "reason": "22数归凶符合民间约定，尾数2属木、负向主题一致，含免责声明。"
+      },
+      "reviewer_b.p1": {
+        "verdict": "pass",
+        "issues": [],
+        "reason": "22数归凶及尾数2属木符合常见民间约定，波折提醒与负向主题一致，表达通俗且无确定性断言。"
+      },
+      "reviewer_b.p2": {
+        "verdict": "revise",
+        "issues": [
+          {
+            "dimension": "consistency",
+            "detail": "主体释义与其他凶数条目重复，尤其与2数除数值外几乎相同；建议补充22数在民间解释中常见的力量薄弱、进展受挫等象征。"
+          }
+        ],
+        "reason": "基本传统信息无误，但条目内容重复，缺少22数的具体特点。"
+      }
+    },
+    "code_findings": []
+  },
+  {
+    "id": "kb:name:shuli:23",
+    "content_sha256": "3a072fd38acbb61f7a236f5b609d6f2279969c2a94fb1b86127ca772bf432a18",
+    "verdicts": {
+      "reviewer_a.p1": {
+        "verdict": "revise",
+        "issues": [
+          {
+            "dimension": "plain_language",
+            "detail": "尾数3对应火的说法不准确，五格数理只论1-10的五行，尾数对应并不成立"
+          }
+        ],
+        "reason": "吉的倾向没问题，但“尾数3对应火”的白话解释有误。"
+      },
+      "reviewer_a.p2": {
+        "verdict": "pass",
+        "issues": [],
+        "reason": "23数归吉符合民间约定，尾数3属火、正向主题与文字一致。"
+      },
+      "reviewer_b.p1": {
+        "verdict": "pass",
+        "issues": [],
+        "reason": "23数归吉及尾数3属火符合常见民间约定，正向主题与释义一致，并保留了习俗性质的说明。"
+      },
+      "reviewer_b.p2": {
+        "verdict": "revise",
+        "issues": [
+          {
+            "dimension": "consistency",
+            "detail": "主体释义与其他吉数条目重复；建议补充23数在民间解释中常见的进取、旺盛行动力与领导倾向，避免将其特点统一写成易得助力。"
+          }
+        ],
+        "reason": "吉数和火的对应正确，但释义模板化，缺少23数的辨识度。"
+      }
+    },
+    "code_findings": []
+  },
+  {
+    "id": "kb:name:shuli:24",
+    "content_sha256": "f55a7476054d78c34c97cb2a763244adf59ceecf6e2a6b8c0f440a8d34dce817",
+    "verdicts": {
+      "reviewer_a.p1": {
+        "verdict": "revise",
+        "issues": [
+          {
+            "dimension": "plain_language",
+            "detail": "尾数4对应火的说法不准确，五格数理只论1-10的五行，尾数对应并不成立"
+          }
+        ],
+        "reason": "吉的倾向没问题，但“尾数4对应火”的白话解释有误。"
+      },
+      "reviewer_a.p2": {
+        "verdict": "pass",
+        "issues": [],
+        "reason": "24数归吉符合民间约定，尾数4属火、正向主题与文字一致。"
+      },
+      "reviewer_b.p1": {
+        "verdict": "pass",
+        "issues": [],
+        "reason": "24数归吉及尾数4属火符合常见民间约定，主题方向与文字一致，未作财务或命运方面的确定性结论。"
+      },
+      "reviewer_b.p2": {
+        "verdict": "revise",
+        "issues": [
+          {
+            "dimension": "consistency",
+            "detail": "主体释义与其他吉数条目重复；建议补充24数在民间解释中常见的积累、经营与丰足象征，但不要转写为实际财务收益承诺。"
+          }
+        ],
+        "reason": "方向与措辞边界合适，但未体现24数区别于其他吉数的传统侧重。"
+      }
+    },
+    "code_findings": []
+  },
+  {
+    "id": "kb:name:shuli:25",
+    "content_sha256": "cea9f4c45a7b963920d87a3b667c74ac3cad51d91526e2db260f9d6db02cc5b7",
+    "verdicts": {
+      "reviewer_a.p1": {
+        "verdict": "revise",
+        "issues": [
+          {
+            "dimension": "plain_language",
+            "detail": "尾数5对应土的说法不准确，五格数理只论1-10的五行，尾数对应并不成立"
+          }
+        ],
+        "reason": "吉凶倾向没问题，但“尾数5对应土”的白话解释有误。"
+      },
+      "reviewer_a.p2": {
+        "verdict": "pass",
+        "issues": [],
+        "reason": "25数归吉符合民间约定，尾数5属土的说法可接受，主题均为正向且措辞不宿命化，含免责声明。"
+      },
+      "reviewer_b.p1": {
+        "verdict": "pass",
+        "issues": [],
+        "reason": "25数归吉及尾数5属土符合常见民间约定，主题倾向与文字一致，且明确不作命运断言。"
+      },
+      "reviewer_b.p2": {
+        "verdict": "revise",
+        "issues": [
+          {
+            "dimension": "consistency",
+            "detail": "主体释义与其他吉数条目重复，仅替换数值和五行；建议补充25数在民间解释中常见的才智、独立与性情刚强等特点，而非只概括为顺遂、易得助力。"
+          }
+        ],
+        "reason": "吉凶归类与五行对应基本正确，但通用模板未体现25数的独立含义。"
+      }
+    },
+    "code_findings": []
+  },
+  {
+    "id": "kb:name:shuli:26",
+    "content_sha256": "75c4d11a58304c2fc232ac1d107b43155ae52d3943e800e9f8fd6d814edbcad9",
+    "verdicts": {
+      "reviewer_a.p1": {
+        "verdict": "revise",
+        "issues": [
+          {
+            "dimension": "plain_language",
+            "detail": "尾数6对应土的说法不准确，五格数理只论1-10的五行，尾数对应并不成立"
+          }
+        ],
+        "reason": "凶的倾向没问题，但“尾数6对应土”的白话解释有误。"
+      },
+      "reviewer_a.p2": {
+        "verdict": "pass",
+        "issues": [],
+        "reason": "26数归凶符合民间说法，尾数6属土、负向主题与文字一致。"
+      },
+      "reviewer_b.p1": {
+        "verdict": "pass",
+        "issues": [],
+        "reason": "26数归凶及尾数6属土属于常见民间约定，负向主题与文字一致，未将传统分类写成个人命运结论。"
+      },
+      "reviewer_b.p2": {
+        "verdict": "revise",
+        "issues": [
+          {
+            "dimension": "consistency",
+            "detail": "主体释义与其他凶数条目重复；建议补充26数在民间解释中常见的起伏变化、成败交织或英雄受困等象征，以体现其复杂性。"
+          }
+        ],
+        "reason": "偏阻方向可以成立，但单写波折较多使26数与其他凶数失去区别。"
+      }
+    },
+    "code_findings": []
+  },
+  {
+    "id": "kb:name:shuli:27",
+    "content_sha256": "fd4ba86ee3b4a9637475f605cdadc6ea37dd653233690aefda38801585bc2d95",
+    "verdicts": {
+      "reviewer_a.p1": {
+        "verdict": "revise",
+        "issues": [
+          {
+            "dimension": "plain_language",
+            "detail": "尾数7对应金的说法不准确，五格数理只论1-10的五行，尾数对应并不成立"
+          }
+        ],
+        "reason": "凶的倾向没问题，但“尾数7对应金”的白话解释有误。"
+      },
+      "reviewer_a.p2": {
+        "verdict": "pass",
+        "issues": [],
+        "reason": "27数归凶符合民间约定，尾数7属金、负向主题一致，措辞不宿命化。"
+      },
+      "reviewer_b.p1": {
+        "verdict": "pass",
+        "issues": [],
+        "reason": "27数归凶及尾数7属金属于常见民间约定，主题倾向与波折提醒一致，且有明确的非决定论说明。"
+      },
+      "reviewer_b.p2": {
+        "verdict": "revise",
+        "issues": [
+          {
+            "dimension": "consistency",
+            "detail": "主体释义与其他凶数条目重复；建议补充27数在民间解释中常见的刚强、坚持己见与人际摩擦等特点，而非仅使用通用的波折提醒。"
+          }
+        ],
+        "reason": "五行对应及非宿命化表达妥当，但缺少27数自身的传统侧重。"
+      }
+    },
+    "code_findings": []
+  },
+  {
+    "id": "kb:name:shuli:28",
+    "content_sha256": "29ca779b5ebf874255077f5af59b85b0cf177185e76fbfe569c173e4ef0063f0",
+    "verdicts": {
+      "reviewer_a.p1": {
+        "verdict": "pass",
+        "issues": [],
+        "reason": "28数传统归凶，theme_map 取负值且释义以提醒口吻表达，方向一致、无确定性断言。"
+      },
+      "reviewer_a.p2": {
+        "verdict": "pass",
+        "issues": [],
+        "reason": "凶的释义与各主题负向一致，措辞为提醒而非断言，含免责声明。"
+      },
+      "reviewer_b.p1": {
+        "verdict": "revise",
+        "issues": [
+          {
+            "dimension": "consistency",
+            "detail": "主体释义与其他凶数条目实质重复；宜以民俗约定的口吻补充28数偏重处境变动、困顿或支持不足的特点，不将其写成现实预测。"
+          }
+        ],
+        "reason": "风险提醒与负向主题一致，但需区别于其他凶数的通用描述。"
+      },
+      "reviewer_b.p2": {
+        "verdict": "pass",
+        "issues": [],
+        "reason": "28数归凶及尾数8属金符合常见传统，负向倾向与波折提醒一致，并明确不据此判断命运。"
+      }
+    },
+    "code_findings": []
+  },
+  {
+    "id": "kb:name:shuli:29",
+    "content_sha256": "dec4e3bd816563e0c70defa768c9d8d25f2592671ea93753d2712acdaab560d3",
+    "verdicts": {
+      "reviewer_a.p1": {
+        "verdict": "revise",
+        "issues": [
+          {
+            "dimension": "tradition",
+            "detail": "29数在五格剖象法中通常被列为吉，但尾数9在三才五行中对应水（9、0属水）本身正确；然而“顺遂、易得助力”的概括偏笼统，29数传统上多解为“智谋优秀、财力归集、名闻海内、成就大业”，与“易得助力”并不完全对应，措辞可再准确。"
+          }
+        ],
+        "reason": "29数为吉的判定方向无误，但释义概括较笼统，未准确对应其传统数理含义。"
+      },
+      "reviewer_a.p2": {
+        "verdict": "pass",
+        "issues": [],
+        "reason": "吉的释义与各主题正向一致，含免责声明，符合民间约定表述。"
+      },
+      "reviewer_b.p1": {
+        "verdict": "revise",
+        "issues": [
+          {
+            "dimension": "consistency",
+            "detail": "主体释义套用通用吉数描述，与其他吉数条目实质重复；宜补充29数传统上偏重智谋、进取，同时需节制欲望的特点，并保持民俗表述。"
+          }
+        ],
+        "reason": "基本分类正确，但缺少29数的辨识性，需减少同类释义重复。"
+      },
+      "reviewer_b.p2": {
+        "verdict": "pass",
+        "issues": [],
+        "reason": "29数归吉有常见传统依据，尾数9属水正确，正向倾向与文字一致且有习俗性质的限定。"
+      }
+    },
+    "code_findings": []
+  },
+  {
+    "id": "kb:name:shuli:3",
+    "content_sha256": "c02b8705a2b3ca469b3a9373d9e35a08bc88d9a1b33b6391063f29f01f4840d5",
+    "verdicts": {
+      "reviewer_a.p1": {
+        "verdict": "pass",
+        "issues": [],
+        "reason": "3数为吉、尾数3对应火的传统设定与释义方向一致，措辞非宿命化。"
+      },
+      "reviewer_a.p2": {
+        "verdict": "pass",
+        "issues": [],
+        "reason": "吉的释义与各主题正向一致，含免责声明，符合民间约定表述。"
+      },
+      "reviewer_b.p1": {
+        "verdict": "revise",
+        "issues": [
+          {
+            "dimension": "consistency",
+            "detail": "主体释义与其他吉数条目实质重复；宜突出3数传统上生发、活力、开拓进取的特点，避免与其他吉数共用同一主体解释。"
+          }
+        ],
+        "reason": "传统分类及五行对应正确，但需增加3数的辨识性。"
+      },
+      "reviewer_b.p2": {
+        "verdict": "pass",
+        "issues": [],
+        "reason": "3数归吉及属火的对应正确，释义为非确定性的正向提醒，与主题方向一致。"
+      }
+    },
+    "code_findings": []
+  },
+  {
+    "id": "kb:name:shuli:30",
+    "content_sha256": "35b882082db20e3653eb0607a200c179f58898ac58146d96f7b049aa9d1cf0fa",
+    "verdicts": {
+      "reviewer_a.p1": {
+        "verdict": "revise",
+        "issues": [
+          {
+            "dimension": "tradition",
+            "detail": "五格剖象法中30数的数理并非“半吉”，尾数0在三才五行对应上通常归为水（1、2木，3、4火，5、6土，7、8金，9、0水），这一点本身无误，但30数一般判为吉凶参半（“半吉”）需与其他数理判定口径一致；更关键的是“尾数0对应水”与三才五行的对应表述本身没错，但“30数半吉”的说法与传统五格数理常见判定（30数多列为凶或半吉）需核对，且“顺与不顺都与个人选择有关”属于把数理吉凶解释为个人选择，偏离了数理习俗本身的吉凶归类。"
+          }
+        ],
+        "reason": "30数的吉凶归类与五行对应需与五格剖象民间约定核对一致，且“与个人选择有关”的表述弱化了数理归类本身。"
+      },
+      "reviewer_a.p2": {
+        "verdict": "pass",
+        "issues": [],
+        "reason": "半吉释义与四主题微正倾向一致，措辞为民间约定且免责，无宿命化断言。"
+      },
+      "reviewer_b.p1": {
+        "verdict": "revise",
+        "issues": [
+          {
+            "dimension": "theme_direction",
+            "detail": "文字强调“半吉”“吉凶参半”，未体现偏顺依据，四个主题却均为正向；宜改为中性，或在释义中说明偏顺的依据。"
+          }
+        ],
+        "reason": "民俗定位与五行对应无误，但主题方向未充分体现吉凶参半。"
+      },
+      "reviewer_b.p2": {
+        "verdict": "pass",
+        "issues": [],
+        "reason": "30数的半吉归类及尾数0属水符合常见民间约定，倾向值接近中性，且未作命运断言。"
+      }
+    },
+    "code_findings": []
+  },
+  {
+    "id": "kb:name:shuli:31",
+    "content_sha256": "fb2610c62ccd8598e737016064026ad2d73c0191f8453fcec7d6654bd6e57338",
+    "verdicts": {
+      "reviewer_a.p1": {
+        "verdict": "pass",
+        "issues": [],
+        "reason": "31数为吉、尾数1对应木的传统设定与释义方向一致，措辞非宿命化。"
+      },
+      "reviewer_a.p2": {
+        "verdict": "pass",
+        "issues": [],
+        "reason": "吉的释义与各主题正向一致，含免责声明，符合民间约定表述。"
+      },
+      "reviewer_b.p1": {
+        "verdict": "revise",
+        "issues": [
+          {
+            "dimension": "consistency",
+            "detail": "主体释义与其他吉数条目实质重复；宜补充31数传统上稳健发展、组织领导与获得信任的特点，形成独立释义。"
+          }
+        ],
+        "reason": "基本分类正确，但释义模板化，未充分区分31数。"
+      },
+      "reviewer_b.p2": {
+        "verdict": "pass",
+        "issues": [],
+        "reason": "31数归吉及尾数1属木符合常见传统，正向倾向与释义一致，习俗性质交代清楚。"
+      }
+    },
+    "code_findings": []
+  },
+  {
+    "id": "kb:name:shuli:32",
+    "content_sha256": "817bf684989c5d8d8288a3ea188a5f50e10b9eed393a5c2fd3b3224729a2fb99",
+    "verdicts": {
+      "reviewer_a.p1": {
+        "verdict": "pass",
+        "issues": [],
+        "reason": "32数为吉、尾数2对应木的传统设定与释义方向一致，措辞留有余地、无宿命化断言。"
+      },
+      "reviewer_a.p2": {
+        "verdict": "pass",
+        "issues": [],
+        "reason": "吉的释义与各主题正向一致，含免责声明，符合民间约定表述。"
+      },
+      "reviewer_b.p1": {
+        "verdict": "revise",
+        "issues": [
+          {
+            "dimension": "consistency",
+            "detail": "主体释义与其他吉数条目实质重复；可突出32数在传统约定中偏重机缘、贵人助力的特点，而非仅写通用的顺遂描述。"
+          }
+        ],
+        "reason": "吉凶与五行对应正确，但需突出32数特点以区别其他吉数。"
+      },
+      "reviewer_b.p2": {
+        "verdict": "pass",
+        "issues": [],
+        "reason": "32数归吉、尾数2属木及易得助力的概括符合常见传统，主题方向与文字一致。"
+      }
+    },
+    "code_findings": []
+  },
+  {
+    "id": "kb:name:shuli:33",
+    "content_sha256": "a03e43e731f9b7aacbae116fe61ecafbd1517489f9bad3f815e19583086e5fcc",
+    "verdicts": {
+      "reviewer_a.p1": {
+        "verdict": "revise",
+        "issues": [
+          {
+            "dimension": "tradition",
+            "detail": "33数在五格剖象法中通常判为吉（旭日东升、家门隆昌），但尾数3在三才五行中对应火（3、4属火）本身正确；释义“顺遂、易得助力”较笼统，且未体现33数传统上“升腾、权威”的核心意象，概括可更贴近。"
+          }
+        ],
+        "reason": "33数吉的判定方向无误，但释义概括笼统，未准确反映其传统数理意象。"
+      },
+      "reviewer_a.p2": {
+        "verdict": "pass",
+        "issues": [],
+        "reason": "吉的释义与各主题正向一致，含免责声明，符合民间约定表述。"
+      },
+      "reviewer_b.p1": {
+        "verdict": "revise",
+        "issues": [
+          {
+            "dimension": "consistency",
+            "detail": "主体释义与其他吉数条目实质重复；宜突出33数传统上旺盛进取、领导力与过刚需调节的特点，避免仅写顺遂和助力。"
+          }
+        ],
+        "reason": "吉数分类与五行对应可接受，但缺少33数自身特点。"
+      },
+      "reviewer_b.p2": {
+        "verdict": "pass",
+        "issues": [],
+        "reason": "33数归吉及尾数3属火符合常见民间约定，正向概括未与传统核心含义冲突，也未作命运承诺。"
+      }
+    },
+    "code_findings": []
+  },
+  {
+    "id": "kb:name:shuli:34",
+    "content_sha256": "ab09f950563857acbc7228acc8c820f7312678afa2bdfb283661bf1f9419a4cc",
+    "verdicts": {
+      "reviewer_a.p1": {
+        "verdict": "pass",
+        "issues": [],
+        "reason": "34数传统归凶，theme_map 取负值且释义以提醒口吻表达，方向一致、无确定性断言。"
+      },
+      "reviewer_a.p2": {
+        "verdict": "pass",
+        "issues": [],
+        "reason": "凶的释义与各主题负向一致，措辞为提醒而非断言，含免责声明。"
+      },
+      "reviewer_b.p1": {
+        "verdict": "revise",
+        "issues": [
+          {
+            "dimension": "consistency",
+            "detail": "主体释义与其他凶数条目实质重复；可将34数传统上偏重基础受损、挫折与重整的象征转为自我反思提示，并明确只是民俗解释。"
+          }
+        ],
+        "reason": "负向主题与文字一致，但通用波折描述不足以区分34数。"
+      },
+      "reviewer_b.p2": {
+        "verdict": "pass",
+        "issues": [],
+        "reason": "34数归凶及尾数4属火符合常见传统，负向倾向与波折描述一致，未将吉凶解释为必然经历。"
+      }
+    },
+    "code_findings": []
+  },
+  {
+    "id": "kb:name:shuli:35",
+    "content_sha256": "0467eceb44bc2b7bef41432078e017ba8a377760a850ae629569d6860d11669f",
+    "verdicts": {
+      "reviewer_a.p1": {
+        "verdict": "pass",
+        "issues": [],
+        "reason": "35数为吉、尾数5对应土的传统设定与释义方向一致，措辞非宿命化。"
+      },
+      "reviewer_a.p2": {
+        "verdict": "pass",
+        "issues": [],
+        "reason": "吉的释义与各主题正向一致，含免责声明，符合民间约定表述。"
+      },
+      "reviewer_b.p1": {
+        "verdict": "revise",
+        "issues": [
+          {
+            "dimension": "consistency",
+            "detail": "主体释义与其他吉数条目实质重复；宜补充35数传统上温和、稳健、重修养或技艺的特点，避免仅以通用吉数模板释义。"
+          }
+        ],
+        "reason": "基本含义无误，但未体现35数的传统辨识特征。"
+      },
+      "reviewer_b.p2": {
+        "verdict": "pass",
+        "issues": [],
+        "reason": "35数归吉及尾数5属土符合常见民间约定，正向释义与主题方向一致，无确定性断言。"
+      }
+    },
+    "code_findings": []
+  },
+  {
+    "id": "kb:name:shuli:36",
+    "content_sha256": "3b34750c5a3cd97f3283da40ceeb8101e0bfeb5881cfb0411e10fdef2593be1f",
+    "verdicts": {
+      "reviewer_a.p1": {
+        "verdict": "pass",
+        "issues": [],
+        "reason": "36数传统归凶，theme_map 取负值且释义以提醒口吻表达，方向一致、无确定性断言。"
+      },
+      "reviewer_a.p2": {
+        "verdict": "pass",
+        "issues": [],
+        "reason": "凶的释义与各主题负向一致，措辞为提醒而非断言，含免责声明。"
+      },
+      "reviewer_b.p1": {
+        "verdict": "revise",
+        "issues": [
+          {
+            "dimension": "consistency",
+            "detail": "主体释义与其他凶数条目实质重复；宜补充36数传统上波澜较多、重义气而容易承担过多的特点，以区别其他凶数。"
+          }
+        ],
+        "reason": "吉凶分类和五行对应无误，但需减少同类条目的实质重复。"
+      },
+      "reviewer_b.p2": {
+        "verdict": "pass",
+        "issues": [],
+        "reason": "36数归凶有常见传统依据，尾数6属土正确，负向倾向与谨慎提醒一致且无宿命化表述。"
+      }
+    },
+    "code_findings": []
+  },
+  {
+    "id": "kb:name:shuli:37",
+    "content_sha256": "054a818180f1e4131669a5a5234eb29527e23e6102a6b0ed7b29fde3ec34eacf",
+    "verdicts": {
+      "reviewer_a.p1": {
+        "verdict": "revise",
+        "issues": [
+          {
+            "dimension": "plain_language",
+            "detail": "尾数7对应的五行应为金（7、8金），此处写“尾数7在三才里对应金”正确；但条目本身无误，问题在于整体尾数五行规则需统一。"
+          }
+        ],
+        "reason": "尾数7对应金的表述与7、8金规则一致，需统一校正。"
+      },
+      "reviewer_a.p2": {
+        "verdict": "revise",
+        "issues": [
+          {
+            "dimension": "tradition",
+            "detail": "三才五行对应错误：尾数7在三才中通常对应金（7、8金），文中写金正确，无误。但37数民间约定常归为吉，方向一致。未见明确问题。"
+          }
+        ],
+        "reason": "尾数7对应金正确，方向与吉一致，未见明确问题。"
+      },
+      "reviewer_b.p1": {
+        "verdict": "pass",
+        "issues": [],
+        "reason": "37数归吉、尾数7属金符合常见约定，释义与主题方向一致且无宿命化表述。"
+      },
+      "reviewer_b.p2": {
+        "verdict": "pass",
+        "issues": [],
+        "reason": "37数归吉、尾数7属金符合常见约定，释义虽概括但未偏离传统正向含义。"
+      }
+    },
+    "code_findings": []
+  },
+  {
+    "id": "kb:name:shuli:38",
+    "content_sha256": "ca318a324e4ac9eccb5ed2c6552901c7b27ea0ff1e3d992c15dd648005d3b07e",
+    "verdicts": {
+      "reviewer_a.p1": {
+        "verdict": "revise",
+        "issues": [
+          {
+            "dimension": "plain_language",
+            "detail": "尾数8对应的五行应为金（7、8金），此处写“尾数8在三才里对应金”正确；但条目本身无误，问题在于整体尾数五行规则需统一。"
+          }
+        ],
+        "reason": "尾数8对应金的表述与7、8金规则一致，需统一校正。"
+      },
+      "reviewer_a.p2": {
+        "verdict": "revise",
+        "issues": [
+          {
+            "dimension": "tradition",
+            "detail": "三才五行对应错误：尾数8在三才中通常对应金（7、8金），文中写金正确，无误。38数民间约定常归为半吉，方向一致。未见明确问题。"
+          }
+        ],
+        "reason": "尾数8对应金正确，方向与半吉一致，未见明确问题。"
+      },
+      "reviewer_b.p1": {
+        "verdict": "pass",
+        "issues": [],
+        "reason": "38数归半吉、尾数8属金符合常见约定，轻微正向设置与半吉表述基本相容。"
+      },
+      "reviewer_b.p2": {
+        "verdict": "pass",
+        "issues": [],
+        "reason": "38数归半吉、尾数8属金符合常见约定，轻微正向主题与半吉定位相容。"
+      }
+    },
+    "code_findings": []
+  },
+  {
+    "id": "kb:name:shuli:39",
+    "content_sha256": "7d36a7a425bfaa2f557bad4ca4072a908e5238c6802aae0763491504f4f8759f",
+    "verdicts": {
+      "reviewer_a.p1": {
+        "verdict": "revise",
+        "issues": [
+          {
+            "dimension": "plain_language",
+            "detail": "尾数9对应的五行应为水（9、0水），此处写“尾数9在三才里对应水”正确；但条目本身无误，问题在于整体尾数五行规则需统一。"
+          }
+        ],
+        "reason": "尾数9对应水的表述与9、0水规则一致，需统一校正。"
+      },
+      "reviewer_a.p2": {
+        "verdict": "revise",
+        "issues": [
+          {
+            "dimension": "tradition",
+            "detail": "三才五行对应错误：尾数9在三才中通常对应水（9、0水），文中写水正确，无误。39数民间约定常归为吉，方向一致。未见明确问题。"
+          }
+        ],
+        "reason": "尾数9对应水正确，方向与吉一致，未见明确问题。"
+      },
+      "reviewer_b.p1": {
+        "verdict": "pass",
+        "issues": [],
+        "reason": "39数归吉、尾数9属水符合常见约定，主题方向与文字一致。"
+      },
+      "reviewer_b.p2": {
+        "verdict": "pass",
+        "issues": [],
+        "reason": "39数归吉、尾数9属水符合常见约定，文字与正向主题一致且无宿命化断言。"
+      }
+    },
+    "code_findings": []
+  },
+  {
+    "id": "kb:name:shuli:4",
+    "content_sha256": "ab51514fb795c9969d4c2030019f78b7050e5ec8267cdb99f354f4413b641c4c",
+    "verdicts": {
+      "reviewer_a.p1": {
+        "verdict": "revise",
+        "issues": [
+          {
+            "dimension": "plain_language",
+            "detail": "三才配置中，尾数4对应的五行应为金（1、2木，3、4火，5、6土，7、8金，9、0水），此处写“尾数4在三才里对应火”有误"
+          }
+        ],
+        "reason": "三才尾数五行对应关系写错，会误导用户。"
+      },
+      "reviewer_a.p2": {
+        "verdict": "revise",
+        "issues": [
+          {
+            "dimension": "tradition",
+            "detail": "三才五行对应错误：尾数4在五格三才中通常对应金（1、2木，3、4火，5、6土，7、8金，9、0水），不是火"
+          }
+        ],
+        "reason": "尾数4的三才五行对应写错，应为金而非火。"
+      },
+      "reviewer_b.p1": {
+        "verdict": "pass",
+        "issues": [],
+        "reason": "吉凶归类与尾数五行符合常见约定，主题方向一致，且明确不作命运断言。"
+      },
+      "reviewer_b.p2": {
+        "verdict": "pass",
+        "issues": [],
+        "reason": "4数的传统吉凶归类与五行对应准确，主题方向一致，且明确限定为民间习俗。"
+      }
+    },
+    "code_findings": []
+  },
+  {
+    "id": "kb:name:shuli:40",
+    "content_sha256": "456fe56fe950d9e6822aff54967f1cee75f81a3cdb60a48dc62c54073a43ce6f",
+    "verdicts": {
+      "reviewer_a.p1": {
+        "verdict": "revise",
+        "issues": [
+          {
+            "dimension": "plain_language",
+            "detail": "尾数0对应的五行应为水（9、0水），此处写“尾数0在三才里对应水”正确；但条目本身无误，问题在于整体尾数五行规则需统一。"
+          }
+        ],
+        "reason": "尾数0对应水的表述与9、0水规则一致，需统一校正。"
+      },
+      "reviewer_a.p2": {
+        "verdict": "revise",
+        "issues": [
+          {
+            "dimension": "tradition",
+            "detail": "三才五行对应错误：尾数0在三才中通常对应水（9、0水），文中写水正确，无误；但40数吉凶民间约定未必为半吉，且主题方向0.05与“半吉”偏正向尚可。未见明确问题。"
+          }
+        ],
+        "reason": "尾数0对应水正确，主题方向与半吉偏正一致，未见明确问题。"
+      },
+      "reviewer_b.p1": {
+        "verdict": "reject",
+        "issues": [
+          {
+            "dimension": "tradition",
+            "detail": "常见五格81数理表通常将40数归为“凶”，侧重冒进、浮沉及宜谨慎退守，而非通常归为“半吉”；当前核心吉凶归类及相应释义需要更正。"
+          },
+          {
+            "dimension": "theme_direction",
+            "detail": "“吉凶参半、稳住节奏”的文字没有明确偏顺依据，四个主题却均设为正向；更正传统归类后，也应同步调整主题方向。"
+          }
+        ],
+        "reason": "40数的核心吉凶归类不符合常见约定，主题正向设置也缺少文字支持。"
+      },
+      "reviewer_b.p2": {
+        "verdict": "reject",
+        "issues": [
+          {
+            "dimension": "tradition",
+            "detail": "40数在主流81数理表中通常归为“凶”，常以冒进、浮沉及宜退守为主要寓意；此处归为“半吉”并以吉凶参半概括，偏离其核心传统归类。"
+          }
+        ],
+        "reason": "尾数0属水无误，但40数的核心吉凶归类不符合主流约定。"
+      }
+    },
+    "code_findings": []
+  },
+  {
+    "id": "kb:name:shuli:41",
+    "content_sha256": "c3e86cd5883032d73af4c8ac44eb6f91682ff37954cc2fa5adda16fb86ddafe8",
+    "verdicts": {
+      "reviewer_a.p1": {
+        "verdict": "revise",
+        "issues": [
+          {
+            "dimension": "plain_language",
+            "detail": "尾数1对应的五行应为木，符合1、2木的规则，但需核对：1、2木正确，此处无误；然而条目本身无误，问题出在整体尾数五行规则的表述需保持一致。"
+          }
+        ],
+        "reason": "尾数1对应木的表述与1、2木规则一致，但需统一校正；判定为可修正。"
+      },
+      "reviewer_a.p2": {
+        "verdict": "revise",
+        "issues": [
+          {
+            "dimension": "tradition",
+            "detail": "三才五行对应错误：尾数1在三才中通常对应木（1、2木），不是木……但文中写木正确？按口诀1、2木，1对应木，此处无误；然而尾数1实际对应木，文中所写正确，问题不存在。改判：该条无此问题"
+          }
+        ],
+        "reason": "尾数1对应木，方向与文字一致，未见明确问题。"
+      },
+      "reviewer_b.p1": {
+        "verdict": "pass",
+        "issues": [],
+        "reason": "41数归吉、尾数1属木符合常见约定，正向主题与文字一致。"
+      },
+      "reviewer_b.p2": {
+        "verdict": "pass",
+        "issues": [],
+        "reason": "41数归吉、尾数1属木符合常见约定，正向主题与文字一致，无命运断言。"
+      }
+    },
+    "code_findings": []
+  },
+  {
+    "id": "kb:name:shuli:42",
+    "content_sha256": "8dc09285443f82998ec0298159a472578bfefa2743e184b482db3a07f40a0ef2",
+    "verdicts": {
+      "reviewer_a.p1": {
+        "verdict": "revise",
+        "issues": [
+          {
+            "dimension": "plain_language",
+            "detail": "尾数2对应的五行应为木（1、2木），此处写“尾数2在三才里对应木”正确；但条目本身无误，问题在于整体尾数五行规则需统一。"
+          }
+        ],
+        "reason": "尾数2对应木的表述与1、2木规则一致，需统一校正。"
+      },
+      "reviewer_a.p2": {
+        "verdict": "revise",
+        "issues": [
+          {
+            "dimension": "tradition",
+            "detail": "三才五行对应错误：尾数2在三才中通常对应木（1、2木），文中写木正确，无误。42数民间约定常归为凶，方向一致。未见明确问题。"
+          }
+        ],
+        "reason": "尾数2对应木正确，方向与凶一致，未见明确问题。"
+      },
+      "reviewer_b.p1": {
+        "verdict": "pass",
+        "issues": [],
+        "reason": "42数归凶属于常见归类，尾数2属木正确，负向主题与释义一致。"
+      },
+      "reviewer_b.p2": {
+        "verdict": "pass",
+        "issues": [],
+        "reason": "42数归凶属于常见传统归类，尾数2属木准确，负向主题与文字一致。"
+      }
+    },
+    "code_findings": []
+  },
+  {
+    "id": "kb:name:shuli:43",
+    "content_sha256": "17d1abf9023a83901f1bb401468c5e46af345cc837b47293c8e3d9680278e2a2",
+    "verdicts": {
+      "reviewer_a.p1": {
+        "verdict": "revise",
+        "issues": [
+          {
+            "dimension": "plain_language",
+            "detail": "尾数3对应的五行应为火（3、4火），此处写“尾数3在三才里对应火”正确；但条目本身无误，问题在于整体尾数五行规则需统一。"
+          }
+        ],
+        "reason": "尾数3对应火的表述与3、4火规则一致，需统一校正。"
+      },
+      "reviewer_a.p2": {
+        "verdict": "revise",
+        "issues": [
+          {
+            "dimension": "tradition",
+            "detail": "三才五行对应错误：尾数3在三才中通常对应火（3、4火），文中写火正确，无误。43数民间约定常归为凶，方向一致。未见明确问题。"
+          }
+        ],
+        "reason": "尾数3对应火正确，方向与凶一致，未见明确问题。"
+      },
+      "reviewer_b.p1": {
+        "verdict": "pass",
+        "issues": [],
+        "reason": "43数归凶、尾数3属火符合常见约定，负向主题与波折提醒一致。"
+      },
+      "reviewer_b.p2": {
+        "verdict": "pass",
+        "issues": [],
+        "reason": "43数归凶、尾数3属火准确，负向主题与波折提醒一致，未作确定性预言。"
+      }
+    },
+    "code_findings": []
+  },
+  {
+    "id": "kb:name:shuli:44",
+    "content_sha256": "71aac082b249ef1ce5b44d196161f599fab030a0bb15680a60ae81e501c85a59",
+    "verdicts": {
+      "reviewer_a.p1": {
+        "verdict": "revise",
+        "issues": [
+          {
+            "dimension": "plain_language",
+            "detail": "尾数4对应的五行应为火（3、4火），此处写“尾数4在三才里对应火”正确；但条目本身无误，问题在于整体尾数五行规则需统一。"
+          }
+        ],
+        "reason": "尾数4对应火的表述与3、4火规则一致，需统一校正。"
+      },
+      "reviewer_a.p2": {
+        "verdict": "revise",
+        "issues": [
+          {
+            "dimension": "tradition",
+            "detail": "三才五行对应错误：尾数4在三才中通常对应金（3、4火？按口诀1、2木，3、4火，5、6土，7、8金，9、0水，4对应火，文中写火正确；但i01同尾数4也写火，若按另一口诀则不一致。此处按常见口诀4对应火，无误。"
+          }
+        ],
+        "reason": "尾数4对应火，方向与凶一致，未见明确问题。"
+      },
+      "reviewer_b.p1": {
+        "verdict": "pass",
+        "issues": [],
+        "reason": "44数归凶、尾数4属火符合常见约定，并将传统负面含义处理为非宿命性的提醒。"
+      },
+      "reviewer_b.p2": {
+        "verdict": "pass",
+        "issues": [],
+        "reason": "44数归凶、尾数4属火准确，文字将传统负向寓意处理为提醒而非命运结论。"
+      }
+    },
+    "code_findings": []
+  },
+  {
+    "id": "kb:name:shuli:45",
+    "content_sha256": "021ba97080cd80b30f75e4b15d26558e51ef01ef3b3b428ff894372ac4892387",
+    "verdicts": {
+      "reviewer_a.p1": {
+        "verdict": "revise",
+        "issues": [
+          {
+            "dimension": "plain_language",
+            "detail": "尾数5对应的五行应为土（5、6土），此处写“尾数5在三才里对应土”正确；但条目本身无误，问题在于整体尾数五行规则需统一。"
+          }
+        ],
+        "reason": "尾数5对应土的表述与5、6土规则一致，需统一校正。"
+      },
+      "reviewer_a.p2": {
+        "verdict": "revise",
+        "issues": [
+          {
+            "dimension": "tradition",
+            "detail": "三才五行对应错误：尾数5在三才中通常对应土（5、6土），文中写土正确，无误。45数民间约定常归为吉，方向一致。未见明确问题。"
+          }
+        ],
+        "reason": "尾数5对应土正确，方向与吉一致，未见明确问题。"
+      },
+      "reviewer_b.p1": {
+        "verdict": "pass",
+        "issues": [],
+        "reason": "45数归吉、尾数5属土符合常见约定，正向释义与主题设置一致。"
+      },
+      "reviewer_b.p2": {
+        "verdict": "pass",
+        "issues": [],
+        "reason": "45数归吉、尾数5属土符合常见约定，正向释义与主题方向一致。"
+      }
+    },
+    "code_findings": []
+  },
+  {
+    "id": "kb:name:shuli:46",
+    "content_sha256": "03f100afa62b706b06d77ad1ab69082ba747a49532ef7a053fd623620d66d31e",
+    "verdicts": {
+      "reviewer_a.p1": {
+        "verdict": "revise",
+        "issues": [
+          {
+            "dimension": "tradition",
+            "detail": "尾数6对应土并非三才五行定法，三才五行由三格配置决定，与尾数无关。"
+          },
+          {
+            "dimension": "plain_language",
+            "detail": "“尾数6在三才里对应土”的白话解释不准确。"
+          }
+        ],
+        "reason": "数字尾数对应三才五行的说法不符合数理常识。"
+      },
+      "reviewer_a.p2": {
+        "verdict": "revise",
+        "issues": [
+          {
+            "dimension": "plain_language",
+            "detail": "'尾数6在三才里对应土'不准确：三才非由尾数决定，河图数中6通常对应水而非土"
+          }
+        ],
+        "reason": "凶数与负向主题一致，但尾数五行解释有误。"
+      },
+      "reviewer_b.p1": {
+        "verdict": "pass",
+        "issues": [],
+        "reason": "46数的民间凶类归属及尾数属土正确，负向倾向与释义一致，建议不含宿命化断言。"
+      },
+      "reviewer_b.p2": {
+        "verdict": "pass",
+        "issues": [],
+        "reason": "凶数归类与尾数属土符合常见约定，负向主题与波折提醒一致，表达不含确定性预言。"
+      }
+    },
+    "code_findings": []
+  },
+  {
+    "id": "kb:name:shuli:47",
+    "content_sha256": "f4c45587ea839cbf18a0ef391d12a149936c819173333a6cac7d360f5e2ebe2a",
+    "verdicts": {
+      "reviewer_a.p1": {
+        "verdict": "revise",
+        "issues": [
+          {
+            "dimension": "tradition",
+            "detail": "尾数7对应金并非三才五行定法，三才五行由三格配置决定，与尾数无关。"
+          },
+          {
+            "dimension": "plain_language",
+            "detail": "“尾数7在三才里对应金”的白话解释不准确。"
+          }
+        ],
+        "reason": "数字尾数对应三才五行的说法不符合数理常识。"
+      },
+      "reviewer_a.p2": {
+        "verdict": "revise",
+        "issues": [
+          {
+            "dimension": "plain_language",
+            "detail": "'尾数7在三才里对应金'不准确：三才非由尾数决定，河图数中7通常对应火而非金"
+          }
+        ],
+        "reason": "吉数与正向主题一致，但尾数五行解释有误。"
+      },
+      "reviewer_b.p1": {
+        "verdict": "pass",
+        "issues": [],
+        "reason": "47数的民间吉类归属及尾数属金正确，正向倾向与释义一致，没有确定性结论。"
+      },
+      "reviewer_b.p2": {
+        "verdict": "pass",
+        "issues": [],
+        "reason": "吉数归类与尾数属金符合常见约定，正向主题与助力、顺遂的表述一致，并有明确的民俗边界说明。"
+      }
+    },
+    "code_findings": []
+  },
+  {
+    "id": "kb:name:shuli:48",
+    "content_sha256": "34f5815870683ee392fbecc1c0ef1596030e150cff67c4cd7ea04ec1d0eafc1b",
+    "verdicts": {
+      "reviewer_a.p1": {
+        "verdict": "revise",
+        "issues": [
+          {
+            "dimension": "tradition",
+            "detail": "尾数8对应金并非三才五行定法，三才五行由三格配置决定，与尾数无关。"
+          },
+          {
+            "dimension": "plain_language",
+            "detail": "“尾数8在三才里对应金”的白话解释不准确。"
+          }
+        ],
+        "reason": "数字尾数对应三才五行的说法不符合数理常识。"
+      },
+      "reviewer_a.p2": {
+        "verdict": "revise",
+        "issues": [
+          {
+            "dimension": "plain_language",
+            "detail": "'尾数8在三才里对应金'不准确：三才非由尾数决定，河图数中8通常对应木而非金"
+          }
+        ],
+        "reason": "吉数与正向主题一致，但尾数五行解释有误。"
+      },
+      "reviewer_b.p1": {
+        "verdict": "pass",
+        "issues": [],
+        "reason": "48数的民间吉类归属及尾数属金正确，正向倾向与释义一致，且明确限定为取名习俗。"
+      },
+      "reviewer_b.p2": {
+        "verdict": "pass",
+        "issues": [],
+        "reason": "吉数归类与尾数属金符合常见约定，正向主题与顺遂、助力的文字一致。"
+      }
+    },
+    "code_findings": []
+  },
+  {
+    "id": "kb:name:shuli:49",
+    "content_sha256": "80d895f949b72efb37082ba90f80dfd30d039725dbe748d94e6e9c0d8ecd4220",
+    "verdicts": {
+      "reviewer_a.p1": {
+        "verdict": "revise",
+        "issues": [
+          {
+            "dimension": "tradition",
+            "detail": "尾数9对应水并非三才五行定法，三才五行由三格配置决定，与尾数无关。"
+          },
+          {
+            "dimension": "plain_language",
+            "detail": "“尾数9在三才里对应水”的白话解释不准确。"
+          }
+        ],
+        "reason": "数字尾数对应三才五行的说法不符合数理常识。"
+      },
+      "reviewer_a.p2": {
+        "verdict": "revise",
+        "issues": [
+          {
+            "dimension": "plain_language",
+            "detail": "'尾数9在三才里对应水'不准确：三才非由尾数决定，河图数中9通常对应金而非水"
+          }
+        ],
+        "reason": "半吉与微正方向一致，但尾数五行解释有误。"
+      },
+      "reviewer_b.p1": {
+        "verdict": "pass",
+        "issues": [],
+        "reason": "49数的半吉表述及尾数属水符合常见约定，轻微正向倾向与半吉定位相容，未断言命运。"
+      },
+      "reviewer_b.p2": {
+        "verdict": "pass",
+        "issues": [],
+        "reason": "半吉归类与尾数属水符合常见约定，轻微正向倾向与半吉定位相容，未将数理作为命运结论。"
+      }
+    },
+    "code_findings": []
+  },
+  {
+    "id": "kb:name:shuli:5",
+    "content_sha256": "e91c49cf4acd15a536df81c0e9f80904b3fd8537c3fc7cafe72e6cd0fdf7b003",
+    "verdicts": {
+      "reviewer_a.p1": {
+        "verdict": "revise",
+        "issues": [
+          {
+            "dimension": "tradition",
+            "detail": "尾数5对应土并非三才五行定法，三才五行由三格配置决定，与尾数无关。"
+          },
+          {
+            "dimension": "plain_language",
+            "detail": "“尾数5在三才里对应土”的白话解释不准确。"
+          }
+        ],
+        "reason": "数字尾数对应三才五行的说法不符合数理常识。"
+      },
+      "reviewer_a.p2": {
+        "verdict": "revise",
+        "issues": [
+          {
+            "dimension": "plain_language",
+            "detail": "'尾数5在三才里对应土'表述不准确：三才五行由天地人三格组合决定，不能简单以尾数归五行"
+          }
+        ],
+        "reason": "吉数与正向主题一致，但三才尾数对应的说法不准确。"
+      },
+      "reviewer_b.p1": {
+        "verdict": "pass",
+        "issues": [],
+        "reason": "5数的民间吉类归属及五行属土正确，正向倾向与文字一致，表述通俗且不决定论。"
+      },
+      "reviewer_b.p2": {
+        "verdict": "pass",
+        "issues": [],
+        "reason": "吉数归类与五行属土符合常见约定，正向倾向与释义一致，民俗定位清楚。"
+      }
+    },
+    "code_findings": []
+  },
+  {
+    "id": "kb:name:shuli:50",
+    "content_sha256": "063cd4881b7b4d1d81567c2a788d724d9346d1d04edccc73be4918f011a08fa9",
+    "verdicts": {
+      "reviewer_a.p1": {
+        "verdict": "revise",
+        "issues": [
+          {
+            "dimension": "tradition",
+            "detail": "尾数0对应水并非三才五行的定法，三才五行由三格配置决定，与尾数无关，存在误导。"
+          },
+          {
+            "dimension": "plain_language",
+            "detail": "“尾数0在三才里对应水”的白话解释不准确。"
+          }
+        ],
+        "reason": "数字尾数对应三才五行的说法不符合数理常识。"
+      },
+      "reviewer_a.p2": {
+        "verdict": "revise",
+        "issues": [
+          {
+            "dimension": "plain_language",
+            "detail": "'尾数0在三才里对应水'不准确：三才五行不由尾数决定，且河图数中0/10通常对应土而非水"
+          }
+        ],
+        "reason": "方向与文字一致，但三才尾数五行的解释有误。"
+      },
+      "reviewer_b.p1": {
+        "verdict": "pass",
+        "issues": [],
+        "reason": "50数的半吉表述及尾数属水符合常见约定，轻微正向倾向与半吉定位相容，措辞审慎。"
+      },
+      "reviewer_b.p2": {
+        "verdict": "pass",
+        "issues": [],
+        "reason": "半吉及尾数属水的表述符合常见约定，轻微正向倾向与半吉定位相容，措辞保留了个人选择空间。"
+      }
+    },
+    "code_findings": []
+  },
+  {
+    "id": "kb:name:shuli:51",
+    "content_sha256": "d258e0dd638de141f1fa6d393493bf240c25bd5c1e825b4ba284b28647f2d100",
+    "verdicts": {
+      "reviewer_a.p1": {
+        "verdict": "revise",
+        "issues": [
+          {
+            "dimension": "tradition",
+            "detail": "尾数1对应木并非三才五行定法，三才五行由三格配置决定，与尾数无关。"
+          },
+          {
+            "dimension": "plain_language",
+            "detail": "“尾数1在三才里对应木”的白话解释不准确。"
+          }
+        ],
+        "reason": "数字尾数对应三才五行的说法不符合数理常识。"
+      },
+      "reviewer_a.p2": {
+        "verdict": "revise",
+        "issues": [
+          {
+            "dimension": "plain_language",
+            "detail": "'尾数1在三才里对应木'不准确：三才不由尾数决定，河图数中1通常对应水而非木"
+          }
+        ],
+        "reason": "半吉与微正方向一致，但尾数五行解释有误。"
+      },
+      "reviewer_b.p1": {
+        "verdict": "pass",
+        "issues": [],
+        "reason": "51数的半吉表述及尾数属木符合常见约定，倾向值与半吉定位相容，未作确定性预测。"
+      },
+      "reviewer_b.p2": {
+        "verdict": "pass",
+        "issues": [],
+        "reason": "半吉归类与尾数属木符合常见约定，主题倾向温和，且已说明数理不决定个人经历。"
+      }
+    },
+    "code_findings": []
+  },
+  {
+    "id": "kb:name:shuli:52",
+    "content_sha256": "76b7fd9cd9b44211fa1b774f985c20028605d02dffda8e3a9e3cf9913e6e39dd",
+    "verdicts": {
+      "reviewer_a.p1": {
+        "verdict": "revise",
+        "issues": [
+          {
+            "dimension": "tradition",
+            "detail": "五格数理中尾数与三才五行的对应并非“尾数2对应木”，三才按天格、人格、地格的三才配置（如木木木、火木土等）定五行，而非按数字尾数；文中“尾数2在三才里对应木”与数理常识不符，属误导性解释。"
+          },
+          {
+            "dimension": "plain_language",
+            "detail": "“尾数X在三才里对应某五行”的说法没有依据，白话解释不准确。"
+          }
+        ],
+        "reason": "数字尾数对应三才五行的说法不符合五格剖象法常识，需修正。"
+      },
+      "reviewer_a.p2": {
+        "verdict": "revise",
+        "issues": [
+          {
+            "dimension": "plain_language",
+            "detail": "三才由天格、人格、地格的五行组合构成，并非取数理尾数对应五行；'尾数2在三才里对应木'的表述不准确，且2在河图数中通常对应火而非木"
+          }
+        ],
+        "reason": "吉凶与主题方向一致、无宿命化，但三才与尾数五行的白话解释有误。"
+      },
+      "reviewer_b.p1": {
+        "verdict": "pass",
+        "issues": [],
+        "reason": "52数的民间吉类归属及尾数五行对应正确，倾向值与文字一致，且未作命运断言。"
+      },
+      "reviewer_b.p2": {
+        "verdict": "pass",
+        "issues": [],
+        "reason": "吉数归类与尾数五行符合常见约定，主题倾向与文字一致，且未作命运断言。"
+      }
+    },
+    "code_findings": []
+  },
+  {
+    "id": "kb:name:shuli:53",
+    "content_sha256": "34af46231234218a7de06d4538d56ffb475c1153ed2d58e9a1658bd52a6110bb",
+    "verdicts": {
+      "reviewer_a.p1": {
+        "verdict": "revise",
+        "issues": [
+          {
+            "dimension": "tradition",
+            "detail": "尾数3对应火并非三才五行定法，三才五行由三格配置决定，与尾数无关。"
+          },
+          {
+            "dimension": "plain_language",
+            "detail": "“尾数3在三才里对应火”的白话解释不准确。"
+          }
+        ],
+        "reason": "数字尾数对应三才五行的说法不符合数理常识。"
+      },
+      "reviewer_a.p2": {
+        "verdict": "revise",
+        "issues": [
+          {
+            "dimension": "plain_language",
+            "detail": "'尾数3在三才里对应火'不准确：三才非由尾数决定，河图数中3通常对应木而非火"
+          }
+        ],
+        "reason": "半吉与微正方向一致，但尾数五行解释有误。"
+      },
+      "reviewer_b.p1": {
+        "verdict": "pass",
+        "issues": [],
+        "reason": "53数的半吉表述及尾数属火符合常见约定，倾向值与半吉定位相容，并明确说明习俗的局限。"
+      },
+      "reviewer_b.p2": {
+        "verdict": "pass",
+        "issues": [],
+        "reason": "半吉归类与尾数属火符合常见约定，主题倾向与半吉定位相容，措辞通俗且非宿命化。"
+      }
+    },
+    "code_findings": []
+  },
+  {
+    "id": "kb:name:shuli:54",
+    "content_sha256": "996f73c1d8a966bfc00256b836ec09c817b339b42450d42ac472e707bc6d8495",
+    "verdicts": {
+      "reviewer_a.p1": {
+        "verdict": "revise",
+        "issues": [
+          {
+            "dimension": "tradition",
+            "detail": "尾数4对应火并非三才五行定法，三才五行由天格人格地格配置决定，与尾数无关。"
+          },
+          {
+            "dimension": "plain_language",
+            "detail": "“尾数4在三才里对应火”的白话解释不准确。"
+          }
+        ],
+        "reason": "数字尾数对应三才五行的说法不符合数理常识。"
+      },
+      "reviewer_a.p2": {
+        "verdict": "revise",
+        "issues": [
+          {
+            "dimension": "plain_language",
+            "detail": "'尾数4在三才里对应火'不准确：三才五行非由尾数决定，河图数中4通常对应金而非火"
+          }
+        ],
+        "reason": "凶数与负向主题一致，但尾数五行解释有误。"
+      },
+      "reviewer_b.p1": {
+        "verdict": "pass",
+        "issues": [],
+        "reason": "54数的民间凶类归属及尾数属火正确，负向倾向与波折提醒一致，并明确避免命运断言。"
+      },
+      "reviewer_b.p2": {
+        "verdict": "pass",
+        "issues": [],
+        "reason": "凶数归类与尾数属火符合常见约定，负向倾向对应波折提醒，并明确避免宿命化解读。"
+      }
+    },
+    "code_findings": []
+  },
+  {
+    "id": "kb:name:shuli:55",
+    "content_sha256": "7c5e67ddfbcc3411c8bd3eb41b00caf97f06034536cf897ecb098e9d3f205bf5",
+    "verdicts": {
+      "reviewer_a.p1": {
+        "verdict": "revise",
+        "issues": [
+          {
+            "dimension": "plain_language",
+            "detail": "“尾数5在三才里对应土”的说法不准确，三才五行的判定方式被写得过于简化，容易误导用户。"
+          }
+        ],
+        "reason": "数理与五行对应的说明不准确。"
+      },
+      "reviewer_a.p2": {
+        "verdict": "revise",
+        "issues": [
+          {
+            "dimension": "plain_language",
+            "detail": "“尾数5在三才里对应土”表述不准；5属土是五格数理五行，不是三才。"
+          }
+        ],
+        "reason": "半吉与轻微正向theme_map一致，但白话解释需修正。"
+      },
+      "reviewer_b.p1": {
+        "verdict": "pass",
+        "issues": [],
+        "reason": "55数归为半吉、尾数5属土符合常见约定，主题轻微偏正与半吉定位相容，表达为反思提醒而非命运判断。"
+      },
+      "reviewer_b.p2": {
+        "verdict": "pass",
+        "issues": [],
+        "reason": "55数的半吉归属及尾数属土符合常见民间约定，主题仅轻微偏正，与吉凶参半的表述相容。"
+      }
+    },
+    "code_findings": []
+  },
+  {
+    "id": "kb:name:shuli:56",
+    "content_sha256": "bc0ad1bb89017a6023260ac7c1a5a83622194adc75743c81f196e4c8ab19a001",
+    "verdicts": {
+      "reviewer_a.p1": {
+        "verdict": "revise",
+        "issues": [
+          {
+            "dimension": "plain_language",
+            "detail": "“尾数6在三才里对应土”的说法不准确，三才五行的判定被写错，数理吉凶也被简化了。"
+          }
+        ],
+        "reason": "数理与五行的对应说明不准确。"
+      },
+      "reviewer_a.p2": {
+        "verdict": "revise",
+        "issues": [
+          {
+            "dimension": "plain_language",
+            "detail": "“尾数6在三才里对应土”表述不准；6属土是五格数理五行，不是三才。"
+          }
+        ],
+        "reason": "凶与负向theme_map一致，但白话解释需修正。"
+      },
+      "reviewer_b.p1": {
+        "verdict": "pass",
+        "issues": [],
+        "reason": "56数归为凶、尾数6属土符合常见约定，负向主题与波折提示一致，未作确定性预测。"
+      },
+      "reviewer_b.p2": {
+        "verdict": "pass",
+        "issues": [],
+        "reason": "56数的凶类归属及尾数属土符合常见民间约定，负向主题与文字一致，解释保持非决定论。"
+      }
+    },
+    "code_findings": []
+  },
+  {
+    "id": "kb:name:shuli:57",
+    "content_sha256": "7f3634d2c81a78758e3dfde2660a173ff8d1f9e4a74d5924e22ee5684c0d101c",
+    "verdicts": {
+      "reviewer_a.p1": {
+        "verdict": "revise",
+        "issues": [
+          {
+            "dimension": "plain_language",
+            "detail": "“尾数7在三才里对应金”的说法不准确，容易误导读者以为三才五行只看尾数。"
+          }
+        ],
+        "reason": "数理与五行对应的说明不准确。"
+      },
+      "reviewer_a.p2": {
+        "verdict": "revise",
+        "issues": [
+          {
+            "dimension": "plain_language",
+            "detail": "“尾数7在三才里对应金”表述不准；7属金是五格数理五行，并非三才规则。"
+          }
+        ],
+        "reason": "吉与正向theme_map一致，但五行解释挂错概念。"
+      },
+      "reviewer_b.p1": {
+        "verdict": "pass",
+        "issues": [],
+        "reason": "57数的传统吉类归属及尾数7属金的说明准确，主题方向与释义一致，无确定性结论。"
+      },
+      "reviewer_b.p2": {
+        "verdict": "pass",
+        "issues": [],
+        "reason": "57数常被列为吉数，尾数属金正确，正向主题与文字相符，并明确限定为取名习俗。"
+      }
+    },
+    "code_findings": []
+  },
+  {
+    "id": "kb:name:shuli:58",
+    "content_sha256": "31f4396b5f80bdc01fb03a4dcbcc722661b7a32cf965850f9939de8d9c3fa228",
+    "verdicts": {
+      "reviewer_a.p1": {
+        "verdict": "revise",
+        "issues": [
+          {
+            "dimension": "plain_language",
+            "detail": "“尾数8在三才里对应金”的说明不准确，容易让用户以为三才只看尾数，就得出五行。三才的五行由天格、人格、地格的个位数字决定，数理吉凶另按81数循环判断。"
+          }
+        ],
+        "reason": "数理与五行的对应说明不准确。"
+      },
+      "reviewer_a.p2": {
+        "verdict": "revise",
+        "issues": [
+          {
+            "dimension": "plain_language",
+            "detail": "“尾数8在三才里对应金”同样把五格数理五行说成三才规则；8属金本身无误，但“在三才里”表述不准。"
+          }
+        ],
+        "reason": "半吉与theme_map轻微正向一致，但白话解释中五行归属的表述需修正。"
+      },
+      "reviewer_b.p1": {
+        "verdict": "pass",
+        "issues": [],
+        "reason": "58数归为半吉、尾数8属金符合常见约定，主题轻微偏正与半吉定位相容，无命运断言。"
+      },
+      "reviewer_b.p2": {
+        "verdict": "pass",
+        "issues": [],
+        "reason": "58数的半吉归属及尾数属金符合常见民间约定，轻微正向的主题倾向与半吉表述相容。"
+      }
+    },
+    "code_findings": []
+  },
+  {
+    "id": "kb:name:shuli:59",
+    "content_sha256": "d6ea1a7b60508d4f6d8f5ee10149cbc81cc74f27ca2b77b3ee0ae0ab5e9d6922",
+    "verdicts": {
+      "reviewer_a.p1": {
+        "verdict": "revise",
+        "issues": [
+          {
+            "dimension": "plain_language",
+            "detail": "“尾数9在三才里对应水”的说法不准确，容易误导用户把数理吉凶和三才五行混在一起。"
+          }
+        ],
+        "reason": "数理与五行对应的说明不准确。"
+      },
+      "reviewer_a.p2": {
+        "verdict": "revise",
+        "issues": [
+          {
+            "dimension": "plain_language",
+            "detail": "“尾数9在三才里对应水”表述不准；9属水是五格数理五行，并非三才规则。"
+          }
+        ],
+        "reason": "凶与负向theme_map一致，但五行解释挂错概念。"
+      },
+      "reviewer_b.p1": {
+        "verdict": "pass",
+        "issues": [],
+        "reason": "59数的传统凶类归属及尾数9属水的说明准确，主题倾向与文字一致，且清楚限定为民间习俗。"
+      },
+      "reviewer_b.p2": {
+        "verdict": "pass",
+        "issues": [],
+        "reason": "59数的凶类归属及尾数属水符合常见民间约定，主题方向与波折表述一致，无确定性风险结论。"
+      }
+    },
+    "code_findings": []
+  },
+  {
+    "id": "kb:name:shuli:6",
+    "content_sha256": "53f8c5e2d5edf1193e7ab92c17ae40596ad52014a00e0e976b52c8ce7fc27731",
+    "verdicts": {
+      "reviewer_a.p1": {
+        "verdict": "revise",
+        "issues": [
+          {
+            "dimension": "plain_language",
+            "detail": "“尾数6在三才里对应土”的说法不准确，三才五行是按天格、人格、地格的个位数定的，不是单看尾数。"
+          }
+        ],
+        "reason": "数理与五行对应的说明不准确。"
+      },
+      "reviewer_a.p2": {
+        "verdict": "revise",
+        "issues": [
+          {
+            "dimension": "plain_language",
+            "detail": "“尾数6在三才里对应土”表述不准；6属土是五格数理五行，与三才不是同一回事。"
+          }
+        ],
+        "reason": "吉与正向theme_map一致，但白话解释需修正。"
+      },
+      "reviewer_b.p1": {
+        "verdict": "pass",
+        "issues": [],
+        "reason": "6数归为吉、尾数6属土符合常见约定，正向主题与释义一致，并明确说明数理不决定个人经历。"
+      },
+      "reviewer_b.p2": {
+        "verdict": "pass",
+        "issues": [],
+        "reason": "6数的吉类归属及尾数属土符合常见民间约定，正向主题与助力表述一致，措辞审慎。"
+      }
+    },
+    "code_findings": []
+  },
+  {
+    "id": "kb:name:shuli:60",
+    "content_sha256": "75b7a7785dbe8cacc27d4c7e760025c3262065b6d854bad5ffc92bd770427c57",
+    "verdicts": {
+      "reviewer_a.p1": {
+        "verdict": "revise",
+        "issues": [
+          {
+            "dimension": "plain_language",
+            "detail": "“尾数0在三才里对应水”的说法不准确，容易误导用户以为三才五行只看尾数。"
+          }
+        ],
+        "reason": "数理与五行对应的说明不准确。"
+      },
+      "reviewer_a.p2": {
+        "verdict": "revise",
+        "issues": [
+          {
+            "dimension": "plain_language",
+            "detail": "“尾数0在三才里对应水”表述不准；0属水是五格数理五行，并非三才规则；且“尾数0”作为个位数处理也易混淆。"
+          }
+        ],
+        "reason": "凶与负向theme_map一致，但五行解释挂错概念。"
+      },
+      "reviewer_b.p1": {
+        "verdict": "pass",
+        "issues": [],
+        "reason": "60数的传统凶类归属及尾数0属水的说明准确，负向主题与文字一致，并避免了宿命化表达。"
+      },
+      "reviewer_b.p2": {
+        "verdict": "pass",
+        "issues": [],
+        "reason": "60数的凶类归属及尾数属水符合常见民间约定，负向主题与风险提醒一致，未断言实际命运。"
+      }
+    },
+    "code_findings": []
+  },
+  {
+    "id": "kb:name:shuli:61",
+    "content_sha256": "b154ad83c8085ae7bfbcd19640844b3abaf3d6ff41b876c6ba2b5019c8d85d25",
+    "verdicts": {
+      "reviewer_a.p1": {
+        "verdict": "revise",
+        "issues": [
+          {
+            "dimension": "plain_language",
+            "detail": "“尾数1在三才里对应木”的说法不准确，三才五行不是这么判定的，容易误导读者。"
+          }
+        ],
+        "reason": "数理与五行对应的说明不准确。"
+      },
+      "reviewer_a.p2": {
+        "verdict": "revise",
+        "issues": [
+          {
+            "dimension": "plain_language",
+            "detail": "“尾数1在三才里对应木”表述不准；1属木是五格数理五行，不是三才。"
+          }
+        ],
+        "reason": "吉与正向theme_map一致，但白话解释需修正。"
+      },
+      "reviewer_b.p1": {
+        "verdict": "pass",
+        "issues": [],
+        "reason": "61数归为吉、尾数1属木符合常见约定，正向主题与释义一致，无宿命化或专业领域确定性结论。"
+      },
+      "reviewer_b.p2": {
+        "verdict": "pass",
+        "issues": [],
+        "reason": "61数的吉类归属及尾数属木符合常见民间约定，正向主题与文字一致，且明确不以数理决定人生经历。"
+      }
+    },
+    "code_findings": []
+  },
+  {
+    "id": "kb:name:shuli:62",
+    "content_sha256": "99e1df5b6803c7c2f0a2f4812015acc4eab25a38e4d232245fb09aaa4f30b936",
+    "verdicts": {
+      "reviewer_a.p1": {
+        "verdict": "revise",
+        "issues": [
+          {
+            "dimension": "plain_language",
+            "detail": "“尾数2在三才里对应木”的说法不准确，容易让用户把数理吉凶和三才五行混为一谈。"
+          }
+        ],
+        "reason": "数理与五行对应关系的说明不准确，容易混淆。"
+      },
+      "reviewer_a.p2": {
+        "verdict": "revise",
+        "issues": [
+          {
+            "dimension": "plain_language",
+            "detail": "“尾数2在三才里对应木”表述不准：2属木是五格数理五行，不是三才推算规则。"
+          }
+        ],
+        "reason": "凶数与负向theme_map一致，但五行解释挂错到三才概念上。"
+      },
+      "reviewer_b.p1": {
+        "verdict": "pass",
+        "issues": [],
+        "reason": "62数的传统凶类归属及尾数2属木的说明准确，负向主题与波折提示一致，措辞不宿命化。"
+      },
+      "reviewer_b.p2": {
+        "verdict": "pass",
+        "issues": [],
+        "reason": "62数的凶类归属及尾数属木符合常见民间约定，负向主题与波折提醒一致，未作宿命化解释。"
+      }
+    },
+    "code_findings": []
+  },
+  {
+    "id": "kb:name:shuli:63",
+    "content_sha256": "09941ad48d4fe890d9edc5ec209bb82620f117e0a54825f769d22d68982acac8",
+    "verdicts": {
+      "reviewer_a.p1": {
+        "verdict": "revise",
+        "issues": [
+          {
+            "dimension": "plain_language",
+            "detail": "“尾数3在三才里对应火”的说法不准确：三才按天格、人格、地格各自个位数的五行来配置（尾数1、2为木，3、4为火，5、6为土，7、8为金，9、0为水），含义是数本身的五行，并非“尾数对应某行”这种笼统的对应关系；而且“3”在个位数中对应的五行是火，与上下文一样，但表述方式会误导用户以为这是三才体系里通用的“尾数对应”规则。"
+          }
+        ],
+        "reason": "数理吉凶的民间约定没有错，但“尾数3对应火”的说法容易误导用户。"
+      },
+      "reviewer_a.p2": {
+        "verdict": "revise",
+        "issues": [
+          {
+            "dimension": "plain_language",
+            "detail": "“尾数3在三才里对应火”说法不准确：三才指天格、人格、地格三格各自的五行组合，并非由数字尾数直接对应五行；五格中1、2为木，3、4为火，5、6为土，7、8为金，9、0为水，3确属火，但表述为“尾数3对应火”容易误导为三才规则。"
+          }
+        ],
+        "reason": "吉凶方向与theme_map一致，但尾数对应五行的白话解释把数理五行误挂到“三才”名下，需修正。"
+      },
+      "reviewer_b.p1": {
+        "verdict": "pass",
+        "issues": [],
+        "reason": "63数的传统吉类归属及尾数3属火的说明准确，主题倾向与文字一致，且明确限定为民间取名习俗。"
+      },
+      "reviewer_b.p2": {
+        "verdict": "pass",
+        "issues": [],
+        "reason": "63数的吉类归属及尾数属火符合常见民间约定，主题方向与文字一致，且无命运断言。"
+      }
+    },
+    "code_findings": []
+  },
+  {
+    "id": "kb:name:shuli:7",
+    "content_sha256": "8ef807bbe01ff85f29fb1087cbc0d04f17b501b60f539a30d9462d63cd4c2522",
+    "verdicts": {
+      "reviewer_a.p1": {
+        "verdict": "pass",
+        "issues": [],
+        "reason": "吉数释义与正向主题一致，无宿命化断言。"
+      },
+      "reviewer_a.p2": {
+        "verdict": "pass",
+        "issues": [],
+        "reason": "7数民间约定为吉，尾数7在三才中对应金，theme_map正向且文字不宿命化，无其他问题。"
+      },
+      "reviewer_b.p1": {
+        "verdict": "revise",
+        "issues": [
+          {
+            "dimension": "tradition",
+            "detail": "7数虽常归为吉，但传统侧重刚健、果断、独立进取，也有过刚而失和的提醒；“顺遂、易得助力”未准确呈现其主要特点，尤其“易得助力”缺乏典型依据。建议改为对行动力、坚持与沟通分寸的提醒。"
+          }
+        ],
+        "reason": "吉凶归类与五行对应正确，但具体释义应突出7数的独立刚健，而非笼统强调顺遂与外援。"
+      },
+      "reviewer_b.p2": {
+        "verdict": "revise",
+        "issues": [
+          {
+            "dimension": "tradition",
+            "detail": "7数的传统释义主要强调刚健、独立、意志坚定，也常提醒过刚或欠缺和气；以“顺遂、易得助力”为主要特征不够贴切。建议改为有关自主行动、坚持与兼顾合作的表述。"
+          }
+        ],
+        "reason": "吉凶分类及五行对应无误，但核心描述应突出7数的独立刚健，而非笼统强调顺遂与外界助力。"
+      }
+    },
+    "code_findings": []
+  },
+  {
+    "id": "kb:name:shuli:8",
+    "content_sha256": "f56902f8e27cf07aefee74bd59664c5078e65fd6438682807d6b077c71670650",
+    "verdicts": {
+      "reviewer_a.p1": {
+        "verdict": "pass",
+        "issues": [],
+        "reason": "吉数释义与正向主题一致，并附免责说明。"
+      },
+      "reviewer_a.p2": {
+        "verdict": "revise",
+        "issues": [
+          {
+            "dimension": "tradition",
+            "detail": "按五格剖象法（熊崎氏）民间约定，8数属'吉'且尾数8对应金，但传统上8数常被归为'吉'偏意志坚强、需勤勉之数，而非'易得助力'；且三才中尾数1、2为木，8应属金无误，但表述'易得助力'与传统8数含义（勤勉发展、意志坚定）不完全吻合，建议改为强调勤勉与自我发展。"
+          }
+        ],
+        "reason": "8数释义中'易得助力'与传统8数勤勉发展之意有偏差，建议调整措辞。"
+      },
+      "reviewer_b.p1": {
+        "verdict": "pass",
+        "issues": [],
+        "reason": "8数的吉数归类及属金的对应符合常见约定，正向主题与文字一致，表达通俗且无确定性承诺。"
+      },
+      "reviewer_b.p2": {
+        "verdict": "pass",
+        "issues": [],
+        "reason": "8数归吉、五行属金符合常见约定，概括性的正向释义与主题方向一致，无宿命化表述。"
+      }
+    },
+    "code_findings": []
+  }
+]

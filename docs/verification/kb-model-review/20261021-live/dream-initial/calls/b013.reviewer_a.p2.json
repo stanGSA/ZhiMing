@@ -1,0 +1,83 @@
+{
+  "batch": "b013",
+  "reviewer": "reviewer_a",
+  "run_pass": 2,
+  "attempt": 1,
+  "vendor": "deepseek",
+  "requested_model": "deepseek-flash",
+  "returned_model": "deepseek-flash",
+  "api": "openai",
+  "started_at": "2026-10-21T16:15:08+00:00",
+  "finished_at": "2026-10-21T16:15:11+00:00",
+  "latency_s": 2.567,
+  "http_attempts": 1,
+  "finish_reason": "stop",
+  "prompt_sha256": "1630cedc08dabcc3833fd4985634cec97a5a09f4526c0953d6ed6a9ac5d6fddc",
+  "input_tokens": 2500,
+  "output_tokens": 502,
+  "cached_input_tokens": 2304,
+  "usage_available": true,
+  "raw_text": "{\"items\": [{\"item\": \"i01\", \"verdict\": \"pass\", \"issues\": [], \"reason\": \"释义与传统心理联想一致，主题方向中性略正与文字相符，无宿命化断言，措辞平和。\"}, {\"item\": \"i02\", \"verdict\": \"pass\", \"issues\": [], \"reason\": \"排队象征等待与缓慢，career 略负与文字一致，无确定性断言。\"}, {\"item\": \"i03\", \"verdict\": \"pass\", \"issues\": [], \"reason\": \"找东西象征寻找方向与需求，主题全中性，措辞平和无预兆。\"}, {\"item\": \"i04\", \"verdict\": \"pass\", \"issues\": [], \"reason\": \"拍照象征留住时刻与形象，self 略正合理，未预言现实。\"}, {\"item\": \"i05\", \"verdict\": \"pass\", \"issues\": [], \"reason\": \"投票象征选择权与公平，主题中性，措辞平和。\"}, {\"item\": \"i06\", \"verdict\": \"pass\", \"issues\": [], \"reason\": \"接吻象征亲密感与认同，relationship 略正一致，无宿命化。\"}, {\"item\": \"i07\", \"verdict\": \"pass\", \"issues\": [], \"reason\": \"掉牙释义避开疾病预兆，self 略负与文字一致，就诊提示适当。\"}, {\"item\": \"i08\", \"verdict\": \"pass\", \"issues\": [], \"reason\": \"拥抱象征亲近与和解，relationship 略正一致。\"}, {\"item\": \"i09\", \"verdict\": \"pass\", \"issues\": [], \"reason\": \"摩托车象征冒险与速度，主题中性，明确不预示出行安全。\"}, {\"item\": \"i10\", \"verdict\": \"revise\", \"issues\": [{\"dimension\": \"theme_direction\", \"detail\": \"文字将竹子描述为坚韧、灵活与节节成长，偏正面意象，但 self 与 career 均为 -0.1，方向与文字相反\"}], \"reason\": \"竹子释义偏正面成长，主题值却为负，方向不一致。\"}, {\"item\": \"i11\", \"verdict\": \"pass\", \"issues\": [], \"reason\": \"打雷象征觉醒与震动，self 略负符合情绪冲击，无天气预兆。\"}]}",
+  "verdicts": {
+    "i01": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "释义与传统心理联想一致，主题方向中性略正与文字相符，无宿命化断言，措辞平和。"
+    },
+    "i02": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "排队象征等待与缓慢，career 略负与文字一致，无确定性断言。"
+    },
+    "i03": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "找东西象征寻找方向与需求，主题全中性，措辞平和无预兆。"
+    },
+    "i04": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "拍照象征留住时刻与形象，self 略正合理，未预言现实。"
+    },
+    "i05": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "投票象征选择权与公平，主题中性，措辞平和。"
+    },
+    "i06": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "接吻象征亲密感与认同，relationship 略正一致，无宿命化。"
+    },
+    "i07": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "掉牙释义避开疾病预兆，self 略负与文字一致，就诊提示适当。"
+    },
+    "i08": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "拥抱象征亲近与和解，relationship 略正一致。"
+    },
+    "i09": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "摩托车象征冒险与速度，主题中性，明确不预示出行安全。"
+    },
+    "i10": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "theme_direction",
+          "detail": "文字将竹子描述为坚韧、灵活与节节成长，偏正面意象，但 self 与 career 均为 -0.1，方向与文字相反"
+        }
+      ],
+      "reason": "竹子释义偏正面成长，主题值却为负，方向不一致。"
+    },
+    "i11": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "打雷象征觉醒与震动，self 略负符合情绪冲击，无天气预兆。"
+    }
+  }
+}

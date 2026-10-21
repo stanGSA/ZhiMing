@@ -1,0 +1,83 @@
+{
+  "batch": "b012",
+  "reviewer": "reviewer_a",
+  "run_pass": 1,
+  "attempt": 1,
+  "vendor": "deepseek",
+  "requested_model": "deepseek-flash",
+  "returned_model": "deepseek-flash",
+  "api": "openai",
+  "started_at": "2026-10-21T16:00:55+00:00",
+  "finished_at": "2026-10-21T16:00:59+00:00",
+  "latency_s": 3.681,
+  "http_attempts": 1,
+  "finish_reason": "stop",
+  "prompt_sha256": "1f261ee60bd06d37595b5a2e8e15c8cc17b6a7df6cb24cfd69573bae27f1f13a",
+  "input_tokens": 2307,
+  "output_tokens": 627,
+  "cached_input_tokens": 384,
+  "usage_available": true,
+  "raw_text": "{\"items\": [{\"item\": \"i01\", \"verdict\": \"pass\", \"issues\": [], \"reason\": \"释义围绕整理生活与放下杂事的心理联想，方向中性略偏正，theme_map 与文字一致，措辞平和无宿命化。\"}, {\"item\": \"i02\", \"verdict\": \"pass\", \"issues\": [], \"reason\": \"房子象征自我与内在空间是常见心理联想，theme_map 全为 0 与文字中无明确方向一致，措辞限定心理层面。\"}, {\"item\": \"i03\", \"verdict\": \"pass\", \"issues\": [], \"reason\": \"手表与时间感、效率的联想合理，theme_map 中性，措辞留有余地，无宿命断言。\"}, {\"item\": \"i04\", \"verdict\": \"pass\", \"issues\": [], \"reason\": \"战场反映冲突与紧张感，self 与 career 略偏负与文字一致，relationship 与 finance 为 0 也合理。\"}, {\"item\": \"i05\", \"verdict\": \"revise\", \"issues\": [{\"dimension\": \"consistency\", \"detail\": \"同义词包含“没有门的房间”“密室”，这类意象带有被困、封闭的负面色彩，与释义仅说“内心的某个部分或私人空间”及全 0 主题不符，容易误命中其他意象。\"}], \"reason\": \"同义词里的封闭型房间意象与释义方向不一致，建议收紧同义词或补充对应解释。\"}, {\"item\": \"i06\", \"verdict\": \"pass\", \"issues\": [], \"reason\": \"扇子与调节情绪、风度的联想合理，theme_map 中性，文字无确定断言。\"}, {\"item\": \"i07\", \"verdict\": \"revise\", \"issues\": [{\"dimension\": \"consistency\", \"detail\": \"同义词“手机没电”“手机坏了”指向沟通受阻的负面意象，而释义与 theme_map 全 0 未体现这一方向，且“电话”与 i08“打电话”存在重叠。\"}], \"reason\": \"负面同义词未在文字中体现，且“电话”与打电话条目重叠，建议调整。\"}, {\"item\": \"i08\", \"verdict\": \"pass\", \"issues\": [], \"reason\": \"打电话涵盖沟通与联系受阻的感受，theme_map 全 0 虽偏平淡但无矛盾，措辞为心理层面且不预示现实。\"}, {\"item\": \"i09\", \"verdict\": \"pass\", \"issues\": [], \"reason\": \"手象征行动力与连接属常见联想，明确声明不代表健康状况并提示就医，措辞安全。\"}, {\"item\": \"i10\", \"verdict\": \"pass\", \"issues\": [], \"reason\": \"打架反映内心冲突与捍卫边界，self 与 relationship 略偏负与文字一致，career 与 finance 为 0 合理。\"}]}",
+  "verdicts": {
+    "i01": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "释义围绕整理生活与放下杂事的心理联想，方向中性略偏正，theme_map 与文字一致，措辞平和无宿命化。"
+    },
+    "i02": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "房子象征自我与内在空间是常见心理联想，theme_map 全为 0 与文字中无明确方向一致，措辞限定心理层面。"
+    },
+    "i03": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "手表与时间感、效率的联想合理，theme_map 中性，措辞留有余地，无宿命断言。"
+    },
+    "i04": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "战场反映冲突与紧张感，self 与 career 略偏负与文字一致，relationship 与 finance 为 0 也合理。"
+    },
+    "i05": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "consistency",
+          "detail": "同义词包含“没有门的房间”“密室”，这类意象带有被困、封闭的负面色彩，与释义仅说“内心的某个部分或私人空间”及全 0 主题不符，容易误命中其他意象。"
+        }
+      ],
+      "reason": "同义词里的封闭型房间意象与释义方向不一致，建议收紧同义词或补充对应解释。"
+    },
+    "i06": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "扇子与调节情绪、风度的联想合理，theme_map 中性，文字无确定断言。"
+    },
+    "i07": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "consistency",
+          "detail": "同义词“手机没电”“手机坏了”指向沟通受阻的负面意象，而释义与 theme_map 全 0 未体现这一方向，且“电话”与 i08“打电话”存在重叠。"
+        }
+      ],
+      "reason": "负面同义词未在文字中体现，且“电话”与打电话条目重叠，建议调整。"
+    },
+    "i08": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "打电话涵盖沟通与联系受阻的感受，theme_map 全 0 虽偏平淡但无矛盾，措辞为心理层面且不预示现实。"
+    },
+    "i09": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "手象征行动力与连接属常见联想，明确声明不代表健康状况并提示就医，措辞安全。"
+    },
+    "i10": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "打架反映内心冲突与捍卫边界，self 与 relationship 略偏负与文字一致，career 与 finance 为 0 合理。"
+    }
+  }
+}

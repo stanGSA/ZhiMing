@@ -1,0 +1,38 @@
+{
+  "batch": "b001",
+  "reviewer": "reviewer_a",
+  "run_pass": 2,
+  "attempt": 1,
+  "vendor": "deepseek",
+  "requested_model": "deepseek-flash",
+  "returned_model": "deepseek-flash",
+  "api": "openai",
+  "started_at": "2026-10-21T16:48:26+00:00",
+  "finished_at": "2026-10-21T16:48:28+00:00",
+  "latency_s": 1.349,
+  "http_attempts": 1,
+  "finish_reason": "stop",
+  "prompt_sha256": "78cd9c0e695428e6dcedbaa22b18758f0a525ed30bee289c15d064b2366e7a18",
+  "input_tokens": 1185,
+  "output_tokens": 159,
+  "cached_input_tokens": 1024,
+  "usage_available": true,
+  "raw_text": "{\"items\": [{\"item\": \"i01\", \"verdict\": \"pass\", \"issues\": [], \"reason\": \"术语与口径说明准确，主题中性无方向，措辞非宿命化，符合传统排盘常识。\"}, {\"item\": \"i02\", \"verdict\": \"revise\", \"issues\": [{\"dimension\": \"theme_direction\", \"detail\": \"释义文字明确将地支破描述为“轻度偏阻倾向”，但 theme_map 中 career 与 relationship 为 +0.2（偏顺），方向与文字相反，应改为负值。\"}], \"reason\": \"theme_map 的事业与感情方向为正，与文中“偏阻”表述相矛盾，需修正为负向。\"}]}",
+  "verdicts": {
+    "i01": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "术语与口径说明准确，主题中性无方向，措辞非宿命化，符合传统排盘常识。"
+    },
+    "i02": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "theme_direction",
+          "detail": "释义文字明确将地支破描述为“轻度偏阻倾向”，但 theme_map 中 career 与 relationship 为 +0.2（偏顺），方向与文字相反，应改为负值。"
+        }
+      ],
+      "reason": "theme_map 的事业与感情方向为正，与文中“偏阻”表述相矛盾，需修正为负向。"
+    }
+  }
+}

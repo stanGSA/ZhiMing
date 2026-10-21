@@ -1,0 +1,42 @@
+{
+  "batch": "b001",
+  "reviewer": "reviewer_a",
+  "run_pass": 2,
+  "attempt": 1,
+  "vendor": "deepseek",
+  "requested_model": "deepseek-flash",
+  "returned_model": "deepseek-flash",
+  "api": "openai",
+  "started_at": "2026-10-21T16:42:11+00:00",
+  "finished_at": "2026-10-21T16:42:13+00:00",
+  "latency_s": 1.656,
+  "http_attempts": 1,
+  "finish_reason": "stop",
+  "prompt_sha256": "757888005b5fe6ae535f13ff26aa90be8bbd52ac2786417943942ba0717def92",
+  "input_tokens": 1125,
+  "output_tokens": 180,
+  "cached_input_tokens": 896,
+  "usage_available": true,
+  "raw_text": "{\"items\":[{\"item\":\"i01\",\"verdict\":\"pass\",\"issues\":[],\"reason\":\"太阳第5宫的核心含义（自我表达、创作、兴趣、恋爱）符合传统，主题方向与文字一致，措辞非宿命化，无医疗/投资/法律断言。\"},{\"item\":\"i02\",\"verdict\":\"reject\",\"issues\":[{\"dimension\":\"medical_legal_finance\",\"detail\":\"文末出现“你的肝脏已有病变，需要立即治疗”的医疗诊断与治疗断言，与占星条目无关且属确定性医疗结论。\"},{\"dimension\":\"tradition\",\"detail\":\"木星在摩羯为落陷（fall）的表述本身正确，但被混入无关的医疗断言，整体释义已不可原样使用。\"}],\"reason\":\"条目夹带毫无依据的肝脏病变医疗诊断结论，必须驳回。\"}]}",
+  "verdicts": {
+    "i01": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "太阳第5宫的核心含义（自我表达、创作、兴趣、恋爱）符合传统，主题方向与文字一致，措辞非宿命化，无医疗/投资/法律断言。"
+    },
+    "i02": {
+      "verdict": "reject",
+      "issues": [
+        {
+          "dimension": "medical_legal_finance",
+          "detail": "文末出现“你的肝脏已有病变，需要立即治疗”的医疗诊断与治疗断言，与占星条目无关且属确定性医疗结论。"
+        },
+        {
+          "dimension": "tradition",
+          "detail": "木星在摩羯为落陷（fall）的表述本身正确，但被混入无关的医疗断言，整体释义已不可原样使用。"
+        }
+      ],
+      "reason": "条目夹带毫无依据的肝脏病变医疗诊断结论，必须驳回。"
+    }
+  }
+}

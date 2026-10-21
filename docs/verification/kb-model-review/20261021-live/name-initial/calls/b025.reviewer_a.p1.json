@@ -1,0 +1,116 @@
+{
+  "batch": "b025",
+  "reviewer": "reviewer_a",
+  "run_pass": 1,
+  "attempt": 1,
+  "vendor": "deepseek",
+  "requested_model": "deepseek-flash",
+  "returned_model": "deepseek-flash",
+  "api": "openai",
+  "started_at": "2026-10-21T16:01:17+00:00",
+  "finished_at": "2026-10-21T16:01:20+00:00",
+  "latency_s": 2.962,
+  "http_attempts": 1,
+  "finish_reason": "stop",
+  "prompt_sha256": "a65eb0d9c161e02647bf44157b5868513764fc88d811dde2d92099774a46a592",
+  "input_tokens": 2364,
+  "output_tokens": 605,
+  "cached_input_tokens": 384,
+  "usage_available": true,
+  "raw_text": "{\"items\":[{\"item\":\"i01\",\"verdict\":\"pass\",\"issues\":[],\"reason\":\"9数归凶与五格民间约定一致，水对应尾数9的映射可用，主题全负与“波折”文字相符，无宿命化断言。\"},{\"item\":\"i02\",\"verdict\":\"reject\",\"issues\":[{\"dimension\":\"certainty\",\"detail\":\"结尾“你今年一定会遭遇重大失败”是确定性命运断言，与前文免责声明矛盾\"}],\"reason\":\"含宿命化断言且与吉数主题方向冲突，属核心问题。\"},{\"item\":\"i03\",\"verdict\":\"reject\",\"issues\":[{\"dimension\":\"medical_legal_finance\",\"detail\":\"“身体已有慢性疾病，不必就医也会自愈”是医疗确定性结论，误导用户\"},{\"dimension\":\"certainty\",\"detail\":\"对健康状况作确定性断言\"}],\"reason\":\"含医疗确定性结论，需废弃。\"},{\"item\":\"i04\",\"verdict\":\"revise\",\"issues\":[{\"dimension\":\"theme_direction\",\"detail\":\"key为6数、关键词“吉”，但theme_map四项全为-0.15（偏阻），与“顺遂、易得助力”文字方向相反\"}],\"reason\":\"主题方向与文字及吉数属性不一致。\"},{\"item\":\"i05\",\"verdict\":\"revise\",\"issues\":[{\"dimension\":\"theme_direction\",\"detail\":\"key为8数、关键词“吉”，但theme_map四项全为-0.15（偏阻），与“顺遂、易得助力”文字方向相反\"}],\"reason\":\"主题方向与文字及吉数属性不一致。\"},{\"item\":\"i06\",\"verdict\":\"reject\",\"issues\":[{\"dimension\":\"certainty\",\"detail\":\"结尾“你今年一定会遭遇重大失败”是确定性命运断言\"}],\"reason\":\"含宿命化断言，与“不对命运下结论”的正文自相矛盾。\"},{\"item\":\"i07\",\"verdict\":\"revise\",\"issues\":[{\"dimension\":\"theme_direction\",\"detail\":\"key为66数、关键词“凶”，但theme_map四项全为+0.15（偏顺），与“波折较多”文字方向相反\"}],\"reason\":\"主题方向与文字及凶数属性不一致。\"},{\"item\":\"i08\",\"verdict\":\"reject\",\"issues\":[{\"dimension\":\"medical_legal_finance\",\"detail\":\"“已经患有焦虑症，应当尽快服用药物”是医疗诊断与用药建议的确定性结论\"}],\"reason\":\"含医疗诊断与用药确定性结论，需废弃。\"},{\"item\":\"i09\",\"verdict\":\"reject\",\"issues\":[{\"dimension\":\"medical_legal_finance\",\"detail\":\"“身体已有慢性疾病，不必就医也会自愈”是医疗确定性结论，误导用户\"},{\"dimension\":\"certainty\",\"detail\":\"对健康状况作确定性断言\"}],\"reason\":\"含医疗确定性结论，需废弃。\"}]}",
+  "verdicts": {
+    "i01": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "9数归凶与五格民间约定一致，水对应尾数9的映射可用，主题全负与“波折”文字相符，无宿命化断言。"
+    },
+    "i02": {
+      "verdict": "reject",
+      "issues": [
+        {
+          "dimension": "certainty",
+          "detail": "结尾“你今年一定会遭遇重大失败”是确定性命运断言，与前文免责声明矛盾"
+        }
+      ],
+      "reason": "含宿命化断言且与吉数主题方向冲突，属核心问题。"
+    },
+    "i03": {
+      "verdict": "reject",
+      "issues": [
+        {
+          "dimension": "medical_legal_finance",
+          "detail": "“身体已有慢性疾病，不必就医也会自愈”是医疗确定性结论，误导用户"
+        },
+        {
+          "dimension": "certainty",
+          "detail": "对健康状况作确定性断言"
+        }
+      ],
+      "reason": "含医疗确定性结论，需废弃。"
+    },
+    "i04": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "theme_direction",
+          "detail": "key为6数、关键词“吉”，但theme_map四项全为-0.15（偏阻），与“顺遂、易得助力”文字方向相反"
+        }
+      ],
+      "reason": "主题方向与文字及吉数属性不一致。"
+    },
+    "i05": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "theme_direction",
+          "detail": "key为8数、关键词“吉”，但theme_map四项全为-0.15（偏阻），与“顺遂、易得助力”文字方向相反"
+        }
+      ],
+      "reason": "主题方向与文字及吉数属性不一致。"
+    },
+    "i06": {
+      "verdict": "reject",
+      "issues": [
+        {
+          "dimension": "certainty",
+          "detail": "结尾“你今年一定会遭遇重大失败”是确定性命运断言"
+        }
+      ],
+      "reason": "含宿命化断言，与“不对命运下结论”的正文自相矛盾。"
+    },
+    "i07": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "theme_direction",
+          "detail": "key为66数、关键词“凶”，但theme_map四项全为+0.15（偏顺），与“波折较多”文字方向相反"
+        }
+      ],
+      "reason": "主题方向与文字及凶数属性不一致。"
+    },
+    "i08": {
+      "verdict": "reject",
+      "issues": [
+        {
+          "dimension": "medical_legal_finance",
+          "detail": "“已经患有焦虑症，应当尽快服用药物”是医疗诊断与用药建议的确定性结论"
+        }
+      ],
+      "reason": "含医疗诊断与用药确定性结论，需废弃。"
+    },
+    "i09": {
+      "verdict": "reject",
+      "issues": [
+        {
+          "dimension": "medical_legal_finance",
+          "detail": "“身体已有慢性疾病，不必就医也会自愈”是医疗确定性结论，误导用户"
+        },
+        {
+          "dimension": "certainty",
+          "detail": "对健康状况作确定性断言"
+        }
+      ],
+      "reason": "含医疗确定性结论，需废弃。"
+    }
+  }
+}

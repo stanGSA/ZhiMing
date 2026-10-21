@@ -1,0 +1,58 @@
+{
+  "batch": "b003",
+  "reviewer": "reviewer_b",
+  "run_pass": 2,
+  "attempt": 1,
+  "vendor": "openai",
+  "requested_model": "gpt-6.1-sol",
+  "returned_model": "gpt-6.1-sol",
+  "api": "openai",
+  "started_at": "2026-10-21T16:09:54+00:00",
+  "finished_at": "2026-10-21T16:10:13+00:00",
+  "latency_s": 19.305,
+  "http_attempts": 1,
+  "finish_reason": "stop",
+  "prompt_sha256": "08efd89198ca6ca8dd76fcda56fdab7abb26f41e2b3e4e69463a72b2afe539de",
+  "input_tokens": 1410,
+  "output_tokens": 774,
+  "cached_input_tokens": 1407,
+  "usage_available": true,
+  "raw_text": "{\n  \"items\": [\n    {\n      \"item\": \"i01\",\n      \"verdict\": \"revise\",\n      \"issues\": [\n        {\n          \"dimension\": \"plain_language\",\n          \"detail\": \"“由名字各字组成”未说明笔画相加及单字名补一的约定，容易使用户误解地格的计算方式。建议改为“地格通常按名字各字的笔画数相加，单字名另加一”。\"\n        }\n      ],\n      \"reason\": \"传统含义基本相符，但地格的计算说明需要补充单字名的规则。\"\n    },\n    {\n      \"item\": \"i02\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"符合天格在五格体系中的常见解释，且已明确属于约定而非命运断言。\"\n    },\n    {\n      \"item\": \"i03\",\n      \"verdict\": \"revise\",\n      \"issues\": [\n        {\n          \"dimension\": \"plain_language\",\n          \"detail\": \"“实际笔画”容易被理解为日常书写的笔画数，而传统五格通常采用康熙字典笔画等约定口径。建议改为“总格是全名各字按五格所用笔画规则计算后的总和，不另加虚数”。\"\n        }\n      ],\n      \"reason\": \"总格的核心解释正确，但笔画口径表述有歧义，需要澄清。\"\n    },\n    {\n      \"item\": \"i04\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"计算关系及外部人际、社会支持的传统解释相符，没有确定性断言。\"\n    },\n    {\n      \"item\": \"i05\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"人格的构成与核心含义符合五格常见约定，中性主题值与文字一致。\"\n    }\n  ]\n}",
+  "verdicts": {
+    "i01": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "plain_language",
+          "detail": "“由名字各字组成”未说明笔画相加及单字名补一的约定，容易使用户误解地格的计算方式。建议改为“地格通常按名字各字的笔画数相加，单字名另加一”。"
+        }
+      ],
+      "reason": "传统含义基本相符，但地格的计算说明需要补充单字名的规则。"
+    },
+    "i02": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "符合天格在五格体系中的常见解释，且已明确属于约定而非命运断言。"
+    },
+    "i03": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "plain_language",
+          "detail": "“实际笔画”容易被理解为日常书写的笔画数，而传统五格通常采用康熙字典笔画等约定口径。建议改为“总格是全名各字按五格所用笔画规则计算后的总和，不另加虚数”。"
+        }
+      ],
+      "reason": "总格的核心解释正确，但笔画口径表述有歧义，需要澄清。"
+    },
+    "i04": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "计算关系及外部人际、社会支持的传统解释相符，没有确定性断言。"
+    },
+    "i05": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "人格的构成与核心含义符合五格常见约定，中性主题值与文字一致。"
+    }
+  }
+}

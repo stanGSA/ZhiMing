@@ -1,0 +1,75 @@
+{
+  "batch": "b003",
+  "reviewer": "reviewer_b",
+  "run_pass": 2,
+  "attempt": 1,
+  "vendor": "openai",
+  "requested_model": "gpt-6.1-sol",
+  "returned_model": "gpt-6.1-sol",
+  "api": "openai",
+  "started_at": "2026-10-21T16:11:12+00:00",
+  "finished_at": "2026-10-21T16:11:28+00:00",
+  "latency_s": 16.184,
+  "http_attempts": 1,
+  "finish_reason": "stop",
+  "prompt_sha256": "8adef05171a13d39cea2d5555f13150e0cf28359ead0b7af77b23f8c0578223b",
+  "input_tokens": 1333,
+  "output_tokens": 570,
+  "cached_input_tokens": 1330,
+  "usage_available": true,
+  "raw_text": "{\n  \"items\": [\n    {\n      \"item\": \"i01\",\n      \"verdict\": \"reject\",\n      \"issues\": [\n        {\n          \"dimension\": \"medical_legal_finance\",\n          \"detail\": \"仅凭第6宫断定肝脏已有病变并要求立即治疗，属于确定性医疗诊断与治疗指示。\"\n        },\n        {\n          \"dimension\": \"certainty\",\n          \"detail\": \"“出现它说明你的肝脏已有病变”将占星符号直接当作疾病事实的依据。\"\n        }\n      ],\n      \"reason\": \"日常工作与习惯的宫位主题基本正确，但附加了无依据的确定性医疗结论。\"\n    },\n    {\n      \"item\": \"i02\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"远行、学习与视野符合第9宫的常见主题，文字中性且与主题倾向值一致。\"\n    },\n    {\n      \"item\": \"i03\",\n      \"verdict\": \"reject\",\n      \"issues\": [\n        {\n          \"dimension\": \"tradition\",\n          \"detail\": \"条目对象为第4宫，正文却解释第10宫的职业与公共责任，写错了宫位对象。\"\n        },\n        {\n          \"dimension\": \"consistency\",\n          \"detail\": \"正文中的“10（10）”及“第10宫”均与 key 和关键词“4”不符。\"\n        }\n      ],\n      \"reason\": \"正文解释的是第10宫，而不是 key 指定的第4宫。\"\n    },\n    {\n      \"item\": \"i04\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"共享资源与信任符合第8宫的常见讨论范围，表述中性且没有确定性断言。\"\n    },\n    {\n      \"item\": \"i05\",\n      \"verdict\": \"reject\",\n      \"issues\": [\n        {\n          \"dimension\": \"medical_legal_finance\",\n          \"detail\": \"仅凭第7宫断定用户患有焦虑症并建议尽快服药，属于确定性医疗诊断与用药指示。\"\n        },\n        {\n          \"dimension\": \"certainty\",\n          \"detail\": \"“这表明你已经患有焦虑症”将占星符号直接当作确诊依据。\"\n        }\n      ],\n      \"reason\": \"合作与关系的宫位主题基本正确，但附加了无依据的精神疾病诊断和用药指示。\"\n    }\n  ]\n}",
+  "verdicts": {
+    "i01": {
+      "verdict": "reject",
+      "issues": [
+        {
+          "dimension": "medical_legal_finance",
+          "detail": "仅凭第6宫断定肝脏已有病变并要求立即治疗，属于确定性医疗诊断与治疗指示。"
+        },
+        {
+          "dimension": "certainty",
+          "detail": "“出现它说明你的肝脏已有病变”将占星符号直接当作疾病事实的依据。"
+        }
+      ],
+      "reason": "日常工作与习惯的宫位主题基本正确，但附加了无依据的确定性医疗结论。"
+    },
+    "i02": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "远行、学习与视野符合第9宫的常见主题，文字中性且与主题倾向值一致。"
+    },
+    "i03": {
+      "verdict": "reject",
+      "issues": [
+        {
+          "dimension": "tradition",
+          "detail": "条目对象为第4宫，正文却解释第10宫的职业与公共责任，写错了宫位对象。"
+        },
+        {
+          "dimension": "consistency",
+          "detail": "正文中的“10（10）”及“第10宫”均与 key 和关键词“4”不符。"
+        }
+      ],
+      "reason": "正文解释的是第10宫，而不是 key 指定的第4宫。"
+    },
+    "i04": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "共享资源与信任符合第8宫的常见讨论范围，表述中性且没有确定性断言。"
+    },
+    "i05": {
+      "verdict": "reject",
+      "issues": [
+        {
+          "dimension": "medical_legal_finance",
+          "detail": "仅凭第7宫断定用户患有焦虑症并建议尽快服药，属于确定性医疗诊断与用药指示。"
+        },
+        {
+          "dimension": "certainty",
+          "detail": "“这表明你已经患有焦虑症”将占星符号直接当作确诊依据。"
+        }
+      ],
+      "reason": "合作与关系的宫位主题基本正确，但附加了无依据的精神疾病诊断和用药指示。"
+    }
+  }
+}

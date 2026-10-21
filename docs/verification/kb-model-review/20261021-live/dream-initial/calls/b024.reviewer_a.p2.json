@@ -1,0 +1,87 @@
+{
+  "batch": "b024",
+  "reviewer": "reviewer_a",
+  "run_pass": 2,
+  "attempt": 1,
+  "vendor": "deepseek",
+  "requested_model": "deepseek-flash",
+  "returned_model": "deepseek-flash",
+  "api": "openai",
+  "started_at": "2026-10-21T16:15:23+00:00",
+  "finished_at": "2026-10-21T16:15:25+00:00",
+  "latency_s": 2.85,
+  "http_attempts": 1,
+  "finish_reason": "stop",
+  "prompt_sha256": "112083fee88295df86ea0c1f11f14c9f1f302eca39e26c4832c37c5099f42323",
+  "input_tokens": 2480,
+  "output_tokens": 568,
+  "cached_input_tokens": 2304,
+  "usage_available": true,
+  "raw_text": "{\"items\": [{\"item\": \"i01\", \"verdict\": \"pass\", \"issues\": [], \"reason\": \"释义符合传统羊象征温和顺从的心理联想，主题方向轻微正向且与文字一致，无宿命化或误命中问题。\"}, {\"item\": \"i02\", \"verdict\": \"pass\", \"issues\": [], \"reason\": \"纹身释义聚焦自我形象与掌控感，主题全为0合理，且明确不涉健康状况，措辞平和。\"}, {\"item\": \"i03\", \"verdict\": \"pass\", \"issues\": [], \"reason\": \"约会释义贴合关系期待与紧张，relationship轻微正向一致，无预测断言。\"}, {\"item\": \"i04\", \"verdict\": \"pass\", \"issues\": [], \"reason\": \"红包象征被祝福认可，relationship与finance轻微正向与文字一致，无投资性结论。\"}, {\"item\": \"i05\", \"verdict\": \"pass\", \"issues\": [], \"reason\": \"结婚象征承诺与角色转变，relationship轻微正向一致，明确不预示现实事件。\"}, {\"item\": \"i06\", \"verdict\": \"pass\", \"issues\": [], \"reason\": \"老家象征归属与怀旧，self与relationship轻微正向符合文字，措辞心理层面。\"}, {\"item\": \"i07\", \"verdict\": \"reject\", \"issues\": [{\"dimension\": \"certainty\", \"detail\": \"结尾出现“必然破财，结局已经注定，无法避免”的宿命化断言，与前半段“不是吉凶预兆”自相矛盾。\"}, {\"dimension\": \"theme_direction\", \"detail\": \"文字断言必然破财，而theme_map全为0，方向与文字不一致。\"}], \"reason\": \"含宿命化破财断言且与主题值矛盾，属确定性结论，应拒绝。\"}, {\"item\": \"i08\", \"verdict\": \"pass\", \"issues\": [], \"reason\": \"梦见老公反映伴侣关系感受，relationship轻微正向一致，无对他人状况的断言。\"}, {\"item\": \"i09\", \"verdict\": \"pass\", \"issues\": [], \"reason\": \"绳子象征束缚与连接，self与relationship轻微负向与文字一致，措辞平和。\"}, {\"item\": \"i10\", \"verdict\": \"pass\", \"issues\": [], \"reason\": \"梦见老婆与i08同类但对象不同，释义中性合理，主题方向一致，无重复疑虑。\"}, {\"item\": \"i11\", \"verdict\": \"pass\", \"issues\": [], \"reason\": \"老人象征经验智慧与时间感受，self轻微正向一致，措辞平和无断言。\"}]}",
+  "verdicts": {
+    "i01": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "释义符合传统羊象征温和顺从的心理联想，主题方向轻微正向且与文字一致，无宿命化或误命中问题。"
+    },
+    "i02": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "纹身释义聚焦自我形象与掌控感，主题全为0合理，且明确不涉健康状况，措辞平和。"
+    },
+    "i03": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "约会释义贴合关系期待与紧张，relationship轻微正向一致，无预测断言。"
+    },
+    "i04": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "红包象征被祝福认可，relationship与finance轻微正向与文字一致，无投资性结论。"
+    },
+    "i05": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "结婚象征承诺与角色转变，relationship轻微正向一致，明确不预示现实事件。"
+    },
+    "i06": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "老家象征归属与怀旧，self与relationship轻微正向符合文字，措辞心理层面。"
+    },
+    "i07": {
+      "verdict": "reject",
+      "issues": [
+        {
+          "dimension": "certainty",
+          "detail": "结尾出现“必然破财，结局已经注定，无法避免”的宿命化断言，与前半段“不是吉凶预兆”自相矛盾。"
+        },
+        {
+          "dimension": "theme_direction",
+          "detail": "文字断言必然破财，而theme_map全为0，方向与文字不一致。"
+        }
+      ],
+      "reason": "含宿命化破财断言且与主题值矛盾，属确定性结论，应拒绝。"
+    },
+    "i08": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "梦见老公反映伴侣关系感受，relationship轻微正向一致，无对他人状况的断言。"
+    },
+    "i09": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "绳子象征束缚与连接，self与relationship轻微负向与文字一致，措辞平和。"
+    },
+    "i10": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "梦见老婆与i08同类但对象不同，释义中性合理，主题方向一致，无重复疑虑。"
+    },
+    "i11": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "老人象征经验智慧与时间感受，self轻微正向一致，措辞平和无断言。"
+    }
+  }
+}

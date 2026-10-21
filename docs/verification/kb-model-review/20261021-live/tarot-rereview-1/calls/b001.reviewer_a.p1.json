@@ -1,0 +1,92 @@
+{
+  "batch": "b001",
+  "reviewer": "reviewer_a",
+  "run_pass": 1,
+  "attempt": 1,
+  "vendor": "deepseek",
+  "requested_model": "deepseek-flash",
+  "returned_model": "deepseek-flash",
+  "api": "openai",
+  "started_at": "2026-10-21T15:48:29+00:00",
+  "finished_at": "2026-10-21T15:48:37+00:00",
+  "latency_s": 8.049,
+  "http_attempts": 1,
+  "finish_reason": "stop",
+  "prompt_sha256": "178917599d7d40a2e29858d1bb625ee3e8c5b90ece12b192a1f7a78924beb37b",
+  "input_tokens": 3298,
+  "output_tokens": 571,
+  "cached_input_tokens": 384,
+  "usage_available": true,
+  "raw_text": "{\"items\":[{\"item\":\"i01\",\"verdict\":\"pass\",\"issues\":[],\"reason\":\"逆位释义符合权杖十卸下负担的传统方向，theme_map 正负与文字一致，且含非宿命化免责声明。\"},{\"item\":\"i02\",\"verdict\":\"revise\",\"issues\":[{\"dimension\":\"theme_direction\",\"detail\":\"逆位星币四传统上偏向松开控制、释放资源，text 侧重提醒不要过度控制，但 theme_map 的 finance/career 均为负值，与文字方向不一致，宜改为中性或偏正。\"}],\"reason\":\"文字虽提及过度控制，但主题方向与逆位松开控制的象征不一致。\"},{\"item\":\"i03\",\"verdict\":\"pass\",\"issues\":[],\"reason\":\"倒吊人逆位以拖延、无效牺牲为核心，theme_map 负值与文字一致，措辞非宿命化。\"},{\"item\":\"i04\",\"verdict\":\"pass\",\"issues\":[],\"reason\":\"愚人逆位以冲动或犹豫、准备不足为核心，负方向与文字一致。\"},{\"item\":\"i05\",\"verdict\":\"pass\",\"issues\":[],\"reason\":\"星币九逆位指向自主感不足，财务与事业负方向与文字一致。\"},{\"item\":\"i06\",\"verdict\":\"pass\",\"issues\":[],\"reason\":\"星币骑士逆位以执行停滞、过度保守为核心，负方向与文字一致。\"},{\"item\":\"i07\",\"verdict\":\"pass\",\"issues\":[],\"reason\":\"宝剑九逆位以担忧缓解、接纳支持为核心，self 微正与文字一致，且注意避免宿命化。\"},{\"item\":\"i08\",\"verdict\":\"reject\",\"issues\":[{\"dimension\":\"consistency\",\"detail\":\"牌位释义应说明选项 A 的考虑因素，却在末尾加入“注定会失去现在的感情、一定会发生”的宿命化断言，与牌位定义和用途不符。\"},{\"dimension\":\"certainty\",\"detail\":\"出现“注定”“一定会发生”等确定性断言。\"}],\"reason\":\"牌位条目混入与“选 A”无关的宿命化感情断言，属于核心错误。\"},{\"item\":\"i09\",\"verdict\":\"pass\",\"issues\":[],\"reason\":\"教皇逆位以审视惯例、探索替代方式为核心，theme_map 微负与文字一致，措辞谨慎。\"},{\"item\":\"i10\",\"verdict\":\"pass\",\"issues\":[],\"reason\":\"星币侍从逆位以落实不足、计划未落地为核心，负方向与文字一致。\"},{\"item\":\"i11\",\"verdict\":\"pass\",\"issues\":[],\"reason\":\"太阳逆位以热情暂缓、清晰感减弱为核心，微负方向与文字一致，含免责声明。\"}]}",
+  "verdicts": {
+    "i01": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "逆位释义符合权杖十卸下负担的传统方向，theme_map 正负与文字一致，且含非宿命化免责声明。"
+    },
+    "i02": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "theme_direction",
+          "detail": "逆位星币四传统上偏向松开控制、释放资源，text 侧重提醒不要过度控制，但 theme_map 的 finance/career 均为负值，与文字方向不一致，宜改为中性或偏正。"
+        }
+      ],
+      "reason": "文字虽提及过度控制，但主题方向与逆位松开控制的象征不一致。"
+    },
+    "i03": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "倒吊人逆位以拖延、无效牺牲为核心，theme_map 负值与文字一致，措辞非宿命化。"
+    },
+    "i04": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "愚人逆位以冲动或犹豫、准备不足为核心，负方向与文字一致。"
+    },
+    "i05": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "星币九逆位指向自主感不足，财务与事业负方向与文字一致。"
+    },
+    "i06": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "星币骑士逆位以执行停滞、过度保守为核心，负方向与文字一致。"
+    },
+    "i07": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "宝剑九逆位以担忧缓解、接纳支持为核心，self 微正与文字一致，且注意避免宿命化。"
+    },
+    "i08": {
+      "verdict": "reject",
+      "issues": [
+        {
+          "dimension": "consistency",
+          "detail": "牌位释义应说明选项 A 的考虑因素，却在末尾加入“注定会失去现在的感情、一定会发生”的宿命化断言，与牌位定义和用途不符。"
+        },
+        {
+          "dimension": "certainty",
+          "detail": "出现“注定”“一定会发生”等确定性断言。"
+        }
+      ],
+      "reason": "牌位条目混入与“选 A”无关的宿命化感情断言，属于核心错误。"
+    },
+    "i09": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "教皇逆位以审视惯例、探索替代方式为核心，theme_map 微负与文字一致，措辞谨慎。"
+    },
+    "i10": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "星币侍从逆位以落实不足、计划未落地为核心，负方向与文字一致。"
+    },
+    "i11": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "太阳逆位以热情暂缓、清晰感减弱为核心，微负方向与文字一致，含免责声明。"
+    }
+  }
+}

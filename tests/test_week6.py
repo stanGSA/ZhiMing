@@ -235,7 +235,11 @@ def test_dream_kb_covers_seed_vocabulary_and_excludes_probes(project):
         oov = {o for item in DREAMS["items"] for o in item["out_of_vocabulary"]}
         assert not oov & set(matcher.aliases)
         for key, synonyms in DREAMS["vocabulary_used"]["synonym_examples"].items():
-            assert all(matcher.match(s)["key"] == key for s in synonyms)
+            for synonym in synonyms:
+                # Live review found that a venue alone does not imply taking an exam.
+                # Keep the older draft dataset intact; assert the corrected boundary.
+                expected = None if (key, synonym) == ("考试", "考场") else key
+                assert matcher.match(synonym)["key"] == expected
         assert kb.db.execute("SELECT count(*) FROM dream_fts").fetchone()[0] > 300
     finally:
         kb.close()

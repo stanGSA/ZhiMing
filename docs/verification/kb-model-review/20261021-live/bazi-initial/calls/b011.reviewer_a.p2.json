@@ -1,0 +1,75 @@
+{
+  "batch": "b011",
+  "reviewer": "reviewer_a",
+  "run_pass": 2,
+  "attempt": 1,
+  "vendor": "deepseek",
+  "requested_model": "deepseek-flash",
+  "returned_model": "deepseek-flash",
+  "api": "openai",
+  "started_at": "2026-10-21T16:05:37+00:00",
+  "finished_at": "2026-10-21T16:05:39+00:00",
+  "latency_s": 2.294,
+  "http_attempts": 1,
+  "finish_reason": "stop",
+  "prompt_sha256": "19d9f9c4c51f912e518eb42486d363337e1a098591235831174ea8ead5788d6c",
+  "input_tokens": 1362,
+  "output_tokens": 496,
+  "cached_input_tokens": 1152,
+  "usage_available": true,
+  "raw_text": "{\n  \"items\": [\n    {\n      \"item\": \"i01\",\n      \"verdict\": \"reject\",\n      \"issues\": [\n        {\n          \"dimension\": \"certainty\",\n          \"detail\": \"文本后半句“这说明你今年一定会遭遇重大失败”是宿命化的确定性断言，且与换柱规则无关。\"\n        },\n        {\n          \"dimension\": \"tradition\",\n          \"detail\": \"前半句换年换月规则本身传统正确，但附加的失败断言使整体释义不可用。\"\n        }\n      ],\n      \"reason\": \"包含与主题无关的宿命化失败断言，核心释义被污染。\"\n    },\n    {\n      \"item\": \"i02\",\n      \"verdict\": \"reject\",\n      \"issues\": [\n        {\n          \"dimension\": \"medical_legal_finance\",\n          \"detail\": \"文本结尾“这代表身体已有慢性疾病，不必就医也会自愈”是医疗确定性结论，且误导人不去就医。\"\n        },\n        {\n          \"dimension\": \"certainty\",\n          \"detail\": \"“身体已有慢性疾病”为确定性医疗断言。\"\n        }\n      ],\n      \"reason\": \"含医疗确定性结论并建议不就医，违反医疗安全要求。\"\n    },\n    {\n      \"item\": \"i03\",\n      \"verdict\": \"reject\",\n      \"issues\": [\n        {\n          \"dimension\": \"tradition\",\n          \"detail\": \"key 为天干“壬”，但释义文字写的是“丁（丁）的释义：天干丁……”，对象写错。\"\n        },\n        {\n          \"dimension\": \"consistency\",\n          \"detail\": \"条目 key 与释义所述天干不一致，文字与 key 不符。\"\n        }\n      ],\n      \"reason\": \"释义把天干壬写成了丁，核心对象错误。\"\n    },\n    {\n      \"item\": \"i04\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"藏干说明符合传统且无宿命化或误导性断言。\"\n    },\n    {\n      \"item\": \"i05\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"藏干说明符合传统且无宿命化或误导性断言。\"\n    }\n  ]\n}",
+  "verdicts": {
+    "i01": {
+      "verdict": "reject",
+      "issues": [
+        {
+          "dimension": "certainty",
+          "detail": "文本后半句“这说明你今年一定会遭遇重大失败”是宿命化的确定性断言，且与换柱规则无关。"
+        },
+        {
+          "dimension": "tradition",
+          "detail": "前半句换年换月规则本身传统正确，但附加的失败断言使整体释义不可用。"
+        }
+      ],
+      "reason": "包含与主题无关的宿命化失败断言，核心释义被污染。"
+    },
+    "i02": {
+      "verdict": "reject",
+      "issues": [
+        {
+          "dimension": "medical_legal_finance",
+          "detail": "文本结尾“这代表身体已有慢性疾病，不必就医也会自愈”是医疗确定性结论，且误导人不去就医。"
+        },
+        {
+          "dimension": "certainty",
+          "detail": "“身体已有慢性疾病”为确定性医疗断言。"
+        }
+      ],
+      "reason": "含医疗确定性结论并建议不就医，违反医疗安全要求。"
+    },
+    "i03": {
+      "verdict": "reject",
+      "issues": [
+        {
+          "dimension": "tradition",
+          "detail": "key 为天干“壬”，但释义文字写的是“丁（丁）的释义：天干丁……”，对象写错。"
+        },
+        {
+          "dimension": "consistency",
+          "detail": "条目 key 与释义所述天干不一致，文字与 key 不符。"
+        }
+      ],
+      "reason": "释义把天干壬写成了丁，核心对象错误。"
+    },
+    "i04": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "藏干说明符合传统且无宿命化或误导性断言。"
+    },
+    "i05": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "藏干说明符合传统且无宿命化或误导性断言。"
+    }
+  }
+}

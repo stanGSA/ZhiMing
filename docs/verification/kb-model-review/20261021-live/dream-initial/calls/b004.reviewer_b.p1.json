@@ -1,0 +1,110 @@
+{
+  "batch": "b004",
+  "reviewer": "reviewer_b",
+  "run_pass": 1,
+  "attempt": 1,
+  "vendor": "openai",
+  "requested_model": "gpt-6.1-sol",
+  "returned_model": "gpt-6.1-sol",
+  "api": "openai",
+  "started_at": "2026-10-21T16:02:02+00:00",
+  "finished_at": "2026-10-21T16:02:29+00:00",
+  "latency_s": 26.845,
+  "http_attempts": 1,
+  "finish_reason": "stop",
+  "prompt_sha256": "e8d0ad6a4df3ff2bb26fb34f8e1d856d89b02420350c02569a8cfea716591ba0",
+  "input_tokens": 2721,
+  "output_tokens": 1190,
+  "cached_input_tokens": null,
+  "usage_available": true,
+  "raw_text": "{\n  \"items\": [\n    {\n      \"item\": \"i01\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"释义符合常见心理联想，主题无明显顺阻倾向，也未作出行预言。\"\n    },\n    {\n      \"item\": \"i02\",\n      \"verdict\": \"revise\",\n      \"issues\": [\n        {\n          \"dimension\": \"consistency\",\n          \"detail\": \"“单位”也可指计量单位，“工位”是具体工作位置，均不宜直接作为“公司”的同义词；建议删除或设置明确的工作场景限定。\"\n        }\n      ],\n      \"reason\": \"正文可用，但同义词范围过宽，存在误命中其他意象的风险。\"\n    },\n    {\n      \"item\": \"i03\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"情绪冻结与关系变冷的表述对应自我、关系的负向倾向，且没有预兆化断言。\"\n    },\n    {\n      \"item\": \"i04\",\n      \"verdict\": \"revise\",\n      \"issues\": [\n        {\n          \"dimension\": \"certainty\",\n          \"detail\": \"“今年一定会遭遇重大失败”是明确的宿命化预测，应整句删除，也违背解梦不写预兆的要求。\"\n        },\n        {\n          \"dimension\": \"theme_direction\",\n          \"detail\": \"末句断言重大失败，带有明显负向倾向，与全部为零的主题方向不一致；删除该句后可保留中性映射。\"\n        },\n        {\n          \"dimension\": \"consistency\",\n          \"detail\": \"“手受伤”包含额外的受伤情境，不是“手”的同义词，宜单独处理或作为情境限定。\"\n        }\n      ],\n      \"reason\": \"主体释义可保留，但必须删除确定性失败预言并调整同义词。\"\n    },\n    {\n      \"item\": \"i05\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"凤凰与重生、美好的象征联系合理，自我主题偏正与文字一致，并明确排除吉凶预兆。\"\n    },\n    {\n      \"item\": \"i06\",\n      \"verdict\": \"revise\",\n      \"issues\": [\n        {\n          \"dimension\": \"consistency\",\n          \"detail\": \"“写信”和“写作业”是带有特定对象与目的的活动，不是“写字”的同义词，可能混淆通信表达与学习任务等独立意象；建议改为相关情境或分别建条目。\"\n        }\n      ],\n      \"reason\": \"正文中性且无预言，但同义词混入了含义不同的具体活动。\"\n    },\n    {\n      \"item\": \"i07\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"决断、切割及伤害担忧均是合理联想，自我轻微负向与文字相容。\"\n    },\n    {\n      \"item\": \"i08\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"突如其来的打击感支持自我负向倾向，且明确不预示现实天气或灾害。\"\n    },\n    {\n      \"item\": \"i09\",\n      \"verdict\": \"revise\",\n      \"issues\": [\n        {\n          \"dimension\": \"consistency\",\n          \"detail\": \"“花园”“游乐园”与“公园”不是同义词，分别可能突出栽培、私密空间或游乐刺激等不同意象，建议移出同义词列表。\"\n        },\n        {\n          \"dimension\": \"theme_direction\",\n          \"detail\": \"正文主要描述个人放松、童心与休闲，没有明确支持感情关系向好的内容；relationship 的正向倾向依据不足，建议归零或补充相应释义。\"\n        }\n      ],\n      \"reason\": \"同义词混淆不同场所，且感情关系的正向映射缺少文字支持。\"\n    },\n    {\n      \"item\": \"i10\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"沉淀、休整与孤冷的混合联想合理，自我轻微负向不与文字冲突。\"\n    },\n    {\n      \"item\": \"i11\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"纪律、保护与责任感符合军人意象的常见联想，中性映射及非预言式表述均合理。\"\n    }\n  ]\n}",
+  "verdicts": {
+    "i01": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "释义符合常见心理联想，主题无明显顺阻倾向，也未作出行预言。"
+    },
+    "i02": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "consistency",
+          "detail": "“单位”也可指计量单位，“工位”是具体工作位置，均不宜直接作为“公司”的同义词；建议删除或设置明确的工作场景限定。"
+        }
+      ],
+      "reason": "正文可用，但同义词范围过宽，存在误命中其他意象的风险。"
+    },
+    "i03": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "情绪冻结与关系变冷的表述对应自我、关系的负向倾向，且没有预兆化断言。"
+    },
+    "i04": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "certainty",
+          "detail": "“今年一定会遭遇重大失败”是明确的宿命化预测，应整句删除，也违背解梦不写预兆的要求。"
+        },
+        {
+          "dimension": "theme_direction",
+          "detail": "末句断言重大失败，带有明显负向倾向，与全部为零的主题方向不一致；删除该句后可保留中性映射。"
+        },
+        {
+          "dimension": "consistency",
+          "detail": "“手受伤”包含额外的受伤情境，不是“手”的同义词，宜单独处理或作为情境限定。"
+        }
+      ],
+      "reason": "主体释义可保留，但必须删除确定性失败预言并调整同义词。"
+    },
+    "i05": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "凤凰与重生、美好的象征联系合理，自我主题偏正与文字一致，并明确排除吉凶预兆。"
+    },
+    "i06": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "consistency",
+          "detail": "“写信”和“写作业”是带有特定对象与目的的活动，不是“写字”的同义词，可能混淆通信表达与学习任务等独立意象；建议改为相关情境或分别建条目。"
+        }
+      ],
+      "reason": "正文中性且无预言，但同义词混入了含义不同的具体活动。"
+    },
+    "i07": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "决断、切割及伤害担忧均是合理联想，自我轻微负向与文字相容。"
+    },
+    "i08": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "突如其来的打击感支持自我负向倾向，且明确不预示现实天气或灾害。"
+    },
+    "i09": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "consistency",
+          "detail": "“花园”“游乐园”与“公园”不是同义词，分别可能突出栽培、私密空间或游乐刺激等不同意象，建议移出同义词列表。"
+        },
+        {
+          "dimension": "theme_direction",
+          "detail": "正文主要描述个人放松、童心与休闲，没有明确支持感情关系向好的内容；relationship 的正向倾向依据不足，建议归零或补充相应释义。"
+        }
+      ],
+      "reason": "同义词混淆不同场所，且感情关系的正向映射缺少文字支持。"
+    },
+    "i10": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "沉淀、休整与孤冷的混合联想合理，自我轻微负向不与文字冲突。"
+    },
+    "i11": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "纪律、保护与责任感符合军人意象的常见联想，中性映射及非预言式表述均合理。"
+    }
+  }
+}

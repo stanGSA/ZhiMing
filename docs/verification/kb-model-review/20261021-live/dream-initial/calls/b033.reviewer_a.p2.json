@@ -1,0 +1,87 @@
+{
+  "batch": "b033",
+  "reviewer": "reviewer_a",
+  "run_pass": 2,
+  "attempt": 1,
+  "vendor": "deepseek",
+  "requested_model": "deepseek-flash",
+  "returned_model": "deepseek-flash",
+  "api": "openai",
+  "started_at": "2026-10-21T16:15:34+00:00",
+  "finished_at": "2026-10-21T16:15:37+00:00",
+  "latency_s": 2.937,
+  "http_attempts": 1,
+  "finish_reason": "stop",
+  "prompt_sha256": "7610ea2083716ef96eeeea51875d0ef7d9a2f869a5e086503d342d9936be1afd",
+  "input_tokens": 2516,
+  "output_tokens": 556,
+  "cached_input_tokens": 2304,
+  "usage_available": true,
+  "raw_text": "{\"items\": [{\"item\": \"i01\", \"verdict\": \"pass\", \"issues\": [], \"reason\": \"主题全部为0且与文字中性描述一致，措辞为心理联想，无宿命化或越界断言。\"}, {\"item\": \"i02\", \"verdict\": \"pass\", \"issues\": [], \"reason\": \"自我主题轻微负向与在意自我形象的偏阻描述相符，并明确不代表健康状况、建议就医，措辞平和。\"}, {\"item\": \"i03\", \"verdict\": \"pass\", \"issues\": [], \"reason\": \"主题为0与中性自我审视描述一致，无宿命化或医疗类断言。\"}, {\"item\": \"i04\", \"verdict\": \"pass\", \"issues\": [], \"reason\": \"主题为0与资源、安全感的心理层面描述一致，无预兆或确定性断言。\"}, {\"item\": \"i05\", \"verdict\": \"pass\", \"issues\": [], \"reason\": \"self与career微正与“打开新阶段的机会”方向一致，措辞为象征性联想。\"}, {\"item\": \"i06\", \"verdict\": \"pass\", \"issues\": [], \"reason\": \"self与career微正与“进入新阶段的资格”一致，无宿命化措辞。\"}, {\"item\": \"i07\", \"verdict\": \"pass\", \"issues\": [], \"reason\": \"主题为0与机会、界限、选择的中性描述一致，无问题。\"}, {\"item\": \"i08\", \"verdict\": \"pass\", \"issues\": [], \"reason\": \"主题为0与过渡、透气空间的中性描述一致，无问题。\"}, {\"item\": \"i09\", \"verdict\": \"reject\", \"issues\": [{\"dimension\": \"medical_legal_finance\", \"detail\": \"释义结尾“这表明你已经患有焦虑症，应当尽快服用药物”属于医疗诊断与用药结论。\"}, {\"dimension\": \"certainty\", \"detail\": \"“你已经患有焦虑症”是确定性诊断断言，超出梦境心理联想范围。\"}], \"reason\": \"条目包含医疗诊断和服药建议的确定性结论，需直接拒绝。\"}, {\"item\": \"i10\", \"verdict\": \"pass\", \"issues\": [], \"reason\": \"主题为0与“不预示真实财运”的免责式心理描述一致，无宿命化结论。\"}, {\"item\": \"i11\", \"verdict\": \"pass\", \"issues\": [], \"reason\": \"self微负与“封闭、难以打开的心结”方向一致，措辞为象征联想。\"}]}",
+  "verdicts": {
+    "i01": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "主题全部为0且与文字中性描述一致，措辞为心理联想，无宿命化或越界断言。"
+    },
+    "i02": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "自我主题轻微负向与在意自我形象的偏阻描述相符，并明确不代表健康状况、建议就医，措辞平和。"
+    },
+    "i03": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "主题为0与中性自我审视描述一致，无宿命化或医疗类断言。"
+    },
+    "i04": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "主题为0与资源、安全感的心理层面描述一致，无预兆或确定性断言。"
+    },
+    "i05": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "self与career微正与“打开新阶段的机会”方向一致，措辞为象征性联想。"
+    },
+    "i06": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "self与career微正与“进入新阶段的资格”一致，无宿命化措辞。"
+    },
+    "i07": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "主题为0与机会、界限、选择的中性描述一致，无问题。"
+    },
+    "i08": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "主题为0与过渡、透气空间的中性描述一致，无问题。"
+    },
+    "i09": {
+      "verdict": "reject",
+      "issues": [
+        {
+          "dimension": "medical_legal_finance",
+          "detail": "释义结尾“这表明你已经患有焦虑症，应当尽快服用药物”属于医疗诊断与用药结论。"
+        },
+        {
+          "dimension": "certainty",
+          "detail": "“你已经患有焦虑症”是确定性诊断断言，超出梦境心理联想范围。"
+        }
+      ],
+      "reason": "条目包含医疗诊断和服药建议的确定性结论，需直接拒绝。"
+    },
+    "i10": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "主题为0与“不预示真实财运”的免责式心理描述一致，无宿命化结论。"
+    },
+    "i11": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "self微负与“封闭、难以打开的心结”方向一致，措辞为象征联想。"
+    }
+  }
+}

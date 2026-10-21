@@ -1,0 +1,86 @@
+{
+  "batch": "b002",
+  "reviewer": "reviewer_a",
+  "run_pass": 2,
+  "attempt": 1,
+  "vendor": "deepseek",
+  "requested_model": "deepseek-flash",
+  "returned_model": "deepseek-flash",
+  "api": "openai",
+  "started_at": "2026-10-21T15:48:37+00:00",
+  "finished_at": "2026-10-21T15:48:41+00:00",
+  "latency_s": 3.626,
+  "http_attempts": 1,
+  "finish_reason": "stop",
+  "prompt_sha256": "d4721582cf295c537dcfbdf0fde00d35ca7159a850721e81086db7070b1557b2",
+  "input_tokens": 2410,
+  "output_tokens": 572,
+  "cached_input_tokens": 2176,
+  "usage_available": true,
+  "raw_text": "{\"items\":[{\"item\":\"i01\",\"verdict\":\"pass\",\"issues\":[],\"reason\":\"逆位星币骑士释义围绕谨慎与过度控制的区分，与关键词一致，theme_map 为负向且弱于正位，方向合理，无宿命化或越界断言。\"},{\"item\":\"i02\",\"verdict\":\"pass\",\"issues\":[],\"reason\":\"牌位说明与 spread_positions 中第2位“选 A”一致，theme_map 全为0符合中性反思定位，无预测性语言。\"},{\"item\":\"i03\",\"verdict\":\"reject\",\"issues\":[{\"dimension\":\"tradition\",\"detail\":\"星币九逆位释义中混入“肝脏已有病变，需要立即治疗”，与塔罗牌义无关且属医疗诊断结论。\"},{\"dimension\":\"medical_legal_finance\",\"detail\":\"文本给出确定性医疗诊断并要求立即治疗，属于医疗确定性结论。\"}],\"reason\":\"条目含明确的医疗诊断断言，核心内容错误，须拒收。\"},{\"item\":\"i04\",\"verdict\":\"reject\",\"issues\":[{\"dimension\":\"certainty\",\"detail\":\"结尾句“意味着必然破财，结局已经注定，无法避免”为宿命化确定性断言，且与前文释然、减负的方向矛盾。\"},{\"dimension\":\"theme_direction\",\"detail\":\"正文theme_map偏正向（self/career 0.4）表示减负释然，但附加句却说必然破财，方向自相矛盾。\"}],\"reason\":\"附加的宿命化破财断言与条目方向矛盾，构成确定性误导。\"},{\"item\":\"i05\",\"verdict\":\"pass\",\"issues\":[],\"reason\":\"单张牌阵唯一位置说明与 spread_positions 一致，theme_map 中性，措辞为反思性、非预测。\"},{\"item\":\"i06\",\"verdict\":\"pass\",\"issues\":[],\"reason\":\"“现状”牌位说明与 spread_positions 第1位一致，中性点值，明确不预设优劣，符合定义。\"},{\"item\":\"i07\",\"verdict\":\"pass\",\"issues\":[],\"reason\":\"“选 B”牌位说明与 spread_positions 第3位一致，theme_map 全0，措辞为比较反思、不作预测。\"},{\"item\":\"i08\",\"verdict\":\"revise\",\"issues\":[{\"dimension\":\"theme_direction\",\"detail\":\"文字强调“担忧缓解、接纳支持”属正向改善，但 self 主题取 -0.1 表示仍偏阻，方向与文字不够一致（虽接近0，但应更中性或微正）。\"}],\"reason\":\"逆位宝剑九文字偏正向缓解，但 self 主题方向呈负值，建议调整为中性或轻微正向。\"}]}",
+  "verdicts": {
+    "i01": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "逆位星币骑士释义围绕谨慎与过度控制的区分，与关键词一致，theme_map 为负向且弱于正位，方向合理，无宿命化或越界断言。"
+    },
+    "i02": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "牌位说明与 spread_positions 中第2位“选 A”一致，theme_map 全为0符合中性反思定位，无预测性语言。"
+    },
+    "i03": {
+      "verdict": "reject",
+      "issues": [
+        {
+          "dimension": "tradition",
+          "detail": "星币九逆位释义中混入“肝脏已有病变，需要立即治疗”，与塔罗牌义无关且属医疗诊断结论。"
+        },
+        {
+          "dimension": "medical_legal_finance",
+          "detail": "文本给出确定性医疗诊断并要求立即治疗，属于医疗确定性结论。"
+        }
+      ],
+      "reason": "条目含明确的医疗诊断断言，核心内容错误，须拒收。"
+    },
+    "i04": {
+      "verdict": "reject",
+      "issues": [
+        {
+          "dimension": "certainty",
+          "detail": "结尾句“意味着必然破财，结局已经注定，无法避免”为宿命化确定性断言，且与前文释然、减负的方向矛盾。"
+        },
+        {
+          "dimension": "theme_direction",
+          "detail": "正文theme_map偏正向（self/career 0.4）表示减负释然，但附加句却说必然破财，方向自相矛盾。"
+        }
+      ],
+      "reason": "附加的宿命化破财断言与条目方向矛盾，构成确定性误导。"
+    },
+    "i05": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "单张牌阵唯一位置说明与 spread_positions 一致，theme_map 中性，措辞为反思性、非预测。"
+    },
+    "i06": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "“现状”牌位说明与 spread_positions 第1位一致，中性点值，明确不预设优劣，符合定义。"
+    },
+    "i07": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "“选 B”牌位说明与 spread_positions 第3位一致，theme_map 全0，措辞为比较反思、不作预测。"
+    },
+    "i08": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "theme_direction",
+          "detail": "文字强调“担忧缓解、接纳支持”属正向改善，但 self 主题取 -0.1 表示仍偏阻，方向与文字不够一致（虽接近0，但应更中性或微正）。"
+        }
+      ],
+      "reason": "逆位宝剑九文字偏正向缓解，但 self 主题方向呈负值，建议调整为中性或轻微正向。"
+    }
+  }
+}

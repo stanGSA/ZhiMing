@@ -1,0 +1,37 @@
+{
+  "batch": "b002",
+  "reviewer": "reviewer_b",
+  "run_pass": 1,
+  "attempt": 1,
+  "vendor": "openai",
+  "requested_model": "gpt-6.1-sol",
+  "returned_model": "gpt-6.1-sol",
+  "api": "openai",
+  "started_at": "2026-10-21T16:57:57+00:00",
+  "finished_at": "2026-10-21T16:58:04+00:00",
+  "latency_s": 7.29,
+  "http_attempts": 1,
+  "finish_reason": "stop",
+  "prompt_sha256": "ae2310ea9c421d2d04ae36b2cdae3a91ce3473ac1d012462cc796186b670bc60",
+  "input_tokens": 834,
+  "output_tokens": 158,
+  "cached_input_tokens": null,
+  "usage_available": true,
+  "raw_text": "{\"items\":[{\"item\":\"i01\",\"verdict\":\"reject\",\"issues\":[{\"dimension\":\"medical_legal_finance\",\"detail\":\"“已经患有焦虑症”仅凭梦境作出确定性医疗诊断，“应当尽快服用药物”进一步给出未经专业评估的用药建议。\"},{\"dimension\":\"certainty\",\"detail\":\"“这表明你已经患有焦虑症”将梦境意象与疾病直接、确定地关联，不符合敏感意象应采用平和、非断言措辞的要求。\"}],\"reason\":\"前段心理联想可作参考，但末句包含确定性医疗诊断及不当用药建议，不能面向用户使用。\"}]}",
+  "verdicts": {
+    "i01": {
+      "verdict": "reject",
+      "issues": [
+        {
+          "dimension": "medical_legal_finance",
+          "detail": "“已经患有焦虑症”仅凭梦境作出确定性医疗诊断，“应当尽快服用药物”进一步给出未经专业评估的用药建议。"
+        },
+        {
+          "dimension": "certainty",
+          "detail": "“这表明你已经患有焦虑症”将梦境意象与疾病直接、确定地关联，不符合敏感意象应采用平和、非断言措辞的要求。"
+        }
+      ],
+      "reason": "前段心理联想可作参考，但末句包含确定性医疗诊断及不当用药建议，不能面向用户使用。"
+    }
+  }
+}

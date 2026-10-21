@@ -3,7 +3,6 @@
 import asyncio
 import copy
 import json
-import shutil
 
 import pytest
 import yaml
@@ -48,9 +47,9 @@ def test_authoring_rerun_preserves_revised_source(tmp_path, system):
 
 @pytest.mark.parametrize("module", [draft_week23, draft_week6])
 def test_authoring_main_is_noop_on_current_sources(tmp_path, monkeypatch, module):
-    shutil.copytree(review.ROOT / "knowledge/sources", tmp_path / "knowledge/sources")
-    before = {p: p.read_bytes() for p in tmp_path.rglob("*.yaml")}
     monkeypatch.setattr(module, "ROOT", tmp_path)
+    module.main()
+    before = {p: p.read_bytes() for p in tmp_path.rglob("*.yaml")}
     module.main()
     assert all(p.read_bytes() == data for p, data in before.items())
 
@@ -66,6 +65,82 @@ async def test_uncalibrated_rereview_still_revokes_matching_approval(workspace, 
     assert TARGET not in load_ledgers(workspace.reviews)
     revoked = review.read_json(new.path / "ledger_revocations.json")["records"]
     assert [row["id"] for row in revoked] == [TARGET]
+
+
+async def test_concurrent_revisions_keep_all_proposals_and_resume(workspace, tmp_path):
+    work, config = workspace
+    plan = review.prepare(work, config, "daily")
+    run = review.open_run(tmp_path / "parallel-revision", plan)
+    review.write_json(
+        run.path / "revision_queue.json",
+        [dict(id=e["id"], verdicts={}, code_findings=[]) for e in plan["entries"][:6]],
+    )
+    active = maximum = calls = 0
+
+    class Reviser:
+        async def chat(self, messages, tools):
+            nonlocal active, maximum, calls
+            active += 1
+            calls += 1
+            maximum = max(maximum, active)
+            await asyncio.sleep(0.01)
+            proposal = json.loads(messages[-1]["content"])["entry"]
+            active -= 1
+            return ModelResponse(model="independent-reviser", text=json.dumps(proposal))
+
+    options = dict(make_model=lambda *_: Reviser(), concurrency=3)
+    result = await review.revise(run, plan, review.load_roles(config), **options)
+    assert calls == 6 and maximum == 3
+    assert len(result) == 6 and all(p["invalid"] is None for p in result)
+    assert review.read_json(run.path / "revisions.json") == result
+    assert await review.revise(run, plan, review.load_roles(config), **options) == result
+    assert calls == 6
+
+
+@pytest.mark.parametrize(
+    "clause",
+    [
+        "不代表现实运势或事件必然发生",
+        "不表示精力一定会受牵扯",
+        "并不意味着现实发展必然顺利",
+        "不代表实际情况必然如此",
+        "并不意味着使用此数的人必然遭遇波折",
+        "不代表个人必然具备相应能力",
+        "不代表个人必然具有某种性格",
+        "不意味着现实生活必然不利",
+    ],
+)
+def test_review_disclaimers_do_not_hide_following_assertions(clause):
+    assert certainty_finding(clause + "。") is None
+    assert certainty_finding(clause + "，但你必然破财。") == "必然"
+
+
+@pytest.mark.parametrize("conflict", ["shared_alias", "other_key"])
+def test_revision_apply_rejects_cross_entry_alias_collision_before_writes(
+    workspace, tmp_path, conflict
+):
+    work, config = workspace
+    plan = review.prepare(work, config, "daily")
+    run = review.open_run(tmp_path / "collision", plan)
+    entries = plan["entries"][:2]
+    alias = "冲突同义词" if conflict == "shared_alias" else entries[1]["key"]
+    proposals = []
+    for index, entry in enumerate(entries):
+        proposal = {k: entry[k] for k in ("text", "theme_map", "synonyms", "keywords")}
+        proposal["synonyms"] = [alias] if index == 0 or conflict == "shared_alias" else []
+        proposals.append(
+            dict(
+                id=entry["id"],
+                before_sha256=review.content_hash(entry),
+                proposal=proposal,
+                invalid=None,
+            )
+        )
+    review.write_json(run.path / "revisions.json", proposals)
+    before = {p: p.read_bytes() for p in review.source_paths(work.sources, "daily")}
+    with pytest.raises(ValueError, match="同义词冲突"):
+        review.apply_revisions(work, run)
+    assert all(p.read_bytes() == content for p, content in before.items())
 
 
 def test_runtime_vendor_exception_is_scoped_to_exact_model():

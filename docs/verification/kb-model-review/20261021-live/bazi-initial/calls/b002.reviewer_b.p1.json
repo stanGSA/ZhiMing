@@ -1,0 +1,97 @@
+{
+  "batch": "b002",
+  "reviewer": "reviewer_b",
+  "run_pass": 1,
+  "attempt": 1,
+  "vendor": "openai",
+  "requested_model": "gpt-6.1-sol",
+  "returned_model": "gpt-6.1-sol",
+  "api": "openai",
+  "started_at": "2026-10-21T16:01:03+00:00",
+  "finished_at": "2026-10-21T16:01:35+00:00",
+  "latency_s": 31.267,
+  "http_attempts": 1,
+  "finish_reason": "stop",
+  "prompt_sha256": "aa791aedcc3383522c4d91dead4ce304b3cc7993cfab416cf4b0e4f8ff76744b",
+  "input_tokens": 1671,
+  "output_tokens": 987,
+  "cached_input_tokens": null,
+  "usage_available": true,
+  "raw_text": "{\n  \"items\": [\n    {\n      \"item\": \"i01\",\n      \"verdict\": \"reject\",\n      \"issues\": [\n        {\n          \"dimension\": \"consistency\",\n          \"detail\": \"key 为“庚”，正文却释义“壬”，对象不符。\"\n        },\n        {\n          \"dimension\": \"tradition\",\n          \"detail\": \"庚与壬是不同天干，分别属阳金与阳水，不能互作释义。\"\n        }\n      ],\n      \"reason\": \"正文写成了另一个天干，属于释义对象错误。\"\n    },\n    {\n      \"item\": \"i02\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"对地支、藏干及数量不能直接代表旺衰的说明合理，中性主题方向与文字一致。\"\n    },\n    {\n      \"item\": \"i03\",\n      \"verdict\": \"reject\",\n      \"issues\": [\n        {\n          \"dimension\": \"consistency\",\n          \"detail\": \"key 为“自刑”，正文却解释“地支破”，二者是不同的地支关系。\"\n        },\n        {\n          \"dimension\": \"tradition\",\n          \"detail\": \"“地支破”应描述为地支之间的关系，而不是笼统的“干支之间”的关系；“是否化局”也不是解释自刑或破的恰当核心内容。\"\n        }\n      ],\n      \"reason\": \"正文混淆自刑与破，核心释义与条目对象不符。\"\n    },\n    {\n      \"item\": \"i04\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"对酉的概括及不能以简单数量推断旺衰的提醒没有明显错误，与中性主题方向一致。\"\n    },\n    {\n      \"item\": \"i05\",\n      \"verdict\": \"revise\",\n      \"issues\": [\n        {\n          \"dimension\": \"certainty\",\n          \"detail\": \"“必然破财”“结局已经注定，无法避免”是明确的宿命化断言，应删除。\"\n        },\n        {\n          \"dimension\": \"tradition\",\n          \"detail\": \"不能仅凭地支戌就推断破财，末句也与前文强调不能简单判断的原则冲突。\"\n        },\n        {\n          \"dimension\": \"theme_direction\",\n          \"detail\": \"正文末句明确指向财务受损，但 finance 为 0，与当前文字不一致；建议删除该断言并保留中性方向。\"\n        }\n      ],\n      \"reason\": \"基础说明可保留，但必须删除无依据的必然破财及命运注定断言。\"\n    },\n    {\n      \"item\": \"i06\",\n      \"verdict\": \"reject\",\n      \"issues\": [\n        {\n          \"dimension\": \"medical_legal_finance\",\n          \"detail\": \"“你的肝脏已有病变，需要立即治疗”直接作出医疗诊断并提出治疗要求，不能由五行关系推出。\"\n        },\n        {\n          \"dimension\": \"certainty\",\n          \"detail\": \"“出现它说明”将象征关系确定地等同于现实疾病，属于无依据的确定性断言。\"\n        },\n        {\n          \"dimension\": \"tradition\",\n          \"detail\": \"五行相克的基本关系由元素确定，阴阳并非相克成立的必要条件；也不能由单独一个“克”推出肝脏病变。\"\n        }\n      ],\n      \"reason\": \"条目含有从五行符号直接推导疾病并要求治疗的确定性医疗结论。\"\n    }\n  ]\n}",
+  "verdicts": {
+    "i01": {
+      "verdict": "reject",
+      "issues": [
+        {
+          "dimension": "consistency",
+          "detail": "key 为“庚”，正文却释义“壬”，对象不符。"
+        },
+        {
+          "dimension": "tradition",
+          "detail": "庚与壬是不同天干，分别属阳金与阳水，不能互作释义。"
+        }
+      ],
+      "reason": "正文写成了另一个天干，属于释义对象错误。"
+    },
+    "i02": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "对地支、藏干及数量不能直接代表旺衰的说明合理，中性主题方向与文字一致。"
+    },
+    "i03": {
+      "verdict": "reject",
+      "issues": [
+        {
+          "dimension": "consistency",
+          "detail": "key 为“自刑”，正文却解释“地支破”，二者是不同的地支关系。"
+        },
+        {
+          "dimension": "tradition",
+          "detail": "“地支破”应描述为地支之间的关系，而不是笼统的“干支之间”的关系；“是否化局”也不是解释自刑或破的恰当核心内容。"
+        }
+      ],
+      "reason": "正文混淆自刑与破，核心释义与条目对象不符。"
+    },
+    "i04": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "对酉的概括及不能以简单数量推断旺衰的提醒没有明显错误，与中性主题方向一致。"
+    },
+    "i05": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "certainty",
+          "detail": "“必然破财”“结局已经注定，无法避免”是明确的宿命化断言，应删除。"
+        },
+        {
+          "dimension": "tradition",
+          "detail": "不能仅凭地支戌就推断破财，末句也与前文强调不能简单判断的原则冲突。"
+        },
+        {
+          "dimension": "theme_direction",
+          "detail": "正文末句明确指向财务受损，但 finance 为 0，与当前文字不一致；建议删除该断言并保留中性方向。"
+        }
+      ],
+      "reason": "基础说明可保留，但必须删除无依据的必然破财及命运注定断言。"
+    },
+    "i06": {
+      "verdict": "reject",
+      "issues": [
+        {
+          "dimension": "medical_legal_finance",
+          "detail": "“你的肝脏已有病变，需要立即治疗”直接作出医疗诊断并提出治疗要求，不能由五行关系推出。"
+        },
+        {
+          "dimension": "certainty",
+          "detail": "“出现它说明”将象征关系确定地等同于现实疾病，属于无依据的确定性断言。"
+        },
+        {
+          "dimension": "tradition",
+          "detail": "五行相克的基本关系由元素确定，阴阳并非相克成立的必要条件；也不能由单独一个“克”推出肝脏病变。"
+        }
+      ],
+      "reason": "条目含有从五行符号直接推导疾病并要求治疗的确定性医疗结论。"
+    }
+  }
+}

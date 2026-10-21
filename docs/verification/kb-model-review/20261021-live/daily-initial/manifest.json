@@ -1,0 +1,81 @@
+{
+  "schema": 1,
+  "system": "daily",
+  "seed": 1,
+  "batch_size": 10,
+  "plant_rate": 0.1,
+  "min_planted": 5,
+  "passes": 2,
+  "only_ids": null,
+  "calibrated_by": null,
+  "rubric_version": 1,
+  "rubric_sha256": "a33bd07bd2299376f88d6cf1c958b26990685099797e78272054352ff7557b0d",
+  "script_sha256": "c74413d4a3c84e0f5fee7a257d912a7e2b2bd4fa637218972e417b339240969e",
+  "runtime_vendor": "deepseek",
+  "drafter_vendors": [
+    "anthropic"
+  ],
+  "runtime_vendor_exception": {
+    "vendor": "deepseek",
+    "model": "deepseek-flash",
+    "reason": "2026-10-21 项目负责人明确要求第一审核方使用本机.env的DeepSeek配置"
+  },
+  "pricing": {
+    "reviewer_a": {
+      "input_per_mtok": null,
+      "output_per_mtok": null,
+      "currency": null
+    },
+    "reviewer_b": {
+      "input_per_mtok": null,
+      "output_per_mtok": null,
+      "currency": null
+    }
+  },
+  "reviewers": {
+    "reviewer_a": {
+      "vendor": "deepseek",
+      "api": "openai",
+      "model": "deepseek-flash",
+      "api_key_env": "DEEPSEEK_API_KEY",
+      "temperature": null,
+      "max_tokens": 4096,
+      "base_url_host": "api.deepseek.com"
+    },
+    "reviewer_b": {
+      "vendor": "openai",
+      "api": "openai",
+      "model": "gpt-6.1-sol",
+      "api_key_env": "OPENAI_REVIEW_API_KEY",
+      "temperature": null,
+      "max_tokens": 4096,
+      "base_url_host": "codegoai.com"
+    }
+  },
+  "source_files": {
+    "knowledge/sources/daily/entries.yaml": "b57abb09a7f00445e9dfe3051974bd83863dc1da3f41e7d209de7b254e864531"
+  },
+  "entry_hashes": {
+    "kb:daily:convention:daily_seed": "07ff0b90f515278af5c354785e5adfd69ea07f28ea6ae3b37a6d4c7dc261d98f",
+    "kb:daily:convention:moment_only": "75c15f8396e7a69e1603ce83b81da29fb32b927d905e9c00fa95312a78ef139b",
+    "kb:daily:convention:no_exact_events": "aa2241d853f6370c6d23664506a3a49751e1ff1d51609aae1d5a351a9e9f2be5",
+    "kb:daily:convention:unknown_time": "202fae7cb658e2ee8e6dd2b773e493c584729f17851c4a45ab98d49eb41d5383",
+    "kb:daily:day_element:土": "7dddd8133d25ba22d73e2fba7778419a687e07725df438351afa33b91ff21678",
+    "kb:daily:day_element:木": "698fc82d1cdcab3429dee87c0eb1a554635768479da926cd76657f98fa343345",
+    "kb:daily:day_element:水": "3d38b8c163537e1523c493d998aa66001bc5433d36e91a47cda67062e6044cee",
+    "kb:daily:day_element:火": "ea9b95f5ff47ae75bb76b5bbe494a02f95d494ad9aa382276381b6fa445977a4",
+    "kb:daily:day_element:金": "6c07c5e586dd86adb85b028f9be96010f104f01fbcdd35614ce2dff7c9536ce2"
+  },
+  "planted_count": 5,
+  "batch_count": 2,
+  "prompt_sha256": {
+    "b001": "de0e879be2b6002d105ab1913de45e24b1bc8c444f36336000c25e12ce438e55",
+    "b002": "11f81b4a894471d5afac07aa712484caff2057e80aba4d8011f095ba3e8302b1"
+  },
+  "created_at": "2026-10-21T16:00:34+00:00",
+  "git": {
+    "head": "e8dae18cd2dae8139bcec667242c7169ebadaf13",
+    "dirty": true
+  },
+  "kb_version": "v1-2276936cdc440649"
+}

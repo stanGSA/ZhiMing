@@ -1,0 +1,96 @@
+{
+  "batch": "b010",
+  "reviewer": "reviewer_b",
+  "run_pass": 2,
+  "attempt": 1,
+  "vendor": "openai",
+  "requested_model": "gpt-6.1-sol",
+  "returned_model": "gpt-6.1-sol",
+  "api": "openai",
+  "started_at": "2026-10-21T16:18:34+00:00",
+  "finished_at": "2026-10-21T16:19:06+00:00",
+  "latency_s": 32.773,
+  "http_attempts": 1,
+  "finish_reason": "stop",
+  "prompt_sha256": "b0ecf91a006922bf8c9998482e1d51bbbe532c9c967deb5bd0ad754d5d8d640d",
+  "input_tokens": 2754,
+  "output_tokens": 1397,
+  "cached_input_tokens": 2751,
+  "usage_available": true,
+  "raw_text": "{\n  \"items\": [\n    {\n      \"item\": \"i01\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"屋顶与保护、视野及逃离的心理联想合理，中性主题方向与文字一致。\"\n    },\n    {\n      \"item\": \"i02\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"释义围绕宁静、指引和精神寄托展开，自我主题轻度偏正可以成立，未作吉凶预言。\"\n    },\n    {\n      \"item\": \"i03\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"客户与工作要求及评价压力的关联合理，事业主题轻度偏负与文字一致。\"\n    },\n    {\n      \"item\": \"i04\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"小偷与利益受损、界限被侵犯的担忧相符，自我和财务偏负表达的是心理压力而非失窃预兆。\"\n    },\n    {\n      \"item\": \"i05\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"文字兼顾工作压力和成就感，但整体侧重压力与节奏，事业轻度偏负可以成立。\"\n    },\n    {\n      \"item\": \"i06\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"独处、隔绝和喘息空间涵盖不同情绪体验，主题保持中性合理。\"\n    },\n    {\n      \"item\": \"i07\",\n      \"verdict\": \"reject\",\n      \"issues\": [\n        {\n          \"dimension\": \"medical_legal_finance\",\n          \"detail\": \"“这代表身体已有慢性疾病，不必就医也会自愈”依据梦境断言患病及自愈，并劝阻就医，属于医疗确定性结论。\"\n        },\n        {\n          \"dimension\": \"certainty\",\n          \"detail\": \"“已有慢性疾病”和“也会自愈”将梦境解释为确定的健康事实与结果。\"\n        },\n        {\n          \"dimension\": \"consistency\",\n          \"detail\": \"末句突然转向疾病诊断，与电脑、工作任务和信息处理的条目主题不符。\"\n        }\n      ],\n      \"reason\": \"条目含无依据的疾病诊断、自愈保证及不必就医的危险表述，不能作为用户释义使用。\"\n    },\n    {\n      \"item\": \"i08\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"山与目标、阻碍和稳定依靠的联想合理，自我与事业轻度偏正与其中的目标及支持含义相容。\"\n    },\n    {\n      \"item\": \"i09\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"宠物与陪伴、责任和依赖的关联合理，关系主题轻度偏正，措辞平和且不作预兆判断。\"\n    },\n    {\n      \"item\": \"i10\",\n      \"verdict\": \"revise\",\n      \"issues\": [\n        {\n          \"dimension\": \"theme_direction\",\n          \"detail\": \"文字描述的是珍视的品质、潜力和心理价值感，没有表达财务方面的顺遂倾向；finance 为正缺乏文字依据，宜改为中性或补充相符的非预测性说明。\"\n        }\n      ],\n      \"reason\": \"自我主题偏正有文字支持，但不能将心理价值感直接等同于财务偏顺。\"\n    },\n    {\n      \"item\": \"i11\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"帽子与身份、角色及遮掩的联想合理，文字未指向明确顺逆，中性主题设置一致。\"\n    }\n  ]\n}",
+  "verdicts": {
+    "i01": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "屋顶与保护、视野及逃离的心理联想合理，中性主题方向与文字一致。"
+    },
+    "i02": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "释义围绕宁静、指引和精神寄托展开，自我主题轻度偏正可以成立，未作吉凶预言。"
+    },
+    "i03": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "客户与工作要求及评价压力的关联合理，事业主题轻度偏负与文字一致。"
+    },
+    "i04": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "小偷与利益受损、界限被侵犯的担忧相符，自我和财务偏负表达的是心理压力而非失窃预兆。"
+    },
+    "i05": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "文字兼顾工作压力和成就感，但整体侧重压力与节奏，事业轻度偏负可以成立。"
+    },
+    "i06": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "独处、隔绝和喘息空间涵盖不同情绪体验，主题保持中性合理。"
+    },
+    "i07": {
+      "verdict": "reject",
+      "issues": [
+        {
+          "dimension": "medical_legal_finance",
+          "detail": "“这代表身体已有慢性疾病，不必就医也会自愈”依据梦境断言患病及自愈，并劝阻就医，属于医疗确定性结论。"
+        },
+        {
+          "dimension": "certainty",
+          "detail": "“已有慢性疾病”和“也会自愈”将梦境解释为确定的健康事实与结果。"
+        },
+        {
+          "dimension": "consistency",
+          "detail": "末句突然转向疾病诊断，与电脑、工作任务和信息处理的条目主题不符。"
+        }
+      ],
+      "reason": "条目含无依据的疾病诊断、自愈保证及不必就医的危险表述，不能作为用户释义使用。"
+    },
+    "i08": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "山与目标、阻碍和稳定依靠的联想合理，自我与事业轻度偏正与其中的目标及支持含义相容。"
+    },
+    "i09": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "宠物与陪伴、责任和依赖的关联合理，关系主题轻度偏正，措辞平和且不作预兆判断。"
+    },
+    "i10": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "theme_direction",
+          "detail": "文字描述的是珍视的品质、潜力和心理价值感，没有表达财务方面的顺遂倾向；finance 为正缺乏文字依据，宜改为中性或补充相符的非预测性说明。"
+        }
+      ],
+      "reason": "自我主题偏正有文字支持，但不能将心理价值感直接等同于财务偏顺。"
+    },
+    "i11": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "帽子与身份、角色及遮掩的联想合理，文字未指向明确顺逆，中性主题设置一致。"
+    }
+  }
+}

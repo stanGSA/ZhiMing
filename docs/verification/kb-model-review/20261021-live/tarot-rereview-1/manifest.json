@@ -1,0 +1,101 @@
+{
+  "schema": 1,
+  "system": "tarot",
+  "seed": 1,
+  "batch_size": 10,
+  "plant_rate": 0.1,
+  "min_planted": 5,
+  "passes": 2,
+  "only_ids": [
+    "kb:tarot:card:pentacles_four:reversed",
+    "kb:tarot:card:pentacles_knight:reversed",
+    "kb:tarot:card:pentacles_nine:reversed",
+    "kb:tarot:card:pentacles_page:reversed",
+    "kb:tarot:card:swords_nine:reversed",
+    "kb:tarot:card:the_fool:reversed",
+    "kb:tarot:card:the_hanged_man:reversed",
+    "kb:tarot:card:the_hierophant:reversed",
+    "kb:tarot:card:the_sun:reversed",
+    "kb:tarot:card:wands_ten:reversed",
+    "kb:tarot:position:decision:1",
+    "kb:tarot:position:decision:2",
+    "kb:tarot:position:decision:3",
+    "kb:tarot:position:single:1"
+  ],
+  "calibrated_by": "docs/verification/kb-model-review/20261021-live/tarot-pilot",
+  "rubric_version": 1,
+  "rubric_sha256": "a33bd07bd2299376f88d6cf1c958b26990685099797e78272054352ff7557b0d",
+  "script_sha256": "7d26ea877c3c9f18469fe4b0cb9dc9f8c96ba7a3d97d1f258051d1173bb56b3e",
+  "runtime_vendor": "deepseek",
+  "drafter_vendors": [
+    "anthropic"
+  ],
+  "runtime_vendor_exception": {
+    "vendor": "deepseek",
+    "model": "deepseek-flash",
+    "reason": "2026-10-21 项目负责人明确要求第一审核方使用本机.env的DeepSeek配置"
+  },
+  "pricing": {
+    "reviewer_a": {
+      "input_per_mtok": null,
+      "output_per_mtok": null,
+      "currency": null
+    },
+    "reviewer_b": {
+      "input_per_mtok": null,
+      "output_per_mtok": null,
+      "currency": null
+    }
+  },
+  "reviewers": {
+    "reviewer_a": {
+      "vendor": "deepseek",
+      "api": "openai",
+      "model": "deepseek-flash",
+      "api_key_env": "DEEPSEEK_API_KEY",
+      "temperature": null,
+      "max_tokens": 4096,
+      "base_url_host": "api.deepseek.com"
+    },
+    "reviewer_b": {
+      "vendor": "openai",
+      "api": "openai",
+      "model": "gpt-6.1-sol",
+      "api_key_env": "OPENAI_REVIEW_API_KEY",
+      "temperature": null,
+      "max_tokens": 4096,
+      "base_url_host": "codegoai.com"
+    }
+  },
+  "source_files": {
+    "knowledge/sources/tarot/cards.yaml": "8d4b6ac24aa01faccd80b1b6d026e70b117635faf91e0bc4f4ca4b9e77854a02"
+  },
+  "entry_hashes": {
+    "kb:tarot:card:pentacles_four:reversed": "230c29be0e100580373344e0d9572398bddf563a740f6ce51d46460c1f8c5fa7",
+    "kb:tarot:card:pentacles_knight:reversed": "92f132ce763c62ad565df3f8c47005de8761918a3b0a472fc753b86df14d7b6f",
+    "kb:tarot:card:pentacles_nine:reversed": "97e4a54eccd808550bbdb161e5a630372e1f8500bf96d1ad59e064f5bc326c3c",
+    "kb:tarot:card:pentacles_page:reversed": "261abda431e570c735624d66078a7a4d9318a1c13a4dc065b7678d76fda23653",
+    "kb:tarot:card:swords_nine:reversed": "6aea0853e9e59773d24e4dd9abd915cd6aaf25f80ce728a901f720bd712b2ac7",
+    "kb:tarot:card:the_fool:reversed": "7451e4d999c2b71d62cabaf33dbf0521bba2af872283a820a2a61695242db9ef",
+    "kb:tarot:card:the_hanged_man:reversed": "1abe89cf61432dcfd16482869226928a87bd2316c4ff78b0a0785767515cb692",
+    "kb:tarot:card:the_hierophant:reversed": "c3f2fb5a2aa193114cac2ea3cad1944e9b68b790e5846aece6072906f7c64270",
+    "kb:tarot:card:the_sun:reversed": "dc749858e40442eebfda3dcf0c6004e1ffda31888b9e3fbfc00faf61532367b9",
+    "kb:tarot:card:wands_ten:reversed": "e9c1b5cf3044a4adc51e8d3c293367b3d51d3004a3171ee26ce8db1a45a79a3e",
+    "kb:tarot:position:decision:1": "8876a946e3a7e44ca4be9e1e5c502b317f92c0db88b241a8a4a101780754117c",
+    "kb:tarot:position:decision:2": "4b3df2874d418b02c6672a4d3dbee31c3040b19aa079d32384af743c10e01cd3",
+    "kb:tarot:position:decision:3": "ee9b7f6b66e4f3831401a4e88ca0d4e7c88515479ceaa690212ac33097db2742",
+    "kb:tarot:position:single:1": "fb30a63e6da7f0f30fa9160272234a555a6c55b6dd00cc6fd1d8c7036bcce3b5"
+  },
+  "planted_count": 5,
+  "batch_count": 2,
+  "prompt_sha256": {
+    "b001": "178917599d7d40a2e29858d1bb625ee3e8c5b90ece12b192a1f7a78924beb37b",
+    "b002": "d4721582cf295c537dcfbdf0fde00d35ca7159a850721e81086db7070b1557b2"
+  },
+  "created_at": "2026-10-21T15:48:28+00:00",
+  "git": {
+    "head": "e8dae18cd2dae8139bcec667242c7169ebadaf13",
+    "dirty": true
+  },
+  "kb_version": "v1-5a1f4b104db32ba1"
+}

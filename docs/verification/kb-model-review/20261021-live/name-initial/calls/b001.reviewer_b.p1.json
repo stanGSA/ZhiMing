@@ -1,0 +1,57 @@
+{
+  "batch": "b001",
+  "reviewer": "reviewer_b",
+  "run_pass": 1,
+  "attempt": 1,
+  "vendor": "openai",
+  "requested_model": "gpt-6.1-sol",
+  "returned_model": "gpt-6.1-sol",
+  "api": "openai",
+  "started_at": "2026-10-21T16:01:18+00:00",
+  "finished_at": "2026-10-21T16:01:39+00:00",
+  "latency_s": 20.102,
+  "http_attempts": 1,
+  "finish_reason": "stop",
+  "prompt_sha256": "ef9549c7fc7f5c496a8aea8b72d87c66de11111776c34a4f4fe5438b52163481",
+  "input_tokens": 1495,
+  "output_tokens": 581,
+  "cached_input_tokens": null,
+  "usage_available": true,
+  "raw_text": "{\n  \"items\": [\n    {\n      \"item\": \"i01\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"说明了五格姓名学常用的笔画计数约定，与现代简体笔画的区别也交代清楚。\"\n    },\n    {\n      \"item\": \"i02\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"提示不同字形可能影响笔画计数，并要求先确认写法，表述清楚且无命运断言。\"\n    },\n    {\n      \"item\": \"i03\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"明确将对照限定为五行信息并列，不据此判断喜用神或提出改名建议，范围说明合理。\"\n    },\n    {\n      \"item\": \"i04\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"复姓天格与人格的取字规则符合五格剖象法的常见约定。\"\n    },\n    {\n      \"item\": \"i05\",\n      \"verdict\": \"reject\",\n      \"issues\": [\n        {\n          \"dimension\": \"medical_legal_finance\",\n          \"detail\": \"以三才中出现火断定肝脏已有病变并要求立即治疗，属于无依据的确定性医疗诊断及治疗指示。\"\n        },\n        {\n          \"dimension\": \"certainty\",\n          \"detail\": \"“说明你的肝脏已有病变”将数理符号直接断言为现实健康状况，具有确定性。\"\n        }\n      ],\n      \"reason\": \"虽正确区分了三才五行与字义五行，但后半段含不可接受的确定性医疗结论。\"\n    }\n  ]\n}",
+  "verdicts": {
+    "i01": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "说明了五格姓名学常用的笔画计数约定，与现代简体笔画的区别也交代清楚。"
+    },
+    "i02": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "提示不同字形可能影响笔画计数，并要求先确认写法，表述清楚且无命运断言。"
+    },
+    "i03": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "明确将对照限定为五行信息并列，不据此判断喜用神或提出改名建议，范围说明合理。"
+    },
+    "i04": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "复姓天格与人格的取字规则符合五格剖象法的常见约定。"
+    },
+    "i05": {
+      "verdict": "reject",
+      "issues": [
+        {
+          "dimension": "medical_legal_finance",
+          "detail": "以三才中出现火断定肝脏已有病变并要求立即治疗，属于无依据的确定性医疗诊断及治疗指示。"
+        },
+        {
+          "dimension": "certainty",
+          "detail": "“说明你的肝脏已有病变”将数理符号直接断言为现实健康状况，具有确定性。"
+        }
+      ],
+      "reason": "虽正确区分了三才五行与字义五行，但后半段含不可接受的确定性医疗结论。"
+    }
+  }
+}

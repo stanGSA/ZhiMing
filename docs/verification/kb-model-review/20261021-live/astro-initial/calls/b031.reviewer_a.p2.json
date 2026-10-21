@@ -1,0 +1,48 @@
+{
+  "batch": "b031",
+  "reviewer": "reviewer_a",
+  "run_pass": 2,
+  "attempt": 1,
+  "vendor": "deepseek",
+  "requested_model": "deepseek-flash",
+  "returned_model": "deepseek-flash",
+  "api": "openai",
+  "started_at": "2026-10-21T16:10:45+00:00",
+  "finished_at": "2026-10-21T16:10:46+00:00",
+  "latency_s": 1.5,
+  "http_attempts": 1,
+  "finish_reason": "stop",
+  "prompt_sha256": "0ad71cc84d9c0863c6dc8ad6f7a1c7dbd2587c51a1ef36efb8b9dab5f1f89aa1",
+  "input_tokens": 989,
+  "output_tokens": 198,
+  "cached_input_tokens": 768,
+  "usage_available": true,
+  "raw_text": "{\"items\":[{\"item\":\"i01\",\"verdict\":\"pass\",\"issues\":[],\"reason\":\"无精确事件的说明准确，未宿命化，主题方向为中性且与文字一致。\"},{\"item\":\"i02\",\"verdict\":\"revise\",\"issues\":[{\"dimension\":\"theme_direction\",\"detail\":\"文字称三分相“较顺、可把优势转成行动”，但 self 与 career 主题值为 -0.2，方向与文字相反\"}],\"reason\":\"三分相被描述为顺畅有利，却给出负向主题值，方向不一致。\"},{\"item\":\"i03\",\"verdict\":\"revise\",\"issues\":[{\"dimension\":\"theme_direction\",\"detail\":\"对分相是拉扯/张力的挑战相位，而 self 与 career 主题值为 +0.15（顺），与文字表达的阻力方向不符\"}],\"reason\":\"对分相文字提示拉扯，但主题值偏正，方向与文字不一致。\"}]}",
+  "verdicts": {
+    "i01": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "无精确事件的说明准确，未宿命化，主题方向为中性且与文字一致。"
+    },
+    "i02": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "theme_direction",
+          "detail": "文字称三分相“较顺、可把优势转成行动”，但 self 与 career 主题值为 -0.2，方向与文字相反"
+        }
+      ],
+      "reason": "三分相被描述为顺畅有利，却给出负向主题值，方向不一致。"
+    },
+    "i03": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "theme_direction",
+          "detail": "对分相是拉扯/张力的挑战相位，而 self 与 career 主题值为 +0.15（顺），与文字表达的阻力方向不符"
+        }
+      ],
+      "reason": "对分相文字提示拉扯，但主题值偏正，方向与文字不一致。"
+    }
+  }
+}

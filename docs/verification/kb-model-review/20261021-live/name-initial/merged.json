@@ -1,0 +1,384 @@
+{
+  "system": "name",
+  "entries": 220,
+  "planted": 22,
+  "metrics": {
+    "pass_rate": 0.5182,
+    "detection": {
+      "reviewer_a": 0.9545,
+      "reviewer_b": 1.0
+    },
+    "detection_merged": 1.0,
+    "rerun": {
+      "reviewer_a": 0.8967,
+      "reviewer_b": 0.8182
+    },
+    "kappa": -0.098,
+    "observed_agreement": 0.5955,
+    "verdict_counts": {
+      "reviewer_a": {
+        "pass": 171,
+        "revise": 49
+      },
+      "reviewer_b": {
+        "pass": 163,
+        "revise": 55,
+        "reject": 2
+      }
+    }
+  },
+  "gates": {
+    "pass_rate": false,
+    "detection_merged": true,
+    "detection_single": true,
+    "rerun": false,
+    "kappa": false,
+    "complete": true
+  },
+  "thresholds": {
+    "pass_rate": 0.95,
+    "detection_merged": 0.9,
+    "detection_single": 0.8,
+    "rerun": 0.9,
+    "kappa": 0.6
+  },
+  "calibrated": false,
+  "passed": false,
+  "approved": 114,
+  "queued": 106,
+  "incomplete": [],
+  "planted_detail": [
+    {
+      "ref": "planted-001",
+      "original": "kb:name:sancai:土金土",
+      "mutation": "foreign_text",
+      "reviewer_a": "reject",
+      "reviewer_b": "reject"
+    },
+    {
+      "ref": "planted-002",
+      "original": "kb:name:shuli:15",
+      "mutation": "fatalistic",
+      "reviewer_a": "reject",
+      "reviewer_b": "revise"
+    },
+    {
+      "ref": "planted-003",
+      "original": "kb:name:shuli:8",
+      "mutation": "flip_signs",
+      "reviewer_a": "revise",
+      "reviewer_b": "revise"
+    },
+    {
+      "ref": "planted-004",
+      "original": "kb:name:shuli:7",
+      "mutation": "medical",
+      "reviewer_a": "reject",
+      "reviewer_b": "reject"
+    },
+    {
+      "ref": "planted-005",
+      "original": "kb:name:shuli:60",
+      "mutation": "fatalistic",
+      "reviewer_a": "reject",
+      "reviewer_b": "revise"
+    },
+    {
+      "ref": "planted-006",
+      "original": "kb:name:sancai:土土水",
+      "mutation": "foreign_text",
+      "reviewer_a": "reject",
+      "reviewer_b": "reject"
+    },
+    {
+      "ref": "planted-007",
+      "original": "kb:name:sancai:水土木",
+      "mutation": "medical",
+      "reviewer_a": "reject",
+      "reviewer_b": "reject"
+    },
+    {
+      "ref": "planted-008",
+      "original": "kb:name:sancai:土火木",
+      "mutation": "flip_signs",
+      "reviewer_a": "revise",
+      "reviewer_b": "revise"
+    },
+    {
+      "ref": "planted-009",
+      "original": "kb:name:sancai:金水水",
+      "mutation": "fatalistic",
+      "reviewer_a": "reject",
+      "reviewer_b": "revise"
+    },
+    {
+      "ref": "planted-010",
+      "original": "kb:name:shuli:6",
+      "mutation": "flip_signs",
+      "reviewer_a": "revise",
+      "reviewer_b": "revise"
+    },
+    {
+      "ref": "planted-011",
+      "original": "kb:name:sancai:金土木",
+      "mutation": "medical",
+      "reviewer_a": "reject",
+      "reviewer_b": "reject"
+    },
+    {
+      "ref": "planted-012",
+      "original": "kb:name:sancai:金木木",
+      "mutation": "foreign_text",
+      "reviewer_a": "reject",
+      "reviewer_b": "reject"
+    },
+    {
+      "ref": "planted-013",
+      "original": "kb:name:shuli:34",
+      "mutation": "medical",
+      "reviewer_a": "reject",
+      "reviewer_b": "reject"
+    },
+    {
+      "ref": "planted-014",
+      "original": "kb:name:sancai:火木火",
+      "mutation": "fatalistic",
+      "reviewer_a": "reject",
+      "reviewer_b": "revise"
+    },
+    {
+      "ref": "planted-015",
+      "original": "kb:name:shuli:66",
+      "mutation": "flip_signs",
+      "reviewer_a": "revise",
+      "reviewer_b": "revise"
+    },
+    {
+      "ref": "planted-016",
+      "original": "kb:name:sancai:木水金",
+      "mutation": "foreign_text",
+      "reviewer_a": "reject",
+      "reviewer_b": "reject"
+    },
+    {
+      "ref": "planted-017",
+      "original": "kb:name:sancai:土水土",
+      "mutation": "fatalistic",
+      "reviewer_a": "reject",
+      "reviewer_b": "reject"
+    },
+    {
+      "ref": "planted-018",
+      "original": "kb:name:sancai:金水土",
+      "mutation": "foreign_text",
+      "reviewer_a": "revise",
+      "reviewer_b": "reject"
+    },
+    {
+      "ref": "planted-019",
+      "original": "kb:name:element:火",
+      "mutation": "medical",
+      "reviewer_a": "reject",
+      "reviewer_b": "reject"
+    },
+    {
+      "ref": "planted-020",
+      "original": "kb:name:sancai:火水土",
+      "mutation": "flip_signs",
+      "reviewer_a": "revise",
+      "reviewer_b": "revise"
+    },
+    {
+      "ref": "planted-021",
+      "original": "kb:name:sancai:火金木",
+      "mutation": "flip_signs",
+      "reviewer_a": "pass",
+      "reviewer_b": "revise"
+    },
+    {
+      "ref": "planted-022",
+      "original": "kb:name:shuli:24",
+      "mutation": "medical",
+      "reviewer_a": "reject",
+      "reviewer_b": "reject"
+    }
+  ],
+  "detection_by_mutation": {
+    "foreign_text": {
+      "total": 5,
+      "reviewer_a": 5,
+      "reviewer_b": 5
+    },
+    "fatalistic": {
+      "total": 5,
+      "reviewer_a": 5,
+      "reviewer_b": 5
+    },
+    "flip_signs": {
+      "total": 6,
+      "reviewer_a": 5,
+      "reviewer_b": 6
+    },
+    "medical": {
+      "total": 6,
+      "reviewer_a": 6,
+      "reviewer_b": 6
+    }
+  },
+  "usage": {
+    "reviewer_a": {
+      "calls": 50,
+      "input_tokens": 133008,
+      "output_tokens": 29989,
+      "latency_s": 160.287,
+      "returned_models": [
+        "deepseek-flash"
+      ],
+      "errors": {
+        "parse_error": 2
+      },
+      "retried_calls": 2,
+      "http_retries": 0,
+      "cost": null,
+      "known_cost_estimate": null,
+      "usage_complete": true,
+      "cost_basis": "配置单价估算，非账单；服务失败的用量可能未知",
+      "currency": null
+    },
+    "reviewer_b": {
+      "calls": 50,
+      "input_tokens": 138216,
+      "output_tokens": 53574,
+      "latency_s": 1672.717,
+      "returned_models": [
+        "gpt-6.1-sol"
+      ],
+      "errors": {},
+      "retried_calls": 0,
+      "http_retries": 3,
+      "cost": null,
+      "known_cost_estimate": null,
+      "usage_complete": true,
+      "cost_basis": "配置单价估算，非账单；服务失败的用量可能未知",
+      "currency": null
+    }
+  },
+  "code_findings": [],
+  "human_reviewed_rate": 0.0,
+  "approved_ids": [
+    "kb:name:convention:bazi_compare",
+    "kb:name:convention:compound_surname",
+    "kb:name:convention:stroke_rule",
+    "kb:name:element:土",
+    "kb:name:element:木",
+    "kb:name:element:水",
+    "kb:name:element:火",
+    "kb:name:element:金",
+    "kb:name:grid:人格",
+    "kb:name:grid:天格",
+    "kb:name:sancai:土金土",
+    "kb:name:sancai:土金木",
+    "kb:name:sancai:土金水",
+    "kb:name:sancai:土金火",
+    "kb:name:sancai:土金金",
+    "kb:name:sancai:木土土",
+    "kb:name:sancai:木土木",
+    "kb:name:sancai:木土水",
+    "kb:name:sancai:木土火",
+    "kb:name:sancai:木土金",
+    "kb:name:sancai:木木土",
+    "kb:name:sancai:木木木",
+    "kb:name:sancai:木木水",
+    "kb:name:sancai:木木火",
+    "kb:name:sancai:木木金",
+    "kb:name:sancai:木水土",
+    "kb:name:sancai:木水木",
+    "kb:name:sancai:木水水",
+    "kb:name:sancai:木水火",
+    "kb:name:sancai:木水金",
+    "kb:name:sancai:木火土",
+    "kb:name:sancai:木火木",
+    "kb:name:sancai:木火火",
+    "kb:name:sancai:木火金",
+    "kb:name:sancai:木金土",
+    "kb:name:sancai:木金木",
+    "kb:name:sancai:木金水",
+    "kb:name:sancai:木金火",
+    "kb:name:sancai:木金金",
+    "kb:name:sancai:水土土",
+    "kb:name:sancai:水土木",
+    "kb:name:sancai:水土水",
+    "kb:name:sancai:水土火",
+    "kb:name:sancai:水土金",
+    "kb:name:sancai:水木土",
+    "kb:name:sancai:水木木",
+    "kb:name:sancai:水木水",
+    "kb:name:sancai:水木火",
+    "kb:name:sancai:水木金",
+    "kb:name:sancai:水水土",
+    "kb:name:sancai:水水木",
+    "kb:name:sancai:水水火",
+    "kb:name:sancai:水水金",
+    "kb:name:sancai:水火土",
+    "kb:name:sancai:水火木",
+    "kb:name:sancai:水火水",
+    "kb:name:sancai:水火火",
+    "kb:name:sancai:水火金",
+    "kb:name:sancai:水金土",
+    "kb:name:sancai:水金木",
+    "kb:name:sancai:水金水",
+    "kb:name:sancai:水金金",
+    "kb:name:sancai:火土土",
+    "kb:name:sancai:火土木",
+    "kb:name:sancai:火土水",
+    "kb:name:sancai:火土火",
+    "kb:name:sancai:火土金",
+    "kb:name:sancai:火火土",
+    "kb:name:sancai:火火木",
+    "kb:name:sancai:火火水",
+    "kb:name:sancai:火火金",
+    "kb:name:sancai:火金木",
+    "kb:name:sancai:火金火",
+    "kb:name:sancai:金土土",
+    "kb:name:sancai:金土火",
+    "kb:name:sancai:金土金",
+    "kb:name:sancai:金木土",
+    "kb:name:sancai:金木木",
+    "kb:name:sancai:金木水",
+    "kb:name:sancai:金木火",
+    "kb:name:sancai:金木金",
+    "kb:name:sancai:金金土",
+    "kb:name:sancai:金金木",
+    "kb:name:sancai:金金火",
+    "kb:name:sancai:金金金",
+    "kb:name:shuli:1",
+    "kb:name:shuli:10",
+    "kb:name:shuli:11",
+    "kb:name:shuli:12",
+    "kb:name:shuli:13",
+    "kb:name:shuli:14",
+    "kb:name:shuli:15",
+    "kb:name:shuli:16",
+    "kb:name:shuli:17",
+    "kb:name:shuli:18",
+    "kb:name:shuli:64",
+    "kb:name:shuli:65",
+    "kb:name:shuli:66",
+    "kb:name:shuli:67",
+    "kb:name:shuli:68",
+    "kb:name:shuli:69",
+    "kb:name:shuli:70",
+    "kb:name:shuli:71",
+    "kb:name:shuli:72",
+    "kb:name:shuli:73",
+    "kb:name:shuli:74",
+    "kb:name:shuli:75",
+    "kb:name:shuli:76",
+    "kb:name:shuli:77",
+    "kb:name:shuli:78",
+    "kb:name:shuli:79",
+    "kb:name:shuli:80",
+    "kb:name:shuli:81",
+    "kb:name:shuli:9"
+  ]
+}

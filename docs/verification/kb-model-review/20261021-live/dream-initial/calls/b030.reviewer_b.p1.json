@@ -1,0 +1,88 @@
+{
+  "batch": "b030",
+  "reviewer": "reviewer_b",
+  "run_pass": 1,
+  "attempt": 1,
+  "vendor": "openai",
+  "requested_model": "gpt-6.1-sol",
+  "returned_model": "gpt-6.1-sol",
+  "api": "openai",
+  "started_at": "2026-10-21T16:11:40+00:00",
+  "finished_at": "2026-10-21T16:12:09+00:00",
+  "latency_s": 28.61,
+  "http_attempts": 1,
+  "finish_reason": "stop",
+  "prompt_sha256": "d4a8aaf88fde4197ecb2717b8816909a21fc9cd970e577927665c7e21e04151f",
+  "input_tokens": 2549,
+  "output_tokens": 1074,
+  "cached_input_tokens": null,
+  "usage_available": true,
+  "raw_text": "{\n  \"items\": [\n    {\n      \"item\": \"i01\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"释义以自我要求与被否定的担忧作心理联想，倾向设置与文字基本一致。\"\n    },\n    {\n      \"item\": \"i02\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"身份认同与资格的联想贴合证件意象，中性倾向与结合情绪理解的表述一致。\"\n    },\n    {\n      \"item\": \"i03\",\n      \"verdict\": \"revise\",\n      \"issues\": [\n        {\n          \"dimension\": \"theme_direction\",\n          \"detail\": \"文字中的需求、选择与自我奖励不表示财务状况偏顺，finance 为正缺少依据，建议改为中性。\"\n        }\n      ],\n      \"reason\": \"心理联想合理，但将购物直接赋予财务正向倾向与文字不一致。\"\n    },\n    {\n      \"item\": \"i04\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"夏日、分享与满足感的联想自然，关系主题轻微偏正有文字依据。\"\n    },\n    {\n      \"item\": \"i05\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"规则、秩序与自我约束的象征贴合警察意象，未作现实法律判断或预兆断言。\"\n    },\n    {\n      \"item\": \"i06\",\n      \"verdict\": \"revise\",\n      \"issues\": [\n        {\n          \"dimension\": \"consistency\",\n          \"detail\": \"“车开走了”“眼看着车开走”并不必然表示自己没赶上车，也可能是送别或旁观，作为同义词会误命中其他情境，建议删除或补充未赶上的限定。\"\n        }\n      ],\n      \"reason\": \"释义本身合理，但部分同义词不能准确限定错过乘车的情境。\"\n    },\n    {\n      \"item\": \"i07\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"走廊与等待、过渡状态的联想贴合意象，中性倾向及参考性措辞恰当。\"\n    },\n    {\n      \"item\": \"i08\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"追求目标与释放精力可支持自我和事业轻微偏正，且未将梦境写成现实预兆。\"\n    },\n    {\n      \"item\": \"i09\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"以改变现状、冒险感受和压力作平和的心理联想，没有将敏感意象解释为现实事件预兆。\"\n    },\n    {\n      \"item\": \"i10\",\n      \"verdict\": \"revise\",\n      \"issues\": [\n        {\n          \"dimension\": \"consistency\",\n          \"detail\": \"“猎豹”与通常指花豹的“豹子”不是严格同义词，直接作为同义词会合并不同动物意象，建议移除或另设条目。\"\n        }\n      ],\n      \"reason\": \"主体释义可用，但同义词将猎豹与花豹混同，需要调整。\"\n    }\n  ]\n}",
+  "verdicts": {
+    "i01": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "释义以自我要求与被否定的担忧作心理联想，倾向设置与文字基本一致。"
+    },
+    "i02": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "身份认同与资格的联想贴合证件意象，中性倾向与结合情绪理解的表述一致。"
+    },
+    "i03": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "theme_direction",
+          "detail": "文字中的需求、选择与自我奖励不表示财务状况偏顺，finance 为正缺少依据，建议改为中性。"
+        }
+      ],
+      "reason": "心理联想合理，但将购物直接赋予财务正向倾向与文字不一致。"
+    },
+    "i04": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "夏日、分享与满足感的联想自然，关系主题轻微偏正有文字依据。"
+    },
+    "i05": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "规则、秩序与自我约束的象征贴合警察意象，未作现实法律判断或预兆断言。"
+    },
+    "i06": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "consistency",
+          "detail": "“车开走了”“眼看着车开走”并不必然表示自己没赶上车，也可能是送别或旁观，作为同义词会误命中其他情境，建议删除或补充未赶上的限定。"
+        }
+      ],
+      "reason": "释义本身合理，但部分同义词不能准确限定错过乘车的情境。"
+    },
+    "i07": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "走廊与等待、过渡状态的联想贴合意象，中性倾向及参考性措辞恰当。"
+    },
+    "i08": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "追求目标与释放精力可支持自我和事业轻微偏正，且未将梦境写成现实预兆。"
+    },
+    "i09": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "以改变现状、冒险感受和压力作平和的心理联想，没有将敏感意象解释为现实事件预兆。"
+    },
+    "i10": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "consistency",
+          "detail": "“猎豹”与通常指花豹的“豹子”不是严格同义词，直接作为同义词会合并不同动物意象，建议移除或另设条目。"
+        }
+      ],
+      "reason": "主体释义可用，但同义词将猎豹与花豹混同，需要调整。"
+    }
+  }
+}

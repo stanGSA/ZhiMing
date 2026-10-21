@@ -1,0 +1,130 @@
+{
+  "batch": "b014",
+  "reviewer": "reviewer_b",
+  "run_pass": 2,
+  "attempt": 1,
+  "vendor": "openai",
+  "requested_model": "gpt-6.1-sol",
+  "returned_model": "gpt-6.1-sol",
+  "api": "openai",
+  "started_at": "2026-10-21T16:50:23+00:00",
+  "finished_at": "2026-10-21T16:50:47+00:00",
+  "latency_s": 23.111,
+  "http_attempts": 1,
+  "finish_reason": "stop",
+  "prompt_sha256": "c2747e0ae33eba80a9bb53aab0ed28d413e111856490914bd0d117e7e60ae510",
+  "input_tokens": 2728,
+  "output_tokens": 1181,
+  "cached_input_tokens": 2725,
+  "usage_available": true,
+  "raw_text": "{\n  \"items\": [\n    {\n      \"item\": \"i01\",\n      \"verdict\": \"revise\",\n      \"issues\": [\n        {\n          \"dimension\": \"certainty\",\n          \"detail\": \"“今年一定会遭遇重大失败”是确定性的现实预兆，与前文的非预兆说明矛盾，应删除。\"\n        }\n      ],\n      \"reason\": \"台风的情绪联想合理，但结尾将梦境解释为必然失败的预兆。\"\n    },\n    {\n      \"item\": \"i02\",\n      \"verdict\": \"revise\",\n      \"issues\": [\n        {\n          \"dimension\": \"theme_direction\",\n          \"detail\": \"文字主要描述厌烦和想摆脱琐事的困扰，self 却为正向，宜调整为负向或补充明确的积极含义。\"\n        }\n      ],\n      \"reason\": \"释义措辞平和，但自我状态的正向倾向与正文的困扰含义不一致。\"\n    },\n    {\n      \"item\": \"i03\",\n      \"verdict\": \"revise\",\n      \"issues\": [\n        {\n          \"dimension\": \"certainty\",\n          \"detail\": \"“今年一定会遭遇重大失败”是宿命化断言，也将梦境写成现实预兆，应删除。\"\n        },\n        {\n          \"dimension\": \"theme_direction\",\n          \"detail\": \"结尾明确断言重大失败，与 theme_map 全部为中性的设置不一致；宜删除该断言，保留中性探索性释义。\"\n        }\n      ],\n      \"reason\": \"钱与价值感、资源的联想合理，但结尾添加了与中性释义不符的确定性失败预言。\"\n    },\n    {\n      \"item\": \"i04\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"黑暗与未知、不安的联想合理，负向自我倾向与文字一致，且没有现实预兆断言。\"\n    },\n    {\n      \"item\": \"i05\",\n      \"verdict\": \"reject\",\n      \"issues\": [\n        {\n          \"dimension\": \"medical_legal_finance\",\n          \"detail\": \"仅凭梦见奶便断言肝脏已有病变并要求立即治疗，属于无依据的确定性医疗诊断和治疗指示。\"\n        },\n        {\n          \"dimension\": \"certainty\",\n          \"detail\": \"“说明你的肝脏已有病变”将梦境直接认定为现实疾病的证据，与前文“不作为现实预兆”矛盾。\"\n        }\n      ],\n      \"reason\": \"条目包含由梦境直接推断肝脏病变的确定性医疗结论。\"\n    },\n    {\n      \"item\": \"i06\",\n      \"verdict\": \"reject\",\n      \"issues\": [\n        {\n          \"dimension\": \"consistency\",\n          \"detail\": \"key、同义词和关键词均指向骨头，正文却完整解释淋浴、洗澡，释义对象错误。\"\n        }\n      ],\n      \"reason\": \"正文解释的是洗澡而非骨头，与条目对象完全不符。\"\n    },\n    {\n      \"item\": \"i07\",\n      \"verdict\": \"reject\",\n      \"issues\": [\n        {\n          \"dimension\": \"consistency\",\n          \"detail\": \"key、同义词和关键词指向废墟及建筑残骸，正文却解释降雪、下雪，释义对象错误。\"\n        }\n      ],\n      \"reason\": \"正文解释的是下雪而非废墟，与条目对象完全不符。\"\n    },\n    {\n      \"item\": \"i08\",\n      \"verdict\": \"revise\",\n      \"issues\": [\n        {\n          \"dimension\": \"consistency\",\n          \"detail\": \"同义词“摩托车”与雪山无关，会误命中交通工具意象，应移除。\"\n        }\n      ],\n      \"reason\": \"雪山释义基本合理，但错误同义词会使其他意象命中本条。\"\n    },\n    {\n      \"item\": \"i09\",\n      \"verdict\": \"revise\",\n      \"issues\": [\n        {\n          \"dimension\": \"consistency\",\n          \"detail\": \"同义词“被冤枉”不是灯的同义表达，会误命中受委屈或被误解的梦境，应移除。\"\n        }\n      ],\n      \"reason\": \"灯的释义及主题倾向合理，但同义词混入了无关事件意象。\"\n    },\n    {\n      \"item\": \"i10\",\n      \"verdict\": \"reject\",\n      \"issues\": [\n        {\n          \"dimension\": \"medical_legal_finance\",\n          \"detail\": \"“身体已有慢性疾病”构成确定性疾病判断，“不必就医也会自愈”又作出无依据的预后保证并劝阻就医。\"\n        },\n        {\n          \"dimension\": \"certainty\",\n          \"detail\": \"结尾将桥的梦境确定解释为现实疾病及必然自愈，与前文“不预示现实结果”矛盾。\"\n        }\n      ],\n      \"reason\": \"条目包含确定性疾病判断和无需就医即可自愈的危险医疗结论。\"\n    }\n  ]\n}",
+  "verdicts": {
+    "i01": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "certainty",
+          "detail": "“今年一定会遭遇重大失败”是确定性的现实预兆，与前文的非预兆说明矛盾，应删除。"
+        }
+      ],
+      "reason": "台风的情绪联想合理，但结尾将梦境解释为必然失败的预兆。"
+    },
+    "i02": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "theme_direction",
+          "detail": "文字主要描述厌烦和想摆脱琐事的困扰，self 却为正向，宜调整为负向或补充明确的积极含义。"
+        }
+      ],
+      "reason": "释义措辞平和，但自我状态的正向倾向与正文的困扰含义不一致。"
+    },
+    "i03": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "certainty",
+          "detail": "“今年一定会遭遇重大失败”是宿命化断言，也将梦境写成现实预兆，应删除。"
+        },
+        {
+          "dimension": "theme_direction",
+          "detail": "结尾明确断言重大失败，与 theme_map 全部为中性的设置不一致；宜删除该断言，保留中性探索性释义。"
+        }
+      ],
+      "reason": "钱与价值感、资源的联想合理，但结尾添加了与中性释义不符的确定性失败预言。"
+    },
+    "i04": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "黑暗与未知、不安的联想合理，负向自我倾向与文字一致，且没有现实预兆断言。"
+    },
+    "i05": {
+      "verdict": "reject",
+      "issues": [
+        {
+          "dimension": "medical_legal_finance",
+          "detail": "仅凭梦见奶便断言肝脏已有病变并要求立即治疗，属于无依据的确定性医疗诊断和治疗指示。"
+        },
+        {
+          "dimension": "certainty",
+          "detail": "“说明你的肝脏已有病变”将梦境直接认定为现实疾病的证据，与前文“不作为现实预兆”矛盾。"
+        }
+      ],
+      "reason": "条目包含由梦境直接推断肝脏病变的确定性医疗结论。"
+    },
+    "i06": {
+      "verdict": "reject",
+      "issues": [
+        {
+          "dimension": "consistency",
+          "detail": "key、同义词和关键词均指向骨头，正文却完整解释淋浴、洗澡，释义对象错误。"
+        }
+      ],
+      "reason": "正文解释的是洗澡而非骨头，与条目对象完全不符。"
+    },
+    "i07": {
+      "verdict": "reject",
+      "issues": [
+        {
+          "dimension": "consistency",
+          "detail": "key、同义词和关键词指向废墟及建筑残骸，正文却解释降雪、下雪，释义对象错误。"
+        }
+      ],
+      "reason": "正文解释的是下雪而非废墟，与条目对象完全不符。"
+    },
+    "i08": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "consistency",
+          "detail": "同义词“摩托车”与雪山无关，会误命中交通工具意象，应移除。"
+        }
+      ],
+      "reason": "雪山释义基本合理，但错误同义词会使其他意象命中本条。"
+    },
+    "i09": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "consistency",
+          "detail": "同义词“被冤枉”不是灯的同义表达，会误命中受委屈或被误解的梦境，应移除。"
+        }
+      ],
+      "reason": "灯的释义及主题倾向合理，但同义词混入了无关事件意象。"
+    },
+    "i10": {
+      "verdict": "reject",
+      "issues": [
+        {
+          "dimension": "medical_legal_finance",
+          "detail": "“身体已有慢性疾病”构成确定性疾病判断，“不必就医也会自愈”又作出无依据的预后保证并劝阻就医。"
+        },
+        {
+          "dimension": "certainty",
+          "detail": "结尾将桥的梦境确定解释为现实疾病及必然自愈，与前文“不预示现实结果”矛盾。"
+        }
+      ],
+      "reason": "条目包含确定性疾病判断和无需就医即可自愈的危险医疗结论。"
+    }
+  }
+}

@@ -1,0 +1,52 @@
+{
+  "recorded_at": "2026-10-21T16:04:14+00:00",
+  "reviewers": {
+    "reviewer_a": {
+      "vendor": "DeepSeek",
+      "model": "deepseek-flash",
+      "runtime_vendor_exception": true
+    },
+    "reviewer_b": {
+      "vendor": "OpenAI",
+      "model": "gpt-6.1-sol",
+      "base_url": "https://codegoai.com/v1"
+    }
+  },
+  "reviser": {
+    "vendor": "OpenAI",
+    "model": "gpt-6-astra",
+    "review_vendor_exception": true
+  },
+  "budget": {
+    "unlimited": true,
+    "known_rates": false
+  },
+  "model_reviewed_confidence_cap": "medium",
+  "acceptance": {
+    "scope": "每个体系的全部初审和复审批次",
+    "keep_all_failed_samples": true,
+    "current_coverage": "当前内容哈希的最后有效四次双审结论",
+    "thresholds": {
+      "pass_rate": 0.95,
+      "detection_merged": 0.9,
+      "detection_single": 0.8,
+      "rerun": 0.9,
+      "kappa": 0.6
+    },
+    "owner_reply": "按体系汇总所有批次（推荐）",
+    "kappa": {
+      "approved_at": "2026-10-21T16:09:58+00:00",
+      "owner_reply": "同意：全部样本、放行二分类（推荐）",
+      "scope": "全部批次第一轮真实及埋错样本",
+      "classes": {
+        "pass_": "放行",
+        "revise": "不通过",
+        "reject": "不通过"
+      },
+      "threshold": 0.6,
+      "retain_original_metrics": true,
+      "limitation": "埋错样本影响分布，不能与原三分类真实条目kappa直接比较"
+    }
+  },
+  "independence_note": "负责人明确授权运行时DeepSeek参与审核、OpenAI同时作为修改厂商；两家审核仍为不同厂商，不能宣称满足原4.3全部独立性要求。"
+}
