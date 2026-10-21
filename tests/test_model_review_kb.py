@@ -239,6 +239,10 @@ def test_vendor_rules(workspace):
     reviser = dict(roles, reviser=roles["reviser"].model_copy(update=dict(vendor="vendor-b")))
     with pytest.raises(ValueError, match="自审自改"):
         review.check_roles(reviser, config, (*review.REVIEWERS, "reviser"))
+    drafted = dict(config, kb_review={**config["kb_review"], "drafter_vendors": [" Vendor-B "]})
+    with pytest.raises(ValueError, match="起草"):
+        review.check_roles(roles, drafted, review.REVIEWERS)
+    review.check_roles(roles, drafted, ("reviser",))  # the drafter may revise
     with pytest.raises(ValueError, match="未配置"):
         review.check_roles(dict(roles, reviewer_a=None), config, review.REVIEWERS)
 

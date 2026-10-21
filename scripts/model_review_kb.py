@@ -177,8 +177,19 @@ def runtime_vendor(config: dict) -> str:
     return str(config["llm"]["provider"]).strip().lower()
 
 
+def drafter_vendors(config: dict) -> set[str]:
+    drafters = (config.get("kb_review") or {}).get("drafter_vendors") or []
+    if isinstance(drafters, str):
+        drafters = [drafters]  # one vendor written without brackets, not a list of letters
+    if not isinstance(drafters, list) or not all(
+        isinstance(v, str) and v.strip() for v in drafters
+    ):
+        raise ValueError("kb_review.drafter_vendors 必须是厂商名列表")
+    return {vendor.strip().lower() for vendor in drafters}
+
+
 def check_roles(roles: dict, config: dict, needed: tuple[str, ...]) -> None:
-    """4.3: two vendors, neither the runtime vendor; a reviser is a third party."""
+    """4.3: two vendors, neither the runtime nor a drafting vendor; a reviser is a third party."""
     missing = [name for name in needed if roles.get(name) is None]
     if missing:
         raise ValueError(f"config.yaml 的 kb_review.roles 未配置：{'、'.join(missing)}")
@@ -188,6 +199,8 @@ def check_roles(roles: dict, config: dict, needed: tuple[str, ...]) -> None:
         raise ValueError("两个审核模型必须来自不同厂商")
     if runtime_vendor(config) in reviewers:
         raise ValueError("审核模型不能与运行时模型同一厂商")
+    if drafter_vendors(config) & set(reviewers):
+        raise ValueError("审核模型不能与起草条目的模型同一厂商，否则会审自己写的内容")
     if "reviser" in vendors and vendors["reviser"] in reviewers:
         raise ValueError("修改模型不能与审核模型同一厂商，否则会自审自改")
 

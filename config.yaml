@@ -51,6 +51,9 @@ kb_review:                    # 知识库模型交叉审核（scripts.model_revi
   # reviewer_a: {vendor: <厂商>, api: openai, model: <模型名>, api_key_env: <密钥环境变量名>,
   #              base_url: <兼容接口地址>, input_per_mtok: <每百万输入token单价>, output_per_mtok: <单价>, currency: USD}
   # api 为 openai（任何兼容 OpenAI 的接口）或 anthropic。密钥只从环境变量读取，不写入任何文件。
+  # 起草条目内容的厂商，审核方不能与之同厂商（4.3）：阶段1 B1 的感情、财务方向与对应文字由
+  # Anthropic Claude 起草；更早草稿的起草模型没有记录。
+  drafter_vendors: [anthropic]
   roles:
     reviewer_a: null
     reviewer_b: null

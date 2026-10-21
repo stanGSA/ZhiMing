@@ -79,9 +79,195 @@ GOD_TEXT = {
     "正印": ("学习与支持", "借助学习和支持体系完善准备，避免只积累不行动", 0.2),
 }
 
+# Stage 1 B1: relationship/finance directions, drafted by Anthropic Claude on 2026-10-21 from
+# traditional rules. Only placements with a traditional basis get a direction; every other
+# placement keeps 0 ("no directional content"). Model reviewers must not be Anthropic.
+B1_SOURCE = "感情、财务方向由 Anthropic Claude 于2026-10-21按传统规则起草"
+# Ten gods (gender-neutral simplification): (relationship, finance) and the matching phrases.
+GOD_DIRECTIONS = {
+    "比肩": (
+        -0.1,
+        "重视平等与独立，也容易各自坚持，宜留出协商空间",
+        -0.1,
+        "同伴分担也分享，留意合伙分配",
+    ),
+    "劫财": (
+        -0.15,
+        "容易出现竞争或争执，宜坦诚说明边界",
+        -0.2,
+        "留意资源被分走或冲动花费，借贷与合伙要写清约定",
+    ),
+    "食神": (0.15, "温和，重视相处的愉快感", 0.15, "倾向通过技能与产出带来收入"),
+    "伤官": (
+        -0.15,
+        "直率，容易挑剔对方，宜先肯定再提意见",
+        0.1,
+        "可凭创意与专长开源，收入节奏可能起伏",
+    ),
+    "偏财": (
+        0.1,
+        "人缘与交际较活跃，宜保持专注",
+        0.15,
+        "较容易遇到机会，同时核实风险，不据此作投资判断",
+    ),
+    "正财": (0.15, "倾向稳定投入、重视承诺", 0.2, "对应稳定收入与预算，适合按计划积累"),
+    "七杀": (-0.15, "容易出现强势与压力，宜明确界限、互相尊重", 0.0, ""),
+    "正官": (0.15, "重视责任、规范与承诺", 0.1, "倾向稳定的职位收入，按规矩管理财务"),
+    "偏印": (
+        -0.1,
+        "较需要独处空间，容易显得疏离，宜主动表达",
+        -0.1,
+        "不太关注理财，宜建立基本预算",
+    ),
+    "正印": (0.1, "重视照顾与支持", 0.0, ""),
+}
+# Traditional dignities of the planets that signify a theme below: 入庙 domicile, 擢升
+# exaltation, 失势 detriment (opposite the domicile), 落陷 fall (opposite the exaltation).
+# The outer planets stay sign-neutral: their sign is shared by a whole generation.
+DIGNITY = {
+    "Moon": ({"Cancer": "入庙", "Taurus": "擢升"}, {"Capricorn": "失势", "Scorpio": "落陷"}),
+    "Mercury": (
+        {"Gemini": "入庙", "Virgo": "入庙并擢升"},
+        {"Sagittarius": "失势", "Pisces": "失势并落陷"},
+    ),
+    "Venus": (
+        {"Taurus": "入庙", "Libra": "入庙", "Pisces": "擢升"},
+        {"Aries": "失势", "Scorpio": "失势", "Virgo": "落陷"},
+    ),
+    "Mars": (
+        {"Aries": "入庙", "Scorpio": "入庙", "Capricorn": "擢升"},
+        {"Taurus": "失势", "Libra": "失势", "Cancer": "落陷"},
+    ),
+    "Jupiter": (
+        {"Sagittarius": "入庙", "Pisces": "入庙", "Cancer": "擢升"},
+        {"Gemini": "失势", "Virgo": "失势", "Capricorn": "落陷"},
+    ),
+    "Saturn": (
+        {"Capricorn": "入庙", "Aquarius": "入庙", "Libra": "擢升"},
+        {"Cancer": "失势", "Leo": "失势", "Aries": "落陷"},
+    ),
+}
+# Sign-based directions only for each theme's traditional significators:
+# planet -> theme -> (magnitude, dignified phrase, debilitated phrase).
+SIGN_DIRECTIONS = {
+    "Venus": {
+        "relationship": (
+            0.2,
+            "较容易表达好感、经营和谐关系",
+            "表达好感的方式容易急切或别扭，宜多确认彼此节奏",
+        ),
+        "finance": (0.15, "对价值与花费有较好的分寸感", "留意因喜好或情绪冲动消费"),
+    },
+    "Moon": {
+        "relationship": (
+            0.15,
+            "情感需求较容易被理解和回应",
+            "情感需求不易直接说出，宜主动沟通感受",
+        )
+    },
+    "Mars": {
+        "relationship": (
+            0.15,
+            "主动直接，敢于表达需求",
+            "主动性容易受压或转为急躁，宜直接而温和地沟通",
+        )
+    },
+    "Mercury": {
+        "finance": (0.15, "处理账目、比较与交易较有条理", "细节与合同条款容易疏忽，宜复核数字")
+    },
+    "Jupiter": {
+        "finance": (
+            0.2,
+            "倾向看到机会、乐于扩展，仍需核实成本",
+            "容易高估机会或分散投入，扩张前先算清预算",
+        )
+    },
+    "Saturn": {
+        "finance": (
+            0.15,
+            "倾向稳健积累、守住预算",
+            "容易因压力过度保守或感到资源吃紧，宜做长期规划",
+        )
+    },
+}
+# House topics: the 2nd and 8th are money, the 5th and 7th romance and partnership. Benefics
+# lean positive, the luminaries and Mercury mildly positive, the malefics negative; the outer
+# planets stay house-neutral (their house meanings are modern and divergent).
+HOUSE_THEME = {"2": "finance", "5": "relationship", "7": "relationship", "8": "finance"}
+PLANET_NATURE = dict(
+    Venus=0.2, Jupiter=0.2, Sun=0.1, Moon=0.1, Mercury=0.1, Mars=-0.15, Saturn=-0.15
+)
+HOUSE_PHRASES = {
+    "2": dict(
+        Sun="把收入与价值感视为自我实现的一部分，适合设定清楚的财务目标",
+        Moon="重视财务安全感，倾向积蓄以求安心",
+        Mercury="可通过信息、沟通或交易类工作获得收入，适合比较后再决定支出",
+        Venus="对价值与享受敏感，较容易得到积累的机会，同时留意花在喜好上的开销",
+        Jupiter="倾向看到增长机会，收入来源较宽，扩张前仍需核算成本",
+        Mars="收入靠主动争取，也容易冲动支出，大额花费前先冷静一天",
+        Saturn="积累偏慢、容易感到资源紧，适合预算与长期规划",
+    ),
+    "5": dict(
+        Sun="恋爱与兴趣是表达自我的重要场景，投入时容易带来活力",
+        Moon="恋爱中重视情感交流与陪伴，享受轻松的相处",
+        Mercury="恋爱中重视聊得来，交流与玩笑能拉近距离",
+        Venus="恋爱与享受中较容易感到愉快，表达好感比较自然",
+        Jupiter="恋爱中乐观大方，较容易遇到愉快的相处",
+        Mars="恋爱中热情直接，也容易急躁起冲突，留意沟通节奏",
+        Saturn="恋爱中较谨慎，容易压抑表达或进展缓慢，可给自己放松的空间",
+    ),
+    "7": dict(
+        Sun="伴侣与合作关系是投入心力、认识自己的重要场景",
+        Moon="在伴侣关系中寻求情感安全感，重视被理解与照顾",
+        Mercury="伴侣与合作关系中重视沟通，适合把期待说清楚",
+        Venus="伴侣与合作关系中较容易得到善意与和谐",
+        Jupiter="伴侣与合作关系中较容易得到支持，关系常带来成长",
+        Mars="伴侣与合作中容易出现直接冲突，宜约定沟通方式",
+        Saturn="关系中责任感重、进展偏慢，需要耐心经营承诺",
+    ),
+    "8": dict(
+        Sun="共享资源、合作财务与信任是关注重点，宜把约定写清楚",
+        Moon="在共同财务与亲密信任中寻求安全感，适合与对方坦诚沟通预算",
+        Mercury="善于研究共同财务、保险与合同细节，签约前逐条核对",
+        Venus="合作与伴侣带来的共享资源较顺，较容易得到他人支持",
+        Jupiter="较容易从合作、共享资源或他人支持中受益，借贷仍需量力",
+        Mars="共同财务中容易起争执，宜事先约定分配与决策方式",
+        Saturn="债务与共同责任感较重，处理借贷与担保宜保守稳妥",
+    ),
+}
+THEME_ZH = dict(relationship="感情", finance="财务")
+PILLAR_ZH = dict(year="年", month="月", day="日", time="时")
+
+
+def sign_directions(planet, sign):
+    """B1 directions of a planet in a sign, and the sentence that states them."""
+    if planet not in SIGN_DIRECTIONS:
+        return {}, ""
+    strong, weak = DIGNITY[planet]
+    label = strong.get(sign) or weak.get(sign)
+    if label is None:
+        return {}, ""
+    polarity = 1 if sign in strong else -1
+    themes = {t: v[0] * polarity for t, v in SIGN_DIRECTIONS[planet].items()}
+    phrases = "；".join(
+        f"{THEME_ZH[t]}方面{v[1] if polarity > 0 else v[2]}"
+        for t, v in SIGN_DIRECTIONS[planet].items()
+    )
+    return themes, f"传统上{BODY_ZH[planet]}在{SIGN_ZH[SIGNS.index(sign)]}为{label}，{phrases}。"
+
+
+def house_directions(planet, house):
+    """B1 direction of a planet in a money or relationship house, and its sentence."""
+    if house not in HOUSE_THEME or planet not in PLANET_NATURE:
+        return {}, ""
+    theme = HOUSE_THEME[house]
+    phrase = HOUSE_PHRASES[house][planet]
+    return {theme: PLANET_NATURE[planet]}, f"{THEME_ZH[theme]}方面：{phrase}。"
+
 
 def draft(system, kind, key):
     valence = 0.0
+    directions = {}
     if system == "astro":
         if kind == "planet":
             text = f"{BODY_ZH[key]}在传统占星中用于讨论{PLANET_THEMES[key]}。这是象征性反思主题，不表示现实事件必然发生。"
@@ -96,9 +282,13 @@ def draft(system, kind, key):
             text += (
                 f"可把{WORK_EXAMPLES[planet]}作为小任务探索方向，并用真实成果与反馈决定职业选择。"
             )
+            directions, sentence = sign_directions(planet, sign)
+            text += sentence
         elif kind == "planet_house":
             planet, house = key.split(":")
             text = f"{BODY_ZH[planet]}在第{house}宫，可围绕{HOUSE_TEXT[int(house) - 1]}观察{PLANET_THEMES[planet]}的表达。"
+            directions, sentence = house_directions(planet, house)
+            text += sentence
         elif kind == "aspect":
             descriptions = {
                 "conjunction": ("合相强调主题集中，需要协调两种需求", 0.0),
@@ -119,8 +309,13 @@ def draft(system, kind, key):
             god = key.split(":")[0]
             keywords, text, valence = GOD_TEXT[god]
             text = f"{god}是相对日主的传统关系标签，主题是{keywords}：{text}。"
+            love, love_text, money, money_text = GOD_DIRECTIONS[god]
+            directions = {t: v for t, v in (("relationship", love), ("finance", money)) if v}
+            text += f"感情方面{love_text}" + (f"；财务方面{money_text}" if money else "") + "。"
+            text += "传统上配偶星按性别区分，这里只作不分性别的倾向参考。"
             if kind == "god_pillar":
-                text += f"在{key.split(':')[1]}柱可作为该柱位置的反思线索，不能代替全局分析。"
+                pillar = PILLAR_ZH[key.split(":")[1]]
+                text += f"在{pillar}柱可作为该柱位置的反思线索，不能代替全局分析。"
         elif kind == "stem":
             text = f"天干{key}是阴阳五行关系中的一个符号；需结合日主、所在柱位与节气，不单凭一个字判断命运。"
         elif kind == "branch":
@@ -149,6 +344,8 @@ def draft(system, kind, key):
         else:
             text = f"五行关系“{key}”需以双方元素与阴阳为条件，用作传统关系描述，不能推出喜用神。"
         source = "自写草稿；参考《渊海子平》《三命通会》传统术语，未复制原文；待人工审核"
+    if directions:
+        source = source.replace("；待人工审核", f"；{B1_SOURCE}；待人工审核")
     return dict(
         id=f"kb:{system}:{kind}:{key}",
         system=system,
@@ -156,12 +353,18 @@ def draft(system, kind, key):
         key=key,
         synonyms=[],
         keywords=[key],
-        theme_map=dict(self=valence, career=valence, relationship=0.0, finance=0.0),
+        theme_map=dict(
+            self=valence,
+            career=valence,
+            relationship=directions.get("relationship", 0.0),
+            finance=directions.get("finance", 0.0),
+        ),
         text=text,
         source=source,
         license="本项目自写",
         reviewed=False,
-        version=3,
+        # A changed entry gets a new edition number, as scripts.model_review_kb apply does.
+        version=4 if directions else 3,
     )
 
 
