@@ -254,9 +254,12 @@ def mutations(entry: dict, by_id: dict[str, dict], rng: random.Random) -> dict[s
     if peers:
         found["foreign_text"] = dict(entry, text=rng.choice(peers)["text"])
     if entry["system"] == "dream" and entry["kind"] == "symbol":
-        keys = sorted(e["key"] for e in by_id.values() if e["kind"] == "symbol")
-        alias = rng.choice([k for k in keys if k != entry["key"]])
-        found["misleading_synonym"] = dict(entry, synonyms=[*entry["synonyms"], alias])
+        keys = sorted(
+            e["key"] for e in by_id.values() if e["kind"] == "symbol" and e["key"] != entry["key"]
+        )
+        if keys:
+            alias = rng.choice(keys)
+            found["misleading_synonym"] = dict(entry, synonyms=[*entry["synonyms"], alias])
     terms = {"bazi": GODS + ELEMENTS, "astro": PLANETS + SIGNS}.get(entry["system"])
     if terms:
         text = replace_term(entry["text"], terms, rng)
@@ -1043,6 +1046,12 @@ async def revise(
     """Proposals from a third model; saved for review, never applied or approved here."""
     make_model = make_model or (lambda role, spec: role_model(spec, timeout))
     spec = roles["reviser"]
+    if spec is None:
+        raise ValueError("config.yaml 的 kb_review.roles 未配置：reviser")
+    # Historical runs keep their reviewers even when today's configuration changes.
+    reviewers = plan["manifest"]["reviewers"]
+    if any(spec.vendor.strip().lower() == r["vendor"].strip().lower() for r in reviewers.values()):
+        raise ValueError("修改模型不能与本批审核模型同一厂商，否则会自审自改")
     model = make_model("reviser", spec)
     queue = read_json(run.path / "revision_queue.json")
     by_id = {e["id"]: e for e in plan["entries"]}
@@ -1170,46 +1179,64 @@ def calibration_of(run_path: Path, root: Path) -> tuple[dict, dict]:
 
 
 def record_ledger(workspace: Workspace, run_paths: list[Path], root: Path = ROOT) -> dict:
-    """Approvals whose content is unchanged since the run; existing records are replaced."""
+    """Update approvals and revoke rejected content, preserving unrelated versions."""
     written: dict[str, list[str]] = {}
     stale = []
     for run_path in run_paths:
         manifest, merged = calibration_of(run_path, root)
-        if not merged["approved_ids"]:
-            continue
         system = manifest["system"]
-        current = {e["id"]: e for e in load_entries(workspace.sources, system)}
-        calls = RunDir(run_path).calls()
-        reviewers = []
-        for role in REVIEWERS:
-            spec = manifest["reviewers"][role]
-            returned = sorted(
-                {c["returned_model"] for c in calls if c["reviewer"] == role} - {None}
-            )
-            reviewers.append(
-                dict(
-                    vendor=spec["vendor"],
-                    model=spec["model"],
-                    returned_model="、".join(returned) or None,
-                    verdict="pass",
-                )
-            )
-        day = min(c["started_at"] for c in calls)[:10]
-        report = run_path / "report.md"
-        report = report.relative_to(root).as_posix() if report.is_relative_to(root) else str(report)
         existing = {
             record.id: record.model_dump()
             for record in load_ledgers(workspace.reviews).values()
             if record.id.startswith(f"kb:{system}:")
         }
-        for entry_id in merged["approved_ids"]:
-            entry = current.get(entry_id)
-            if entry is None or content_hash(entry) != manifest["entry_hashes"][entry_id]:
-                stale.append(entry_id)
-                continue
-            existing[entry_id] = approval(entry, reviewers, day, report)
-            written.setdefault(system, []).append(entry_id)
-        write_ledger(workspace.reviews, system, list(existing.values()))
+        before = existing.copy()
+        run = RunDir(run_path)
+        plan = load_plan(run_path)
+        verdicts = collect(run, plan)
+        rejected = {
+            ref
+            for table in verdicts.values()
+            for ref, verdict in table.items()
+            if verdict["verdict"] != "pass"
+        }
+        rejected.update(f["id"] for f in plan["checks"] if f["check"] in BLOCKING_CHECKS)
+        for entry_id in rejected:
+            record = existing.get(entry_id)
+            # A rejection of older content cannot revoke a newer content approval.
+            if record and record["content_sha256"] == manifest["entry_hashes"].get(entry_id):
+                del existing[entry_id]
+        if merged["approved_ids"]:
+            current = {e["id"]: e for e in load_entries(workspace.sources, system)}
+            calls = run.calls()
+            reviewers = []
+            for role in REVIEWERS:
+                spec = manifest["reviewers"][role]
+                returned = sorted(
+                    {c["returned_model"] for c in calls if c["reviewer"] == role} - {None}
+                )
+                reviewers.append(
+                    dict(
+                        vendor=spec["vendor"],
+                        model=spec["model"],
+                        returned_model="、".join(returned) or None,
+                        verdict="pass",
+                    )
+                )
+            day = min(c["started_at"] for c in calls)[:10]
+            report = run_path / "report.md"
+            report = (
+                report.relative_to(root).as_posix() if report.is_relative_to(root) else str(report)
+            )
+            for entry_id in merged["approved_ids"]:
+                entry = current.get(entry_id)
+                if entry is None or content_hash(entry) != manifest["entry_hashes"][entry_id]:
+                    stale.append(entry_id)
+                    continue
+                existing[entry_id] = approval(entry, reviewers, day, report)
+                written.setdefault(system, []).append(entry_id)
+        if existing != before:
+            write_ledger(workspace.reviews, system, list(existing.values()))
     return dict(written={k: len(v) for k, v in written.items()}, stale=sorted(stale))
 
 
@@ -1301,7 +1328,7 @@ def main(argv: list[str] | None = None) -> Any:
         output = merge(RunDir(args.run_dir), load_plan(args.run_dir), roles)
         output = {k: v for k, v in output.items() if k not in ("planted_detail", "code_findings")}
     elif args.command == "revise":
-        check_roles(roles, config, (*REVIEWERS, "reviser"))
+        check_roles(roles, config, ("reviser",))
         plan = load_plan(args.run_dir)
         output = asyncio.run(revise(RunDir(args.run_dir), plan, roles, timeout=timeout))
     elif args.command == "apply":
