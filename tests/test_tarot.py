@@ -63,6 +63,6 @@ def test_signals_come_from_kb_and_are_immutable(runtime):
     assert signals
     assert {s.horizon for s in signals} == {"moment"}
     assert all(s.kb_ref.endswith(runtime.kb.version) for s in signals)
-    assert all(s.reviewed is False for s in signals)
+    assert all(s.review_status == "draft" for s in signals)
     with pytest.raises(ValueError):
         signals[0].valence = 1

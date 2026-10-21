@@ -6,7 +6,7 @@ from pydantic import Field
 
 from harness.models import StrictInput
 from harness.registry import Tool
-from plugins.base import Signal
+from plugins.base import MEANING_FIELDS, Signal, meaning_view
 from plugins.dream.match import DreamMatcher
 from plugins.dream.validation import validate_output
 
@@ -78,7 +78,7 @@ class DreamPlugin:
                 dict(
                     ref_id=i["ref_id"],
                     fact=i["fact"],
-                    meaning=dict(text=i["meaning"]["text"], reviewed=i["meaning"]["reviewed"]),
+                    meaning=meaning_view(i["meaning"]),
                 )
                 for i in data["interpretations"]
             ],
@@ -103,7 +103,7 @@ class DreamPlugin:
                             keywords=tuple(entry["keywords"]),
                             kb_ref=entry["ref_id"],
                             rule_version=rule["version"],
-                            reviewed=entry["reviewed"],
+                            review_status=entry["review_status"],
                         )
                     )
         return signals
@@ -141,9 +141,7 @@ class DreamPlugin:
                     timeframe=None,
                     matched_from=hit["query"],
                     phrase=hit["phrase"],
-                    meaning={
-                        k: entry[k] for k in ("text", "keywords", "theme_map", "reviewed", "ref_id")
-                    },
+                    meaning={k: entry[k] for k in MEANING_FIELDS},
                 )
             )
         for key in (
@@ -160,9 +158,7 @@ class DreamPlugin:
                     key=key,
                     horizon="psyche",
                     timeframe=None,
-                    meaning={
-                        k: entry[k] for k in ("text", "keywords", "theme_map", "reviewed", "ref_id")
-                    },
+                    meaning={k: entry[k] for k in MEANING_FIELDS},
                 )
             )
         signals = self.extract_signals([result])

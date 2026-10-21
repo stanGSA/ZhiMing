@@ -19,8 +19,9 @@ from common.time_utils import NeedsInput
 from harness.models import StrictInput, ToolResult
 from harness.registry import Tool
 from harness.session import profile_timezone
+from knowledge.review import lowest
 from plugins.astro.calculator import BODY_ZH, natal_chart, transits
-from plugins.base import Signal
+from plugins.base import Signal, meaning_view
 from plugins.bazi.calculator import GAN, GAN_WX, WX, bazi_period, compute_bazi
 from plugins.context import BirthInput, birth_values, confirmed_timezone, period_timezone
 from plugins.tarot.draw import draw_tarot
@@ -233,7 +234,7 @@ class DailyPlugin:
             dict(
                 ref_id=i["ref_id"],
                 fact=i["fact"],
-                meaning=dict(text=i["meaning"]["text"], reviewed=i["meaning"]["reviewed"]),
+                meaning=meaning_view(i["meaning"]),
             )
             for i in data["interpretations"]
         ]
@@ -361,6 +362,7 @@ class DailyPlugin:
                         keywords=entry["keywords"],
                         theme_map=entry["theme_map"],
                         reviewed=all(p["reviewed"] for p in parts),
+                        review_status=lowest(p["review_status"] for p in parts),
                         ref_id=entry["ref_id"],
                         component_refs=[p["ref_id"] for p in parts],
                     ),
@@ -424,7 +426,7 @@ class DailyPlugin:
                         kb_ref=item["meaning"]["ref_id"],
                         kb_refs=tuple(item["meaning"]["component_refs"]),
                         rule_version=rule["version"],
-                        reviewed=item["meaning"]["reviewed"],
+                        review_status=item["meaning"]["review_status"],
                     ).model_dump(mode="json")
                 )
         card_ref = next(i["ref_id"] for i in items if i["fact"].startswith("card:"))

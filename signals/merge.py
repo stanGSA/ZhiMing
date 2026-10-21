@@ -19,6 +19,8 @@ import json
 from datetime import UTC, date, datetime, time, timedelta
 from zoneinfo import ZoneInfo
 
+from knowledge.review import lowest, review_status
+
 DEFAULT_RULE = {
     "system": "merge",
     "version": 3,
@@ -109,7 +111,8 @@ def side(system: str, signals: list[dict], rule: dict) -> dict:
         strength=round(max((s["strength"] for s in agreeing), default=0.0), 4),
         refs=list(dict.fromkeys(s["ref_id"] for s in agreeing))[: rule["max_refs_per_side"]],
         keywords=keywords[:4],
-        reviewed=all(s.get("reviewed", False) for s in agreeing),
+        # The least reviewed meaning bounds the side, as "all reviewed" did before.
+        review_status=lowest(review_status(s) for s in agreeing),
     )
 
 
@@ -156,8 +159,8 @@ def fold(pieces: list[dict], applied: dict, rule: dict, tz: str) -> tuple[list[d
     """Aggregate the per-piece sides of one window by duration.
 
     Directions are identical across the pieces (that is why they were folded); valence is the
-    duration-weighted mean, strength the maximum, ``reviewed`` only if every piece was
-    reviewed. Each piece's own numbers are kept in ``segments`` for the saved table.
+    duration-weighted mean, strength the maximum, ``review_status`` the lowest of the pieces.
+    Each piece's own numbers are kept in ``segments`` for the saved table.
     """
 
     def duration(piece):
@@ -183,7 +186,7 @@ def fold(pieces: list[dict], applied: dict, rule: dict, tz: str) -> tuple[list[d
                 strength=max(s["strength"] for s in column),
                 refs=refs[: rule["max_refs_per_side"]],
                 keywords=words[:4],
-                reviewed=all(s["reviewed"] for s in column),
+                review_status=lowest(review_status(s) for s in column),
             )
         )
     segments_out = []

@@ -20,6 +20,7 @@ from __future__ import annotations
 import re
 
 from common.facts import rendered_texts
+from knowledge.review import lowest, review_status
 
 DISCLAIMER = re.compile(r"仅供参考|仅供娱乐|仅供[^。！？!?\n]{0,10}反思")
 INTERNAL = re.compile(
@@ -77,7 +78,17 @@ CARE_NEGATED_BELIEF = re.compile(
 CARE_DIRECT_NEGATION = re.compile(r"(?:并非|绝非|并不是|不是)$")
 CARE_CONDITION = re.compile(r"(?:如果|若|万一|一旦)(?:你们|我们|你|您|我)?(?:暂时|一时)?$")
 HEALTH_NOTE = "如有身体不适，请及时就医，以医生的诊断为准。"
-UNREVIEWED_NOTE = "释义为未经人工审核的草稿"
+# Lowest review level of the meanings used → confidence cap and the fact the reason must state.
+# Model cross-review is never written as human review (项目完善计划书 4.2; cap: stage 1 decision 2).
+REVIEW_CAP = {"draft": "low", "model_reviewed": "medium", "human_reviewed": None}
+REVIEW_NOTE = {"draft": "释义未经审核", "model_reviewed": "释义经模型交叉审核，未经人工审核"}
+# Wordings that already state the level; any other clause about 审核 is replaced by the note.
+REVIEW_STATED = {
+    "draft": re.compile(r"未经?(?:人工)?审核|没有(?:经过)?(?:人工)?审核"),
+    "model_reviewed": re.compile(r"模型交叉审核.*未经?人工审核|未经?人工审核.*模型交叉审核"),
+}
+CONFIDENCE_RANK = {"low": 0, "medium": 1, "high": 2}
+REASON_CLAUSE = re.compile(r"[^，,。；;\n]*(?:[，,。；;\n]+|$)")
 
 
 def warn(state: dict, message: str) -> None:
@@ -192,16 +203,25 @@ def clean_reading(reading) -> None:
 
 
 def mark_unreviewed(confidence, signals) -> None:
-    """Unreviewed meanings mean low confidence; code sets it instead of rejecting."""
-    if all(s.get("reviewed") for s in signals):
+    """Cap confidence by the least reviewed meaning used; code sets it instead of rejecting.
+
+    The reason must state that level. A clause about 审核 that states something else (for
+    example that a draft was reviewed by a person) is dropped and the note added.
+    """
+    level = lowest(review_status(s) for s in signals)
+    cap = REVIEW_CAP[level]
+    if cap is None:
         return
-    confidence.level = "low"
-    if "审核" not in confidence.reason:
-        confidence.reason = (
-            f"{confidence.reason.rstrip('。；; ')}；{UNREVIEWED_NOTE}。"
-            if confidence.reason.strip()
-            else f"{UNREVIEWED_NOTE}。"
-        )
+    if CONFIDENCE_RANK[confidence.level] > CONFIDENCE_RANK[cap]:
+        confidence.level = cap
+    stated = REVIEW_STATED[level]
+    clauses = [c for c in REASON_CLAUSE.findall(confidence.reason) if c]
+    kept = [c for c in clauses if "审核" not in c or stated.search(c)]
+    reason = confidence.reason if kept == clauses else "".join(kept).strip("，, ")
+    if not stated.search(reason):
+        note = REVIEW_NOTE[level]
+        reason = f"{reason.rstrip('。；;，, ')}；{note}。" if reason.strip() else f"{note}。"
+    confidence.reason = reason
 
 
 def care_advice(texts) -> tuple[bool, str | None]:

@@ -780,7 +780,7 @@ def test_folded_windows_aggregate_numbers_by_duration():
     assert sides["astro"]["valence"] == 0.5 and sides["bazi"]["valence"] == -0.2
     assert window["combined_valence"] == 0.15  # not the first day's -0.05
     assert [seg["combined_valence"] for seg in window["segments"]] == [-0.05, 0.35]
-    assert sides["astro"]["reviewed"] is False  # conservative: one unreviewed day
+    assert sides["astro"]["review_status"] == "draft"  # conservative: one unreviewed day
     assert sides["astro"]["refs"] == ["a1", "a2"]
 
 

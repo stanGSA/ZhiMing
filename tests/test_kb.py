@@ -16,7 +16,9 @@ def edit_source(project, change):
 
 
 def rebuild(project):
-    return build(project / "sources", project / "data/kb.sqlite", project / "rules")
+    return build(
+        project / "sources", project / "data/kb.sqlite", project / "rules", project / "reviews"
+    )
 
 
 def test_build_coverage_and_repeatability(project):
