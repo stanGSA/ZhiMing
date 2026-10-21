@@ -8,7 +8,7 @@ B1修订后占星55条、八字52条有感情或财务方向，十神10/10及七
 
 负责人已明确授权DeepSeek运行时厂商审核及OpenAI同厂商修改例外，并同意按体系保留全部批次、以全部真实及埋错样本的放行二分类kappa验收；原三分类和失败指标全部保留，阈值未变。本次1129次HTTP尝试、已知输入2,063,835/输出603,770 token，费用未知；无预算上限不表示零费用。
 
-完整逐体系计数、四项指标、模型身份、费用限制、兼容性及未过关原因见[本次验收报告](20261022-acceptance/report.md)和[全部真实证据](../kb-model-review/20261021-live/campaign/summary.json)。代码/CI结果见[PR #17](https://github.com/stanGSA/ZhiMing/pull/17)，不自动合并。阶段2真实回答质量未在本次开展。
+完整逐体系计数、四项指标、模型身份、费用限制、兼容性及未过关原因见[本次验收报告](20261022-acceptance/report.md)和[全部真实证据](../kb-model-review/20261021-live/campaign/summary.json)。代码/CI结果见[PR #17](https://github.com/stanGSA/ZhiMing/pull/17)。2026-10-22负责人明确说明CI额度用尽，并授权本机测试通过后合并；提交`82b81c7`本机再次全量824项通过（587.42秒），Ruff、147文件格式检查、构建和doctor通过，见[合并前检查及授权记录](20261022-acceptance/local-merge-check/summary.json)。合并不代表阶段1知识库验收通过，未运行的CI不记为通过。阶段2真实回答质量未在本次开展。
 
 整改提交`fc5da04`在本机Windows全量824项、相关专项108项通过，云端受下载限制的11项Skyfield独立核验及doctor也已通过；Ruff与147文件格式检查通过，见[本机补验记录](20261022-acceptance/fc5da04/summary.json)。Ubuntu/Windows CI仍因GitHub账户付款或支出额度问题未启动，不能记作通过，[本轮平台诊断](20261022-acceptance/fc5da04/ci-annotations.json)保留原文。此前814项、66项结果为整改前记录。
 

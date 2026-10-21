@@ -92,4 +92,4 @@ PR #17复核发现的问题已逐项处理。以下是代码与证据的变化�
 
 三态覆盖率见[coverage.json](coverage.json)（复核整改后按`v1-c0c1725272723b2e`重新构建）：451 model_reviewed、720 draft、0 human_reviewed，账本全部current、无stale/orphan。draft仍受low上限约束，model_reviewed上限medium；模型记录从不写reviewed:true。旧reading、旧每日缓存的兼容性回归保留；旧知识快照v1-db9e5019df128abc仍存在且对应条目仍为draft，同条目在新版为model_reviewed，见[实际快照核验](../../kb-model-review/20261021-live/compatibility-snapshot-check.json)。
 
-代码检查、知识库审核、真实回答质量分开记录：本次知识库未过关；真实回答质量属于阶段2，本次未重测，不能据此宣布端到端发布通过。PR保持草稿，不自动合并。
+代码检查、知识库审核、真实回答质量分开记录：本次知识库未过关；真实回答质量属于阶段2，本次未重测，不能据此宣布端到端发布通过。PR此前保持草稿；2026-10-22负责人明确说明GitHub Actions额度用尽，并授权本机测试通过后合并。对提交`82b81c77462268f318d5e7ba72386260def77ec6`再次运行本机Windows全量回归，**824项通过（587.42秒）**，Ruff、147文件格式检查、构建和doctor均通过，详见[合并前本机检查及授权原文](local-merge-check/summary.json)和[完整测试输出](local-merge-check/tests-full.txt)。本次合并依据是负责人明确接受CI不可用时的本机验证，未运行的Ubuntu/Windows CI不记为通过，合并也不改变阶段1知识库验收未通过的结论。
