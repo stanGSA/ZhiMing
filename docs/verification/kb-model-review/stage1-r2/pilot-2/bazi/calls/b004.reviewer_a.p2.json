@@ -1,0 +1,33 @@
+{
+  "batch": "b004",
+  "reviewer": "reviewer_a",
+  "run_pass": 2,
+  "attempt": 1,
+  "vendor": "deepseek",
+  "requested_model": "deepseek-flash",
+  "returned_model": "deepseek-flash",
+  "api": "openai",
+  "started_at": "2026-10-22T07:46:24+00:00",
+  "finished_at": "2026-10-22T07:46:26+00:00",
+  "latency_s": 1.598,
+  "http_attempts": 1,
+  "finish_reason": "stop",
+  "prompt_sha256": "e6482e26c3b67bc17178f069b38a3fbc8a8b6ed71983accb86d04db7bc093921",
+  "input_tokens": 1984,
+  "output_tokens": 124,
+  "cached_input_tokens": 1792,
+  "usage_available": true,
+  "raw_text": "{\"items\": [{\"item\": \"i01\", \"verdict\": \"revise\", \"issues\": [{\"dimension\": \"consistency\", \"detail\": \"文中写「不能仅据此判断喜用神」，但本项目不计算喜用神，与 key（五行关系「泄」）以及该类条目的对象范围不一致，属于容易误导的表述，宜改为不与本项目定位冲突的说法。\"}], \"reason\": \"核心五行关系与参考事实一致，但文中提及判断喜用神，与本项目不计算喜用神及条目定位不符，需要修正。\"}]}",
+  "verdicts": {
+    "i01": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "consistency",
+          "detail": "文中写「不能仅据此判断喜用神」，但本项目不计算喜用神，与 key（五行关系「泄」）以及该类条目的对象范围不一致，属于容易误导的表述，宜改为不与本项目定位冲突的说法。"
+        }
+      ],
+      "reason": "核心五行关系与参考事实一致，但文中提及判断喜用神，与本项目不计算喜用神及条目定位不符，需要修正。"
+    }
+  }
+}

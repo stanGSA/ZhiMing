@@ -1,0 +1,53 @@
+{
+  "batch": "b002",
+  "reviewer": "reviewer_b",
+  "run_pass": 1,
+  "attempt": 1,
+  "vendor": "openai",
+  "requested_model": "gpt-6.1-sol",
+  "returned_model": "gpt-6.1-sol",
+  "api": "openai",
+  "started_at": "2026-10-22T08:03:41+00:00",
+  "finished_at": "2026-10-22T08:03:53+00:00",
+  "latency_s": 11.479,
+  "http_attempts": 1,
+  "finish_reason": "stop",
+  "prompt_sha256": "9bac40b6350791ac9c0808be6cc4dae4ab8b7e0b0a07c41ecf208091183affd3",
+  "input_tokens": 1894,
+  "output_tokens": 344,
+  "cached_input_tokens": null,
+  "usage_available": true,
+  "raw_text": "{\n  \"items\": [\n    {\n      \"item\": \"i01\",\n      \"verdict\": \"revise\",\n      \"issues\": [\n        {\n          \"dimension\": \"theme_direction\",\n          \"detail\": \"theme_map.self 为 0.2；每日运势条目按项目约定须全部保持中性，应改为 0。\"\n        }\n      ],\n      \"reason\": \"水的传统配色表述正确，但每日运势条目不得设置非零主题方向。\"\n    },\n    {\n      \"item\": \"i02\",\n      \"verdict\": \"revise\",\n      \"issues\": [\n        {\n          \"dimension\": \"tradition\",\n          \"detail\": \"text 中“金……传统配色为黑、蓝”与参考事实不符；金的传统配色为白、金，黑、蓝对应水。\"\n        }\n      ],\n      \"reason\": \"主题值均为中性，但金的传统配色写错，需修正。\"\n    },\n    {\n      \"item\": \"i03\",\n      \"verdict\": \"revise\",\n      \"issues\": [\n        {\n          \"dimension\": \"certainty\",\n          \"detail\": \"text 中“可以为当天带来好运”暗示传统配色会带来实际运气，与每日运势配色仅为约定的要求不符，应删除或改为不暗示实际效果的表述。\"\n        }\n      ],\n      \"reason\": \"木的配色及中性主题值符合要求，但不能宣称配色能带来实际好运。\"\n    }\n  ]\n}",
+  "verdicts": {
+    "i01": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "theme_direction",
+          "detail": "theme_map.self 为 0.2；每日运势条目按项目约定须全部保持中性，应改为 0。"
+        }
+      ],
+      "reason": "水的传统配色表述正确，但每日运势条目不得设置非零主题方向。"
+    },
+    "i02": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "tradition",
+          "detail": "text 中“金……传统配色为黑、蓝”与参考事实不符；金的传统配色为白、金，黑、蓝对应水。"
+        }
+      ],
+      "reason": "主题值均为中性，但金的传统配色写错，需修正。"
+    },
+    "i03": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "certainty",
+          "detail": "text 中“可以为当天带来好运”暗示传统配色会带来实际运气，与每日运势配色仅为约定的要求不符，应删除或改为不暗示实际效果的表述。"
+        }
+      ],
+      "reason": "木的配色及中性主题值符合要求，但不能宣称配色能带来实际好运。"
+    }
+  }
+}

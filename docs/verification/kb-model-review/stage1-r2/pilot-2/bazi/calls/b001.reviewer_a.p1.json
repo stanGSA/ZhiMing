@@ -1,0 +1,38 @@
+{
+  "batch": "b001",
+  "reviewer": "reviewer_a",
+  "run_pass": 1,
+  "attempt": 1,
+  "vendor": "deepseek",
+  "requested_model": "deepseek-flash",
+  "returned_model": "deepseek-flash",
+  "api": "openai",
+  "started_at": "2026-10-22T07:43:40+00:00",
+  "finished_at": "2026-10-22T07:43:42+00:00",
+  "latency_s": 2.359,
+  "http_attempts": 1,
+  "finish_reason": "stop",
+  "prompt_sha256": "6f1191212718aad1d9ddc1bb412b180452f9c6deef517074a1ec6e1e884bc615",
+  "input_tokens": 2303,
+  "output_tokens": 157,
+  "cached_input_tokens": 768,
+  "usage_available": true,
+  "raw_text": "{\"items\": [{\"item\": \"i01\", \"verdict\": \"pass\", \"issues\": [], \"reason\": \"戌属土、藏干戊辛丁均与参考事实一致，theme_map 全零与中性文字相容，无宿命化或医疗投资法律确定性结论，白话解释准确。\"}, {\"item\": \"i02\", \"verdict\": \"revise\", \"issues\": [{\"dimension\": \"tradition\", \"detail\": \"开头写“丑……属金”，与参考事实“丑属土”不符；后文又称“计入土”，前后矛盾，核心五行写错。\"}], \"reason\": \"丑的地支五行被写成属金，与参考事实不符且自相矛盾。\"}]}",
+  "verdicts": {
+    "i01": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "戌属土、藏干戊辛丁均与参考事实一致，theme_map 全零与中性文字相容，无宿命化或医疗投资法律确定性结论，白话解释准确。"
+    },
+    "i02": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "tradition",
+          "detail": "开头写“丑……属金”，与参考事实“丑属土”不符；后文又称“计入土”，前后矛盾，核心五行写错。"
+        }
+      ],
+      "reason": "丑的地支五行被写成属金，与参考事实不符且自相矛盾。"
+    }
+  }
+}

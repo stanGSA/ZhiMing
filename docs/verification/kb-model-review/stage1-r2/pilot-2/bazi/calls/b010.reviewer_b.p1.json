@@ -1,0 +1,43 @@
+{
+  "batch": "b010",
+  "reviewer": "reviewer_b",
+  "run_pass": 1,
+  "attempt": 1,
+  "vendor": "openai",
+  "requested_model": "gpt-6.1-sol",
+  "returned_model": "gpt-6.1-sol",
+  "api": "openai",
+  "started_at": "2026-10-22T08:18:13+00:00",
+  "finished_at": "2026-10-22T08:21:19+00:00",
+  "latency_s": 185.99,
+  "http_attempts": 2,
+  "finish_reason": "stop",
+  "prompt_sha256": "8ae675fea62c29f863f3cf0d8b9cdb957e3caa5c312564e00f85c3bc8635d4ad",
+  "input_tokens": 2613,
+  "output_tokens": 396,
+  "cached_input_tokens": 2610,
+  "usage_available": true,
+  "raw_text": "{\n  \"items\": [\n    {\n      \"item\": \"i01\",\n      \"verdict\": \"revise\",\n      \"issues\": [\n        {\n          \"dimension\": \"theme_direction\",\n          \"detail\": \"theme_map.finance 为负值，但正文“财务方面较容易遇到机会”表达偏顺倾向；“核实成本”“核实风险”只是建议，不能支持财务偏阻方向。\"\n        }\n      ],\n      \"reason\": \"偏财定义符合参考事实，自我与事业正向符合十神方向约定，感情正向有人缘与交际描述支持，但财务负向与正文不一致。\"\n    },\n    {\n      \"item\": \"i02\",\n      \"verdict\": \"revise\",\n      \"issues\": [\n        {\n          \"dimension\": \"certainty\",\n          \"detail\": \"text 末句“它出现在流年时，预示当年会有搬迁或换工作的变动”直接预测现实事件，须删除或改为不预测具体事件的象征性说明。\"\n        }\n      ],\n      \"reason\": \"正印定义符合参考事实，自我、事业及感情正向均有依据，财务为零与正文相容，但末句包含明确的现实事件预测。\"\n    }\n  ]\n}",
+  "verdicts": {
+    "i01": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "theme_direction",
+          "detail": "theme_map.finance 为负值，但正文“财务方面较容易遇到机会”表达偏顺倾向；“核实成本”“核实风险”只是建议，不能支持财务偏阻方向。"
+        }
+      ],
+      "reason": "偏财定义符合参考事实，自我与事业正向符合十神方向约定，感情正向有人缘与交际描述支持，但财务负向与正文不一致。"
+    },
+    "i02": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "certainty",
+          "detail": "text 末句“它出现在流年时，预示当年会有搬迁或换工作的变动”直接预测现实事件，须删除或改为不预测具体事件的象征性说明。"
+        }
+      ],
+      "reason": "正印定义符合参考事实，自我、事业及感情正向均有依据，财务为零与正文相容，但末句包含明确的现实事件预测。"
+    }
+  }
+}

@@ -1,0 +1,48 @@
+{
+  "batch": "b006",
+  "reviewer": "reviewer_a",
+  "run_pass": 2,
+  "attempt": 1,
+  "vendor": "deepseek",
+  "requested_model": "deepseek-flash",
+  "returned_model": "deepseek-flash",
+  "api": "openai",
+  "started_at": "2026-10-22T07:46:27+00:00",
+  "finished_at": "2026-10-22T07:46:29+00:00",
+  "latency_s": 1.904,
+  "http_attempts": 1,
+  "finish_reason": "stop",
+  "prompt_sha256": "5678250db560d2188bb46d264b422c0c867a13b64d5fae9a368ec65929b46797",
+  "input_tokens": 2483,
+  "output_tokens": 220,
+  "cached_input_tokens": 2304,
+  "usage_available": true,
+  "raw_text": "{\"items\": [{\"item\": \"i01\", \"verdict\": \"revise\", \"issues\": [{\"dimension\": \"tradition\", \"detail\": \"申的藏干写成庚、壬、甲，与参考事实（申藏庚、壬、戊）不符，应为戊而非甲\"}], \"reason\": \"藏干成员写错，把戊写成甲。\"}, {\"item\": \"i02\", \"verdict\": \"pass\", \"issues\": [], \"reason\": \"丑藏己、癸、辛及其土水金五行均与参考事实一致，无方向标注也无宿命化表述。\"}, {\"item\": \"i03\", \"verdict\": \"revise\", \"issues\": [{\"dimension\": \"tradition\", \"detail\": \"条目只写“按固定表列出”而未写出未的藏干成员（己、丁、乙），缺少该地支区别于同类对象的核心信息\"}], \"reason\": \"术语条目未写出未的具体藏干成员，仅泛泛说明按表确定。\"}]}",
+  "verdicts": {
+    "i01": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "tradition",
+          "detail": "申的藏干写成庚、壬、甲，与参考事实（申藏庚、壬、戊）不符，应为戊而非甲"
+        }
+      ],
+      "reason": "藏干成员写错，把戊写成甲。"
+    },
+    "i02": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "丑藏己、癸、辛及其土水金五行均与参考事实一致，无方向标注也无宿命化表述。"
+    },
+    "i03": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "tradition",
+          "detail": "条目只写“按固定表列出”而未写出未的藏干成员（己、丁、乙），缺少该地支区别于同类对象的核心信息"
+        }
+      ],
+      "reason": "术语条目未写出未的具体藏干成员，仅泛泛说明按表确定。"
+    }
+  }
+}

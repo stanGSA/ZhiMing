@@ -1,0 +1,106 @@
+{
+  "system": "name",
+  "rubric_sha256": "be04c7fbbd2de98a1048811f4af929e2456352172059ec5151ef61904ab8e6e5",
+  "agreement": {
+    "items": 20,
+    "reviewed": 3,
+    "labels": {
+      "fail": 10,
+      "pass": 10
+    },
+    "kappa": 1.0,
+    "observed_agreement": 1.0,
+    "pairs": {
+      "pass/pass": 2,
+      "reject/reject": 1
+    },
+    "label_agreement": {
+      "reviewer_a": {
+        "accuracy": 1.0,
+        "sensitivity": 1.0,
+        "specificity": 1.0
+      },
+      "reviewer_b": {
+        "accuracy": 1.0,
+        "sensitivity": 1.0,
+        "specificity": 1.0
+      }
+    }
+  },
+  "rerun": {
+    "reviewer_a": 0.95,
+    "reviewer_b": 1.0
+  },
+  "gates": {
+    "complete": false,
+    "kappa": true,
+    "rerun": true,
+    "label_agreement": true
+  },
+  "met": false,
+  "thresholds": {
+    "kappa": 0.6,
+    "rerun": 0.9,
+    "label_agreement": 0.85
+  },
+  "disputed": [
+    {
+      "id": "cal-name-d16",
+      "label": "pass",
+      "verdicts": {
+        "reviewer_a.p1": "revise",
+        "reviewer_a.p2": "pass"
+      },
+      "reasons": {
+        "reviewer_a.p1": "经核对75数半吉与尾数5属土均符合参考事实，主题0.05与半吉约定一致，未见具体问题。",
+        "reviewer_a.p2": "75属半吉符合参考表，主题小正与半吉约定一致，尾数5对应土正确，有民俗免责。"
+      },
+      "issues": {
+        "reviewer_a.p1": [
+          {
+            "dimension": "tradition",
+            "detail": "尾数5在三才五行中对应土，文中写成“对应土”正确，但此处不构成问题；问题在于主题方向：半吉按约定应标小正（0.05）已符合——实际无误。真正问题：text称尾数5对应土，参考表5、6为土，正确。逐项核对未见方向或事实错误。"
+          }
+        ]
+      }
+    }
+  ],
+  "usage": {
+    "reviewer_a": {
+      "calls": 10,
+      "input_tokens": 25104,
+      "output_tokens": 3262,
+      "latency_s": 25.039,
+      "returned_models": [
+        "deepseek-flash"
+      ],
+      "errors": {},
+      "retried_calls": 0,
+      "http_retries": 0,
+      "cost": null,
+      "known_cost_estimate": null,
+      "usage_complete": true,
+      "cost_basis": "配置单价估算，非账单；服务失败的用量可能未知",
+      "currency": null
+    },
+    "reviewer_b": {
+      "calls": 5,
+      "input_tokens": 11025,
+      "output_tokens": 1132,
+      "latency_s": 302.951,
+      "returned_models": [
+        "gpt-6.1-sol"
+      ],
+      "errors": {
+        "service_error": 5
+      },
+      "retried_calls": 0,
+      "http_retries": 4,
+      "cost": null,
+      "known_cost_estimate": null,
+      "usage_complete": false,
+      "cost_basis": "配置单价估算，非账单；服务失败的用量可能未知",
+      "currency": null
+    }
+  }
+}

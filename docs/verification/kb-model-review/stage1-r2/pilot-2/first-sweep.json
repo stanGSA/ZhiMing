@@ -1,0 +1,140 @@
+{
+  "iteration": 2,
+  "rubric_sha256": "be04c7fbbd2de98a1048811f4af929e2456352172059ec5151ef61904ab8e6e5",
+  "calibration_sha256": "9acac4d7943a11d4c56e918a3adce9b3e8680fe68cc9556783c21277a9a7ab14",
+  "systems": {
+    "tarot": {
+      "status": "service_errors",
+      "failed": [
+        [
+          "b001",
+          "reviewer_b",
+          1
+        ],
+        [
+          "b001",
+          "reviewer_b",
+          2
+        ],
+        [
+          "b002",
+          "reviewer_b",
+          1
+        ],
+        [
+          "b002",
+          "reviewer_b",
+          2
+        ]
+      ]
+    },
+    "astro": {
+      "status": "service_errors",
+      "failed": [
+        [
+          "b001",
+          "reviewer_b",
+          1
+        ],
+        [
+          "b002",
+          "reviewer_b",
+          2
+        ]
+      ]
+    },
+    "bazi": {
+      "status": "service_errors",
+      "failed": [
+        [
+          "b004",
+          "reviewer_b",
+          1
+        ],
+        [
+          "b010",
+          "reviewer_b",
+          1
+        ],
+        [
+          "b010",
+          "reviewer_b",
+          2
+        ]
+      ]
+    },
+    "name": {
+      "status": "service_errors",
+      "failed": [
+        [
+          "b003",
+          "reviewer_b",
+          1
+        ],
+        [
+          "b004",
+          "reviewer_b",
+          1
+        ],
+        [
+          "b004",
+          "reviewer_b",
+          2
+        ],
+        [
+          "b005",
+          "reviewer_b",
+          1
+        ],
+        [
+          "b005",
+          "reviewer_b",
+          2
+        ]
+      ]
+    },
+    "dream": {
+      "status": "service_errors",
+      "failed": [
+        [
+          "b002",
+          "reviewer_b",
+          1
+        ],
+        [
+          "b002",
+          "reviewer_b",
+          2
+        ]
+      ]
+    },
+    "daily": {
+      "met": true,
+      "gates": {
+        "complete": true,
+        "kappa": true,
+        "rerun": true,
+        "label_agreement": true
+      },
+      "rerun": {
+        "reviewer_a": 1.0,
+        "reviewer_b": 1.0
+      },
+      "kappa": 1.0,
+      "label_agreement": {
+        "reviewer_a": {
+          "accuracy": 1.0,
+          "sensitivity": 1.0,
+          "specificity": 1.0
+        },
+        "reviewer_b": {
+          "accuracy": 1.0,
+          "sensitivity": 1.0,
+          "specificity": 1.0
+        }
+      },
+      "disputed": 0
+    }
+  },
+  "met": false
+}

@@ -16,4 +16,4 @@ Windows CI 在 `test_shared_chat_secure_cookie_origins_and_separate_browsers` �
 - 全部1171条源内容在修复前后产生相同17条代码检查发现；知识库版本保持 `v1-984b14f53d4d43c7`，见 `ci-fix-source-check.json`。不改变任何源内容批准。
 - 原提交 `037ca29` 的Windows失败日志保留；后续提交 `da2c90c` 的Ubuntu/Windows检查均通过，见 `ci-da2c90c.json`。随机测试曾成功不能替代对两种失败牌面的明确回归。
 
-完整回归853项通过（650.14秒），见 `tests-full-ci-fix.txt`；Ruff、153文件格式检查、doctor通过（`doctor-ci-fix.txt`）。本次修复提交的CI结果以本目录后续记录为准。R2开发集试跑与阶段1知识库验收分开记录，本修复不代表知识库验收通过。
+完整回归853项通过（650.14秒），见 `tests-full-ci-fix.txt`；Ruff、153文件格式检查、doctor通过（`doctor-ci-fix.txt`）。修复提交 `69e7bef` 的两组 Ubuntu/Windows CI 均通过，见 `ci-69e7bef.json`。R2开发集试跑与阶段1知识库验收分开记录，本修复不代表知识库验收通过。

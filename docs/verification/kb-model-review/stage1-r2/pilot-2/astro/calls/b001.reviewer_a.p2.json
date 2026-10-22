@@ -1,0 +1,47 @@
+{
+  "batch": "b001",
+  "reviewer": "reviewer_a",
+  "run_pass": 2,
+  "attempt": 1,
+  "vendor": "deepseek",
+  "requested_model": "deepseek-flash",
+  "returned_model": "deepseek-flash",
+  "api": "openai",
+  "started_at": "2026-10-22T07:40:58+00:00",
+  "finished_at": "2026-10-22T07:40:59+00:00",
+  "latency_s": 1.801,
+  "http_attempts": 1,
+  "finish_reason": "stop",
+  "prompt_sha256": "6edcb596b4958c949596d146ec03c5877a4537edf3a9b446959ee2c59dfa7ec7",
+  "input_tokens": 2011,
+  "output_tokens": 239,
+  "cached_input_tokens": 1792,
+  "usage_available": true,
+  "raw_text": "{\"items\": [{\"item\": \"i01\", \"verdict\": \"revise\", \"issues\": [{\"dimension\": \"certainty\", \"detail\": \"“这一配置预示你今年会迎来职位上的晋升”是对现实事件（晋升）的预测，违反 certainty 维度。\"}, {\"dimension\": \"consistency\", \"detail\": \"第5宫条目正文混入职业晋升预测，与第5宫创作与兴趣的主题不符，且主题全0与含预测性的职业暗示不一致。\"}], \"reason\": \"第5宫释义夹带对现实晋升的预测，属宿命化预测且与宫位主题不符。\"}, {\"item\": \"i02\", \"verdict\": \"pass\", \"issues\": [], \"reason\": \"第3宫核心含义（学习与日常沟通）准确，主题全0与中性表述相容，无预测或宿命化措辞。\"}, {\"item\": \"i03\", \"verdict\": \"pass\", \"issues\": [], \"reason\": \"第2宫核心含义（资源与价值）准确，主题全0与中性表述相容，符合参考事实。\"}]}",
+  "verdicts": {
+    "i01": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "certainty",
+          "detail": "“这一配置预示你今年会迎来职位上的晋升”是对现实事件（晋升）的预测，违反 certainty 维度。"
+        },
+        {
+          "dimension": "consistency",
+          "detail": "第5宫条目正文混入职业晋升预测，与第5宫创作与兴趣的主题不符，且主题全0与含预测性的职业暗示不一致。"
+        }
+      ],
+      "reason": "第5宫释义夹带对现实晋升的预测，属宿命化预测且与宫位主题不符。"
+    },
+    "i02": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "第3宫核心含义（学习与日常沟通）准确，主题全0与中性表述相容，无预测或宿命化措辞。"
+    },
+    "i03": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "第2宫核心含义（资源与价值）准确，主题全0与中性表述相容，符合参考事实。"
+    }
+  }
+}

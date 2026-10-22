@@ -1,0 +1,195 @@
+{
+  "system": "bazi",
+  "rubric_sha256": "be04c7fbbd2de98a1048811f4af929e2456352172059ec5151ef61904ab8e6e5",
+  "agreement": {
+    "items": 20,
+    "reviewed": 20,
+    "labels": {
+      "pass": 10,
+      "fail": 10
+    },
+    "kappa": 0.802,
+    "observed_agreement": 0.9,
+    "pairs": {
+      "pass/reject": 2,
+      "pass/pass": 9,
+      "reject/reject": 9
+    },
+    "label_agreement": {
+      "reviewer_a": {
+        "accuracy": 0.95,
+        "sensitivity": 0.9,
+        "specificity": 1.0
+      },
+      "reviewer_b": {
+        "accuracy": 0.95,
+        "sensitivity": 1.0,
+        "specificity": 0.9
+      }
+    }
+  },
+  "rerun": {
+    "reviewer_a": 0.85,
+    "reviewer_b": 1.0
+  },
+  "gates": {
+    "complete": true,
+    "kappa": true,
+    "rerun": false,
+    "label_agreement": true
+  },
+  "met": false,
+  "thresholds": {
+    "kappa": 0.6,
+    "rerun": 0.9,
+    "label_agreement": 0.85
+  },
+  "disputed": [
+    {
+      "id": "cal-bazi-d01",
+      "label": "pass",
+      "verdicts": {
+        "reviewer_a.p1": "pass",
+        "reviewer_a.p2": "pass",
+        "reviewer_b.p1": "revise",
+        "reviewer_b.p2": "revise"
+      },
+      "reasons": {
+        "reviewer_a.p1": "比肩定义（同五行同阴阳）正确，感情与财务的偏阻方向与“各自坚持、留意合伙分配”等文字一致，其余主题不矛盾。",
+        "reviewer_a.p2": "比肩定义（同五行同阴阳）正确，感情、财务的负向标注与“各自坚持、留意合伙分配”的文字一致。",
+        "reviewer_b.p1": "比肩定义、自我与事业方向以及感情负向均有依据，但财务负向缺少文字支持。",
+        "reviewer_b.p2": "比肩定义、自我与事业方向及关系负向均有依据，但财务负向缺少正文支持。"
+      },
+      "issues": {
+        "reviewer_b.p1": [
+          {
+            "dimension": "theme_direction",
+            "detail": "theme_map.finance 为负值，但正文“财务方面同伴分担也分享，留意合伙分配”仅表达共同分担、分享及分配提醒，未呈现财务偏阻倾向；不能仅凭留意分配的建议推定负向。"
+          }
+        ],
+        "reviewer_b.p2": [
+          {
+            "dimension": "theme_direction",
+            "detail": "theme_map.finance 为负，但正文“财务方面同伴分担也分享，留意合伙分配”仅描述分担、分享及分配提醒，未表达财务偏阻；不能仅凭“留意”这一建议支持负向标注。"
+          }
+        ]
+      }
+    },
+    {
+      "id": "cal-bazi-d02",
+      "label": "pass",
+      "verdicts": {
+        "reviewer_a.p1": "pass",
+        "reviewer_a.p2": "revise",
+        "reviewer_b.p1": "pass",
+        "reviewer_b.p2": "pass"
+      },
+      "reasons": {
+        "reviewer_a.p1": "释义准确说明了“泄”由相生方向确定、以我生者为泄，并明确否定吉凶与喜用神的定论，theme_map 全为 0 与中性文字相容，符合对象专属信息与免责要求。",
+        "reviewer_a.p2": "核心五行关系与参考事实一致，但文中提及判断喜用神，与本项目不计算喜用神及条目定位不符，需要修正。",
+        "reviewer_b.p1": "释义准确说明“泄”为我生者泄我，木生火、火泄木的示例及不以阴阳为成立条件的表述正确；同义词与关键词相容，四个主题均为零与正文不预设吉凶的表述一致。",
+        "reviewer_b.p2": "“泄”的主体视角、“我生者泄我”及木生火的示例一致，不以阴阳为成立条件；“泄气”同义关系与关键词恰当，四个主题均为0且与中性说明相容，无现实预测或确定性结论。"
+      },
+      "issues": {
+        "reviewer_a.p2": [
+          {
+            "dimension": "consistency",
+            "detail": "文中写「不能仅据此判断喜用神」，但本项目不计算喜用神，与 key（五行关系「泄」）以及该类条目的对象范围不一致，属于容易误导的表述，宜改为不与本项目定位冲突的说法。"
+          }
+        ]
+      }
+    },
+    {
+      "id": "cal-bazi-d05",
+      "label": "fail",
+      "verdicts": {
+        "reviewer_a.p1": "pass",
+        "reviewer_a.p2": "pass",
+        "reviewer_b.p1": "revise",
+        "reviewer_b.p2": "revise"
+      },
+      "reasons": {
+        "reviewer_a.p1": "乙为阴木、花草藤蔓的意象符合传统；self 标为 -0.3（偏阻）与文中“柔韧”等偏中性象征是否一致存疑，但文字未给出明确顺逆倾向，按锚点 B 不因“本可标方向”判 revise；无宿命化断言、无医疗投资法律结论、白话解释准确、不疑似抄录、与 key 及关键词一致。",
+        "reviewer_a.p2": "乙为阴木，花草藤蔓意象与柔韧象征符合传统，免责声明得当，self 的轻微负向可由柔韧、不刚强的象征支持，事业感情财务未标方向与文字中性相容。",
+        "reviewer_b.p1": "乙属阴木、乙木别名及花草藤蔓意象均相符，但自我主题的负向标记缺乏正文依据。",
+        "reviewer_b.p2": "乙属阴木的事实及“乙木”同义词均正确，但自我状态的负向标注缺乏正文依据。"
+      },
+      "issues": {
+        "reviewer_b.p1": [
+          {
+            "dimension": "theme_direction",
+            "detail": "theme_map.self 为负值，但 text 中“象征柔韧与舒展”未表达自我状态偏阻；结合整体关系解读的提醒也不支持负向，应将 self 调为 0 或使其方向与正文一致。"
+          }
+        ],
+        "reviewer_b.p2": [
+          {
+            "dimension": "theme_direction",
+            "detail": "theme_map.self 为 -0.3，表示自我状态偏阻，但 text 中“柔韧与舒展”未表达负面倾向；乙木条目也不适用十神的方向约定，建议将 self 改为 0。"
+          }
+        ]
+      }
+    },
+    {
+      "id": "cal-bazi-d20",
+      "label": "pass",
+      "verdicts": {
+        "reviewer_a.p1": "pass",
+        "reviewer_a.p2": "revise",
+        "reviewer_b.p1": "pass",
+        "reviewer_b.p2": "pass"
+      },
+      "reasons": {
+        "reviewer_a.p1": "正文完整列出相刑与自刑成员，theme_map 的轻微负向与“牵制、摩擦、阻力”措辞一致，且未写死为灾祸。",
+        "reviewer_a.p2": "地支刑成员与自刑符合参考事实，但 self、career 的负向主题在文字中缺乏支持。",
+        "reviewer_b.p1": "相刑及自刑成员符合参考事实，同义词准确，自我负向有苛责纠结支持、事业负向有协作推进阻力支持，关系与财务零值相容，且未将相刑断为灾祸。",
+        "reviewer_b.p2": "相刑及自刑成员均与参考事实一致，别名准确，自我纠结与工作推进阻力分别支持自我、事业的负向值，其余零值相容，且未作现实结果断言。"
+      },
+      "issues": {
+        "reviewer_a.p2": [
+          {
+            "dimension": "theme_direction",
+            "detail": "theme_map 中 self=-0.1、career=-0.1，但文字只作“传统解释侧重点”的象征说明和反思提示，未表达自我状态或事业方向偏阻的倾向，方向依据不足"
+          }
+        ]
+      }
+    }
+  ],
+  "usage": {
+    "reviewer_a": {
+      "calls": 20,
+      "input_tokens": 44764,
+      "output_tokens": 3365,
+      "latency_s": 35.05,
+      "returned_models": [
+        "deepseek-flash"
+      ],
+      "errors": {},
+      "retried_calls": 0,
+      "http_retries": 0,
+      "cost": null,
+      "known_cost_estimate": null,
+      "usage_complete": true,
+      "cost_basis": "配置单价估算，非账单；服务失败的用量可能未知",
+      "currency": null
+    },
+    "reviewer_b": {
+      "calls": 20,
+      "input_tokens": 52732,
+      "output_tokens": 5613,
+      "latency_s": 621.997,
+      "returned_models": [
+        "gpt-6.1-sol"
+      ],
+      "errors": {
+        "service_error": 3
+      },
+      "retried_calls": 0,
+      "http_retries": 2,
+      "cost": null,
+      "known_cost_estimate": null,
+      "usage_complete": false,
+      "cost_basis": "配置单价估算，非账单；服务失败的用量可能未知",
+      "currency": null
+    }
+  }
+}

@@ -1,0 +1,102 @@
+{
+  "batch": "b002",
+  "reviewer": "reviewer_a",
+  "run_pass": 2,
+  "attempt": 1,
+  "vendor": "deepseek",
+  "requested_model": "deepseek-flash",
+  "returned_model": "deepseek-flash",
+  "api": "openai",
+  "started_at": "2026-10-22T08:00:43+00:00",
+  "finished_at": "2026-10-22T08:00:48+00:00",
+  "latency_s": 4.518,
+  "http_attempts": 1,
+  "finish_reason": "stop",
+  "prompt_sha256": "e1a988fa68226cf517ac2c449e3157213d4bae49fad7b8a3cc129f9f550b61bc",
+  "input_tokens": 3267,
+  "output_tokens": 777,
+  "cached_input_tokens": 3072,
+  "usage_available": true,
+  "raw_text": "{\n  \"items\": [\n    {\"item\": \"i01\", \"verdict\": \"pass\", \"issues\": [], \"reason\": \"灯的核心象征指引、清晰感与希望，self 微正方向可从文字看出，同义词灯光、台灯为同一意象，措辞非宿命化。\"},\n    {\"item\": \"i02\", \"verdict\": \"pass\", \"issues\": [], \"reason\": \"天空象征开阔与可能性，self 微正方向与文字一致，蓝天、天上为同一意象的常见说法。\"},\n    {\"item\": \"i03\", \"verdict\": \"revise\", \"issues\": [{\"dimension\": \"theme_direction\", \"detail\": \"theme_map 中 finance 为 -0.3，但正文只写团圆、家庭、满足与照顾，未体现财务受阻的方向；团圆与照顾不自动表示财务偏阻。\"}], \"reason\": \"财务负向缺乏文字依据，需修正方向或补充可读出的依据。\"},\n    {\"item\": \"i04\", \"verdict\": \"pass\", \"issues\": [], \"reason\": \"去世亲人象征思念与未竟话语，全主题为 0 与中性文字相容，同义词均为同一人物的常见称谓，并已否定对现实状况的推断。\"},\n    {\"item\": \"i05\", \"verdict\": \"pass\", \"issues\": [], \"reason\": \"迷路以空间寻路为核心，self 微负与方向不确定、压力的文字一致，同义词均为找不到路的同义说法。\"},\n    {\"item\": \"i06\", \"verdict\": \"revise\", \"issues\": [{\"dimension\": \"certainty\", \"detail\": \"末尾“这个梦预示近期会有一笔意外之财”是对现实事件的确定性预测，属于宿命化断言。\"}, {\"dimension\": \"medical_legal_finance\", \"detail\": \"该句对财务作出确定性结论，违反财务方面不得下确定性结论的要求。\"}], \"reason\": \"正文含对未来财务事件的预测性断言。\"},\n    {\"item\": \"i07\", \"verdict\": \"pass\", \"issues\": [], \"reason\": \"花象征美好、绽放与关系期待，self 与 relationship 微正方向可由文字看出，同义词花海等为同一意象，并含否定式免责。\"},\n    {\"item\": \"i08\", \"verdict\": \"revise\", \"issues\": [{\"dimension\": \"theme_direction\", \"detail\": \"theme_map 中 self 为 -0.15，但正文写渴望自由、摆脱限制或自信提升，整体偏积极；后半“压力与节奏”属泛词，不能把偏顺的核心描述改读为偏阻。\"}], \"reason\": \"自我方向与文字表达的偏顺倾向不一致。\"},\n    {\"item\": \"i09\", \"verdict\": \"revise\", \"issues\": [{\"dimension\": \"theme_direction\", \"detail\": \"theme_map 中 career 为 -0.3，但正文只写根基、务实或陷入困局的感受，未体现事业受阻的方向；泛词困局不能自动支持事业负向。\"}], \"reason\": \"事业负向缺乏文字依据，需修正方向或补充依据。\"},\n    {\"item\": \"i10\", \"verdict\": \"revise\", \"issues\": [{\"dimension\": \"copying\", \"detail\": \"同义词中混入“狐狸精”，其为精怪或对人的贬称，与“狐狸”这一动物意象不是同一事物，会误命中检索。\"}], \"reason\": \"同义词“狐狸精”指向不同意象，需移除。\"}\n  ]\n}",
+  "verdicts": {
+    "i01": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "灯的核心象征指引、清晰感与希望，self 微正方向可从文字看出，同义词灯光、台灯为同一意象，措辞非宿命化。"
+    },
+    "i02": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "天空象征开阔与可能性，self 微正方向与文字一致，蓝天、天上为同一意象的常见说法。"
+    },
+    "i03": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "theme_direction",
+          "detail": "theme_map 中 finance 为 -0.3，但正文只写团圆、家庭、满足与照顾，未体现财务受阻的方向；团圆与照顾不自动表示财务偏阻。"
+        }
+      ],
+      "reason": "财务负向缺乏文字依据，需修正方向或补充可读出的依据。"
+    },
+    "i04": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "去世亲人象征思念与未竟话语，全主题为 0 与中性文字相容，同义词均为同一人物的常见称谓，并已否定对现实状况的推断。"
+    },
+    "i05": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "迷路以空间寻路为核心，self 微负与方向不确定、压力的文字一致，同义词均为找不到路的同义说法。"
+    },
+    "i06": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "certainty",
+          "detail": "末尾“这个梦预示近期会有一笔意外之财”是对现实事件的确定性预测，属于宿命化断言。"
+        },
+        {
+          "dimension": "medical_legal_finance",
+          "detail": "该句对财务作出确定性结论，违反财务方面不得下确定性结论的要求。"
+        }
+      ],
+      "reason": "正文含对未来财务事件的预测性断言。"
+    },
+    "i07": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "花象征美好、绽放与关系期待，self 与 relationship 微正方向可由文字看出，同义词花海等为同一意象，并含否定式免责。"
+    },
+    "i08": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "theme_direction",
+          "detail": "theme_map 中 self 为 -0.15，但正文写渴望自由、摆脱限制或自信提升，整体偏积极；后半“压力与节奏”属泛词，不能把偏顺的核心描述改读为偏阻。"
+        }
+      ],
+      "reason": "自我方向与文字表达的偏顺倾向不一致。"
+    },
+    "i09": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "theme_direction",
+          "detail": "theme_map 中 career 为 -0.3，但正文只写根基、务实或陷入困局的感受，未体现事业受阻的方向；泛词困局不能自动支持事业负向。"
+        }
+      ],
+      "reason": "事业负向缺乏文字依据，需修正方向或补充依据。"
+    },
+    "i10": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "copying",
+          "detail": "同义词中混入“狐狸精”，其为精怪或对人的贬称，与“狐狸”这一动物意象不是同一事物，会误命中检索。"
+        }
+      ],
+      "reason": "同义词“狐狸精”指向不同意象，需移除。"
+    }
+  }
+}

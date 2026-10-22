@@ -1,0 +1,98 @@
+{
+  "batch": "b001",
+  "reviewer": "reviewer_a",
+  "run_pass": 2,
+  "attempt": 1,
+  "vendor": "deepseek",
+  "requested_model": "deepseek-flash",
+  "returned_model": "deepseek-flash",
+  "api": "openai",
+  "started_at": "2026-10-22T08:00:38+00:00",
+  "finished_at": "2026-10-22T08:00:43+00:00",
+  "latency_s": 5.503,
+  "http_attempts": 1,
+  "finish_reason": "stop",
+  "prompt_sha256": "71331df8762fc9c4327e286e189e2ee849cedc9c4cc4c739aeac7f4ed7bcf25e",
+  "input_tokens": 3290,
+  "output_tokens": 606,
+  "cached_input_tokens": 3072,
+  "usage_available": true,
+  "raw_text": "{\"items\": [{\"item\": \"i01\", \"verdict\": \"pass\", \"issues\": [], \"reason\": \"生病意象与疲惫、需要休息的心理联想一致，方向偏阻与文字相符，免责与就医提示恰当。\"}, {\"item\": \"i02\", \"verdict\": \"pass\", \"issues\": [], \"reason\": \"彩票与转机期待联想合理，无方向且文字中性，未含购买建议。\"}, {\"item\": \"i03\", \"verdict\": \"pass\", \"issues\": [], \"reason\": \"石头象征稳固、阻碍或沉重心事符合传统意象，无方向与中性文字相容。\"}, {\"item\": \"i04\", \"verdict\": \"revise\", \"issues\": [{\"dimension\": \"certainty\", \"detail\": \"文末“梦到它预示近期会收到好消息”属对现实事件的预测，且与前面“不预示现实结果”自相矛盾。\"}], \"reason\": \"结尾加入预示好消息的确定性预测，违反预测维度。\"}, {\"item\": \"i05\", \"verdict\": \"pass\", \"issues\": [], \"reason\": \"面试与评价、新机会的紧张联想合理，无方向，免责说明恰当。\"}, {\"item\": \"i06\", \"verdict\": \"revise\", \"issues\": [{\"dimension\": \"copying\", \"detail\": \"同义词“桥断了”是桥破损的不同情节，不是桥的别名，应删去。\"}], \"reason\": \"同义词混入“桥断了”这一不同情节，会误命中检索。\"}, {\"item\": \"i07\", \"verdict\": \"pass\", \"issues\": [], \"reason\": \"背叛与关系不安全感联想一致，relationship 负向与文字相符，免责到位。\"}, {\"item\": \"i08\", \"verdict\": \"revise\", \"issues\": [{\"dimension\": \"copying\", \"detail\": \"同义词“杯子碎了”是杯子破碎的不同情节，不是杯子的别名，应删去。\"}], \"reason\": \"同义词混入“杯子碎了”这一不同情节。\"}, {\"item\": \"i09\", \"verdict\": \"revise\", \"issues\": [{\"dimension\": \"copying\", \"detail\": \"同义词“想不开”是常见其他义项（情绪低落/钻牛角尖），不是自杀这一意象的别名。\"}], \"reason\": \"同义词“想不开”易误命中，需移除。\"}, {\"item\": \"i10\", \"verdict\": \"revise\", \"issues\": [{\"dimension\": \"certainty\", \"detail\": \"文末“这个梦预示近期会有一笔意外之财”是对现实事件的预测，且与“不预示现实事件”矛盾。\"}], \"reason\": \"结尾加入预示意外之财的预测，违反预测维度。\"}]}",
+  "verdicts": {
+    "i01": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "生病意象与疲惫、需要休息的心理联想一致，方向偏阻与文字相符，免责与就医提示恰当。"
+    },
+    "i02": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "彩票与转机期待联想合理，无方向且文字中性，未含购买建议。"
+    },
+    "i03": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "石头象征稳固、阻碍或沉重心事符合传统意象，无方向与中性文字相容。"
+    },
+    "i04": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "certainty",
+          "detail": "文末“梦到它预示近期会收到好消息”属对现实事件的预测，且与前面“不预示现实结果”自相矛盾。"
+        }
+      ],
+      "reason": "结尾加入预示好消息的确定性预测，违反预测维度。"
+    },
+    "i05": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "面试与评价、新机会的紧张联想合理，无方向，免责说明恰当。"
+    },
+    "i06": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "copying",
+          "detail": "同义词“桥断了”是桥破损的不同情节，不是桥的别名，应删去。"
+        }
+      ],
+      "reason": "同义词混入“桥断了”这一不同情节，会误命中检索。"
+    },
+    "i07": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "背叛与关系不安全感联想一致，relationship 负向与文字相符，免责到位。"
+    },
+    "i08": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "copying",
+          "detail": "同义词“杯子碎了”是杯子破碎的不同情节，不是杯子的别名，应删去。"
+        }
+      ],
+      "reason": "同义词混入“杯子碎了”这一不同情节。"
+    },
+    "i09": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "copying",
+          "detail": "同义词“想不开”是常见其他义项（情绪低落/钻牛角尖），不是自杀这一意象的别名。"
+        }
+      ],
+      "reason": "同义词“想不开”易误命中，需移除。"
+    },
+    "i10": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "certainty",
+          "detail": "文末“这个梦预示近期会有一笔意外之财”是对现实事件的预测，且与“不预示现实事件”矛盾。"
+        }
+      ],
+      "reason": "结尾加入预示意外之财的预测，违反预测维度。"
+    }
+  }
+}
