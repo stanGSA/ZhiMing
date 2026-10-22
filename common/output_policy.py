@@ -33,6 +33,18 @@ BREAK_TAG = re.compile(r"<br\s*/?>", re.IGNORECASE)
 SENTENCE = re.compile(r"[^。！？!?\n]*(?:[。！？!?]+|\n|$)")
 
 CERTAINTY = re.compile(r"一定会|一定能|一定是|必然|必定|注定|肯定会|绝对会|百分之百|毫无疑问|铁定")
+# Shared with source checks. Only enumerated subjects and predicates are accepted;
+# an intervening predicate or contrast must not hide a separate affirmative claim.
+DISCLAIMER_CLAIM = (
+    r"(?:现实运势或事件|现实事件|现实发展|现实生活|实际情况|使用此数的人|个人|精力|事件|困扰|状态|负担)?"
+    r"(?:必然|一定会?|注定)(?:会)?"
+    r"(?:发生|出现|如此|成立|消退|好转|减轻|顺利|不利|受牵扯|遭遇波折|具备|具有)"
+)
+NEGATED_DISCLAIMER = re.compile(
+    r"(?:并不|并非|不)(?:代表|表示|意味着?|等于|预示|说明)"
+    + DISCLAIMER_CLAIM
+    + rf"(?:(?:或|以及){DISCLAIMER_CLAIM})*"
+)
 # A negation cancels a certainty word only when it governs that word: directly ("不一定会",
 # "并非注定", "不是必然") or through a negated framing verb earlier in the clause ("不代表事件
 # 必然发生", "并不意味着一定会"). A stray negative character ("不久后你一定会…") does not.
@@ -148,7 +160,8 @@ def clause_before(text: str, start: int, width: int = 16) -> str:
 def certainty_claim(texts) -> str | None:
     """The first certainty word that no negation in its clause governs."""
     for text in texts:
-        for match in CERTAINTY.finditer(text or ""):
+        text = NEGATED_DISCLAIMER.sub(" ", text or "")
+        for match in CERTAINTY.finditer(text):
             before = clause_before(text, match.start(), 40)
             if negates_claim(before):
                 continue

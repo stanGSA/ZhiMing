@@ -186,6 +186,14 @@ async def test_field_made_only_of_a_disclaimer_is_still_rejected(runtime):
         ("无论如何都一定会顺利。", "一定会"),
         ("你注定要经历这一关。", "注定"),
         ("这不代表事件必然发生。", None),
+        ("这是象征性反思线索，不代表状态必然好转或事件必然发生。", None),
+        ("这是象征性反思线索，不代表负担必然减轻。", None),
+        ("不代表状态必然好转，但你必然成功。", "必然"),
+        ("不代表负担必然减轻你必然成功。", "必然"),
+        ("不代表过去不好但你必然好转。", "必然"),
+        ("不代表状态必然好转或你必然成功。", "必然"),
+        ("不代表状态必然好转，负担必然减轻。", "必然"),
+        ("状态必然好转或事件必然发生。", "必然"),
         ("结果不一定会如愿，但容易遇到转机。", None),
         ("并非注定如此，倾向于先难后易。", None),
         ("一定要保证睡眠。", None),
@@ -193,6 +201,20 @@ async def test_field_made_only_of_a_disclaimer_is_still_rejected(runtime):
 )
 def test_certainty_words(text, claim):
     assert certainty_claim([text]) == claim
+
+
+@pytest.mark.parametrize("seed,card", [(75, "swords_nine"), (162, "wands_ten")])
+async def test_reviewed_reversed_meanings_can_generate_reading(project, seed, card):
+    runtime = create_runtime(root=project, user_id="synthetic-negated-claim", seed=seed)
+    try:
+        outcome = await runtime.turn("抽一张牌")
+        drawn = runtime.session.state["tarot_result"]["cards"][0]
+        assert drawn["card_id"] == card and drawn["reversed"] is True
+        assert outcome.status == "submit_reading"
+        assert outcome.data["reading_id"]
+        assert outcome.data["reading"]["evidence"]
+    finally:
+        runtime.close()
 
 
 async def test_certainty_claim_in_section_is_rejected(runtime):

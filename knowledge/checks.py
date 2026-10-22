@@ -4,32 +4,18 @@ Ranges, ids, keys and aliases are hard errors in ``knowledge.build``. The checks
 findings: they go to the report and the revision queue, never fail the build, because a
 reader must decide them (a reversed card may honestly stay negative, only less so).
 
-Certainty words are judged the way replies are (common.output_policy), after removing the
-project's own negated disclaimers such as “不代表事件必然发生” and “不表示现实事件必然发生”.
+Certainty words and restricted negated disclaimers use the same policy as replies
+(common.output_policy).
 """
 
 from __future__ import annotations
 
-import re
-
 from common.output_policy import certainty_claim
-
-# Only a short noun subject is allowed here, never an intervening predicate or contrast.
-DISCLAIMER_CLAIM = (
-    r"(?:现实运势或事件|现实事件|现实发展|现实生活|实际情况|使用此数的人|个人|精力|事件|困扰|状态|负担)?"
-    r"(?:必然|一定会?|注定)(?:会)?"
-    r"(?:发生|出现|如此|成立|消退|好转|减轻|顺利|不利|受牵扯|遭遇波折|具备|具有)"
-)
-DISCLAIMER = re.compile(
-    r"(?:并不|并非|不)(?:代表|表示|意味着?|等于|预示|说明)"
-    + DISCLAIMER_CLAIM
-    + rf"(?:(?:或|以及){DISCLAIMER_CLAIM})*"
-)
 
 
 def certainty_finding(text: str) -> str | None:
     """The first certainty word that is not part of a negated disclaimer."""
-    return certainty_claim([DISCLAIMER.sub("", text)])
+    return certainty_claim([text])
 
 
 def findings(entries: list[dict]) -> list[dict]:

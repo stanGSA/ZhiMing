@@ -1,0 +1,39 @@
+.........................FF............................................. [ 90%]
+........                                                                 [100%]
+================================== FAILURES ===================================
+____ test_reviewed_reversed_meanings_can_generate_reading[75-swords_nine] _____
+
+project = WindowsPath('C:/Users/Stan/Desktop/֪��/reports/test_tmp/1fdc0282e5e64400b82f66f4a0288994/test_reviewed_reversed_meaning0')
+seed = 75, card = 'swords_nine'
+
+    @pytest.mark.parametrize("seed,card", [(75, "swords_nine"), (162, "wands_ten")])
+    async def test_reviewed_reversed_meanings_can_generate_reading(project, seed, card):
+        runtime = create_runtime(root=project, user_id="synthetic-negated-claim", seed=seed)
+        try:
+            outcome = await runtime.turn("��һ����")
+            drawn = runtime.session.state["tarot_result"]["cards"][0]
+>           assert drawn["id"] == card and drawn["reversed"] is True
+                   ^^^^^^^^^^^
+E           KeyError: 'id'
+
+tests\test_expression_policy.py:212: KeyError
+_____ test_reviewed_reversed_meanings_can_generate_reading[162-wands_ten] _____
+
+project = WindowsPath('C:/Users/Stan/Desktop/֪��/reports/test_tmp/1fdc0282e5e64400b82f66f4a0288994/test_reviewed_reversed_meaning1')
+seed = 162, card = 'wands_ten'
+
+    @pytest.mark.parametrize("seed,card", [(75, "swords_nine"), (162, "wands_ten")])
+    async def test_reviewed_reversed_meanings_can_generate_reading(project, seed, card):
+        runtime = create_runtime(root=project, user_id="synthetic-negated-claim", seed=seed)
+        try:
+            outcome = await runtime.turn("��һ����")
+            drawn = runtime.session.state["tarot_result"]["cards"][0]
+>           assert drawn["id"] == card and drawn["reversed"] is True
+                   ^^^^^^^^^^^
+E           KeyError: 'id'
+
+tests\test_expression_policy.py:212: KeyError
+=========================== short test summary info ===========================
+FAILED tests/test_expression_policy.py::test_reviewed_reversed_meanings_can_generate_reading[75-swords_nine]
+FAILED tests/test_expression_policy.py::test_reviewed_reversed_meanings_can_generate_reading[162-wands_ten]
+2 failed, 78 passed in 31.93s
