@@ -2,12 +2,19 @@
 
 Drafted by Anthropic Claude on 2026-10-22 at the owner's request. Anthropic drafted the B1
 directions and reviews nothing; this set never enters the knowledge base. Generation is
-deterministic from the current sources, so the owner can rerun it and diff the result:
+deterministic from the current sources, so the owner can rerun it and diff the result.
 
-- pass: a current entry both reviewers passed four times on 2026-10-21 whose content the
-  checks below find consistent with the rubric anchors and the reference facts;
-- fail: a different current entry with exactly one realistic defect, written in the entries'
-  own words (no wrapper real entries never carry), with the defect and the change stated.
+Two partitions per system: ``dev`` (20 items; daily 6) is reviewed in the pilot and may shape
+the rubric; ``holdout`` (30 items; daily 18) is used once, in the pre-registered acceptance.
+They share no source entry, except daily, which has only nine. Each partition holds:
+
+- typical pass: a current entry chosen by the rule checks below, never by the 2026-10-21
+  verdicts (choosing what models agreed on would inflate their agreement on this set);
+- boundary pass: content that looks suspicious but the rubric accepts (a reversed card in its
+  upright's direction, a legitimate synonym, a hidden-stem list in another order, ...);
+- fail: another current entry with exactly one realistic defect, in the entries' own words.
+
+Every label states the rule it rests on.
 
     python -m scripts.draft_calibration --output <校准集.yaml>
 """
@@ -26,15 +33,21 @@ from lunar_python.util import LunarUtil
 
 from knowledge.checks import certainty_finding
 from knowledge.review import content_hash
+from plugins.astro.calculator import BODY_ZH
 from plugins.name.wuge import ELEMENTS, element
 from scripts import model_review_kb as review
 from scripts.draft_tarot import MAJOR_THEMES, SUIT_THEMES
 from scripts.draft_week6 import DAY_COLORS, LUCKY, MIXED
-from scripts.draft_week23 import HOUSE_TEXT, HOUSE_THEME
+from scripts.draft_week23 import DIGNITY, HOUSE_TEXT, HOUSE_THEME
 
 SEED = 20261022
-EVIDENCE = review.ROOT / "docs/verification/kb-model-review/20261021-live/campaign"
+SYSTEMS = ("tarot", "astro", "bazi", "name", "dream", "daily")
+# Items per label in each partition.
+SIZES = dict(holdout=15, dev=10)
+DAILY_SIZES = dict(holdout=9, dev=3)
 THEME_ZH = dict(self="自我状态", career="事业", relationship="感情关系", finance="财务")
+# Entries whose content still has a substantive or traditional dispute: no label is certain.
+DISPUTED = {"kb:tarot:card:pentacles_four:reversed", "kb:name:sancai:火木水"}
 # Anchor B: wording that states a direction (narrow) and wording that may hint at one (broad).
 STATED = dict(
     self=r"自我|情绪|精力|心态|状态|自信|感受|内在",
@@ -76,7 +89,7 @@ OBJECTIVE = dict(
     sancai=("有这种三才配置的人，性格稳重、事业顺利。", "这种三才配置会让人一生较为顺利。"),
     shuli=("取用这一数理的人，往往人缘好、贵人多。", "名字里有这个数的人，做事容易成功。"),
 )
-# (dream key, alias, why it is not the same image) — the anchors' own categories.
+# (dream key, alias, why it is not the same image): the dream anchor's own categories.
 BAD_SYNONYMS = (
     ("医生", "护士", "不同人物：护士不是医生"),
     ("新郎", "新娘", "不同人物：新娘不是新郎"),
@@ -84,6 +97,20 @@ BAD_SYNONYMS = (
     ("麒麟", "瑞兽", "上位泛称：瑞兽包含麒麟以外的神兽"),
     ("自杀", "想不开", "常见其他义项：想不开也常指一时纠结"),
     ("考试", "考场", "只是场所：考场不等于考试这件事"),
+    ("杯子", "杯子碎了", "只是事件：杯子碎了是一个情节，不是杯子本身"),
+    ("桥", "桥断了", "只是事件：桥断了是一个情节，不是桥本身"),
+    ("星星", "流星", "不同事物：流星不是星星"),
+    ("蜜蜂", "马蜂", "不同物种：马蜂不是蜜蜂"),
+    ("狐狸", "狐狸精", "常见其他义项：狐狸精多指精怪或贬称"),
+)
+# Same image, other words (scripts.dream_alias_review "restore"): synonyms the rubric accepts.
+GOOD_SYNONYMS = (
+    ("剪头发", "理发"),
+    ("坠落", "往下掉"),
+    ("迷路", "走丢"),
+    ("拥抱", "抱在一起"),
+    ("地震", "地动山摇"),
+    ("花", "花海"),
 )
 GENERIC = dict(
     hidden="在传统命理中，“藏干”指地支所对应的天干，具体按固定表列出。各藏干对应的十神需结合日主"
@@ -94,15 +121,33 @@ GENERIC = dict(
     "现实中的吉凶，也不能据此判断个人、事业、关系或财务的结果。",
 )
 STRONGER = {"入庙": "失势", "擢升": "落陷", "失势": "入庙", "落陷": "擢升"}
-
-
-def approved_now() -> set[str]:
-    """Entries whose current content both reviewers passed four times on 2026-10-21."""
-    found = set()
-    for path in EVIDENCE.glob("*/summary.json"):
-        evidence = review.read_json(path).get("current_content_evidence", {})
-        found |= {ref for ref, row in evidence.items() if row["approved"]}
-    return found
+MODERN = ("Uranus", "Neptune", "Pluto")
+# Bases kept for one recipe only (the position defects).
+RESERVED = {"kb:tarot:position:three_card:1", "kb:tarot:position:decision:2"}
+DISPUTED_NUMBERS = {27, 28, 40, 50, 71, 73, 75}
+NEUTRAL_NOTE = "这一约定只作说明，不影响其他体系的判断。"
+ANCHOR_OF = dict(
+    unsupported_direction="锚点B",
+    direction_contradicts_text="锚点B",
+    prediction="锚点F",
+    orientation_not_distinguished="塔罗规则：正逆位区分",
+    position_mismatch="塔罗规则：牌位以 spread_positions 为准",
+    dignity_wrong="锚点D：尊贵表",
+    modern_planet_dignity="锚点D：现代行星不在尊贵表",
+    house_topic_wrong="锚点D：十二宫主题",
+    hidden_stems_wrong="锚点D：藏干表",
+    branch_element_wrong="锚点D：地支五行",
+    group_members_wrong="锚点D：三合三会",
+    not_object_specific="锚点C",
+    tail_digit_element_wrong="锚点D：尾数五行",
+    shuli_level_wrong="锚点D：数理三档",
+    sancai_relation_wrong="锚点D：五行生克",
+    evaluation_as_fact="锚点E",
+    synonym_not_same_image="解梦同义词锚点",
+    color_wrong="锚点D：五行配色",
+    luck_claim="每日运势规则：不暗示带来运气",
+    nonzero_direction="每日运势规则：保持中性",
+)
 
 
 def conventional(entry: dict) -> set[str]:
@@ -122,33 +167,80 @@ def conventional(entry: dict) -> set[str]:
     return set()
 
 
-def consistent(entry: dict) -> str | None:
-    """Why a current entry cannot serve as a pass item, or None. Conservative: a direction
-    needs its convention or explicit wording, narrower than what the rubric accepts."""
-    if certainty_finding(entry["text"]):
-        return "certainty"
+def predicts(text: str) -> bool:
+    plain = re.sub(r"(?:不|并不|也不|不会|不能|未)(?:预示|预测)", "", text)
+    return bool(re.search(r"预示|将会|近期会|很快会|必将", plain))
+
+
+def listed_stems(entry):
+    found = re.search(rf"{entry['key']}(?:的藏干为|藏)([甲乙丙丁戊己庚辛壬癸、]+)", entry["text"])
+    return found.group(1).split("、") if found else None
+
+
+def dignity_term(entry):
+    found = re.search(r"为“?(入庙|擢升|失势|落陷)”?(?!并)", entry["text"])
+    return found.group(1) if found else None
+
+
+def table_dignity(entry):
+    planet, sign = entry["key"].split(":")
+    strong, weak = DIGNITY.get(planet, ({}, {}))
+    return {**strong, **weak}.get(sign)
+
+
+def checks(entry: dict) -> list[str] | None:
+    """The rule checks a pass item satisfies, or None when one fails (conservative: a
+    direction needs its convention or explicit wording, narrower than the rubric)."""
+    text, system, kind = entry["text"], entry["system"], entry["kind"]
+    if entry["id"] in DISPUTED or certainty_finding(text) or predicts(text):
+        return None
+    notes = ["无确定性词语，无对现实事件的预测"]
     for theme, value in entry["theme_map"].items():
-        if (
-            value
-            and theme not in conventional(entry)
-            and not re.search(STATED[theme], entry["text"])
-        ):
-            return "direction"
-    if entry["system"] == "daily" and any(entry["theme_map"].values()):
-        return "daily_direction"
-    if entry["system"] == "bazi" and entry["kind"] in ("hidden", "branch"):
-        stems = LunarUtil.ZHI_HIDE_GAN[entry["key"]]
-        listed = re.search(
-            rf"{entry['key']}(?:的藏干为|藏)([甲乙丙丁戊己庚辛壬癸、]+)", entry["text"]
-        )
-        if not listed or sorted(listed.group(1).split("、")) != sorted(stems):
-            return "hidden_stems"
-    if entry["system"] == "name" and entry["kind"] == "shuli":
+        if not value:
+            continue
+        if theme in conventional(entry):
+            notes.append(f"{THEME_ZH[theme]} {value:+g} 属本体系方向约定")
+            continue
+        stated = re.search(STATED[theme], text)
+        if not stated:
+            return None
+        notes.append(f"{THEME_ZH[theme]} {value:+g} 有文字“{stated.group(0)}”")
+    if not any(entry["theme_map"].values()):
+        notes.append("theme_map 全为 0，与中性文字相容")
+    if system == "daily" and any(entry["theme_map"].values()):
+        return None
+    if system == "bazi" and kind == "hidden":
+        stems = listed_stems(entry)
+        if not stems or sorted(stems) != sorted(LunarUtil.ZHI_HIDE_GAN[entry["key"]]):
+            return None
+        notes.append(f"藏干成员{'、'.join(stems)}与参考表一致（顺序不审）")
+    if system == "bazi" and kind == "branch":
+        if f"属{LunarUtil.WU_XING_ZHI[entry['key']]}" not in text:
+            return None
+        notes.append(f"地支五行属{LunarUtil.WU_XING_ZHI[entry['key']]}与参考表一致")
+    if system == "name" and kind == "shuli":
         number = int(entry["key"])
         level = "吉" if number in LUCKY else "半吉" if number in MIXED else "凶"
-        if f"“{level}”" not in entry["text"] or f"对应{element(number)}" not in entry["text"]:
-            return "shuli"
-    return None
+        if f"“{level}”" not in text or f"对应{element(number)}" not in text:
+            return None
+        notes.append(f"归类“{level}”、尾数对应{element(number)}与参考表一致")
+    if system == "astro" and kind == "planet_sign" and dignity_term(entry):
+        if dignity_term(entry) != table_dignity(entry):
+            return None
+        notes.append(f"尊贵“{dignity_term(entry)}”与参考表一致")
+    if system == "astro" and kind == "planet_house":
+        house = int(entry["key"].split(":")[1])
+        topics = re.split(r"与|、|和", HOUSE_TEXT[house - 1])
+        if f"第{house}宫" in text and not any(t in text for t in topics):
+            return None
+    if system == "daily" and kind == "day_element":
+        colors = DAY_COLORS[entry["key"]][1].split("传统配色为")[1]
+        if colors not in text:
+            return None
+        notes.append(f"配色{colors}与参考表一致")
+    if system == "dream" and entry["synonyms"]:
+        notes.append(f"同义词{'、'.join(entry['synonyms'])}均指同一意象")
+    return notes
 
 
 def theme_change(entry, rng, *, flip):
@@ -206,159 +298,19 @@ def append_text(entry, sentence, detail):
 
 
 def with_synonym(entry, alias, detail):
+    if alias in entry["synonyms"]:
+        return None
     variant = copy.deepcopy(entry)
     variant["synonyms"] = [*entry["synonyms"], alias]
     return variant, detail, dict(field="synonyms", before="（无）", after=alias)
 
 
-def defects(system: str, by_id: dict[str, dict], rng: random.Random):
-    """(type, [(base id, make)]) per defect kind, ``make(entry) -> (variant, detail, change)``."""
-    entries = sorted(by_id.values(), key=lambda e: e["id"])
-
-    def of(kind):
-        return [e for e in entries if e["kind"] == kind]
-
-    plans = []
-    predict = PREDICTIONS.get(system, ())
-    if system == "tarot":
-        plans += [
-            (
-                "unsupported_direction",
-                [*of("card"), *of("position")],
-                5,
-                lambda e: theme_change(e, rng, flip=False),
-            ),
-            (
-                "direction_contradicts_text",
-                of("card"),
-                3,
-                lambda e: theme_change(e, rng, flip=True),
-            ),
-            (
-                "orientation_not_distinguished",
-                [e for e in of("card") if e["key"].endswith(":reversed")],
-                3,
-                lambda e: tarot_duplicate(e, by_id),
-            ),
-            (
-                "position_mismatch",
-                [by_id["kb:tarot:position:three_card:1"]],
-                1,
-                lambda e: replace_text(
-                    e,
-                    "“过去”",
-                    "“未来”",
-                    "牌阵定义中三张牌阵第1位是“过去”，text 写成了“未来”",
-                ),
-            ),
-        ]
-    if system == "astro":
-        plans += [
-            ("dignity_wrong", [e for e in of("planet_sign") if dignity_term(e)], 4, astro_dignity),
-            ("house_topic_wrong", of("planet_house"), 3, astro_house),
-            (
-                "unsupported_direction",
-                of("planet_house"),
-                3,
-                lambda e: theme_change(e, rng, flip=False),
-            ),
-            (
-                "direction_contradicts_text",
-                of("planet_sign"),
-                2,
-                lambda e: theme_change(e, rng, flip=True),
-            ),
-        ]
-    if system == "bazi":
-        plans += [
-            ("hidden_stems_wrong", of("hidden"), 3, bazi_hidden),
-            ("branch_element_wrong", of("branch"), 2, bazi_branch),
-            (
-                "group_members_wrong",
-                [by_id[f"kb:bazi:relation:{k}"] for k in ("三合", "三会")],
-                2,
-                bazi_group,
-            ),
-            *[
-                ("not_object_specific", of(kind), 1, bazi_generic)
-                for kind in ("hidden", "branch", "relation")
-            ],
-            ("unsupported_direction", of("stem"), 2, lambda e: theme_change(e, rng, flip=False)),
-        ]
-    if system == "name":
-        plans += [
-            ("tail_digit_element_wrong", of("shuli"), 3, name_digit),
-            ("shuli_level_wrong", of("shuli"), 3, name_level),
-            (
-                "sancai_relation_wrong",
-                [e for e in of("sancai") if sancai_claim(e)],
-                2,
-                name_relation,
-            ),
-            (
-                "evaluation_as_fact",
-                [*of("sancai"), *of("shuli")],
-                3,
-                lambda e: append_text(
-                    e,
-                    rng.choice(OBJECTIVE[e["kind"]]),
-                    "把民间约定的评价写成了对使用者现实的客观推断",
-                ),
-            ),
-            ("unsupported_direction", of("sancai"), 2, lambda e: theme_change(e, rng, flip=False)),
-        ]
-    if system == "dream":
-        symbols = {e["key"]: e for e in of("symbol")}
-        plans += [
-            (
-                "synonym_not_same_image",
-                [symbols[k] for k, *_ in BAD_SYNONYMS if k in symbols],
-                6,
-                lambda e: with_synonym(
-                    e,
-                    *next((a, f"同义词“{a}”{why}") for k, a, why in BAD_SYNONYMS if k == e["key"]),
-                ),
-            ),
-            ("unsupported_direction", of("symbol"), 2, lambda e: theme_change(e, rng, flip=False)),
-            (
-                "direction_contradicts_text",
-                of("symbol"),
-                2,
-                lambda e: theme_change(e, rng, flip=True),
-            ),
-        ]
-    if system == "daily":
-        plans += [
-            ("color_wrong", [by_id[f"kb:daily:day_element:{k}"] for k in "木火水"], 3, daily_color),
-            (
-                "luck_claim",
-                [by_id[f"kb:daily:day_element:{k}"] for k in "土金"],
-                2,
-                lambda e: replace_text(
-                    e,
-                    "不带来实际运气",
-                    "可以为当天带来好运",
-                    "把配色约定写成了能带来实际运气",
-                ),
-            ),
-            ("nonzero_direction", of("convention"), 4, daily_direction),
-        ]
-    if predict:
-        count = 5 if system == "dream" else 3 if system != "name" else 2
-        candidates = [e for e in entries if e["kind"] not in ("convention", "position")]
-        plans.append(
-            (
-                "prediction",
-                candidates,
-                count,
-                lambda e: append_text(
-                    e,
-                    rng.choice(predict),
-                    "加入了对现实事件的预测（“预示……会……”），没有确定性词语但仍是预测",
-                ),
-            )
-        )
-    return plans
+def added_synonym(entry, alias):
+    """A boundary pass: the entry with one more synonym the dream anchor accepts."""
+    result = with_synonym(entry, alias, "")
+    if result is None:
+        return None
+    return result[0], f"新增同义词“{alias}”是同一意象的说法（解梦同义词锚点）"
 
 
 def tarot_duplicate(entry, by_id):
@@ -374,20 +326,25 @@ def tarot_duplicate(entry, by_id):
     )
 
 
-def dignity_term(entry):
-    found = re.search(r"为“?(入庙|擢升|失势|落陷)”?(?!并)", entry["text"])
-    return found.group(1) if found else None
-
-
 def astro_dignity(entry):
     term = dignity_term(entry)
-    if not term:
+    if not term or term != table_dignity(entry):
         return None
     return replace_text(
         entry,
         f"为{term}",
         f"为{STRONGER[term]}",
         f"按本项目尊贵表此配置为{term}，text 写成了{STRONGER[term]}",
+    )
+
+
+def modern_dignity(entry):
+    planet = entry["key"].split(":")[0]
+    sentence = f"在传统尊贵体系中，{BODY_ZH[planet]}在此星座为入庙。"
+    return append_text(
+        entry,
+        sentence,
+        f"{planet} 属现代行星，不在本项目的传统尊贵表中（参考事实），text 却给出“入庙”",
     )
 
 
@@ -403,7 +360,9 @@ def astro_house(entry):
 
 
 def bazi_hidden(entry):
-    stems = LunarUtil.ZHI_HIDE_GAN[entry["key"]]
+    stems = listed_stems(entry)
+    if not stems:
+        return None
     wrong = next(s for s in "甲乙丙丁戊己庚辛壬癸" if s not in stems)
     correct = "、".join(stems)
     changed = "、".join([*stems[:-1], wrong])
@@ -442,9 +401,7 @@ def bazi_group(entry):
 def bazi_generic(entry):
     variant = copy.deepcopy(entry)
     variant["text"] = GENERIC[entry["kind"]].format(key=entry["key"])
-    detail = (
-        f"只有通用说明，没有写出{entry['key']}本身的核心信息（锚点C），换成同类其他对象也同样成立"
-    )
+    detail = f"只有通用说明，没有写出{entry['key']}本身的核心信息，换成同类其他对象也同样成立"
     return variant, detail, dict(field="text", before=entry["text"], after=variant["text"])
 
 
@@ -507,73 +464,259 @@ def daily_direction(entry):
     )
 
 
+def daily_luck(entry):
+    return replace_text(
+        entry, "不带来实际运气", "可以为当天带来好运", "把配色约定写成了能带来实际运气"
+    )
+
+
+def recipes(system: str, by_id: dict[str, dict], rng: random.Random):
+    """(label, type, {partition: count}, candidates, make); make(entry) returns
+    (variant, detail, change) for a fail and (variant, note) for a boundary pass."""
+    entries = sorted(by_id.values(), key=lambda e: e["id"])
+
+    def of(*kinds):
+        return [e for e in entries if e["kind"] in kinds]
+
+    def counts(holdout, dev):
+        return dict(holdout=holdout, dev=dev)
+
+    def keep(note):
+        return lambda e: (e, note)
+
+    def prediction(entry):
+        return append_text(
+            entry,
+            rng.choice(PREDICTIONS[system]),
+            "加入了对现实事件的预测（“预示……会……”），没有确定性词语但仍是预测",
+        )
+
+    predictable = [e for e in entries if e["kind"] not in ("convention", "position")]
+    unsupported = lambda e: theme_change(e, rng, flip=False)  # noqa: E731
+    contradicts = lambda e: theme_change(e, rng, flip=True)  # noqa: E731
+    if system == "tarot":
+        same_direction = [
+            e
+            for e in of("card")
+            if e["key"].endswith(":reversed")
+            and (up := by_id.get(e["id"].replace(":reversed", ":upright")))
+            and any(e["theme_map"].get(t, 0) * up["theme_map"].get(t, 0) > 0 for t in THEME_ZH)
+        ]
+        return [
+            ("pass", "same_direction_reversed", counts(4, 3), same_direction,
+             keep("逆位与正位方向相同（程度减弱），塔罗规则允许，只要与本条文字一致")),
+            ("fail", "unsupported_direction", counts(4, 2), [e for e in of("card", "position") if e["id"] not in RESERVED], unsupported),
+            ("fail", "direction_contradicts_text", counts(4, 3), of("card"), contradicts),
+            ("fail", "orientation_not_distinguished", counts(3, 2),
+             [e for e in of("card") if e["key"].endswith(":reversed")],
+             lambda e: tarot_duplicate(e, by_id)),
+            ("fail", "position_mismatch", counts(1, 0), [by_id["kb:tarot:position:three_card:1"]],
+             lambda e: replace_text(e, "“过去”", "“未来”", "牌阵定义中三张牌阵第1位是“过去”，text 写成了“未来”")),
+            ("fail", "position_mismatch", counts(0, 1), [by_id["kb:tarot:position:decision:2"]],
+             lambda e: replace_text(e, "此牌位对应“选 A”，用于梳理选择 A", "此牌位对应“选 B”，用于梳理选择 B",
+                                    "牌阵定义中决策牌阵第2位是“选 A”，text 写成了“选 B”")),
+            ("fail", "prediction", counts(3, 2), predictable, prediction),
+        ]  # fmt: skip
+    if system == "astro":
+        supported = [
+            e
+            for e in of("planet_house")
+            if any(
+                v and t not in conventional(e) and re.search(STATED[t], e["text"])
+                for t, v in e["theme_map"].items()
+            )
+        ]
+        return [
+            ("pass", "off_convention_supported", counts(3, 2), supported,
+             keep("方向不在落宫约定内，但文字写明了对应主题（锚点B）")),
+            ("pass", "modern_planet", counts(2, 1),
+             [e for e in of("planet") if e["key"] in MODERN],
+             keep("现代行星，没有尊贵说法属于正常（参考事实）")),
+            ("fail", "dignity_wrong", counts(3, 2), [e for e in of("planet_sign") if dignity_term(e)], astro_dignity),
+            ("fail", "modern_planet_dignity", counts(2, 1),
+             [e for e in of("planet_sign") if e["key"].split(":")[0] in MODERN], modern_dignity),
+            ("fail", "house_topic_wrong", counts(3, 2), of("planet_house"), astro_house),
+            ("fail", "unsupported_direction", counts(3, 2), of("planet_house"), unsupported),
+            ("fail", "direction_contradicts_text", counts(2, 1), of("planet_sign"), contradicts),
+            ("fail", "prediction", counts(2, 2), predictable, prediction),
+        ]  # fmt: skip
+    if system == "bazi":
+        reordered = [
+            e
+            for e in of("hidden")
+            if (s := listed_stems(e)) and s != LunarUtil.ZHI_HIDE_GAN[e["key"]]
+        ]
+        return [
+            ("pass", "stem_order_differs", counts(1, 0), reordered,
+             keep("藏干列举顺序与参考表不同，但成员一致；规则只审成员")),
+            ("pass", "relation_with_supported_direction", counts(2, 1),
+             [e for e in of("relation") if any(e["theme_map"].values())],
+             keep("术语条目带方向，但文字写明了对应主题（锚点B）")),
+            ("pass", "convention_direction_unstated", counts(1, 1), of("ten_god", "god_pillar"),
+             keep("十神的自我、事业方向属约定，不必在文字中写明（锚点B）")),
+            ("pass", "zero_with_topic_mention", counts(1, 2), [
+                e for e in of("relation", "element_relation", "nayin", "convention")
+                if not any(e["theme_map"].values())
+                and any(re.search(HINTED[t], e["text"]) for t in THEME_ZH)
+            ], keep("文字提到相关主题但只作中性说明，方向为 0 与之相容（锚点B）")),
+            ("fail", "hidden_stems_wrong", counts(2, 1), of("hidden"), bazi_hidden),
+            ("fail", "branch_element_wrong", counts(2, 1), of("branch"), bazi_branch),
+            ("fail", "group_members_wrong", counts(1, 0), [by_id["kb:bazi:relation:三合"]], bazi_group),
+            ("fail", "group_members_wrong", counts(0, 1), [by_id["kb:bazi:relation:三会"]], bazi_group),
+            ("fail", "not_object_specific", counts(1, 1), of("hidden"), bazi_generic),
+            ("fail", "not_object_specific", counts(1, 0), of("branch"), bazi_generic),
+            ("fail", "not_object_specific", counts(1, 1), of("relation"), bazi_generic),
+            ("fail", "unsupported_direction", counts(2, 1), of("stem"), unsupported),
+            ("fail", "direction_contradicts_text", counts(2, 2), of("ten_god", "god_pillar"), contradicts),
+            ("fail", "prediction", counts(3, 2), predictable, prediction),
+        ]  # fmt: skip
+    if system == "name":
+        return [
+            ("pass", "disputed_number", counts(2, 2),
+             [e for e in of("shuli") if int(e["key"]) in DISPUTED_NUMBERS],
+             keep("各家归类不同的数，与本项目归类一致即不算错（锚点D）")),
+            ("pass", "folk_once", counts(1, 1),
+             [e for e in of("sancai") if e["text"].count("民间") == 1],
+             keep("民间约定只写了一次，规则不要求每句重复（锚点E）")),
+            ("fail", "tail_digit_element_wrong", counts(3, 2), of("shuli"), name_digit),
+            ("fail", "shuli_level_wrong", counts(3, 2), of("shuli"), name_level),
+            ("fail", "sancai_relation_wrong", counts(2, 1),
+             [e for e in of("sancai") if sancai_claim(e)], name_relation),
+            ("fail", "evaluation_as_fact", counts(3, 2), of("sancai", "shuli"),
+             lambda e: append_text(e, rng.choice(OBJECTIVE[e["kind"]]),
+                                   "把民间约定的评价写成了对使用者现实的客观推断")),
+            ("fail", "unsupported_direction", counts(2, 1), of("sancai"), unsupported),
+            ("fail", "prediction", counts(2, 2), predictable, prediction),
+        ]  # fmt: skip
+    if system == "dream":
+        symbols = {e["key"]: e for e in of("symbol")}
+        bad = {k: (a, why) for k, a, why in BAD_SYNONYMS}
+        good = dict(GOOD_SYNONYMS)
+        return [
+            ("pass", "legit_synonym_added", counts(3, 2), [symbols[k] for k in good if k in symbols],
+             lambda e: added_synonym(e, good[e["key"]])),
+            ("pass", "sensitive_calm", counts(1, 1),
+             [symbols[k] for k in ("葬礼", "生病", "去世的亲人", "死亡") if k in symbols],
+             keep("敏感意象，措辞平和且不作预兆（解梦规则）")),
+            ("fail", "synonym_not_same_image", counts(6, 4), [symbols[k] for k in bad if k in symbols],
+             lambda e: with_synonym(e, bad[e["key"]][0], f"同义词“{bad[e['key']][0]}”{bad[e['key']][1]}")),
+            ("fail", "unsupported_direction", counts(3, 2), of("symbol"), unsupported),
+            ("fail", "direction_contradicts_text", counts(2, 1), of("symbol"), contradicts),
+            ("fail", "prediction", counts(4, 3), of("symbol"), prediction),
+        ]  # fmt: skip
+    day = {k: by_id[f"kb:daily:day_element:{k}"] for k in DAY_COLORS}
+    return [
+        ("pass", "neutral_note_added", counts(0, 3), of("convention"),
+         lambda e: (append_text(e, NEUTRAL_NOTE, "")[0], "补了一句中性说明，仍是约定、仍无方向")),
+        ("fail", "color_wrong", counts(3, 0), [day[k] for k in "木火水"], daily_color),
+        ("fail", "color_wrong", counts(0, 1), [day["金"]], daily_color),
+        ("fail", "luck_claim", counts(2, 0), [day[k] for k in "土金"], daily_luck),
+        ("fail", "luck_claim", counts(0, 1), [day["木"]], daily_luck),
+        ("fail", "nonzero_direction", counts(4, 0), of("convention"), daily_direction),
+        ("fail", "nonzero_direction", counts(0, 1), [day["水"]], daily_direction),
+    ]  # fmt: skip
+
+
+def pick(pool, count, make, used, rng, label):
+    pool = [e for e in pool if e["id"] not in used and e["id"] not in DISPUTED]
+    rng.shuffle(pool)
+    made = []
+    for entry in pool:
+        if len(made) == count:
+            break
+        if label == "pass" and checks(entry) is None:
+            continue
+        result = make(entry)
+        if result is None or (label == "fail" and content_hash(result[0]) == content_hash(entry)):
+            continue
+        used.add(entry["id"])
+        made.append((entry, result))
+    return made
+
+
 def draft(seed: int = SEED) -> dict:
     rng = random.Random(seed)
-    approved = approved_now()
     items = []
-    for system in ("tarot", "astro", "bazi", "name", "dream", "daily"):
+    for system in SYSTEMS:
         by_id = {e["id"]: e for e in review.load_entries(review.ROOT / "knowledge/sources", system)}
+        plan = recipes(system, by_id, rng)
         used: set[str] = set()
-        fails = []
-        for kind, candidates, count, make in defects(system, by_id, rng):
-            pool = [e for e in candidates if e["id"] not in used]
-            rng.shuffle(pool)
-            made = 0
-            for entry in pool:
-                if made == count:
-                    break
-                result = make(entry)
-                if result is None:
-                    continue
-                variant, detail, change = result
-                if content_hash(variant) == content_hash(entry):
-                    continue
+        for partition in ("holdout", "dev"):
+            size = (DAILY_SIZES if system == "daily" else SIZES)[partition]
+            if system == "daily":
+                used = set()  # both partitions draw on all nine entries
+            rows = []
+            for label, kind, wanted, candidates, make in plan:
+                count = wanted[partition]
+                made = pick(candidates, count, make, used, rng, label) if count else []
+                if label == "fail" and len(made) < count:
+                    raise ValueError(f"{system} {partition} {kind} 只构造出 {len(made)}/{count} 条")
+                for base, result in made:
+                    if label == "fail":
+                        variant, detail, change = result
+                        rows.append(
+                            dict(
+                                label="fail",
+                                case="defect",
+                                base=base["id"],
+                                defect=dict(type=kind, detail=detail),
+                                change=change,
+                                rationale=f"由现行条目改出一处缺陷（{ANCHOR_OF[kind]}），其余内容不变；"
+                                "按规则应判 revise 或 reject。",
+                                entry=variant,
+                            )
+                        )
+                    else:
+                        variant, note = result
+                        rows.append(
+                            dict(
+                                label="pass",
+                                case="boundary",
+                                base=base["id"],
+                                rationale=f"边界案例：{note}。按规则逐项核对："
+                                + "；".join(checks(variant) or checks(base)),
+                                entry=variant,
+                            )
+                        )
+            fails = sum(r["label"] == "fail" for r in rows)
+            if fails != size:
+                raise ValueError(f"{system} {partition} 缺陷 {fails}，应为 {size}")
+            typical_needed = size - sum(r["label"] == "pass" for r in rows)
+            # daily has nine entries: each is both a typical pass and the base of a defect.
+            pool = [
+                e
+                for e in sorted(by_id.values(), key=lambda e: e["id"])
+                if (system == "daily" or e["id"] not in used)
+                and e["id"] not in RESERVED
+                and checks(e) is not None
+            ]
+            for entry in stratified(pool, typical_needed, rng):
                 used.add(entry["id"])
-                made += 1
-                fails.append((entry, variant, kind, detail, change))
-            if made < count:
-                raise ValueError(f"{system} {kind} 只构造出 {made}/{count} 条")
-        # daily has nine entries: every one is both a pass item and the base of one defect.
-        pool = [
-            e
-            for e in sorted(by_id.values(), key=lambda e: e["id"])
-            if e["id"] in approved
-            and consistent(e) is None
-            and (system == "daily" or e["id"] not in used)
-        ]
-        passes = stratified(pool, len(fails), rng)
-        rows = [
-            dict(
-                system=system,
-                label="pass",
-                base=e["id"],
-                rationale="现行条目；2026-10-21两家各两轮均判通过；自动核对无确定性措辞，"
-                "非零方向符合体系方向约定或有对应表述"
-                + ("，与参考事实一致" if system in ("bazi", "name", "daily") else "")
-                + "。请按判定锚点复核。",
-                entry=e,
-            )
-            for e in passes
-        ] + [
-            dict(
-                system=system,
-                label="fail",
-                base=base["id"],
-                defect=dict(type=kind, detail=detail),
-                change=change,
-                rationale="由现行条目改出一处缺陷，其余内容不变；按判定锚点应判 revise 或 reject。",
-                entry=variant,
-            )
-            for base, variant, kind, detail, change in fails
-        ]
-        rng.shuffle(rows)
-        for number, row in enumerate(rows, 1):
-            items.append(dict(id=f"cal-{system}-{number:02d}", **row))
+                rows.append(
+                    dict(
+                        label="pass",
+                        case="typical",
+                        base=entry["id"],
+                        rationale="按规则逐项核对：" + "；".join(checks(entry)),
+                        entry=entry,
+                    )
+                )
+            rng.shuffle(rows)
+            prefix = "h" if partition == "holdout" else "d"
+            for number, row in enumerate(rows, 1):
+                items.append(
+                    dict(
+                        id=f"cal-{system}-{prefix}{number:02d}",
+                        system=system,
+                        partition=partition,
+                        **row,
+                    )
+                )
     return dict(
         schema_version=1,
         status="draft_needs_owner_confirmation",
-        drafted_by="Anthropic Claude，2026-10-22 应负责人要求起草；负责人逐条确认后冻结",
-        purpose="阶段1第二轮知识库审核的标注校准集：kappa在此集合上计算（运行前登记）",
+        drafted_by="Anthropic Claude，2026-10-22 应负责人要求起草；负责人确认后冻结",
+        purpose="阶段1第二轮：dev 用于试跑与完善规则，holdout 只在预先登记的正式验收中使用一次",
         seed=seed,
         items=items,
     )
@@ -608,11 +751,12 @@ def main(argv=None):
     args.output.write_text(
         yaml.safe_dump(data, allow_unicode=True, sort_keys=False, width=1000), encoding="utf-8"
     )
-    counts = {}
+    counts: dict = {}
     for item in data["items"]:
-        counts.setdefault(item["system"], {}).setdefault(item["label"], 0)
-        counts[item["system"]][item["label"]] += 1
-    print(json.dumps(counts, ensure_ascii=False))
+        key = f"{item['system']}/{item['partition']}"
+        counts.setdefault(key, {}).setdefault(f"{item['label']}:{item['case']}", 0)
+        counts[key][f"{item['label']}:{item['case']}"] += 1
+    print(json.dumps(counts, ensure_ascii=False, indent=1))
 
 
 if __name__ == "__main__":

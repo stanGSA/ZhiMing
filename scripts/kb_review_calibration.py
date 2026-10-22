@@ -26,6 +26,8 @@ from knowledge.schema import SourceEntry
 
 SCHEMA = 1
 LABELS = ("pass", "fail")
+# dev: the pilot, may shape the rubric; holdout: the pre-registered acceptance, used once.
+PARTITIONS = ("dev", "holdout")
 
 
 def canonical(value) -> str:
@@ -47,6 +49,8 @@ def load(path: Path) -> dict:
         seen.add(item["id"])
         if item["label"] not in LABELS:
             raise ValueError(f"{item['id']} 的标签必须是 pass 或 fail")
+        if item["partition"] not in PARTITIONS:
+            raise ValueError(f"{item['id']} 的 partition 必须是 dev 或 holdout")
         if (item["label"] == "fail") != bool(item.get("defect")):
             raise ValueError(f"{item['id']}：fail 必须写明缺陷，pass 不能带缺陷")
         if not str(item.get("rationale") or "").strip():
@@ -61,10 +65,11 @@ def digest(data: dict) -> str:
     return hashlib.sha256(canonical(data["items"]).encode()).hexdigest()
 
 
-def counts(data: dict) -> dict:
+def counts(data: dict, partition: str | None = None) -> dict:
     found: dict = {}
     for item in data["items"]:
-        found.setdefault(item["system"], Counter())[item["label"]] += 1
+        if partition is None or item["partition"] == partition:
+            found.setdefault(item["system"], Counter())[item["label"]] += 1
     return {system: dict(sorted(c.items())) for system, c in sorted(found.items())}
 
 
@@ -80,33 +85,47 @@ def frozen(path: Path) -> tuple[dict, dict]:
     return data, record
 
 
-def freeze(path: Path, confirmed_by: str, at: str | None = None) -> dict:
+def partition_digest(data: dict, partition: str) -> str:
+    items = [i for i in data["items"] if i["partition"] == partition]
+    return hashlib.sha256(canonical(items).encode()).hexdigest()
+
+
+def freeze(path: Path, confirmed_by: str, at: str | None = None, reason: str | None = None) -> dict:
+    """Record the confirmed set. Freezing again (say, a dev label corrected after the pilot)
+    needs a reason and keeps every earlier record; the holdout hash shows it never moved."""
     if not confirmed_by.strip():
         raise ValueError("须写明确认人")
     data = load(path)
+    lock = lock_path(path)
+    previous = json.loads(lock.read_text(encoding="utf-8")) if lock.is_file() else None
+    if previous and not (reason or "").strip():
+        raise ValueError("校准集已冻结；重新冻结须用 --reason 写明原因")
     record = dict(
         sha256=digest(data),
+        partition_sha256={p: partition_digest(data, p) for p in PARTITIONS},
         items=len(data["items"]),
-        by_system=counts(data),
+        by_partition={p: counts(data, p) for p in PARTITIONS},
         confirmed_by=confirmed_by.strip(),
         confirmed_at=at or datetime.now(UTC).isoformat(timespec="seconds"),
         statement="负责人已逐条确认校准条目的内容、标签与依据；冻结后任何修改都使本记录失效。",
+        reason=(reason or "").strip() or None,
     )
-    lock_path(path).write_text(
-        json.dumps(record, ensure_ascii=False, indent=2) + "\n", encoding="utf-8"
-    )
+    history = [*(previous or {}).get("previous", []), *([previous] if previous else [])]
+    record["previous"] = [{k: v for k, v in r.items() if k != "previous"} for r in history]
+    lock.write_text(json.dumps(record, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     return record
 
 
-def plan_items(data: dict, system: str) -> list[dict]:
+def plan_items(data: dict, system: str, partition: str = "holdout") -> list[dict]:
     """Blind plan items: refs like planted copies; the label stays out of the prompt."""
-    items = [i for i in data["items"] if i["system"] == system]
+    items = [i for i in data["items"] if i["system"] == system and i["partition"] == partition]
     return [
         dict(
             ref=f"calib-{number:03d}",
             id=item["id"],
             original=item.get("base") or item["entry"]["id"],
             label=item["label"],
+            partition=item["partition"],
             entry=SourceEntry.model_validate(item["entry"]).model_dump(),
         )
         for number, item in enumerate(items, 1)
@@ -116,10 +135,11 @@ def plan_items(data: dict, system: str) -> list[dict]:
 def table(data: dict) -> str:
     """A Markdown table for the owner to check every label before freezing."""
     rows = [
-        "| 编号 | 体系 | 对象 | 标签 | 缺陷 / 依据 | 改动 | 释义（审核员看到的全文） | 方向 | 同义词 |",
-        "| --- | --- | --- | --- | --- | --- | --- | --- | --- |",
+        "| 编号 | 部分 | 体系 | 对象 | 标签 | 类型 | 缺陷 / 依据 | 改动 | 释义（审核员看到的全文） | 方向 | 同义词 |",
+        "| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |",
     ]
-    for item in data["items"]:
+    order = {p: n for n, p in enumerate(("holdout", "dev"))}
+    for item in sorted(data["items"], key=lambda i: (order[i["partition"]], i["id"])):
         entry = item["entry"]
         defect = item.get("defect") or {}
         why = (f"**{defect['type']}**：{defect['detail']}<br>" if defect else "") + item[
@@ -129,9 +149,11 @@ def table(data: dict) -> str:
         change = item.get("change")
         cells = [
             item["id"],
+            {"holdout": "保留", "dev": "开发"}[item["partition"]],
             item["system"],
             f"{entry['kind']}:{entry['key']}",
             item["label"],
+            {"typical": "典型", "boundary": "边界", "defect": "缺陷"}.get(item.get("case"), "—"),
             why,
             f"{change['field']}：{change['before']} → {change['after']}" if change else "—",
             entry["text"],
@@ -154,11 +176,13 @@ def main(argv=None):
         command.add_argument("--calibration", type=Path, required=True)
         if name == "freeze":
             command.add_argument("--confirmed-by", required=True)
+            command.add_argument("--reason", help="重新冻结时写明原因")
     args = parser.parse_args(argv)
     if args.command == "show":
         print(table(load(args.calibration)))
     else:
-        print(json.dumps(freeze(args.calibration, args.confirmed_by), ensure_ascii=False, indent=2))
+        record = freeze(args.calibration, args.confirmed_by, reason=args.reason)
+        print(json.dumps(record, ensure_ascii=False, indent=2))
 
 
 if __name__ == "__main__":

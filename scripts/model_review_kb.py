@@ -199,12 +199,14 @@ def rubric_digest() -> str:
     return sha256_bytes((RUBRIC + canonical(SYSTEM_RUBRIC) + REVISE_PROMPT).encode())
 
 
-def calibration_for(path: Path | None, system: str) -> dict | None:
-    """The frozen labelled items of one system, ready for ``prepare``."""
+def calibration_for(path: Path | None, system: str, partition: str = "holdout") -> dict | None:
+    """The frozen labelled items of one system and partition, ready for ``prepare``."""
     if path is None:
         return None
     data, lock = calibration_set.frozen(path)
-    return dict(lock=lock, items=calibration_set.plan_items(data, system))
+    return dict(
+        lock=lock, partition=partition, items=calibration_set.plan_items(data, system, partition)
+    )
 
 
 def require_endpoints(roles: dict, needed: tuple[str, ...]) -> None:
@@ -445,6 +447,16 @@ class Workspace:
         self.reviews = root / "knowledge/reviews"
 
 
+def source_digests(workspace: Workspace, system: str) -> dict[str, str]:
+    """Line-ending-independent hashes of one system's source files: what a run reviewed."""
+    return {
+        p.relative_to(workspace.root).as_posix(): sha256_bytes(
+            p.read_bytes().replace(b"\r\n", b"\n")
+        )
+        for p in source_paths(workspace.sources, system)
+    }
+
+
 def prepare(
     workspace: Workspace,
     config: dict,
@@ -484,7 +496,6 @@ def prepare(
     }
     prompts = {b["batch"]: batch_messages(system, b, contents, by_id) for b in batches}
     roles = load_roles(config)
-    paths = source_paths(workspace.sources, system)
     found = [f for f in checks.findings(entries) if f["id"] in {e["id"] for e in selected}]
     manifest = dict(
         schema=SCHEMA,
@@ -511,16 +522,15 @@ def prepare(
             for name in REVIEWERS
         },
         reviewers={name: public_spec(roles[name]) if roles[name] else None for name in REVIEWERS},
-        source_files={
-            p.relative_to(workspace.root).as_posix(): sha256_bytes(
-                p.read_bytes().replace(b"\r\n", b"\n")
-            )
-            for p in paths
-        },
+        source_files=source_digests(workspace, system),
         entry_hashes={e["id"]: content_hash(e) for e in selected},
         planted_count=len(planted),
         calibration=(
-            dict(lock_sha256=calibration["lock"]["sha256"], items=len(calibration_items))
+            dict(
+                lock_sha256=calibration["lock"]["sha256"],
+                items=len(calibration_items),
+                partition=calibration.get("partition"),
+            )
             if calibration
             else None
         ),

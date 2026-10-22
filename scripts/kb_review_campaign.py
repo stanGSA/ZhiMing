@@ -40,8 +40,16 @@ def deviations(manifest, prereg, system):
         if manifest.get(key) != prereg["plan"][key]:
             found.append(key)
     carried = manifest.get("calibration")
-    if carried and carried["lock_sha256"] != prereg["calibration"]["lock_sha256"]:
+    if carried and (
+        carried["lock_sha256"] != prereg["calibration"]["lock_sha256"]
+        or carried.get("partition") != prereg["calibration"]["partition"]
+    ):
         found.append("calibration")
+    # The initial review must see exactly the registered knowledge base.
+    if not manifest.get("only_ids") and manifest.get("source_files") != (
+        prereg["knowledge_base"]["source_files"].get(system)
+    ):
+        found.append("knowledge_base")
     if system not in prereg["systems"]:
         found.append("system")
     return found

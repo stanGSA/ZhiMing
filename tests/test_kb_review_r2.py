@@ -86,21 +86,33 @@ def test_rubric_v2_is_a_new_identity_and_reaches_the_reviser():
 # ---- calibration set ---------------------------------------------------------------------
 
 
-def test_drafted_calibration_set_is_balanced_and_labelled():
+def test_drafted_calibration_set_is_balanced_split_and_rule_based():
     data = calibration_set.load(DRAFT)
-    assert calibration_set.counts(data) == {
-        **{s: {"fail": 15, "pass": 15} for s in ("astro", "bazi", "dream", "name", "tarot")},
+    five = ("astro", "bazi", "dream", "name", "tarot")
+    assert calibration_set.counts(data, "holdout") == {
+        **{s: {"fail": 15, "pass": 15} for s in five},
         "daily": {"fail": 9, "pass": 9},
+    }
+    assert calibration_set.counts(data, "dev") == {
+        **{s: {"fail": 10, "pass": 10} for s in five},
+        "daily": {"fail": 3, "pass": 3},
     }
     for item in data["items"]:
         if item["label"] == "fail":
             assert item["change"]["before"] != item["change"]["after"], item["id"]
             assert item["defect"]["detail"]
-    # A fail is a single edit of a real entry; daily alone reuses its nine entries as passes.
+            assert "锚点" in item["rationale"] or "规则" in item["rationale"]
+        else:
+            # A label rests on the rules, never on what the 2026-10-21 models said.
+            assert "按规则逐项核对" in item["rationale"] and "两家" not in item["rationale"]
+    # Every base is used once, so dev (pilot) and holdout (acceptance) share no entry; daily
+    # alone has too few entries and reuses them.
     bases = {}
     for item in data["items"]:
-        bases.setdefault((item["system"], item["base"]), []).append(item["label"])
-    assert all(len(labels) == 1 or system == "daily" for (system, _), labels in bases.items())
+        bases.setdefault((item["system"], item["base"]), []).append(item["partition"])
+    assert all(len(p) == 1 or system == "daily" for (system, _), p in bases.items())
+    boundary = {(i["system"], i["partition"]) for i in data["items"] if i["case"] == "boundary"}
+    assert {(s, p) for s in five for p in ("holdout", "dev")} <= boundary
 
 
 def test_freeze_binds_the_exact_items(tmp_path):
@@ -117,14 +129,31 @@ def test_freeze_binds_the_exact_items(tmp_path):
         calibration_set.frozen(path)
 
 
+def test_refreezing_needs_a_reason_and_leaves_the_holdout_hash(tmp_path):
+    path = tmp_path / "calibration.yaml"
+    path.write_bytes(DRAFT.read_bytes())
+    first = calibration_set.freeze(path, "负责人")
+    data = yaml.safe_load(path.read_text(encoding="utf-8"))
+    dev = next(i for i in data["items"] if i["partition"] == "dev")
+    dev["rationale"] += "（试跑后更正）"
+    path.write_text(yaml.safe_dump(data, allow_unicode=True), encoding="utf-8")
+    with pytest.raises(ValueError, match="--reason"):
+        calibration_set.freeze(path, "负责人")
+    second = calibration_set.freeze(path, "负责人", reason="更正一条开发集依据")
+    assert second["partition_sha256"]["holdout"] == first["partition_sha256"]["holdout"]
+    assert second["partition_sha256"]["dev"] != first["partition_sha256"]["dev"]
+    assert [r["sha256"] for r in second["previous"]] == [first["sha256"]]
+
+
 # ---- an offline campaign -----------------------------------------------------------------
 
 
 def small_calibration(work, path):
-    """Four real daily entries (pass) and four one-edit copies (fail), frozen."""
+    """Holdout: four real daily entries (pass) and four one-edit copies (fail); dev: two and
+    two more of the same kind. Frozen."""
     entries = review.load_entries(work.sources, SYSTEM)
     items = []
-    for number, entry in enumerate(entries[:8]):
+    for number, entry in enumerate([*entries[:8], *entries[:4]]):
         variant = copy.deepcopy(entry)
         label = "pass" if number % 2 == 0 else "fail"
         if label == "fail":
@@ -133,6 +162,7 @@ def small_calibration(work, path):
             dict(
                 id=f"cal-daily-{number:02d}",
                 system=SYSTEM,
+                partition="holdout" if number < 8 else "dev",
                 label=label,
                 base=entry["id"],
                 rationale="测试",
@@ -215,7 +245,15 @@ def setting(tmp_path, monkeypatch):
     root = tmp_path / "stage1-r2"
     calibration = small_calibration(work, tmp_path / "calibration.yaml")
     roles = review.load_roles(config)
-    prereg = live.preregister(root, calibration, config, roles, systems=(SYSTEM,))
+    prereg = live.preregister(
+        root,
+        calibration,
+        config,
+        roles,
+        systems=(SYSTEM,),
+        workspace=work,
+        pilot_override="离线测试",
+    )
     return work, config, roles, root, prereg
 
 
@@ -233,7 +271,7 @@ def test_calibration_items_are_blind_and_apart_from_their_originals(setting):
         work, config, SYSTEM, calibration=review.calibration_for(path, SYSTEM), seed=3
     )
     assert plan["manifest"]["calibration"] == dict(
-        lock_sha256=prereg["calibration"]["lock_sha256"], items=8
+        lock_sha256=prereg["calibration"]["lock_sha256"], items=8, partition="holdout"
     )
     text = json.dumps(plan["prompts"], ensure_ascii=False)
     assert not any(
@@ -338,3 +376,97 @@ def test_calibration_draft_is_deterministic():
     from scripts.draft_calibration import draft
 
     assert draft() == draft()
+
+
+# ---- pilot, knowledge-base freeze, dream aliases --------------------------------------------
+
+
+async def test_pilot_reviews_only_dev_items_and_gates_registration(setting, tmp_path):
+    work, config, roles, _, prereg = setting
+    calibration = review.ROOT / prereg["calibration"]["path"]
+    root = tmp_path / "fresh"
+    with pytest.raises(ValueError, match="最近一次试跑"):
+        live.preregister(root, calibration, config, roles, systems=(SYSTEM,), workspace=work)
+    models = Models(work)
+    result = await live.run_pilot(
+        root, 1, calibration, workspace=work, config=config, roles=roles,
+        make_model=models.make, systems=(SYSTEM,),
+    )  # fmt: skip
+    assert result["met"] and result["systems"][SYSTEM]["kappa"] == 1.0
+    plan = review.load_plan(root / "pilot-1" / SYSTEM)
+    assert not plan["entries"] and not plan["planted"]
+    assert {i["partition"] for i in plan["calibration"]} == {"dev"}
+    assert plan["manifest"]["calibration"]["partition"] == "dev"
+    # A pilot sits two levels down: never part of the acceptance campaign.
+    assert not list(root.glob("*/manifest.json"))
+    record = live.preregister(root, calibration, config, roles, systems=(SYSTEM,), workspace=work)
+    assert [p["iteration"] for p in record["pilots"]] == [1] and record["pilot_override"] is None
+    assert record["calibration"]["partition"] == "holdout"
+
+
+async def test_pilot_rounds_are_bounded_and_bound_to_one_rubric(setting, tmp_path, monkeypatch):
+    work, config, roles, _, prereg = setting
+    calibration = review.ROOT / prereg["calibration"]["path"]
+    options = dict(
+        workspace=work, config=config, roles=roles, make_model=Models(work).make, systems=(SYSTEM,)
+    )
+    with pytest.raises(ValueError, match="最多"):
+        await live.run_pilot(tmp_path / "r", live.PILOT_MAX + 1, calibration, **options)
+    await live.run_pilot(tmp_path / "r", 1, calibration, **options)
+    monkeypatch.setattr(review, "rubric_digest", lambda: "f" * 64)
+    with pytest.raises(ValueError, match="另一版规则"):
+        await live.run_pilot(tmp_path / "r", 1, calibration, **options)
+    with pytest.raises(ValueError, match="最近一次试跑"):
+        live.preregister(
+            tmp_path / "r", calibration, config, roles, systems=(SYSTEM,), workspace=work
+        )
+
+
+async def test_initial_review_must_see_the_registered_knowledge_base(setting):
+    work, config, roles, root, prereg = setting
+    assert prereg["knowledge_base"]["source_files"][SYSTEM]
+    path = next((work.sources / SYSTEM).glob("*.yaml"))
+    path.write_text(path.read_text(encoding="utf-8") + "\n", encoding="utf-8")  # any byte change
+    data = yaml.safe_load(path.read_text(encoding="utf-8"))
+    data["entries"][0]["text"] += "登记之后的改动。"
+    path.write_text(yaml.safe_dump(data, allow_unicode=True, sort_keys=False), encoding="utf-8")
+    with pytest.raises(ValueError, match="与预先登记不符"):
+        await run(setting, Models(work))
+
+
+def test_dream_alias_review_needs_every_decision_and_refuses_collisions(tmp_path):
+    from scripts import dream_alias_review as aliases
+
+    copy_draft_knowledge(review.ROOT / "knowledge", tmp_path / "knowledge")
+    work = review.Workspace(tmp_path)
+    data = aliases.draft()
+    groups = {i["group"] for i in data["items"]}
+    assert groups == {"restore", "owner", "keep", "matched"}
+    path = tmp_path / "review.yaml"
+    path.write_text(yaml.safe_dump(data, allow_unicode=True), encoding="utf-8")
+    before = {p: p.read_bytes() for p in (work.sources / "dream").glob("*.yaml")}
+    with pytest.raises(ValueError, match="未决定"):
+        aliases.apply(work, path)
+    for item in data["items"]:
+        if item["decision"] == "undecided":
+            item["decision"] = "keep"
+    path.write_text(yaml.safe_dump(data, allow_unicode=True), encoding="utf-8")
+    result = aliases.apply(work, path)
+    assert result["count"] == len(aliases.RESTORE)
+    restored = {e["key"]: e for e in review.load_entries(work.sources, "dream")}
+    assert "理发" in restored["剪头发"]["synonyms"] and not restored["剪头发"]["reviewed"]
+    # An alias another entry already owns is refused before any file is written.
+    for p, content in before.items():
+        p.write_bytes(content)
+    clash = next(i for i in data["items"] if i["decision"] == "keep")
+    clash["decision"], clash["alias"] = "restore", "猫"
+    path.write_text(yaml.safe_dump(data, allow_unicode=True), encoding="utf-8")
+    with pytest.raises(ValueError, match="别名冲突"):
+        aliases.apply(work, path)
+    assert all(p.read_bytes() == content for p, content in before.items())
+
+
+def test_rubric_gives_examples_for_the_disputed_boundaries():
+    assert "正反例" in SYSTEM_RUBRIC["bazi"] and "正反例" in SYSTEM_RUBRIC["name"]
+    assert "theme_map 为 0，两者相容" in SYSTEM_RUBRIC["bazi"]
+    assert "评价写成了客观推断" in SYSTEM_RUBRIC["name"]

@@ -1,12 +1,17 @@
 """Run a pre-registered knowledge review campaign end to end, on the owner's machine.
 
+    python -m scripts.kb_review_live pilot  --run-root <活动目录> --calibration <校准集> --iteration 1
     python -m scripts.kb_review_live preregister --run-root <活动目录> --calibration <校准集>
     python -m scripts.kb_review_live run    --run-root <活动目录> [--systems tarot ...]
     python -m scripts.kb_review_live status --run-root <活动目录>
     python -m scripts.kb_review_live accept --run-root <活动目录>
 
-``preregister`` fixes, before any call, the rubric hash, reviewers, frozen calibration set,
-plan settings, thresholds and the kappa basis, and closes the per-batch ledger path. ``run``
+``pilot`` reviews only the calibration set's dev partition (no real entry), so the rubric can be
+checked and revised before the full spend; its pre-specified gates are ``PILOT_GATES``, with at
+most ``PILOT_MAX`` iterations before the owner decides on other reviewers. ``preregister``
+fixes, before any acceptance call, the rubric hash, reviewers, knowledge base, the frozen
+holdout partition, plan settings, thresholds, the kappa basis and the pilot evidence, and
+closes the per-batch ledger path. ``run``
 then works system by system: one initial run of every entry (with planted copies and the
 calibration items) → merge → the reviser proposes fixes for the queue → proposals that change
 something are applied → only those entries are re-reviewed in a new run, for at most the
@@ -21,6 +26,7 @@ from __future__ import annotations
 import argparse
 import asyncio
 import json
+import random
 from datetime import UTC, datetime
 from pathlib import Path
 
@@ -37,6 +43,11 @@ from scripts.kb_review_rubric import RUBRIC_VERSION
 ROUNDS = 3
 EDITABLE = ("text", "theme_map", "synonyms", "keywords")
 PLAN = dict(batch_size=10, plant_rate=0.1, min_planted=5, passes=2)
+# Fixed before any pilot: both reviewers agree on the dev set, each is stable on a second
+# look, and each agrees with the frozen labels. Thresholds match the acceptance gates where
+# those exist; label agreement is a pilot-only bar.
+PILOT_GATES = dict(kappa=0.6, rerun=0.9, label_agreement=0.85)
+PILOT_MAX = 3  # the first pilot plus at most two rubric revisions
 
 
 def now() -> str:
@@ -59,17 +70,31 @@ def preregister(
     rounds: int = ROUNDS,
     systems=campaign.SYSTEMS,
     decisions: list[dict] | None = None,
+    workspace=None,
+    pilot_override: str | None = None,
 ) -> dict:
-    """Write preregistration.json before any review call; it can never be rewritten."""
+    """Write preregistration.json before any acceptance call; it can never be rewritten.
+
+    The latest pilot must have run under today's rubric and met every gate, unless the owner
+    gives ``pilot_override`` (a reason, recorded verbatim)."""
+    workspace = workspace or review.Workspace()
     target = run_root / campaign.PREREGISTRATION
     if target.exists():
         raise ValueError(f"{relative(target)} 已登记，不能改写；新的口径须使用新的活动目录")
     if any(run_root.glob("*/manifest.json")):
         raise ValueError("活动目录已有审核批次，不能事后登记")
     data, lock = calibration_set.frozen(calibration)
-    missing = [s for s in systems if not lock["by_system"].get(s)]
+    holdout = lock["by_partition"]["holdout"]
+    missing = [s for s in systems if not holdout.get(s)]
     if missing:
-        raise ValueError(f"校准集缺少体系：{'、'.join(missing)}")
+        raise ValueError(f"校准集保留部分缺少体系：{'、'.join(missing)}")
+    pilots = pilot_record(run_root)
+    latest = pilots[-1] if pilots else None
+    ready = bool(latest and latest["met"] and latest["rubric_sha256"] == review.rubric_digest())
+    if not ready and not (pilot_override or "").strip():
+        raise ValueError(
+            "最近一次试跑未在当前规则下通过（或尚未试跑）；请先试跑，或由负责人写明 --pilot-override 理由"
+        )
     review.check_roles(roles, config, (*review.REVIEWERS, "reviser"))
     review.require_endpoints(roles, (*review.REVIEWERS, "reviser"))
     kb_review = config.get("kb_review") or {}
@@ -92,10 +117,19 @@ def preregister(
         calibration=dict(
             path=relative(calibration),
             lock_sha256=lock["sha256"],
-            by_system=lock["by_system"],
+            partition="holdout",
+            holdout_sha256=lock["partition_sha256"]["holdout"],
+            by_system=holdout,
             confirmed_by=lock["confirmed_by"],
             confirmed_at=lock["confirmed_at"],
         ),
+        knowledge_base=dict(
+            kb_version=review.kb_version(workspace.sources, workspace.rules, workspace.reviews),
+            source_files={s: review.source_digests(workspace, s) for s in systems},
+        ),
+        pilots=pilots,
+        pilot_gates=PILOT_GATES,
+        pilot_override=(pilot_override or "").strip() or None,
         thresholds=review.GATES,
         acceptance_basis=(
             "运行前登记：按体系汇总本活动全部初审及复审批次；通过率按当前内容哈希的最后一份完整"
@@ -103,7 +137,8 @@ def preregister(
             "标注校准集上计算；阈值不变；体系未达标时撤销该体系当前内容的全部批准"
         ),
         kappa_basis=dict(
-            scope="每个体系初审中混入的已冻结标注校准集（约一半合格、一半各含一处真实缺陷），第一轮",
+            scope="每个体系初审中混入的已冻结标注校准集保留部分（约一半合格、一半各含一处真实缺陷），"
+            "第一轮；开发部分只用于试跑和完善规则，不进入验收",
             classes={"pass": "放行", "revise": "不通过", "reject": "不通过"},
             reason="真实条目九成以上判通过时kappa失真（2026-10-21占星两家同时标出0条）；"
             "平衡且有标签的校准集使kappa衡量两家能否一致地分辨缺陷",
@@ -142,6 +177,212 @@ def paid_models(config: dict, run_root: Path, timeout: float):
         )
 
     return make_model
+
+
+# ---- pilot on the dev partition -----------------------------------------------------------
+
+
+def pilot_plan(workspace, config, system: str, calibration: Path, *, seed: int) -> dict:
+    """Only the dev items of one system, blind and batched like an ordinary run: by kind, at
+    most ``batch_size`` per batch, never two copies of one entry together."""
+    found = review.calibration_for(calibration, system, "dev")
+    items = found["items"]
+    rng = random.Random(seed)
+    batches = []
+    for kind in sorted({i["entry"]["kind"] for i in items}):
+        members = [i for i in items if i["entry"]["kind"] == kind]
+        rng.shuffle(members)
+        groups: list[list[dict]] = []
+        for item in members:
+            room = [
+                g
+                for g in groups
+                if len(g) < PLAN["batch_size"] and all(o["original"] != item["original"] for o in g)
+            ]
+            if room:
+                room[0].append(item)
+            else:
+                groups.append([item])
+        batches += [dict(kind=kind, refs=[i["ref"] for i in g]) for g in groups]
+    batches = [
+        dict(
+            batch=f"b{n:03d}",
+            kind=b["kind"],
+            items=[dict(item=f"i{k:02d}", ref=r) for k, r in enumerate(b["refs"], 1)],
+        )
+        for n, b in enumerate(batches, 1)
+    ]
+    by_id = {e["id"]: e for e in review.load_entries(workspace.sources, system)}
+    contents = {i["ref"]: i["entry"] for i in items}
+    prompts = {b["batch"]: review.batch_messages(system, b, contents, by_id) for b in batches}
+    roles = review.load_roles(config)
+    manifest = dict(
+        schema=review.SCHEMA,
+        kind="pilot",
+        system=system,
+        seed=seed,
+        batch_size=PLAN["batch_size"],
+        passes=PLAN["passes"],
+        rubric_version=RUBRIC_VERSION,
+        rubric_sha256=review.rubric_digest(),
+        script_sha256=review.sha256_bytes(Path(review.__file__).read_bytes()),
+        reviewers={n: review.public_spec(roles[n]) for n in review.REVIEWERS},
+        calibration=dict(lock_sha256=found["lock"]["sha256"], items=len(items), partition="dev"),
+        batch_count=len(batches),
+        prompt_sha256={
+            k: review.sha256_bytes(review.canonical(v).encode()) for k, v in prompts.items()
+        },
+    )
+    return dict(
+        manifest=manifest,
+        entries=[],
+        planted=[],
+        calibration=items,
+        batches=batches,
+        prompts=prompts,
+        checks=[],
+    )
+
+
+def summarize_pilot(run: review.RunDir, plan: dict) -> dict:
+    """Agreement on the dev items, each reviewer's stability and agreement with the labels,
+    and every item the reviewers or the labels disagree on (what the rubric must settle)."""
+    verdicts = review.collect(run, plan)
+    first = {r: verdicts.get((r, 1), {}) for r in review.REVIEWERS}
+    second = {r: verdicts.get((r, 2), {}) for r in review.REVIEWERS}
+    items = plan["calibration"]
+    rows = [
+        dict(
+            label=i["label"],
+            **{r: first[r].get(i["ref"], {}).get("verdict") for r in review.REVIEWERS},
+        )
+        for i in items
+    ]
+    agreement = review.calibration_metrics(rows)
+    rerun = {
+        r: review.ratio(
+            sum(first[r][i["ref"]]["verdict"] == second[r][i["ref"]]["verdict"] for i in items if i["ref"] in first[r] and i["ref"] in second[r]),
+            sum(i["ref"] in first[r] and i["ref"] in second[r] for i in items),
+        )
+        for r in review.REVIEWERS
+    }  # fmt: skip
+    disputed = []
+    for item in items:
+        seen = {
+            f"{r}.p{n}": table.get(item["ref"])
+            for r in review.REVIEWERS
+            for n, table in ((1, first[r]), (2, second[r]))
+        }
+        calls = {k: v["verdict"] for k, v in seen.items() if v}
+        flagged = {k: v != "pass" for k, v in calls.items()}
+        if len(set(flagged.values())) > 1 or any(
+            f != (item["label"] == "fail") for f in flagged.values()
+        ):
+            disputed.append(
+                dict(
+                    id=item["id"],
+                    label=item["label"],
+                    verdicts=calls,
+                    reasons={k: v["reason"] for k, v in seen.items() if v},
+                    issues={k: v["issues"] for k, v in seen.items() if v and v["issues"]},
+                )
+            )  # fmt: skip
+    gates = dict(
+        complete=agreement["reviewed"] == agreement["items"]
+        and all(sum(i["ref"] in second[r] for i in items) == len(items) for r in review.REVIEWERS),
+        kappa=(agreement["kappa"] or 0) >= PILOT_GATES["kappa"],
+        rerun=all((v or 0) >= PILOT_GATES["rerun"] for v in rerun.values()),
+        label_agreement=all(
+            (a["accuracy"] or 0) >= PILOT_GATES["label_agreement"]
+            for a in agreement["label_agreement"].values()
+        ),
+    )
+    return dict(
+        system=plan["manifest"]["system"],
+        rubric_sha256=plan["manifest"]["rubric_sha256"],
+        agreement=agreement,
+        rerun=rerun,
+        gates=gates,
+        met=all(gates.values()),
+        thresholds=PILOT_GATES,
+        disputed=disputed,
+        usage=review.usage_summary(run, {}),
+    )
+
+
+async def run_pilot(
+    run_root: Path,
+    iteration: int,
+    calibration: Path,
+    *,
+    workspace,
+    config: dict,
+    roles: dict,
+    make_model,
+    systems=campaign.SYSTEMS,
+    concurrency: int = 2,
+    timeout: float = 120,
+) -> dict:
+    if not 1 <= iteration <= PILOT_MAX:
+        raise ValueError(f"试跑最多 {PILOT_MAX} 轮；仍不达标时请负责人决定是否更换审核模型")
+    root = run_root / f"pilot-{iteration}"
+    results = {}
+    for system in systems:
+        path = root / system
+        if (path / "manifest.json").is_file():
+            plan = review.load_plan(path)
+            if plan["manifest"]["rubric_sha256"] != review.rubric_digest():
+                raise ValueError(
+                    f"{relative(path)} 是在另一版规则下试跑的；调整规则后请用新的 --iteration"
+                )
+            run = review.RunDir(path)
+        else:
+            plan = pilot_plan(workspace, config, system, calibration, seed=iteration)
+            run = review.open_run(
+                path, plan, dict(created_at=now(), git=review.git_state(review.ROOT))
+            )
+        result = await review.execute(
+            run, plan, roles, make_model=make_model, timeout=timeout, concurrency=concurrency
+        )
+        if result["failed"]:
+            results[system] = dict(status="service_errors", failed=result["failed"])
+            continue
+        summary = summarize_pilot(run, plan)
+        review.write_json(path / "pilot-summary.json", summary)
+        results[system] = {k: summary[k] for k in ("met", "gates", "rerun")} | dict(
+            kappa=summary["agreement"]["kappa"],
+            label_agreement=summary["agreement"]["label_agreement"],
+            disputed=len(summary["disputed"]),
+        )
+    overall = dict(
+        iteration=iteration,
+        rubric_sha256=review.rubric_digest(),
+        systems=results,
+        met=len(results) == len(systems) and all(r.get("met") for r in results.values()),
+    )
+    if all("met" in r for r in results.values()):
+        review.write_json(root / "summary.json", overall)
+    return overall
+
+
+def pilot_record(run_root: Path) -> list[dict]:
+    """Every finished pilot, in order: what the preregistration cites."""
+    found = []
+    for path in sorted(run_root.glob("pilot-*/summary.json"), key=lambda p: int(p.parent.name[6:])):
+        summary = review.read_json(path)
+        found.append(
+            dict(
+                dir=relative(path.parent),
+                iteration=summary["iteration"],
+                rubric_sha256=summary["rubric_sha256"],
+                met=summary["met"],
+                summary_sha256=review.sha256_bytes(path.read_bytes()),
+            )
+        )
+    return found
+
+
+# ---- the acceptance campaign ---------------------------------------------------------------
 
 
 def stage(path: Path, make_plan, workspace) -> tuple[review.RunDir, dict]:
@@ -309,15 +550,19 @@ def main(argv=None):
         description=__doc__, formatter_class=argparse.RawTextHelpFormatter
     )
     commands = parser.add_subparsers(dest="command", required=True)
-    for name in ("preregister", "run", "status", "accept"):
+    for name in ("pilot", "preregister", "run", "status", "accept"):
         command = commands.add_parser(name)
         command.add_argument("--run-root", type=Path, required=True)
-        if name == "preregister":
+        if name in ("pilot", "preregister"):
             command.add_argument("--calibration", type=Path, required=True)
+        if name == "pilot":
+            command.add_argument("--iteration", type=int, required=True)
+        if name == "preregister":
             command.add_argument("--seed", type=int, default=1)
             command.add_argument("--rounds", type=int, default=ROUNDS)
             command.add_argument("--decisions", type=Path, help="负责人决定记录（JSON列表）")
-        if name == "run":
+            command.add_argument("--pilot-override", help="试跑未达标仍登记时，负责人写明的理由")
+        if name in ("pilot", "run"):
             command.add_argument("--systems", nargs="*")
             command.add_argument("--concurrency", type=int, default=2)
             command.add_argument("--revise-concurrency", type=int, default=2)
@@ -326,7 +571,24 @@ def main(argv=None):
     config = review.load_config(review.ROOT)
     roles = review.load_roles(config)
     timeout = float((config.get("kb_review") or {}).get("timeout_s", 120))
-    if args.command == "preregister":
+    if args.command == "pilot":
+        review.check_roles(roles, config, review.REVIEWERS)
+        review.require_endpoints(roles, review.REVIEWERS)
+        output = asyncio.run(
+            run_pilot(
+                args.run_root,
+                args.iteration,
+                args.calibration,
+                workspace=review.Workspace(),
+                config=config,
+                roles=roles,
+                make_model=paid_models(config, args.run_root, timeout),
+                systems=args.systems or campaign.SYSTEMS,
+                concurrency=args.concurrency,
+                timeout=timeout,
+            )
+        )
+    elif args.command == "preregister":
         decisions = json.loads(args.decisions.read_text(encoding="utf-8")) if args.decisions else []
         output = preregister(
             args.run_root,
@@ -336,6 +598,7 @@ def main(argv=None):
             seed=args.seed,
             rounds=args.rounds,
             decisions=decisions,
+            pilot_override=args.pilot_override,
         )
     elif args.command == "run":
         prereg_path = args.run_root / campaign.PREREGISTRATION
