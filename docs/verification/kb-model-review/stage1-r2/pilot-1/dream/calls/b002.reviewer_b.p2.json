@@ -1,0 +1,106 @@
+{
+  "batch": "b002",
+  "reviewer": "reviewer_b",
+  "run_pass": 2,
+  "attempt": 1,
+  "vendor": "openai",
+  "requested_model": "gpt-6.1-sol",
+  "returned_model": "gpt-6.1-sol",
+  "api": "openai",
+  "started_at": "2026-10-22T07:06:43+00:00",
+  "finished_at": "2026-10-22T07:07:13+00:00",
+  "latency_s": 30.81,
+  "http_attempts": 1,
+  "finish_reason": "stop",
+  "prompt_sha256": "b350278ff0b43e30029accec9dd696515be43c1adf9e6599662dda850b8268d9",
+  "input_tokens": 3514,
+  "output_tokens": 1245,
+  "cached_input_tokens": 3511,
+  "usage_available": true,
+  "raw_text": "{\n  \"items\": [\n    {\n      \"item\": \"i01\",\n      \"verdict\": \"revise\",\n      \"issues\": [\n        {\n          \"dimension\": \"consistency\",\n          \"detail\": \"synonyms 中“包饺子”是制作食物的动作，不是“饺子”这一食物的同义说法，可能误命中。\"\n        },\n        {\n          \"dimension\": \"theme_direction\",\n          \"detail\": \"theme_map.finance 为负，但 text 仅涉及团圆、家庭、满足感与照顾，没有财务受阻的含义。\"\n        }\n      ],\n      \"reason\": \"同义词混入不同动作意象，且财务负向缺乏文字依据。\"\n    },\n    {\n      \"item\": \"i02\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"释义围绕关系中的不安全感展开，关系负向与文字一致，且明确不作现实预测。\"\n    },\n    {\n      \"item\": \"i03\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"指引、清晰感与希望符合灯的象征联想，自我轻度正向与文字一致。\"\n    },\n    {\n      \"item\": \"i04\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"以平和措辞表达思念与关系联想，没有现实预测，中性主题方向合理。\"\n    },\n    {\n      \"item\": \"i05\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"疲惫与休息需求支持自我负向，文字没有据梦作健康诊断。\"\n    },\n    {\n      \"item\": \"i06\",\n      \"verdict\": \"revise\",\n      \"issues\": [\n        {\n          \"dimension\": \"consistency\",\n          \"detail\": \"synonyms 中“想不开”也常指一时纠结、无法释怀，并不必然指自杀；作为检索别名会误命中，应删除。\"\n        }\n      ],\n      \"reason\": \"敏感意象的解释与求助提示妥当，但“想不开”不符合检索同义词要求。\"\n    },\n    {\n      \"item\": \"i07\",\n      \"verdict\": \"revise\",\n      \"issues\": [\n        {\n          \"dimension\": \"certainty\",\n          \"detail\": \"text 末句“梦到它预示近期会收到好消息”直接预测现实事件，前面的“不预示现实结果”不能抵消这一问题。\"\n        },\n        {\n          \"dimension\": \"consistency\",\n          \"detail\": \"text 中“不预示现实结果”与末句“预示近期会收到好消息”相互矛盾。\"\n        }\n      ],\n      \"reason\": \"末句包含明确的现实事件预测，并与前文自相矛盾。\"\n    },\n    {\n      \"item\": \"i08\",\n      \"verdict\": \"revise\",\n      \"issues\": [\n        {\n          \"dimension\": \"theme_direction\",\n          \"detail\": \"theme_map.career 为负，但 text 的“根基、务实或陷入困局”仅是一般状态联想，没有将困局指向事业，不能据此支持事业负向。\"\n        }\n      ],\n      \"reason\": \"文字可以表达一般受困感，但不足以支持专门的事业负向标注。\"\n    },\n    {\n      \"item\": \"i09\",\n      \"verdict\": \"revise\",\n      \"issues\": [\n        {\n          \"dimension\": \"theme_direction\",\n          \"detail\": \"theme_map.self 为负，而 text 的核心联想是“渴望自由、摆脱限制或自信提升”，整体偏向舒展与提升；后文泛指压力不足以支持当前自我负向。\"\n        }\n      ],\n      \"reason\": \"自我负向与释义核心表达的自由、突破和自信提升不一致。\"\n    },\n    {\n      \"item\": \"i10\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"开阔、理想与可能性支持自我正向，文字没有现实预测。\"\n    }\n  ]\n}",
+  "verdicts": {
+    "i01": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "consistency",
+          "detail": "synonyms 中“包饺子”是制作食物的动作，不是“饺子”这一食物的同义说法，可能误命中。"
+        },
+        {
+          "dimension": "theme_direction",
+          "detail": "theme_map.finance 为负，但 text 仅涉及团圆、家庭、满足感与照顾，没有财务受阻的含义。"
+        }
+      ],
+      "reason": "同义词混入不同动作意象，且财务负向缺乏文字依据。"
+    },
+    "i02": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "释义围绕关系中的不安全感展开，关系负向与文字一致，且明确不作现实预测。"
+    },
+    "i03": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "指引、清晰感与希望符合灯的象征联想，自我轻度正向与文字一致。"
+    },
+    "i04": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "以平和措辞表达思念与关系联想，没有现实预测，中性主题方向合理。"
+    },
+    "i05": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "疲惫与休息需求支持自我负向，文字没有据梦作健康诊断。"
+    },
+    "i06": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "consistency",
+          "detail": "synonyms 中“想不开”也常指一时纠结、无法释怀，并不必然指自杀；作为检索别名会误命中，应删除。"
+        }
+      ],
+      "reason": "敏感意象的解释与求助提示妥当，但“想不开”不符合检索同义词要求。"
+    },
+    "i07": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "certainty",
+          "detail": "text 末句“梦到它预示近期会收到好消息”直接预测现实事件，前面的“不预示现实结果”不能抵消这一问题。"
+        },
+        {
+          "dimension": "consistency",
+          "detail": "text 中“不预示现实结果”与末句“预示近期会收到好消息”相互矛盾。"
+        }
+      ],
+      "reason": "末句包含明确的现实事件预测，并与前文自相矛盾。"
+    },
+    "i08": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "theme_direction",
+          "detail": "theme_map.career 为负，但 text 的“根基、务实或陷入困局”仅是一般状态联想，没有将困局指向事业，不能据此支持事业负向。"
+        }
+      ],
+      "reason": "文字可以表达一般受困感，但不足以支持专门的事业负向标注。"
+    },
+    "i09": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "theme_direction",
+          "detail": "theme_map.self 为负，而 text 的核心联想是“渴望自由、摆脱限制或自信提升”，整体偏向舒展与提升；后文泛指压力不足以支持当前自我负向。"
+        }
+      ],
+      "reason": "自我负向与释义核心表达的自由、突破和自信提升不一致。"
+    },
+    "i10": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "开阔、理想与可能性支持自我正向，文字没有现实预测。"
+    }
+  }
+}

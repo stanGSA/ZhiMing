@@ -1,0 +1,43 @@
+{
+  "batch": "b005",
+  "reviewer": "reviewer_a",
+  "run_pass": 1,
+  "attempt": 1,
+  "vendor": "deepseek",
+  "requested_model": "deepseek-flash",
+  "returned_model": "deepseek-flash",
+  "api": "openai",
+  "started_at": "2026-10-22T06:55:37+00:00",
+  "finished_at": "2026-10-22T06:55:38+00:00",
+  "latency_s": 1.276,
+  "http_attempts": 1,
+  "finish_reason": "stop",
+  "prompt_sha256": "34e9bbf869eb31f35f68f1b7c5ed4197e2fe18375b4a511c3370ba9f8e12c21e",
+  "input_tokens": 2292,
+  "output_tokens": 178,
+  "cached_input_tokens": 1408,
+  "usage_available": true,
+  "raw_text": "{\"items\": [{\"item\": \"i01\", \"verdict\": \"revise\", \"issues\": [{\"dimension\": \"theme_direction\", \"detail\": \"theme_map 中 finance 为 -0.15（偏阻），但文字写“财务方面倾向通过技能与产出带来收入”，含义偏顺，方向与文字不一致。\"}], \"reason\": \"财务主题的方向值与释义文字表达的倾向相反。\"}, {\"item\": \"i02\", \"verdict\": \"pass\", \"issues\": [], \"reason\": \"核心含义、主题方向与措辞均无明显问题，免责说明不构成宿命化。\"}, {\"item\": \"i03\", \"verdict\": \"pass\", \"issues\": [], \"reason\": \"偏财核心含义与主题方向一致，且含不据此作投资判断的免责声明。\"}]}",
+  "verdicts": {
+    "i01": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "theme_direction",
+          "detail": "theme_map 中 finance 为 -0.15（偏阻），但文字写“财务方面倾向通过技能与产出带来收入”，含义偏顺，方向与文字不一致。"
+        }
+      ],
+      "reason": "财务主题的方向值与释义文字表达的倾向相反。"
+    },
+    "i02": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "核心含义、主题方向与措辞均无明显问题，免责说明不构成宿命化。"
+    },
+    "i03": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "偏财核心含义与主题方向一致，且含不据此作投资判断的免责声明。"
+    }
+  }
+}

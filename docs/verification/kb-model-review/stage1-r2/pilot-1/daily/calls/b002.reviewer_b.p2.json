@@ -1,0 +1,53 @@
+{
+  "batch": "b002",
+  "reviewer": "reviewer_b",
+  "run_pass": 2,
+  "attempt": 1,
+  "vendor": "openai",
+  "requested_model": "gpt-6.1-sol",
+  "returned_model": "gpt-6.1-sol",
+  "api": "openai",
+  "started_at": "2026-10-22T07:10:58+00:00",
+  "finished_at": "2026-10-22T07:11:13+00:00",
+  "latency_s": 14.077,
+  "http_attempts": 1,
+  "finish_reason": "stop",
+  "prompt_sha256": "ad589fc71880e2d886a0f69ed34d0c5c774fc26c1a2a503b8315233a7661238a",
+  "input_tokens": 1702,
+  "output_tokens": 336,
+  "cached_input_tokens": 1699,
+  "usage_available": true,
+  "raw_text": "{\n  \"items\": [\n    {\n      \"item\": \"i01\",\n      \"verdict\": \"revise\",\n      \"issues\": [\n        {\n          \"dimension\": \"theme_direction\",\n          \"detail\": \"theme_map.self 为 0.2；按项目约定，每日运势条目的 theme_map 须全为 0，应将该值改为 0。\"\n        }\n      ],\n      \"reason\": \"文字符合水的传统配色约定，但每日运势条目不应设置非零方向。\"\n    },\n    {\n      \"item\": \"i02\",\n      \"verdict\": \"revise\",\n      \"issues\": [\n        {\n          \"dimension\": \"certainty\",\n          \"detail\": \"text 中“可以为当天带来好运”暗示配色能带来实际运气，违反每日运势配色仅为约定的要求。\"\n        }\n      ],\n      \"reason\": \"木的配色与中性方向均符合要求，但需删除配色能带来实际好运的表述。\"\n    },\n    {\n      \"item\": \"i03\",\n      \"verdict\": \"revise\",\n      \"issues\": [\n        {\n          \"dimension\": \"tradition\",\n          \"detail\": \"text 中“传统配色为黑、蓝”与参考事实不符；金的传统配色应为白、金，黑、蓝对应水。\"\n        }\n      ],\n      \"reason\": \"条目对象仍为金，但其传统配色写错，需要修正。\"\n    }\n  ]\n}",
+  "verdicts": {
+    "i01": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "theme_direction",
+          "detail": "theme_map.self 为 0.2；按项目约定，每日运势条目的 theme_map 须全为 0，应将该值改为 0。"
+        }
+      ],
+      "reason": "文字符合水的传统配色约定，但每日运势条目不应设置非零方向。"
+    },
+    "i02": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "certainty",
+          "detail": "text 中“可以为当天带来好运”暗示配色能带来实际运气，违反每日运势配色仅为约定的要求。"
+        }
+      ],
+      "reason": "木的配色与中性方向均符合要求，但需删除配色能带来实际好运的表述。"
+    },
+    "i03": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "tradition",
+          "detail": "text 中“传统配色为黑、蓝”与参考事实不符；金的传统配色应为白、金，黑、蓝对应水。"
+        }
+      ],
+      "reason": "条目对象仍为金，但其传统配色写错，需要修正。"
+    }
+  }
+}

@@ -1,0 +1,462 @@
+{
+  "at": "2026-10-22T07:25:17+00:00",
+  "human_reviewed": false,
+  "reason": "Development only after pilot1; holdout untouched",
+  "holdout_sha256": "535c87eaabeeec47591f4029d96cd0b990485f8157e522fc3e52db67f9733ac3",
+  "changes": [
+    {
+      "id": "cal-bazi-d01",
+      "reason": "锚点C应要求十神关系定义；补足底稿，保留原标签和原故意缺陷；明确符号倾向不指现实机会概率",
+      "before": {
+        "id": "cal-bazi-d01",
+        "system": "bazi",
+        "partition": "dev",
+        "label": "pass",
+        "case": "boundary",
+        "base": "kb:bazi:god_pillar:比肩:month",
+        "rationale": "边界案例：十神的自我、事业方向属约定，不必在文字中写明（锚点B）。按规则逐项核对：无确定性词语，无对现实事件的预测；自我状态 +0.1 属本体系方向约定；事业 +0.1 属本体系方向约定；感情关系 -0.1 有文字“关系”；财务 -0.1 有文字“财务”",
+        "entry": {
+          "id": "kb:bazi:god_pillar:比肩:month",
+          "system": "bazi",
+          "kind": "god_pillar",
+          "key": "比肩:month",
+          "synonyms": [],
+          "keywords": [
+            "比肩:month"
+          ],
+          "theme_map": {
+            "self": 0.1,
+            "career": 0.1,
+            "relationship": -0.1,
+            "finance": -0.1
+          },
+          "text": "比肩是相对日主的传统关系标签，主题是独立与同伴：明确自己的职责，也给同伴协作空间。感情方面重视平等与独立，也容易各自坚持，宜留出协商空间；财务方面同伴分担也分享，留意合伙分配。传统上配偶星按性别区分，这里只作不分性别的倾向参考。在月柱可作为该柱位置的反思线索，不能代替全局分析。",
+          "source": "自写草稿；参考《渊海子平》《三命通会》传统术语，未复制原文；感情、财务方向由 Anthropic Claude 于2026-10-21按传统规则起草；待人工审核",
+          "license": "本项目自写",
+          "reviewed": false,
+          "version": 4
+        }
+      },
+      "after": {
+        "id": "cal-bazi-d01",
+        "system": "bazi",
+        "partition": "dev",
+        "label": "pass",
+        "case": "boundary",
+        "base": "kb:bazi:god_pillar:比肩:month",
+        "rationale": "边界案例：十神的自我、事业方向属约定，不必在文字中写明（锚点B）。按规则逐项核对：无确定性词语，无对现实事件的预测；自我状态 +0.1 属本体系方向约定；事业 +0.1 属本体系方向约定；感情关系 -0.1 有文字“关系”；财务 -0.1 有文字“财务”。试跑1后开发集修正：锚点C应要求十神关系定义；补足底稿，保留原标签和原故意缺陷；明确符号倾向不指现实机会概率",
+        "entry": {
+          "id": "kb:bazi:god_pillar:比肩:month",
+          "system": "bazi",
+          "kind": "god_pillar",
+          "key": "比肩:month",
+          "synonyms": [],
+          "keywords": [
+            "比肩:month"
+          ],
+          "theme_map": {
+            "self": 0.1,
+            "career": 0.1,
+            "relationship": -0.1,
+            "finance": -0.1
+          },
+          "text": "以下说法均为传统象征联想，不表示现实中更容易获得机会或收入。按传统十神定义，与日主五行相同且阴阳相同的天干关系称为比肩。比肩是相对日主的传统关系标签，主题是独立与同伴：明确自己的职责，也给同伴协作空间。感情方面重视平等与独立，也容易各自坚持，宜留出协商空间；财务方面同伴分担也分享，留意合伙分配。传统上配偶星按性别区分，这里只作不分性别的倾向参考。在月柱可作为该柱位置的反思线索，不能代替全局分析。",
+          "source": "自写草稿；参考《渊海子平》《三命通会》传统术语，未复制原文；感情、财务方向由 Anthropic Claude 于2026-10-21按传统规则起草；待人工审核",
+          "license": "本项目自写",
+          "reviewed": false,
+          "version": 4
+        }
+      }
+    },
+    {
+      "id": "cal-bazi-d04",
+      "reason": "锚点C应要求十神关系定义；补足底稿，保留原标签和原故意缺陷",
+      "before": {
+        "id": "cal-bazi-d04",
+        "system": "bazi",
+        "partition": "dev",
+        "label": "fail",
+        "case": "defect",
+        "base": "kb:bazi:god_pillar:食神:day",
+        "defect": {
+          "type": "direction_contradicts_text",
+          "detail": "text 对财务的表述偏顺，theme_map.finance 却是 -0.15（原为 +0.15）"
+        },
+        "change": {
+          "field": "theme_map.finance",
+          "before": 0.15,
+          "after": -0.15
+        },
+        "rationale": "由现行条目改出一处缺陷（锚点B），其余内容不变；按规则应判 revise 或 reject。",
+        "entry": {
+          "id": "kb:bazi:god_pillar:食神:day",
+          "system": "bazi",
+          "kind": "god_pillar",
+          "key": "食神:day",
+          "synonyms": [],
+          "keywords": [
+            "食神:day"
+          ],
+          "theme_map": {
+            "self": 0.2,
+            "career": 0.2,
+            "relationship": 0.15,
+            "finance": -0.15
+          },
+          "text": "食神是相对日主的传统关系标签，主题是表达与产出：通过稳定输出展示技能，保持可持续节奏。感情方面温和，重视相处的愉快感；财务方面倾向通过技能与产出带来收入。传统上配偶星按性别区分，这里只作不分性别的倾向参考。在日柱可作为该柱位置的反思线索，不能代替全局分析。",
+          "source": "自写草稿；参考《渊海子平》《三命通会》传统术语，未复制原文；感情、财务方向由 Anthropic Claude 于2026-10-21按传统规则起草；待人工审核",
+          "license": "本项目自写",
+          "reviewed": false,
+          "version": 4
+        }
+      },
+      "after": {
+        "id": "cal-bazi-d04",
+        "system": "bazi",
+        "partition": "dev",
+        "label": "fail",
+        "case": "defect",
+        "base": "kb:bazi:god_pillar:食神:day",
+        "defect": {
+          "type": "direction_contradicts_text",
+          "detail": "text 对财务的表述偏顺，theme_map.finance 却是 -0.15（原为 +0.15）"
+        },
+        "change": {
+          "field": "theme_map.finance",
+          "before": 0.15,
+          "after": -0.15
+        },
+        "rationale": "由现行条目改出一处缺陷（锚点B），其余内容不变；按规则应判 revise 或 reject。。试跑1后开发集修正：锚点C应要求十神关系定义；补足底稿，保留原标签和原故意缺陷",
+        "entry": {
+          "id": "kb:bazi:god_pillar:食神:day",
+          "system": "bazi",
+          "kind": "god_pillar",
+          "key": "食神:day",
+          "synonyms": [],
+          "keywords": [
+            "食神:day"
+          ],
+          "theme_map": {
+            "self": 0.2,
+            "career": 0.2,
+            "relationship": 0.15,
+            "finance": -0.15
+          },
+          "text": "按传统十神定义，日主所生、且与日主阴阳相同的天干关系称为食神。食神是相对日主的传统关系标签，主题是表达与产出：通过稳定输出展示技能，保持可持续节奏。感情方面温和，重视相处的愉快感；财务方面倾向通过技能与产出带来收入。传统上配偶星按性别区分，这里只作不分性别的倾向参考。在日柱可作为该柱位置的反思线索，不能代替全局分析。",
+          "source": "自写草稿；参考《渊海子平》《三命通会》传统术语，未复制原文；感情、财务方向由 Anthropic Claude 于2026-10-21按传统规则起草；待人工审核",
+          "license": "本项目自写",
+          "reviewed": false,
+          "version": 4
+        }
+      }
+    },
+    {
+      "id": "cal-bazi-d10",
+      "reason": "锚点C应要求十神关系定义；补足底稿，保留原标签和原故意缺陷",
+      "before": {
+        "id": "cal-bazi-d10",
+        "system": "bazi",
+        "partition": "dev",
+        "label": "fail",
+        "case": "defect",
+        "base": "kb:bazi:ten_god:正印",
+        "defect": {
+          "type": "prediction",
+          "detail": "加入了对现实事件的预测（“预示……会……”），没有确定性词语但仍是预测"
+        },
+        "change": {
+          "field": "text",
+          "before": "（无）",
+          "after": "它出现在流年时，预示当年会有搬迁或换工作的变动。"
+        },
+        "rationale": "由现行条目改出一处缺陷（锚点F），其余内容不变；按规则应判 revise 或 reject。",
+        "entry": {
+          "id": "kb:bazi:ten_god:正印",
+          "system": "bazi",
+          "kind": "ten_god",
+          "key": "正印",
+          "synonyms": [],
+          "keywords": [
+            "正印"
+          ],
+          "theme_map": {
+            "self": 0.2,
+            "career": 0.2,
+            "relationship": 0.1,
+            "finance": 0.0
+          },
+          "text": "正印是相对日主的传统关系标签，主题是学习与支持：借助学习和支持体系完善准备，避免只积累不行动。感情方面重视照顾与支持。传统上配偶星按性别区分，这里只作不分性别的倾向参考。它出现在流年时，预示当年会有搬迁或换工作的变动。",
+          "source": "自写草稿；参考《渊海子平》《三命通会》传统术语，未复制原文；感情、财务方向由 Anthropic Claude 于2026-10-21按传统规则起草；待人工审核",
+          "license": "本项目自写",
+          "reviewed": false,
+          "version": 4
+        }
+      },
+      "after": {
+        "id": "cal-bazi-d10",
+        "system": "bazi",
+        "partition": "dev",
+        "label": "fail",
+        "case": "defect",
+        "base": "kb:bazi:ten_god:正印",
+        "defect": {
+          "type": "prediction",
+          "detail": "加入了对现实事件的预测（“预示……会……”），没有确定性词语但仍是预测"
+        },
+        "change": {
+          "field": "text",
+          "before": "（无）",
+          "after": "它出现在流年时，预示当年会有搬迁或换工作的变动。"
+        },
+        "rationale": "由现行条目改出一处缺陷（锚点F），其余内容不变；按规则应判 revise 或 reject。。试跑1后开发集修正：锚点C应要求十神关系定义；补足底稿，保留原标签和原故意缺陷",
+        "entry": {
+          "id": "kb:bazi:ten_god:正印",
+          "system": "bazi",
+          "kind": "ten_god",
+          "key": "正印",
+          "synonyms": [],
+          "keywords": [
+            "正印"
+          ],
+          "theme_map": {
+            "self": 0.2,
+            "career": 0.2,
+            "relationship": 0.1,
+            "finance": 0.0
+          },
+          "text": "按传统十神定义，生日主、且与日主阴阳相异的天干关系称为正印。正印是相对日主的传统关系标签，主题是学习与支持：借助学习和支持体系完善准备，避免只积累不行动。感情方面重视照顾与支持。传统上配偶星按性别区分，这里只作不分性别的倾向参考。它出现在流年时，预示当年会有搬迁或换工作的变动。",
+          "source": "自写草稿；参考《渊海子平》《三命通会》传统术语，未复制原文；感情、财务方向由 Anthropic Claude 于2026-10-21按传统规则起草；待人工审核",
+          "license": "本项目自写",
+          "reviewed": false,
+          "version": 4
+        }
+      }
+    },
+    {
+      "id": "cal-bazi-d16",
+      "reason": "锚点C应要求十神关系定义；补足底稿，保留原标签和原故意缺陷",
+      "before": {
+        "id": "cal-bazi-d16",
+        "system": "bazi",
+        "partition": "dev",
+        "label": "fail",
+        "case": "defect",
+        "base": "kb:bazi:ten_god:偏财",
+        "defect": {
+          "type": "direction_contradicts_text",
+          "detail": "text 对财务的表述偏顺，theme_map.finance 却是 -0.15（原为 +0.15）"
+        },
+        "change": {
+          "field": "theme_map.finance",
+          "before": 0.15,
+          "after": -0.15
+        },
+        "rationale": "由现行条目改出一处缺陷（锚点B），其余内容不变；按规则应判 revise 或 reject。",
+        "entry": {
+          "id": "kb:bazi:ten_god:偏财",
+          "system": "bazi",
+          "kind": "ten_god",
+          "key": "偏财",
+          "synonyms": [],
+          "keywords": [
+            "偏财"
+          ],
+          "theme_map": {
+            "self": 0.1,
+            "career": 0.1,
+            "relationship": 0.1,
+            "finance": -0.15
+          },
+          "text": "偏财是相对日主的传统关系标签，主题是机会与调配：探索机会时核实成本，不据符号作投资预测。感情方面人缘与交际较活跃，宜保持专注；财务方面较容易遇到机会，同时核实风险，不据此作投资判断。传统上配偶星按性别区分，这里只作不分性别的倾向参考。",
+          "source": "自写草稿；参考《渊海子平》《三命通会》传统术语，未复制原文；感情、财务方向由 Anthropic Claude 于2026-10-21按传统规则起草；待人工审核",
+          "license": "本项目自写",
+          "reviewed": false,
+          "version": 4
+        }
+      },
+      "after": {
+        "id": "cal-bazi-d16",
+        "system": "bazi",
+        "partition": "dev",
+        "label": "fail",
+        "case": "defect",
+        "base": "kb:bazi:ten_god:偏财",
+        "defect": {
+          "type": "direction_contradicts_text",
+          "detail": "text 对财务的表述偏顺，theme_map.finance 却是 -0.15（原为 +0.15）"
+        },
+        "change": {
+          "field": "theme_map.finance",
+          "before": 0.15,
+          "after": -0.15
+        },
+        "rationale": "由现行条目改出一处缺陷（锚点B），其余内容不变；按规则应判 revise 或 reject。。试跑1后开发集修正：锚点C应要求十神关系定义；补足底稿，保留原标签和原故意缺陷",
+        "entry": {
+          "id": "kb:bazi:ten_god:偏财",
+          "system": "bazi",
+          "kind": "ten_god",
+          "key": "偏财",
+          "synonyms": [],
+          "keywords": [
+            "偏财"
+          ],
+          "theme_map": {
+            "self": 0.1,
+            "career": 0.1,
+            "relationship": 0.1,
+            "finance": -0.15
+          },
+          "text": "按传统十神定义，日主所克、且与日主阴阳相同的天干关系称为偏财。偏财是相对日主的传统关系标签，主题是机会与调配：探索机会时核实成本，不据符号作投资预测。感情方面人缘与交际较活跃，宜保持专注；财务方面较容易遇到机会，同时核实风险，不据此作投资判断。传统上配偶星按性别区分，这里只作不分性别的倾向参考。",
+          "source": "自写草稿；参考《渊海子平》《三命通会》传统术语，未复制原文；感情、财务方向由 Anthropic Claude 于2026-10-21按传统规则起草；待人工审核",
+          "license": "本项目自写",
+          "reviewed": false,
+          "version": 4
+        }
+      }
+    },
+    {
+      "id": "cal-bazi-d17",
+      "reason": "锚点C应要求十神关系定义；补足底稿，保留原标签和原故意缺陷；明确符号倾向不指现实机会概率；将现实机会措辞本身改为传统符号倾向，不只追加免责声明",
+      "before": {
+        "id": "cal-bazi-d17",
+        "system": "bazi",
+        "partition": "dev",
+        "label": "pass",
+        "case": "typical",
+        "base": "kb:bazi:god_pillar:偏财:year",
+        "rationale": "按规则逐项核对：无确定性词语，无对现实事件的预测；自我状态 +0.1 属本体系方向约定；事业 +0.1 属本体系方向约定；感情关系 +0.1 有文字“关系”；财务 +0.15 有文字“财务”",
+        "entry": {
+          "id": "kb:bazi:god_pillar:偏财:year",
+          "system": "bazi",
+          "kind": "god_pillar",
+          "key": "偏财:year",
+          "synonyms": [],
+          "keywords": [
+            "偏财:year"
+          ],
+          "theme_map": {
+            "self": 0.1,
+            "career": 0.1,
+            "relationship": 0.1,
+            "finance": 0.15
+          },
+          "text": "偏财是相对日主的传统关系标签，主题是机会与调配：探索机会时核实成本，不据符号作投资预测。感情方面人缘与交际较活跃，宜保持专注；财务方面较容易遇到机会，同时核实风险，不据此作投资判断。传统上配偶星按性别区分，这里只作不分性别的倾向参考。在年柱可作为该柱位置的反思线索，不能代替全局分析。",
+          "source": "自写草稿；参考《渊海子平》《三命通会》传统术语，未复制原文；感情、财务方向由 Anthropic Claude 于2026-10-21按传统规则起草；待人工审核",
+          "license": "本项目自写",
+          "reviewed": false,
+          "version": 4
+        }
+      },
+      "after": {
+        "id": "cal-bazi-d17",
+        "system": "bazi",
+        "partition": "dev",
+        "label": "pass",
+        "case": "typical",
+        "base": "kb:bazi:god_pillar:偏财:year",
+        "rationale": "按规则逐项核对：无确定性词语，无对现实事件的预测；自我状态 +0.1 属本体系方向约定；事业 +0.1 属本体系方向约定；感情关系 +0.1 有文字“关系”；财务 +0.15 有文字“财务”。试跑1后开发集修正：锚点C应要求十神关系定义；补足底稿，保留原标签和原故意缺陷；明确符号倾向不指现实机会概率",
+        "entry": {
+          "id": "kb:bazi:god_pillar:偏财:year",
+          "system": "bazi",
+          "kind": "god_pillar",
+          "key": "偏财:year",
+          "synonyms": [],
+          "keywords": [
+            "偏财:year"
+          ],
+          "theme_map": {
+            "self": 0.1,
+            "career": 0.1,
+            "relationship": 0.1,
+            "finance": 0.15
+          },
+          "text": "以下说法均为传统象征联想，不表示现实中更容易获得机会或收入。按传统十神定义，日主所克、且与日主阴阳相同的天干关系称为偏财。偏财是相对日主的传统关系标签，主题是机会与调配：探索机会时核实成本，不据符号作投资预测。感情方面人缘与交际较活跃，宜保持专注；财务方面在传统象征中侧重机会与资源调配的偏顺倾向，同时提醒核实风险，不据此作投资判断。传统上配偶星按性别区分，这里只作不分性别的倾向参考。在年柱可作为该柱位置的反思线索，不能代替全局分析。",
+          "source": "自写草稿；参考《渊海子平》《三命通会》传统术语，未复制原文；感情、财务方向由 Anthropic Claude 于2026-10-21按传统规则起草；待人工审核",
+          "license": "本项目自写",
+          "reviewed": false,
+          "version": 4
+        }
+      }
+    },
+    {
+      "id": "cal-bazi-d20",
+      "reason": "补足地支刑的具体组合，避免把象征侧重当作完整规则",
+      "before": {
+        "id": "cal-bazi-d20",
+        "system": "bazi",
+        "partition": "dev",
+        "label": "pass",
+        "case": "boundary",
+        "base": "kb:bazi:relation:地支刑",
+        "rationale": "边界案例：术语条目带方向，但文字写明了对应主题（锚点B）。按规则逐项核对：无确定性词语，无对现实事件的预测；自我状态 -0.1 有文字“内在”；事业 -0.1 有文字“工作”",
+        "entry": {
+          "id": "kb:bazi:relation:地支刑",
+          "system": "bazi",
+          "kind": "relation",
+          "key": "地支刑",
+          "synonyms": [
+            "地支相刑"
+          ],
+          "keywords": [
+            "地支刑",
+            "地支相刑",
+            "相互牵制",
+            "反复摩擦",
+            "内在纠结",
+            "规则约束",
+            "自我反思"
+          ],
+          "theme_map": {
+            "self": -0.1,
+            "career": -0.1,
+            "relationship": 0.0,
+            "finance": 0.0
+          },
+          "text": "地支刑是传统命理中特定地支之间的相刑关系，并非泛指天干、地支之间的关系。白话说，它常被用来象征相互牵制、反复摩擦或内在纠结；与“冲”侧重对立变动、“害”侧重暗中不协调、“破”侧重原有配合受损相比，“刑”更强调约束与拧巴。这些只是传统解释的侧重点，不是现实结果的判定。用于自我反思时，可提醒留意自我苛责、反复纠结；用于工作反思时，可提醒检查规则约束、协作摩擦是否增加了推进阻力。“刑”不等于刑罚或灾祸，也不能据此推断关系破裂、事业受挫或财务损失，仍需结合实际情况判断。",
+          "source": "自写草稿；参考《渊海子平》《三命通会》传统术语，未复制原文；待人工审核",
+          "license": "本项目自写",
+          "reviewed": false,
+          "version": 4
+        }
+      },
+      "after": {
+        "id": "cal-bazi-d20",
+        "system": "bazi",
+        "partition": "dev",
+        "label": "pass",
+        "case": "boundary",
+        "base": "kb:bazi:relation:地支刑",
+        "rationale": "边界案例：术语条目带方向，但文字写明了对应主题（锚点B）。按规则逐项核对：无确定性词语，无对现实事件的预测；自我状态 -0.1 有文字“内在”；事业 -0.1 有文字“工作”。试跑1后开发集修正：补足地支刑的具体组合，避免把象征侧重当作完整规则",
+        "entry": {
+          "id": "kb:bazi:relation:地支刑",
+          "system": "bazi",
+          "kind": "relation",
+          "key": "地支刑",
+          "synonyms": [
+            "地支相刑"
+          ],
+          "keywords": [
+            "地支刑",
+            "地支相刑",
+            "相互牵制",
+            "反复摩擦",
+            "内在纠结",
+            "规则约束",
+            "自我反思"
+          ],
+          "theme_map": {
+            "self": -0.1,
+            "career": -0.1,
+            "relationship": 0.0,
+            "finance": 0.0
+          },
+          "text": "本项目采用的相刑成员为子卯、寅巳、巳申、申寅、丑戌、戌未、未丑；辰、午、酉、亥各自重复为自刑。地支刑是传统命理中特定地支之间的相刑关系，并非泛指天干、地支之间的关系。白话说，它常被用来象征相互牵制、反复摩擦或内在纠结；与“冲”侧重对立变动、“害”侧重暗中不协调、“破”侧重原有配合受损相比，“刑”更强调约束与拧巴。这些只是传统解释的侧重点，不是现实结果的判定。用于自我反思时，可提醒留意自我苛责、反复纠结；用于工作反思时，可提醒检查规则约束、协作摩擦是否增加了推进阻力。“刑”不等于刑罚或灾祸，也不能据此推断关系破裂、事业受挫或财务损失，仍需结合实际情况判断。",
+          "source": "自写草稿；参考《渊海子平》《三命通会》传统术语，未复制原文；待人工审核",
+          "license": "本项目自写",
+          "reviewed": false,
+          "version": 4
+        }
+      }
+    }
+  ]
+}

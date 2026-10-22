@@ -1,0 +1,33 @@
+{
+  "batch": "b003",
+  "reviewer": "reviewer_b",
+  "run_pass": 2,
+  "attempt": 1,
+  "vendor": "openai",
+  "requested_model": "gpt-6.1-sol",
+  "returned_model": "gpt-6.1-sol",
+  "api": "openai",
+  "started_at": "2026-10-22T06:35:31+00:00",
+  "finished_at": "2026-10-22T06:35:38+00:00",
+  "latency_s": 7.56,
+  "http_attempts": 1,
+  "finish_reason": "stop",
+  "prompt_sha256": "433c588f05cbe3da9497abcab599317f5639d80fe500e4e7fc8eca899027ba16",
+  "input_tokens": 1521,
+  "output_tokens": 128,
+  "cached_input_tokens": 1518,
+  "usage_available": true,
+  "raw_text": "{\"items\":[{\"item\":\"i01\",\"verdict\":\"reject\",\"issues\":[{\"dimension\":\"consistency\",\"detail\":\"text 将此牌位写为“选 B”、梳理“选择 B”，但 key=decision:2、position=2 对应 spread_positions 的“选 A”，且 synonyms、keywords 均指向选 A；应说明选 A，并与“现状”和“选 B”对照。\"}],\"reason\":\"释义将第二牌位“选 A”写成“选 B”，核心对象与牌阵定义及条目标识不符。\"}]}",
+  "verdicts": {
+    "i01": {
+      "verdict": "reject",
+      "issues": [
+        {
+          "dimension": "consistency",
+          "detail": "text 将此牌位写为“选 B”、梳理“选择 B”，但 key=decision:2、position=2 对应 spread_positions 的“选 A”，且 synonyms、keywords 均指向选 A；应说明选 A，并与“现状”和“选 B”对照。"
+        }
+      ],
+      "reason": "释义将第二牌位“选 A”写成“选 B”，核心对象与牌阵定义及条目标识不符。"
+    }
+  }
+}

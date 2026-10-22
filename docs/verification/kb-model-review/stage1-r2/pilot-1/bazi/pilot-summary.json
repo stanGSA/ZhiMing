@@ -1,0 +1,249 @@
+{
+  "system": "bazi",
+  "rubric_sha256": "540ccba092ad014719c09482151da49f63576976f69c322053a8f0b207183ddc",
+  "agreement": {
+    "items": 20,
+    "reviewed": 20,
+    "labels": {
+      "pass": 10,
+      "fail": 10
+    },
+    "kappa": 0.7059,
+    "observed_agreement": 0.85,
+    "pairs": {
+      "pass/pass": 8,
+      "reject/reject": 9,
+      "pass/reject": 3
+    },
+    "label_agreement": {
+      "reviewer_a": {
+        "accuracy": 0.95,
+        "sensitivity": 0.9,
+        "specificity": 1.0
+      },
+      "reviewer_b": {
+        "accuracy": 0.9,
+        "sensitivity": 1.0,
+        "specificity": 0.8
+      }
+    }
+  },
+  "rerun": {
+    "reviewer_a": 0.9,
+    "reviewer_b": 0.95
+  },
+  "gates": {
+    "complete": true,
+    "kappa": true,
+    "rerun": true,
+    "label_agreement": true
+  },
+  "met": true,
+  "thresholds": {
+    "kappa": 0.6,
+    "rerun": 0.9,
+    "label_agreement": 0.85
+  },
+  "disputed": [
+    {
+      "id": "cal-bazi-d01",
+      "label": "pass",
+      "verdicts": {
+        "reviewer_a.p1": "pass",
+        "reviewer_a.p2": "pass",
+        "reviewer_b.p1": "pass",
+        "reviewer_b.p2": "revise"
+      },
+      "reasons": {
+        "reviewer_a.p1": "核心含义、主题方向与措辞均无明显问题，免责说明不构成宿命化。",
+        "reviewer_a.p2": "比肩主题独立与同伴定位准确，感情与财务的偏阻方向与“各自坚持、合伙分配”文字一致，免责声明充分。",
+        "reviewer_b.p1": "独立、同伴及分配协商的主题符合比肩象征，各主题方向与文字相容。",
+        "reviewer_b.p2": "主题及方向基本相容，但缺少比肩作为十神术语的核心关系定义。"
+      },
+      "issues": {
+        "reviewer_b.p2": [
+          {
+            "dimension": "tradition",
+            "detail": "text 以“独立与同伴”及协作建议说明比肩，未写出其区别于其他十神的核心关系：与日主五行相同、阴阳相同。需补充该对象专属定义。"
+          }
+        ]
+      }
+    },
+    {
+      "id": "cal-bazi-d05",
+      "label": "fail",
+      "verdicts": {
+        "reviewer_a.p1": "pass",
+        "reviewer_a.p2": "pass",
+        "reviewer_b.p1": "revise",
+        "reviewer_b.p2": "revise"
+      },
+      "reasons": {
+        "reviewer_a.p1": "乙属阴木、花草藤蔓意象符合传统，免责声明适当，theme_map 仅自我状态略偏负且与“柔韧、需结合整体”不矛盾，无具体问题。",
+        "reviewer_a.p2": "乙为阴木，花草藤蔓意象、柔韧舒展均符合传统象征；theme_map 的 self 为负略偏柔顺可接；末尾含免责声明、不将象征写成定论，无宿命化或断言。",
+        "reviewer_b.p1": "乙属阴木及其传统意象表述准确，但自我状态的负向标值缺乏文字依据。",
+        "reviewer_b.p2": "乙属阴木的核心信息与象征解释准确，但自我状态的负向标注缺乏文字或方向约定支持。"
+      },
+      "issues": {
+        "reviewer_b.p1": [
+          {
+            "dimension": "theme_direction",
+            "detail": "theme_map.self 为 -0.3，表示自我状态偏阻，但 text 中“柔韧与舒展”未表达负向倾向；天干条目也不适用十神方向约定，建议将该值改为 0。"
+          }
+        ],
+        "reviewer_b.p2": [
+          {
+            "dimension": "theme_direction",
+            "detail": "theme_map.self 为 -0.3，表示自我状态偏阻，但 text 仅描述阴木及柔韧、舒展的传统意象，没有表达自我状态受阻的倾向；天干也不属于可依十神方向约定标注的对象，建议将 self 改为 0。"
+          }
+        ]
+      }
+    },
+    {
+      "id": "cal-bazi-d16",
+      "label": "fail",
+      "verdicts": {
+        "reviewer_a.p1": "revise",
+        "reviewer_a.p2": "pass",
+        "reviewer_b.p1": "revise",
+        "reviewer_b.p2": "revise"
+      },
+      "reasons": {
+        "reviewer_a.p1": "感情与财务的主题方向与文字表达不完全一致，需调整 theme_map 或补充文字倾向。",
+        "reviewer_a.p2": "释义中的感情活跃、留意风险与主题方向基本一致，且以免责代替投资预测，未发现具体错误。",
+        "reviewer_b.p1": "缺少偏财的对象专属定义，且财务负向标记与文字倾向不一致。",
+        "reviewer_b.p2": "偏财的关系定义缺失，且财务负向标值与文字表达的机会倾向不一致。"
+      },
+      "issues": {
+        "reviewer_a.p1": [
+          {
+            "dimension": "theme_direction",
+            "detail": "theme_map 中 relationship 为 +0.1，但文字“感情方面人缘与交际较活跃，宜保持专注”表达的是活跃但需收束的中性偏提醒倾向，未能从文字看出偏顺的正方向；finance 为 -0.15，而文字“较容易遇到机会，同时核实风险”整体偏中性，未明确表达财务受阻的负向倾向。"
+          }
+        ],
+        "reviewer_b.p1": [
+          {
+            "dimension": "tradition",
+            "detail": "text 仅以“机会与调配”概括偏财，未说明其区别于其他十神的核心关系：日主所克、且与日主阴阳相同者为偏财。"
+          },
+          {
+            "dimension": "theme_direction",
+            "detail": "theme_map.finance 为负，但 text 的财务描述为“较容易遇到机会”，倾向偏顺；“核实风险”只是审慎提醒，不足以支持财务偏阻的方向。"
+          }
+        ],
+        "reviewer_b.p2": [
+          {
+            "dimension": "tradition",
+            "detail": "text 仅以“机会与调配”描述偏财主题，未说明其作为十神关系的核心定义：日主所克、且与日主阴阳相同者为偏财。需补充对象专属的关系信息。"
+          },
+          {
+            "dimension": "theme_direction",
+            "detail": "theme_map.finance 为负，但 text 财务部分写“较容易遇到机会”，整体偏顺；“核实风险”“不据此作投资判断”只是审慎提醒，不足以支持财务偏阻。"
+          }
+        ]
+      }
+    },
+    {
+      "id": "cal-bazi-d17",
+      "label": "pass",
+      "verdicts": {
+        "reviewer_a.p1": "pass",
+        "reviewer_a.p2": "pass",
+        "reviewer_b.p1": "revise",
+        "reviewer_b.p2": "revise"
+      },
+      "reasons": {
+        "reviewer_a.p1": "偏财核心含义与主题方向一致，且含不据此作投资判断的免责声明。",
+        "reviewer_a.p2": "偏财主题机会与调配符合传统，财务正向与文字“较容易遇到机会”一致，并含不据符号作投资预测的免责。",
+        "reviewer_b.p1": "偏财的核心主题及方向基本一致，但财务机会的表述越出了象征解释范围。",
+        "reviewer_b.p2": "偏财的核心关系定义缺失，且财务表述从传统象征滑向现实机会推断。"
+      },
+      "issues": {
+        "reviewer_b.p1": [
+          {
+            "dimension": "certainty",
+            "detail": "“财务方面较容易遇到机会”将偏财象征推及个人现实中遇到财务机会的可能性；应改为传统上象征机会与资源调配等表述，后面的“不据此作投资判断”不能消除该推断。"
+          }
+        ],
+        "reviewer_b.p2": [
+          {
+            "dimension": "tradition",
+            "detail": "text 以“机会与调配”说明偏财主题，未写出其区别于其他十神的核心关系：日主所克、与日主阴阳相同。需补充该对象专属定义。"
+          },
+          {
+            "dimension": "certainty",
+            "detail": "text“财务方面较容易遇到机会”将符号含义写成现实财务机会的推断；应改为偏财在传统象征中与机会、资源调配相关，而非断言用户更容易遇到机会。后文“不据此作投资判断”不能消除这一问题。"
+          }
+        ]
+      }
+    },
+    {
+      "id": "cal-bazi-d20",
+      "label": "pass",
+      "verdicts": {
+        "reviewer_a.p1": "pass",
+        "reviewer_a.p2": "pass",
+        "reviewer_b.p1": "revise",
+        "reviewer_b.p2": "revise"
+      },
+      "reasons": {
+        "reviewer_a.p1": "地支刑的象征与免责表述合理，负向主题与文字倾向一致。",
+        "reviewer_a.p2": "地支刑的含义与侧重解释准确，theme_map 自我与事业为轻微负向且文字有相应倾向，免责充分。",
+        "reviewer_b.p1": "象征解释及自我、事业的负向提示相容，但缺少相刑关系的具体成员。",
+        "reviewer_b.p2": "主题方向与文字一致，但作为规则类条目仍缺少相刑组合这一核心信息。"
+      },
+      "issues": {
+        "reviewer_b.p1": [
+          {
+            "dimension": "tradition",
+            "detail": "text 解释了“刑”的象征侧重点，但未说明哪些地支构成相刑，缺少规则类条目的核心信息；应列明子卯、寅巳、巳申、申寅、丑戌、戌未、未丑，并说明辰、午、酉、亥自刑。"
+          }
+        ],
+        "reviewer_b.p2": [
+          {
+            "dimension": "plain_language",
+            "detail": "text 虽解释了“刑”的象征侧重点，但没有写明具体相刑成员；应补充子卯、寅巳、巳申、申寅、丑戌、戌未、未丑，以及辰、午、酉、亥自刑，使术语释义包含具体规则。"
+          }
+        ]
+      }
+    }
+  ],
+  "usage": {
+    "reviewer_a": {
+      "calls": 20,
+      "input_tokens": 41148,
+      "output_tokens": 2765,
+      "latency_s": 27.295,
+      "returned_models": [
+        "deepseek-flash"
+      ],
+      "errors": {},
+      "retried_calls": 0,
+      "http_retries": 0,
+      "cost": null,
+      "known_cost_estimate": null,
+      "usage_complete": true,
+      "cost_basis": "配置单价估算，非账单；服务失败的用量可能未知",
+      "currency": null
+    },
+    "reviewer_b": {
+      "calls": 20,
+      "input_tokens": 48402,
+      "output_tokens": 6140,
+      "latency_s": 535.104,
+      "returned_models": [
+        "gpt-6.1-sol"
+      ],
+      "errors": {
+        "service_error": 3
+      },
+      "retried_calls": 0,
+      "http_retries": 3,
+      "cost": null,
+      "known_cost_estimate": null,
+      "usage_complete": false,
+      "cost_basis": "配置单价估算，非账单；服务失败的用量可能未知",
+      "currency": null
+    }
+  }
+}

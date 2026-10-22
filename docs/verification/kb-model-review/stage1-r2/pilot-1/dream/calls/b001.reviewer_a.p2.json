@@ -1,0 +1,99 @@
+{
+  "batch": "b001",
+  "reviewer": "reviewer_a",
+  "run_pass": 2,
+  "attempt": 1,
+  "vendor": "deepseek",
+  "requested_model": "deepseek-flash",
+  "returned_model": "deepseek-flash",
+  "api": "openai",
+  "started_at": "2026-10-22T07:06:39+00:00",
+  "finished_at": "2026-10-22T07:06:42+00:00",
+  "latency_s": 3.251,
+  "http_attempts": 1,
+  "finish_reason": "stop",
+  "prompt_sha256": "12698fd9decfbeee253a1b9afaca77ef19480a86fc4bab7b5f59c9f4f78c7c00",
+  "input_tokens": 3039,
+  "output_tokens": 606,
+  "cached_input_tokens": 2816,
+  "usage_available": true,
+  "raw_text": "{\"items\": [{\"item\": \"i01\", \"verdict\": \"pass\", \"issues\": [], \"reason\": \"花的核心象征与文字相符，主题方向温和正向一致，无宿命化断言。\"}, {\"item\": \"i02\", \"verdict\": \"reject\", \"issues\": [{\"dimension\": \"prediction\", \"detail\": \"“这个梦预示近期会有一笔意外之财”是对现实财务事件的确定性预测\"}, {\"dimension\": \"medical_legal_finance\", \"detail\": \"对财运作出肯定预测，属于财务方面的确定性结论\"}, {\"dimension\": \"theme_direction\", \"detail\": \"文字写预示得财，却将 finance 标为 0，方向与文字不一致\"}], \"reason\": \"含有对意外之财的预测性断言，且与 finance 主题方向不符。\"}, {\"item\": \"i03\", \"verdict\": \"pass\", \"issues\": [], \"reason\": \"石头象征稳固、阻碍或沉重心事，符合传统意象，且明确否定预兆天气灾害。\"}, {\"item\": \"i04\", \"verdict\": \"pass\", \"issues\": [], \"reason\": \"面试与对评价和新机会的紧张的联系合理，并注明只反映心理感受。\"}, {\"item\": \"i05\", \"verdict\": \"reject\", \"issues\": [{\"dimension\": \"prediction\", \"detail\": \"“这个梦预示近期会有一笔意外之财”是对现实事件的预测\"}, {\"dimension\": \"medical_legal_finance\", \"detail\": \"对财运作确定性预测，属于财务方面的确定性结论\"}, {\"dimension\": \"theme_direction\", \"detail\": \"文字提意外之财，但 finance 标为 0，方向与文字不一致\"}], \"reason\": \"加入意外之财的预测性断言，违反预测与财务确定性规则。\"}, {\"item\": \"i06\", \"verdict\": \"pass\", \"issues\": [], \"reason\": \"杯子联想合理，破碎情节单独提示，无预兆性表述，同义词恰当。\"}, {\"item\": \"i07\", \"verdict\": \"pass\", \"issues\": [], \"reason\": \"迷路释义明确锁定空间寻路情境，方向为轻微负向，与文字一致。\"}, {\"item\": \"i08\", \"verdict\": \"pass\", \"issues\": [], \"reason\": \"狐狸象征机敏、试探、动机疑虑，与动物象征传统相符，无宿命断言。\"}, {\"item\": \"i09\", \"verdict\": \"pass\", \"issues\": [], \"reason\": \"桥象征过渡与连接，表述中性并注明仅供自我探索。\"}, {\"item\": \"i10\", \"verdict\": \"pass\", \"issues\": [], \"reason\": \"彩票释义与转机期待挂钩，并明确不构成购买建议，无预测断言。\"}]}",
+  "verdicts": {
+    "i01": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "花的核心象征与文字相符，主题方向温和正向一致，无宿命化断言。"
+    },
+    "i02": {
+      "verdict": "reject",
+      "issues": [
+        {
+          "dimension": "prediction",
+          "detail": "“这个梦预示近期会有一笔意外之财”是对现实财务事件的确定性预测"
+        },
+        {
+          "dimension": "medical_legal_finance",
+          "detail": "对财运作出肯定预测，属于财务方面的确定性结论"
+        },
+        {
+          "dimension": "theme_direction",
+          "detail": "文字写预示得财，却将 finance 标为 0，方向与文字不一致"
+        }
+      ],
+      "reason": "含有对意外之财的预测性断言，且与 finance 主题方向不符。"
+    },
+    "i03": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "石头象征稳固、阻碍或沉重心事，符合传统意象，且明确否定预兆天气灾害。"
+    },
+    "i04": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "面试与对评价和新机会的紧张的联系合理，并注明只反映心理感受。"
+    },
+    "i05": {
+      "verdict": "reject",
+      "issues": [
+        {
+          "dimension": "prediction",
+          "detail": "“这个梦预示近期会有一笔意外之财”是对现实事件的预测"
+        },
+        {
+          "dimension": "medical_legal_finance",
+          "detail": "对财运作确定性预测，属于财务方面的确定性结论"
+        },
+        {
+          "dimension": "theme_direction",
+          "detail": "文字提意外之财，但 finance 标为 0，方向与文字不一致"
+        }
+      ],
+      "reason": "加入意外之财的预测性断言，违反预测与财务确定性规则。"
+    },
+    "i06": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "杯子联想合理，破碎情节单独提示，无预兆性表述，同义词恰当。"
+    },
+    "i07": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "迷路释义明确锁定空间寻路情境，方向为轻微负向，与文字一致。"
+    },
+    "i08": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "狐狸象征机敏、试探、动机疑虑，与动物象征传统相符，无宿命断言。"
+    },
+    "i09": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "桥象征过渡与连接，表述中性并注明仅供自我探索。"
+    },
+    "i10": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "彩票释义与转机期待挂钩，并明确不构成购买建议，无预测断言。"
+    }
+  }
+}

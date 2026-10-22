@@ -2,3 +2,5 @@
 # Preserve execution-source bytes so archived SHA256 values survive Git checkout.
 docs/verification/kb-model-review/**/runner_source/*.py -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
 docs/verification/kb-model-review/**/revision_runner_source/**/*.py -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+# Raw test/CI evidence retains the whitespace printed by the original command.
+docs/verification/stage1/20261022-r2/*.txt -whitespace

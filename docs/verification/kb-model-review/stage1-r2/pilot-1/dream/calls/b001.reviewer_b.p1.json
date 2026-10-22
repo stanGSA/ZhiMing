@@ -1,0 +1,106 @@
+{
+  "batch": "b001",
+  "reviewer": "reviewer_b",
+  "run_pass": 1,
+  "attempt": 1,
+  "vendor": "openai",
+  "requested_model": "gpt-6.1-sol",
+  "returned_model": "gpt-6.1-sol",
+  "api": "openai",
+  "started_at": "2026-10-22T07:06:12+00:00",
+  "finished_at": "2026-10-22T07:06:39+00:00",
+  "latency_s": 26.977,
+  "http_attempts": 1,
+  "finish_reason": "stop",
+  "prompt_sha256": "12698fd9decfbeee253a1b9afaca77ef19480a86fc4bab7b5f59c9f4f78c7c00",
+  "input_tokens": 3470,
+  "output_tokens": 1101,
+  "cached_input_tokens": null,
+  "usage_available": true,
+  "raw_text": "{\n  \"items\": [\n    {\n      \"item\": \"i01\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"花的美好、绽放及关系期待联想与主题方向一致，措辞保留了情境差异，没有现实事件预测。\"\n    },\n    {\n      \"item\": \"i02\",\n      \"verdict\": \"revise\",\n      \"issues\": [\n        {\n          \"dimension\": \"consistency\",\n          \"detail\": \"synonyms 中的“开枪”是使用枪的动作，不是“枪”这一物品的同义称呼，可能造成意象误命中。\"\n        },\n        {\n          \"dimension\": \"certainty\",\n          \"detail\": \"text 末句“这个梦预示近期会有一笔意外之财”直接预测现实财务事件，应删除或改为非预测性的心理联想。\"\n        }\n      ],\n      \"reason\": \"存在物品与动作的同义词混用，并包含明确的现实事件预测。\"\n    },\n    {\n      \"item\": \"i03\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"稳固、阻碍及沉重心事均是贴合石头的象征联想，主题值为零与混合倾向相容。\"\n    },\n    {\n      \"item\": \"i04\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"释义围绕面试中的评价、新机会与紧张感展开，主题值为零可接受，也未预测现实结果。\"\n    },\n    {\n      \"item\": \"i05\",\n      \"verdict\": \"revise\",\n      \"issues\": [\n        {\n          \"dimension\": \"certainty\",\n          \"detail\": \"text 末句“这个梦预示近期会有一笔意外之财”是在预测现实财务事件，不符合非预测性释义要求。\"\n        },\n        {\n          \"dimension\": \"consistency\",\n          \"detail\": \"text 中“不预示现实事件”与紧随其后的“预示近期会有一笔意外之财”直接矛盾。\"\n        }\n      ],\n      \"reason\": \"末句引入财务事件预测，并与前文的非预测说明相矛盾。\"\n    },\n    {\n      \"item\": \"i06\",\n      \"verdict\": \"revise\",\n      \"issues\": [\n        {\n          \"dimension\": \"consistency\",\n          \"detail\": \"synonyms 中的“杯子碎了”包含破碎这一额外情节，不是一般“杯子”的同义称呼；text 也明确要求破碎情节单独考虑，将其设为同义词会误套一般解释。\"\n        }\n      ],\n      \"reason\": \"正文表述平和，但同义词将需要单独理解的破碎情节混入了一般物品意象。\"\n    },\n    {\n      \"item\": \"i07\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"同义词与空间寻路意象相符，不确定和压力的联想支持自我主题的负向倾向。\"\n    },\n    {\n      \"item\": \"i08\",\n      \"verdict\": \"revise\",\n      \"issues\": [\n        {\n          \"dimension\": \"consistency\",\n          \"detail\": \"synonyms 中的“狐狸精”可指神怪形象，也常用于指称某类人，并不等同于狐狸动物意象，作为检索别名会产生误命中。\"\n        }\n      ],\n      \"reason\": \"释义及方向基本一致，但“狐狸精”具有不同于狐狸动物的常见含义，不宜直接作为同义词。\"\n    },\n    {\n      \"item\": \"i09\",\n      \"verdict\": \"revise\",\n      \"issues\": [\n        {\n          \"dimension\": \"consistency\",\n          \"detail\": \"synonyms 中的“桥断了”包含连接中断或通行受阻的额外情节，不是一般“桥”的同义称呼，直接匹配当前过渡、连接的释义可能误导。\"\n        }\n      ],\n      \"reason\": \"一般桥梁的象征解释可用，但断桥情节不宜作为其同义检索别名。\"\n    },\n    {\n      \"item\": \"i10\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"彩票与期待转机的联想相符，同义词合理，且未作中奖预测或购买建议。\"\n    }\n  ]\n}",
+  "verdicts": {
+    "i01": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "花的美好、绽放及关系期待联想与主题方向一致，措辞保留了情境差异，没有现实事件预测。"
+    },
+    "i02": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "consistency",
+          "detail": "synonyms 中的“开枪”是使用枪的动作，不是“枪”这一物品的同义称呼，可能造成意象误命中。"
+        },
+        {
+          "dimension": "certainty",
+          "detail": "text 末句“这个梦预示近期会有一笔意外之财”直接预测现实财务事件，应删除或改为非预测性的心理联想。"
+        }
+      ],
+      "reason": "存在物品与动作的同义词混用，并包含明确的现实事件预测。"
+    },
+    "i03": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "稳固、阻碍及沉重心事均是贴合石头的象征联想，主题值为零与混合倾向相容。"
+    },
+    "i04": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "释义围绕面试中的评价、新机会与紧张感展开，主题值为零可接受，也未预测现实结果。"
+    },
+    "i05": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "certainty",
+          "detail": "text 末句“这个梦预示近期会有一笔意外之财”是在预测现实财务事件，不符合非预测性释义要求。"
+        },
+        {
+          "dimension": "consistency",
+          "detail": "text 中“不预示现实事件”与紧随其后的“预示近期会有一笔意外之财”直接矛盾。"
+        }
+      ],
+      "reason": "末句引入财务事件预测，并与前文的非预测说明相矛盾。"
+    },
+    "i06": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "consistency",
+          "detail": "synonyms 中的“杯子碎了”包含破碎这一额外情节，不是一般“杯子”的同义称呼；text 也明确要求破碎情节单独考虑，将其设为同义词会误套一般解释。"
+        }
+      ],
+      "reason": "正文表述平和，但同义词将需要单独理解的破碎情节混入了一般物品意象。"
+    },
+    "i07": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "同义词与空间寻路意象相符，不确定和压力的联想支持自我主题的负向倾向。"
+    },
+    "i08": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "consistency",
+          "detail": "synonyms 中的“狐狸精”可指神怪形象，也常用于指称某类人，并不等同于狐狸动物意象，作为检索别名会产生误命中。"
+        }
+      ],
+      "reason": "释义及方向基本一致，但“狐狸精”具有不同于狐狸动物的常见含义，不宜直接作为同义词。"
+    },
+    "i09": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "consistency",
+          "detail": "synonyms 中的“桥断了”包含连接中断或通行受阻的额外情节，不是一般“桥”的同义称呼，直接匹配当前过渡、连接的释义可能误导。"
+        }
+      ],
+      "reason": "一般桥梁的象征解释可用，但断桥情节不宜作为其同义检索别名。"
+    },
+    "i10": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "彩票与期待转机的联想相符，同义词合理，且未作中奖预测或购买建议。"
+    }
+  }
+}

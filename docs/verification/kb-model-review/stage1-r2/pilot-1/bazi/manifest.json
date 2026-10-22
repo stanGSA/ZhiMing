@@ -1,0 +1,54 @@
+{
+  "schema": 1,
+  "kind": "pilot",
+  "system": "bazi",
+  "seed": 1,
+  "batch_size": 10,
+  "passes": 2,
+  "rubric_version": 2,
+  "rubric_sha256": "540ccba092ad014719c09482151da49f63576976f69c322053a8f0b207183ddc",
+  "script_sha256": "851d79753765ce382eae0d88518af7bfb7a4de58519d542f9f582403ab2f5800",
+  "reviewers": {
+    "reviewer_a": {
+      "vendor": "deepseek",
+      "api": "openai",
+      "model": "deepseek-flash",
+      "api_key_env": "DEEPSEEK_API_KEY",
+      "temperature": null,
+      "max_tokens": 4096,
+      "base_url_host": "api.deepseek.com"
+    },
+    "reviewer_b": {
+      "vendor": "openai",
+      "api": "openai",
+      "model": "gpt-6.1-sol",
+      "api_key_env": "OPENAI_REVIEW_API_KEY",
+      "temperature": null,
+      "max_tokens": 4096,
+      "base_url_host": "codegoai.com"
+    }
+  },
+  "calibration": {
+    "lock_sha256": "2afa69703e43c22170622bec25835b596f83288a0397f1897d9168429de5a1fa",
+    "items": 20,
+    "partition": "dev"
+  },
+  "batch_count": 10,
+  "prompt_sha256": {
+    "b001": "739b066e6e0092254ebdcdfdf79a7c5bf4afd1905d40229864d03b2fa9f3fe75",
+    "b002": "7a033869895cfc8fd60ce20baec1832f648a7337d02790ea4b2b4c52647f261b",
+    "b003": "3861d994ea7e9d7716a1b6f6f78eca6490fa1f5be3f9d5aeb47c254d40e4939e",
+    "b004": "92edb3f8c728d2460640f4236201fab23736cf4a087edfddc83c13abe6249621",
+    "b005": "34e9bbf869eb31f35f68f1b7c5ed4197e2fe18375b4a511c3370ba9f8e12c21e",
+    "b006": "50e13f80ca1e19ea29530d0be29f372cfc44972bc4490022a9e8cae8e04535ae",
+    "b007": "b27c632d90953b34e3fa47b9c91fbffed34ca4aa490b44adb8862aeb9175f90c",
+    "b008": "051c086d1b9f1fb478f0c3eb3153171a97b60ed9ecae2f7a736387373696bdc9",
+    "b009": "266fcc3917af532a111651ed488b6d5490fe15b9d547772b49b59d0f76da9eb9",
+    "b010": "fe5f2eee47f6a66d1f3b9ea3c57241008bd3153162d11834d9021fc5ab840351"
+  },
+  "created_at": "2026-10-22T06:55:35+00:00",
+  "git": {
+    "head": "037ca292d6608e6bb32824d7127ec466d07cbde9",
+    "dirty": false
+  }
+}

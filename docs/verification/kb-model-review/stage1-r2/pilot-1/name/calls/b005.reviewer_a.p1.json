@@ -1,0 +1,91 @@
+{
+  "batch": "b005",
+  "reviewer": "reviewer_a",
+  "run_pass": 1,
+  "attempt": 1,
+  "vendor": "deepseek",
+  "requested_model": "deepseek-flash",
+  "returned_model": "deepseek-flash",
+  "api": "openai",
+  "started_at": "2026-10-22T07:05:03+00:00",
+  "finished_at": "2026-10-22T07:05:06+00:00",
+  "latency_s": 3.482,
+  "http_attempts": 1,
+  "finish_reason": "stop",
+  "prompt_sha256": "4bb44628d3bc8fbd742fd9c8aed6ba47a36bb1c508183f0691a8657ffbb4a76a",
+  "input_tokens": 2904,
+  "output_tokens": 643,
+  "cached_input_tokens": 1152,
+  "usage_available": true,
+  "raw_text": "{\"items\": [{\"item\": \"i01\", \"verdict\": \"revise\", \"issues\": [{\"dimension\": \"tradition\", \"detail\": \"text 首句写“48数……常被归为‘凶’”，但参考事实中 48 属于吉数，归类写错。\"}, {\"dimension\": \"consistency\", \"detail\": \"keywords 标为“吉”，theme_map 全为正向，均与 text 中“凶”的归类自相矛盾。\"}], \"reason\": \"48 数按本项目约定为吉数，正文却写成凶，且与关键词、主题方向矛盾。\"}, {\"item\": \"i02\", \"verdict\": \"revise\", \"issues\": [{\"dimension\": \"tradition\", \"detail\": \"“尾数8在三才五行配属中对应金”有误；三才按天格、人格、地格各自尾数定五行，并非按数理本身尾数，且 8 对应的是金没错，但“某数尾数对应某五行”的说法与三才规则不符。\"}], \"reason\": \"把数理自身尾数当作三才五行对应依据，属对象规则表述错误。\"}, {\"item\": \"i03\", \"verdict\": \"revise\", \"issues\": [{\"dimension\": \"tradition\", \"detail\": \"“尾数1在三才里对应土”错误，参考事实中 1、2 对应木，5、6 才对应土。\"}], \"reason\": \"三才五行尾数对应写错。\"}, {\"item\": \"i04\", \"verdict\": \"pass\", \"issues\": [], \"reason\": \"75 属半吉、尾数5对应土均与参考事实一致，方向为小正与文字相符，无宿命化断言。\"}, {\"item\": \"i05\", \"verdict\": \"revise\", \"issues\": [{\"dimension\": \"tradition\", \"detail\": \"“尾数6在三才里对应水”错误，参考事实中 6 对应土，9、0 才对应水。\"}], \"reason\": \"三才五行尾数对应写错。\"}, {\"item\": \"i06\", \"verdict\": \"revise\", \"issues\": [{\"dimension\": \"tradition\", \"detail\": \"“55数……常被归为‘凶’”与参考事实不符，55 属半吉；随后又称“吉凶参半”，前后归类自相矛盾。\"}, {\"dimension\": \"consistency\", \"detail\": \"keywords 标“半吉”，theme_map 为小正，正文却写“凶”。\"}], \"reason\": \"55 数归类前后矛盾且与参考事实（半吉）不符。\"}, {\"item\": \"i07\", \"verdict\": \"pass\", \"issues\": [], \"reason\": \"39 属吉、尾数9对应水均与参考事实一致，方向为正与文字相符，含民俗免责说明。\"}]}",
+  "verdicts": {
+    "i01": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "tradition",
+          "detail": "text 首句写“48数……常被归为‘凶’”，但参考事实中 48 属于吉数，归类写错。"
+        },
+        {
+          "dimension": "consistency",
+          "detail": "keywords 标为“吉”，theme_map 全为正向，均与 text 中“凶”的归类自相矛盾。"
+        }
+      ],
+      "reason": "48 数按本项目约定为吉数，正文却写成凶，且与关键词、主题方向矛盾。"
+    },
+    "i02": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "tradition",
+          "detail": "“尾数8在三才五行配属中对应金”有误；三才按天格、人格、地格各自尾数定五行，并非按数理本身尾数，且 8 对应的是金没错，但“某数尾数对应某五行”的说法与三才规则不符。"
+        }
+      ],
+      "reason": "把数理自身尾数当作三才五行对应依据，属对象规则表述错误。"
+    },
+    "i03": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "tradition",
+          "detail": "“尾数1在三才里对应土”错误，参考事实中 1、2 对应木，5、6 才对应土。"
+        }
+      ],
+      "reason": "三才五行尾数对应写错。"
+    },
+    "i04": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "75 属半吉、尾数5对应土均与参考事实一致，方向为小正与文字相符，无宿命化断言。"
+    },
+    "i05": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "tradition",
+          "detail": "“尾数6在三才里对应水”错误，参考事实中 6 对应土，9、0 才对应水。"
+        }
+      ],
+      "reason": "三才五行尾数对应写错。"
+    },
+    "i06": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "tradition",
+          "detail": "“55数……常被归为‘凶’”与参考事实不符，55 属半吉；随后又称“吉凶参半”，前后归类自相矛盾。"
+        },
+        {
+          "dimension": "consistency",
+          "detail": "keywords 标“半吉”，theme_map 为小正，正文却写“凶”。"
+        }
+      ],
+      "reason": "55 数归类前后矛盾且与参考事实（半吉）不符。"
+    },
+    "i07": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "39 属吉、尾数9对应水均与参考事实一致，方向为正与文字相符，含民俗免责说明。"
+    }
+  }
+}

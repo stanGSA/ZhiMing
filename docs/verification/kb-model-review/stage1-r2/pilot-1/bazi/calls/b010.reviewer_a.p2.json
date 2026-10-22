@@ -1,0 +1,38 @@
+{
+  "batch": "b010",
+  "reviewer": "reviewer_a",
+  "run_pass": 2,
+  "attempt": 1,
+  "vendor": "deepseek",
+  "requested_model": "deepseek-flash",
+  "returned_model": "deepseek-flash",
+  "api": "openai",
+  "started_at": "2026-10-22T07:02:54+00:00",
+  "finished_at": "2026-10-22T07:02:56+00:00",
+  "latency_s": 1.515,
+  "http_attempts": 1,
+  "finish_reason": "stop",
+  "prompt_sha256": "fe5f2eee47f6a66d1f3b9ea3c57241008bd3153162d11834d9021fc5ab840351",
+  "input_tokens": 2018,
+  "output_tokens": 139,
+  "cached_input_tokens": 1792,
+  "usage_available": true,
+  "raw_text": "{\"items\": [{\"item\": \"i01\", \"verdict\": \"pass\", \"issues\": [], \"reason\": \"释义中的感情活跃、留意风险与主题方向基本一致，且以免责代替投资预测，未发现具体错误。\"}, {\"item\": \"i02\", \"verdict\": \"revise\", \"issues\": [{\"dimension\": \"predict\", \"detail\": \"“它出现在流年时，预示当年会有搬迁或换工作的变动”对现实事件作预测，宿命化，应改为可能性提示或删除。\"}], \"reason\": \"正印释义含对流年搬迁、换工作的现实预测，需修改。\"}]}",
+  "verdicts": {
+    "i01": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "释义中的感情活跃、留意风险与主题方向基本一致，且以免责代替投资预测，未发现具体错误。"
+    },
+    "i02": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "predict",
+          "detail": "“它出现在流年时，预示当年会有搬迁或换工作的变动”对现实事件作预测，宿命化，应改为可能性提示或删除。"
+        }
+      ],
+      "reason": "正印释义含对流年搬迁、换工作的现实预测，需修改。"
+    }
+  }
+}

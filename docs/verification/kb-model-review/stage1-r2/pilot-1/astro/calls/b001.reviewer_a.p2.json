@@ -1,0 +1,43 @@
+{
+  "batch": "b001",
+  "reviewer": "reviewer_a",
+  "run_pass": 2,
+  "attempt": 1,
+  "vendor": "deepseek",
+  "requested_model": "deepseek-flash",
+  "returned_model": "deepseek-flash",
+  "api": "openai",
+  "started_at": "2026-10-22T06:37:19+00:00",
+  "finished_at": "2026-10-22T06:37:21+00:00",
+  "latency_s": 1.638,
+  "http_attempts": 1,
+  "finish_reason": "stop",
+  "prompt_sha256": "9ab24bf83c59e5ccc4f84a7988ea9fb64362a7f089393b1455ed962731ed9bc1",
+  "input_tokens": 1763,
+  "output_tokens": 169,
+  "cached_input_tokens": 1536,
+  "usage_available": true,
+  "raw_text": "{\"items\": [{\"item\": \"i01\", \"verdict\": \"revise\", \"issues\": [{\"dimension\": \"certainty\", \"detail\": \"“这一配置预示你今年会迎来职位上的晋升”是对现实事件的确定性预测，属于宿命化措辞。\"}], \"reason\": \"第5宫释义含对个人职业晋升的预测，需改为非预测性表达。\"}, {\"item\": \"i02\", \"verdict\": \"pass\", \"issues\": [], \"reason\": \"第3宫主题与参考事实一致，无方向标值，措辞中性。\"}, {\"item\": \"i03\", \"verdict\": \"pass\", \"issues\": [], \"reason\": \"第2宫主题与参考事实一致，无方向标值，措辞中性。\"}]}",
+  "verdicts": {
+    "i01": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "certainty",
+          "detail": "“这一配置预示你今年会迎来职位上的晋升”是对现实事件的确定性预测，属于宿命化措辞。"
+        }
+      ],
+      "reason": "第5宫释义含对个人职业晋升的预测，需改为非预测性表达。"
+    },
+    "i02": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "第3宫主题与参考事实一致，无方向标值，措辞中性。"
+    },
+    "i03": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "第2宫主题与参考事实一致，无方向标值，措辞中性。"
+    }
+  }
+}

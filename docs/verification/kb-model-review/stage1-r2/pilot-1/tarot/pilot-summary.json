@@ -1,0 +1,151 @@
+{
+  "system": "tarot",
+  "rubric_sha256": "540ccba092ad014719c09482151da49f63576976f69c322053a8f0b207183ddc",
+  "agreement": {
+    "items": 20,
+    "reviewed": 20,
+    "labels": {
+      "pass": 10,
+      "fail": 10
+    },
+    "kappa": 0.8,
+    "observed_agreement": 0.9,
+    "pairs": {
+      "pass/pass": 10,
+      "reject/reject": 8,
+      "pass/reject": 2
+    },
+    "label_agreement": {
+      "reviewer_a": {
+        "accuracy": 0.9,
+        "sensitivity": 0.8,
+        "specificity": 1.0
+      },
+      "reviewer_b": {
+        "accuracy": 1.0,
+        "sensitivity": 1.0,
+        "specificity": 1.0
+      }
+    }
+  },
+  "rerun": {
+    "reviewer_a": 0.95,
+    "reviewer_b": 1.0
+  },
+  "gates": {
+    "complete": true,
+    "kappa": true,
+    "rerun": true,
+    "label_agreement": true
+  },
+  "met": true,
+  "thresholds": {
+    "kappa": 0.6,
+    "rerun": 0.9,
+    "label_agreement": 0.85
+  },
+  "disputed": [
+    {
+      "id": "cal-tarot-d04",
+      "label": "fail",
+      "verdicts": {
+        "reviewer_a.p1": "pass",
+        "reviewer_a.p2": "revise",
+        "reviewer_b.p1": "revise",
+        "reviewer_b.p2": "revise"
+      },
+      "reasons": {
+        "reviewer_a.p1": "教皇逆位审视惯例的释义与大阿卡纳约定主题一致；finance 正方向虽非核心，但文字中“更符合自身需要的方式”可读为财务上探索替代方式，不构成明确矛盾。",
+        "reviewer_a.p2": "finance 方向无法从释义文字或主题约定中看出。",
+        "reviewer_b.p1": "反思惯例符合教皇逆位，但财务正向没有文字或体系约定依据。",
+        "reviewer_b.p2": "反思惯例与自主选择符合教皇逆位，但财务正向缺少依据。"
+      },
+      "issues": {
+        "reviewer_a.p2": [
+          {
+            "dimension": "theme_direction",
+            "detail": "text 仅谈审视惯例、自主选择，未涉及财务，theme_map 中 finance 标为 +0.3，属约定外主题且无法从文字看出。"
+          }
+        ],
+        "reviewer_b.p1": [
+          {
+            "dimension": "theme_direction",
+            "detail": "theme_map.finance 为正，但 text 的审视惯例、外部标准与个人选择未涉及财务偏顺；财务不在大阿卡纳的默认主题约定内，应改为 0 或补充相应含义。"
+          }
+        ],
+        "reviewer_b.p2": [
+          {
+            "dimension": "theme_direction",
+            "detail": "theme_map.finance 为正，但“审视外部标准与个人选择”“探索更符合自身需要的方式”没有表达财务偏顺；财务也不属于大阿卡纳的约定主题，应改为 0 或补充相应含义。"
+          }
+        ]
+      }
+    },
+    {
+      "id": "cal-tarot-d12",
+      "label": "fail",
+      "verdicts": {
+        "reviewer_a.p1": "pass",
+        "reviewer_a.p2": "pass",
+        "reviewer_b.p1": "revise",
+        "reviewer_b.p2": "revise"
+      },
+      "reasons": {
+        "reviewer_a.p1": "逆位释义与关键词、theme_map 方向一致，无宿命化断言，免责声明不构成预测。",
+        "reviewer_a.p2": "逆位释义与权杖十逆位“卸下重担”传统相符，主题方向与文字一致，含否定式免责声明，非宿命化。",
+        "reviewer_b.p1": "卸下重担的逆位释义成立，但财务正向缺少文字或体系约定支持。",
+        "reviewer_b.p2": "牌义及逆位区分成立，但财务正向缺少文字或体系约定支持。"
+      },
+      "issues": {
+        "reviewer_b.p1": [
+          {
+            "dimension": "theme_direction",
+            "detail": "theme_map.finance 为正，但 text 仅涉及负担、压力与责任分配，未表达财务方面的偏顺倾向；财务也不在权杖牌的默认主题约定内，应改为 0 或补充相应含义。"
+          }
+        ],
+        "reviewer_b.p2": [
+          {
+            "dimension": "theme_direction",
+            "detail": "theme_map.finance 为正，但文字只涉及卸下重担、责任分配与任务交接，未表达财务偏顺；财务也不属于权杖牌的约定主题，应改为 0 或补充相应含义。"
+          }
+        ]
+      }
+    }
+  ],
+  "usage": {
+    "reviewer_a": {
+      "calls": 6,
+      "input_tokens": 15892,
+      "output_tokens": 2588,
+      "latency_s": 18.608,
+      "returned_models": [
+        "deepseek-flash"
+      ],
+      "errors": {},
+      "retried_calls": 0,
+      "http_retries": 0,
+      "cost": null,
+      "known_cost_estimate": null,
+      "usage_complete": true,
+      "cost_basis": "配置单价估算，非账单；服务失败的用量可能未知",
+      "currency": null
+    },
+    "reviewer_b": {
+      "calls": 6,
+      "input_tokens": 17934,
+      "output_tokens": 4217,
+      "latency_s": 102.509,
+      "returned_models": [
+        "gpt-6.1-sol"
+      ],
+      "errors": {},
+      "retried_calls": 0,
+      "http_retries": 0,
+      "cost": null,
+      "known_cost_estimate": null,
+      "usage_complete": true,
+      "cost_basis": "配置单价估算，非账单；服务失败的用量可能未知",
+      "currency": null
+    }
+  }
+}

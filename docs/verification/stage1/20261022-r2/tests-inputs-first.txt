@@ -1,0 +1,33 @@
+.................F..................................                     [100%]
+================================== FAILURES ===================================
+_____ test_dream_alias_review_needs_every_decision_and_refuses_collisions _____
+
+tmp_path = WindowsPath('C:/Users/Stan/Desktop/知命/reports/test_tmp/cefc9db9b156406e8fcd4fa913c3d125/test_dream_alias_review_needs_0')
+
+    def test_dream_alias_review_needs_every_decision_and_refuses_collisions(tmp_path):
+        from scripts import dream_alias_review as aliases
+    
+        copy_draft_knowledge(review.ROOT / "knowledge", tmp_path / "knowledge")
+        work = review.Workspace(tmp_path)
+        data = aliases.draft()
+        groups = {i["group"] for i in data["items"]}
+        assert groups == {"restore", "owner", "keep", "matched"}
+        path = tmp_path / "review.yaml"
+        path.write_text(yaml.safe_dump(data, allow_unicode=True), encoding="utf-8")
+        before = {p: p.read_bytes() for p in (work.sources / "dream").glob("*.yaml")}
+        with pytest.raises(ValueError, match="未决定"):
+            aliases.apply(work, path)
+        for item in data["items"]:
+            if item["decision"] == "undecided":
+                item["decision"] = "keep"
+        path.write_text(yaml.safe_dump(data, allow_unicode=True), encoding="utf-8")
+        result = aliases.apply(work, path)
+>       assert result["count"] == len(aliases.RESTORE)
+E       AssertionError: assert 0 == 7
+E        +  where 7 = len({'理发': '剪头发的常用说法，同一动作；“理发店”不会命中（匹配只看整词或词尾）', '往下掉': '坠落的口语说法，同一动作', '掉下去': '坠落的口语说法，同一动作', '走丢': '迷路的口语说法，同一处境', ...})
+E        +    where {'理发': '剪头发的常用说法，同一动作；“理发店”不会命中（匹配只看整词或词尾）', '往下掉': '坠落的口语说法，同一动作', '掉下去': '坠落的口语说法，同一动作', '走丢': '迷路的口语说法，同一处境', ...} = <module 'scripts.dream_alias_review' from 'C:\\Users\\Stan\\Desktop\\知命\\scripts\\dream_alias_review.py'>.RESTORE
+
+tests\test_kb_review_r2.py:467: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_kb_review_r2.py::test_dream_alias_review_needs_every_decision_and_refuses_collisions
+1 failed, 51 passed in 61.75s (0:01:01)

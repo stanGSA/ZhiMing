@@ -1,0 +1,48 @@
+{
+  "batch": "b006",
+  "reviewer": "reviewer_b",
+  "run_pass": 2,
+  "attempt": 1,
+  "vendor": "openai",
+  "requested_model": "gpt-6.1-sol",
+  "returned_model": "gpt-6.1-sol",
+  "api": "openai",
+  "started_at": "2026-10-22T07:03:52+00:00",
+  "finished_at": "2026-10-22T07:04:12+00:00",
+  "latency_s": 19.681,
+  "http_attempts": 1,
+  "finish_reason": "stop",
+  "prompt_sha256": "50e13f80ca1e19ea29530d0be29f372cfc44972bc4490022a9e8cae8e04535ae",
+  "input_tokens": 2681,
+  "output_tokens": 461,
+  "cached_input_tokens": 2678,
+  "usage_available": true,
+  "raw_text": "{\n  \"items\": [\n    {\n      \"item\": \"i01\",\n      \"verdict\": \"revise\",\n      \"issues\": [\n        {\n          \"dimension\": \"tradition\",\n          \"detail\": \"text 中“申的藏干为庚、壬、甲”与参考事实不符；申的藏干应为庚、壬、戊，需将“甲”改为“戊”。\"\n        }\n      ],\n      \"reason\": \"藏干成员有一处错误，修正后可与参考事实及关键词保持一致。\"\n    },\n    {\n      \"item\": \"i02\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"丑的藏干、五行归属及十神判定说明准确，主题方向中性，且无确定性预测。\"\n    },\n    {\n      \"item\": \"i03\",\n      \"verdict\": \"revise\",\n      \"issues\": [\n        {\n          \"dimension\": \"tradition\",\n          \"detail\": \"text 仅称藏干“具体按固定表列出”，未写出未的藏干为己、丁、乙，缺少该对象区别于其他地支的核心信息。\"\n        }\n      ],\n      \"reason\": \"作为未的藏干条目，正文须明确列出其藏干成员，不能只提供通用规则说明。\"\n    }\n  ]\n}",
+  "verdicts": {
+    "i01": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "tradition",
+          "detail": "text 中“申的藏干为庚、壬、甲”与参考事实不符；申的藏干应为庚、壬、戊，需将“甲”改为“戊”。"
+        }
+      ],
+      "reason": "藏干成员有一处错误，修正后可与参考事实及关键词保持一致。"
+    },
+    "i02": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "丑的藏干、五行归属及十神判定说明准确，主题方向中性，且无确定性预测。"
+    },
+    "i03": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "tradition",
+          "detail": "text 仅称藏干“具体按固定表列出”，未写出未的藏干为己、丁、乙，缺少该对象区别于其他地支的核心信息。"
+        }
+      ],
+      "reason": "作为未的藏干条目，正文须明确列出其藏干成员，不能只提供通用规则说明。"
+    }
+  }
+}

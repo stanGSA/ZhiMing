@@ -1,0 +1,43 @@
+{
+  "batch": "b010",
+  "reviewer": "reviewer_a",
+  "run_pass": 1,
+  "attempt": 1,
+  "vendor": "deepseek",
+  "requested_model": "deepseek-flash",
+  "returned_model": "deepseek-flash",
+  "api": "openai",
+  "started_at": "2026-10-22T06:55:41+00:00",
+  "finished_at": "2026-10-22T06:55:43+00:00",
+  "latency_s": 1.963,
+  "http_attempts": 1,
+  "finish_reason": "stop",
+  "prompt_sha256": "fe5f2eee47f6a66d1f3b9ea3c57241008bd3153162d11834d9021fc5ab840351",
+  "input_tokens": 2018,
+  "output_tokens": 231,
+  "cached_input_tokens": 1408,
+  "usage_available": true,
+  "raw_text": "{\"items\": [{\"item\": \"i01\", \"verdict\": \"revise\", \"issues\": [{\"dimension\": \"theme_direction\", \"detail\": \"theme_map 中 relationship 为 +0.1，但文字“感情方面人缘与交际较活跃，宜保持专注”表达的是活跃但需收束的中性偏提醒倾向，未能从文字看出偏顺的正方向；finance 为 -0.15，而文字“较容易遇到机会，同时核实风险”整体偏中性，未明确表达财务受阻的负向倾向。\"}], \"reason\": \"感情与财务的主题方向与文字表达不完全一致，需调整 theme_map 或补充文字倾向。\"}, {\"item\": \"i02\", \"verdict\": \"revise\", \"issues\": [{\"dimension\": \"certainty\", \"detail\": \"“它出现在流年时，预示当年会有搬迁或换工作的变动”对现实事件作出确定性预测，属于宿命化断言。\"}], \"reason\": \"含对流年现实事件的预测性断言，需改为倾向性表述。\"}]}",
+  "verdicts": {
+    "i01": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "theme_direction",
+          "detail": "theme_map 中 relationship 为 +0.1，但文字“感情方面人缘与交际较活跃，宜保持专注”表达的是活跃但需收束的中性偏提醒倾向，未能从文字看出偏顺的正方向；finance 为 -0.15，而文字“较容易遇到机会，同时核实风险”整体偏中性，未明确表达财务受阻的负向倾向。"
+        }
+      ],
+      "reason": "感情与财务的主题方向与文字表达不完全一致，需调整 theme_map 或补充文字倾向。"
+    },
+    "i02": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "certainty",
+          "detail": "“它出现在流年时，预示当年会有搬迁或换工作的变动”对现实事件作出确定性预测，属于宿命化断言。"
+        }
+      ],
+      "reason": "含对流年现实事件的预测性断言，需改为倾向性表述。"
+    }
+  }
+}
