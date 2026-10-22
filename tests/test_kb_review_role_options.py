@@ -80,7 +80,8 @@ def test_review_reasoning_cannot_be_silently_ignored(options):
         RoleModelSpec(**(data | options))
 
 
-async def test_pilot_and_registration_are_bound_to_actual_role_settings(setting, tmp_path):  # noqa: F811
+@pytest.mark.parametrize("change", [{"temperature": 0.0}, {"base_url": "https://relay.example/v1"}])
+async def test_pilot_and_registration_are_bound_to_actual_role_settings(setting, tmp_path, change):  # noqa: F811
     work, config, roles, _, prereg = setting
     calibration = review.ROOT / prereg["calibration"]["path"]
     root = tmp_path / "bound-pilot"
@@ -97,7 +98,7 @@ async def test_pilot_and_registration_are_bound_to_actual_role_settings(setting,
     )
     assert result["met"]
     changed = copy.deepcopy(roles)
-    changed["reviewer_a"] = roles["reviewer_a"].model_copy(update={"temperature": 0.0})
+    changed["reviewer_a"] = roles["reviewer_a"].model_copy(update=change)
     before = len(models.calls)
     with pytest.raises(ValueError, match="角色|审核方"):
         await live.run_pilot(
@@ -119,3 +120,15 @@ async def test_pilot_and_registration_are_bound_to_actual_role_settings(setting,
             review.RunDir(root / "pilot-1" / SYSTEM), plan, changed, make_model=models.make
         )
     assert len(models.calls) == before
+
+
+def test_deepseek_relay_configuration_never_falls_back_to_official(monkeypatch):
+    spec = review.load_roles(review.load_config(review.ROOT))["reviewer_a"]
+    assert spec.base_url is None and spec.base_url_env == "DEEPSEEK_BASE_URL"
+    monkeypatch.setenv(spec.api_key_env, "offline-relay-key")
+    monkeypatch.delenv("DEEPSEEK_BASE_URL", raising=False)
+    with pytest.raises(ValueError, match="未设置 DEEPSEEK_BASE_URL"):
+        role_model(spec)
+    monkeypatch.setenv("DEEPSEEK_BASE_URL", "https://relay.example/v1")
+    assert spec.endpoint() == "https://relay.example/v1"
+    assert review.public_spec(spec)["base_url_host"] == "relay.example"

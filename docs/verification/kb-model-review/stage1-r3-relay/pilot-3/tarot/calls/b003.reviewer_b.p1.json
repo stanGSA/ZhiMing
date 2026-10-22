@@ -1,0 +1,37 @@
+{
+  "batch": "b003",
+  "reviewer": "reviewer_b",
+  "run_pass": 1,
+  "attempt": 1,
+  "vendor": "openai",
+  "requested_model": "gpt-6.1-sol",
+  "returned_model": "gpt-6.1-sol",
+  "api": "openai",
+  "started_at": "2026-10-22T10:44:52+00:00",
+  "finished_at": "2026-10-22T10:45:01+00:00",
+  "latency_s": 8.275,
+  "http_attempts": 1,
+  "finish_reason": "stop",
+  "prompt_sha256": "0fae1ed5dc01fc2417025165de0415e9dab4f9343deb5b428c0c0d51fa7e03ff",
+  "input_tokens": 1933,
+  "output_tokens": 210,
+  "cached_input_tokens": 1930,
+  "usage_available": true,
+  "raw_text": "{\"items\":[{\"item\":\"i01\",\"verdict\":\"reject\",\"issues\":[{\"dimension\":\"tradition\",\"detail\":\"按 spread_positions，position=2 对应“选 A”，但 text 将本牌位定义为“选 B”并说明用于梳理选择 B，主体定义错置。\"},{\"dimension\":\"consistency\",\"detail\":\"text 的“选 B”与 synonyms 中的“选择 A”“选项 A”及 keywords 中的“选 A”矛盾；且要求与“选 B”牌位对照，造成与自身对照。\"}],\"reason\":\"正文将应为“选 A”的牌位整体写成“选 B”，主定义与牌阵位置及同义词不符。\"}]}",
+  "verdicts": {
+    "i01": {
+      "verdict": "reject",
+      "issues": [
+        {
+          "dimension": "tradition",
+          "detail": "按 spread_positions，position=2 对应“选 A”，但 text 将本牌位定义为“选 B”并说明用于梳理选择 B，主体定义错置。"
+        },
+        {
+          "dimension": "consistency",
+          "detail": "text 的“选 B”与 synonyms 中的“选择 A”“选项 A”及 keywords 中的“选 A”矛盾；且要求与“选 B”牌位对照，造成与自身对照。"
+        }
+      ],
+      "reason": "正文将应为“选 A”的牌位整体写成“选 B”，主定义与牌阵位置及同义词不符。"
+    }
+  }
+}
