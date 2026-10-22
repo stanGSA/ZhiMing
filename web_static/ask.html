@@ -1,0 +1,241 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#ebe1c8" />
+    <meta name="description" content="知命 · 问道：心有所问，择术而观。" />
+    <title>知命 · 问道</title>
+    <link rel="icon" href="/static/favicon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="/static/base.css" />
+    <link rel="stylesheet" href="/static/theme-ask.css" />
+    <script src="/static/app.js" defer></script>
+  </head>
+  <body data-page="ask">
+    <header class="zm-header">
+      <div class="wrap zm-bar">
+        <a class="zm-brand" href="/ask" aria-label="知命 · 问道">
+          <span class="zm-mark" aria-hidden="true">知<br />命</span>
+          <span class="zm-wordmark">知命</span>
+        </a>
+        <nav class="zm-nav" aria-label="六术">
+          <a href="/ask" aria-current="page">问道</a>
+          <a href="/bazi">八字</a>
+          <a href="/astro">星盘</a>
+          <a href="/tarot">塔罗</a>
+          <a href="/name">姓名</a>
+          <a href="/dream">解梦</a>
+          <a href="/daily">运势</a>
+        </nav>
+        <div class="zm-tools">
+          <span class="zm-status" id="connection">正在连接</span>
+          <button class="btn btn-text" id="open-history" type="button">足迹</button>
+        </div>
+      </div>
+    </header>
+
+    <main>
+      <section class="hero" aria-labelledby="hero-title">
+        <div class="wrap hero-inner">
+          <div class="hero-title">
+            <h1 id="hero-title">观天时<br />明己心</h1>
+            <span class="hero-seal" aria-hidden="true">道法<br />自然</span>
+          </div>
+          <div class="hero-copy">
+            <span class="hero-date" id="today-line">今日 · 正在推算</span>
+            <p>
+              心有所问，不必先想好用哪一门。写下来，知命会从八字、星盘、塔罗等六术中择其相宜者，合而观之。
+            </p>
+          </div>
+        </div>
+        <svg
+          class="hero-mountains"
+          viewBox="0 0 1440 440"
+          preserveAspectRatio="xMidYMax slice"
+          aria-hidden="true"
+        >
+          <defs>
+            <linearGradient id="hb-gmid" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0" class="hb-s1" />
+              <stop offset=".55" class="hb-s2" />
+              <stop offset="1" class="hb-s3" />
+            </linearGradient>
+            <linearGradient id="hb-gnear" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0" class="hb-s4" />
+              <stop offset=".5" class="hb-s5" />
+              <stop offset="1" class="hb-s6" />
+            </linearGradient>
+          </defs>
+          <path
+            class="m-far"
+            d="M0 440 L0 220 L10 211 L20 203 L30 195 L40 185 L50 175 L60 164 L70 152 L80 142 L90 130 L100 140 L110 153 L120 163 L130 176 L140 185 L150 194 L160 202 L170 190 L180 180 L190 172 L200 161 L210 147 L220 133 L230 122 L240 109 L250 94 L260 80 L270 94 L280 108 L290 122 L300 136 L310 148 L320 160 L330 171 L340 182 L350 193 L360 200 L370 193 L380 183 L390 174 L400 161 L410 150 L420 140 L430 151 L440 162 L450 173 L460 182 L470 194 L480 201 L490 210 L500 219 L510 225 L520 230 L530 236 L540 239 L550 235 L560 232 L570 226 L580 218 L590 213 L600 206 L610 198 L620 189 L630 181 L640 173 L650 163 L660 153 L670 141 L680 131 L690 121 L700 109 L710 122 L720 133 L730 142 L740 151 L750 162 L760 172 L770 182 L780 190 L790 196 L800 205 L810 212 L820 218 L830 212 L840 203 L850 193 L860 185 L870 175 L880 165 L890 153 L900 140 L910 130 L920 115 L930 101 L940 87 L950 73 L960 58 L970 74 L980 88 L990 103 L1000 117 L1010 128 L1020 141 L1030 154 L1040 164 L1050 175 L1060 186 L1070 195 L1080 203 L1090 211 L1100 204 L1110 196 L1120 188 L1130 177 L1140 167 L1150 155 L1160 142 L1170 130 L1180 118 L1190 130 L1200 144 L1210 154 L1220 166 L1230 178 L1240 188 L1250 197 L1260 204 L1270 200 L1280 191 L1290 179 L1300 169 L1310 158 L1320 145 L1330 131 L1340 119 L1350 104 L1360 88 L1370 103 L1380 118 L1390 131 L1400 146 L1410 157 L1420 168 L1430 180 L1440 191 L1440 440 Z"
+          />
+          <path
+            class="m-cloud"
+            d="M120 238 C150 226 178 226 204 236 M640 214 C676 200 712 202 742 214 M1180 226 C1210 214 1246 214 1276 226"
+          />
+          <path
+            class="m-mid"
+            d="M0 440 L0 321 L10 316 L20 314 L30 306 L40 294 L50 285 L60 275 L70 264 L80 250 L90 237 L100 223 L110 209 L120 192 L130 175 L140 156 L150 136 L160 155 L170 174 L180 192 L190 209 L200 225 L210 239 L220 251 L230 264 L240 276 L250 258 L260 242 L270 223 L280 204 L290 182 L300 158 L310 133 L320 106 L330 76 L340 105 L350 133 L360 155 L370 179 L380 202 L390 221 L400 241 L410 258 L420 276 L430 284 L440 274 L450 265 L460 251 L470 237 L480 224 L490 208 L500 193 L510 174 L520 158 L530 174 L540 193 L550 207 L560 222 L570 238 L580 251 L590 262 L600 275 L610 286 L620 297 L630 305 L640 311 L650 319 L660 321 L670 327 L680 324 L690 322 L700 313 L710 306 L720 297 L730 286 L740 272 L750 259 L760 245 L770 228 L780 209 L790 189 L800 170 L810 151 L820 126 L830 103 L840 78 L850 56 L860 27 L870 56 L880 79 L890 105 L900 128 L910 148 L920 172 L930 191 L940 208 L950 228 L960 245 L970 247 L980 232 L990 212 L1000 194 L1010 171 L1020 149 L1030 123 L1040 100 L1050 122 L1060 150 L1070 170 L1080 194 L1090 214 L1100 230 L1110 250 L1120 266 L1130 279 L1140 293 L1150 286 L1160 271 L1170 262 L1180 249 L1190 233 L1200 217 L1210 200 L1220 186 L1230 167 L1240 149 L1250 128 L1260 147 L1270 165 L1280 183 L1290 200 L1300 216 L1310 232 L1320 247 L1330 261 L1340 272 L1350 283 L1360 272 L1370 257 L1380 242 L1390 230 L1400 212 L1410 196 L1420 178 L1430 197 L1440 211 L1440 440 Z"
+          />
+          <path
+            class="m-near"
+            d="M0 440 L0 314 L10 298 L20 283 L30 265 L40 247 L50 267 L60 285 L70 297 L80 314 L90 328 L100 338 L110 352 L120 361 L130 372 L140 375 L150 367 L160 353 L170 339 L180 326 L190 309 L200 292 L210 276 L220 253 L230 233 L240 212 L250 190 L260 210 L270 233 L280 253 L290 273 L300 292 L310 308 L320 326 L330 339 L340 354 L350 364 L360 374 L370 386 L380 393 L390 397 L400 396 L410 398 L420 397 L430 399 L440 398 L450 396 L460 392 L470 384 L480 375 L490 364 L500 353 L510 339 L520 324 L530 308 L540 292 L550 275 L560 253 L570 231 L580 209 L590 188 L600 163 L610 139 L620 162 L630 188 L640 212 L650 235 L660 253 L670 272 L680 294 L690 309 L700 326 L710 341 L720 325 L730 307 L740 289 L750 274 L760 251 L770 232 L780 207 L790 231 L800 250 L810 270 L820 291 L830 306 L840 325 L850 341 L860 353 L870 367 L880 377 L890 385 L900 391 L910 397 L920 400 L930 397 L940 399 L950 396 L960 396 L970 396 L980 390 L990 382 L1000 372 L1010 360 L1020 347 L1030 331 L1040 313 L1050 296 L1060 277 L1070 254 L1080 233 L1090 209 L1100 181 L1110 156 L1120 128 L1130 158 L1140 183 L1150 208 L1160 234 L1170 255 L1180 276 L1190 298 L1200 314 L1210 332 L1220 346 L1230 361 L1240 359 L1250 348 L1260 338 L1270 324 L1280 307 L1290 290 L1300 276 L1310 257 L1320 238 L1330 219 L1340 238 L1350 258 L1360 275 L1370 291 L1380 308 L1390 323 L1400 335 L1410 351 L1420 360 L1430 369 L1440 380 L1440 440 Z"
+          />
+        </svg>
+      </section>
+
+      <div class="wrap">
+        <form class="scroll" id="chat-form" aria-label="所问">
+          <label class="scroll-label" for="message">所问</label>
+          <div class="scroll-body">
+            <textarea
+              id="message"
+              rows="3"
+              maxlength="4000"
+              required
+              placeholder="写下此刻萦绕心头的事。越具体越好，比如：年底前要不要换工作？"
+            ></textarea>
+            <div class="scroll-foot">
+              <span class="hint" id="input-hint">Enter 发送 · Shift + Enter 换行</span>
+              <span class="scroll-note">由知命择术 · 已保存的生辰会一并参考</span>
+            </div>
+          </div>
+          <button class="btn btn-primary ask-button" id="send" type="submit" aria-label="发问">
+            问
+          </button>
+        </form>
+
+        <section class="section consult" aria-labelledby="consult-title">
+          <div class="section-title">
+            <h2 id="consult-title">问答</h2>
+            <span class="note">一问一答，解读整理在右</span>
+          </div>
+          <div class="consult-grid">
+            <div class="messages" id="messages" role="log" aria-live="polite"></div>
+            <section class="reading" id="reading" aria-labelledby="reading-title">
+              <div class="reading-head">
+                <h3 id="reading-title">此间解读</h3>
+                <button class="btn btn-text" id="copy-reading" type="button" hidden>复制</button>
+              </div>
+              <div class="reading-content" id="reading-content">
+                <p class="reading-empty">
+                  发问之后，定调、分层分析与可行之事会整理在这里。
+                </p>
+              </div>
+            </section>
+          </div>
+        </section>
+
+        <section class="section arts" aria-labelledby="arts-title">
+          <div class="section-title">
+            <h2 id="arts-title">六术</h2>
+            <span class="note">择一而入 · 各有天地</span>
+          </div>
+          <div class="arts-list">
+            <a class="art" href="/bazi" data-art="bazi">
+              <span class="art-num">壹</span><span class="art-name">八字</span>
+              <span class="art-desc">四柱五行，读一份生命的底稿</span><span class="art-go">入此门 →</span>
+            </a>
+            <a class="art" href="/astro" data-art="astro">
+              <span class="art-num">贰</span><span class="art-name">星盘</span>
+              <span class="art-desc">行星与宫位，绘出你的本命天空</span
+              ><span class="art-go">入此门 →</span>
+            </a>
+            <a class="art" href="/tarot" data-art="tarot">
+              <span class="art-num">叁</span><span class="art-name">塔罗</span>
+              <span class="art-desc">借一张牌，照见此刻的心</span><span class="art-go">入此门 →</span>
+            </a>
+            <a class="art" href="/name" data-art="name">
+              <span class="art-num">肆</span><span class="art-name">姓名</span>
+              <span class="art-desc">康熙笔画，五格数理与三才</span><span class="art-go">入此门 →</span>
+            </a>
+            <a class="art" href="/dream" data-art="dream">
+              <span class="art-num">伍</span><span class="art-name">解梦</span>
+              <span class="art-desc">梦中意象，映照醒时心绪</span><span class="art-go">入此门 →</span>
+            </a>
+            <a class="art" href="/daily" data-art="daily">
+              <span class="art-num">陆</span><span class="art-name">运势</span>
+              <span class="art-desc">流日干支、行运与每日一牌</span><span class="art-go">入此门 →</span>
+            </a>
+          </div>
+        </section>
+
+        <div class="section lower">
+          <section class="recent" aria-labelledby="recent-title">
+            <div class="section-title">
+              <h2 id="recent-title">近来所问</h2>
+            </div>
+            <div class="recent-list" id="recent-list"></div>
+          </section>
+
+          <aside class="profile" aria-labelledby="profile-title">
+            <div class="profile-head">
+              <h2 id="profile-title">生辰档案</h2>
+              <span class="profile-status" id="profile-status">未填写</span>
+            </div>
+            <div id="profile-list"></div>
+            <button class="btn btn-ghost" id="edit-birth" type="button" data-lock>填写 / 修改</button>
+            <details class="profile-form" id="birth-details">
+              <summary>出生资料</summary>
+              <div data-birth="save"></div>
+            </details>
+          </aside>
+        </div>
+      </div>
+    </main>
+
+    <footer class="zm-footer">
+      <div class="wrap zm-bar">
+        <p>致虚极，守静笃。——《道德经》 · 解读仅供参考与自我反思</p>
+        <div class="zm-controls">
+          <label class="zm-mode"
+            >体验模式<select id="provider">
+              <option value="configured">真实模型</option>
+              <option value="demo">离线演示</option>
+            </select></label
+          >
+          <button class="btn btn-text" id="new-chat" type="button">开启新对话</button>
+          <button class="btn btn-text" id="forget" type="button">清除我的记录</button>
+        </div>
+      </div>
+    </footer>
+
+    <template id="welcome">
+      <div class="welcome">
+        <h3>你好，有缘相见。</h3>
+        <p>命理如一面镜，照见可能，也照见自己。人生的岔路，或此刻的小小困惑，都可以从这里说起。</p>
+        <div class="btn-row">
+          <button
+            class="btn btn-tag"
+            type="button"
+            data-question="最近在考虑职业方向，如何看清当下、找到适合自己的下一步？"
+          >
+            事业与方向
+          </button>
+          <button
+            class="btn btn-tag"
+            type="button"
+            data-question="我想梳理一下当前的感情状态，有哪些值得留意的地方？"
+          >
+            感情与关系
+          </button>
+          <button
+            class="btn btn-tag"
+            type="button"
+            data-question="我想了解自己的性格特点与优势，需要提供哪些出生信息？"
+          >
+            认识自己
+          </button>
+          <button
+            class="btn btn-tag"
+            type="button"
+            data-question="请抽一张塔罗牌，为我今天的自我反思提供一个线索。"
+          >
+            今日一问
+          </button>
+        </div>
+      </div>
+    </template>
+  </body>
+</html>

@@ -261,6 +261,25 @@ class Store:
             for row in rows
         ]
 
+    def reading_history(self, user_id: str, limit: int = 30) -> list[dict]:
+        """Browser footprints: recent readings plus the systems and time shown in the list."""
+        rows = self.db.execute(
+            "SELECT reading_id,question,output_json,kb_version,systems_used,created_at "
+            "FROM readings WHERE user_id=? ORDER BY created_at DESC LIMIT ?",
+            (user_id, limit),
+        ).fetchall()
+        return [
+            {
+                "reading_id": row["reading_id"],
+                "question": row["question"],
+                "summary": json.loads(row["output_json"])["summary"],
+                "kb_version": row["kb_version"],
+                "systems_used": json.loads(row["systems_used"]),
+                "created_at": row["created_at"],
+            }
+            for row in rows
+        ]
+
     def save_response(self, session, output: dict) -> str:
         import uuid
 

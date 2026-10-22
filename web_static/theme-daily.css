@@ -1,0 +1,391 @@
+/* 运势 · 今日黄历：撕页日历、朱红版框、Didone 大号日期。 */
+:root {
+  --bg: #f1e5cb;
+  --surface: #f6ecd6;
+  --surface-2: #efe2c4;
+  --ink: #1a1613;
+  --muted: #5e5243;
+  --line: rgba(26, 22, 19, 0.16);
+  --line-strong: rgba(26, 22, 19, 0.4);
+  --accent: #b3261e;
+  --accent-hover: #9c1f18;
+  --accent-ink: #f6ecd6;
+  --accent-2: #b3261e;
+  --focus: #1a1613;
+}
+[data-element="木"] {
+  --swatch-a: #3f7d5c;
+  --swatch-b: #6aa37a;
+}
+[data-element="火"] {
+  --swatch-a: #b3261e;
+  --swatch-b: #7b3f8c;
+}
+[data-element="土"] {
+  --swatch-a: #c9a033;
+  --swatch-b: #7e522a;
+}
+[data-element="金"] {
+  --swatch-a: #f4f1ea;
+  --swatch-b: #c9a45c;
+}
+[data-element="水"] {
+  --swatch-a: #1a1613;
+  --swatch-b: #2f4a6b;
+}
+
+.zm-mark {
+  width: 30px;
+  height: 44px;
+  border: 2px solid var(--accent);
+  color: var(--accent);
+  font-size: 13px;
+  font-weight: 900;
+}
+.zm-nav a[aria-current="page"] {
+  border-bottom-width: 2px;
+}
+
+/* Almanac buttons: red block with a cut-in paper frame; black hairline steppers. */
+.btn-primary {
+  min-height: 56px;
+  padding: 0 34px;
+  font-weight: 600;
+  letter-spacing: 0.45em;
+  box-shadow:
+    inset 0 0 0 4px var(--accent),
+    inset 0 0 0 5px rgba(246, 236, 214, 0.6);
+}
+.btn-primary:not(:disabled):hover {
+  box-shadow:
+    inset 0 0 0 4px var(--accent-hover),
+    inset 0 0 0 5px rgba(246, 236, 214, 0.6);
+}
+.btn-ghost {
+  border-color: var(--ink);
+}
+.btn-ghost:not(:disabled):hover {
+  background: rgba(26, 22, 19, 0.06);
+}
+
+.daily-main {
+  padding-top: 32px;
+  padding-bottom: 72px;
+}
+.day-nav {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-bottom: 18px;
+}
+.btn.step {
+  width: 44px;
+  padding: 0;
+  font-size: 20px;
+  letter-spacing: 0;
+  border-color: var(--line-strong);
+}
+.day-picker input {
+  min-height: 44px;
+  padding: 0 12px;
+  border: 1px solid var(--line-strong);
+  background: transparent;
+  color: var(--ink);
+}
+
+/* ---------- The almanac page ---------- */
+.almanac {
+  border: 3px double var(--accent);
+  background: var(--surface);
+}
+.almanac-binding {
+  height: 30px;
+  background: var(--accent);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 180px;
+}
+.almanac-binding span {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--bg);
+}
+.almanac-body {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: stretch;
+}
+.almanac-side {
+  flex: 0 0 auto;
+  padding: 36px 30px;
+  border-right: 1px solid rgba(179, 38, 30, 0.35);
+  display: flex;
+  gap: 18px;
+  justify-content: center;
+}
+.side-pillars {
+  writing-mode: vertical-rl;
+  font-size: 30px;
+  font-weight: 900;
+  letter-spacing: 0.3em;
+  color: var(--accent);
+}
+.side-lunar {
+  writing-mode: vertical-rl;
+  font-size: 16px;
+  letter-spacing: 0.4em;
+  color: var(--muted);
+}
+.almanac-center {
+  flex: 1 1 420px;
+  min-width: 0;
+  padding: 32px 36px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  text-align: center;
+}
+.day-month {
+  font-family: var(--font-didone);
+  font-size: 16px;
+  letter-spacing: 0.5em;
+  color: var(--muted);
+}
+.day-num {
+  font-family: var(--font-didone);
+  font-weight: 800;
+  font-size: clamp(150px, 18vw, 250px);
+  line-height: 0.95;
+  letter-spacing: -0.02em;
+}
+.day-weekday {
+  margin-top: 6px;
+  font-size: 20px;
+  letter-spacing: 0.5em;
+  font-weight: 600;
+}
+.day-term {
+  margin-top: 12px;
+  font-size: 15px;
+  letter-spacing: 0.2em;
+  color: var(--accent);
+}
+.almanac-cells {
+  flex: 1 1 380px;
+  min-width: 0;
+  border-left: 1px solid rgba(179, 38, 30, 0.35);
+  display: flex;
+  flex-direction: column;
+}
+.cell {
+  padding: 20px 28px;
+  border-bottom: 1px solid rgba(179, 38, 30, 0.25);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.cell:last-child {
+  border-bottom: 0;
+  flex: 1;
+}
+.cell-label {
+  font-size: 13px;
+  letter-spacing: 0.4em;
+  color: var(--muted);
+}
+.cell-big {
+  font-size: 44px;
+  font-weight: 900;
+  letter-spacing: 0.1em;
+  line-height: 1.15;
+}
+.cell-value {
+  font-size: 18px;
+}
+.cell-value b {
+  color: var(--accent);
+}
+.cell-value.muted {
+  color: var(--muted);
+  font-size: 16px;
+}
+.cell-note {
+  font-size: 13px;
+  line-height: 1.8;
+  color: var(--muted);
+}
+.cell-element > div {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+#day-element {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 22px;
+  font-weight: 600;
+}
+#day-element::after {
+  content: "";
+  width: 54px;
+  height: 22px;
+  background: linear-gradient(90deg, var(--swatch-a) 50%, var(--swatch-b) 50%);
+  border: 1px solid var(--line);
+}
+#day-transits::before,
+#day-card::before {
+  font-size: 13px;
+  letter-spacing: 0.4em;
+  color: var(--muted);
+}
+#day-transits::before {
+  content: "今日行运";
+}
+#day-card::before {
+  content: "每日一牌";
+}
+
+/* ---------- Brief and week ---------- */
+.daily-grid {
+  display: flex;
+  gap: 48px;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  margin-top: 48px;
+}
+.brief {
+  flex: 1 1 560px;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+.brief .reading {
+  background: var(--surface);
+  border-color: rgba(179, 38, 30, 0.3);
+}
+.reading-summary {
+  font-size: 22px;
+}
+.reading-list li::before {
+  font-weight: 800;
+}
+.week-panel {
+  flex: 1 1 520px;
+  min-width: 0;
+}
+.week-scroll {
+  overflow-x: auto;
+}
+.week {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(72px, 1fr));
+  border-top: 2px solid var(--ink);
+  border-bottom: 1px solid var(--line-strong);
+}
+.week-day {
+  padding: 14px 0 16px;
+  background: transparent;
+  border: 0;
+  border-right: 1px solid var(--line);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+}
+.week-day:last-child {
+  border-right: 0;
+}
+.week-day:not(:disabled):hover {
+  background: rgba(179, 38, 30, 0.06);
+}
+.week-day[aria-current="date"] {
+  background: var(--accent);
+  color: var(--accent-ink);
+}
+.week-label {
+  font-size: 12px;
+  color: var(--muted);
+}
+.week-num {
+  font-family: var(--font-didone);
+  font-size: 32px;
+  line-height: 1;
+}
+.week-gz {
+  font-size: 15px;
+}
+.week-god {
+  font-size: 12px;
+  color: var(--muted);
+}
+.week-day[aria-current="date"] .week-label,
+.week-day[aria-current="date"] .week-god {
+  color: var(--accent-ink);
+}
+.week-day[aria-current="date"] .week-num {
+  font-weight: 800;
+}
+.week-note {
+  margin-top: 12px;
+  font-size: 13px;
+  line-height: 1.9;
+  color: var(--muted);
+}
+
+/* ---------- Birth and dialogue ---------- */
+.daily-lower {
+  display: flex;
+  gap: 48px;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  margin-top: 64px;
+}
+.birth-panel {
+  flex: 1 1 400px;
+  min-width: 0;
+}
+.daily-lower .consult {
+  flex: 1 1 520px;
+  min-width: 0;
+}
+.consult .messages {
+  max-height: 420px;
+  border-top: 2px solid var(--ink);
+}
+.msg-label {
+  color: var(--accent);
+}
+
+@media (max-width: 760px) {
+  .almanac-side {
+    flex-basis: 100%;
+    border-right: 0;
+    border-bottom: 1px solid rgba(179, 38, 30, 0.35);
+    padding: 20px;
+  }
+  .side-pillars,
+  .side-lunar {
+    writing-mode: horizontal-tb;
+    font-size: 18px;
+    letter-spacing: 0.15em;
+  }
+  .almanac-side {
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+  }
+  .almanac-cells {
+    border-left: 0;
+    border-top: 1px solid rgba(179, 38, 30, 0.35);
+  }
+  .almanac-binding {
+    gap: 120px;
+  }
+}

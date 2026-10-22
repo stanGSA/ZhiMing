@@ -1,0 +1,512 @@
+/* 姓名 · 碑拓金石：拓片黑底、白字、米字格与朱文印章。 */
+:root {
+  color-scheme: dark;
+  --bg: #1b1b19;
+  --surface: #232320;
+  --surface-2: #2a2a26;
+  --ink: #ece8de;
+  --muted: #a6a196;
+  --line: rgba(236, 232, 222, 0.14);
+  --line-strong: rgba(236, 232, 222, 0.42);
+  --accent: #b8352a;
+  --accent-hover: #c9402f;
+  --accent-ink: #f3e9da;
+  --accent-2: #ece8de;
+  --seal: #b8352a;
+  --focus: #ece8de;
+  --body: var(--font-serif);
+}
+[data-element="木"] {
+  --el-text: #8fb98a;
+}
+[data-element="火"] {
+  --el-text: #e07a62;
+}
+[data-element="土"] {
+  --el-text: #cfa65a;
+}
+[data-element="金"] {
+  --el-text: #dad3c1;
+}
+[data-element="水"] {
+  --el-text: #8aa7d4;
+}
+
+.zm-mark {
+  background: var(--seal);
+  color: var(--accent-ink);
+  box-shadow:
+    inset 0 0 0 3px var(--seal),
+    inset 0 0 0 4px var(--accent-ink);
+}
+.zm-nav a[aria-current="page"] {
+  color: var(--ink);
+  border-bottom: 2px solid var(--seal);
+}
+.kicker {
+  color: var(--muted);
+}
+.kicker::before {
+  width: 10px;
+  height: 10px;
+  background: var(--seal);
+}
+
+/* Seal-stamp buttons: vermilion with a cut-in paper frame. */
+.btn-primary {
+  font-weight: 600;
+  letter-spacing: 0.45em;
+  box-shadow:
+    inset 0 0 0 4px var(--accent),
+    inset 0 0 0 5px rgba(243, 233, 218, 0.8);
+}
+.btn-primary:not(:disabled):hover {
+  box-shadow:
+    inset 0 0 0 4px var(--accent-hover),
+    inset 0 0 0 5px rgba(243, 233, 218, 0.8);
+}
+.btn-tag {
+  border-color: rgba(236, 232, 222, 0.3);
+  color: #d6d1c5;
+}
+.seal {
+  width: 84px;
+  height: 84px;
+  border: 0;
+  padding: 0;
+  background: var(--seal);
+  color: var(--accent-ink);
+  font: 700 24px/1.1 var(--font-kai);
+  cursor: pointer;
+  box-shadow:
+    inset 0 0 0 5px var(--seal),
+    inset 0 0 0 7px var(--accent-ink);
+}
+.seal:not(:disabled):hover {
+  background: var(--accent-hover);
+  box-shadow:
+    inset 0 0 0 5px var(--accent-hover),
+    inset 0 0 0 7px var(--accent-ink);
+}
+.seal:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* 米字格 drawn with four hairlines. */
+.mi,
+.mi-input,
+.stele-glyph,
+.wuge-cell {
+  background-image:
+    linear-gradient(45deg, transparent calc(50% - 0.5px), rgba(184, 53, 42, 0.35) calc(50% - 0.5px), rgba(184, 53, 42, 0.35) calc(50% + 0.5px), transparent calc(50% + 0.5px)),
+    linear-gradient(-45deg, transparent calc(50% - 0.5px), rgba(184, 53, 42, 0.35) calc(50% - 0.5px), rgba(184, 53, 42, 0.35) calc(50% + 0.5px), transparent calc(50% + 0.5px)),
+    linear-gradient(90deg, transparent calc(50% - 0.5px), rgba(184, 53, 42, 0.35) calc(50% - 0.5px), rgba(184, 53, 42, 0.35) calc(50% + 0.5px), transparent calc(50% + 0.5px)),
+    linear-gradient(0deg, transparent calc(50% - 0.5px), rgba(184, 53, 42, 0.35) calc(50% - 0.5px), rgba(184, 53, 42, 0.35) calc(50% + 0.5px), transparent calc(50% + 0.5px));
+}
+
+/* ---------- Hero ---------- */
+.stele-hero {
+  background-image: repeating-linear-gradient(90deg, rgba(236, 232, 222, 0.045) 0 1px, transparent 1px 72px);
+  border-bottom: 1px solid var(--line);
+}
+.stele-hero-inner {
+  padding-top: 56px;
+  padding-bottom: 48px;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 40px;
+  flex-wrap: wrap;
+}
+.name-heading {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.name-heading h1 {
+  font-family: var(--font-kai);
+  font-size: 56px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  line-height: 1.2;
+}
+.name-heading p {
+  color: var(--muted);
+  font-size: 15px;
+  line-height: 1.9;
+}
+.name-form {
+  display: grid;
+  grid-template-columns: auto auto auto;
+  gap: 8px 16px;
+  align-items: end;
+}
+.mi-field {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+.mi-field > span {
+  font-size: 13px;
+  letter-spacing: 0.4em;
+  text-indent: 0.4em;
+  color: var(--muted);
+}
+.mi-input {
+  height: 84px;
+  border: 1px solid rgba(236, 232, 222, 0.45);
+  background-color: transparent;
+  color: var(--ink);
+  font: 400 40px/1 var(--font-kai);
+  text-align: center;
+}
+.mi-surname {
+  width: 84px;
+}
+.mi-given {
+  width: 168px;
+  letter-spacing: 0.4em;
+  text-indent: 0.4em;
+}
+.mi-input:focus {
+  outline: none;
+  border-color: var(--ink);
+}
+.name-feedback {
+  grid-column: 1 / -1;
+  font-size: 13px;
+  color: var(--muted);
+}
+
+/* ---------- Characters ---------- */
+.name-empty {
+  padding: 48px 0;
+  color: var(--muted);
+}
+.steles {
+  margin-top: 40px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  border-top: 1px solid rgba(236, 232, 222, 0.25);
+  border-bottom: 1px solid rgba(236, 232, 222, 0.25);
+}
+.stele {
+  padding: 30px 18px;
+  display: flex;
+  gap: 24px;
+  align-items: center;
+  justify-content: center;
+  border-left: 1px solid var(--line);
+}
+.stele:first-child {
+  border-left: 0;
+}
+.stele-glyph {
+  flex: none;
+  width: 160px;
+  height: 160px;
+  border: 1px solid rgba(236, 232, 222, 0.5);
+  display: grid;
+  place-items: center;
+  font: 400 120px/1 var(--font-kai);
+}
+.stele-info {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+}
+.stele-role {
+  font-size: 13px;
+  letter-spacing: 0.3em;
+  color: var(--muted);
+}
+.stele-strokes {
+  font-size: 30px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+}
+.stele-rule {
+  font-size: 13px;
+  line-height: 1.8;
+  color: var(--muted);
+}
+.name-forms {
+  margin-top: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.form-choice {
+  border: 1px dashed rgba(236, 232, 222, 0.35);
+  padding: 14px 18px;
+  display: flex;
+  gap: 8px 22px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+.form-choice legend {
+  padding: 0 6px;
+  font-size: 14px;
+}
+.form-choice .check {
+  font-size: 15px;
+  color: var(--ink);
+}
+
+/* ---------- 五格剖象 ---------- */
+.name-grid {
+  display: flex;
+  gap: 56px;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  margin-top: 56px;
+}
+.wuge-panel {
+  flex: 1 1 620px;
+  min-width: 0;
+}
+.wuge-panel h2,
+.panel-head h2,
+.panel-title {
+  font-size: 22px;
+  letter-spacing: 0.4em;
+  font-weight: 600;
+  margin-bottom: 24px;
+}
+.wuge-scroll {
+  overflow-x: auto;
+}
+.wuge {
+  display: grid;
+  grid-template-columns: minmax(120px, 1fr) 30px 26px 110px 44px minmax(150px, 1fr);
+  min-width: 520px;
+  max-width: 620px;
+  margin: 0 auto;
+}
+.wuge-cell {
+  margin: 6px 0;
+  border: 1px solid rgba(236, 232, 222, 0.5);
+  display: grid;
+  place-items: center;
+  position: relative;
+}
+.wuge-char {
+  font: 400 60px/1 var(--font-kai);
+}
+.wuge-strokes {
+  position: absolute;
+  right: 6px;
+  bottom: 4px;
+  font-size: 12px;
+  color: var(--muted);
+}
+.wuge-fake {
+  border-style: dashed;
+  background-image: none;
+}
+.wuge-fake .wuge-char {
+  font-size: 28px;
+}
+.wuge-bracket {
+  margin: 4px 0;
+  border: 1px solid var(--ink);
+}
+.wuge-bracket.left {
+  border-right: 0;
+  margin-right: 6px;
+}
+.wuge-bracket.right {
+  border-left: 0;
+  margin-left: 6px;
+  margin-right: 14px;
+}
+.wuge-label {
+  align-self: center;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 0 12px;
+}
+.wuge-label {
+  align-items: flex-end;
+  text-align: right;
+}
+.wuge-label.right {
+  align-items: flex-start;
+  text-align: left;
+}
+.wuge-name {
+  font-size: 13px;
+  letter-spacing: 0.3em;
+  color: var(--muted);
+}
+.wuge-number {
+  font-size: 30px;
+  font-weight: 600;
+  line-height: 1.15;
+}
+.wuge-label .el,
+.wuge-total .el {
+  font-size: 15px;
+  color: var(--el-text, var(--muted));
+}
+.wuge-formula {
+  font-size: 12px;
+  color: var(--muted);
+}
+.wuge-total {
+  margin-top: 18px;
+  padding-top: 16px;
+  border-top: 1px solid rgba(236, 232, 222, 0.3);
+  display: flex;
+  justify-content: center;
+  align-items: baseline;
+  gap: 16px;
+}
+
+/* ---------- 三才 ---------- */
+.sancai-panel {
+  flex: 1 1 380px;
+  min-width: 0;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  padding: 28px;
+}
+.panel-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 12px;
+}
+.panel-head span {
+  font-size: 12px;
+  color: var(--muted);
+}
+.sancai-flow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+.talent {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+.talent-element {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  border: 1px solid currentColor;
+  display: grid;
+  place-items: center;
+  font-size: 26px;
+  font-weight: 600;
+  color: var(--el-text, var(--ink));
+}
+.talent-name {
+  font-size: 13px;
+  color: var(--muted);
+  letter-spacing: 0.2em;
+}
+.talent-link {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-bottom: 26px;
+  font-size: 13px;
+  letter-spacing: 0.2em;
+  color: #d6d1c5;
+}
+.talent-link::after {
+  content: "";
+  width: 100%;
+  height: 1px;
+  margin-top: 4px;
+  background: rgba(236, 232, 222, 0.4);
+}
+.sancai-rule,
+.sancai-note {
+  margin-top: 18px;
+  font-size: 14px;
+  line-height: 1.9;
+  color: #d6d1c5;
+}
+.sancai-note {
+  font-size: 13px;
+  color: var(--muted);
+}
+
+/* ---------- Dialogue ---------- */
+.name-lower {
+  display: flex;
+  gap: 40px;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  margin: 64px 0;
+}
+.stone {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  padding: 28px 30px;
+}
+.name-lower .consult {
+  flex: 1 1 520px;
+  min-width: 0;
+}
+.name-lower .reading {
+  flex: 1 1 520px;
+}
+.consult .messages {
+  max-height: 420px;
+}
+.msg-label {
+  color: var(--seal);
+}
+.reading-summary {
+  font-family: var(--font-kai);
+  font-size: 24px;
+}
+.reading-subheading,
+.reading-tags span {
+  color: #e07a62;
+}
+.reading-list li::before {
+  color: var(--seal);
+}
+
+@media (max-width: 760px) {
+  .name-heading h1 {
+    font-size: 30px;
+  }
+  .mi-input,
+  .seal {
+    height: 72px;
+  }
+  .mi-surname,
+  .seal {
+    width: 72px;
+  }
+  .mi-given {
+    width: 132px;
+    font-size: 34px;
+  }
+  .stele {
+    border-left: 0;
+    border-bottom: 1px solid var(--line);
+    justify-content: flex-start;
+  }
+  .stele-glyph {
+    width: 120px;
+    height: 120px;
+    font-size: 88px;
+  }
+  .stone {
+    padding: 22px 18px;
+  }
+}

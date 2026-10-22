@@ -1,0 +1,435 @@
+/* 八字 · 朱漆描金：黑红漆底，四柱如描金牌匾，五色五行。 */
+:root {
+  color-scheme: dark;
+  --bg: #170d0b;
+  --surface: #2b1511;
+  --surface-2: #22110e;
+  --ink: #f0e4cc;
+  --muted: #b5a28a;
+  --line: rgba(207, 165, 91, 0.22);
+  --line-strong: rgba(207, 165, 91, 0.5);
+  --accent: #7e2418;
+  --accent-hover: #962c1e;
+  --accent-ink: #f3dfae;
+  --accent-2: #cfa55b;
+  --gold-light: #e8cb8a;
+  --focus: #e8cb8a;
+  --wood: #6e9e6a;
+  --fire: #d3553a;
+  --earth: #c49a4a;
+  --metal: #e3dccb;
+  --water: #6f93c4;
+}
+[data-element="木"] {
+  --el: var(--wood);
+  --el-text: #9bc596;
+}
+[data-element="火"] {
+  --el: var(--fire);
+  --el-text: #e98a72;
+}
+[data-element="土"] {
+  --el: var(--earth);
+  --el-text: #ddb66a;
+}
+[data-element="金"] {
+  --el: var(--metal);
+  --el-text: #e3dccb;
+}
+[data-element="水"] {
+  --el: var(--water);
+  --el-text: #8fb0da;
+}
+
+.zm-mark {
+  border: 1px solid var(--accent-2);
+  color: var(--gold-light);
+  box-shadow:
+    inset 0 0 0 3px var(--bg),
+    inset 0 0 0 4px rgba(207, 165, 91, 0.5);
+}
+.zm-nav a[aria-current="page"] {
+  color: var(--gold-light);
+}
+
+/* Lacquer buttons: red ground, gold rim. */
+.btn-primary {
+  border-color: var(--accent-2);
+  box-shadow:
+    inset 0 0 0 3px var(--accent),
+    inset 0 0 0 4px rgba(207, 165, 91, 0.55);
+  font-weight: 600;
+  letter-spacing: 0.4em;
+}
+.btn-primary:not(:disabled):hover {
+  border-color: var(--accent-2);
+  box-shadow:
+    inset 0 0 0 3px var(--accent-hover),
+    inset 0 0 0 4px rgba(207, 165, 91, 0.55);
+}
+.btn-ghost {
+  border-color: rgba(207, 165, 91, 0.55);
+  color: var(--gold-light);
+}
+.btn-ghost:not(:disabled):hover {
+  border-color: var(--accent-2);
+  background: rgba(207, 165, 91, 0.1);
+}
+.btn-tag {
+  border-color: rgba(207, 165, 91, 0.3);
+  color: #dccdb2;
+}
+
+/* ---------- Heading ---------- */
+.bazi-hero {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 32px;
+  flex-wrap: wrap;
+}
+.bazi-heading {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.bazi-heading h1 {
+  font-size: 50px;
+  font-weight: 900;
+  letter-spacing: 0.14em;
+  line-height: 1.2;
+}
+.bazi-heading h1 span {
+  color: var(--accent-2);
+}
+.bazi-meta {
+  font-size: 15px;
+  letter-spacing: 0.08em;
+  color: var(--muted);
+  line-height: 1.9;
+}
+
+/* ---------- Four plaques ---------- */
+.bazi-board {
+  display: flex;
+  gap: 40px;
+  flex-wrap: wrap;
+  align-items: stretch;
+}
+.pillars {
+  flex: 1 1 720px;
+  min-width: 0;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 18px;
+}
+.plaque {
+  background: var(--surface);
+  border: 1px solid rgba(207, 165, 91, 0.5);
+  box-shadow:
+    inset 0 0 0 6px var(--surface),
+    inset 0 0 0 7px rgba(207, 165, 91, 0.22);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 7px 7px 24px;
+  text-align: center;
+  min-width: 0;
+}
+.plaque-day {
+  background: #3a1912;
+  border-color: var(--accent-2);
+  box-shadow:
+    inset 0 0 0 6px #3a1912,
+    inset 0 0 0 7px rgba(207, 165, 91, 0.6),
+    0 0 0 4px rgba(207, 165, 91, 0.12);
+}
+.plaque-band {
+  align-self: stretch;
+  background: #5a1a12;
+  padding: 11px 0;
+  font-size: 15px;
+  letter-spacing: 0.6em;
+  text-indent: 0.6em;
+  color: var(--gold-light);
+}
+.plaque-day .plaque-band {
+  background: var(--accent);
+  color: var(--accent-ink);
+}
+.plaque-god {
+  margin-top: 20px;
+  font-size: 13px;
+  letter-spacing: 0.3em;
+  color: var(--muted);
+}
+.plaque-day .plaque-god {
+  color: var(--gold-light);
+  font-weight: 600;
+}
+.plaque-char {
+  font-size: clamp(56px, 6.4vw, 92px);
+  font-weight: 900;
+  line-height: 1.15;
+}
+.plaque-stem {
+  color: var(--gold-light);
+}
+.plaque-day .plaque-stem {
+  color: #f3d58e;
+}
+.plaque-empty .plaque-char {
+  color: rgba(240, 228, 204, 0.25);
+}
+.plaque .el {
+  font-size: 13px;
+  letter-spacing: 0.2em;
+  color: var(--el-text, var(--muted));
+}
+.plaque .el::before {
+  content: "● ";
+  color: var(--el, transparent);
+}
+.plaque-rule {
+  width: 48px;
+  height: 1px;
+  background: rgba(207, 165, 91, 0.4);
+  margin: 16px 0 6px;
+}
+.plaque-facts {
+  margin-top: auto;
+  padding-top: 20px;
+  display: grid;
+  grid-template-columns: auto auto;
+  column-gap: 12px;
+  row-gap: 6px;
+  font-size: 13px;
+}
+.plaque-facts dt {
+  color: var(--muted);
+}
+.plaque-facts dd {
+  margin: 0;
+}
+
+/* ---------- Five elements and day master ---------- */
+.bazi-side {
+  flex: 1 1 340px;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+.panel-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+.panel-head h2 {
+  font-size: 20px;
+  font-weight: 600;
+  letter-spacing: 0.35em;
+}
+.panel-head span {
+  font-size: 12px;
+  color: var(--muted);
+  letter-spacing: 0.1em;
+}
+.wuxing-panel {
+  border: 1px solid rgba(207, 165, 91, 0.3);
+  padding: 24px 26px;
+}
+.wuxing {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.wuxing-row {
+  display: grid;
+  grid-template-columns: 34px minmax(0, 1fr) 24px;
+  align-items: center;
+  gap: 14px;
+}
+.el-badge {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  border: 1px solid var(--el);
+  color: var(--el-text);
+  display: grid;
+  place-items: center;
+  font-size: 15px;
+}
+.beads {
+  display: grid;
+  grid-template-columns: repeat(8, minmax(0, 1fr));
+  gap: 4px;
+}
+.bead {
+  height: 10px;
+  background: rgba(240, 228, 204, 0.08);
+}
+.bead.on {
+  background: var(--el);
+}
+.wuxing-count {
+  font-size: 18px;
+  text-align: right;
+}
+.dm-panel {
+  flex: 1;
+  background: var(--surface);
+  border: 1px solid rgba(207, 165, 91, 0.3);
+  padding: 24px 26px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.dm-panel h2 {
+  font-size: 14px;
+  font-weight: 400;
+  letter-spacing: 0.4em;
+  color: var(--accent-2);
+}
+.dm-name {
+  display: flex;
+  align-items: baseline;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+.dm-name span {
+  font-size: 46px;
+  font-weight: 900;
+  color: #f3d58e;
+}
+.dm-name small {
+  font-size: 14px;
+  color: var(--muted);
+  letter-spacing: 0.2em;
+}
+.dm-note {
+  font-size: 14px;
+  line-height: 2;
+  color: #dccdb2;
+}
+.bazi-empty {
+  margin-top: 18px;
+  color: var(--muted);
+}
+
+/* ---------- 大运 ---------- */
+.dayun-section {
+  border-top: 1px solid rgba(207, 165, 91, 0.3);
+  margin-top: 48px;
+}
+.dayun {
+  display: grid;
+  grid-template-columns: repeat(8, minmax(88px, 1fr));
+  border: 1px solid rgba(207, 165, 91, 0.3);
+  overflow-x: auto;
+}
+.dayun:empty {
+  display: none;
+}
+.dayun-step {
+  padding: 20px 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  border-right: 1px solid rgba(207, 165, 91, 0.18);
+}
+.dayun-step:last-child {
+  border-right: 0;
+}
+.dayun-step.current {
+  background: var(--accent);
+}
+.dayun-age,
+.dayun-years {
+  font-size: 12px;
+  color: var(--muted);
+}
+.dayun-step.current .dayun-age,
+.dayun-step.current .dayun-years {
+  color: var(--accent-ink);
+}
+.dayun-gz {
+  writing-mode: vertical-rl;
+  font-size: 30px;
+  font-weight: 600;
+  line-height: 1.2;
+  letter-spacing: 0.1em;
+}
+.dayun-step.current .dayun-gz {
+  color: #f3d58e;
+  font-weight: 900;
+}
+.bazi-notes p {
+  margin-top: 14px;
+  font-size: 13px;
+  color: var(--muted);
+  line-height: 1.9;
+}
+
+/* ---------- Birth form and dialogue ---------- */
+.bazi-lower {
+  display: flex;
+  gap: 40px;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  padding-top: 8px;
+}
+.lacquer-panel {
+  background: var(--surface);
+  border: 1px solid rgba(207, 165, 91, 0.3);
+  padding: 28px 30px;
+}
+.birth-panel {
+  flex: 1 1 400px;
+  min-width: 0;
+}
+.bazi-lower .consult {
+  flex: 1 1 560px;
+  min-width: 0;
+}
+.consult .messages {
+  max-height: 420px;
+  border-top-color: rgba(207, 165, 91, 0.45);
+}
+.msg-label {
+  color: var(--accent-2);
+}
+.lacquer-reading {
+  margin: 48px 0 64px;
+  padding: 32px 36px;
+  background: var(--surface);
+  border-color: rgba(207, 165, 91, 0.35);
+}
+.reading-summary {
+  color: #f3d58e;
+}
+.reading-tags span,
+.reading-subheading {
+  color: var(--accent-2);
+}
+.zm-dialog .btn-danger {
+  box-shadow: none;
+}
+
+@media (max-width: 900px) {
+  .pillars {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@media (max-width: 760px) {
+  .bazi-heading h1 {
+    font-size: 34px;
+  }
+  .lacquer-panel,
+  .lacquer-reading {
+    padding: 22px 18px;
+  }
+}

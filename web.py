@@ -6,13 +6,14 @@ import asyncio
 import base64
 import binascii
 import logging
+import re
 import secrets
 import shutil
 import time
 from contextlib import asynccontextmanager
 from dataclasses import dataclass, field
 from datetime import date as CalendarDate
-from datetime import datetime
+from datetime import datetime, timedelta
 from pathlib import Path
 from typing import Literal
 from urllib.parse import urlsplit
@@ -20,8 +21,9 @@ from zoneinfo import ZoneInfo
 
 import yaml
 from fastapi import FastAPI, HTTPException, Request, Response
-from fastapi.responses import FileResponse, JSONResponse
+from fastapi.responses import FileResponse, JSONResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
+from lunar_python import Solar
 from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
 from starlette.middleware.trustedhost import TrustedHostMiddleware
 
@@ -31,11 +33,40 @@ from common.time_utils import NeedsInput
 from harness.trace import Tracer
 from memory.store import Store
 from plugins.astro.calculator import natal_chart
-from plugins.bazi.calculator import compute_bazi
+from plugins.bazi.calculator import GAN, GAN_WX, WX, compute_bazi, ten_god
+from plugins.name.strokes import UnihanMissing
+from plugins.name.tools import HAN
+from plugins.name.wuge import analyze, element
 
 STATIC = Path(__file__).with_name("web_static")
 COOKIE = "zhiming_session"
 MAX_IDLE = 12 * 3600
+# Each consultation has its own page; "/" is the entrance (login) page.
+PAGES = {
+    "ask": "ask.html",
+    "bazi": "bazi.html",
+    "astro": "astro.html",
+    "tarot": "tarot.html",
+    "name": "name.html",
+    "dream": "dream.html",
+    "daily": "daily.html",
+}
+SYSTEM_LABELS = {
+    "bazi": "八字",
+    "astro": "西方占星",
+    "tarot": "塔罗",
+    "name": "姓名五格",
+    "dream": "解梦",
+    "daily": "每日运势",
+}
+# Only these consultations use the birth form; tarot, dreams and names never receive it.
+BIRTH_SYSTEMS = ("auto", "bazi", "astro", "daily")
+DEMO_UNSUPPORTED = {
+    "name": "离线演示不调用模型，姓名解读需切换真实模型。五格笔画与三才可在上方点「推演」直接计算。",
+    "dream": "离线演示不调用模型，解梦需切换真实模型后再试。你的梦境描述已保留在对话中。",
+    "daily": "离线演示不调用模型，今日运势解读需切换真实模型。上方的流日干支与十神由历法直接计算，可先参考。",
+}
+WEEKDAYS = "一二三四五六日"
 logger = logging.getLogger(__name__)
 
 
@@ -139,7 +170,7 @@ class BirthInfo(BaseModel):
 class ChatInput(BaseModel):
     model_config = ConfigDict(extra="forbid")
     message: str = Field(min_length=1, max_length=4000)
-    system: Literal["auto", "bazi", "astro", "tarot"] = "auto"
+    system: Literal["auto", "bazi", "astro", "tarot", "name", "dream", "daily"] = "auto"
     birth: BirthInfo = Field(default_factory=BirthInfo)
     spread: Literal["single", "three_card", "decision"] = "three_card"
 
@@ -158,6 +189,89 @@ class NewInput(BaseModel):
 class ChartInput(BaseModel):
     system: Literal["bazi", "astro"]
     birth: BirthInfo
+
+
+class NameQuery(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+    surname: str = Field(min_length=1, max_length=2)
+    given: str = Field(min_length=1, max_length=3)
+    forms: dict[str, str] = Field(default_factory=dict, max_length=5)
+
+    @field_validator("surname", "given", mode="before")
+    @classmethod
+    def trimmed(cls, value):
+        return value.strip() if isinstance(value, str) else value
+
+    @model_validator(mode="after")
+    def han_only(self):
+        full = self.surname + self.given
+        if not re.fullmatch(f"{HAN}+", full):
+            raise ValueError("姓名只能包含汉字")
+        for char, form in self.forms.items():
+            if char not in full or not re.fullmatch(HAN, form):
+                raise ValueError("写法确认只能针对本名中的字，且为单个汉字")
+        return self
+
+
+class AlmanacInput(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+    date: CalendarDate | None = None
+    birth: BirthInfo = Field(default_factory=BirthInfo)
+
+    @field_validator("date")
+    @classmethod
+    def supported(cls, value):
+        if value and not CalendarDate(1901, 1, 1) <= value <= CalendarDate(2099, 12, 31):
+            raise ValueError("请选择 1901 至 2099 年之间的日期")
+        return value
+
+
+def almanac(day: CalendarDate, day_master: str | None, kb) -> dict:
+    """Calendar facts for one day and its week; the day pillar is taken at local noon."""
+
+    def lunar_of(value):
+        return Solar.fromYmdHms(value.year, value.month, value.day, 12, 0, 0).getLunar()
+
+    def brief(value):
+        lunar = lunar_of(value)
+        pillar = lunar.getDayInGanZhiExact()
+        return dict(
+            date=value.isoformat(),
+            weekday=WEEKDAYS[value.weekday()],
+            day_pillar=pillar,
+            term=lunar.getJieQi() or None,
+            ten_god=ten_god(day_master[0], pillar[0]) if day_master else None,
+        )
+
+    lunar = lunar_of(day)
+    today = brief(day)
+    stem = today["day_pillar"][0]
+    day_element = WX[GAN_WX[GAN.index(stem)]]
+    entry = kb.lookup("daily", "day_element", day_element)
+    upcoming = lunar.getNextJieQi(True)
+    monday = day - timedelta(days=day.weekday())
+    return dict(
+        **today,
+        lunar_date=("闰" if lunar.getMonth() < 0 else "")
+        + lunar.getMonthInChinese()
+        + "月"
+        + lunar.getDayInChinese(),
+        year_pillar=lunar.getYearInGanZhiByLiChun(),
+        month_pillar=lunar.getMonthInGanZhiExact(),
+        current_term=lunar.getPrevJieQi(True).getName(),
+        hou=lunar.getHou(),
+        wuhou=lunar.getWuHou(),
+        next_term=dict(name=upcoming.getName(), date=upcoming.getSolar().toYmd()),
+        day_element=day_element,
+        day_element_note=entry["text"] if entry else None,
+        day_master=day_master,
+        week=[brief(monday + timedelta(days=offset)) for offset in range(7)],
+        conventions=dict(
+            day_pillar="流日取当地正午所在日柱",
+            ten_god="十神以出生日主对流日天干推算",
+            calendar="立春换年、节气换月",
+        ),
+    )
 
 
 @dataclass
@@ -348,7 +462,7 @@ def create_web_app(
             "birth": session.birth.model_dump(mode="json"),
             "reading": session.reading,
             "chart": session.chart,
-            "history": session.runtime.store.recent_readings(session.user_id, limit=30),
+            "history": session.runtime.store.reading_history(session.user_id, limit=30),
             "busy": session.lock.locked(),
         }
 
@@ -409,14 +523,10 @@ def create_web_app(
                     chart_question = exc.question
             evidence = body.birth.evidence()
             message = body.message
-            if evidence and body.system != "tarot":
+            if evidence and body.system in BIRTH_SYSTEMS:
                 message += "\n\n我在出生信息表中填写的资料：" + evidence + "。"
             if body.system != "auto":
-                message += (
-                    "\n本次希望使用"
-                    + {"bazi": "八字", "astro": "西方占星", "tarot": "塔罗"}[body.system]
-                    + "来解读。"
-                )
+                message += "\n本次希望使用" + SYSTEM_LABELS[body.system] + "来解读。"
             if body.system == "tarot":
                 message += (
                     "\n我选择的牌阵为："
@@ -427,6 +537,17 @@ def create_web_app(
                 )
             session.birth = body.birth
             session.messages.append({"role": "user", "text": body.message, "system": body.system})
+            if session.provider == "demo" and body.system in DEMO_UNSUPPORTED:
+                # The offline demo only draws tarot; never answer a dream or name with cards.
+                session.messages.append(
+                    {
+                        "role": "assistant",
+                        "text": DEMO_UNSUPPORTED[body.system],
+                        "status": "demo_unsupported",
+                        "system": body.system,
+                    }
+                )
+                return {**state(session), "busy": False}
             if session.provider == "demo" and body.system in ("bazi", "astro"):
                 if chart_question:
                     answer = chart_question
@@ -577,9 +698,77 @@ def create_web_app(
                 return {"chart": None, "question": exc.question, "code": exc.code}
         return {"chart": session.chart}
 
+    @app.put("/api/birth")
+    async def save_birth(body: BirthInfo, request: Request):
+        session = get_session(request)
+        available(session)
+        async with session.lock:
+            if body != session.birth:
+                # A chart drawn from the previous birth data no longer belongs to this profile.
+                session.chart = None
+            session.birth = body
+        return {"birth": session.birth.model_dump(mode="json"), "chart": session.chart}
+
+    @app.post("/api/name")
+    async def name_grids(body: NameQuery, request: Request):
+        session = get_session(request)
+        if session.runtime.session.safety_pending:
+            return {
+                "result": None,
+                "question": "请先在对话中确认此刻安全，再继续测名。",
+                "code": "safety_confirmation_required",
+            }
+        try:
+            result = analyze(body.surname, body.given, body.forms)
+        except UnihanMissing as exc:
+            raise HTTPException(503, "缺少康熙笔画数据，请先运行 scripts.fetch_data。") from exc
+        except ValueError as exc:
+            raise HTTPException(422, str(exc)) from exc
+        if result["status"] != "ok":
+            chars = "、".join(f"“{c}”" for c in result["unknown"])
+            return {
+                "result": None,
+                "question": f"无法确定{chars}的康熙笔画，请确认写法（可提供繁体或常用异体）；不会猜测笔画。",
+                "code": "unknown_name_char",
+            }
+        result["elements"] = {grid: element(number) for grid, number in result["grids"].items()}
+        return {"result": result}
+
+    @app.post("/api/almanac")
+    async def day_almanac(body: AlmanacInput, request: Request):
+        session = get_session(request)
+        day = body.date or datetime.now(ZoneInfo("Asia/Shanghai")).date()
+        day_master, question = None, None
+        if body.birth.date and body.birth.location_id:
+            if session.runtime.session.safety_pending:
+                question = "请先在对话中确认此刻安全，再查看个人流日。"
+            else:
+                try:
+                    day_master = body.birth.chart("bazi")["result"]["day_master"] or None
+                except NeedsInput as exc:
+                    question = exc.question
+        return {**almanac(day, day_master, session.runtime.kb), "question": question}
+
     @app.get("/")
-    async def index():
-        return FileResponse(STATIC / "index.html")
+    async def index(request: Request):
+        # A live browser session skips the entrance and returns to the consultation hall.
+        if request.cookies.get(COOKIE, "") in sessions:
+            return RedirectResponse("/ask", status_code=303)
+        # Never cache the entrance: the answer depends on whether the session is alive.
+        return FileResponse(STATIC / "login.html", headers={"Cache-Control": "no-store"})
+
+    @app.get("/login", include_in_schema=False)
+    async def login():
+        return FileResponse(STATIC / "login.html")
+
+    def page(filename):
+        async def serve():
+            return FileResponse(STATIC / filename)
+
+        return serve
+
+    for slug, filename in PAGES.items():
+        app.add_api_route(f"/{slug}", page(filename), methods=["GET"], include_in_schema=False)
 
     app.mount("/static", StaticFiles(directory=STATIC), name="static")
     return app

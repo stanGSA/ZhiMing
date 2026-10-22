@@ -1,0 +1,166 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#170d0b" />
+    <meta name="description" content="知命 · 八字：四柱藏序，五行知衡。" />
+    <title>知命 · 八字命盘</title>
+    <link rel="icon" href="/static/favicon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="/static/base.css" />
+    <link rel="stylesheet" href="/static/theme-bazi.css" />
+    <script src="/static/app.js" defer></script>
+  </head>
+  <body data-page="bazi">
+    <header class="zm-header">
+      <div class="wrap zm-bar">
+        <a class="zm-brand" href="/ask" aria-label="知命 · 问道">
+          <span class="zm-mark" aria-hidden="true">知<br />命</span>
+          <span class="zm-wordmark">知命</span>
+        </a>
+        <nav class="zm-nav" aria-label="六术">
+          <a href="/ask">问道</a>
+          <a href="/bazi" aria-current="page">八字</a>
+          <a href="/astro">星盘</a>
+          <a href="/tarot">塔罗</a>
+          <a href="/name">姓名</a>
+          <a href="/dream">解梦</a>
+          <a href="/daily">运势</a>
+        </nav>
+        <div class="zm-tools">
+          <span class="zm-status" id="connection">正在连接</span>
+          <button class="btn btn-text" id="open-history" type="button">足迹</button>
+        </div>
+      </div>
+    </header>
+
+    <main class="wrap">
+      <section class="section bazi-hero" aria-labelledby="bazi-title">
+        <div class="bazi-heading">
+          <span class="kicker">子平 · 四柱八字</span>
+          <h1 id="bazi-title">四柱藏序，<span>五行知衡</span></h1>
+          <p class="bazi-meta" id="bazi-meta">填写公历生辰与出生地，排出属于你的四柱。</p>
+        </div>
+        <a class="btn btn-ghost" href="#bazi-birth">填写生辰</a>
+      </section>
+
+      <div class="bazi-board">
+        <section class="pillars" id="pillars" aria-label="四柱"></section>
+        <aside class="bazi-side">
+          <section class="wuxing-panel" aria-labelledby="wuxing-title">
+            <div class="panel-head">
+              <h2 id="wuxing-title">五行之数</h2>
+              <span>八字本气 · 不含藏干</span>
+            </div>
+            <div class="wuxing" id="wuxing"></div>
+          </section>
+          <section class="dm-panel" aria-labelledby="dm-title">
+            <h2 id="dm-title">日主</h2>
+            <p class="dm-name"><span id="dm-name">—</span><small id="dm-detail">排盘后显示</small></p>
+            <p class="dm-note">
+              日主是命盘中“我”的位置，其余七字都以它为参照，读出十神关系。
+            </p>
+          </section>
+        </aside>
+      </div>
+      <p class="bazi-empty" id="bazi-empty">尚未排盘。请在下方填写出生资料，点「排出我的八字」。</p>
+
+      <section class="section dayun-section" aria-labelledby="dayun-title">
+        <div class="section-title">
+          <h2 id="dayun-title">大运</h2>
+          <span class="note" id="dayun-start">排盘并填写性别后显示十年大运。</span>
+        </div>
+        <ol class="dayun" id="dayun"></ol>
+        <div class="bazi-notes" id="bazi-notes"></div>
+      </section>
+
+      <div class="bazi-lower">
+        <section class="lacquer-panel birth-panel" id="bazi-birth" aria-labelledby="birth-title">
+          <div class="panel-head">
+            <h2 id="birth-title">生辰</h2>
+            <span>公历 · 出生地</span>
+          </div>
+          <div data-birth="bazi"></div>
+        </section>
+
+        <section class="consult" aria-labelledby="consult-title">
+          <div class="panel-head">
+            <h2 id="consult-title">就此命盘发问</h2>
+            <span>出生资料随问题一并交给知命</span>
+          </div>
+          <div class="messages" id="messages" role="log" aria-live="polite"></div>
+          <form class="composer" id="chat-form">
+            <label class="sr-only" for="message">你的问题</label>
+            <textarea
+              id="message"
+              rows="2"
+              maxlength="4000"
+              required
+              placeholder="比如：从命盘看，我更适合怎样的工作方式？"
+            ></textarea>
+            <div class="composer-foot">
+              <span class="hint" id="input-hint">Enter 发送 · Shift + Enter 换行</span>
+              <button class="btn btn-primary" id="send" type="submit">解读命盘</button>
+            </div>
+          </form>
+        </section>
+      </div>
+
+      <section class="section reading lacquer-reading" id="reading" aria-labelledby="reading-title">
+        <div class="reading-head">
+          <h3 id="reading-title">命盘解读</h3>
+          <button class="btn btn-text" id="copy-reading" type="button" hidden>复制</button>
+        </div>
+        <div class="reading-content" id="reading-content">
+          <p class="reading-empty">排盘后发问，定调、分层分析与可行之事会整理在这里。</p>
+        </div>
+      </section>
+    </main>
+
+    <footer class="zm-footer">
+      <div class="wrap zm-bar">
+        <p>排盘由历法程序完成，不依赖模型 · 解读仅供参考与自我反思</p>
+        <div class="zm-controls">
+          <label class="zm-mode"
+            >体验模式<select id="provider">
+              <option value="configured">真实模型</option>
+              <option value="demo">离线演示</option>
+            </select></label
+          >
+          <button class="btn btn-text" id="new-chat" type="button">开启新对话</button>
+          <button class="btn btn-text" id="forget" type="button">清除我的记录</button>
+        </div>
+      </div>
+    </footer>
+
+    <template id="welcome">
+      <div class="welcome">
+        <h3>从你的生辰，读一份生命的底稿。</h3>
+        <p>先排出四柱，再从日主、五行与大运的线索，聊聊你的性格与选择。</p>
+        <div class="btn-row">
+          <button
+            class="btn btn-tag"
+            type="button"
+            data-question="结合我的八字，说明五行分布与日主，以及可以自我观察的性格线索。"
+          >
+            五行与禀赋
+          </button>
+          <button
+            class="btn btn-tag"
+            type="button"
+            data-question="根据我的出生资料，说明起运日期、首步大运与当前大运的主题。"
+          >
+            当前大运
+          </button>
+          <button
+            class="btn btn-tag"
+            type="button"
+            data-question="从我的八字中，看看有哪些与工作方式和个人成长相关的线索。"
+          >
+            事业与修身
+          </button>
+        </div>
+      </div>
+    </template>
+  </body>
+</html>

@@ -1,0 +1,183 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#060a16" />
+    <meta name="description" content="知命 · 星盘：仰望星辰，照见自我。" />
+    <title>知命 · 本命星图</title>
+    <link rel="icon" href="/static/favicon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="/static/base.css" />
+    <link rel="stylesheet" href="/static/theme-astro.css" />
+    <script src="/static/app.js" defer></script>
+  </head>
+  <body data-page="astro">
+    <header class="zm-header">
+      <div class="wrap zm-bar">
+        <a class="zm-brand" href="/ask" aria-label="知命 · 问道">
+          <svg class="zm-orbit" viewBox="0 0 36 36" aria-hidden="true">
+            <circle cx="18" cy="18" r="17" />
+            <circle cx="18" cy="18" r="11" />
+            <circle class="zm-orbit-star" cx="18" cy="7" r="2" />
+          </svg>
+          <span class="zm-wordmark">知命</span>
+        </a>
+        <nav class="zm-nav" aria-label="六术">
+          <a href="/ask">问道</a>
+          <a href="/bazi">八字</a>
+          <a href="/astro" aria-current="page">星盘</a>
+          <a href="/tarot">塔罗</a>
+          <a href="/name">姓名</a>
+          <a href="/dream">解梦</a>
+          <a href="/daily">运势</a>
+        </nav>
+        <div class="zm-tools">
+          <span class="zm-status" id="connection">正在连接</span>
+          <button class="btn btn-text" id="open-history" type="button">足迹</button>
+        </div>
+      </div>
+    </header>
+
+    <main class="wrap">
+      <section class="section astro-hero" aria-labelledby="astro-title">
+        <div class="astro-heading">
+          <span class="astro-kicker">NATAL CHART · 本命星图</span>
+          <h1 id="astro-title">仰望星辰，照见自我</h1>
+          <p class="astro-meta" id="astro-meta">填写出生时空，绘出你的本命星图。</p>
+        </div>
+        <a class="btn btn-ghost" href="#astro-birth">调整出生时空</a>
+      </section>
+
+      <div class="astro-board">
+        <figure class="plate">
+          <span class="plate-corner tl" aria-hidden="true"></span>
+          <span class="plate-corner tr" aria-hidden="true"></span>
+          <span class="plate-corner bl" aria-hidden="true"></span>
+          <span class="plate-corner br" aria-hidden="true"></span>
+          <div class="plate-wheel" id="astro-wheel"></div>
+          <figcaption class="legend">
+            <span class="legend-soft">和谐相位 · 拱 / 六合</span>
+            <span class="legend-hard">紧张相位 · 刑 / 冲</span>
+            <span class="legend-axis">四轴</span>
+          </figcaption>
+        </figure>
+
+        <div class="astro-data">
+          <section class="trio" id="astro-trio" aria-label="太阳、月亮、上升"></section>
+          <p class="astro-empty" id="astro-empty">尚未绘制。请在下方填写出生时空，点「绘制本命星图」。</p>
+          <section aria-labelledby="planets-title">
+            <h2 class="latin-title" id="planets-title">PLANETS · 行星落点</h2>
+            <table class="planet-table">
+              <thead>
+                <tr>
+                  <th scope="col">行星</th>
+                  <th scope="col">星座</th>
+                  <th scope="col">黄经度数</th>
+                  <th scope="col" class="num">宫</th>
+                </tr>
+              </thead>
+              <tbody id="planet-rows"></tbody>
+            </table>
+          </section>
+          <section aria-labelledby="aspects-title">
+            <h2 class="latin-title" id="aspects-title">ASPECTS · 主要相位</h2>
+            <ul class="aspect-list" id="aspect-list"></ul>
+          </section>
+          <div class="astro-notes" id="astro-notes"></div>
+        </div>
+      </div>
+
+      <div class="astro-lower">
+        <section class="glass birth-panel" id="astro-birth" aria-labelledby="birth-title">
+          <h2 class="panel-title" id="birth-title">出生时空</h2>
+          <div data-birth="astro"></div>
+        </section>
+        <section class="consult" aria-labelledby="consult-title">
+          <h2 class="panel-title" id="consult-title">向这片星空发问</h2>
+          <div class="messages" id="messages" role="log" aria-live="polite"></div>
+          <form class="composer" id="chat-form">
+            <label class="sr-only" for="message">你的问题</label>
+            <textarea
+              id="message"
+              rows="2"
+              maxlength="4000"
+              required
+              placeholder="比如：金星和火星的位置，说明我在关系里需要什么？"
+            ></textarea>
+            <div class="composer-foot">
+              <span class="hint" id="input-hint">Enter 发送 · Shift + Enter 换行</span>
+              <button class="btn btn-primary" id="send" type="submit">
+                <svg class="cast-star" viewBox="0 0 14 14" aria-hidden="true">
+                  <path d="M7 0 L8.2 5.8 L14 7 L8.2 8.2 L7 14 L5.8 8.2 L0 7 L5.8 5.8 Z" />
+                </svg>
+                解读星图
+              </button>
+            </div>
+          </form>
+        </section>
+      </div>
+
+      <section class="reading glass" id="reading" aria-labelledby="reading-title">
+        <div class="reading-head">
+          <h3 id="reading-title">星图解读</h3>
+          <button class="btn btn-text" id="copy-reading" type="button" hidden>复制</button>
+        </div>
+        <div class="reading-content" id="reading-content">
+          <p class="reading-empty">绘制星图后发问，解读会整理在这里。</p>
+        </div>
+      </section>
+
+      <section class="precision" aria-label="计算精度">
+        <div><b>Swiss Ephemeris</b><span>视黄经 · 回归黄道 · 地心</span></div>
+        <div><b>0.0000006°</b><span>与 JPL DE440s 独立交叉验证最大差</span></div>
+        <div><b>11 / 11</b><span>参考星盘全部通过</span></div>
+      </section>
+    </main>
+
+    <footer class="zm-footer">
+      <div class="wrap zm-bar">
+        <p>出生时刻决定上升与宫位；时刻不详时不显示 · 解读仅供参考与自我反思</p>
+        <div class="zm-controls">
+          <label class="zm-mode"
+            >体验模式<select id="provider">
+              <option value="configured">真实模型</option>
+              <option value="demo">离线演示</option>
+            </select></label
+          >
+          <button class="btn btn-text" id="new-chat" type="button">开启新对话</button>
+          <button class="btn btn-text" id="forget" type="button">清除我的记录</button>
+        </div>
+      </div>
+    </footer>
+
+    <template id="welcome">
+      <div class="welcome">
+        <h3>每个人，都有一片自己的星空。</h3>
+        <p>太阳、月亮与上升，是认识自己的起点；时刻未知时，会明确保留宫位与上升的不确定性。</p>
+        <div class="btn-row">
+          <button
+            class="btn btn-tag"
+            type="button"
+            data-question="请结合我的出生资料，说明太阳、月亮与上升星座及其自我观察线索。"
+          >
+            太阳 · 月亮 · 上升
+          </button>
+          <button
+            class="btn btn-tag"
+            type="button"
+            data-question="从本命盘的金星和火星线索，帮我观察亲密关系中的沟通和需要。"
+          >
+            关系中的自己
+          </button>
+          <button
+            class="btn btn-tag"
+            type="button"
+            data-question="结合我的星盘，梳理学习、表达和行动方面值得自我观察的特点。"
+          >
+            学习与表达
+          </button>
+        </div>
+      </div>
+    </template>
+  </body>
+</html>

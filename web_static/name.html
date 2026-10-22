@@ -1,0 +1,156 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#1b1b19" />
+    <meta name="description" content="知命 · 姓名五格：一笔一画，皆有其数。" />
+    <title>知命 · 姓名五格</title>
+    <link rel="icon" href="/static/favicon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="/static/base.css" />
+    <link rel="stylesheet" href="/static/theme-name.css" />
+    <script src="/static/app.js" defer></script>
+  </head>
+  <body data-page="name">
+    <header class="zm-header">
+      <div class="wrap zm-bar">
+        <a class="zm-brand" href="/ask" aria-label="知命 · 问道">
+          <span class="zm-mark" aria-hidden="true">知<br />命</span>
+          <span class="zm-wordmark">知命</span>
+        </a>
+        <nav class="zm-nav" aria-label="六术">
+          <a href="/ask">问道</a>
+          <a href="/bazi">八字</a>
+          <a href="/astro">星盘</a>
+          <a href="/tarot">塔罗</a>
+          <a href="/name" aria-current="page">姓名</a>
+          <a href="/dream">解梦</a>
+          <a href="/daily">运势</a>
+        </nav>
+        <div class="zm-tools">
+          <span class="zm-status" id="connection">正在连接</span>
+          <button class="btn btn-text" id="open-history" type="button">足迹</button>
+        </div>
+      </div>
+    </header>
+
+    <main>
+      <section class="stele-hero" aria-labelledby="name-title">
+        <div class="wrap stele-hero-inner">
+          <div class="name-heading">
+            <span class="kicker">姓名五格 · 数理剖象</span>
+            <h1 id="name-title">一笔一画，皆有其数</h1>
+            <p>笔画依《康熙字典》繁体与部首原形计数，如“阝”按“阜”八画、“辶”按“辵”七画。</p>
+          </div>
+          <form class="name-form" id="name-form" aria-label="输入姓名">
+            <label class="mi-field">
+              <span>姓</span>
+              <input
+                id="name-surname"
+                class="mi-input mi-surname"
+                type="text"
+                maxlength="2"
+                autocomplete="family-name"
+                required
+                data-lock
+              />
+            </label>
+            <label class="mi-field">
+              <span>名</span>
+              <input
+                id="name-given"
+                class="mi-input mi-given"
+                type="text"
+                maxlength="3"
+                autocomplete="given-name"
+                required
+                data-lock
+              />
+            </label>
+            <button class="seal" type="submit" aria-label="推演五格" data-lock>推<br />演</button>
+            <p class="name-feedback" id="name-feedback" role="status">复姓请把两个字都填在“姓”里。</p>
+          </form>
+        </div>
+      </section>
+
+      <div class="wrap">
+        <p class="name-empty" id="name-empty">填写姓与名，按朱印「推演」，即可看到康熙笔画、五格与三才。</p>
+
+        <div id="name-board" hidden>
+          <section class="steles" id="name-chars" aria-label="康熙笔画"></section>
+          <div class="name-forms" id="name-forms" hidden></div>
+
+          <div class="name-grid">
+            <section class="wuge-panel" aria-labelledby="wuge-title">
+              <h2 id="wuge-title">五格剖象</h2>
+              <div class="wuge-scroll">
+                <div class="wuge" id="wuge" role="img" aria-label="五格剖象图"></div>
+              </div>
+            </section>
+            <aside class="sancai-panel" aria-labelledby="sancai-title">
+              <div class="panel-head">
+                <h2 id="sancai-title">三才</h2>
+                <span>取天、人、地格尾数</span>
+              </div>
+              <div class="sancai-flow" id="sancai-flow"></div>
+              <p class="sancai-rule">尾数 1、2 属木，3、4 属火，5、6 属土，7、8 属金，9、0 属水。</p>
+              <p class="sancai-note" id="sancai-note"></p>
+            </aside>
+          </div>
+        </div>
+
+        <div class="name-lower">
+          <section class="consult stone" aria-labelledby="consult-title">
+            <h2 class="panel-title" id="consult-title">就此姓名发问</h2>
+            <div class="messages" id="messages" role="log" aria-live="polite"></div>
+            <form class="composer" id="chat-form">
+              <label class="sr-only" for="message">你的问题</label>
+              <textarea
+                id="message"
+                rows="2"
+                maxlength="3800"
+                placeholder="比如：人格数说明了什么样的性格线索？（留空则解读五格与三才）"
+              ></textarea>
+              <div class="composer-foot">
+                <span class="hint" id="input-hint">Enter 发送 · 会连同上方姓名一起解读</span>
+                <button class="btn btn-primary" id="send" type="submit">解读姓名</button>
+              </div>
+            </form>
+          </section>
+          <section class="reading stone" id="reading" aria-labelledby="reading-title">
+            <div class="reading-head">
+              <h3 id="reading-title">姓名解读</h3>
+              <button class="btn btn-text" id="copy-reading" type="button" hidden>复制</button>
+            </div>
+            <div class="reading-content" id="reading-content">
+              <p class="reading-empty">推演后发问，五格与三才的解读会整理在这里。</p>
+            </div>
+          </section>
+        </div>
+      </div>
+    </main>
+
+    <footer class="zm-footer">
+      <div class="wrap zm-bar">
+        <p>笔画与规则数据集 200/200 一致 · 数理超过 81 减 80 循环 · 解读仅供参考与自我反思</p>
+        <div class="zm-controls">
+          <label class="zm-mode"
+            >体验模式<select id="provider">
+              <option value="configured">真实模型</option>
+              <option value="demo">离线演示</option>
+            </select></label
+          >
+          <button class="btn btn-text" id="new-chat" type="button">开启新对话</button>
+          <button class="btn btn-text" id="forget" type="button">清除我的记录</button>
+        </div>
+      </div>
+    </footer>
+
+    <template id="welcome">
+      <div class="welcome">
+        <h3>名字，是被反复书写的自己。</h3>
+        <p>先推演五格，再来聊聊这个名字里的性格线索。无康熙字形资料的字会如实标出，不做猜测。</p>
+      </div>
+    </template>
+  </body>
+</html>

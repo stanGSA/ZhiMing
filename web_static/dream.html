@@ -1,0 +1,159 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#dce2e7" />
+    <meta name="description" content="知命 · 解梦：梦，是夜里写给自己的信。" />
+    <title>知命 · 解梦</title>
+    <link rel="icon" href="/static/favicon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="/static/base.css" />
+    <link rel="stylesheet" href="/static/theme-dream.css" />
+    <script src="/static/app.js" defer></script>
+  </head>
+  <body data-page="dream">
+    <div class="sky" aria-hidden="true">
+      <div class="moon"></div>
+      <div class="mist mist-a"></div>
+      <div class="mist mist-b"></div>
+    </div>
+
+    <header class="zm-header">
+      <div class="wrap zm-bar">
+        <a class="zm-brand" href="/ask" aria-label="知命 · 问道">
+          <svg class="zm-crescent" viewBox="0 0 34 34" aria-hidden="true">
+            <path d="M24 4 A14 14 0 1 0 30 24 A11 11 0 1 1 24 4 Z" />
+          </svg>
+          <span class="zm-wordmark">知命</span>
+        </a>
+        <nav class="zm-nav" aria-label="六术">
+          <a href="/ask">问道</a>
+          <a href="/bazi">八字</a>
+          <a href="/astro">星盘</a>
+          <a href="/tarot">塔罗</a>
+          <a href="/name">姓名</a>
+          <a href="/dream" aria-current="page">解梦</a>
+          <a href="/daily">运势</a>
+        </nav>
+        <div class="zm-tools">
+          <span class="zm-status" id="connection">正在连接</span>
+          <button class="btn btn-text" id="open-history" type="button">足迹</button>
+        </div>
+      </div>
+    </header>
+
+    <main>
+      <section class="dream-hero" aria-labelledby="dream-title">
+        <div class="wrap dream-hero-inner">
+          <div class="dream-heading">
+            <span class="epigraph">昔者庄周梦为胡蝶，栩栩然胡蝶也。</span>
+            <h1 id="dream-title">梦，是夜里<br />写给自己的信</h1>
+            <p>趁醒来不久，把还记得的画面写下来。知命会找出其中的意象，帮你读一读心里那些没说出口的话。</p>
+          </div>
+          <svg class="butterfly" viewBox="0 0 200 200" aria-hidden="true">
+            <path class="fly" d="M100 98 C72 36 18 46 28 90 C36 116 80 112 100 100 Z" />
+            <path class="fly" d="M100 98 C128 36 182 46 172 90 C164 116 120 112 100 100 Z" />
+            <path class="fly" d="M100 104 C80 120 52 148 70 160 C88 170 98 132 100 108 Z" />
+            <path class="fly" d="M100 104 C120 120 148 148 130 160 C112 170 102 132 100 108 Z" />
+            <path
+              class="fly-vein"
+              d="M100 99 C80 80 56 66 40 70 M100 99 C78 92 54 92 36 96 M100 99 C120 80 144 66 160 70 M100 99 C122 92 146 92 164 96 M100 108 C92 124 80 140 72 152 M100 108 C108 124 120 140 128 152"
+            />
+            <path class="fly" d="M100 86 L100 130 M100 88 C96 74 90 66 82 60 M100 88 C104 74 110 66 118 60" />
+          </svg>
+        </div>
+      </section>
+
+      <div class="wrap dream-body">
+        <div class="dream-grid">
+          <form class="journal" id="chat-form" data-enter="newline" aria-labelledby="journal-label">
+            <div class="paper">
+              <div class="paper-head">
+                <label id="journal-label" for="message">记梦</label>
+                <span class="paper-date" id="paper-date">清晨</span>
+              </div>
+              <textarea
+                id="message"
+                rows="5"
+                maxlength="3800"
+                required
+                placeholder="梦里在哪里？有谁？发生了什么？比如：梦见自己站在河边，牙齿掉了好几颗……"
+              ></textarea>
+            </div>
+            <fieldset class="moods">
+              <legend>醒来时的感受</legend>
+              <label class="mood"><input type="radio" name="mood" value="平静" data-lock /><span>平静</span></label>
+              <label class="mood"><input type="radio" name="mood" value="不安" data-lock /><span>不安</span></label>
+              <label class="mood"><input type="radio" name="mood" value="怅然" data-lock /><span>怅然</span></label>
+              <label class="mood"><input type="radio" name="mood" value="轻快" data-lock /><span>轻快</span></label>
+              <label class="mood"><input type="radio" name="mood" value="说不清" data-lock /><span>说不清</span></label>
+            </fieldset>
+            <div class="journal-foot">
+              <button class="btn btn-primary" id="send" type="submit">
+                <svg class="moon-icon" viewBox="0 0 16 16" aria-hidden="true">
+                  <path d="M11 1.5 A7 7 0 1 0 14.5 11 A5.5 5.5 0 1 1 11 1.5 Z" />
+                </svg>
+                解梦
+              </button>
+              <span class="hint" id="input-hint">Ctrl + Enter 发送 · Enter 换行</span>
+            </div>
+          </form>
+
+          <section class="symbols" aria-labelledby="symbols-title">
+            <div class="symbols-head">
+              <h2 id="symbols-title">梦中意象</h2>
+              <span id="dream-count"></span>
+            </div>
+            <div id="dream-symbols"></div>
+          </section>
+        </div>
+
+        <div class="dream-lower">
+          <section class="reading" id="reading" aria-labelledby="reading-title">
+            <div class="reading-head">
+              <h3 id="reading-title">梦的回信</h3>
+              <button class="btn btn-text" id="copy-reading" type="button" hidden>复制</button>
+            </div>
+            <div class="reading-content" id="reading-content">
+              <p class="reading-empty">写下梦境、点「解梦」，读到的心绪会整理在这里。</p>
+            </div>
+          </section>
+          <section class="consult" aria-labelledby="consult-title">
+            <h2 class="panel-title" id="consult-title">对话</h2>
+            <div class="messages" id="messages" role="log" aria-live="polite"></div>
+          </section>
+        </div>
+
+        <section class="diary" aria-labelledby="diary-title">
+          <div class="section-title">
+            <h2 id="diary-title">梦境日记</h2>
+          </div>
+          <div class="diary-list" id="dream-diary"></div>
+        </section>
+      </div>
+    </main>
+
+    <footer class="zm-footer">
+      <div class="wrap zm-bar">
+        <p>梦境只映照心理感受，不预示现实事件 · 身体不适请就医</p>
+        <div class="zm-controls">
+          <label class="zm-mode"
+            >体验模式<select id="provider">
+              <option value="configured">真实模型</option>
+              <option value="demo">离线演示</option>
+            </select></label
+          >
+          <button class="btn btn-text" id="new-chat" type="button">开启新对话</button>
+          <button class="btn btn-text" id="forget" type="button">清除我的记录</button>
+        </div>
+      </div>
+    </footer>
+
+    <template id="welcome">
+      <div class="welcome">
+        <h3>梦里的事，醒来就会淡去。</h3>
+        <p>写得越具体越好：场景、人物、动作，以及梦中的情绪。词典外的意象不会被硬套解释。</p>
+      </div>
+    </template>
+  </body>
+</html>

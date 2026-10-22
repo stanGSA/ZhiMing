@@ -321,3 +321,115 @@ async def test_daily_birth_form_keeps_consultation_timezone(
     assert runtime.session.calendar_timezone == zone
     profile = runtime.store.get_profile(runtime.session.user_id)
     assert profile["tz"] == "Asia/Shanghai" and profile["consultation_tz"] == zone
+
+
+async def test_entrance_and_consultation_pages(browser):
+    client, _, _ = browser
+    entrance = await client.get("/")
+    assert entrance.status_code == 200 and "叩门问道" in entrance.text
+    assert entrance.headers["cache-control"] == "no-store"
+    for slug in ("ask", "bazi", "astro", "tarot", "name", "dream", "daily"):
+        page = await client.get(f"/{slug}")
+        assert page.status_code == 200
+        assert f'data-page="{slug}"' in page.text
+        assert "style=" not in page.text  # The CSP forbids inline styles.
+    await client.get("/api/session")
+    returning = await client.get("/", follow_redirects=False)
+    assert returning.status_code == 303 and returning.headers["location"] == "/ask"
+    assert "叩门问道" in (await client.get("/login")).text
+
+
+async def test_new_systems_hint_the_method_and_keep_birth_private(browser):
+    client, _, runtimes = browser
+    await client.get("/api/session")
+    birth = {"date": "1995-03-21", "time": "14:30", "place": "中国浙江杭州"}
+    for system, label in (("dream", "解梦"), ("name", "姓名五格"), ("daily", "每日运势")):
+        response = await client.post(
+            "/api/chat", json={"message": "抽一张牌", "system": system, "birth": birth}
+        )
+        assert response.status_code == 200
+        sent = runtimes[-1].session.user_messages[-1]
+        assert f"本次希望使用{label}来解读" in sent
+        assert ("1995-03-21" in sent) is (system == "daily")
+        assert response.json()["messages"][-1]["system"] == system
+        await client.post("/api/new", json={"provider": "configured"})
+
+
+async def test_demo_does_not_answer_dreams_names_or_days_with_cards(browser):
+    client, _, _ = browser
+    await client.get("/api/session?provider=demo")
+    for system in ("dream", "name", "daily"):
+        data = (
+            await client.post("/api/chat", json={"message": "梦见掉牙", "system": system})
+        ).json()
+        assert data["messages"][-1]["status"] == "demo_unsupported"
+        assert data["reading"] is None
+
+
+async def test_name_grids_are_calculated_without_a_model(browser):
+    client, _, _ = browser
+    await client.get("/api/session")
+    result = (await client.post("/api/name", json={"surname": "陈", "given": "知远"})).json()[
+        "result"
+    ]
+    assert result["grids"] == {"天格": 17, "人格": 24, "地格": 25, "外格": 18, "总格": 41}
+    assert result["elements"] == {
+        "天格": "金",
+        "人格": "火",
+        "地格": "土",
+        "外格": "金",
+        "总格": "木",
+    }
+    assert [c["form"] for c in result["chars"]] == ["陳", "知", "遠"]
+    assert result["sancai"]["key"] == "金火土"
+    for payload in (
+        {"surname": "Li", "given": "明"},
+        {"surname": "陈", "given": ""},
+        {"surname": "陈", "given": "知远", "forms": {"杰": "傑"}},
+    ):
+        assert (await client.post("/api/name", json=payload)).status_code == 422
+
+
+async def test_almanac_day_and_personal_ten_gods(browser):
+    client, _, _ = browser
+    await client.get("/api/session")
+    plain = (await client.post("/api/almanac", json={"date": "2026-10-22"})).json()
+    assert (plain["year_pillar"], plain["month_pillar"], plain["day_pillar"]) == (
+        "丙午",
+        "戊戌",
+        "己巳",
+    )
+    assert plain["lunar_date"] == "九月十三" and plain["weekday"] == "四"
+    assert plain["next_term"] == {"name": "霜降", "date": "2026-10-23"}
+    assert plain["day_element"] == "土" and "黄" in plain["day_element_note"]
+    assert plain["ten_god"] is None and plain["day_master"] is None
+    assert [d["date"] for d in plain["week"]][::6] == ["2026-10-19", "2026-10-25"]
+    birth = {"date": "1994-03-18", "time": "08:30", "location_id": "6607381"}
+    personal = (
+        await client.post("/api/almanac", json={"date": "2026-10-22", "birth": birth})
+    ).json()
+    assert personal["day_master"] == "癸水" and personal["ten_god"] == "七杀"
+    assert [d["ten_god"] for d in personal["week"]] == [
+        "正财",
+        "偏财",
+        "正官",
+        "七杀",
+        "正印",
+        "偏印",
+        "劫财",
+    ]
+    assert (await client.post("/api/almanac", json={"date": "1800-01-01"})).status_code == 422
+
+
+async def test_birth_profile_is_saved_for_every_page(browser):
+    client, _, _ = browser
+    await client.get("/api/session")
+    birth = {"date": "1994-03-18", "time": "08:30", "location_id": "6607381"}
+    chart = (await client.post("/api/chart", json={"system": "bazi", "birth": birth})).json()
+    assert chart["chart"]["result"]["day_master"] == "癸水"
+    same = (await client.put("/api/birth", json=birth)).json()
+    assert same["chart"] is not None and same["birth"]["place"].endswith("西湖区")
+    changed = (await client.put("/api/birth", json={**birth, "time": "09:30"})).json()
+    assert changed["chart"] is None
+    assert (await client.get("/api/session")).json()["birth"]["time"] == "09:30"
+    assert (await client.put("/api/birth", json={"time": "09:30"})).status_code == 422

@@ -1,0 +1,453 @@
+/* 星盘 · 天文台：深夜星空，发丝线与精密刻度，等宽度数。 */
+:root {
+  color-scheme: dark;
+  --bg: #060a16;
+  --surface: #0b1124;
+  --surface-2: #0e1531;
+  --ink: #e6e9f2;
+  --muted: #9aa6c2;
+  --line: rgba(169, 193, 234, 0.16);
+  --line-strong: rgba(169, 193, 234, 0.4);
+  --accent: transparent;
+  --accent-hover: rgba(217, 197, 142, 0.12);
+  --accent-ink: #f1e6c2;
+  --accent-2: #d9c58e;
+  --ice: #a9c1ea;
+  --soft: #7fa6e0;
+  --hard: #de8c6c;
+  --focus: #f3e2ae;
+}
+
+body {
+  background-color: var(--bg);
+  background-image:
+    radial-gradient(1px 1px at 8% 6%, rgba(255, 255, 255, 0.75), transparent 70%),
+    radial-gradient(1px 1px at 22% 14%, rgba(255, 255, 255, 0.5), transparent 70%),
+    radial-gradient(1.5px 1.5px at 37% 4%, rgba(255, 244, 214, 0.8), transparent 70%),
+    radial-gradient(1px 1px at 51% 11%, rgba(255, 255, 255, 0.45), transparent 70%),
+    radial-gradient(1px 1px at 66% 3%, rgba(255, 255, 255, 0.6), transparent 70%),
+    radial-gradient(1.5px 1.5px at 79% 9%, rgba(214, 226, 255, 0.8), transparent 70%),
+    radial-gradient(1px 1px at 92% 15%, rgba(255, 255, 255, 0.5), transparent 70%),
+    radial-gradient(1px 1px at 14% 31%, rgba(255, 255, 255, 0.4), transparent 70%),
+    radial-gradient(1px 1px at 47% 26%, rgba(255, 255, 255, 0.35), transparent 70%),
+    radial-gradient(1.5px 1.5px at 88% 34%, rgba(255, 244, 214, 0.6), transparent 70%),
+    radial-gradient(1px 1px at 5% 52%, rgba(255, 255, 255, 0.4), transparent 70%),
+    radial-gradient(1px 1px at 61% 58%, rgba(255, 255, 255, 0.4), transparent 70%),
+    radial-gradient(1px 1px at 33% 71%, rgba(214, 226, 255, 0.45), transparent 70%),
+    radial-gradient(1px 1px at 74% 79%, rgba(255, 255, 255, 0.35), transparent 70%),
+    radial-gradient(1px 1px at 18% 92%, rgba(255, 255, 255, 0.35), transparent 70%);
+  font-weight: 300;
+}
+.zm-orbit {
+  width: 36px;
+  height: 36px;
+  fill: none;
+  stroke: var(--accent-2);
+}
+.zm-orbit circle:nth-child(2) {
+  stroke-opacity: 0.5;
+}
+.zm-orbit-star {
+  fill: var(--accent-2);
+  stroke: none;
+}
+.zm-wordmark {
+  font-weight: 400;
+}
+.zm-nav a[aria-current="page"] {
+  font-weight: 400;
+}
+
+/* Hairline instrument buttons. */
+.btn-primary {
+  border-color: var(--accent-2);
+  color: var(--accent-ink);
+  letter-spacing: 0.35em;
+}
+.btn-primary:not(:disabled):hover {
+  background: var(--accent-hover);
+  border-color: var(--accent-2);
+}
+.cast-star {
+  width: 14px;
+  height: 14px;
+  fill: var(--accent-2);
+}
+.btn-ghost,
+.btn-tag {
+  border-color: rgba(169, 193, 234, 0.32);
+  color: #c9d3ea;
+}
+.btn-ghost:not(:disabled):hover,
+.btn-tag:not(:disabled):hover {
+  border-color: rgba(169, 193, 234, 0.7);
+  color: var(--ink);
+}
+
+/* ---------- Heading ---------- */
+.astro-hero {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 32px;
+  flex-wrap: wrap;
+}
+.astro-heading {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.astro-kicker,
+.latin-title {
+  font-family: var(--font-italic);
+  font-size: 15px;
+  font-weight: 500;
+  letter-spacing: 0.4em;
+  color: var(--accent-2);
+}
+.astro-heading h1 {
+  font-size: 52px;
+  font-weight: 300;
+  letter-spacing: 0.12em;
+  line-height: 1.2;
+}
+.astro-meta {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  color: var(--muted);
+  letter-spacing: 0.04em;
+}
+
+/* ---------- Plate and wheel ---------- */
+.astro-board {
+  display: flex;
+  gap: 56px;
+  flex-wrap: wrap;
+  align-items: flex-start;
+}
+.plate {
+  flex: 1 1 580px;
+  min-width: 0;
+  position: relative;
+  border: 1px solid var(--line);
+  background: rgba(7, 12, 28, 0.55);
+  padding: 28px;
+}
+.plate-corner {
+  position: absolute;
+  width: 16px;
+  height: 16px;
+  border: 0 solid var(--accent-2);
+}
+.plate-corner.tl {
+  top: -1px;
+  left: -1px;
+  border-width: 1px 0 0 1px;
+}
+.plate-corner.tr {
+  top: -1px;
+  right: -1px;
+  border-width: 1px 1px 0 0;
+}
+.plate-corner.bl {
+  bottom: -1px;
+  left: -1px;
+  border-width: 0 0 1px 1px;
+}
+.plate-corner.br {
+  bottom: -1px;
+  right: -1px;
+  border-width: 0 1px 1px 0;
+}
+.natal-wheel {
+  width: 100%;
+  max-width: 640px;
+  height: auto;
+  margin: 0 auto;
+}
+.nw-ring-o {
+  fill: none;
+  stroke: rgba(169, 193, 234, 0.6);
+}
+.nw-ring {
+  fill: none;
+  stroke: rgba(169, 193, 234, 0.32);
+}
+.nw-core {
+  fill: #070c1c;
+  stroke: rgba(169, 193, 234, 0.35);
+}
+.nw-tick {
+  stroke: rgba(169, 193, 234, 0.5);
+}
+.nw-sign-sep {
+  stroke: rgba(169, 193, 234, 0.42);
+}
+.nw-sign {
+  fill: #c9d3ea;
+  font: 12px var(--font-serif);
+  text-anchor: middle;
+}
+.nw-cusp {
+  stroke: rgba(169, 193, 234, 0.22);
+}
+.nw-axis {
+  stroke: var(--accent-2);
+  stroke-width: 1.2;
+}
+.nw-house {
+  fill: #8592b0;
+  font: 10px var(--font-mono);
+  text-anchor: middle;
+}
+.nw-pmark {
+  stroke: var(--accent-2);
+  stroke-width: 1.6;
+}
+.nw-pdot {
+  fill: var(--surface);
+  stroke: rgba(217, 197, 142, 0.75);
+}
+.nw-planet {
+  fill: #f1e6c2;
+  font: 600 13px var(--font-serif);
+  text-anchor: middle;
+}
+.nw-asp-soft {
+  stroke: rgba(127, 166, 224, 0.8);
+}
+.nw-asp-hard {
+  stroke: rgba(222, 140, 108, 0.85);
+}
+.nw-axislbl {
+  fill: var(--accent-2);
+  font: 500 11px var(--font-mono);
+  letter-spacing: 0.1em;
+}
+.nw-empty {
+  fill: var(--muted);
+  font: 16px var(--font-serif);
+  text-anchor: middle;
+  letter-spacing: 0.4em;
+}
+.legend {
+  margin-top: 18px;
+  display: flex;
+  gap: 24px;
+  flex-wrap: wrap;
+  justify-content: center;
+  font-size: 13px;
+  color: var(--muted);
+}
+.legend span::before {
+  content: "";
+  display: inline-block;
+  width: 22px;
+  height: 1px;
+  margin-right: 8px;
+  vertical-align: middle;
+}
+.legend-soft::before {
+  background: var(--soft);
+}
+.legend-hard::before {
+  background: var(--hard);
+}
+.legend-axis::before {
+  background: var(--accent-2);
+}
+
+/* ---------- Data ---------- */
+.astro-data {
+  flex: 1 1 420px;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+.trio {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  border-top: 1px solid rgba(169, 193, 234, 0.25);
+  border-bottom: 1px solid rgba(169, 193, 234, 0.25);
+}
+.trio-cell {
+  padding: 20px 0 20px 20px;
+  border-left: 1px solid rgba(169, 193, 234, 0.18);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.trio-cell:first-child {
+  padding-left: 0;
+  border-left: 0;
+}
+.trio-label {
+  font-size: 13px;
+  letter-spacing: 0.3em;
+  color: var(--muted);
+}
+.trio-sign {
+  font-size: 28px;
+  letter-spacing: 0.08em;
+}
+.trio-degree {
+  font-family: var(--font-italic);
+  font-size: 22px;
+  color: var(--accent-2);
+}
+.astro-empty {
+  color: var(--muted);
+  margin-top: -16px;
+}
+.latin-title {
+  font-size: 14px;
+  margin-bottom: 10px;
+}
+.planet-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+.planet-table th {
+  text-align: left;
+  font-weight: 400;
+  font-size: 12px;
+  letter-spacing: 0.2em;
+  color: var(--muted);
+  padding: 8px 0;
+  border-bottom: 1px solid rgba(169, 193, 234, 0.25);
+}
+.planet-table td {
+  padding: 8px 0;
+  border-bottom: 1px solid rgba(169, 193, 234, 0.1);
+}
+.planet-table .num {
+  text-align: right;
+}
+.mono {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  color: #c9d3ea;
+}
+.table-empty {
+  color: var(--muted);
+}
+.aspect-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 22px;
+  font-size: 14px;
+}
+.aspect-list b {
+  font-weight: 400;
+  color: var(--soft);
+}
+.aspect-square b,
+.aspect-opposition b {
+  color: var(--hard);
+}
+.aspect-conjunction b {
+  color: var(--accent-2);
+}
+.aspect-list .mono {
+  font-size: 12px;
+  color: var(--muted);
+}
+.astro-notes p {
+  font-size: 13px;
+  color: var(--muted);
+  line-height: 1.9;
+}
+
+/* ---------- Birth and dialogue ---------- */
+.astro-lower {
+  display: flex;
+  gap: 40px;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  margin-top: 64px;
+}
+.glass {
+  border: 1px solid rgba(169, 193, 234, 0.2);
+  background: rgba(11, 17, 36, 0.75);
+  padding: 28px 30px;
+}
+.birth-panel {
+  flex: 1 1 400px;
+  min-width: 0;
+}
+.astro-lower .consult {
+  flex: 1 1 560px;
+  min-width: 0;
+}
+.panel-title {
+  font-size: 18px;
+  font-weight: 400;
+  letter-spacing: 0.3em;
+  margin-bottom: 18px;
+}
+.consult .messages {
+  max-height: 420px;
+}
+.msg-label {
+  color: var(--accent-2);
+}
+#reading {
+  margin-top: 48px;
+}
+.reading-summary {
+  font-weight: 400;
+  color: #f1e6c2;
+}
+.reading-tags span {
+  color: var(--ice);
+}
+.precision {
+  margin: 56px 0 64px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  border-top: 1px solid rgba(169, 193, 234, 0.2);
+}
+.precision div {
+  padding: 24px 24px 0;
+  border-left: 1px solid var(--line);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.precision div:first-child {
+  padding-left: 0;
+  border-left: 0;
+}
+.precision b {
+  font-family: var(--font-italic);
+  font-size: 28px;
+  font-weight: 500;
+  color: var(--accent-2);
+}
+.precision span {
+  font-size: 13px;
+  color: var(--muted);
+  letter-spacing: 0.1em;
+}
+
+@media (max-width: 760px) {
+  .astro-heading h1 {
+    font-size: 34px;
+  }
+  .plate,
+  .glass {
+    padding: 18px 14px;
+  }
+  .trio-cell {
+    padding-left: 12px;
+  }
+  .trio-sign {
+    font-size: 22px;
+  }
+  .precision div {
+    padding-left: 0;
+    border-left: 0;
+  }
+}

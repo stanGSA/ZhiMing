@@ -1,0 +1,432 @@
+/* 问道 · 千里江山：绢本底色，石青石绿的山，朱砂印。 */
+:root {
+  --bg: #ebe1c8;
+  --surface: #f6efdd;
+  --surface-2: #f1e8d2;
+  --ink: #1c2a2c;
+  --muted: #4d5650;
+  --line: rgba(28, 42, 44, 0.16);
+  --line-strong: rgba(28, 42, 44, 0.4);
+  --accent: #1f4c6b;
+  --accent-hover: #2a5f82;
+  --accent-ink: #f6efdd;
+  --accent-2: #1f4c6b;
+  --cinnabar: #b23a2c;
+  --malachite: #3e8470;
+  --focus: #b23a2c;
+}
+
+.zm-mark {
+  background: var(--cinnabar);
+  color: #f7efdc;
+}
+.zm-nav a[aria-current="page"] {
+  border-bottom-width: 2px;
+}
+
+/* ---------- Hero with mineral-blue landscape ---------- */
+.hero {
+  position: relative;
+  overflow: hidden;
+}
+.hero-inner {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  justify-content: space-between;
+  gap: 48px;
+  flex-wrap: wrap;
+  padding-top: 56px;
+}
+.hero-title {
+  display: flex;
+  gap: 22px;
+  align-items: flex-start;
+}
+.hero-title h1 {
+  writing-mode: vertical-rl;
+  height: 330px;
+  font-size: 64px;
+  line-height: 1.25;
+  font-weight: 900;
+  letter-spacing: 0.18em;
+}
+.hero-seal {
+  margin-top: 150px;
+  width: 52px;
+  height: 52px;
+  border: 2px solid var(--cinnabar);
+  color: var(--cinnabar);
+  display: grid;
+  place-items: center;
+  font-size: 15px;
+  line-height: 1.1;
+  text-align: center;
+  font-weight: 600;
+}
+.hero-copy {
+  flex: 0 1 420px;
+  padding-top: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+.hero-date {
+  font-family: var(--font-sans);
+  font-size: 13px;
+  letter-spacing: 0.3em;
+  color: var(--malachite);
+}
+.hero-copy p {
+  font-size: 18px;
+  line-height: 2;
+  color: #2c3a3a;
+}
+.hero-mountains {
+  width: 100%;
+  height: 300px;
+  margin-top: -90px;
+}
+.m-far {
+  fill: #b5cbc0;
+}
+.m-mid {
+  fill: url(#hb-gmid);
+}
+.m-near {
+  fill: url(#hb-gnear);
+}
+.m-cloud {
+  fill: none;
+  stroke: #f4ecd8;
+  stroke-width: 2;
+  stroke-linecap: round;
+  opacity: 0.9;
+}
+.hb-s1 {
+  stop-color: #2d6487;
+}
+.hb-s2 {
+  stop-color: #5e9c86;
+}
+.hb-s3 {
+  stop-color: #d2be92;
+}
+.hb-s4 {
+  stop-color: #1f4c6b;
+}
+.hb-s5 {
+  stop-color: #3e8470;
+}
+.hb-s6 {
+  stop-color: #b4844c;
+}
+
+/* ---------- The scroll composer ---------- */
+.scroll {
+  position: relative;
+  z-index: 2;
+  margin-top: -40px;
+  background: var(--surface);
+  border-top: 3px double var(--ink);
+  border-bottom: 3px double var(--ink);
+  padding: 28px 32px;
+  display: flex;
+  gap: 28px;
+  align-items: stretch;
+  flex-wrap: wrap;
+}
+.scroll-label {
+  flex: none;
+  writing-mode: vertical-rl;
+  font-size: 18px;
+  letter-spacing: 0.5em;
+  color: var(--cinnabar);
+  font-weight: 600;
+  border-left: 1px solid rgba(178, 58, 44, 0.4);
+  padding-left: 14px;
+}
+.scroll-body {
+  flex: 1 1 520px;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.scroll textarea {
+  width: 100%;
+  min-height: 96px;
+  resize: vertical;
+  background: transparent;
+  border: 0;
+  padding: 0;
+  font-size: 19px;
+  line-height: 1.9;
+}
+.scroll textarea:focus {
+  outline: none;
+}
+.scroll textarea::placeholder {
+  color: #6f6f60;
+}
+.scroll-foot {
+  display: flex;
+  gap: 24px;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  border-top: 1px solid var(--line);
+  padding-top: 12px;
+}
+.scroll-note {
+  font-family: var(--font-sans);
+  font-size: 12px;
+  color: var(--muted);
+}
+.btn.ask-button {
+  align-self: center;
+  width: 92px;
+  height: 92px;
+  padding: 0;
+  font-size: 38px;
+  font-weight: 900;
+  letter-spacing: 0;
+  box-shadow:
+    inset 0 0 0 5px var(--accent),
+    inset 0 0 0 6px #c9a45c;
+}
+.btn.ask-button:not(:disabled):hover {
+  box-shadow:
+    inset 0 0 0 5px var(--accent-hover),
+    inset 0 0 0 6px #c9a45c;
+}
+
+/* ---------- Dialogue ---------- */
+.consult .messages {
+  border-top-color: var(--ink);
+}
+.reading {
+  background: var(--surface-2);
+  border-color: rgba(28, 42, 44, 0.3);
+}
+.reading-summary {
+  color: var(--ink);
+}
+.reading-tags span {
+  color: var(--malachite);
+}
+.reading-subheading,
+.reading-list li::before,
+.msg-label {
+  color: var(--cinnabar);
+}
+.msg-user .msg-label {
+  color: var(--accent);
+}
+.btn-tag {
+  border-color: rgba(31, 76, 107, 0.35);
+  color: var(--accent);
+}
+
+/* ---------- 六术 index ---------- */
+.arts-list {
+  display: flex;
+  flex-wrap: wrap;
+  border-top: 1px solid var(--ink);
+  border-bottom: 1px solid var(--ink);
+}
+.art {
+  flex: 1 1 190px;
+  min-width: 0;
+  padding: 26px 22px 24px;
+  border-right: 1px solid var(--line);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  color: var(--ink);
+}
+.art:last-child {
+  border-right: 0;
+}
+.art::before {
+  content: "";
+  width: 28px;
+  height: 4px;
+  background: var(--swatch);
+}
+.art[data-art="bazi"] {
+  --swatch: #8e2a1e;
+}
+.art[data-art="astro"] {
+  --swatch: #0e1631;
+}
+.art[data-art="tarot"] {
+  --swatch: #3a2142;
+}
+.art[data-art="name"] {
+  --swatch: #2a2a27;
+}
+.art[data-art="dream"] {
+  --swatch: #8c9ab3;
+}
+.art[data-art="daily"] {
+  --swatch: #b8291e;
+}
+.art-num {
+  font-size: 14px;
+  color: var(--cinnabar);
+  letter-spacing: 0.2em;
+}
+.art-name {
+  font-size: 28px;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+}
+.art-desc {
+  font-size: 14px;
+  line-height: 1.8;
+  color: var(--muted);
+}
+.art-go {
+  margin-top: auto;
+  font-size: 13px;
+  letter-spacing: 0.2em;
+  color: var(--accent);
+}
+.art:hover {
+  background: rgba(246, 239, 221, 0.6);
+  color: var(--ink);
+}
+.art:hover .art-go {
+  color: var(--cinnabar);
+}
+
+/* ---------- Recent & profile ---------- */
+.lower {
+  display: flex;
+  gap: 48px;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  padding-top: 0;
+}
+.recent {
+  flex: 1 1 620px;
+  min-width: 0;
+}
+.recent-item {
+  width: 100%;
+  display: grid;
+  grid-template-columns: 150px minmax(0, 1fr);
+  gap: 20px;
+  align-items: baseline;
+  text-align: left;
+  padding: 18px 0;
+  background: none;
+  border: 0;
+  border-bottom: 1px solid var(--line);
+  cursor: pointer;
+}
+.recent-item .history-meta {
+  color: var(--malachite);
+}
+.recent-item .history-question {
+  font-size: 17px;
+}
+.recent-item:hover .history-question {
+  color: var(--accent);
+}
+.recent-empty,
+.profile-empty {
+  color: var(--muted);
+  line-height: 1.9;
+  padding: 12px 0;
+}
+.profile {
+  flex: 1 1 380px;
+  min-width: 0;
+  border: 1px solid rgba(28, 42, 44, 0.3);
+  background: var(--surface-2);
+  padding: 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.profile-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+}
+.profile-head h2 {
+  font-size: 20px;
+  letter-spacing: 0.3em;
+}
+.profile-status {
+  font-family: var(--font-sans);
+  font-size: 12px;
+  color: var(--malachite);
+}
+.profile-dl {
+  display: grid;
+  grid-template-columns: 64px minmax(0, 1fr);
+  row-gap: 10px;
+  font-size: 15px;
+}
+.profile-dl dt {
+  color: var(--muted);
+}
+.profile .btn-ghost {
+  align-self: flex-start;
+  border-color: var(--accent);
+  color: var(--accent);
+}
+.profile-form summary {
+  cursor: pointer;
+  font-size: 14px;
+  letter-spacing: 0.2em;
+  color: var(--muted);
+  min-height: 32px;
+}
+.profile-form[open] summary {
+  margin-bottom: 14px;
+}
+
+@media (max-width: 760px) {
+  .hero-inner {
+    padding-top: 32px;
+    gap: 20px;
+  }
+  .hero-title h1 {
+    height: 250px;
+    font-size: 48px;
+  }
+  .hero-seal {
+    margin-top: 110px;
+  }
+  .hero-mountains {
+    height: 200px;
+    margin-top: -40px;
+  }
+  .scroll {
+    padding: 20px 18px;
+    gap: 16px;
+  }
+  .scroll-label {
+    writing-mode: horizontal-tb;
+    border-left: 0;
+    padding-left: 0;
+  }
+  .btn.ask-button {
+    width: 100%;
+    height: 56px;
+    font-size: 24px;
+  }
+  .recent-item {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 4px;
+  }
+  .art {
+    flex-basis: 100%;
+    border-right: 0;
+    border-bottom: 1px solid var(--line);
+  }
+}

@@ -1,0 +1,422 @@
+/* 塔罗 · 暗紫鎏金：拱顶牌框、玫瑰窗、象牙牌面。 */
+:root {
+  color-scheme: dark;
+  --bg: #120a16;
+  --surface: #1c1022;
+  --surface-2: #231529;
+  --ink: #ede3d3;
+  --muted: #b4a3b8;
+  --line: rgba(200, 168, 102, 0.2);
+  --line-strong: rgba(200, 168, 102, 0.5);
+  --accent: #c8a866;
+  --accent-hover: #d9bc79;
+  --accent-ink: #1e1024;
+  --accent-2: #e9d29a;
+  --rose: #d9a3b4;
+  --card: #efe3cb;
+  --card-ink: #2a1630;
+  --card-gold: #b8924a;
+  --focus: #e9d29a;
+}
+
+.zm-mark {
+  width: 30px;
+  height: 42px;
+  border: 1px solid var(--accent);
+  border-radius: 15px 15px 3px 3px;
+  font-family: var(--font-latin);
+  font-size: 13px;
+  color: var(--accent-2);
+}
+
+/* Arched buttons, like the top of a card frame. */
+.btn-primary,
+.btn-ghost,
+.spread {
+  border-radius: 30px 30px 4px 4px;
+}
+.btn-primary {
+  min-height: 56px;
+  padding: 0 42px;
+  font-weight: 600;
+  letter-spacing: 0.45em;
+  box-shadow:
+    inset 0 0 0 3px var(--accent),
+    inset 0 0 0 4px rgba(30, 16, 36, 0.45);
+}
+.btn-primary:not(:disabled):hover {
+  box-shadow:
+    inset 0 0 0 3px var(--accent-hover),
+    inset 0 0 0 4px rgba(30, 16, 36, 0.45);
+}
+.btn-ghost {
+  min-height: 56px;
+  border-color: var(--accent);
+  color: var(--accent-2);
+}
+.btn-ghost:not(:disabled):hover {
+  background: rgba(200, 168, 102, 0.1);
+}
+.btn-tag {
+  border-color: rgba(200, 168, 102, 0.3);
+  color: #dccfc0;
+}
+
+main {
+  position: relative;
+  overflow: hidden;
+}
+.rose-window {
+  position: absolute;
+  left: 50%;
+  top: 520px;
+  width: 1000px;
+  height: 1000px;
+  margin-left: -500px;
+  pointer-events: none;
+  fill: none;
+  stroke: rgba(200, 168, 102, 0.1);
+}
+.tarot-wrap {
+  position: relative;
+  max-width: 1240px;
+  padding-top: 64px;
+  padding-bottom: 72px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 40px;
+}
+
+/* ---------- Heading ---------- */
+.tarot-hero {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  text-align: center;
+}
+.tarot-kicker {
+  font-family: var(--font-latin);
+  font-size: 13px;
+  letter-spacing: 0.5em;
+  color: var(--accent);
+}
+.tarot-hero h1 {
+  font-size: 50px;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  line-height: 1.25;
+}
+.ornament {
+  width: 260px;
+  height: 22px;
+}
+.orn-line {
+  fill: none;
+  stroke: var(--accent);
+}
+.orn-fill {
+  fill: var(--accent);
+}
+.tarot-hero p {
+  max-width: 560px;
+  font-size: 16px;
+  line-height: 1.9;
+  color: var(--muted);
+}
+
+/* ---------- Spreads and question ---------- */
+.spreads {
+  display: flex;
+  gap: 14px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+.spread {
+  min-width: 190px;
+  min-height: 64px;
+  padding: 12px 22px 10px;
+  border: 1px solid rgba(200, 168, 102, 0.45);
+  background: transparent;
+  color: #dccfc0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  cursor: pointer;
+}
+.spread b {
+  font-size: 16px;
+  font-weight: 400;
+  letter-spacing: 0.3em;
+}
+.spread small {
+  font-size: 12px;
+  color: var(--muted);
+  letter-spacing: 0.1em;
+}
+.spread[aria-pressed="true"] {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--accent-ink);
+}
+.spread[aria-pressed="true"] b {
+  font-weight: 600;
+}
+.spread[aria-pressed="true"] small {
+  color: var(--accent-ink);
+}
+.spread:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.tarot-question {
+  width: 100%;
+  max-width: 680px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+.question-label {
+  font-family: var(--font-italic);
+  font-style: italic;
+  font-size: 18px;
+  color: var(--accent);
+  letter-spacing: 0.1em;
+}
+.tarot-question input {
+  width: 100%;
+  min-height: 58px;
+  background: transparent;
+  border: 0;
+  border-bottom: 1px solid rgba(200, 168, 102, 0.45);
+  color: var(--ink);
+  font-size: 22px;
+  text-align: center;
+}
+.tarot-question input:focus {
+  outline: none;
+  border-bottom-color: var(--accent-2);
+}
+.tarot-question input::placeholder {
+  color: #8e7d93;
+}
+.tarot-actions {
+  justify-content: center;
+  margin-top: 18px;
+}
+.spread-hint {
+  font-size: 13px;
+  color: var(--muted);
+  text-align: center;
+}
+
+/* ---------- Cards ---------- */
+.tarot-spread {
+  display: flex;
+  gap: 44px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+.tarot-slot {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 18px;
+}
+.card-face {
+  position: relative;
+  width: 230px;
+  height: 384px;
+  border-radius: 115px 115px 10px 10px;
+  background: var(--card);
+  color: var(--card-ink);
+  box-shadow:
+    inset 0 0 0 8px var(--card),
+    inset 0 0 0 9px var(--card-gold),
+    inset 0 0 0 13px var(--card),
+    inset 0 0 0 14px rgba(184, 146, 74, 0.55),
+    0 28px 60px rgba(0, 0, 0, 0.5);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 50px 22px 30px;
+}
+.card-numeral {
+  font-family: var(--font-latin);
+  font-size: 20px;
+  color: #7a5a22;
+  letter-spacing: 0.15em;
+}
+.card-emblem {
+  width: 128px;
+  height: 128px;
+  margin-top: 14px;
+}
+.card-emblem.reversed {
+  transform: rotate(180deg);
+}
+.tr-ink {
+  fill: none;
+  stroke: var(--card-ink);
+  stroke-width: 1.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.tr-gold {
+  fill: var(--card-gold);
+}
+.tr-goldline {
+  fill: none;
+  stroke: var(--card-gold);
+  stroke-width: 1.4;
+  stroke-linecap: round;
+}
+.card-rule {
+  width: 40px;
+  height: 1px;
+  background: var(--card-gold);
+  margin: 18px 0 14px;
+}
+.card-name {
+  font-size: 24px;
+  font-weight: 600;
+  letter-spacing: 0.25em;
+  text-indent: 0.25em;
+  text-align: center;
+}
+.card-english {
+  margin-top: 6px;
+  font-family: var(--font-latin);
+  font-size: 11px;
+  letter-spacing: 0.24em;
+  color: #5a4560;
+  text-align: center;
+}
+.card-reversed {
+  position: absolute;
+  top: 62px;
+  right: 26px;
+  padding: 3px 8px 3px 10px;
+  background: #7e3b52;
+  color: var(--card);
+  font-size: 12px;
+  letter-spacing: 0.2em;
+}
+.card-back {
+  background: #2a1832;
+  box-shadow:
+    inset 0 0 0 8px #2a1832,
+    inset 0 0 0 9px var(--accent),
+    inset 0 0 0 13px #2a1832,
+    inset 0 0 0 14px rgba(200, 168, 102, 0.4),
+    0 28px 60px rgba(0, 0, 0, 0.5);
+  justify-content: center;
+}
+.card-pattern {
+  width: 150px;
+  height: 250px;
+}
+.tr-backline {
+  fill: none;
+  stroke: rgba(200, 168, 102, 0.55);
+}
+.tr-backstar {
+  fill: rgba(200, 168, 102, 0.75);
+}
+.tarot-caption {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  text-align: center;
+}
+.tarot-position {
+  font-size: 15px;
+  letter-spacing: 0.3em;
+  color: var(--accent-2);
+}
+.tarot-orientation {
+  font-size: 13px;
+  color: var(--muted);
+  letter-spacing: 0.12em;
+}
+
+/* ---------- Reading and record ---------- */
+.tarot-lower {
+  width: 100%;
+  display: flex;
+  gap: 40px;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  margin-top: 16px;
+}
+.tarot-lower .reading {
+  flex: 1 1 640px;
+  background: rgba(28, 16, 34, 0.85);
+  border-color: rgba(200, 168, 102, 0.3);
+}
+.tarot-lower .consult {
+  flex: 1 1 360px;
+  min-width: 0;
+}
+.panel-title {
+  font-size: 18px;
+  letter-spacing: 0.3em;
+  font-weight: 600;
+  margin-bottom: 16px;
+}
+.reading-head h3 {
+  color: var(--accent-2);
+}
+.reading-summary {
+  color: #f3e6c4;
+}
+.reading-subheading {
+  color: var(--accent-2);
+}
+.reading-tags span {
+  color: var(--rose);
+}
+.msg-label {
+  color: var(--accent);
+}
+
+@media (max-width: 760px) {
+  .tarot-hero h1 {
+    font-size: 32px;
+  }
+  .spreads {
+    width: 100%;
+    gap: 8px;
+  }
+  .spread {
+    flex: 1 1 0;
+    min-width: 0;
+    padding: 10px 6px 8px;
+  }
+  .spread small {
+    font-size: 11px;
+    letter-spacing: 0;
+  }
+  .tarot-spread {
+    gap: 28px;
+  }
+  .card-face {
+    width: 200px;
+    height: 334px;
+    border-radius: 100px 100px 10px 10px;
+    padding-top: 40px;
+  }
+  .card-emblem {
+    width: 100px;
+    height: 100px;
+  }
+  .rose-window {
+    width: 640px;
+    height: 640px;
+    margin-left: -320px;
+  }
+}
