@@ -1,0 +1,102 @@
+{
+  "batch": "b002",
+  "reviewer": "reviewer_b",
+  "run_pass": 2,
+  "attempt": 1,
+  "vendor": "openai",
+  "requested_model": "gpt-6.1-sol",
+  "returned_model": "gpt-6.1-sol",
+  "api": "openai",
+  "started_at": "2026-10-22T09:14:01+00:00",
+  "finished_at": "2026-10-22T09:14:33+00:00",
+  "latency_s": 32.101,
+  "http_attempts": 1,
+  "finish_reason": "stop",
+  "prompt_sha256": "fc1bf1bd4c1736d03ed84861cfd2d5beb27ea6720627adef921bab759ad4077a",
+  "input_tokens": 4013,
+  "output_tokens": 1173,
+  "cached_input_tokens": 4010,
+  "usage_available": true,
+  "raw_text": "{\n  \"items\": [\n    {\n      \"item\": \"i01\",\n      \"verdict\": \"revise\",\n      \"issues\": [\n        {\n          \"dimension\": \"consistency\",\n          \"detail\": \"synonyms 中“包饺子”是制作饺子的动作，与“饺子”这一食物意象不是同义表达，应另列情节。\"\n        },\n        {\n          \"dimension\": \"theme_direction\",\n          \"detail\": \"theme_map.finance 为负，但正文的团圆、家庭、满足感与照顾没有表达财务受阻的含义，财务方向应改为 0 或补充相应依据。\"\n        }\n      ],\n      \"reason\": \"家庭团圆支持关系正向，但财务负向缺乏依据，且别名混入了制作食物的动作。\"\n    },\n    {\n      \"item\": \"i02\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"别名符合背叛意象，关系中的不安全感支持感情负向，其余主题为中性，且没有预测现实中的背叛。\"\n    },\n    {\n      \"item\": \"i03\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"别名与照明意象相容，指引、清晰感和希望支持自我正向，其余主题未标方向，表述保留了情境差异。\"\n    },\n    {\n      \"item\": \"i04\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"各别名均指向已故亲人，正文以思念和情绪延续作平和解释，与四个主题均不标方向相容。\"\n    },\n    {\n      \"item\": \"i05\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"各别名均属于生病意象，疲惫与休息需求支持自我负向，其他主题无方向，且未作健康诊断。\"\n    },\n    {\n      \"item\": \"i06\",\n      \"verdict\": \"revise\",\n      \"issues\": [\n        {\n          \"dimension\": \"consistency\",\n          \"detail\": \"synonyms 中“想不开”也常指纠结、难以释怀，并不等同于自杀，会误命中非轻生梦境，应删除该别名。\"\n        }\n      ],\n      \"reason\": \"压力联想、自我负向及求助提示均相容，但“想不开”不满足同一意象的别名要求。\"\n    },\n    {\n      \"item\": \"i07\",\n      \"verdict\": \"revise\",\n      \"issues\": [\n        {\n          \"dimension\": \"certainty\",\n          \"detail\": \"text 末句“梦到它预示近期会收到好消息”直接预测现实事件，且与前句“不预示现实结果”矛盾，应删除。\"\n        }\n      ],\n      \"reason\": \"别名与中性主题设置可接受，但末句包含明确的现实事件预测。\"\n    },\n    {\n      \"item\": \"i08\",\n      \"verdict\": \"revise\",\n      \"issues\": [\n        {\n          \"dimension\": \"theme_direction\",\n          \"detail\": \"theme_map.career 为负，但正文只提到根基、务实和一般性的困局，没有工作或事业推进受阻的含义，不能据此标事业负向。\"\n        }\n      ],\n      \"reason\": \"泥土及其别名的联想基本相容，但一般困局不足以支持事业负向。\"\n    },\n    {\n      \"item\": \"i09\",\n      \"verdict\": \"revise\",\n      \"issues\": [\n        {\n          \"dimension\": \"theme_direction\",\n          \"detail\": \"theme_map.self 为负，但正文核心是自由、摆脱限制与自信提升，倾向偏顺；后句泛提压力不足以支持将整体自我方向标为负。\"\n        }\n      ],\n      \"reason\": \"各别名符合飞行意象，但自我负向与正文的核心正向联想不一致。\"\n    },\n    {\n      \"item\": \"i10\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"别名与天空意象相容，开阔、理想和可能性支持自我正向，其他主题未标方向，也未作现实预测。\"\n    }\n  ]\n}",
+  "verdicts": {
+    "i01": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "consistency",
+          "detail": "synonyms 中“包饺子”是制作饺子的动作，与“饺子”这一食物意象不是同义表达，应另列情节。"
+        },
+        {
+          "dimension": "theme_direction",
+          "detail": "theme_map.finance 为负，但正文的团圆、家庭、满足感与照顾没有表达财务受阻的含义，财务方向应改为 0 或补充相应依据。"
+        }
+      ],
+      "reason": "家庭团圆支持关系正向，但财务负向缺乏依据，且别名混入了制作食物的动作。"
+    },
+    "i02": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "别名符合背叛意象，关系中的不安全感支持感情负向，其余主题为中性，且没有预测现实中的背叛。"
+    },
+    "i03": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "别名与照明意象相容，指引、清晰感和希望支持自我正向，其余主题未标方向，表述保留了情境差异。"
+    },
+    "i04": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "各别名均指向已故亲人，正文以思念和情绪延续作平和解释，与四个主题均不标方向相容。"
+    },
+    "i05": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "各别名均属于生病意象，疲惫与休息需求支持自我负向，其他主题无方向，且未作健康诊断。"
+    },
+    "i06": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "consistency",
+          "detail": "synonyms 中“想不开”也常指纠结、难以释怀，并不等同于自杀，会误命中非轻生梦境，应删除该别名。"
+        }
+      ],
+      "reason": "压力联想、自我负向及求助提示均相容，但“想不开”不满足同一意象的别名要求。"
+    },
+    "i07": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "certainty",
+          "detail": "text 末句“梦到它预示近期会收到好消息”直接预测现实事件，且与前句“不预示现实结果”矛盾，应删除。"
+        }
+      ],
+      "reason": "别名与中性主题设置可接受，但末句包含明确的现实事件预测。"
+    },
+    "i08": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "theme_direction",
+          "detail": "theme_map.career 为负，但正文只提到根基、务实和一般性的困局，没有工作或事业推进受阻的含义，不能据此标事业负向。"
+        }
+      ],
+      "reason": "泥土及其别名的联想基本相容，但一般困局不足以支持事业负向。"
+    },
+    "i09": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "theme_direction",
+          "detail": "theme_map.self 为负，但正文核心是自由、摆脱限制与自信提升，倾向偏顺；后句泛提压力不足以支持将整体自我方向标为负。"
+        }
+      ],
+      "reason": "各别名符合飞行意象，但自我负向与正文的核心正向联想不一致。"
+    },
+    "i10": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "别名与天空意象相容，开阔、理想和可能性支持自我正向，其他主题未标方向，也未作现实预测。"
+    }
+  }
+}

@@ -1,0 +1,223 @@
+{
+  "system": "dream",
+  "rubric_sha256": "d26c6757b96a1cdfca3ac89a8b31adcb9acde41833984012806812ceb91859dc",
+  "agreement": {
+    "items": 20,
+    "reviewed": 10,
+    "labels": {
+      "fail": 10,
+      "pass": 10
+    },
+    "kappa": 0.6,
+    "observed_agreement": 0.8,
+    "pairs": {
+      "reject/reject": 4,
+      "pass/reject": 1,
+      "pass/pass": 4,
+      "reject/pass": 1
+    },
+    "label_agreement": {
+      "reviewer_a": {
+        "accuracy": 0.8,
+        "sensitivity": 0.8,
+        "specificity": 0.8
+      },
+      "reviewer_b": {
+        "accuracy": 1.0,
+        "sensitivity": 1.0,
+        "specificity": 1.0
+      }
+    }
+  },
+  "rerun": {
+    "reviewer_a": 0.85,
+    "reviewer_b": 1.0
+  },
+  "gates": {
+    "complete": false,
+    "kappa": true,
+    "rerun": false,
+    "label_agreement": false
+  },
+  "met": false,
+  "thresholds": {
+    "kappa": 0.6,
+    "rerun": 0.9,
+    "label_agreement": 0.85
+  },
+  "disputed": [
+    {
+      "id": "cal-dream-d04",
+      "label": "fail",
+      "verdicts": {
+        "reviewer_a.p1": "pass",
+        "reviewer_a.p2": "revise",
+        "reviewer_b.p1": "revise",
+        "reviewer_b.p2": "revise"
+      },
+      "reasons": {
+        "reviewer_a.p1": "释义与主题方向一致，对象核心含义正确，无宿命化或确定性断言。",
+        "reviewer_a.p2": "同义词“想不开”与“自杀”并非稳定的同义表达，存在误命中风险。",
+        "reviewer_b.p1": "压力联想支持自我负向，安全提示适当，但“想不开”不是可靠的自杀同义词。",
+        "reviewer_b.p2": "压力联想、自我负向及求助提示均相容，但“想不开”不满足同一意象的别名要求。"
+      },
+      "issues": {
+        "reviewer_a.p2": [
+          {
+            "dimension": "consistency",
+            "detail": "synonyms 中“想不开”是口语中对自杀的委婉说法，但更多用于描述一般想不通或情绪低落，与“自杀”梦境意象的同义关系不稳定，易造成检索误命中。"
+          }
+        ],
+        "reviewer_b.p1": [
+          {
+            "dimension": "consistency",
+            "detail": "synonyms 中“想不开”也常指一时纠结、无法释怀，并不一定指自杀，作为检索别名会误命中，应删除。"
+          }
+        ],
+        "reviewer_b.p2": [
+          {
+            "dimension": "consistency",
+            "detail": "synonyms 中“想不开”也常指纠结、难以释怀，并不等同于自杀，会误命中非轻生梦境，应删除该别名。"
+          }
+        ]
+      }
+    },
+    {
+      "id": "cal-dream-d14",
+      "label": "pass",
+      "verdicts": {
+        "reviewer_a.p1": "revise",
+        "reviewer_a.p2": "revise",
+        "reviewer_b.p1": "pass",
+        "reviewer_b.p2": "pass"
+      },
+      "reasons": {
+        "reviewer_a.p1": "同义词“出轨”与“背叛”不构成同义关系，会误命中。",
+        "reviewer_a.p2": "同义词“出轨”混入具体情节，超出“背叛”意象的合理别名范围。",
+        "reviewer_b.p1": "别名与背叛意象相容，关系中的不安全感支持关系负向，否定现实背叛推断不构成预测。",
+        "reviewer_b.p2": "别名符合背叛意象，关系中的不安全感支持感情负向，其余主题为中性，且没有预测现实中的背叛。"
+      },
+      "issues": {
+        "reviewer_a.p1": [
+          {
+            "dimension": "consistency",
+            "detail": "synonyms 中将“出轨”等同为“背叛”的同义词，但出轨是背叛的一种具体情节，不是同义表达，可能导致用户误命中。"
+          }
+        ],
+        "reviewer_a.p2": [
+          {
+            "dimension": "consistency",
+            "detail": "synonyms 中“出轨”是具体情节，不等同于“背叛”这一广泛意象，二者并非稳定的同义关系，可能导致用户检索误命中。"
+          }
+        ]
+      }
+    },
+    {
+      "id": "cal-dream-d16",
+      "label": "fail",
+      "verdicts": {
+        "reviewer_a.p1": "pass",
+        "reviewer_a.p2": "pass"
+      },
+      "reasons": {
+        "reviewer_a.p1": "桥的过渡与连接象征与传统相符，主题全零与文字中性一致，无预测。",
+        "reviewer_a.p2": "桥释为过渡、连接和阶段转换，theme_map 全为 0，且明确说明不预示现实结果，成立。"
+      },
+      "issues": {}
+    },
+    {
+      "id": "cal-dream-d17",
+      "label": "pass",
+      "verdicts": {
+        "reviewer_a.p1": "pass",
+        "reviewer_a.p2": "revise"
+      },
+      "reasons": {
+        "reviewer_a.p1": "迷路的核心意象与空间寻路、方向不确定的联想相符，self 偏负与文字一致，无预测。",
+        "reviewer_a.p2": "部分同义词偏向丢失或回程情节，不能准确指向释义中对空间寻路的限定。"
+      },
+      "issues": {
+        "reviewer_a.p2": [
+          {
+            "dimension": "consistency",
+            "detail": "synonyms 中的“找不到回去的路”和“走丢”侧重走失或回程情境，而正文把“迷路”限定为空间寻路、方向辨认，二者含义不能稳定指同一空间寻路意象。"
+          }
+        ]
+      }
+    },
+    {
+      "id": "cal-dream-d19",
+      "label": "fail",
+      "verdicts": {
+        "reviewer_a.p1": "revise",
+        "reviewer_a.p2": "pass",
+        "reviewer_b.p1": "revise",
+        "reviewer_b.p2": "revise"
+      },
+      "reasons": {
+        "reviewer_a.p1": "self 的主题倾向与释义文字正负相反。",
+        "reviewer_a.p2": "self 偏负向与压力和节奏有关，但文字同时表达自由与自信提升，方向合理。",
+        "reviewer_b.p1": "别名与飞行意象一致，但自我负向与正文偏向自由和自信提升的核心描述不符。",
+        "reviewer_b.p2": "各别名符合飞行意象，但自我负向与正文的核心正向联想不一致。"
+      },
+      "issues": {
+        "reviewer_a.p1": [
+          {
+            "dimension": "theme_direction",
+            "detail": "text 围绕渴望自由、摆脱限制、自信提升展开，整体偏正向，却将 self 标为 -0.15，方向相反。"
+          }
+        ],
+        "reviewer_b.p1": [
+          {
+            "dimension": "theme_direction",
+            "detail": "theme_map.self 为负，但正文核心是自由、摆脱限制和自信提升，倾向偏顺；后文泛提压力与节奏，不能将这一核心解释转为自我负向。"
+          }
+        ],
+        "reviewer_b.p2": [
+          {
+            "dimension": "theme_direction",
+            "detail": "theme_map.self 为负，但正文核心是自由、摆脱限制与自信提升，倾向偏顺；后句泛提压力不足以支持将整体自我方向标为负。"
+          }
+        ]
+      }
+    }
+  ],
+  "usage": {
+    "reviewer_a": {
+      "calls": 4,
+      "input_tokens": 13870,
+      "output_tokens": 3259,
+      "latency_s": 45.073,
+      "returned_models": [
+        "deepseek-v4-pro"
+      ],
+      "errors": {},
+      "retried_calls": 0,
+      "http_retries": 0,
+      "cost": null,
+      "known_cost_estimate": null,
+      "usage_complete": true,
+      "cost_basis": "配置单价估算，非账单；服务失败的用量可能未知",
+      "currency": null
+    },
+    "reviewer_b": {
+      "calls": 2,
+      "input_tokens": 8026,
+      "output_tokens": 2618,
+      "latency_s": 78.957,
+      "returned_models": [
+        "gpt-6.1-sol"
+      ],
+      "errors": {
+        "service_error": 2
+      },
+      "retried_calls": 0,
+      "http_retries": 0,
+      "cost": null,
+      "known_cost_estimate": null,
+      "usage_complete": false,
+      "cost_basis": "配置单价估算，非账单；服务失败的用量可能未知",
+      "currency": null
+    }
+  }
+}

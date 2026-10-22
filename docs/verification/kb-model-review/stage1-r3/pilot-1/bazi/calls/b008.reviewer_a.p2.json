@@ -1,0 +1,53 @@
+{
+  "batch": "b008",
+  "reviewer": "reviewer_a",
+  "run_pass": 2,
+  "attempt": 1,
+  "vendor": "deepseek",
+  "requested_model": "deepseek-v4-pro",
+  "returned_model": "deepseek-v4-pro",
+  "api": "openai",
+  "started_at": "2026-10-22T09:00:57+00:00",
+  "finished_at": "2026-10-22T09:01:03+00:00",
+  "latency_s": 5.851,
+  "http_attempts": 1,
+  "finish_reason": "stop",
+  "prompt_sha256": "041199e7729c6195eab3def46cbb1b927fdc0f616f52c7359f40e839ffe2f4f6",
+  "input_tokens": 3253,
+  "output_tokens": 341,
+  "cached_input_tokens": 3200,
+  "usage_available": true,
+  "raw_text": "{\n  \"items\": [\n    {\n      \"item\": \"i01\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"六冲成员准确，文字为象征性反思而非宿命断言，theme_map 全部为 0 合理。\"\n    },\n    {\n      \"item\": \"i02\",\n      \"verdict\": \"revise\",\n      \"issues\": [\n        {\n          \"dimension\": \"tradition\",\n          \"detail\": \"text 中“亥子丑对应冬季，会木”写错，亥子丑会水，不是木。\"\n        }\n      ],\n      \"reason\": \"三会对应五行中亥子丑写错，应改为会水。\"\n    },\n    {\n      \"item\": \"i03\",\n      \"verdict\": \"revise\",\n      \"issues\": [\n        {\n          \"dimension\": \"tradition\",\n          \"detail\": \"作为术语条目，text 只写“需结合具体干支判断”和免责，没有写出地支六合由哪六组地支构成及核心含义，换成其他关系也能成立，缺少对象专属信息。\"\n        }\n      ],\n      \"reason\": \"地支六合未写出六组成员等核心信息，不符合术语类条目要求。\"\n    },\n    {\n      \"item\": \"i04\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"刑的成员与自刑描述正确，self 和 career 负向有自苛、约束摩擦等文字支撑，relationship 和 finance 为 0 合理。\"\n    }\n  ]\n}",
+  "verdicts": {
+    "i01": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "六冲成员准确，文字为象征性反思而非宿命断言，theme_map 全部为 0 合理。"
+    },
+    "i02": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "tradition",
+          "detail": "text 中“亥子丑对应冬季，会木”写错，亥子丑会水，不是木。"
+        }
+      ],
+      "reason": "三会对应五行中亥子丑写错，应改为会水。"
+    },
+    "i03": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "tradition",
+          "detail": "作为术语条目，text 只写“需结合具体干支判断”和免责，没有写出地支六合由哪六组地支构成及核心含义，换成其他关系也能成立，缺少对象专属信息。"
+        }
+      ],
+      "reason": "地支六合未写出六组成员等核心信息，不符合术语类条目要求。"
+    },
+    "i04": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "刑的成员与自刑描述正确，self 和 career 负向有自苛、约束摩擦等文字支撑，relationship 和 finance 为 0 合理。"
+    }
+  }
+}

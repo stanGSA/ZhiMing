@@ -1,0 +1,182 @@
+{
+  "system": "name",
+  "rubric_sha256": "d26c6757b96a1cdfca3ac89a8b31adcb9acde41833984012806812ceb91859dc",
+  "agreement": {
+    "items": 20,
+    "reviewed": 20,
+    "labels": {
+      "fail": 10,
+      "pass": 10
+    },
+    "kappa": 0.8,
+    "observed_agreement": 0.9,
+    "pairs": {
+      "reject/reject": 9,
+      "pass/pass": 9,
+      "pass/reject": 1,
+      "reject/pass": 1
+    },
+    "label_agreement": {
+      "reviewer_a": {
+        "accuracy": 0.9,
+        "sensitivity": 0.9,
+        "specificity": 0.9
+      },
+      "reviewer_b": {
+        "accuracy": 1.0,
+        "sensitivity": 1.0,
+        "specificity": 1.0
+      }
+    }
+  },
+  "rerun": {
+    "reviewer_a": 0.95,
+    "reviewer_b": 1.0
+  },
+  "gates": {
+    "complete": true,
+    "kappa": true,
+    "rerun": true,
+    "label_agreement": true
+  },
+  "met": true,
+  "thresholds": {
+    "kappa": 0.6,
+    "rerun": 0.9,
+    "label_agreement": 0.85
+  },
+  "disputed": [
+    {
+      "id": "cal-name-d01",
+      "label": "fail",
+      "verdicts": {
+        "reviewer_a.p1": "revise",
+        "reviewer_a.p2": "pass",
+        "reviewer_b.p1": "revise",
+        "reviewer_b.p2": "revise"
+      },
+      "reasons": {
+        "reviewer_a.p1": "16数尾数6的三才五行错误，误写为水。",
+        "reviewer_a.p2": "16数格式、分类与尾数五行均正确，内容和方向一致。",
+        "reviewer_b.p1": "16归吉及四主题正向符合约定，但尾数6的五行应由水改为土。",
+        "reviewer_b.p2": "16归吉及四个主题统一正向符合约定，但尾数6的五行配属写错。"
+      },
+      "issues": {
+        "reviewer_a.p1": [
+          {
+            "dimension": "tradition",
+            "detail": "三才尾部五行规则中5、6对应土，尾数6不应对应水。"
+          }
+        ],
+        "reviewer_b.p1": [
+          {
+            "dimension": "tradition",
+            "detail": "text 中“尾数6在三才里对应水”有误；参考表规定尾数5、6对应土。"
+          }
+        ],
+        "reviewer_b.p2": [
+          {
+            "dimension": "tradition",
+            "detail": "text 中“尾数6在三才里对应水”错误；参考表规定尾数5、6对应土，应将“水”改为“土”。"
+          }
+        ]
+      }
+    },
+    {
+      "id": "cal-name-d12",
+      "label": "fail",
+      "verdicts": {
+        "reviewer_a.p1": "pass",
+        "reviewer_a.p2": "pass",
+        "reviewer_b.p1": "revise",
+        "reviewer_b.p2": "revise"
+      },
+      "reasons": {
+        "reviewer_a.p1": "五行生克关系、三才组成及象征性解读准确，免责声明充分，主题方向与文字一致。",
+        "reviewer_a.p2": "五行关系与三才组合描述正确，主题方向与文字一致，未作命运断言。",
+        "reviewer_b.p1": "五行相克关系有一处可修正的事实错误，其余非零主题方向符合约定。",
+        "reviewer_b.p2": "天格与人格的生克名称写反，属于可修正的事实错误；自我负向、关系正向与相克、相生约定一致。"
+      },
+      "issues": {
+        "reviewer_b.p1": [
+          {
+            "dimension": "tradition",
+            "detail": "text 中“土克木”与参考事实不符，也与紧接的“天格土被人格木所克”矛盾；应改为“木克土”。"
+          }
+        ],
+        "reviewer_b.p2": [
+          {
+            "dimension": "tradition",
+            "detail": "text 中“土克木”写反，应为“木克土”；其后的“天格土被人格木所克”正确，应统一表述。"
+          }
+        ]
+      }
+    },
+    {
+      "id": "cal-name-d16",
+      "label": "pass",
+      "verdicts": {
+        "reviewer_a.p1": "revise",
+        "reviewer_a.p2": "revise",
+        "reviewer_b.p1": "pass",
+        "reviewer_b.p2": "pass"
+      },
+      "reasons": {
+        "reviewer_a.p1": "该条尾数五行为土正确，半吉归类正确，主题方向可依约定标小正，未发现具体可修正问题。",
+        "reviewer_a.p2": "尾数5在三才五行中应为土，原文误写为土。",
+        "reviewer_b.p1": "75归半吉、尾数5对应土均正确，四主题小正符合项目约定，文字也限定为取名习俗而非命运结论。",
+        "reviewer_b.p2": "75归半吉、尾数5属土均符合参考事实，四个主题统一小正向符合半吉方向约定，文字未作命运断言。"
+      },
+      "issues": {
+        "reviewer_a.p1": [
+          {
+            "dimension": "tradition",
+            "detail": "三才尾部五行规则中5、6对应土，尾数5对应土正确，但75在参考事实中属于半吉，文中常被归为半吉无误；但未按要求依据吉凶统一标向时可采用约定，此处半吉标小正可接受，不构成 revise。确有问题的是“意味着顺与不顺都与个人选择有关”后续没有方向矛盾，需重新检查。"
+          }
+        ],
+        "reviewer_a.p2": [
+          {
+            "dimension": "tradition",
+            "detail": "尾数5在三才五行中对应土，不是土。"
+          }
+        ]
+      }
+    }
+  ],
+  "usage": {
+    "reviewer_a": {
+      "calls": 10,
+      "input_tokens": 26994,
+      "output_tokens": 3436,
+      "latency_s": 57.549,
+      "returned_models": [
+        "deepseek-v4-pro"
+      ],
+      "errors": {},
+      "retried_calls": 0,
+      "http_retries": 0,
+      "cost": null,
+      "known_cost_estimate": null,
+      "usage_complete": true,
+      "cost_basis": "配置单价估算，非账单；服务失败的用量可能未知",
+      "currency": null
+    },
+    "reviewer_b": {
+      "calls": 10,
+      "input_tokens": 30846,
+      "output_tokens": 5047,
+      "latency_s": 179.619,
+      "returned_models": [
+        "gpt-6.1-sol"
+      ],
+      "errors": {},
+      "retried_calls": 0,
+      "http_retries": 0,
+      "cost": null,
+      "known_cost_estimate": null,
+      "usage_complete": true,
+      "cost_basis": "配置单价估算，非账单；服务失败的用量可能未知",
+      "currency": null
+    }
+  }
+}

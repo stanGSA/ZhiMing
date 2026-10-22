@@ -1,0 +1,106 @@
+{
+  "batch": "b001",
+  "reviewer": "reviewer_b",
+  "run_pass": 2,
+  "attempt": 1,
+  "vendor": "openai",
+  "requested_model": "gpt-6.1-sol",
+  "returned_model": "gpt-6.1-sol",
+  "api": "openai",
+  "started_at": "2026-10-22T08:51:06+00:00",
+  "finished_at": "2026-10-22T08:51:53+00:00",
+  "latency_s": 47.079,
+  "http_attempts": 1,
+  "finish_reason": "stop",
+  "prompt_sha256": "7dd38860ee6ba23107086d11ed923d04fff929aa1237037d9849d5a8304590e0",
+  "input_tokens": 4123,
+  "output_tokens": 1118,
+  "cached_input_tokens": 4120,
+  "usage_available": true,
+  "raw_text": "{\n  \"items\": [\n    {\n      \"item\": \"i01\",\n      \"verdict\": \"revise\",\n      \"issues\": [\n        {\n          \"dimension\": \"certainty\",\n          \"detail\": \"text 末句“它预示你很快会在工作上得到认可”直接预测近期现实事件，前面的免责声明不能消除该问题。\"\n        },\n        {\n          \"dimension\": \"tradition\",\n          \"detail\": \"text 末句将圣杯八正位解释为工作上即将得到认可，偏离其离开不再满足的处境、寻找更深需要的核心象征。\"\n        }\n      ],\n      \"reason\": \"离开与不满足支持自我、关系负向，但末句加入了不符牌义的现实预测。\"\n    },\n    {\n      \"item\": \"i02\",\n      \"verdict\": \"revise\",\n      \"issues\": [\n        {\n          \"dimension\": \"certainty\",\n          \"detail\": \"text 末句“往往预示一段新感情即将到来”属于对现实感情事件的预测，即使使用“往往”并附有免责声明也不符合要求。\"\n        }\n      ],\n      \"reason\": \"价值对齐与沟通符合恋人正位，三个正向主题符合约定，但新感情即将到来的预测需要删除或改写。\"\n    },\n    {\n      \"item\": \"i03\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"别名对应正确，重新注意选择符合圣杯四逆位重新开放的含义，支持自我与关系的轻度正向。\"\n    },\n    {\n      \"item\": \"i04\",\n      \"verdict\": \"revise\",\n      \"issues\": [\n        {\n          \"dimension\": \"theme_direction\",\n          \"detail\": \"theme_map.self 为负，但 text 的核心是独立判断与清楚边界有助于处理问题，属于偏顺表达；“也要保留倾听”只是建议，不能支持自我负向。\"\n        }\n      ],\n      \"reason\": \"牌义、别名及事业正向相符，但自我负向与正文的建设性描述不一致。\"\n    },\n    {\n      \"item\": \"i05\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"别名对应正确，持续防守带来的疲惫符合权杖七逆位，事业与自我负向均有牌义及体系约定支持。\"\n    },\n    {\n      \"item\": \"i06\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"别名对应正确，情感流动受阻符合圣杯一逆位，关系与自我负向与文字一致。\"\n    },\n    {\n      \"item\": \"i07\",\n      \"verdict\": \"revise\",\n      \"issues\": [\n        {\n          \"dimension\": \"consistency\",\n          \"detail\": \"text 与 counterpart 的正位释义逐字相同，未区分宝剑十逆位的恢复、松动或其他逆位侧重。\"\n        },\n        {\n          \"dimension\": \"theme_direction\",\n          \"detail\": \"theme_map.self 和 career 均为正，但 text 核心仍是困难阶段达到承受边界；“先恢复并处理基本需求”只是行动建议，未表达恢复已开始或困境正在缓解，不能支持这两个正向值。\"\n        }\n      ],\n      \"reason\": \"正文未体现与正位的区别，也未提供自我与事业偏顺的含义依据。\"\n    },\n    {\n      \"item\": \"i08\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"别名对应正确，过度控制与看重收益符合星币国王逆位，财务及事业负向符合文字与星币主题约定。\"\n    },\n    {\n      \"item\": \"i09\",\n      \"verdict\": \"revise\",\n      \"issues\": [\n        {\n          \"dimension\": \"theme_direction\",\n          \"detail\": \"theme_map.self 为负，但 text 描述清楚方向、责任分配与有效带领行动，整体偏顺；“给执行留出空间”并未表达自我状态受阻。\"\n        }\n      ],\n      \"reason\": \"领导行动符合权杖国王正位且支持事业正向，但自我负向缺乏正文依据。\"\n    },\n    {\n      \"item\": \"i10\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"别名对应正确，承认失望并留意尚存支持符合圣杯五正位，关系与自我负向与失落的核心倾向一致。\"\n    }\n  ]\n}",
+  "verdicts": {
+    "i01": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "certainty",
+          "detail": "text 末句“它预示你很快会在工作上得到认可”直接预测近期现实事件，前面的免责声明不能消除该问题。"
+        },
+        {
+          "dimension": "tradition",
+          "detail": "text 末句将圣杯八正位解释为工作上即将得到认可，偏离其离开不再满足的处境、寻找更深需要的核心象征。"
+        }
+      ],
+      "reason": "离开与不满足支持自我、关系负向，但末句加入了不符牌义的现实预测。"
+    },
+    "i02": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "certainty",
+          "detail": "text 末句“往往预示一段新感情即将到来”属于对现实感情事件的预测，即使使用“往往”并附有免责声明也不符合要求。"
+        }
+      ],
+      "reason": "价值对齐与沟通符合恋人正位，三个正向主题符合约定，但新感情即将到来的预测需要删除或改写。"
+    },
+    "i03": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "别名对应正确，重新注意选择符合圣杯四逆位重新开放的含义，支持自我与关系的轻度正向。"
+    },
+    "i04": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "theme_direction",
+          "detail": "theme_map.self 为负，但 text 的核心是独立判断与清楚边界有助于处理问题，属于偏顺表达；“也要保留倾听”只是建议，不能支持自我负向。"
+        }
+      ],
+      "reason": "牌义、别名及事业正向相符，但自我负向与正文的建设性描述不一致。"
+    },
+    "i05": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "别名对应正确，持续防守带来的疲惫符合权杖七逆位，事业与自我负向均有牌义及体系约定支持。"
+    },
+    "i06": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "别名对应正确，情感流动受阻符合圣杯一逆位，关系与自我负向与文字一致。"
+    },
+    "i07": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "consistency",
+          "detail": "text 与 counterpart 的正位释义逐字相同，未区分宝剑十逆位的恢复、松动或其他逆位侧重。"
+        },
+        {
+          "dimension": "theme_direction",
+          "detail": "theme_map.self 和 career 均为正，但 text 核心仍是困难阶段达到承受边界；“先恢复并处理基本需求”只是行动建议，未表达恢复已开始或困境正在缓解，不能支持这两个正向值。"
+        }
+      ],
+      "reason": "正文未体现与正位的区别，也未提供自我与事业偏顺的含义依据。"
+    },
+    "i08": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "别名对应正确，过度控制与看重收益符合星币国王逆位，财务及事业负向符合文字与星币主题约定。"
+    },
+    "i09": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "theme_direction",
+          "detail": "theme_map.self 为负，但 text 描述清楚方向、责任分配与有效带领行动，整体偏顺；“给执行留出空间”并未表达自我状态受阻。"
+        }
+      ],
+      "reason": "领导行动符合权杖国王正位且支持事业正向，但自我负向缺乏正文依据。"
+    },
+    "i10": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "别名对应正确，承认失望并留意尚存支持符合圣杯五正位，关系与自我负向与失落的核心倾向一致。"
+    }
+  }
+}

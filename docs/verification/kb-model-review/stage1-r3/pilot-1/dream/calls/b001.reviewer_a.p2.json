@@ -1,0 +1,98 @@
+{
+  "batch": "b001",
+  "reviewer": "reviewer_a",
+  "run_pass": 2,
+  "attempt": 1,
+  "vendor": "deepseek",
+  "requested_model": "deepseek-v4-pro",
+  "returned_model": "deepseek-v4-pro",
+  "api": "openai",
+  "started_at": "2026-10-22T09:08:40+00:00",
+  "finished_at": "2026-10-22T09:08:52+00:00",
+  "latency_s": 11.777,
+  "http_attempts": 1,
+  "finish_reason": "stop",
+  "prompt_sha256": "91ce563960d05ea70752a49bfa72c781295d6a7b3917afae7f6d6d92c392f8a9",
+  "input_tokens": 3459,
+  "output_tokens": 856,
+  "cached_input_tokens": 3456,
+  "usage_available": true,
+  "raw_text": "{\n  \"items\": [\n    {\n      \"item\": \"i01\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"花作为梦象，联想到美好、绽放与关系期待，self 和 relationship 轻微偏顺与文字一致，未作现实预测。\"\n    },\n    {\n      \"item\": \"i02\",\n      \"verdict\": \"revise\",\n      \"issues\": [\n        {\n          \"dimension\": \"certainty\",\n          \"detail\": \"text 结尾写“这个梦预示近期会有一笔意外之财”，对现实事件作预测，并且没有以否定式免责声明消除。\"\n        }\n      ],\n      \"reason\": \"枪的象征核心含义未错，但结尾将梦境解读为近期会得意外之财，属于对现实事件的预测。\"\n    },\n    {\n      \"item\": \"i03\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"石头象征稳固、阻碍或沉重心事，theme_map 全为 0，文字没有方向或现实预测，释义成立。\"\n    },\n    {\n      \"item\": \"i04\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"面试释为对评价和新机会的紧张，只反映心理感受，theme_map 全为 0 且排除了现实预测，合理。\"\n    },\n    {\n      \"item\": \"i05\",\n      \"verdict\": \"revise\",\n      \"issues\": [\n        {\n          \"dimension\": \"certainty\",\n          \"detail\": \"text 写“这个梦预示近期会有一笔意外之财”，把梦境意象推向现实事件预测，且无否定式免责声明。\"\n        }\n      ],\n      \"reason\": \"钓鱼本义为耐心等待机会或探索内心，但结尾的意外之财预测属于确定性现实事件预言。\"\n    },\n    {\n      \"item\": \"i06\",\n      \"verdict\": \"revise\",\n      \"issues\": [\n        {\n          \"dimension\": \"consistency\",\n          \"detail\": \"synonyms 中的“杯子碎了”是杯子这一意象的破损情节，不等于“杯子”，会误导用户将不同梦境检索到同一释义。\"\n        }\n      ],\n      \"reason\": \"专属同义词“杯子碎了”属于不同情节，与“杯子”的核心意象范围冲突。\"\n    },\n    {\n      \"item\": \"i07\",\n      \"verdict\": \"revise\",\n      \"issues\": [\n        {\n          \"dimension\": \"consistency\",\n          \"detail\": \"synonyms 中的“找不到回去的路”和“走丢”侧重走失或回程情境，而正文把“迷路”限定为空间寻路、方向辨认，二者含义不能稳定指同一空间寻路意象。\"\n        }\n      ],\n      \"reason\": \"部分同义词偏向丢失或回程情节，不能准确指向释义中对空间寻路的限定。\"\n    },\n    {\n      \"item\": \"i08\",\n      \"verdict\": \"revise\",\n      \"issues\": [\n        {\n          \"dimension\": \"consistency\",\n          \"detail\": \"synonyms 中的“狐狸精”可指精怪或对人的贬称，不是“狐狸”本身的同义表达，可能误导用户。\"\n        }\n      ],\n      \"reason\": \"“狐狸精”有另一义项，与“狐狸”不是稳定的意象同义词。\"\n    },\n    {\n      \"item\": \"i09\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"桥释为过渡、连接和阶段转换，theme_map 全为 0，且明确说明不预示现实结果，成立。\"\n    },\n    {\n      \"item\": \"i10\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"彩票释为对转机的期待，不构成购买建议，theme_map 全为 0，未作财务方向或现实预测。\"\n    }\n  ]\n}",
+  "verdicts": {
+    "i01": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "花作为梦象，联想到美好、绽放与关系期待，self 和 relationship 轻微偏顺与文字一致，未作现实预测。"
+    },
+    "i02": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "certainty",
+          "detail": "text 结尾写“这个梦预示近期会有一笔意外之财”，对现实事件作预测，并且没有以否定式免责声明消除。"
+        }
+      ],
+      "reason": "枪的象征核心含义未错，但结尾将梦境解读为近期会得意外之财，属于对现实事件的预测。"
+    },
+    "i03": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "石头象征稳固、阻碍或沉重心事，theme_map 全为 0，文字没有方向或现实预测，释义成立。"
+    },
+    "i04": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "面试释为对评价和新机会的紧张，只反映心理感受，theme_map 全为 0 且排除了现实预测，合理。"
+    },
+    "i05": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "certainty",
+          "detail": "text 写“这个梦预示近期会有一笔意外之财”，把梦境意象推向现实事件预测，且无否定式免责声明。"
+        }
+      ],
+      "reason": "钓鱼本义为耐心等待机会或探索内心，但结尾的意外之财预测属于确定性现实事件预言。"
+    },
+    "i06": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "consistency",
+          "detail": "synonyms 中的“杯子碎了”是杯子这一意象的破损情节，不等于“杯子”，会误导用户将不同梦境检索到同一释义。"
+        }
+      ],
+      "reason": "专属同义词“杯子碎了”属于不同情节，与“杯子”的核心意象范围冲突。"
+    },
+    "i07": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "consistency",
+          "detail": "synonyms 中的“找不到回去的路”和“走丢”侧重走失或回程情境，而正文把“迷路”限定为空间寻路、方向辨认，二者含义不能稳定指同一空间寻路意象。"
+        }
+      ],
+      "reason": "部分同义词偏向丢失或回程情节，不能准确指向释义中对空间寻路的限定。"
+    },
+    "i08": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "consistency",
+          "detail": "synonyms 中的“狐狸精”可指精怪或对人的贬称，不是“狐狸”本身的同义表达，可能误导用户。"
+        }
+      ],
+      "reason": "“狐狸精”有另一义项，与“狐狸”不是稳定的意象同义词。"
+    },
+    "i09": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "桥释为过渡、连接和阶段转换，theme_map 全为 0，且明确说明不预示现实结果，成立。"
+    },
+    "i10": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "彩票释为对转机的期待，不构成购买建议，theme_map 全为 0，未作财务方向或现实预测。"
+    }
+  }
+}

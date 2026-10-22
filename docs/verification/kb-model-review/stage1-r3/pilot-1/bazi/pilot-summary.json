@@ -1,0 +1,175 @@
+{
+  "system": "bazi",
+  "rubric_sha256": "d26c6757b96a1cdfca3ac89a8b31adcb9acde41833984012806812ceb91859dc",
+  "agreement": {
+    "items": 20,
+    "reviewed": 20,
+    "labels": {
+      "pass": 10,
+      "fail": 10
+    },
+    "kappa": 0.7,
+    "observed_agreement": 0.85,
+    "pairs": {
+      "pass/pass": 10,
+      "pass/reject": 3,
+      "reject/reject": 7
+    },
+    "label_agreement": {
+      "reviewer_a": {
+        "accuracy": 0.85,
+        "sensitivity": 0.7,
+        "specificity": 1.0
+      },
+      "reviewer_b": {
+        "accuracy": 1.0,
+        "sensitivity": 1.0,
+        "specificity": 1.0
+      }
+    }
+  },
+  "rerun": {
+    "reviewer_a": 1.0,
+    "reviewer_b": 1.0
+  },
+  "gates": {
+    "complete": true,
+    "kappa": true,
+    "rerun": true,
+    "label_agreement": true
+  },
+  "met": true,
+  "thresholds": {
+    "kappa": 0.6,
+    "rerun": 0.9,
+    "label_agreement": 0.85
+  },
+  "disputed": [
+    {
+      "id": "cal-bazi-d04",
+      "label": "fail",
+      "verdicts": {
+        "reviewer_a.p1": "pass",
+        "reviewer_a.p2": "pass",
+        "reviewer_b.p1": "revise",
+        "reviewer_b.p2": "revise"
+      },
+      "reasons": {
+        "reviewer_a.p1": "食神定义正确，主题方向与文字一致，措辞温和且无确定性断言。",
+        "reviewer_a.p2": "食神定义正确，主题方向与文字一致，无宿命断言或不当结论。",
+        "reviewer_b.p1": "食神定义及自我、事业、感情方向有依据，但财务负向标注与正文的收入产出描述不一致。",
+        "reviewer_b.p2": "食神定义及自我、事业、感情方向与文字相容，但财务负向与正文的收入产出描述相反。"
+      },
+      "issues": {
+        "reviewer_b.p1": [
+          {
+            "dimension": "theme_direction",
+            "detail": "theme_map.finance 为负值，但正文“财务方面倾向通过技能与产出带来收入”表达偏顺倾向，未提供财务偏阻含义，方向相反。"
+          }
+        ],
+        "reviewer_b.p2": [
+          {
+            "dimension": "theme_direction",
+            "detail": "theme_map.finance 为负值，但正文“财务方面倾向通过技能与产出带来收入”表达偏顺倾向，未提供财务偏阻依据，应调整方向或修改对应文字。"
+          }
+        ]
+      }
+    },
+    {
+      "id": "cal-bazi-d05",
+      "label": "fail",
+      "verdicts": {
+        "reviewer_a.p1": "pass",
+        "reviewer_a.p2": "pass",
+        "reviewer_b.p1": "revise",
+        "reviewer_b.p2": "revise"
+      },
+      "reasons": {
+        "reviewer_a.p1": "乙木的属性、意象与主题倾向描述一致，文字为象征性解释且无宿命化或确定性表述。",
+        "reviewer_a.p2": "核心含义与天数五行、阴阳对应相符，self 方向与柔韧等象征性描述一致。",
+        "reviewer_b.p1": "乙属阴木及其意象、同义词均无误，但自我状态的负向标值缺少文字依据。",
+        "reviewer_b.p2": "乙属阴木及“乙木”同义表达均正确，但自我主题负向缺少文字依据。"
+      },
+      "issues": {
+        "reviewer_b.p1": [
+          {
+            "dimension": "theme_direction",
+            "detail": "theme_map.self 为 -0.3，但正文仅描述乙木的阴木属性及柔韧、舒展意象，没有自我状态偏阻的含义；阴柔性质本身不支持负向，应将 self 调整为 0。"
+          }
+        ],
+        "reviewer_b.p2": [
+          {
+            "dimension": "theme_direction",
+            "detail": "theme_map.self 为 -0.3，但正文仅描述阴木的柔韧与舒展，没有自我状态偏阻的含义；阴柔性质本身不能支持负向，应将 self 调为 0 或补充适当的负向象征说明。"
+          }
+        ]
+      }
+    },
+    {
+      "id": "cal-bazi-d16",
+      "label": "fail",
+      "verdicts": {
+        "reviewer_a.p1": "pass",
+        "reviewer_a.p2": "pass",
+        "reviewer_b.p1": "revise",
+        "reviewer_b.p2": "revise"
+      },
+      "reasons": {
+        "reviewer_a.p1": "偏财定义正确，主题方向与文字一致，未做确定性预测或投资结论。",
+        "reviewer_a.p2": "偏财定义、主题方向与财务风险提醒一致，未作确定性预测或投资判断。",
+        "reviewer_b.p1": "偏财定义与参考事实一致，自我、事业及关系正向有依据，但财务负向与正文的机会倾向不符。",
+        "reviewer_b.p2": "偏财定义正确，自我与事业正向符合十神方向约定，感情正向有人缘活跃支持，但财务负向与正文的机会倾向不一致。"
+      },
+      "issues": {
+        "reviewer_b.p1": [
+          {
+            "dimension": "theme_direction",
+            "detail": "theme_map.finance 为负值，但正文“财务方面较容易遇到机会”表达偏顺倾向；“核实风险”只是建议，不能据此将财务方向判为偏阻。应调整财务方向，或修改正文使其具有明确的偏阻含义。"
+          }
+        ],
+        "reviewer_b.p2": [
+          {
+            "dimension": "theme_direction",
+            "detail": "theme_map.finance 为负值，但正文“财务方面较容易遇到机会”表达偏顺；“核实风险”只是建议，不能支持财务偏阻，应调整财务方向或正文。"
+          }
+        ]
+      }
+    }
+  ],
+  "usage": {
+    "reviewer_a": {
+      "calls": 20,
+      "input_tokens": 50528,
+      "output_tokens": 3104,
+      "latency_s": 63.165,
+      "returned_models": [
+        "deepseek-v4-pro"
+      ],
+      "errors": {},
+      "retried_calls": 0,
+      "http_retries": 0,
+      "cost": null,
+      "known_cost_estimate": null,
+      "usage_complete": true,
+      "cost_basis": "配置单价估算，非账单；服务失败的用量可能未知",
+      "currency": null
+    },
+    "reviewer_b": {
+      "calls": 20,
+      "input_tokens": 59514,
+      "output_tokens": 4609,
+      "latency_s": 972.464,
+      "returned_models": [
+        "gpt-6.1-sol"
+      ],
+      "errors": {},
+      "retried_calls": 0,
+      "http_retries": 6,
+      "cost": null,
+      "known_cost_estimate": null,
+      "usage_complete": true,
+      "cost_basis": "配置单价估算，非账单；服务失败的用量可能未知",
+      "currency": null
+    }
+  }
+}

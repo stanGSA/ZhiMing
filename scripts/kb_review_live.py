@@ -95,6 +95,8 @@ def preregister(
         and latest["met"]
         and latest["rubric_sha256"] == review.rubric_digest()
         and latest.get("calibration_sha256") == lock["sha256"]
+        and latest.get("reviewers")
+        == {name: review.public_spec(roles[name]) for name in review.REVIEWERS}
         and set(systems) <= set(latest.get("systems", []))
     )
     if not ready and not (pilot_override or "").strip():
@@ -347,6 +349,12 @@ async def run_pilot(
             if plan["manifest"]["calibration"]["lock_sha256"] != calibration_lock["sha256"]:
                 raise ValueError(f"{relative(path)} 使用另一版校准集；请用新的 --iteration")
             run = review.RunDir(path)
+            if plan["manifest"]["reviewers"] != {
+                name: review.public_spec(roles[name]) for name in review.REVIEWERS
+            }:
+                raise ValueError(
+                    "试跑审核角色与 manifest 不符；变更审核方参数须使用新的 --iteration"
+                )
         else:
             plan = pilot_plan(workspace, config, system, calibration, seed=iteration)
             run = review.open_run(
@@ -382,6 +390,18 @@ def pilot_record(run_root: Path) -> list[dict]:
     found = []
     for path in sorted(run_root.glob("pilot-*/summary.json"), key=lambda p: int(p.parent.name[6:])):
         summary = review.read_json(path)
+        identities = [
+            review.read_json(path.parent / system / "manifest.json")["reviewers"]
+            for system in summary["systems"]
+            if (path.parent / system / "manifest.json").is_file()
+        ]
+        reviewers = (
+            identities[0]
+            if identities
+            and len(identities) == len(summary["systems"])
+            and all(identity == identities[0] for identity in identities)
+            else None
+        )
         found.append(
             dict(
                 dir=relative(path.parent),
@@ -390,6 +410,7 @@ def pilot_record(run_root: Path) -> list[dict]:
                 calibration_sha256=summary.get("calibration_sha256"),
                 systems=list(summary["systems"]),
                 met=summary["met"],
+                reviewers=reviewers,
                 summary_sha256=review.sha256_bytes(path.read_bytes()),
             )
         )

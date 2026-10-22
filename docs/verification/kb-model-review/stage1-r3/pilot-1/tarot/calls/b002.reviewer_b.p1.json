@@ -1,0 +1,92 @@
+{
+  "batch": "b002",
+  "reviewer": "reviewer_b",
+  "run_pass": 1,
+  "attempt": 1,
+  "vendor": "openai",
+  "requested_model": "gpt-6.1-sol",
+  "returned_model": "gpt-6.1-sol",
+  "api": "openai",
+  "started_at": "2026-10-22T08:50:08+00:00",
+  "finished_at": "2026-10-22T08:50:34+00:00",
+  "latency_s": 26.519,
+  "http_attempts": 1,
+  "finish_reason": "stop",
+  "prompt_sha256": "acf02022f60c7e500c2b7c20b9a98af50880904201a08c98e6450dfe15755344",
+  "input_tokens": 4147,
+  "output_tokens": 1051,
+  "cached_input_tokens": null,
+  "usage_available": true,
+  "raw_text": "{\n  \"items\": [\n    {\n      \"item\": \"i01\",\n      \"verdict\": \"revise\",\n      \"issues\": [\n        {\n          \"dimension\": \"theme_direction\",\n          \"detail\": \"theme_map.finance 为正向，但正文的卸下重担、责任分配和任务交接没有明确财务含义；权杖的约定主题也不包含财务，应将该主题设为 0 或补充相应释义。\"\n        }\n      ],\n      \"reason\": \"自我与事业正向符合减负释然的牌义，同义词正确，但财务正向缺少依据。\"\n    },\n    {\n      \"item\": \"i02\",\n      \"verdict\": \"revise\",\n      \"issues\": [\n        {\n          \"dimension\": \"theme_direction\",\n          \"detail\": \"theme_map.career 为正向，但正文核心是难过与伤痛，按宝剑的事业主题约定应体现偏阻；给沟通和恢复留空间的建议不足以支持事业正向。\"\n        }\n      ],\n      \"reason\": \"牌名同义词及伤痛含义正确，自我负向一致，但事业正向与正文倾向不符。\"\n    },\n    {\n      \"item\": \"i03\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"回避改变、压力延续符合高塔逆位，支持约定内自我、事业和关系的负向，同义词准确且未预测现实事件。\"\n    },\n    {\n      \"item\": \"i04\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"尚存对抗与未解决责任符合宝剑五逆位的残留冲突，支持自我及事业轻度负向，同义词准确。\"\n    },\n    {\n      \"item\": \"i05\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"目标清楚与积极反馈符合太阳正位，支持约定内自我、事业和关系的正向，同义词准确，现实检验提醒不改变核心倾向。\"\n    },\n    {\n      \"item\": \"i06\",\n      \"verdict\": \"revise\",\n      \"issues\": [\n        {\n          \"dimension\": \"theme_direction\",\n          \"detail\": \"theme_map.finance 为正向，但正文仅讨论惯例、外部标准与自主选择，没有财务层面的偏顺含义；大阿卡纳的约定主题不包含财务，应将该主题设为 0 或补充相应释义。\"\n        }\n      ],\n      \"reason\": \"审视不合适的惯例符合教皇逆位，同义词准确，但财务正向没有文字或体系约定支持。\"\n    },\n    {\n      \"item\": \"i07\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"习惯或关系中的束缚符合恶魔正位，支持约定内自我、事业和关系的负向，同义词准确且未作确定性推断。\"\n    },\n    {\n      \"item\": \"i08\",\n      \"verdict\": \"revise\",\n      \"issues\": [\n        {\n          \"dimension\": \"theme_direction\",\n          \"detail\": \"theme_map.self 和 career 均为负向，但正文核心是“行动力可以推动变化”的偏顺描述；检查速度与风险只是建议，不能据此支持两项负向。\"\n        },\n        {\n          \"dimension\": \"consistency\",\n          \"detail\": \"text 与 counterpart 的正位正文完全相同，没有区分权杖骑士逆位的冲动、受阻或行动失衡等含义。\"\n        }\n      ],\n      \"reason\": \"同义词正确，但正文未体现逆位区别，且与自我、事业的负向标注不一致。\"\n    },\n    {\n      \"item\": \"i09\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"拖延与无效牺牲符合倒吊人逆位，支持约定内自我、事业和关系的负向，同义词准确且表述属于象征反思。\"\n    }\n  ]\n}",
+  "verdicts": {
+    "i01": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "theme_direction",
+          "detail": "theme_map.finance 为正向，但正文的卸下重担、责任分配和任务交接没有明确财务含义；权杖的约定主题也不包含财务，应将该主题设为 0 或补充相应释义。"
+        }
+      ],
+      "reason": "自我与事业正向符合减负释然的牌义，同义词正确，但财务正向缺少依据。"
+    },
+    "i02": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "theme_direction",
+          "detail": "theme_map.career 为正向，但正文核心是难过与伤痛，按宝剑的事业主题约定应体现偏阻；给沟通和恢复留空间的建议不足以支持事业正向。"
+        }
+      ],
+      "reason": "牌名同义词及伤痛含义正确，自我负向一致，但事业正向与正文倾向不符。"
+    },
+    "i03": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "回避改变、压力延续符合高塔逆位，支持约定内自我、事业和关系的负向，同义词准确且未预测现实事件。"
+    },
+    "i04": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "尚存对抗与未解决责任符合宝剑五逆位的残留冲突，支持自我及事业轻度负向，同义词准确。"
+    },
+    "i05": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "目标清楚与积极反馈符合太阳正位，支持约定内自我、事业和关系的正向，同义词准确，现实检验提醒不改变核心倾向。"
+    },
+    "i06": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "theme_direction",
+          "detail": "theme_map.finance 为正向，但正文仅讨论惯例、外部标准与自主选择，没有财务层面的偏顺含义；大阿卡纳的约定主题不包含财务，应将该主题设为 0 或补充相应释义。"
+        }
+      ],
+      "reason": "审视不合适的惯例符合教皇逆位，同义词准确，但财务正向没有文字或体系约定支持。"
+    },
+    "i07": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "习惯或关系中的束缚符合恶魔正位，支持约定内自我、事业和关系的负向，同义词准确且未作确定性推断。"
+    },
+    "i08": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "theme_direction",
+          "detail": "theme_map.self 和 career 均为负向，但正文核心是“行动力可以推动变化”的偏顺描述；检查速度与风险只是建议，不能据此支持两项负向。"
+        },
+        {
+          "dimension": "consistency",
+          "detail": "text 与 counterpart 的正位正文完全相同，没有区分权杖骑士逆位的冲动、受阻或行动失衡等含义。"
+        }
+      ],
+      "reason": "同义词正确，但正文未体现逆位区别，且与自我、事业的负向标注不一致。"
+    },
+    "i09": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "拖延与无效牺牲符合倒吊人逆位，支持约定内自我、事业和关系的负向，同义词准确且表述属于象征反思。"
+    }
+  }
+}

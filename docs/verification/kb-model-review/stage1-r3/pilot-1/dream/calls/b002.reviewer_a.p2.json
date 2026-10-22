@@ -1,0 +1,98 @@
+{
+  "batch": "b002",
+  "reviewer": "reviewer_a",
+  "run_pass": 2,
+  "attempt": 1,
+  "vendor": "deepseek",
+  "requested_model": "deepseek-v4-pro",
+  "returned_model": "deepseek-v4-pro",
+  "api": "openai",
+  "started_at": "2026-10-22T09:08:52+00:00",
+  "finished_at": "2026-10-22T09:09:04+00:00",
+  "latency_s": 11.606,
+  "http_attempts": 1,
+  "finish_reason": "stop",
+  "prompt_sha256": "fc1bf1bd4c1736d03ed84861cfd2d5beb27ea6720627adef921bab759ad4077a",
+  "input_tokens": 3476,
+  "output_tokens": 786,
+  "cached_input_tokens": 3456,
+  "usage_available": true,
+  "raw_text": "```json\n{\n  \"items\": [\n    {\n      \"item\": \"i01\",\n      \"verdict\": \"revise\",\n      \"issues\": [\n        {\n          \"dimension\": \"theme_direction\",\n          \"detail\": \"text 只提及团圆、家庭、满足感与照顾，未体现财务主题的含义，theme_map 中 finance 标为 -0.3 缺乏依据。\"\n        }\n      ],\n      \"reason\": \"财务方向与文字不一致，缺少能支持财务受阻含义的象征解读。\"\n    },\n    {\n      \"item\": \"i02\",\n      \"verdict\": \"revise\",\n      \"issues\": [\n        {\n          \"dimension\": \"consistency\",\n          \"detail\": \"synonyms 中“出轨”是具体情节，不等同于“背叛”这一广泛意象，二者并非稳定的同义关系，可能导致用户检索误命中。\"\n        }\n      ],\n      \"reason\": \"同义词“出轨”混入具体情节，超出“背叛”意象的合理别名范围。\"\n    },\n    {\n      \"item\": \"i03\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"文字与主题方向一致，表述温和且无预测或宿命化。\"\n    },\n    {\n      \"item\": \"i04\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"核心含义符合去世亲人梦境的心理联想，且无方向或事实错误。\"\n    },\n    {\n      \"item\": \"i05\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"self 偏负向与疲惫、需照顾的含义一致，且包含就医建议但未作医疗诊断。\"\n    },\n    {\n      \"item\": \"i06\",\n      \"verdict\": \"revise\",\n      \"issues\": [\n        {\n          \"dimension\": \"consistency\",\n          \"detail\": \"synonyms 中“想不开”是口语中对自杀的委婉说法，但更多用于描述一般想不通或情绪低落，与“自杀”梦境意象的同义关系不稳定，易造成检索误命中。\"\n        }\n      ],\n      \"reason\": \"同义词“想不开”与“自杀”并非稳定的同义表达，存在误命中风险。\"\n    },\n    {\n      \"item\": \"i07\",\n      \"verdict\": \"revise\",\n      \"issues\": [\n        {\n          \"dimension\": \"certainty\",\n          \"detail\": \"末句“梦到它预示近期会收到好消息”是对现实事件的预测，且与前文“不预示现实结果”矛盾。\"\n        }\n      ],\n      \"reason\": \"结尾出现预示好消息的现实预测，违背确定性维度。\"\n    },\n    {\n      \"item\": \"i08\",\n      \"verdict\": \"revise\",\n      \"issues\": [\n        {\n          \"dimension\": \"theme_direction\",\n          \"detail\": \"text 提及“根基、务实或陷入困局”，但未指向事业主题，theme_map 中 career 标为 -0.3 缺乏明确支持。\"\n        }\n      ],\n      \"reason\": \"事业负向缺乏文字依据，泛化的困局不能自动等同于事业受阻。\"\n    },\n    {\n      \"item\": \"i09\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"self 偏负向与压力和节奏有关，但文字同时表达自由与自信提升，方向合理。\"\n    },\n    {\n      \"item\": \"i10\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"self 偏正向与开阔、理想、可能性的含义一致。\"\n    }\n  ]\n}",
+  "verdicts": {
+    "i01": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "theme_direction",
+          "detail": "text 只提及团圆、家庭、满足感与照顾，未体现财务主题的含义，theme_map 中 finance 标为 -0.3 缺乏依据。"
+        }
+      ],
+      "reason": "财务方向与文字不一致，缺少能支持财务受阻含义的象征解读。"
+    },
+    "i02": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "consistency",
+          "detail": "synonyms 中“出轨”是具体情节，不等同于“背叛”这一广泛意象，二者并非稳定的同义关系，可能导致用户检索误命中。"
+        }
+      ],
+      "reason": "同义词“出轨”混入具体情节，超出“背叛”意象的合理别名范围。"
+    },
+    "i03": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "文字与主题方向一致，表述温和且无预测或宿命化。"
+    },
+    "i04": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "核心含义符合去世亲人梦境的心理联想，且无方向或事实错误。"
+    },
+    "i05": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "self 偏负向与疲惫、需照顾的含义一致，且包含就医建议但未作医疗诊断。"
+    },
+    "i06": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "consistency",
+          "detail": "synonyms 中“想不开”是口语中对自杀的委婉说法，但更多用于描述一般想不通或情绪低落，与“自杀”梦境意象的同义关系不稳定，易造成检索误命中。"
+        }
+      ],
+      "reason": "同义词“想不开”与“自杀”并非稳定的同义表达，存在误命中风险。"
+    },
+    "i07": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "certainty",
+          "detail": "末句“梦到它预示近期会收到好消息”是对现实事件的预测，且与前文“不预示现实结果”矛盾。"
+        }
+      ],
+      "reason": "结尾出现预示好消息的现实预测，违背确定性维度。"
+    },
+    "i08": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "theme_direction",
+          "detail": "text 提及“根基、务实或陷入困局”，但未指向事业主题，theme_map 中 career 标为 -0.3 缺乏明确支持。"
+        }
+      ],
+      "reason": "事业负向缺乏文字依据，泛化的困局不能自动等同于事业受阻。"
+    },
+    "i09": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "self 偏负向与压力和节奏有关，但文字同时表达自由与自信提升，方向合理。"
+    },
+    "i10": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "self 偏正向与开阔、理想、可能性的含义一致。"
+    }
+  }
+}

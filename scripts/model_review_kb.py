@@ -231,6 +231,11 @@ def public_spec(spec: RoleConfig) -> dict:
     data = spec.model_dump(
         exclude={"input_per_mtok", "output_per_mtok", "currency", "base_url", "base_url_env"}
     )
+    # Legacy manifests predate these optional settings. Their implicit default remains
+    # disabled; explicitly configured values are always part of the evidence identity.
+    for key in ("thinking", "reasoning_effort"):
+        if data[key] is None:
+            del data[key]
     try:
         url = spec.endpoint()
     except ValueError:
@@ -786,6 +791,8 @@ async def execute(
     batches: list[str] | None = None,
 ) -> dict:
     """Run every missing (batch, reviewer, pass) call; finished calls are never repeated."""
+    if plan["manifest"]["reviewers"] != {name: public_spec(roles[name]) for name in REVIEWERS}:
+        raise ValueError("审核角色配置与批次 manifest 不符；更换审核方或参数须另开批次")
     make_model = make_model or (lambda role, spec: role_model(spec, timeout))
     models = {name: make_model(name, roles[name]) for name in REVIEWERS}
     wanted = [b for b in plan["batches"] if batches is None or b["batch"] in batches]

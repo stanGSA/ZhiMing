@@ -1,0 +1,38 @@
+{
+  "batch": "b002",
+  "reviewer": "reviewer_a",
+  "run_pass": 2,
+  "attempt": 1,
+  "vendor": "deepseek",
+  "requested_model": "deepseek-v4-pro",
+  "returned_model": "deepseek-v4-pro",
+  "api": "openai",
+  "started_at": "2026-10-22T09:06:37+00:00",
+  "finished_at": "2026-10-22T09:06:40+00:00",
+  "latency_s": 3.618,
+  "http_attempts": 1,
+  "finish_reason": "stop",
+  "prompt_sha256": "7da2a08e3823b1276229814266664cdf8da17f3cf5e8063f24759a518d2ff7da",
+  "input_tokens": 2108,
+  "output_tokens": 182,
+  "cached_input_tokens": 2048,
+  "usage_available": true,
+  "raw_text": "```json\n{\n  \"items\": [\n    {\n      \"item\": \"i01\",\n      \"verdict\": \"revise\",\n      \"issues\": [\n        {\n          \"dimension\": \"certainty\",\n          \"detail\": \"文本包含确定性断言：\\\"用这个数理的人，中年以后会财运亨通\\\"，将数理象征直接预测为现实财运。\"\n        }\n      ],\n      \"reason\": \"结尾将数理象征写成对个人现实财运的确定性预测，违反确定性维度。\"\n    },\n    {\n      \"item\": \"i02\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"准确描述了土在三才中的核心象征，并将来源限定为格数尾数，未将数理象征落实为现实命运，主题方向均为0且与中性文字一致。\"\n    }\n  ]\n}",
+  "verdicts": {
+    "i01": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "certainty",
+          "detail": "文本包含确定性断言：\"用这个数理的人，中年以后会财运亨通\"，将数理象征直接预测为现实财运。"
+        }
+      ],
+      "reason": "结尾将数理象征写成对个人现实财运的确定性预测，违反确定性维度。"
+    },
+    "i02": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "准确描述了土在三才中的核心象征，并将来源限定为格数尾数，未将数理象征落实为现实命运，主题方向均为0且与中性文字一致。"
+    }
+  }
+}

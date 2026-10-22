@@ -1,0 +1,102 @@
+{
+  "batch": "b001",
+  "reviewer": "reviewer_a",
+  "run_pass": 2,
+  "attempt": 1,
+  "vendor": "deepseek",
+  "requested_model": "deepseek-v4-pro",
+  "returned_model": "deepseek-v4-pro",
+  "api": "openai",
+  "started_at": "2026-10-22T08:50:44+00:00",
+  "finished_at": "2026-10-22T08:50:54+00:00",
+  "latency_s": 9.727,
+  "http_attempts": 1,
+  "finish_reason": "stop",
+  "prompt_sha256": "7dd38860ee6ba23107086d11ed923d04fff929aa1237037d9849d5a8304590e0",
+  "input_tokens": 3667,
+  "output_tokens": 828,
+  "cached_input_tokens": 3584,
+  "usage_available": true,
+  "raw_text": "```json\n{\n  \"items\": [\n    {\n      \"item\": \"i01\",\n      \"verdict\": \"revise\",\n      \"issues\": [\n        {\n          \"dimension\": \"certainty\",\n          \"detail\": \"文本中包含对现实事件的预测：“它预示你很快会在工作上得到认可。”这属于对个人现实的推断。\"\n        },\n        {\n          \"dimension\": \"consistency\",\n          \"detail\": \"文本核心含义（离开、重新评估）与“很快会在工作上得到认可”的预测相互矛盾。\"\n        }\n      ],\n      \"reason\": \"文本含有对现实事件的预测性断言，判定修订。\"\n    },\n    {\n      \"item\": \"i02\",\n      \"verdict\": \"revise\",\n      \"issues\": [\n        {\n          \"dimension\": \"certainty\",\n          \"detail\": \"文本中包含对现实事件的预测：“往往预示一段新感情即将到来。”这属于对个人现实的推断。\"\n        }\n      ],\n      \"reason\": \"文本含有预测性断言，判定修订。\"\n    },\n    {\n      \"item\": \"i03\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"文本符合对象传统象征，方向一致，无宿命化或预测性表述。\"\n    },\n    {\n      \"item\": \"i04\",\n      \"verdict\": \"revise\",\n      \"issues\": [\n        {\n          \"dimension\": \"theme_direction\",\n          \"detail\": \"theme_map 中 self 为 -0.3（偏阻），但文本“独立判断与清楚的边界有助于处理问题，也要保留倾听”整体偏向建设性与协助解决问题，未体现自我状态的阻碍。\"\n        }\n      ],\n      \"reason\": \"self 方向为负，但文字未体现自我状态的障碍或压力，判定修订。\"\n    },\n    {\n      \"item\": \"i05\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"文本描述了持续防守带来的疲惫，与 career 和 self 的负向一致。\"\n    },\n    {\n      \"item\": \"i06\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"文字表达了情感流动受阻与照顾自我边界，与 relationship 和 self 的负向一致。\"\n    },\n    {\n      \"item\": \"i07\",\n      \"verdict\": \"revise\",\n      \"issues\": [\n        {\n          \"dimension\": \"theme_direction\",\n          \"detail\": \"theme_map 中 self 和 career 均为 0.2（偏顺），但文本“一个困难阶段可能已到承受边界”表达的是阻滞与耗竭，与正向不一致。\"\n        }\n      ],\n      \"reason\": \"主题方向为正向，但文字描述困难阶段与承受边界，方向相反，判定修订。\"\n    },\n    {\n      \"item\": \"i08\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"文本指出过度控制与重新评估长期代价，与 finance 和 career 的负向一致。\"\n    },\n    {\n      \"item\": \"i09\",\n      \"verdict\": \"revise\",\n      \"issues\": [\n        {\n          \"dimension\": \"theme_direction\",\n          \"detail\": \"theme_map 中 self 为 -0.4（偏阻），但文本“清楚的方向与责任分配有助于带领行动，给执行留出空间”整体偏向带领行动的建设性描述，未体现自我状态的阻碍。\"\n        }\n      ],\n      \"reason\": \"self 方向为负，但文字未体现自我状态的障碍或压力，判定修订。\"\n    },\n    {\n      \"item\": \"i10\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"文字承认失望与失落，与 relationship 和 self 的负向一致。\"\n    }\n  ]\n}\n```",
+  "verdicts": {
+    "i01": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "certainty",
+          "detail": "文本中包含对现实事件的预测：“它预示你很快会在工作上得到认可。”这属于对个人现实的推断。"
+        },
+        {
+          "dimension": "consistency",
+          "detail": "文本核心含义（离开、重新评估）与“很快会在工作上得到认可”的预测相互矛盾。"
+        }
+      ],
+      "reason": "文本含有对现实事件的预测性断言，判定修订。"
+    },
+    "i02": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "certainty",
+          "detail": "文本中包含对现实事件的预测：“往往预示一段新感情即将到来。”这属于对个人现实的推断。"
+        }
+      ],
+      "reason": "文本含有预测性断言，判定修订。"
+    },
+    "i03": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "文本符合对象传统象征，方向一致，无宿命化或预测性表述。"
+    },
+    "i04": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "theme_direction",
+          "detail": "theme_map 中 self 为 -0.3（偏阻），但文本“独立判断与清楚的边界有助于处理问题，也要保留倾听”整体偏向建设性与协助解决问题，未体现自我状态的阻碍。"
+        }
+      ],
+      "reason": "self 方向为负，但文字未体现自我状态的障碍或压力，判定修订。"
+    },
+    "i05": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "文本描述了持续防守带来的疲惫，与 career 和 self 的负向一致。"
+    },
+    "i06": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "文字表达了情感流动受阻与照顾自我边界，与 relationship 和 self 的负向一致。"
+    },
+    "i07": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "theme_direction",
+          "detail": "theme_map 中 self 和 career 均为 0.2（偏顺），但文本“一个困难阶段可能已到承受边界”表达的是阻滞与耗竭，与正向不一致。"
+        }
+      ],
+      "reason": "主题方向为正向，但文字描述困难阶段与承受边界，方向相反，判定修订。"
+    },
+    "i08": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "文本指出过度控制与重新评估长期代价，与 finance 和 career 的负向一致。"
+    },
+    "i09": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "theme_direction",
+          "detail": "theme_map 中 self 为 -0.4（偏阻），但文本“清楚的方向与责任分配有助于带领行动，给执行留出空间”整体偏向带领行动的建设性描述，未体现自我状态的阻碍。"
+        }
+      ],
+      "reason": "self 方向为负，但文字未体现自我状态的障碍或压力，判定修订。"
+    },
+    "i10": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "文字承认失望与失落，与 relationship 和 self 的负向一致。"
+    }
+  }
+}

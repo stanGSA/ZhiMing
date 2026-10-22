@@ -1,0 +1,33 @@
+{
+  "batch": "b003",
+  "reviewer": "reviewer_b",
+  "run_pass": 1,
+  "attempt": 1,
+  "vendor": "openai",
+  "requested_model": "gpt-6.1-sol",
+  "returned_model": "gpt-6.1-sol",
+  "api": "openai",
+  "started_at": "2026-10-22T08:50:34+00:00",
+  "finished_at": "2026-10-22T08:52:24+00:00",
+  "latency_s": 109.566,
+  "http_attempts": 1,
+  "finish_reason": "stop",
+  "prompt_sha256": "0fae1ed5dc01fc2417025165de0415e9dab4f9343deb5b428c0c0d51fa7e03ff",
+  "input_tokens": 1933,
+  "output_tokens": 165,
+  "cached_input_tokens": 1930,
+  "usage_available": true,
+  "raw_text": "{\"items\":[{\"item\":\"i01\",\"verdict\":\"reject\",\"issues\":[{\"dimension\":\"consistency\",\"detail\":\"按 spread_positions，decision:2（position=2）应为“选 A”，synonyms 也指向选项 A；但正文将本牌位定义为“选 B”，并全文围绕选择 B 展开，还要求与“选 B”牌位对照，主体整体错置。\"}],\"reason\":\"正文主定义及解释对象均为选 B，与 key 所对应的选 A 牌位不符。\"}]}",
+  "verdicts": {
+    "i01": {
+      "verdict": "reject",
+      "issues": [
+        {
+          "dimension": "consistency",
+          "detail": "按 spread_positions，decision:2（position=2）应为“选 A”，synonyms 也指向选项 A；但正文将本牌位定义为“选 B”，并全文围绕选择 B 展开，还要求与“选 B”牌位对照，主体整体错置。"
+        }
+      ],
+      "reason": "正文主定义及解释对象均为选 B，与 key 所对应的选 A 牌位不符。"
+    }
+  }
+}
