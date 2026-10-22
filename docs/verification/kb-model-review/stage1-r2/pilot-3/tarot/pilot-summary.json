@@ -1,0 +1,115 @@
+{
+  "system": "tarot",
+  "rubric_sha256": "d26c6757b96a1cdfca3ac89a8b31adcb9acde41833984012806812ceb91859dc",
+  "agreement": {
+    "items": 20,
+    "reviewed": 20,
+    "labels": {
+      "pass": 10,
+      "fail": 10
+    },
+    "kappa": 0.9,
+    "observed_agreement": 0.95,
+    "pairs": {
+      "pass/pass": 10,
+      "reject/reject": 9,
+      "pass/reject": 1
+    },
+    "label_agreement": {
+      "reviewer_a": {
+        "accuracy": 0.95,
+        "sensitivity": 0.9,
+        "specificity": 1.0
+      },
+      "reviewer_b": {
+        "accuracy": 1.0,
+        "sensitivity": 1.0,
+        "specificity": 1.0
+      }
+    }
+  },
+  "rerun": {
+    "reviewer_a": 1.0,
+    "reviewer_b": 1.0
+  },
+  "gates": {
+    "complete": true,
+    "kappa": true,
+    "rerun": true,
+    "label_agreement": true
+  },
+  "met": true,
+  "thresholds": {
+    "kappa": 0.6,
+    "rerun": 0.9,
+    "label_agreement": 0.85
+  },
+  "disputed": [
+    {
+      "id": "cal-tarot-d12",
+      "label": "fail",
+      "verdicts": {
+        "reviewer_a.p1": "pass",
+        "reviewer_a.p2": "pass",
+        "reviewer_b.p1": "revise",
+        "reviewer_b.p2": "revise"
+      },
+      "reasons": {
+        "reviewer_a.p1": "逆位卸下重担的方向与各主题正向一致，权杖对应事业/自我符合约定，财务正向有文字“减轻压力、放下任务”支持，免责声明不构成预测。",
+        "reviewer_a.p2": "逆位卸下重担的偏顺含义与各主题正向一致，synonyms 正确，免责声明到位。",
+        "reviewer_b.p1": "自我与事业正向有依据，但财务正向缺少正文或体系约定支持。",
+        "reviewer_b.p2": "自我与事业正向有依据，但财务正向缺乏正文或体系约定支持。"
+      },
+      "issues": {
+        "reviewer_b.p1": [
+          {
+            "dimension": "theme_direction",
+            "detail": "theme_map.finance 为正，但正文只涉及减轻压力、责任分配与任务交接，没有财务偏顺的含义；财务也不属于权杖的默认方向主题。"
+          }
+        ],
+        "reviewer_b.p2": [
+          {
+            "dimension": "theme_direction",
+            "detail": "theme_map.finance 为正值，但正文仅涉及卸下重担、责任分配与任务交接，没有财务偏顺的含义；财务也不属于权杖的约定主题。"
+          }
+        ]
+      }
+    }
+  ],
+  "usage": {
+    "reviewer_a": {
+      "calls": 6,
+      "input_tokens": 17998,
+      "output_tokens": 3125,
+      "latency_s": 23.635,
+      "returned_models": [
+        "deepseek-flash"
+      ],
+      "errors": {},
+      "retried_calls": 0,
+      "http_retries": 0,
+      "cost": null,
+      "known_cost_estimate": null,
+      "usage_complete": true,
+      "cost_basis": "配置单价估算，非账单；服务失败的用量可能未知",
+      "currency": null
+    },
+    "reviewer_b": {
+      "calls": 6,
+      "input_tokens": 20406,
+      "output_tokens": 4392,
+      "latency_s": 121.919,
+      "returned_models": [
+        "gpt-6.1-sol"
+      ],
+      "errors": {},
+      "retried_calls": 0,
+      "http_retries": 0,
+      "cost": null,
+      "known_cost_estimate": null,
+      "usage_complete": true,
+      "cost_basis": "配置单价估算，非账单；服务失败的用量可能未知",
+      "currency": null
+    }
+  }
+}

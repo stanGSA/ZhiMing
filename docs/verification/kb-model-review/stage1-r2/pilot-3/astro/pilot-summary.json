@@ -1,0 +1,189 @@
+{
+  "system": "astro",
+  "rubric_sha256": "d26c6757b96a1cdfca3ac89a8b31adcb9acde41833984012806812ceb91859dc",
+  "agreement": {
+    "items": 20,
+    "reviewed": 20,
+    "labels": {
+      "pass": 10,
+      "fail": 10
+    },
+    "kappa": 0.9,
+    "observed_agreement": 0.95,
+    "pairs": {
+      "pass/pass": 10,
+      "pass/reject": 1,
+      "reject/reject": 9
+    },
+    "label_agreement": {
+      "reviewer_a": {
+        "accuracy": 0.95,
+        "sensitivity": 0.9,
+        "specificity": 1.0
+      },
+      "reviewer_b": {
+        "accuracy": 1.0,
+        "sensitivity": 1.0,
+        "specificity": 1.0
+      }
+    }
+  },
+  "rerun": {
+    "reviewer_a": 0.75,
+    "reviewer_b": 1.0
+  },
+  "gates": {
+    "complete": true,
+    "kappa": true,
+    "rerun": false,
+    "label_agreement": true
+  },
+  "met": false,
+  "thresholds": {
+    "kappa": 0.6,
+    "rerun": 0.9,
+    "label_agreement": 0.85
+  },
+  "disputed": [
+    {
+      "id": "cal-astro-d02",
+      "label": "fail",
+      "verdicts": {
+        "reviewer_a.p1": "pass",
+        "reviewer_a.p2": "revise",
+        "reviewer_b.p1": "revise",
+        "reviewer_b.p2": "revise"
+      },
+      "reasons": {
+        "reviewer_a.p1": "核心含义与木星双鱼象征相符，主题方向有文字支持，无宿命化或确定性内容。",
+        "reviewer_a.p2": "木星落双鱼的尊贵等级与参考事实相反，属于可修正的事实错误。",
+        "reviewer_b.p1": "财务正向与看到机会、乐于扩展的文字一致，但木星在双鱼的尊贵属性写错。",
+        "reviewer_b.p2": "财务正向有“看到机会、乐于扩展”支持，但木星在双鱼的尊贵属性写错。"
+      },
+      "issues": {
+        "reviewer_a.p2": [
+          {
+            "dimension": "tradition",
+            "detail": "木星在双鱼的尊贵状态写错：参考表中双鱼为木星入庙，而文字写成“传统上木星在双鱼为失势”。"
+          },
+          {
+            "dimension": "consistency",
+            "detail": "同一错误也影响该条目的整体可信度，须按参考表更正为入庙。"
+          }
+        ],
+        "reviewer_b.p1": [
+          {
+            "dimension": "tradition",
+            "detail": "text 中“传统上木星在双鱼为失势”与参考表不符；木星在双鱼为入庙。"
+          }
+        ],
+        "reviewer_b.p2": [
+          {
+            "dimension": "tradition",
+            "detail": "text 中“传统上木星在双鱼为失势”与参考表不符，应为“入庙”。"
+          }
+        ]
+      }
+    },
+    {
+      "id": "cal-astro-d12",
+      "label": "pass",
+      "verdicts": {
+        "reviewer_a.p1": "pass",
+        "reviewer_a.p2": "revise",
+        "reviewer_b.p1": "pass",
+        "reviewer_b.p2": "pass"
+      },
+      "reasons": {
+        "reviewer_a.p1": "天秤座核心象征（协调与公平）符合星座传统，主题方向全为0与中性文字相容，措辞无宿命化断言。",
+        "reviewer_a.p2": "天秤座的核心象征未写出，且 relationship 方向与“重视协调与公平”的文字不符，应 revise。",
+        "reviewer_b.p1": "文字准确呈现天秤座重视协调、公平与取舍的核心象征，四个主题均标0与中性表述相容，无同义词或具体事实冲突，也无确定性预测。",
+        "reviewer_b.p2": "重视协调、公平与练习取舍符合天秤座的核心象征；四个主题均标0，与未明确偏顺或偏阻的文字相容，且无错误别名、确定性预测或其他具体问题。"
+      },
+      "issues": {
+        "reviewer_a.p2": [
+          {
+            "dimension": "tradition",
+            "detail": "天秤座的核心象征只写了“协调与公平、明确取舍”，这是通用的关系/选择提醒，属于风象或一般人际主题都可套用的内容；天秤座作为对象的核心信息（如金星守护、关系中的平衡与和谐、对美感与公正的追求）没有写出，无法与其他星座区分。"
+          },
+          {
+            "dimension": "consistency",
+            "detail": "theme_map 四个主题全为 0，但正文“重视协调与公平”明显指向关系主题（relationship 应偏正），方向与文字不一致。"
+          }
+        ]
+      }
+    },
+    {
+      "id": "cal-astro-d20",
+      "label": "fail",
+      "verdicts": {
+        "reviewer_a.p1": "revise",
+        "reviewer_a.p2": "pass",
+        "reviewer_b.p1": "revise",
+        "reviewer_b.p2": "revise"
+      },
+      "reasons": {
+        "reviewer_a.p1": "第8宫被写成第2宫的“资源与价值”主题，与参考事实不符。",
+        "reviewer_a.p2": "海王星落第8宫，释义围绕资源与价值观察海王星的想象与理想，主题方向全0与中性文字相容，无违反维度。",
+        "reviewer_b.p1": "海王星的象征表述可用，但宫位主题需要修正为第8宫的共享资源与信任。",
+        "reviewer_b.p2": "海王星的象征表述可用，但第8宫的主题对应需要修正。"
+      },
+      "issues": {
+        "reviewer_a.p1": [
+          {
+            "dimension": "tradition",
+            "detail": "第8宫的主题是共享资源与信任，而“资源与价值”是第2宫的主题，宫位对象写错"
+          }
+        ],
+        "reviewer_b.p1": [
+          {
+            "dimension": "tradition",
+            "detail": "text 将第8宫主题写为“资源与价值”，这是参考表中的第2宫主题；第8宫应突出共享资源与信任。"
+          }
+        ],
+        "reviewer_b.p2": [
+          {
+            "dimension": "tradition",
+            "detail": "text 将第8宫主题写为“资源与价值”，这是参考表中的第2宫主题；第8宫应围绕“共享资源与信任”表述。"
+          }
+        ]
+      }
+    }
+  ],
+  "usage": {
+    "reviewer_a": {
+      "calls": 10,
+      "input_tokens": 24836,
+      "output_tokens": 3064,
+      "latency_s": 22.675,
+      "returned_models": [
+        "deepseek-flash"
+      ],
+      "errors": {},
+      "retried_calls": 0,
+      "http_retries": 0,
+      "cost": null,
+      "known_cost_estimate": null,
+      "usage_complete": true,
+      "cost_basis": "配置单价估算，非账单；服务失败的用量可能未知",
+      "currency": null
+    },
+    "reviewer_b": {
+      "calls": 10,
+      "input_tokens": 28770,
+      "output_tokens": 4091,
+      "latency_s": 175.416,
+      "returned_models": [
+        "gpt-6.1-sol"
+      ],
+      "errors": {},
+      "retried_calls": 0,
+      "http_retries": 0,
+      "cost": null,
+      "known_cost_estimate": null,
+      "usage_complete": true,
+      "cost_basis": "配置单价估算，非账单；服务失败的用量可能未知",
+      "currency": null
+    }
+  }
+}

@@ -1,0 +1,53 @@
+{
+  "created_at": "2026-10-22T08:37:20+00:00",
+  "supersedes": "stage1-r2 failed development pilots; retain original evidence and ledger, no formal R2 review",
+  "calibration_origin": "docs/verification/kb-model-review/stage1-r2",
+  "calibration_sha256": "04c047d29b848b757b7a39a78ff681668ac6063ae50e89e3ade6b96daf7d0a3f",
+  "holdout_sha256": "535c87eaabeeec47591f4029d96cd0b990485f8157e522fc3e52db67f9733ac3",
+  "rubric_version": 4,
+  "rubric_sha256": "d26c6757b96a1cdfca3ac89a8b31adcb9acde41833984012806812ceb91859dc",
+  "reviewers": {
+    "reviewer_a": {
+      "vendor": "deepseek",
+      "api": "openai",
+      "model": "deepseek-v4-pro",
+      "api_key_env": "DEEPSEEK_API_KEY",
+      "temperature": null,
+      "max_tokens": 4096,
+      "base_url_host": "api.deepseek.com"
+    },
+    "reviewer_b": {
+      "vendor": "openai",
+      "api": "openai",
+      "model": "gpt-6.1-sol",
+      "api_key_env": "OPENAI_REVIEW_API_KEY",
+      "temperature": null,
+      "max_tokens": 4096,
+      "base_url_host": "codegoai.com"
+    }
+  },
+  "reviser": {
+    "vendor": "openai",
+    "api": "openai",
+    "model": "gpt-6-astra",
+    "api_key_env": "OPENAI_REVIEW_API_KEY",
+    "temperature": null,
+    "max_tokens": 4096,
+    "base_url_host": "codegoai.com"
+  },
+  "pilot_gates": {
+    "kappa": 0.6,
+    "rerun": 0.9,
+    "label_agreement": 0.85
+  },
+  "pilot_max": 3,
+  "production_gates": {
+    "pass_rate": 0.95,
+    "detection_merged": 0.9,
+    "detection_single": 0.8,
+    "rerun": 0.9,
+    "kappa": 0.6
+  },
+  "human_reviewed": false,
+  "pricing": "Unknown; unlimited budget retained; costs null, not zero"
+}

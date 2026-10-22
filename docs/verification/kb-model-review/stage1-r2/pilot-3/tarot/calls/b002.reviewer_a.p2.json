@@ -1,0 +1,83 @@
+{
+  "batch": "b002",
+  "reviewer": "reviewer_a",
+  "run_pass": 2,
+  "attempt": 1,
+  "vendor": "deepseek",
+  "requested_model": "deepseek-flash",
+  "returned_model": "deepseek-flash",
+  "api": "openai",
+  "started_at": "2026-10-22T08:28:57+00:00",
+  "finished_at": "2026-10-22T08:29:00+00:00",
+  "latency_s": 3.781,
+  "http_attempts": 1,
+  "finish_reason": "stop",
+  "prompt_sha256": "d846441c277f18d607560f8e4684a8d7a47ad5401473d328a40a8dcf9877ebcd",
+  "input_tokens": 3605,
+  "output_tokens": 584,
+  "cached_input_tokens": 3456,
+  "usage_available": true,
+  "raw_text": "{\"items\": [{\"item\": \"i01\", \"verdict\": \"revise\", \"issues\": [{\"dimension\": \"theme_direction\", \"detail\": \"theme_map 中 career 为 +0.5，但文字讲的是“难过的经历需要被承认”，属于受伤、受挫的偏阻含义，与事业正向不一致；宝剑牌约定可作用事业，但方向应为负或 0。\"}], \"reason\": \"事业主题标为正值与文字表达的受伤受挫倾向相反。\"}, {\"item\": \"i02\", \"verdict\": \"pass\", \"issues\": [], \"reason\": \"逆位卸下重担的偏顺含义与各主题正向一致，synonyms 正确，免责声明到位。\"}, {\"item\": \"i03\", \"verdict\": \"revise\", \"issues\": [{\"dimension\": \"theme_direction\", \"detail\": \"theme_map 中 self 为 -0.3，但文字“独立判断与清楚的边界有助于处理问题”是偏顺、赋能的正向表达，与自我状态负向不符。\"}], \"reason\": \"自我主题标为负值与文字传递的正向清晰边界含义相反。\"}, {\"item\": \"i04\", \"verdict\": \"pass\", \"issues\": [], \"reason\": \"持续防守疲惫、筛选挑战属偏阻含义，与事业、自我负向一致，逆位同义表达正确。\"}, {\"item\": \"i05\", \"verdict\": \"pass\", \"issues\": [], \"reason\": \"回避改变延长压力的偏阻含义与三主题负向一致，同义词正确，无宿命化断言。\"}, {\"item\": \"i06\", \"verdict\": \"revise\", \"issues\": [{\"dimension\": \"certainty\", \"detail\": \"文末“它预示你很快会在工作上得到认可”是对现实事件的预测性断言，且与前文象征反思口径冲突，也与关键词“离开”无关。\"}], \"reason\": \"含对现实事业的预测句，需删除或改为象征性表述。\"}, {\"item\": \"i07\", \"verdict\": \"pass\", \"issues\": [], \"reason\": \"拖延与无效牺牲的偏阻含义与三主题负向一致，同义词正确，无确定性预测。\"}, {\"item\": \"i08\", \"verdict\": \"pass\", \"issues\": [], \"reason\": \"重新注意选择、尝试小机会属偏顺含义，与感情、自我正向一致，关键词“停顿”与逆位内涵相容。\"}, {\"item\": \"i09\", \"verdict\": \"pass\", \"issues\": [], \"reason\": \"清晰、活力与积极反馈的偏顺含义与三主题正值一致，同义词正确，无宿命化断言。\"}]}",
+  "verdicts": {
+    "i01": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "theme_direction",
+          "detail": "theme_map 中 career 为 +0.5，但文字讲的是“难过的经历需要被承认”，属于受伤、受挫的偏阻含义，与事业正向不一致；宝剑牌约定可作用事业，但方向应为负或 0。"
+        }
+      ],
+      "reason": "事业主题标为正值与文字表达的受伤受挫倾向相反。"
+    },
+    "i02": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "逆位卸下重担的偏顺含义与各主题正向一致，synonyms 正确，免责声明到位。"
+    },
+    "i03": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "theme_direction",
+          "detail": "theme_map 中 self 为 -0.3，但文字“独立判断与清楚的边界有助于处理问题”是偏顺、赋能的正向表达，与自我状态负向不符。"
+        }
+      ],
+      "reason": "自我主题标为负值与文字传递的正向清晰边界含义相反。"
+    },
+    "i04": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "持续防守疲惫、筛选挑战属偏阻含义，与事业、自我负向一致，逆位同义表达正确。"
+    },
+    "i05": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "回避改变延长压力的偏阻含义与三主题负向一致，同义词正确，无宿命化断言。"
+    },
+    "i06": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "certainty",
+          "detail": "文末“它预示你很快会在工作上得到认可”是对现实事件的预测性断言，且与前文象征反思口径冲突，也与关键词“离开”无关。"
+        }
+      ],
+      "reason": "含对现实事业的预测句，需删除或改为象征性表述。"
+    },
+    "i07": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "拖延与无效牺牲的偏阻含义与三主题负向一致，同义词正确，无确定性预测。"
+    },
+    "i08": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "重新注意选择、尝试小机会属偏顺含义，与感情、自我正向一致，关键词“停顿”与逆位内涵相容。"
+    },
+    "i09": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "清晰、活力与积极反馈的偏顺含义与三主题正值一致，同义词正确，无宿命化断言。"
+    }
+  }
+}

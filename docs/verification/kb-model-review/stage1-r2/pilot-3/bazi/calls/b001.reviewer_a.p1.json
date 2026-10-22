@@ -1,0 +1,38 @@
+{
+  "batch": "b001",
+  "reviewer": "reviewer_a",
+  "run_pass": 1,
+  "attempt": 1,
+  "vendor": "deepseek",
+  "requested_model": "deepseek-flash",
+  "returned_model": "deepseek-flash",
+  "api": "openai",
+  "started_at": "2026-10-22T08:31:25+00:00",
+  "finished_at": "2026-10-22T08:31:26+00:00",
+  "latency_s": 1.5,
+  "http_attempts": 1,
+  "finish_reason": "stop",
+  "prompt_sha256": "3b5be1b4cdfc60fce3155543144fc6c9aefe02e74a19838dc83dd2eb3039f8c7",
+  "input_tokens": 2589,
+  "output_tokens": 145,
+  "cached_input_tokens": 896,
+  "usage_available": true,
+  "raw_text": "{\"items\": [{\"item\": \"i01\", \"verdict\": \"pass\", \"issues\": [], \"reason\": \"戌属土、藏干戊辛丁均与参考事实一致，免责说明不构成宿命化，无方向亦无矛盾。\"}, {\"item\": \"i02\", \"verdict\": \"revise\", \"issues\": [{\"dimension\": \"tradition\", \"detail\": \"正文称“丑……在传统干支体系中属金”，但丑五行属土，与参考事实不符；后文又写“丑计入土”，自相矛盾。\"}], \"reason\": \"丑的五行被写成属金，属可修正的事实错误。\"}]}",
+  "verdicts": {
+    "i01": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "戌属土、藏干戊辛丁均与参考事实一致，免责说明不构成宿命化，无方向亦无矛盾。"
+    },
+    "i02": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "tradition",
+          "detail": "正文称“丑……在传统干支体系中属金”，但丑五行属土，与参考事实不符；后文又写“丑计入土”，自相矛盾。"
+        }
+      ],
+      "reason": "丑的五行被写成属金，属可修正的事实错误。"
+    }
+  }
+}

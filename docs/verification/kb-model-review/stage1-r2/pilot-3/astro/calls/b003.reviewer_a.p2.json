@@ -1,0 +1,87 @@
+{
+  "batch": "b003",
+  "reviewer": "reviewer_a",
+  "run_pass": 2,
+  "attempt": 1,
+  "vendor": "deepseek",
+  "requested_model": "deepseek-flash",
+  "returned_model": "deepseek-flash",
+  "api": "openai",
+  "started_at": "2026-10-22T08:30:26+00:00",
+  "finished_at": "2026-10-22T08:30:30+00:00",
+  "latency_s": 4.034,
+  "http_attempts": 1,
+  "finish_reason": "stop",
+  "prompt_sha256": "258a7a2a2fcf273c7c449c9cb5dad1662688a27b946081f16c804c3eb598de85",
+  "input_tokens": 3128,
+  "output_tokens": 663,
+  "cached_input_tokens": 2944,
+  "usage_available": true,
+  "raw_text": "{\"items\": [{\"item\": \"i01\", \"verdict\": \"pass\", \"issues\": [], \"reason\": \"海王星落第8宫，释义围绕资源与价值观察海王星的想象与理想，主题方向全0与中性文字相容，无违反维度。\"}, {\"item\": \"i02\", \"verdict\": \"revise\", \"issues\": [{\"dimension\": \"theme_direction\", \"detail\": \"theme_map 中 finance 为 -0.3，但文字仅中性描述创作与兴趣，未涉及财务偏阻信息，方向无法从文字看出，也非约定可标财务的宫位。\"}], \"reason\": \"第5宫并非约定可标财务的宫位，文字亦无财务偏阻含义，finance 负值缺少依据。\"}, {\"item\": \"i03\", \"verdict\": \"revise\", \"issues\": [{\"dimension\": \"tradition\", \"detail\": \"第9宫主题为远行、学习与视野，文字写成“学习和日常沟通”，把第3宫的日常沟通混入第9宫，宫位核心主题写错。\"}], \"reason\": \"第9宫写成学习与日常沟通，混入第3宫含义，宫位主题不符参考事实。\"}, {\"item\": \"i04\", \"verdict\": \"pass\", \"issues\": [], \"reason\": \"火星落第4宫的核心象征为家庭动力与摩擦，synonyms 均为同义表达，self 正向与家庭行动力、relationship 负向与摩擦争执均与文字一致，结尾否定式免责不算预测。\"}, {\"item\": \"i05\", \"verdict\": \"revise\", \"issues\": [{\"dimension\": \"theme_direction\", \"detail\": \"theme_map 中 career 为 0.3，但文字仅描述休整、内在反思与金星的价值关系主题，没有事业偏顺含义，方向无法从文字看出。\"}], \"reason\": \"career 正向缺少文字支持，第12宫也非约定可标事业的宫位。\"}, {\"item\": \"i06\", \"verdict\": \"pass\", \"issues\": [], \"reason\": \"太阳落第5宫，创作、兴趣与恋爱自我表达方向合理，self 正向、relationship 略正向可从文字看出，第5宫按约定可标感情关系。\"}, {\"item\": \"i07\", \"verdict\": \"pass\", \"issues\": [], \"reason\": \"水星落第6宫，围绕日常工作与习惯观察信息理解与沟通，核心信息准确，主题方向全0与中性文字相容。\"}, {\"item\": \"i08\", \"verdict\": \"revise\", \"issues\": [{\"dimension\": \"certainty\", \"detail\": \"“这一配置预示接下来几个月财运会明显好转”是对现实财务事件的具体预测与确定性断言，属宿命化预测。\"}, {\"dimension\": \"medical_legal_finance\", \"detail\": \"对未来几个月财运明显好转作出确定性财务结论，超出象征解读范围。\"}], \"reason\": \"文字含有对现实财务运势的具体预测与确定性断言。\"}]}",
+  "verdicts": {
+    "i01": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "海王星落第8宫，释义围绕资源与价值观察海王星的想象与理想，主题方向全0与中性文字相容，无违反维度。"
+    },
+    "i02": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "theme_direction",
+          "detail": "theme_map 中 finance 为 -0.3，但文字仅中性描述创作与兴趣，未涉及财务偏阻信息，方向无法从文字看出，也非约定可标财务的宫位。"
+        }
+      ],
+      "reason": "第5宫并非约定可标财务的宫位，文字亦无财务偏阻含义，finance 负值缺少依据。"
+    },
+    "i03": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "tradition",
+          "detail": "第9宫主题为远行、学习与视野，文字写成“学习和日常沟通”，把第3宫的日常沟通混入第9宫，宫位核心主题写错。"
+        }
+      ],
+      "reason": "第9宫写成学习与日常沟通，混入第3宫含义，宫位主题不符参考事实。"
+    },
+    "i04": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "火星落第4宫的核心象征为家庭动力与摩擦，synonyms 均为同义表达，self 正向与家庭行动力、relationship 负向与摩擦争执均与文字一致，结尾否定式免责不算预测。"
+    },
+    "i05": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "theme_direction",
+          "detail": "theme_map 中 career 为 0.3，但文字仅描述休整、内在反思与金星的价值关系主题，没有事业偏顺含义，方向无法从文字看出。"
+        }
+      ],
+      "reason": "career 正向缺少文字支持，第12宫也非约定可标事业的宫位。"
+    },
+    "i06": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "太阳落第5宫，创作、兴趣与恋爱自我表达方向合理，self 正向、relationship 略正向可从文字看出，第5宫按约定可标感情关系。"
+    },
+    "i07": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "水星落第6宫，围绕日常工作与习惯观察信息理解与沟通，核心信息准确，主题方向全0与中性文字相容。"
+    },
+    "i08": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "certainty",
+          "detail": "“这一配置预示接下来几个月财运会明显好转”是对现实财务事件的具体预测与确定性断言，属宿命化预测。"
+        },
+        {
+          "dimension": "medical_legal_finance",
+          "detail": "对未来几个月财运明显好转作出确定性财务结论，超出象征解读范围。"
+        }
+      ],
+      "reason": "文字含有对现实财务运势的具体预测与确定性断言。"
+    }
+  }
+}

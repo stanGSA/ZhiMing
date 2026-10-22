@@ -1,5 +1,7 @@
 # 知命 · 占卜 Agent Harness
 
+2026-10-22 最新状态：R2三轮Flash开发试跑均未通过。第三轮占星A重跑75%（二分类85%），达到三轮上限后负责人批准审核A换为 `deepseek-v4-pro`，另开 [R3活动](docs/verification/kb-model-review/stage1-r3/README.md)；审核B、修改方、无预算上限、medium上限及既有厂商例外沿用。保留集未调用，R1的451条模型审核/720条草稿/0人工状态不变，阶段1尚未通过。R3继续使用冻结输入、规则v4与原阈值，先试跑再预登记推送；旧R2失败全部保留。以下第二轮进行中的描述属于此前记录，以本段为准。
+
 2026-10-20 阶段0修复与DeepSeek回归已归档：日期/时区刷新、网页身份续期与到期清理、危机安全确认及按资料匹配热线已实现，离线验证通过。充值后服务恢复，multi分批覆盖20题，工程3/20、质量9/20、严格综合2/20通过；另保留一次评估中断及重试记录。端到端关口尚未通过，默认保持single。详见[阶段0验收](docs/verification/stage0/README.md)；独立复核后的修复见[阶段0复核修复](docs/verification/stage0/review-fixes.md)。
 
 真实模型质量后续按[独立验收任务](docs/verification/real-model-quality-task.md)推进，保留上述失败基线；出生／咨询时区的工程修复不代表真实模型质量已经达标。

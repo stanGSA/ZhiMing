@@ -1,0 +1,43 @@
+{
+  "batch": "b005",
+  "reviewer": "reviewer_b",
+  "run_pass": 2,
+  "attempt": 1,
+  "vendor": "openai",
+  "requested_model": "gpt-6.1-sol",
+  "returned_model": "gpt-6.1-sol",
+  "api": "openai",
+  "started_at": "2026-10-22T08:38:53+00:00",
+  "finished_at": "2026-10-22T08:39:06+00:00",
+  "latency_s": 12.657,
+  "http_attempts": 1,
+  "finish_reason": "stop",
+  "prompt_sha256": "116f26a88e73b86d7e9aa4e2b2eb95c32b4a9d0c3b149b0c22ddd4ce26730a03",
+  "input_tokens": 3389,
+  "output_tokens": 328,
+  "cached_input_tokens": 3386,
+  "usage_available": true,
+  "raw_text": "{\n  \"items\": [\n    {\n      \"item\": \"i01\",\n      \"verdict\": \"revise\",\n      \"issues\": [\n        {\n          \"dimension\": \"theme_direction\",\n          \"detail\": \"theme_map.finance 为 -0.15，但正文“财务方面倾向通过技能与产出带来收入”表达偏顺倾向，没有财务偏阻的依据，方向相反。\"\n        }\n      ],\n      \"reason\": \"食神定义及自我、事业、感情方向符合文字，但财务负向值与正文的收入产出倾向不一致。\"\n    },\n    {\n      \"item\": \"i02\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"比肩定义正确，自我与事业正向符合十神方向约定，感情中的各自坚持及财务中的份额竞争支持对应负向，且已明确为传统象征而非现实预测。\"\n    },\n    {\n      \"item\": \"i03\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"偏财定义正确，自我与事业正向符合十神方向约定，活跃交际及资源调配的偏顺描述支持感情与财务正向，风险提醒不改变其核心倾向。\"\n    }\n  ]\n}",
+  "verdicts": {
+    "i01": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "theme_direction",
+          "detail": "theme_map.finance 为 -0.15，但正文“财务方面倾向通过技能与产出带来收入”表达偏顺倾向，没有财务偏阻的依据，方向相反。"
+        }
+      ],
+      "reason": "食神定义及自我、事业、感情方向符合文字，但财务负向值与正文的收入产出倾向不一致。"
+    },
+    "i02": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "比肩定义正确，自我与事业正向符合十神方向约定，感情中的各自坚持及财务中的份额竞争支持对应负向，且已明确为传统象征而非现实预测。"
+    },
+    "i03": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "偏财定义正确，自我与事业正向符合十神方向约定，活跃交际及资源调配的偏顺描述支持感情与财务正向，风险提醒不改变其核心倾向。"
+    }
+  }
+}

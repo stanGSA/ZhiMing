@@ -1,0 +1,33 @@
+{
+  "batch": "b003",
+  "reviewer": "reviewer_a",
+  "run_pass": 1,
+  "attempt": 1,
+  "vendor": "deepseek",
+  "requested_model": "deepseek-flash",
+  "returned_model": "deepseek-flash",
+  "api": "openai",
+  "started_at": "2026-10-22T08:28:26+00:00",
+  "finished_at": "2026-10-22T08:28:28+00:00",
+  "latency_s": 1.921,
+  "http_attempts": 1,
+  "finish_reason": "stop",
+  "prompt_sha256": "0fae1ed5dc01fc2417025165de0415e9dab4f9343deb5b428c0c0d51fa7e03ff",
+  "input_tokens": 1659,
+  "output_tokens": 171,
+  "cached_input_tokens": 1280,
+  "usage_available": true,
+  "raw_text": "{\"items\": [{\"item\": \"i01\", \"verdict\": \"reject\", \"issues\": [{\"dimension\": \"consistency\", \"detail\": \"key 为 decision:2，spread_positions 第 2 位（从 0 计为 position 2）是“选 B”，但 synonyms 写作“选择 A”“选项 A”，keywords 写作“选 A”，text 又同时出现“对应‘选 B’”和“梳理选择 B”“与‘现状’和‘选 B’牌位对照”，选项指向自相矛盾；synonyms 与牌位定义不符。\"}], \"reason\": \"牌位定义与 synonyms/keywords 指向不同选项（A/B 混用），文字内部也自相矛盾，核心对象与 key 不符。\"}]}",
+  "verdicts": {
+    "i01": {
+      "verdict": "reject",
+      "issues": [
+        {
+          "dimension": "consistency",
+          "detail": "key 为 decision:2，spread_positions 第 2 位（从 0 计为 position 2）是“选 B”，但 synonyms 写作“选择 A”“选项 A”，keywords 写作“选 A”，text 又同时出现“对应‘选 B’”和“梳理选择 B”“与‘现状’和‘选 B’牌位对照”，选项指向自相矛盾；synonyms 与牌位定义不符。"
+        }
+      ],
+      "reason": "牌位定义与 synonyms/keywords 指向不同选项（A/B 混用），文字内部也自相矛盾，核心对象与 key 不符。"
+    }
+  }
+}

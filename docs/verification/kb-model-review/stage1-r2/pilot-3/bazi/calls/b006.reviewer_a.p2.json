@@ -1,0 +1,48 @@
+{
+  "batch": "b006",
+  "reviewer": "reviewer_a",
+  "run_pass": 2,
+  "attempt": 1,
+  "vendor": "deepseek",
+  "requested_model": "deepseek-flash",
+  "returned_model": "deepseek-flash",
+  "api": "openai",
+  "started_at": "2026-10-22T08:38:18+00:00",
+  "finished_at": "2026-10-22T08:38:19+00:00",
+  "latency_s": 1.906,
+  "http_attempts": 1,
+  "finish_reason": "stop",
+  "prompt_sha256": "dc2da0064b1f03c5806119864038d2b3cef3ad7f6d952dec76177c2d93ef2a8b",
+  "input_tokens": 2769,
+  "output_tokens": 215,
+  "cached_input_tokens": 2560,
+  "usage_available": true,
+  "raw_text": "{\"items\": [{\"item\": \"i01\", \"verdict\": \"pass\", \"issues\": [], \"reason\": \"丑藏干己癸辛与参考事实一致，术语解释准确，各主题中性且无宿命化表述。\"}, {\"item\": \"i02\", \"verdict\": \"revise\", \"issues\": [{\"dimension\": \"tradition\", \"detail\": \"申的藏干写成庚、壬、甲，参考事实为申藏庚、壬、戊，末位成员错误。\"}], \"reason\": \"申藏干成员写错，应为庚、壬、戊。\"}, {\"item\": \"i03\", \"verdict\": \"revise\", \"issues\": [{\"dimension\": \"tradition\", \"detail\": \"未藏干未写出成员己、丁、乙，只说“按固定表列出”，缺少该地支区别于同类对象的核心信息。\"}], \"reason\": \"未藏干条目未列出具体藏干成员，不满足对象专属要求。\"}]}",
+  "verdicts": {
+    "i01": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "丑藏干己癸辛与参考事实一致，术语解释准确，各主题中性且无宿命化表述。"
+    },
+    "i02": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "tradition",
+          "detail": "申的藏干写成庚、壬、甲，参考事实为申藏庚、壬、戊，末位成员错误。"
+        }
+      ],
+      "reason": "申藏干成员写错，应为庚、壬、戊。"
+    },
+    "i03": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "tradition",
+          "detail": "未藏干未写出成员己、丁、乙，只说“按固定表列出”，缺少该地支区别于同类对象的核心信息。"
+        }
+      ],
+      "reason": "未藏干条目未列出具体藏干成员，不满足对象专属要求。"
+    }
+  }
+}

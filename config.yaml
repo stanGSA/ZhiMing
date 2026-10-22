@@ -60,17 +60,17 @@ kb_review:                    # 知识库模型交叉审核（scripts.model_revi
   # 起草条目内容的厂商，审核方不能与之同厂商（4.3）：阶段1 B1 的感情、财务方向与对应文字由
   # Anthropic Claude 起草；更早草稿的起草模型没有记录。
   drafter_vendors: [anthropic]
-  # 2026-10-21 项目负责人明确指定 DeepSeek 审核；仅为此模型放行运行时厂商限制。
+  # 2026-10-22 项目负责人在flash三轮试跑失败后，明确改用pro并沿用厂商例外；仅此模型放行。
   # 两家审核仍须不同厂商，且不能是起草方 Anthropic；不宣称符合原4.3的运行时独立性。
   runtime_vendor_exception:
     vendor: deepseek
-    model: deepseek-flash
-    reason: 2026-10-21 项目负责人明确要求第一审核方使用本机.env的DeepSeek配置
+    model: deepseek-v4-pro
+    reason: 2026-10-22 项目负责人明确批准审核A改用deepseek-v4-pro，沿用已批准的DeepSeek厂商例外
   reviser_vendor_exception:
     vendor: openai
     model: gpt-6-astra
     reviewers:
-      reviewer_a: {vendor: deepseek, model: deepseek-flash}
+      reviewer_a: {vendor: deepseek, model: deepseek-v4-pro}
       reviewer_b: {vendor: openai, model: gpt-6.1-sol}
     reason: 2026-10-21 项目负责人在知晓同厂商限制后明确要求第三方使用OpenAI
   # 第三方中转站地址不入库：reviewer_b与reviser从本机 .env 的 OPENAI_REVIEW_BASE_URL 读取；
@@ -79,7 +79,7 @@ kb_review:                    # 知识库模型交叉审核（scripts.model_revi
     reviewer_a:
       vendor: deepseek
       api: openai
-      model: deepseek-flash
+      model: deepseek-v4-pro
       api_key_env: DEEPSEEK_API_KEY
       base_url: https://api.deepseek.com
     reviewer_b:

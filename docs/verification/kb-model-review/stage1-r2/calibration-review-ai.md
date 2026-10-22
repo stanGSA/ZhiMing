@@ -278,4 +278,3 @@
 | cal-tarot-d18 | 开发 | tarot | card:swords_ten:reversed | fail | 缺陷 | **orientation_not_distinguished**：逆位释义写成了正位释义（与 counterpart 文字相同），正逆位没有区分，且与本条方向不符<br>由现行条目改出一处缺陷（塔罗规则：正逆位区分），其余内容不变；按规则应判 revise 或 reject。 | text：恢复需要循序进行，避免在尚未休整时重回同样负担。这是象征性反思线索，不代表事件必然发生。 → 一个困难阶段可能已到承受边界，先恢复并处理基本需求。这是象征性反思线索，不代表事件必然发生。 | 一个困难阶段可能已到承受边界，先恢复并处理基本需求。这是象征性反思线索，不代表事件必然发生。 | self +0.2，career +0.2 | 宝剑十:逆位 |
 | cal-tarot-d19 | 开发 | tarot | card:cups_four:reversed | pass | 典型 | 按规则逐项核对：无确定性词语，无对现实事件的预测；感情关系 +0.2 属本体系方向约定；自我状态 +0.2 属本体系方向约定 | — | 重新注意到选择时，给一个小机会留出尝试空间。这是象征性反思线索，不代表事件必然发生。 | relationship +0.2，self +0.2 | 圣杯四:逆位 |
 | cal-tarot-d20 | 开发 | tarot | card:swords_queen:upright | fail | 缺陷 | **direction_contradicts_text**：牌义整体偏顺（各主题方向一致），theme_map.self 却是 -0.3（原为 +0.3）<br>由现行条目改出一处缺陷（锚点B），其余内容不变；按规则应判 revise 或 reject。 | theme_map.self：0.3 → -0.3 | 独立判断与清楚的边界有助于处理问题，也要保留倾听。这是象征性反思线索，不代表事件必然发生。 | self -0.3，career +0.3 | 宝剑王后:正位 |
-

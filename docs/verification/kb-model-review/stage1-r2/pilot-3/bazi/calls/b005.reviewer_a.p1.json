@@ -1,0 +1,43 @@
+{
+  "batch": "b005",
+  "reviewer": "reviewer_a",
+  "run_pass": 1,
+  "attempt": 1,
+  "vendor": "deepseek",
+  "requested_model": "deepseek-flash",
+  "returned_model": "deepseek-flash",
+  "api": "openai",
+  "started_at": "2026-10-22T08:31:28+00:00",
+  "finished_at": "2026-10-22T08:31:31+00:00",
+  "latency_s": 2.612,
+  "http_attempts": 1,
+  "finish_reason": "stop",
+  "prompt_sha256": "116f26a88e73b86d7e9aa4e2b2eb95c32b4a9d0c3b149b0c22ddd4ce26730a03",
+  "input_tokens": 2882,
+  "output_tokens": 231,
+  "cached_input_tokens": 1792,
+  "usage_available": true,
+  "raw_text": "{\"items\": [{\"item\": \"i01\", \"verdict\": \"revise\", \"issues\": [{\"dimension\": \"theme_direction\", \"detail\": \"theme_map 中 finance 为 -0.15，但正文写“财务方面倾向通过技能与产出带来收入”，这是偏顺的收入正向描述，没有负向依据，方向与文字不一致。\"}], \"reason\": \"财务主题标注为负向，但正文只给出正向的收入联想，缺少负向依据。\"}, {\"item\": \"i02\", \"verdict\": \"pass\", \"issues\": [], \"reason\": \"十神定义（同五行同阴阳为比肩）正确，各主题方向与文字中的独立、协作摩擦与资源竞争表述一致，且均为传统象征联想并带免责声明。\"}, {\"item\": \"i03\", \"verdict\": \"pass\", \"issues\": [], \"reason\": \"偏财定义（日主所克、阴阳相同）正确，财务偏顺与“机会与资源调配”表述一致，并明确不作投资预测，未发现具体问题。\"}]}",
+  "verdicts": {
+    "i01": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "theme_direction",
+          "detail": "theme_map 中 finance 为 -0.15，但正文写“财务方面倾向通过技能与产出带来收入”，这是偏顺的收入正向描述，没有负向依据，方向与文字不一致。"
+        }
+      ],
+      "reason": "财务主题标注为负向，但正文只给出正向的收入联想，缺少负向依据。"
+    },
+    "i02": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "十神定义（同五行同阴阳为比肩）正确，各主题方向与文字中的独立、协作摩擦与资源竞争表述一致，且均为传统象征联想并带免责声明。"
+    },
+    "i03": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "偏财定义（日主所克、阴阳相同）正确，财务偏顺与“机会与资源调配”表述一致，并明确不作投资预测，未发现具体问题。"
+    }
+  }
+}

@@ -1,0 +1,42 @@
+{
+  "batch": "b007",
+  "reviewer": "reviewer_a",
+  "run_pass": 2,
+  "attempt": 1,
+  "vendor": "deepseek",
+  "requested_model": "deepseek-flash",
+  "returned_model": "deepseek-flash",
+  "api": "openai",
+  "started_at": "2026-10-22T08:38:19+00:00",
+  "finished_at": "2026-10-22T08:38:21+00:00",
+  "latency_s": 1.901,
+  "http_attempts": 1,
+  "finish_reason": "stop",
+  "prompt_sha256": "d3528d73fb94db0473a302bf4cff4a9a59207667ccff043d43c88d0ddadb1946",
+  "input_tokens": 2393,
+  "output_tokens": 157,
+  "cached_input_tokens": 2176,
+  "usage_available": true,
+  "raw_text": "{\"items\":[{\"item\":\"i01\",\"verdict\":\"revise\",\"issues\":[{\"dimension\":\"certainty\",\"detail\":\"“命局中出现它，预示近两年会遇到贵人相助”是对现实事件的确定预测，违反不预测现实事件的要求。\"},{\"dimension\":\"tradition\",\"detail\":\"预测句与纳音条目“不据纳音单独推断职业或成败”的自述矛盾，且贵人相助不属于白蜡金的传统核心释义。\"}],\"reason\":\"条目含对现实事件的预测性断言，需删除或改为免责说明。\"},{\"item\":\"i02\",\"verdict\":\"pass\",\"issues\":[],\"reason\":\"壬寅、癸卯对应金箔金的纳音信息正确，无宿命化预测，主题方向中性相容。\"}]}",
+  "verdicts": {
+    "i01": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "certainty",
+          "detail": "“命局中出现它，预示近两年会遇到贵人相助”是对现实事件的确定预测，违反不预测现实事件的要求。"
+        },
+        {
+          "dimension": "tradition",
+          "detail": "预测句与纳音条目“不据纳音单独推断职业或成败”的自述矛盾，且贵人相助不属于白蜡金的传统核心释义。"
+        }
+      ],
+      "reason": "条目含对现实事件的预测性断言，需删除或改为免责说明。"
+    },
+    "i02": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "壬寅、癸卯对应金箔金的纳音信息正确，无宿命化预测，主题方向中性相容。"
+    }
+  }
+}
