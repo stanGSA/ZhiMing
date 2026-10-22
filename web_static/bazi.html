@@ -41,8 +41,16 @@
           <h1 id="bazi-title">四柱藏序，<span>五行知衡</span></h1>
           <p class="bazi-meta" id="bazi-meta">填写公历生辰与出生地，排出属于你的四柱。</p>
         </div>
-        <a class="btn btn-ghost" href="#bazi-birth">填写生辰</a>
       </section>
+
+      <details class="birth-fold lacquer-panel" id="bazi-birth" data-birth-fold>
+        <summary>
+          <span class="birth-fold-title">生辰</span>
+          <span class="birth-fold-summary" data-birth-summary>尚未填写 · 公历生日、出生时间与出生地</span>
+          <span class="birth-fold-toggle">填写 / 修改</span>
+        </summary>
+        <div class="birth-fold-body"><div data-birth="bazi"></div></div>
+      </details>
 
       <div class="bazi-board">
         <section class="pillars" id="pillars" aria-label="四柱"></section>
@@ -63,7 +71,44 @@
           </section>
         </aside>
       </div>
-      <p class="bazi-empty" id="bazi-empty">尚未排盘。请在下方填写出生资料，点「排出我的八字」。</p>
+      <p class="bazi-empty" id="bazi-empty">尚未排盘。请在上方「生辰」中填写出生资料，点「排出我的八字」。</p>
+
+      <section class="section dialog-band" aria-label="就此命盘发问">
+        <section class="dialog" id="dialog" aria-labelledby="dialog-title">
+          <header class="dialog-head">
+            <span class="dialog-seal" aria-hidden="true">知</span>
+            <div class="dialog-heading">
+              <h2 id="dialog-title">就此命盘发问</h2>
+              <p>出生资料随问题一并交给知命</p>
+            </div>
+            <span class="dialog-live" data-live>正在连接</span>
+          </header>
+          <div class="messages" id="messages" role="log" aria-live="polite"></div>
+          <form class="composer" id="chat-form">
+            <label class="sr-only" for="message">你的问题</label>
+            <div class="composer-box">
+              <textarea
+                id="message"
+                rows="1"
+                maxlength="4000"
+                required
+                placeholder="比如：从命盘看，我更适合怎样的工作方式？"
+              ></textarea>
+              <button class="btn btn-primary composer-send" id="send" type="submit">解读命盘</button>
+            </div>
+            <span class="hint" id="input-hint">Enter 发送 · Shift + Enter 换行</span>
+          </form>
+        </section>
+        <section class="reading lacquer-reading" id="reading" aria-labelledby="reading-title">
+          <div class="reading-head">
+            <h3 id="reading-title">命盘解读</h3>
+            <button class="btn btn-text" id="copy-reading" type="button" hidden>复制</button>
+          </div>
+          <div class="reading-content" id="reading-content">
+            <p class="reading-empty" data-glyph="命">排盘后发问，定调、分层分析与可行之事会整理在这里。</p>
+          </div>
+        </section>
+      </section>
 
       <section class="section dayun-section" aria-labelledby="dayun-title">
         <div class="section-title">
@@ -72,48 +117,6 @@
         </div>
         <ol class="dayun" id="dayun"></ol>
         <div class="bazi-notes" id="bazi-notes"></div>
-      </section>
-
-      <div class="bazi-lower">
-        <section class="lacquer-panel birth-panel" id="bazi-birth" aria-labelledby="birth-title">
-          <div class="panel-head">
-            <h2 id="birth-title">生辰</h2>
-            <span>公历 · 出生地</span>
-          </div>
-          <div data-birth="bazi"></div>
-        </section>
-
-        <section class="consult" aria-labelledby="consult-title">
-          <div class="panel-head">
-            <h2 id="consult-title">就此命盘发问</h2>
-            <span>出生资料随问题一并交给知命</span>
-          </div>
-          <div class="messages" id="messages" role="log" aria-live="polite"></div>
-          <form class="composer" id="chat-form">
-            <label class="sr-only" for="message">你的问题</label>
-            <textarea
-              id="message"
-              rows="2"
-              maxlength="4000"
-              required
-              placeholder="比如：从命盘看，我更适合怎样的工作方式？"
-            ></textarea>
-            <div class="composer-foot">
-              <span class="hint" id="input-hint">Enter 发送 · Shift + Enter 换行</span>
-              <button class="btn btn-primary" id="send" type="submit">解读命盘</button>
-            </div>
-          </form>
-        </section>
-      </div>
-
-      <section class="section reading lacquer-reading" id="reading" aria-labelledby="reading-title">
-        <div class="reading-head">
-          <h3 id="reading-title">命盘解读</h3>
-          <button class="btn btn-text" id="copy-reading" type="button" hidden>复制</button>
-        </div>
-        <div class="reading-content" id="reading-content">
-          <p class="reading-empty">排盘后发问，定调、分层分析与可行之事会整理在这里。</p>
-        </div>
       </section>
     </main>
 

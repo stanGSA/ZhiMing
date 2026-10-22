@@ -182,6 +182,25 @@ function injectChrome() {
   );
   dialog.append(form);
   document.body.append(toastBox, scrim, drawer, dialog);
+  if ($("#dialog")) document.body.append(askFab());
+}
+
+/* The dialogue window may sit below the fold; a floating button brings it back into view. */
+function askFab() {
+  const fab = button("", "ask-fab");
+  fab.id = "ask-fab";
+  fab.hidden = true;
+  fab.append(node("span", "ask-fab-seal", "问"), node("span", "", "对话"));
+  fab.setAttribute("aria-label", "前往对话窗发问");
+  fab.addEventListener("click", () => {
+    if (page.onFab?.()) return;
+    $("#dialog").scrollIntoView({ behavior: "smooth", block: "center" });
+    $("#message")?.focus({ preventScroll: true });
+  });
+  new IntersectionObserver(([entry]) => {
+    fab.hidden = entry.isIntersecting;
+  }).observe($("#dialog"));
+  return fab;
 }
 
 function openDrawer() {
@@ -260,9 +279,19 @@ function renderTranscript() {
 
 function draft(question) {
   if (busy || !state || !$("#message")) return;
+  if (page.draft?.(question)) return;
   $("#message").value = question;
+  fitComposer();
   $("#message").focus();
   $("#chat-form").scrollIntoView({ behavior: "smooth", block: "nearest" });
+}
+
+// The dialogue composer grows with its text up to the CSS max-height.
+function fitComposer() {
+  const box = $(".dialog #message");
+  if (!box) return;
+  box.style.height = "auto";
+  box.style.height = `${box.scrollHeight}px`;
 }
 
 async function send({ message, extra = {} }, birth) {
@@ -272,14 +301,18 @@ async function send({ message, extra = {} }, birth) {
   showThinking();
   setBusy(true);
   const unsent = $("#message").value;
+  let handled = false;
   $("#message").value = "";
+  fitComposer();
   try {
     const next = await api("/api/chat", {
       method: "POST",
       body: JSON.stringify({ message, system: SYSTEM, birth, ...extra }),
     });
     applyState(next);
-    if (next.messages.at(-1)?.status === "submit_reading") {
+    // A page may take over what happens next (塔罗 turns the view to its face-down cards).
+    handled = next.messages.at(-1)?.status === "submit_reading" && Boolean(page.onAnswered?.());
+    if (next.messages.at(-1)?.status === "submit_reading" && !handled) {
       toast("解读已整理好。");
       if (window.innerWidth <= 1100)
         $("#reading")?.scrollIntoView({ behavior: "smooth", block: "start" });
@@ -288,10 +321,12 @@ async function send({ message, extra = {} }, birth) {
     $("#thinking")?.remove();
     showMessage({ role: "assistant", text: error.message, status: "error" });
     $("#message").value = unsent;
+    fitComposer();
     setBusy(false);
     toast(error.message);
+    page.onSendFailed?.();
   }
-  if (!busy && window.innerWidth > 760) $("#message").focus();
+  if (!busy && window.innerWidth > 760) $("#message").focus({ preventScroll: handled });
 }
 
 function initComposer() {
@@ -306,6 +341,7 @@ function initComposer() {
     if ($("#birth-form") && !validateBirth()) return;
     await send(composed, $("#birth-form") ? birthInfo() : state.birth);
   });
+  $("#message").addEventListener("input", fitComposer);
   $("#message").addEventListener("keydown", (event) => {
     if (event.key !== "Enter" || event.isComposing || event.keyCode === 229) return;
     const newline = form.dataset.enter === "newline";
@@ -477,10 +513,15 @@ function applyState(next, first = false) {
     status.classList.remove("offline");
     status.textContent = next.provider === "demo" ? "离线演示" : "真实模型";
   }
+  $$("[data-live]").forEach((live) => {
+    live.textContent = next.provider === "demo" ? "离线演示" : "知命在线";
+    live.classList.toggle("demo", next.provider === "demo");
+  });
   renderTranscript();
   renderReading(next.reading && (next.reading.view || "auto") === SYSTEM ? next.reading : null);
   renderHistory(next.history);
   if (first && $("#birth-form")) fillBirthForm(next.birth);
+  if (first) foldBirth(next.birth, !next.birth?.date && PAGE !== "daily");
   page.onState?.(next, first);
   setBusy(next.busy);
   if (next.busy) {
@@ -714,12 +755,17 @@ async function submitBirth(mode) {
       page.onChart?.(result.chart);
       setBirthFeedback(result.question || "已排盘，可以就此发问。", !result.question);
       toast(result.question || (mode === "bazi" ? "四柱已排出。" : "本命星图已绘出。"));
+      if (!result.question) {
+        foldBirth(birth, false);
+        $("[data-birth-fold]")?.nextElementSibling?.scrollIntoView({ behavior: "smooth", block: "start" });
+      }
     } else {
       const result = await api("/api/birth", { method: "PUT", body: JSON.stringify(birth) });
       state.birth = result.birth;
       state.chart = result.chart;
       setBirthFeedback("生辰已保存，八字、星盘与运势页都会用到。", true);
       toast("生辰已保存。");
+      foldBirth(result.birth, false);
       await page.onBirthSaved?.(result.birth);
     }
   } catch (error) {
@@ -762,7 +808,34 @@ function validateBirth() {
       ? "请先填写出生日期"
       : "",
   );
+  // A folded form cannot show its validation message; open it first.
+  if (!$("#birth-form").checkValidity()) openBirthFold();
   return $("#birth-form").reportValidity();
+}
+
+/* The birth form lives in a <details> fold under the page heading on 八字, 星盘 and 运势. */
+function foldBirth(birth, open) {
+  const fold = $("[data-birth-fold]");
+  if (!fold) return;
+  const summary = $("[data-birth-summary]", fold);
+  summary.dataset.empty ??= summary.textContent;
+  const filled = Boolean(birth?.date);
+  summary.classList.toggle("filled", filled);
+  summary.textContent = filled
+    ? [
+        `公历 ${birth.date} ${birth.unknown_time ? "时辰不详" : birth.time || "时辰不详"}`,
+        birth.place || "地点待补充",
+        ...(birth.gender ? [birth.gender === "female" ? "女" : "男"] : []),
+      ].join(" · ")
+    : summary.dataset.empty;
+  fold.open = open;
+}
+
+function openBirthFold() {
+  const fold = $("[data-birth-fold]");
+  if (!fold) return;
+  fold.open = true;
+  fold.scrollIntoView({ behavior: "smooth", block: "start" });
 }
 
 function fillBirthForm(birth) {
@@ -1288,7 +1361,7 @@ function cardFace(card) {
     [numeral, english] = RANKS[rankKey] || ["", ""];
     english = `${english} OF ${SUITS[suitKey] || ""}`.trim();
   }
-  const face = node("div", "card-face");
+  const face = node("span", "card-face");
   face.append(node("span", "card-numeral", numeral || "·"));
   const emblem = svgNode("svg", { viewBox: "0 0 120 120", class: card.reversed ? "card-emblem reversed" : "card-emblem", "aria-hidden": "true" });
   EMBLEMS[suit].forEach(([tag, attributes]) => emblem.append(svgNode(tag, attributes)));
@@ -1298,7 +1371,7 @@ function cardFace(card) {
 }
 
 function cardBack() {
-  const back = node("div", "card-face card-back");
+  const back = node("span", "card-face card-back");
   const pattern = svgNode("svg", { viewBox: "0 0 120 200", class: "card-pattern", "aria-hidden": "true" });
   pattern.append(
     svgNode("circle", { cx: 60, cy: 100, r: 44, class: "tr-backline" }),
@@ -1311,32 +1384,223 @@ function cardBack() {
 }
 
 let spread = "three_card";
+/* idle → picking (fan out the deck) → waiting (request sent) → reveal (tap to flip) → done */
+let tarotPhase = "idle";
+let picked = [];
+let flipped = new Set();
+let drawnKey = "";
+const DECK_SIZE = 78;
+const SPREAD_HINTS = {
+  idle: "选择牌阵，写下一个具体的问题，再点「洗牌抽牌」。",
+  picking: "",
+  waiting: "牌已选定，正在静候牌意……",
+  reveal: "轻触牌面逐张翻开，或点「全部翻开」。",
+  done: "追问请在下方对话窗；想换一组牌，请点「重新起问」。",
+};
+
+function drawnCards() {
+  return currentReading?.tarot?.cards || [];
+}
+
+function updateTarot() {
+  const size = SPREAD_POSITIONS[spread].length;
+  const step = { idle: 2, picking: 3, waiting: 4, reveal: 4, done: 5 }[tarotPhase];
+  $$("#tarot-steps li").forEach((item) => {
+    const index = Number(item.dataset.step);
+    item.classList.toggle("done", index < step);
+    item.classList.toggle("current", index === step);
+  });
+  $$("[data-spread]").forEach((choice) => {
+    choice.setAttribute("aria-pressed", String(choice.dataset.spread === spread));
+  });
+  $("#tarot-question").readOnly = tarotPhase !== "idle";
+  $("#tarot-begin").hidden = tarotPhase !== "idle";
+  $("#tarot-deck").hidden = tarotPhase !== "picking";
+  $("#spread-hint").textContent = SPREAD_HINTS[tarotPhase];
+  const hint = $("#deck-hint");
+  hint.replaceChildren(
+    document.createTextNode(`默念你的问题，凭直觉从牌堆中选出 ${size} 张 · 已选 `),
+    node("b", "", `${picked.length} / ${size}`),
+  );
+  const unturned = tarotPhase === "reveal" && flipped.size < drawnCards().length;
+  $("#flip-all").hidden = !unturned;
+  $("#tarot-lower").classList.toggle("veiled", unturned);
+  $("#reading-veil").hidden = !unturned;
+  $("#reading-content").toggleAttribute("aria-hidden", unturned);
+  $("#message").placeholder = drawnCards().length
+    ? "就这组牌继续追问，比如：这张牌在提醒我什么？"
+    : "抽牌之后，可在这里就这组牌追问";
+}
+
+function buildDeck() {
+  const fan = $("#deck-fan");
+  fan.setAttribute("aria-label", `${DECK_SIZE} 张背面朝上的牌`);
+  fan.replaceChildren();
+  for (let index = 0; index < DECK_SIZE; index++) {
+    const card = button("", "deck-card");
+    card.style.setProperty("--i", String(index));
+    card.setAttribute("aria-label", `第 ${index + 1} 张`);
+    card.addEventListener("click", () => pickCard(index, card));
+    fan.append(card);
+  }
+  // Gather the deck in the middle, then let it fan out: a short shuffle.
+  fan.classList.add("gathered");
+  requestAnimationFrame(() => requestAnimationFrame(() => fan.classList.remove("gathered")));
+}
+
+function beginPicking() {
+  if (busy || !state || tarotPhase !== "idle") return;
+  if (!$("#tarot-question").value.trim()) {
+    toast("先写下一个具体的问题。");
+    $("#tarot-question").focus();
+    return;
+  }
+  tarotPhase = "picking";
+  picked = [];
+  buildDeck();
+  renderSpread(null);
+  $("#tarot-deck").scrollIntoView({ behavior: "smooth", block: "center" });
+}
+
+function pickCard(index, card) {
+  const size = SPREAD_POSITIONS[spread].length;
+  if (busy || tarotPhase !== "picking" || picked.length >= size) return;
+  picked.push(index);
+  // Decided now, not when the animation ends: quick taps must not send the draw twice.
+  const last = picked.length === size;
+  const target = $$("#tarot-spread .card-face")[picked.length - 1];
+  const from = card.getBoundingClientRect();
+  card.classList.add("taken");
+  card.disabled = true;
+  const done = () => {
+    renderSpread(null);
+    if (last) drawCards();
+  };
+  if (!target || matchMedia("(prefers-reduced-motion: reduce)").matches) return done();
+  // Fly a copy of the chosen card down into its slot.
+  const to = target.getBoundingClientRect();
+  const flyer = node("span", "deck-card deck-flyer");
+  flyer.style.left = `${from.left}px`;
+  flyer.style.top = `${from.top}px`;
+  flyer.style.width = `${from.width}px`;
+  flyer.style.height = `${from.height}px`;
+  document.body.append(flyer);
+  flyer
+    .animate(
+      [
+        { transform: "translate(0, 0) scale(1)", opacity: 1 },
+        {
+          transform: `translate(${to.left - from.left}px, ${to.top - from.top}px) scale(${to.width / from.width}, ${to.height / from.height})`,
+          opacity: 1,
+        },
+      ],
+      { duration: 520, easing: "cubic-bezier(.2,.8,.2,1)" },
+    )
+    .finished.then(() => {
+      flyer.remove();
+      done();
+    });
+  updateTarot();
+}
+
+async function drawCards() {
+  tarotPhase = "waiting";
+  renderSpread(null);
+  await send({ message: $("#tarot-question").value.trim(), extra: { spread } }, state.birth);
+}
+
+function resetTarot() {
+  tarotPhase = "idle";
+  picked = [];
+  flipped = new Set();
+  drawnKey = "";
+  $("#deck-fan").replaceChildren();
+}
+
+function flipCard(index) {
+  const flip = $$("#tarot-spread .flip-card")[index];
+  if (!flip || flipped.has(index)) return;
+  const card = drawnCards()[index];
+  flipped.add(index);
+  flip.classList.add("is-flipped");
+  flip.disabled = true;
+  flip.setAttribute("aria-label", `${card.label}：${card.name}，${card.reversed ? "逆位" : "正位"}`);
+  $$("#tarot-spread .tarot-orientation")[index].textContent = card.reversed ? "逆位" : "正位";
+  if (flipped.size === drawnCards().length) {
+    tarotPhase = "done";
+    toast("牌面已全部翻开，牌意整理在下方。");
+  }
+  updateTarot();
+}
+
+// Called on every render of the reading: a fresh draw waits face down; a restored one shows.
+function onTarotReading(reading) {
+  const cards = reading?.tarot?.cards || [];
+  if (cards.length) {
+    const key = `${reading.tarot.seed}:${cards.map((card) => card.card_id).join(",")}`;
+    if (key !== drawnKey) {
+      drawnKey = key;
+      spread = reading.tarot.spread || spread;
+      if (tarotPhase === "waiting") {
+        tarotPhase = "reveal";
+        flipped = new Set();
+      } else {
+        tarotPhase = "done";
+        flipped = new Set(cards.map((_, index) => index));
+      }
+      // The first 塔罗 message of the session is the question these cards were drawn for.
+      const asked = state?.messages?.find((item) => item.role === "user" && item.system === "tarot");
+      if (!$("#tarot-question").value)
+        $("#tarot-question").value = asked?.text || (reading.tarot.question || "").split("\n")[0];
+    }
+  } else if (tarotPhase !== "waiting") resetTarot(); // 新对话、切换模式或清除记录
+  renderSpread(reading);
+}
 
 function renderSpread(reading) {
-  const cards = reading?.tarot?.cards || [];
+  const cards = reading?.tarot?.cards || drawnCards();
   const box = $("#tarot-spread");
   box.replaceChildren();
   const positions = cards.length ? cards.map((card) => card.label) : SPREAD_POSITIONS[spread];
   positions.forEach((position, index) => {
     const card = cards[index];
     const slot = node("article", "tarot-slot");
-    slot.setAttribute("aria-label", card ? `${position}：${card.name}${card.reversed ? "，逆位" : "，正位"}` : `${position}：未抽牌`);
-    slot.append(card ? cardFace(card) : cardBack());
+    let status = "静待抽牌";
+    if (card) {
+      const open = flipped.has(index);
+      const flip = button("", open ? "flip-card is-flipped" : "flip-card");
+      const inner = node("span", "flip-inner");
+      const back = cardBack();
+      back.append(node("span", "tarot-tap", "轻触翻牌"));
+      inner.append(back, cardFace(card));
+      flip.append(inner);
+      flip.disabled = open;
+      flip.setAttribute(
+        "aria-label",
+        open ? `${position}：${card.name}，${card.reversed ? "逆位" : "正位"}` : `翻开第 ${index + 1} 张：${position}`,
+      );
+      flip.addEventListener("click", () => flipCard(index));
+      slot.append(flip);
+      status = open ? (card.reversed ? "逆位" : "正位") : "未翻开";
+    } else if (index < picked.length) {
+      slot.classList.add(tarotPhase === "waiting" ? "is-waiting" : "is-picked");
+      slot.append(cardBack());
+      status = tarotPhase === "waiting" ? "牌意正在浮现" : "已选";
+    } else {
+      if (tarotPhase === "picking" && index === picked.length) slot.classList.add("is-next");
+      slot.append(node("span", "card-face card-empty"));
+      status = tarotPhase === "picking" ? (index === picked.length ? "下一张落在这里" : "待选") : "静待抽牌";
+    }
+    slot.setAttribute("aria-label", `${position}：${status}`);
     const caption = node("div", "tarot-caption");
     caption.append(
       node("span", "tarot-position", `${ROMAN[index + 1]} · ${position}`),
-      node("span", "tarot-orientation", card ? (card.reversed ? "逆位" : "正位") : "静待翻牌"),
+      node("span", "tarot-orientation", status),
     );
     slot.append(caption);
     box.append(slot);
   });
-  $$("[data-spread]").forEach((choice) => {
-    choice.setAttribute("aria-pressed", String(choice.dataset.spread === spread));
-  });
-  $("#spread-hint").textContent = cards.length
-    ? "追问会沿用这组牌；想换一组牌，请点「重新起问」。"
-    : "选择牌阵，写下一个具体的问题，再点「抽牌解读」。";
-  $("#send").textContent = cards.length ? "就此追问" : "抽牌解读";
+  updateTarot();
 }
 
 /* ---------- 姓名 ---------- */
@@ -1719,25 +1983,75 @@ const PAGES = {
     init() {
       $$("[data-spread]").forEach((choice) =>
         choice.addEventListener("click", () => {
-          if (currentReading?.tarot?.cards?.length) {
-            toast("这组牌已经抽出。想换牌阵，请先点「重新起问」。");
+          if (tarotPhase !== "idle") {
+            toast("这一轮已经开始抽牌。想换牌阵，请先点「重新起问」。");
             return;
           }
           spread = choice.dataset.spread;
           renderSpread(null);
         }),
       );
-      $("#new-question").addEventListener("click", () => startNew(state.provider));
+      $("#tarot-form").addEventListener("submit", (event) => {
+        event.preventDefault();
+        beginPicking();
+      });
+      $("#flip-all").addEventListener("click", () =>
+        drawnCards().forEach((_, index) => setTimeout(() => flipCard(index), index * 260)),
+      );
+      $("#new-question").addEventListener("click", () => {
+        resetTarot();
+        $("#tarot-question").value = "";
+        startNew(state.provider);
+      });
       renderSpread(null);
     },
+    // Before a draw, the dialogue box and the suggestions feed the question above the deck.
     compose(text) {
-      if (!text) {
-        toast("先写下一个具体的问题。");
+      if (drawnCards().length) return text ? { message: text } : null;
+      if (tarotPhase !== "idle") {
+        toast("请先从牌堆中选完牌。");
         return null;
       }
-      return { message: text, extra: { spread } };
+      if (text) $("#tarot-question").value = text;
+      $("#message").value = "";
+      fitComposer();
+      beginPicking();
+      return null;
     },
-    onReading: renderSpread,
+    draft(question) {
+      if (drawnCards().length) return false;
+      if (tarotPhase === "idle") $("#tarot-question").value = question;
+      $("#tarot-form").scrollIntoView({ behavior: "smooth", block: "center" });
+      $("#tarot-question").focus({ preventScroll: true });
+      return true;
+    },
+    onFab() {
+      if (drawnCards().length) return false;
+      $(tarotPhase === "picking" ? "#tarot-deck" : "#tarot-form").scrollIntoView({
+        behavior: "smooth",
+        block: "center",
+      });
+      if (tarotPhase === "idle") $("#tarot-question").focus({ preventScroll: true });
+      return true;
+    },
+    onAnswered() {
+      if (tarotPhase !== "reveal") return false;
+      toast("牌已就位，轻触牌面逐张翻开。");
+      $("#tarot-spread").scrollIntoView({ behavior: "smooth", block: "center" });
+      return true;
+    },
+    onSendFailed() {
+      if (tarotPhase === "waiting") resetTarot();
+      renderSpread(null);
+    },
+    onState(next) {
+      // The reply asked something back instead of drawing: start the round over.
+      if (tarotPhase === "waiting" && !next.busy && !drawnCards().length) {
+        resetTarot();
+        renderSpread(null);
+      }
+    },
+    onReading: onTarotReading,
   },
   name: {
     hint: "Enter 发送 · 会连同上方姓名一起解读",
@@ -1807,8 +2121,8 @@ const PAGES = {
         if (busy || !state || !validateBirth()) return;
         const birth = birthInfo();
         if (!birth.date || !birth.location_id) {
-          toast("请先在下方填写出生日期与出生地点。");
-          $("#daily-birth").scrollIntoView({ behavior: "smooth", block: "start" });
+          toast("请先在上方「生辰」中填写出生日期与出生地点。");
+          openBirthFold();
           return;
         }
         const label = almanacDay === shanghaiToday() ? `今天（${chineseDate(almanacDay)}）` : chineseDate(almanacDay);
@@ -1848,6 +2162,13 @@ function init() {
   if (host) buildBirthForm(host, host.dataset.birth);
   wireControls();
   initComposer();
+  $$('a[href^="#"]').forEach((link) => {
+    if (document.getElementById(link.hash.slice(1))?.matches("[data-birth-fold]"))
+      link.addEventListener("click", (event) => {
+        event.preventDefault();
+        openBirthFold();
+      });
+  });
   page.init?.();
   setBusy(true);
   if (host) locationsReady = initLocations().catch((error) => toast(error.message));
@@ -1866,6 +2187,9 @@ function init() {
         status.textContent = "连接未就绪";
         status.classList.add("offline");
       }
+      $$("[data-live]").forEach((live) => {
+        live.textContent = "连接未就绪";
+      });
       if ($("#input-hint")) $("#input-hint").textContent = "服务未就绪，可切换离线演示或刷新重试";
       if ($("#provider")) $("#provider").disabled = false;
       toast(error.message);

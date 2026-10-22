@@ -44,6 +44,15 @@
         <button class="btn btn-ghost step" id="day-next" type="button" aria-label="后一日" data-lock>›</button>
       </div>
 
+      <details class="birth-fold paper-panel" id="daily-birth" data-birth-fold>
+        <summary>
+          <span class="birth-fold-title">生辰</span>
+          <span class="birth-fold-summary" data-birth-summary>尚未填写 · 填写后按你的日主推算流日十神</span>
+          <span class="birth-fold-toggle">填写 / 修改</span>
+        </summary>
+        <div class="birth-fold-body"><div data-birth="daily"></div></div>
+      </details>
+
       <section class="almanac" aria-labelledby="day-num">
         <div class="almanac-binding" aria-hidden="true"><span></span><span></span></div>
         <div class="almanac-body">
@@ -76,67 +85,59 @@
         </div>
       </section>
 
-      <div class="daily-grid">
-        <section class="brief" aria-labelledby="brief-title">
-          <div class="section-title">
-            <h2 id="brief-title">今日提要</h2>
-          </div>
-          <div class="btn-row">
-            <button class="btn btn-primary" id="daily-ask" type="button" data-lock>看今日详解</button>
-            <a class="btn btn-ghost" href="#daily-birth">填写生辰</a>
-          </div>
-          <section class="reading" id="reading" aria-labelledby="reading-title">
-            <div class="reading-head">
-              <h3 id="reading-title">流日解读</h3>
-              <button class="btn btn-text" id="copy-reading" type="button" hidden>复制</button>
+      <section class="dialog-band daily-dialog" aria-label="问今天的一件事">
+        <section class="dialog" id="dialog" aria-labelledby="dialog-title">
+          <header class="dialog-head">
+            <span class="dialog-seal" aria-hidden="true">问</span>
+            <div class="dialog-heading">
+              <h2 id="dialog-title">问今天的一件事</h2>
+              <p>问题按上方所选日期解读</p>
             </div>
-            <div class="reading-content" id="reading-content">
-              <p class="reading-empty">
-                点「看今日详解」，结合流日干支、行运相位与每日一牌整理今日提要。需要出生日期与地点。
-              </p>
-            </div>
-          </section>
-        </section>
-
-        <section class="week-panel" aria-labelledby="week-title">
-          <div class="section-title">
-            <h2 id="week-title">本周流日</h2>
-          </div>
-          <div class="week-scroll">
-            <div class="week" id="week"></div>
-          </div>
-          <p class="week-note">十神以你的日主推算；流日取当地正午所在日柱。点某一天可查看那天。</p>
-        </section>
-      </div>
-
-      <div class="daily-lower">
-        <section class="paper-panel birth-panel" id="daily-birth" aria-labelledby="birth-title">
-          <div class="section-title">
-            <h2 id="birth-title">生辰</h2>
-          </div>
-          <div data-birth="daily"></div>
-        </section>
-        <section class="consult" aria-labelledby="consult-title">
-          <div class="section-title">
-            <h2 id="consult-title">问今天的一件事</h2>
-          </div>
+            <span class="dialog-live" data-live>正在连接</span>
+          </header>
           <div class="messages" id="messages" role="log" aria-live="polite"></div>
           <form class="composer" id="chat-form">
             <label class="sr-only" for="message">你的问题</label>
-            <textarea
-              id="message"
-              rows="2"
-              maxlength="3900"
-              required
-              placeholder="比如：今天适合和同事谈加薪吗？"
-            ></textarea>
-            <div class="composer-foot">
-              <span class="hint" id="input-hint">Enter 发送 · 问题按上方所选日期解读</span>
-              <button class="btn btn-ghost" id="send" type="submit">发问</button>
+            <div class="composer-box">
+              <textarea
+                id="message"
+                rows="1"
+                maxlength="3900"
+                required
+                placeholder="比如：今天适合和同事谈加薪吗？"
+              ></textarea>
+              <button class="btn btn-primary composer-send" id="send" type="submit">发问</button>
             </div>
+            <span class="hint" id="input-hint">Enter 发送 · 问题按上方所选日期解读</span>
           </form>
         </section>
-      </div>
+
+        <section class="reading" id="reading" aria-labelledby="reading-title">
+          <div class="reading-head">
+            <h3 id="reading-title">今日提要</h3>
+            <button class="btn btn-text" id="copy-reading" type="button" hidden>复制</button>
+          </div>
+          <div class="btn-row brief-actions">
+            <button class="btn btn-primary" id="daily-ask" type="button" data-lock>看今日详解</button>
+            <a class="btn btn-ghost" href="#daily-birth">填写生辰</a>
+          </div>
+          <div class="reading-content" id="reading-content">
+            <p class="reading-empty" data-glyph="吉">
+              点「看今日详解」，结合流日干支、行运相位与每日一牌整理今日提要。需要出生日期与地点。
+            </p>
+          </div>
+        </section>
+      </section>
+
+      <section class="week-panel section" aria-labelledby="week-title">
+        <div class="section-title">
+          <h2 id="week-title">本周流日</h2>
+        </div>
+        <div class="week-scroll">
+          <div class="week" id="week"></div>
+        </div>
+        <p class="week-note">十神以你的日主推算；流日取当地正午所在日柱。点某一天可查看那天。</p>
+      </section>
     </main>
 
     <footer class="zm-footer">

@@ -86,40 +86,44 @@
       </section>
 
       <div class="wrap">
-        <form class="scroll" id="chat-form" aria-label="所问">
-          <label class="scroll-label" for="message">所问</label>
-          <div class="scroll-body">
-            <textarea
-              id="message"
-              rows="3"
-              maxlength="4000"
-              required
-              placeholder="写下此刻萦绕心头的事。越具体越好，比如：年底前要不要换工作？"
-            ></textarea>
-            <div class="scroll-foot">
-              <span class="hint" id="input-hint">Enter 发送 · Shift + Enter 换行</span>
-              <span class="scroll-note">由知命择术 · 已保存的生辰会一并参考</span>
-            </div>
-          </div>
-          <button class="btn btn-primary ask-button" id="send" type="submit" aria-label="发问">
-            问
-          </button>
-        </form>
-
         <section class="section consult" aria-labelledby="consult-title">
           <div class="section-title">
             <h2 id="consult-title">问答</h2>
             <span class="note">一问一答，解读整理在右</span>
           </div>
-          <div class="consult-grid">
-            <div class="messages" id="messages" role="log" aria-live="polite"></div>
+          <div class="dialog-band">
+            <section class="dialog" id="dialog" aria-labelledby="dialog-title">
+              <header class="dialog-head">
+                <span class="dialog-seal" aria-hidden="true">知</span>
+                <div class="dialog-heading">
+                  <h2 id="dialog-title">与知命对话</h2>
+                  <p>不必先选哪一门，知命会择其相宜者合而观之</p>
+                </div>
+                <span class="dialog-live" data-live>正在连接</span>
+              </header>
+              <div class="messages" id="messages" role="log" aria-live="polite"></div>
+              <form class="composer" id="chat-form">
+                <label class="sr-only" for="message">你的问题</label>
+                <div class="composer-box">
+                  <textarea
+                    id="message"
+                    rows="1"
+                    maxlength="4000"
+                    required
+                    placeholder="写下此刻萦绕心头的事，越具体越好"
+                  ></textarea>
+                  <button class="btn btn-primary composer-send" id="send" type="submit">发问</button>
+                </div>
+                <span class="hint" id="input-hint">Enter 发送 · Shift + Enter 换行</span>
+              </form>
+            </section>
             <section class="reading" id="reading" aria-labelledby="reading-title">
               <div class="reading-head">
                 <h3 id="reading-title">此间解读</h3>
                 <button class="btn btn-text" id="copy-reading" type="button" hidden>复制</button>
               </div>
               <div class="reading-content" id="reading-content">
-                <p class="reading-empty">
+                <p class="reading-empty" data-glyph="道">
                   发问之后，定调、分层分析与可行之事会整理在这里。
                 </p>
               </div>

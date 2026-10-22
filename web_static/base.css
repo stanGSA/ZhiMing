@@ -678,6 +678,327 @@ main {
   gap: 10px;
 }
 
+/* ---------- Dialogue window ----------
+   One framed chat window per consultation page: header, scrolling bubbles and a composer docked
+   at the bottom. Themes tune it through the --dialog-*, --bubble-* and --fab-* tokens. */
+.dialog-band {
+  --dialog-height: clamp(520px, calc(100vh - 56px), 680px);
+  display: grid;
+  grid-template-columns: minmax(0, 1.08fr) minmax(0, 1fr);
+  gap: 32px;
+  align-items: start;
+}
+.dialog {
+  position: sticky;
+  top: 24px;
+  height: var(--dialog-height);
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  background: var(--dialog-bg, var(--surface));
+  border: 1px solid var(--dialog-line, var(--line-strong));
+  border-radius: var(--dialog-r, 0);
+  box-shadow: var(--dialog-shadow, 0 18px 48px rgba(0, 0, 0, 0.12));
+  overflow: hidden;
+}
+.dialog-head {
+  flex: none;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 20px;
+  border-bottom: 1px solid var(--line);
+  background: var(--dialog-head-bg, transparent);
+}
+.dialog-seal {
+  flex: none;
+  width: 40px;
+  height: 40px;
+  display: grid;
+  place-items: center;
+  background: var(--seal-bg, var(--accent));
+  color: var(--seal-ink, var(--accent-ink));
+  border: 1px solid var(--seal-line, transparent);
+  border-radius: var(--seal-r, 0);
+  font-family: var(--display);
+  font-size: 18px;
+  font-weight: 700;
+}
+.dialog-heading {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+.dialog-heading h2 {
+  font-family: var(--display);
+  font-size: 18px;
+  font-weight: 600;
+  letter-spacing: 0.22em;
+  line-height: 1.5;
+}
+.dialog-heading p {
+  font-family: var(--font-sans);
+  font-size: 12px;
+  line-height: 1.6;
+  letter-spacing: 0.04em;
+  color: var(--muted);
+}
+.dialog-live {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-family: var(--font-sans);
+  font-size: 12px;
+  letter-spacing: 0.06em;
+  color: var(--muted);
+}
+.dialog-live::before {
+  content: "";
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--live, #3f9b6c);
+  box-shadow: 0 0 0 3px rgba(63, 155, 108, 0.2);
+}
+.dialog-live.demo::before {
+  background: var(--accent-2);
+  box-shadow: none;
+}
+.dialog .messages {
+  flex: 1 1 auto;
+  min-height: 0;
+  max-height: none;
+  gap: 14px;
+  padding: 20px 20px 12px;
+  border-top: 0;
+  overscroll-behavior: contain;
+}
+.dialog .msg {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  max-width: 94%;
+  padding: 0;
+  border: 0;
+}
+.dialog .msg-user {
+  flex-direction: row-reverse;
+  align-self: flex-end;
+}
+.dialog .msg-label {
+  flex: none;
+  width: 32px;
+  height: 32px;
+  display: grid;
+  place-items: center;
+  border: 1px solid currentColor;
+  border-radius: 50%;
+  font-size: 14px;
+  line-height: 1;
+}
+.dialog .msg-body {
+  min-width: 0;
+  padding: 9px 14px;
+  background: var(--bubble-ai, var(--surface-2));
+  border: 1px solid var(--bubble-ai-line, var(--line));
+  border-radius: 2px var(--bubble-r, 12px) var(--bubble-r, 12px) var(--bubble-r, 12px);
+}
+.dialog .msg-user .msg-body {
+  background: var(--bubble-user, var(--surface-2));
+  border-color: var(--bubble-user-line, var(--line-strong));
+  color: var(--bubble-user-ink, var(--ink));
+  border-radius: var(--bubble-r, 12px) 2px var(--bubble-r, 12px) var(--bubble-r, 12px);
+}
+.dialog .msg-text {
+  font-size: 15px;
+  line-height: 1.85;
+}
+.dialog .thinking {
+  padding: 10px 14px;
+  border: 1px dashed var(--line-strong);
+  border-radius: 2px var(--bubble-r, 12px) var(--bubble-r, 12px) var(--bubble-r, 12px);
+}
+.dialog .welcome {
+  padding: 4px 0 8px;
+  gap: 10px;
+}
+.dialog .welcome h3 {
+  font-size: 19px;
+}
+.dialog .welcome p {
+  font-size: 15px;
+}
+.dialog .composer {
+  flex: none;
+  margin: 0;
+  gap: 8px;
+  padding: 12px 16px 12px;
+  border-top: 1px solid var(--line);
+  background: var(--dialog-foot-bg, transparent);
+}
+.composer-box {
+  display: flex;
+  align-items: flex-end;
+  gap: 10px;
+  padding: 5px 5px 5px 14px;
+  background: var(--input-bg, var(--bg));
+  border: 1px solid var(--line-strong);
+  border-radius: var(--input-r, 0);
+  transition: border-color 0.18s ease;
+}
+.composer-box:focus-within {
+  border-color: var(--accent-2);
+}
+.dialog .composer textarea {
+  flex: 1;
+  min-width: 0;
+  min-height: 44px;
+  max-height: 168px;
+  padding: 8px 0;
+  border: 0;
+  font-size: 16px;
+  line-height: 1.7;
+  resize: none;
+}
+.dialog .composer textarea:disabled {
+  opacity: 0.6;
+}
+.btn.composer-send {
+  flex: none;
+  min-height: 44px;
+  padding: 0 18px;
+  letter-spacing: 0.2em;
+}
+.dialog .hint {
+  padding-left: 2px;
+}
+
+/* The reading beside the window keeps the same height, so an empty one still reads as a panel. */
+.dialog-band .reading {
+  min-height: var(--dialog-height);
+}
+.dialog-band .reading-content:has(> .reading-empty:only-child) {
+  flex: 1;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
+.dialog-band .reading-empty {
+  max-width: 360px;
+}
+.dialog-band .reading-empty[data-glyph]::before {
+  content: attr(data-glyph);
+  display: block;
+  margin-bottom: 18px;
+  font-family: var(--display);
+  font-size: 72px;
+  font-weight: 700;
+  line-height: 1;
+  color: var(--accent-2);
+  opacity: 0.22;
+}
+
+/* Floating shortcut to the dialogue window when it is out of view. */
+.ask-fab {
+  position: fixed;
+  right: 28px;
+  bottom: 28px;
+  z-index: 20;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 52px;
+  padding: 0 22px 0 7px;
+  border: 1px solid var(--fab-line, var(--accent-2));
+  border-radius: var(--fab-r, 26px);
+  background: var(--fab-bg, var(--accent));
+  color: var(--fab-ink, var(--accent-ink));
+  font-family: var(--body);
+  font-size: 15px;
+  letter-spacing: 0.2em;
+  box-shadow: 0 14px 34px rgba(0, 0, 0, 0.3);
+  cursor: pointer;
+  transition: transform 0.18s ease;
+}
+.ask-fab:hover {
+  transform: translateY(-2px);
+}
+.ask-fab-seal {
+  width: 38px;
+  height: 38px;
+  display: grid;
+  place-items: center;
+  border-radius: var(--fab-seal-r, 50%);
+  background: var(--fab-ink, var(--accent-ink));
+  color: var(--fab-bg, var(--accent));
+  font-size: 17px;
+  font-weight: 700;
+  letter-spacing: 0;
+}
+
+/* ---------- Birth fold: the profile form folds away once a chart is drawn ---------- */
+.birth-fold {
+  border: 1px solid var(--line-strong);
+  background: var(--surface);
+}
+.birth-fold > summary {
+  list-style: none;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  min-height: 64px;
+  padding: 12px 24px;
+  cursor: pointer;
+}
+.birth-fold > summary::-webkit-details-marker {
+  display: none;
+}
+.birth-fold-title {
+  flex: none;
+  font-family: var(--display);
+  font-size: 17px;
+  font-weight: 600;
+  letter-spacing: 0.3em;
+}
+.birth-fold-summary {
+  flex: 1;
+  min-width: 0;
+  font-size: 15px;
+  color: var(--muted);
+  overflow-wrap: anywhere;
+}
+.birth-fold-summary.filled {
+  color: var(--ink);
+}
+.birth-fold-toggle {
+  flex: none;
+  font-size: 14px;
+  letter-spacing: 0.15em;
+  color: var(--accent-2);
+}
+.birth-fold-toggle::after {
+  content: " ▾";
+}
+.birth-fold[open] .birth-fold-toggle::after {
+  content: " ▴";
+}
+.birth-fold-body {
+  padding: 6px 24px 24px;
+  border-top: 1px solid var(--line);
+}
+.birth-fold-body .birth-form {
+  padding-top: 18px;
+}
+.birth-fold-body .birth-row {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+.birth-fold-body .birth-form > .btn-primary {
+  align-self: flex-start;
+  min-width: 260px;
+}
+
 /* ---------- Footer ---------- */
 .zm-footer {
   border-top: 1px solid var(--line);
@@ -822,8 +1143,23 @@ main {
 
 /* ---------- Responsive ---------- */
 @media (max-width: 1100px) {
-  .consult-grid {
+  .consult-grid,
+  .dialog-band {
     grid-template-columns: minmax(0, 1fr);
+  }
+  .dialog {
+    position: static;
+    height: auto;
+  }
+  .dialog .messages {
+    min-height: 260px;
+    max-height: 62vh;
+  }
+  .dialog-band .reading {
+    min-height: 0;
+  }
+  .birth-fold-body .birth-row {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
 @media (max-width: 760px) {
@@ -855,6 +1191,63 @@ main {
   }
   .reading-summary {
     font-size: 19px;
+  }
+  .dialog-head {
+    padding: 12px 14px;
+    gap: 10px;
+  }
+  .dialog-heading h2 {
+    font-size: 16px;
+    letter-spacing: 0.12em;
+  }
+  .dialog .messages {
+    padding: 16px 14px 10px;
+  }
+  .dialog .msg {
+    max-width: 100%;
+  }
+  .dialog .composer {
+    padding: 10px 12px;
+  }
+  .dialog .composer textarea {
+    min-height: 64px;
+  }
+  .btn.composer-send {
+    padding: 0 14px;
+    letter-spacing: 0.1em;
+  }
+  .birth-fold > summary {
+    flex-wrap: wrap;
+    gap: 4px 14px;
+    padding: 12px 16px;
+  }
+  .birth-fold-summary {
+    order: 3;
+    flex-basis: 100%;
+    font-size: 14px;
+  }
+  .birth-fold-toggle {
+    margin-left: auto;
+  }
+  .birth-fold-body {
+    padding: 4px 16px 18px;
+  }
+  .birth-fold-body .birth-row {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .birth-fold-body .birth-form > .btn-primary {
+    align-self: stretch;
+    min-width: 0;
+  }
+  .ask-fab {
+    right: 16px;
+    bottom: 16px;
+    min-height: 48px;
+    padding-right: 16px;
+  }
+  .ask-fab-seal {
+    width: 34px;
+    height: 34px;
   }
 }
 @media (prefers-reduced-motion: reduce) {
