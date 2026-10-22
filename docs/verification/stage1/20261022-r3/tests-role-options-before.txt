@@ -7,7 +7,7 @@ monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x00000191CFC79210>
     async def test_review_role_transmits_reasoning_options_and_keeps_total_usage(monkeypatch):
         monkeypatch.setenv("REVIEW_TEST_KEY", "offline-placeholder")
         received = []
-    
+
         def respond(request):
             received.append(json.loads(request.content))
             return httpx.Response(200, json={
@@ -18,7 +18,7 @@ monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x00000191CFC79210>
                 "usage": {"prompt_tokens": 20, "completion_tokens": 50, "total_tokens": 70,
                           "completion_tokens_details": {"reasoning_tokens": 40}},
             })
-    
+
 >       spec = RoleModelSpec(vendor="deepseek", api="openai", model="deepseek-v4-pro",
                              api_key_env="REVIEW_TEST_KEY", base_url="https://review.example",
                              thinking="enabled", reasoning_effort="high", max_tokens=16384)
