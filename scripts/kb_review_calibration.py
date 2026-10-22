@@ -90,11 +90,20 @@ def partition_digest(data: dict, partition: str) -> str:
     return hashlib.sha256(canonical(items).encode()).hexdigest()
 
 
-def freeze(path: Path, confirmed_by: str, at: str | None = None, reason: str | None = None) -> dict:
+def freeze(
+    path: Path,
+    confirmed_by: str,
+    at: str | None = None,
+    reason: str | None = None,
+    *,
+    review_kind: str = "human",
+) -> dict:
     """Record the confirmed set. Freezing again (say, a dev label corrected after the pilot)
     needs a reason and keeps every earlier record; the holdout hash shows it never moved."""
     if not confirmed_by.strip():
         raise ValueError("须写明确认人")
+    if review_kind not in ("human", "ai_delegated"):
+        raise ValueError("review_kind 必须是 human 或 ai_delegated")
     data = load(path)
     lock = lock_path(path)
     previous = json.loads(lock.read_text(encoding="utf-8")) if lock.is_file() else None
@@ -106,8 +115,14 @@ def freeze(path: Path, confirmed_by: str, at: str | None = None, reason: str | N
         items=len(data["items"]),
         by_partition={p: counts(data, p) for p in PARTITIONS},
         confirmed_by=confirmed_by.strip(),
+        review_kind=review_kind,
         confirmed_at=at or datetime.now(UTC).isoformat(timespec="seconds"),
-        statement="负责人已逐条确认校准条目的内容、标签与依据；冻结后任何修改都使本记录失效。",
+        statement=(
+            "负责人已逐条确认校准条目的内容、标签与依据；冻结后任何修改都使本记录失效。"
+            if review_kind == "human"
+            else "Codex AI 根据负责人继续实施的授权逐条复核内容、标签与依据；本记录不是人工审核，"
+            "不声称负责人亲自逐条确认；冻结后任何修改都使本记录失效。"
+        ),
         reason=(reason or "").strip() or None,
     )
     history = [*(previous or {}).get("previous", []), *([previous] if previous else [])]
@@ -177,11 +192,16 @@ def main(argv=None):
         if name == "freeze":
             command.add_argument("--confirmed-by", required=True)
             command.add_argument("--reason", help="重新冻结时写明原因")
+            command.add_argument(
+                "--review-kind", choices=("human", "ai_delegated"), default="human"
+            )
     args = parser.parse_args(argv)
     if args.command == "show":
         print(table(load(args.calibration)))
     else:
-        record = freeze(args.calibration, args.confirmed_by, reason=args.reason)
+        record = freeze(
+            args.calibration, args.confirmed_by, reason=args.reason, review_kind=args.review_kind
+        )
         print(json.dumps(record, ensure_ascii=False, indent=2))
 
 

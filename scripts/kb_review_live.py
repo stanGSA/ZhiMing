@@ -90,7 +90,13 @@ def preregister(
         raise ValueError(f"校准集保留部分缺少体系：{'、'.join(missing)}")
     pilots = pilot_record(run_root)
     latest = pilots[-1] if pilots else None
-    ready = bool(latest and latest["met"] and latest["rubric_sha256"] == review.rubric_digest())
+    ready = bool(
+        latest
+        and latest["met"]
+        and latest["rubric_sha256"] == review.rubric_digest()
+        and latest.get("calibration_sha256") == lock["sha256"]
+        and set(systems) <= set(latest.get("systems", []))
+    )
     if not ready and not (pilot_override or "").strip():
         raise ValueError(
             "最近一次试跑未在当前规则下通过（或尚未试跑）；请先试跑，或由负责人写明 --pilot-override 理由"
@@ -122,6 +128,8 @@ def preregister(
             by_system=holdout,
             confirmed_by=lock["confirmed_by"],
             confirmed_at=lock["confirmed_at"],
+            review_kind=lock.get("review_kind", "human"),
+            confirmation_statement=lock.get("statement"),
         ),
         knowledge_base=dict(
             kb_version=review.kb_version(workspace.sources, workspace.rules, workspace.reviews),
@@ -326,6 +334,7 @@ async def run_pilot(
     if not 1 <= iteration <= PILOT_MAX:
         raise ValueError(f"试跑最多 {PILOT_MAX} 轮；仍不达标时请负责人决定是否更换审核模型")
     root = run_root / f"pilot-{iteration}"
+    _, calibration_lock = calibration_set.frozen(calibration)
     results = {}
     for system in systems:
         path = root / system
@@ -335,6 +344,8 @@ async def run_pilot(
                 raise ValueError(
                     f"{relative(path)} 是在另一版规则下试跑的；调整规则后请用新的 --iteration"
                 )
+            if plan["manifest"]["calibration"]["lock_sha256"] != calibration_lock["sha256"]:
+                raise ValueError(f"{relative(path)} 使用另一版校准集；请用新的 --iteration")
             run = review.RunDir(path)
         else:
             plan = pilot_plan(workspace, config, system, calibration, seed=iteration)
@@ -357,6 +368,7 @@ async def run_pilot(
     overall = dict(
         iteration=iteration,
         rubric_sha256=review.rubric_digest(),
+        calibration_sha256=calibration_lock["sha256"],
         systems=results,
         met=len(results) == len(systems) and all(r.get("met") for r in results.values()),
     )
@@ -375,6 +387,8 @@ def pilot_record(run_root: Path) -> list[dict]:
                 dir=relative(path.parent),
                 iteration=summary["iteration"],
                 rubric_sha256=summary["rubric_sha256"],
+                calibration_sha256=summary.get("calibration_sha256"),
+                systems=list(summary["systems"]),
                 met=summary["met"],
                 summary_sha256=review.sha256_bytes(path.read_bytes()),
             )

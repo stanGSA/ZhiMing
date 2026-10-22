@@ -145,6 +145,18 @@ def test_refreezing_needs_a_reason_and_leaves_the_holdout_hash(tmp_path):
     assert [r["sha256"] for r in second["previous"]] == [first["sha256"]]
 
 
+def test_ai_freeze_discloses_identity_without_claiming_human_review(tmp_path):
+    path = tmp_path / "calibration.yaml"
+    path.write_bytes(DRAFT.read_bytes())
+    record = calibration_set.freeze(path, "Codex AI", review_kind="ai_delegated")
+    assert record["review_kind"] == "ai_delegated"
+    assert "不是人工审核" in record["statement"]
+    assert "负责人已逐条确认" not in record["statement"]
+    assert calibration_set.frozen(path)[1] == record
+    with pytest.raises(ValueError, match="review_kind"):
+        calibration_set.freeze(path, "Codex AI", review_kind="unknown")
+
+
 # ---- an offline campaign -----------------------------------------------------------------
 
 
@@ -399,6 +411,15 @@ async def test_pilot_reviews_only_dev_items_and_gates_registration(setting, tmp_
     assert plan["manifest"]["calibration"]["partition"] == "dev"
     # A pilot sits two levels down: never part of the acceptance campaign.
     assert not list(root.glob("*/manifest.json"))
+    summary_path = root / "pilot-1/summary.json"
+    summary_bytes = summary_path.read_bytes()
+    for changed in ({"systems": {}}, {"calibration_sha256": "stale"}):
+        summary = json.loads(summary_bytes)
+        summary.update(changed)
+        review.write_json(summary_path, summary)
+        with pytest.raises(ValueError, match="最近一次试跑"):
+            live.preregister(root, calibration, config, roles, systems=(SYSTEM,), workspace=work)
+    summary_path.write_bytes(summary_bytes)
     record = live.preregister(root, calibration, config, roles, systems=(SYSTEM,), workspace=work)
     assert [p["iteration"] for p in record["pilots"]] == [1] and record["pilot_override"] is None
     assert record["calibration"]["partition"] == "holdout"
@@ -440,6 +461,12 @@ def test_dream_alias_review_needs_every_decision_and_refuses_collisions(tmp_path
     copy_draft_knowledge(review.ROOT / "knowledge", tmp_path / "knowledge")
     work = review.Workspace(tmp_path)
     data = aliases.draft()
+    # Recreate pre-restoration sources regardless of production's progress through R2.
+    for source in (work.sources / "dream").glob("*.yaml"):
+        document = yaml.safe_load(source.read_text(encoding="utf-8"))
+        for entry in document["entries"]:
+            entry["synonyms"] = [a for a in entry["synonyms"] if a not in aliases.RESTORE]
+        source.write_text(yaml.safe_dump(document, allow_unicode=True), encoding="utf-8")
     groups = {i["group"] for i in data["items"]}
     assert groups == {"restore", "owner", "keep", "matched"}
     path = tmp_path / "review.yaml"
@@ -453,6 +480,7 @@ def test_dream_alias_review_needs_every_decision_and_refuses_collisions(tmp_path
     path.write_text(yaml.safe_dump(data, allow_unicode=True), encoding="utf-8")
     result = aliases.apply(work, path)
     assert result["count"] == len(aliases.RESTORE)
+    assert aliases.apply(work, path)["count"] == 0
     restored = {e["key"]: e for e in review.load_entries(work.sources, "dream")}
     assert "理发" in restored["剪头发"]["synonyms"] and not restored["剪头发"]["reviewed"]
     # An alias another entry already owns is refused before any file is written.
