@@ -494,6 +494,21 @@ def test_dream_alias_review_needs_every_decision_and_refuses_collisions(tmp_path
     assert all(p.read_bytes() == content for p, content in before.items())
 
 
+def test_dream_alias_review_keeps_subjectless_aliases_deleted():
+    """Neither a new draft nor re-applying the committed review brings 掉下去, 往下掉 or 走丢
+    back: without the dreamer as subject they misread other things (PR #18 review)."""
+    from scripts import dream_alias_review as aliases
+
+    groups = {i["alias"]: i["group"] for i in aliases.draft()["items"]}
+    committed = aliases.load(
+        review.ROOT / "docs/verification/kb-model-review/stage1-r2/dream-alias-review.yaml"
+    )
+    decisions = {i["alias"]: i["decision"] for i in committed["items"]}
+    assert set(aliases.KEEP) == {"掉下去", "往下掉", "走丢"}
+    for alias in aliases.KEEP:
+        assert groups[alias] == "keep" and decisions[alias] == "keep", alias
+
+
 def test_rubric_gives_examples_for_the_disputed_boundaries():
     assert "正反例" in SYSTEM_RUBRIC["bazi"] and "正反例" in SYSTEM_RUBRIC["name"]
     assert "theme_map 为 0，两者相容" in SYSTEM_RUBRIC["bazi"]

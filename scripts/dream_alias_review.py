@@ -34,9 +34,6 @@ REGRESSION = (
 
 RESTORE = {
     "理发": "剪头发的常用说法，同一动作；“理发店”不会命中（匹配只看整词或词尾）",
-    "往下掉": "坠落的口语说法，同一动作",
-    "掉下去": "坠落的口语说法，同一动作",
-    "走丢": "迷路的口语说法，同一处境",
     "抱在一起": "拥抱的口语说法，同一动作",
     "地动山摇": "描述地震晃动的成语，梦中所指即地震",
     "花海": "成片的花，程度不同但意象相同",
@@ -80,6 +77,13 @@ OWNER = {
     "拼命跑": ("keep", "也可能是比赛或赶路，不一定在逃跑"),
 }
 KEEP_DEFAULT = "不同事物、上位泛称、常见其他义项，或只是场景、事件；审核理由见 reviewer_reason"
+# Restored in R2, then removed again (PR #18 review): without the dreamer as subject they
+# end phrases about something else, which the matcher then reads as this image.
+KEEP = {
+    "往下掉": "没有主语，“杯子往下掉”“牙齿往下掉”也以它结尾，会被当成自己坠落",
+    "掉下去": "没有主语，“手机掉下去”也以它结尾，会被当成自己坠落",
+    "走丢": "没有主语，“孩子走丢了”会被当成自己迷路；条目侧重自己在具体地点找不到路",
+}
 
 
 def removed() -> list[dict]:
@@ -127,7 +131,7 @@ def draft() -> dict:
         elif alias in OWNER:
             group, (lean, reason) = "owner", OWNER[alias]
         else:
-            group, reason, lean = "keep", KEEP_DEFAULT, None
+            group, reason, lean = "keep", KEEP.get(alias, KEEP_DEFAULT), None
         items.append(
             dict(
                 row,

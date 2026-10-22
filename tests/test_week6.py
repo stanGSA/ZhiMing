@@ -264,6 +264,42 @@ def test_distinct_heads_are_never_read_as_another_symbol(project):
         kb.close()
 
 
+def test_subjectless_fall_and_lost_phrases_are_not_the_dreamer(project):
+    """PR #18 review: the restored aliases 掉下去, 往下掉 and 走丢 read 手机掉下去 as the
+    dreamer's own fall and 孩子走丢了 as the dreamer getting lost."""
+    kb = KnowledgeBase(project / "data/kb.sqlite")
+    try:
+        matcher = DreamMatcher(kb.db, kb.version)
+        for query in (
+            "掉下去",
+            "往下掉",
+            "走丢",
+            "手机掉下去",
+            "杯子往下掉",
+            "牙齿往下掉",
+            "孩子走丢了",
+        ):
+            assert matcher.match(query)["key"] is None, query
+        assert matcher.scan("梦见手机掉下去摔碎了") == ["手机"]
+        assert matcher.scan("梦见孩子走丢了，我到处找") == ["孩子"]
+        for phrase in (
+            "手机掉下去",
+            "我的手机掉下去了",
+            "杯子从桌上往下掉",
+            "我看到他从楼上掉下去",
+        ):
+            assert not matcher.supported(phrase, "坠落"), phrase
+        assert not matcher.supported("孩子走丢了", "迷路")
+        # The dreamer's own fall, or getting lost, still reaches the entry.
+        assert matcher.scan("梦见自己从高处跌落") == ["坠落"]
+        for phrase in ("自己从很高的楼上掉下去", "我从楼上摔下来", "我一直往下掉"):
+            assert matcher.supported(phrase, "坠落"), phrase
+        assert matcher.supported("我走丢了", "迷路")
+        assert matcher.supported("牙齿一颗一颗往下掉", "掉牙")
+    finally:
+        kb.close()
+
+
 def test_dream_matching_methods(project):
     kb = KnowledgeBase(project / "data/kb.sqlite")
     try:

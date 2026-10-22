@@ -24,6 +24,13 @@ NORMALISATIONS = {
     "被追": re.compile(
         r"被(?:一[只条个人群]|大|小|陌生的|陌生|凶猛的|凶猛|人|狗|狼|老虎|狮子|怪物|坏人|警察|朋友|同学|追赶者)*追(?:赶)?"
     ),
+    # The dreamer must be the subject: 手机掉下去 and 孩子走丢了 are not the dreamer's own fall
+    # or getting lost, which is why the bare aliases 掉下去, 往下掉 and 走丢 were removed.
+    "坠落": re.compile(
+        r"(?:自己|我)(?:突然|一下子|一直|不停地|不断地|慢慢地?|又|也|就)*(?:从[^，,。！!？?；;]{1,12}?)?"
+        r"(?:[往向]下[掉坠跌]|[掉摔跌坠]了?(?:下去|下来|落))"
+    ),
+    "迷路": re.compile(r"(?:自己|我)(?:又|也|突然|一个人)*走丢"),
 }
 
 
