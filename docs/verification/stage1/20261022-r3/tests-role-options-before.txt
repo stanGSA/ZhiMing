@@ -1,0 +1,57 @@
+F...F                                                                    [100%]
+================================== FAILURES ===================================
+_____ test_review_role_transmits_reasoning_options_and_keeps_total_usage ______
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x00000191CFC79210>
+
+    async def test_review_role_transmits_reasoning_options_and_keeps_total_usage(monkeypatch):
+        monkeypatch.setenv("REVIEW_TEST_KEY", "offline-placeholder")
+        received = []
+
+        def respond(request):
+            received.append(json.loads(request.content))
+            return httpx.Response(200, json={
+                "id": "test", "object": "chat.completion", "created": 0,
+                "model": "deepseek-v4-pro",
+                "choices": [{"index": 0, "finish_reason": "stop", "message": {
+                    "role": "assistant", "content": "{}", "reasoning_content": "test reasoning"}}],
+                "usage": {"prompt_tokens": 20, "completion_tokens": 50, "total_tokens": 70,
+                          "completion_tokens_details": {"reasoning_tokens": 40}},
+            })
+
+>       spec = RoleModelSpec(vendor="deepseek", api="openai", model="deepseek-v4-pro",
+                             api_key_env="REVIEW_TEST_KEY", base_url="https://review.example",
+                             thinking="enabled", reasoning_effort="high", max_tokens=16384)
+E       pydantic_core._pydantic_core.ValidationError: 2 validation errors for RoleModelSpec
+E       thinking
+E         Extra inputs are not permitted [type=extra_forbidden, input_value='enabled', input_type=str]
+E           For further information visit https://errors.pydantic.dev/2.14/v/extra_forbidden
+E       reasoning_effort
+E         Extra inputs are not permitted [type=extra_forbidden, input_value='high', input_type=str]
+E           For further information visit https://errors.pydantic.dev/2.14/v/extra_forbidden
+
+tests\test_kb_review_role_options.py:29: ValidationError
+________ test_pilot_and_registration_are_bound_to_actual_role_settings ________
+
+setting = (<scripts.model_review_kb.Workspace object at 0x00000191CFC793D0>, {'mode': 'single', 'llm': {'provider': 'deepseek', ...ed_at': '2026-10-22T09:26:59+00:00', 'git': {'head': '7a71c816d07622690cbabeabc21f81c830a8c77f', 'dirty': False}, ...})
+tmp_path = WindowsPath('C:/Users/Stan/Desktop/知命/reports/test_tmp/7dddf5a275124ec8a344ef6b7d3f0922/test_pilot_and_registration_ar0')
+
+    async def test_pilot_and_registration_are_bound_to_actual_role_settings(setting, tmp_path):
+        work, config, roles, _, prereg = setting
+        calibration = review.ROOT / prereg["calibration"]["path"]
+        root = tmp_path / "bound-pilot"
+        models = Models(work)
+        result = await live.run_pilot(root, 1, calibration, workspace=work, config=config,
+                                      roles=roles, make_model=models.make, systems=(SYSTEM,))
+        assert result["met"]
+        changed = copy.deepcopy(roles)
+        changed["reviewer_a"] = roles["reviewer_a"].model_copy(update={"temperature": 0.0})
+        before = len(models.calls)
+>       with pytest.raises(ValueError, match="角色|审核方"):
+E       Failed: DID NOT RAISE ValueError
+
+tests\test_kb_review_role_options.py:65: Failed
+=========================== short test summary info ===========================
+FAILED tests/test_kb_review_role_options.py::test_review_role_transmits_reasoning_options_and_keeps_total_usage
+FAILED tests/test_kb_review_role_options.py::test_pilot_and_registration_are_bound_to_actual_role_settings
+2 failed, 3 passed in 2.40s

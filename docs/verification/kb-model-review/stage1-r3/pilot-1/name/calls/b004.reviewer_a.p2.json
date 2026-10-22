@@ -1,0 +1,87 @@
+{
+  "batch": "b004",
+  "reviewer": "reviewer_a",
+  "run_pass": 2,
+  "attempt": 1,
+  "vendor": "deepseek",
+  "requested_model": "deepseek-v4-pro",
+  "returned_model": "deepseek-v4-pro",
+  "api": "openai",
+  "started_at": "2026-10-22T09:06:40+00:00",
+  "finished_at": "2026-10-22T09:06:49+00:00",
+  "latency_s": 9.051,
+  "http_attempts": 1,
+  "finish_reason": "stop",
+  "prompt_sha256": "222557f3df1e4025e7211f1ddb11987cd0fed1d53a2432ff22bd89e9a4b9a6c6",
+  "input_tokens": 3842,
+  "output_tokens": 621,
+  "cached_input_tokens": 3840,
+  "usage_available": true,
+  "raw_text": "{\n  \"items\": [\n    {\n      \"item\": \"i01\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"五行关系与三才组合描述正确，主题方向与文字一致，未作命运断言。\"\n    },\n    {\n      \"item\": \"i02\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"五行关系准确，self 正向与文字支持、relationship 负向与摩擦描述一致，未涉及现实预测。\"\n    },\n    {\n      \"item\": \"i03\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"五行关系与民间较顺评价相符，三个正主题均有文字支持，并有免责说明。\"\n    },\n    {\n      \"item\": \"i04\",\n      \"verdict\": \"revise\",\n      \"issues\": [\n        {\n          \"dimension\": \"certainty\",\n          \"detail\": \"结尾“这样的配置预示婚姻会比较美满”为确定性预言，与前述免责相反，应删除或改为民间象征表述。\"\n        },\n        {\n          \"dimension\": \"theme_direction\",\n          \"detail\": \"relationship 标 0 与“预示婚姻会比较美满”的正向含义不一致，应改为正向或删除该句。\"\n        }\n      ],\n      \"reason\": \"结尾存在对婚姻的确定性预言，并导致感情方向与 theme_map 矛盾。\"\n    },\n    {\n      \"item\": \"i05\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"金水木相生说明正确，民间较顺评价与三个正主题相符，未作实质预测。\"\n    },\n    {\n      \"item\": \"i06\",\n      \"verdict\": \"revise\",\n      \"issues\": [\n        {\n          \"dimension\": \"certainty\",\n          \"detail\": \"结尾“这种三才配置会让人一生较为顺利”为确定性断言，应删除或改为民间象征性说法。\"\n        }\n      ],\n      \"reason\": \"结尾有宿命化的确定性断言。\"\n    },\n    {\n      \"item\": \"i07\",\n      \"verdict\": \"revise\",\n      \"issues\": [\n        {\n          \"dimension\": \"certainty\",\n          \"detail\": \"结尾“这种三才配置会让人一生较为顺利”为确定性断言，与免责说明冲突。\"\n        }\n      ],\n      \"reason\": \"存在确定性人生预言，需要修改。\"\n    },\n    {\n      \"item\": \"i08\",\n      \"verdict\": \"revise\",\n      \"issues\": [\n        {\n          \"dimension\": \"theme_direction\",\n          \"detail\": \"正文未提供财务主题依据，却标 finance 为 0.3 正向，不符合文字与方向一致要求。\"\n        }\n      ],\n      \"reason\": \"财务正向标记缺乏文字或约定支持。\"\n    }\n  ]\n}",
+  "verdicts": {
+    "i01": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "五行关系与三才组合描述正确，主题方向与文字一致，未作命运断言。"
+    },
+    "i02": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "五行关系准确，self 正向与文字支持、relationship 负向与摩擦描述一致，未涉及现实预测。"
+    },
+    "i03": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "五行关系与民间较顺评价相符，三个正主题均有文字支持，并有免责说明。"
+    },
+    "i04": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "certainty",
+          "detail": "结尾“这样的配置预示婚姻会比较美满”为确定性预言，与前述免责相反，应删除或改为民间象征表述。"
+        },
+        {
+          "dimension": "theme_direction",
+          "detail": "relationship 标 0 与“预示婚姻会比较美满”的正向含义不一致，应改为正向或删除该句。"
+        }
+      ],
+      "reason": "结尾存在对婚姻的确定性预言，并导致感情方向与 theme_map 矛盾。"
+    },
+    "i05": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "金水木相生说明正确，民间较顺评价与三个正主题相符，未作实质预测。"
+    },
+    "i06": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "certainty",
+          "detail": "结尾“这种三才配置会让人一生较为顺利”为确定性断言，应删除或改为民间象征性说法。"
+        }
+      ],
+      "reason": "结尾有宿命化的确定性断言。"
+    },
+    "i07": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "certainty",
+          "detail": "结尾“这种三才配置会让人一生较为顺利”为确定性断言，与免责说明冲突。"
+        }
+      ],
+      "reason": "存在确定性人生预言，需要修改。"
+    },
+    "i08": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "theme_direction",
+          "detail": "正文未提供财务主题依据，却标 finance 为 0.3 正向，不符合文字与方向一致要求。"
+        }
+      ],
+      "reason": "财务正向标记缺乏文字或约定支持。"
+    }
+  }
+}

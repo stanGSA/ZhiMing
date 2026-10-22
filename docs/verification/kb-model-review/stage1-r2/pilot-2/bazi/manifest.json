@@ -1,0 +1,54 @@
+{
+  "schema": 1,
+  "kind": "pilot",
+  "system": "bazi",
+  "seed": 2,
+  "batch_size": 10,
+  "passes": 2,
+  "rubric_version": 3,
+  "rubric_sha256": "be04c7fbbd2de98a1048811f4af929e2456352172059ec5151ef61904ab8e6e5",
+  "script_sha256": "851d79753765ce382eae0d88518af7bfb7a4de58519d542f9f582403ab2f5800",
+  "reviewers": {
+    "reviewer_a": {
+      "vendor": "deepseek",
+      "api": "openai",
+      "model": "deepseek-flash",
+      "api_key_env": "DEEPSEEK_API_KEY",
+      "temperature": null,
+      "max_tokens": 4096,
+      "base_url_host": "api.deepseek.com"
+    },
+    "reviewer_b": {
+      "vendor": "openai",
+      "api": "openai",
+      "model": "gpt-6.1-sol",
+      "api_key_env": "OPENAI_REVIEW_API_KEY",
+      "temperature": null,
+      "max_tokens": 4096,
+      "base_url_host": "codegoai.com"
+    }
+  },
+  "calibration": {
+    "lock_sha256": "9acac4d7943a11d4c56e918a3adce9b3e8680fe68cc9556783c21277a9a7ab14",
+    "items": 20,
+    "partition": "dev"
+  },
+  "batch_count": 10,
+  "prompt_sha256": {
+    "b001": "6f1191212718aad1d9ddc1bb412b180452f9c6deef517074a1ec6e1e884bc615",
+    "b002": "775d34285a7cf7571d4bd7744bde64b30bc6aec63583183863390c30549642dd",
+    "b003": "8d6a92865f248b26144f2e5265e9fa93180b4587c705ff9c15a6c99661be2a82",
+    "b004": "e6482e26c3b67bc17178f069b38a3fbc8a8b6ed71983accb86d04db7bc093921",
+    "b005": "1d27236b1fa239953e90d8bd966aabcc2dc1d6e2ae5c8c99c3ba28566e35ebf7",
+    "b006": "5678250db560d2188bb46d264b422c0c867a13b64d5fae9a368ec65929b46797",
+    "b007": "f36822d4c539e3100e9051d97559937b43c117bf01032ad0a3c490ebeca705dc",
+    "b008": "01714ce1f188b2b20306a005ffb25086a006ae2b21f68c351777b127889f0520",
+    "b009": "e6630dd653461fd9c68ec6b6fe4a84e1321971837184c2789fe7bc835381a779",
+    "b010": "8ae675fea62c29f863f3cf0d8b9cdb957e3caa5c312564e00f85c3bc8635d4ad"
+  },
+  "created_at": "2026-10-22T07:43:39+00:00",
+  "git": {
+    "head": "da2c90c0d39acc42192ed2921cd562af20aa5242",
+    "dirty": true
+  }
+}

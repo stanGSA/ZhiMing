@@ -1,0 +1,315 @@
+{
+  "system": "dream",
+  "rubric_sha256": "540ccba092ad014719c09482151da49f63576976f69c322053a8f0b207183ddc",
+  "agreement": {
+    "items": 20,
+    "reviewed": 20,
+    "labels": {
+      "fail": 10,
+      "pass": 10
+    },
+    "kappa": 0.5,
+    "observed_agreement": 0.75,
+    "pairs": {
+      "pass/reject": 5,
+      "reject/reject": 5,
+      "pass/pass": 10
+    },
+    "label_agreement": {
+      "reviewer_a": {
+        "accuracy": 0.75,
+        "sensitivity": 0.5,
+        "specificity": 1.0
+      },
+      "reviewer_b": {
+        "accuracy": 1.0,
+        "sensitivity": 1.0,
+        "specificity": 1.0
+      }
+    }
+  },
+  "rerun": {
+    "reviewer_a": 0.8,
+    "reviewer_b": 1.0
+  },
+  "gates": {
+    "complete": true,
+    "kappa": false,
+    "rerun": false,
+    "label_agreement": false
+  },
+  "met": false,
+  "thresholds": {
+    "kappa": 0.6,
+    "rerun": 0.9,
+    "label_agreement": 0.85
+  },
+  "disputed": [
+    {
+      "id": "cal-dream-d01",
+      "label": "fail",
+      "verdicts": {
+        "reviewer_a.p1": "pass",
+        "reviewer_a.p2": "pass",
+        "reviewer_b.p1": "revise",
+        "reviewer_b.p2": "revise"
+      },
+      "reasons": {
+        "reviewer_a.p1": "杯子的容纳与关系联想符合核心象征，theme_map 全为 0 与中性文字相容，且单独提示了破碎情节，措辞非预测化。",
+        "reviewer_a.p2": "杯子联想合理，破碎情节单独提示，无预兆性表述，同义词恰当。",
+        "reviewer_b.p1": "正文表述平和，但同义词将需要单独理解的破碎情节混入了一般物品意象。",
+        "reviewer_b.p2": "正文联想可用，但同义词将需要单独理解的破碎情节并入了一般物品意象。"
+      },
+      "issues": {
+        "reviewer_b.p1": [
+          {
+            "dimension": "consistency",
+            "detail": "synonyms 中的“杯子碎了”包含破碎这一额外情节，不是一般“杯子”的同义称呼；text 也明确要求破碎情节单独考虑，将其设为同义词会误套一般解释。"
+          }
+        ],
+        "reviewer_b.p2": [
+          {
+            "dimension": "consistency",
+            "detail": "synonyms 中的“杯子碎了”包含破碎情节，不等同于一般“杯子”意象；正文也明确要求对破碎情节单独考虑，不宜将其列作普通杯子的检索别名。"
+          }
+        ]
+      }
+    },
+    {
+      "id": "cal-dream-d02",
+      "label": "fail",
+      "verdicts": {
+        "reviewer_a.p1": "pass",
+        "reviewer_a.p2": "pass",
+        "reviewer_b.p1": "revise",
+        "reviewer_b.p2": "revise"
+      },
+      "reasons": {
+        "reviewer_a.p1": "狐狸的机敏与对他人动机的疑虑联想与 theme_map 的负向方向一致，措辞非吉凶预兆化。",
+        "reviewer_a.p2": "狐狸象征机敏、试探、动机疑虑，与动物象征传统相符，无宿命断言。",
+        "reviewer_b.p1": "释义及方向基本一致，但“狐狸精”具有不同于狐狸动物的常见含义，不宜直接作为同义词。",
+        "reviewer_b.p2": "正文联想及主题方向基本一致，但“狐狸精”不宜作为动物狐狸的同义词。"
+      },
+      "issues": {
+        "reviewer_b.p1": [
+          {
+            "dimension": "consistency",
+            "detail": "synonyms 中的“狐狸精”可指神怪形象，也常用于指称某类人，并不等同于狐狸动物意象，作为检索别名会产生误命中。"
+          }
+        ],
+        "reviewer_b.p2": [
+          {
+            "dimension": "consistency",
+            "detail": "synonyms 中的“狐狸精”通常指神怪形象，也常作对人的贬称，不等同于动物“狐狸”，会误命中不同意象。"
+          }
+        ]
+      }
+    },
+    {
+      "id": "cal-dream-d03",
+      "label": "fail",
+      "verdicts": {
+        "reviewer_a.p1": "pass",
+        "reviewer_a.p2": "pass",
+        "reviewer_b.p1": "revise",
+        "reviewer_b.p2": "revise"
+      },
+      "reasons": {
+        "reviewer_a.p1": "泥土的根基、务实、困局联想合理，career负向与“陷入困局”文字一致，同义词指向同一意象。",
+        "reviewer_a.p2": "泥土的根基与困局联想合理，career 负向与“陷入困局”文字一致，无预测。",
+        "reviewer_b.p1": "正文可以支持一般性的受困感，但不足以确定事业方向偏阻。",
+        "reviewer_b.p2": "文字可以表达一般受困感，但不足以支持专门的事业负向标注。"
+      },
+      "issues": {
+        "reviewer_b.p1": [
+          {
+            "dimension": "theme_direction",
+            "detail": "theme_map.career 为 -0.3，但正文的“陷入困局”仅指一般感受，没有将阻碍关联到事业或工作，无法支持事业主题的负向标记。"
+          }
+        ],
+        "reviewer_b.p2": [
+          {
+            "dimension": "theme_direction",
+            "detail": "theme_map.career 为负，但 text 的“根基、务实或陷入困局”仅是一般状态联想，没有将困局指向事业，不能据此支持事业负向。"
+          }
+        ]
+      }
+    },
+    {
+      "id": "cal-dream-d04",
+      "label": "fail",
+      "verdicts": {
+        "reviewer_a.p1": "revise",
+        "reviewer_a.p2": "pass",
+        "reviewer_b.p1": "revise",
+        "reviewer_b.p2": "revise"
+      },
+      "reasons": {
+        "reviewer_a.p1": "自杀释义措辞平和且含危机支持，但同义词“想不开”指向现实念头而非梦境意象，会造成误检索。",
+        "reviewer_a.p2": "自杀释义措辞平和，含求助与紧急渠道提示，无预测或确定性断言；唯“想不开”为常见其他义项略欠贴切，但不构成实质误导。",
+        "reviewer_b.p1": "正文对敏感意象的处理平和且有求助提示，但“想不开”不适合作为自杀的同义词。",
+        "reviewer_b.p2": "敏感意象的解释与求助提示妥当，但“想不开”不符合检索同义词要求。"
+      },
+      "issues": {
+        "reviewer_a.p1": [
+          {
+            "dimension": "consistency",
+            "detail": "同义词“想不开”是口语中“有轻生念头”的常见义项，与“梦见自杀”并非同一意象，用户说出时易误命中"
+          }
+        ],
+        "reviewer_b.p1": [
+          {
+            "dimension": "consistency",
+            "detail": "synonyms 中“想不开”也常指一时纠结、无法释怀，并不等同于自杀，作为检索别名会误命中。"
+          }
+        ],
+        "reviewer_b.p2": [
+          {
+            "dimension": "consistency",
+            "detail": "synonyms 中“想不开”也常指一时纠结、无法释怀，并不必然指自杀；作为检索别名会误命中，应删除。"
+          }
+        ]
+      }
+    },
+    {
+      "id": "cal-dream-d11",
+      "label": "fail",
+      "verdicts": {
+        "reviewer_a.p1": "pass",
+        "reviewer_a.p2": "pass",
+        "reviewer_b.p1": "revise",
+        "reviewer_b.p2": "revise"
+      },
+      "reasons": {
+        "reviewer_a.p1": "饺子释义符合团圆、家庭的传统象征，theme_map方向（关系微正、财务微负）与文字无明显矛盾，无宿命化断言。",
+        "reviewer_a.p2": "释义与饺子意象的心理联想相符，主题方向与文字一致，无宿命化或预测表述。",
+        "reviewer_b.p1": "财务负向缺少文字依据，且同义词混入了不同的动作意象。",
+        "reviewer_b.p2": "同义词混入不同动作意象，且财务负向缺乏文字依据。"
+      },
+      "issues": {
+        "reviewer_b.p1": [
+          {
+            "dimension": "theme_direction",
+            "detail": "theme_map.finance 为 -0.3，但正文仅涉及团圆、家庭、满足感与照顾，没有财务偏阻的联想依据。"
+          },
+          {
+            "dimension": "consistency",
+            "detail": "synonyms 中“包饺子”指制作食物的动作，key“饺子”指食物本身，不是同一事物或动作的近义说法。"
+          }
+        ],
+        "reviewer_b.p2": [
+          {
+            "dimension": "consistency",
+            "detail": "synonyms 中“包饺子”是制作食物的动作，不是“饺子”这一食物的同义说法，可能误命中。"
+          },
+          {
+            "dimension": "theme_direction",
+            "detail": "theme_map.finance 为负，但 text 仅涉及团圆、家庭、满足感与照顾，没有财务受阻的含义。"
+          }
+        ]
+      }
+    },
+    {
+      "id": "cal-dream-d16",
+      "label": "fail",
+      "verdicts": {
+        "reviewer_a.p1": "pass",
+        "reviewer_a.p2": "pass",
+        "reviewer_b.p1": "revise",
+        "reviewer_b.p2": "revise"
+      },
+      "reasons": {
+        "reviewer_a.p1": "桥的过渡与连接联想符合核心象征，theme_map 全为 0 与中性文字相容，措辞非预测化。",
+        "reviewer_a.p2": "桥象征过渡与连接，表述中性并注明仅供自我探索。",
+        "reviewer_b.p1": "一般桥梁的象征解释可用，但断桥情节不宜作为其同义检索别名。",
+        "reviewer_b.p2": "一般桥梁的释义可用，但断桥情节不应作为其同义检索别名。"
+      },
+      "issues": {
+        "reviewer_b.p1": [
+          {
+            "dimension": "consistency",
+            "detail": "synonyms 中的“桥断了”包含连接中断或通行受阻的额外情节，不是一般“桥”的同义称呼，直接匹配当前过渡、连接的释义可能误导。"
+          }
+        ],
+        "reviewer_b.p2": [
+          {
+            "dimension": "consistency",
+            "detail": "synonyms 中的“桥断了”包含连接中断、桥梁损坏的情节，不是一般“桥”的同义说法，直接匹配当前过渡与连接的释义可能误导。"
+          }
+        ]
+      }
+    },
+    {
+      "id": "cal-dream-d19",
+      "label": "fail",
+      "verdicts": {
+        "reviewer_a.p1": "revise",
+        "reviewer_a.p2": "pass",
+        "reviewer_b.p1": "revise",
+        "reviewer_b.p2": "revise"
+      },
+      "reasons": {
+        "reviewer_a.p1": "飞的文字表达积极联想，self却标负向，方向与释义不符。",
+        "reviewer_a.p2": "飞的自由与自信联想合理，但 theme_map 中 self 标为负值，与文字表达的顺向倾向不一致。",
+        "reviewer_b.p1": "自我主题的负向标记与正文核心表达的倾向不一致。",
+        "reviewer_b.p2": "自我负向与释义核心表达的自由、突破和自信提升不一致。"
+      },
+      "issues": {
+        "reviewer_a.p1": [
+          {
+            "dimension": "theme_direction",
+            "detail": "theme_map中self为-0.15（偏阻），但文字写“渴望自由、摆脱限制或自信提升”，整体偏顺偏积极，方向与文字不一致"
+          }
+        ],
+        "reviewer_b.p1": [
+          {
+            "dimension": "theme_direction",
+            "detail": "theme_map.self 为 -0.15，但正文核心联想是“渴望自由、摆脱限制或自信提升”，整体偏向舒展与提升；泛指近期压力不足以支持当前自我负向标记。"
+          }
+        ],
+        "reviewer_b.p2": [
+          {
+            "dimension": "theme_direction",
+            "detail": "theme_map.self 为负，而 text 的核心联想是“渴望自由、摆脱限制或自信提升”，整体偏向舒展与提升；后文泛指压力不足以支持当前自我负向。"
+          }
+        ]
+      }
+    }
+  ],
+  "usage": {
+    "reviewer_a": {
+      "calls": 4,
+      "input_tokens": 12190,
+      "output_tokens": 2231,
+      "latency_s": 13.056,
+      "returned_models": [
+        "deepseek-flash"
+      ],
+      "errors": {},
+      "retried_calls": 0,
+      "http_retries": 0,
+      "cost": null,
+      "known_cost_estimate": null,
+      "usage_complete": true,
+      "cost_basis": "配置单价估算，非账单；服务失败的用量可能未知",
+      "currency": null
+    },
+    "reviewer_b": {
+      "calls": 4,
+      "input_tokens": 13968,
+      "output_tokens": 4497,
+      "latency_s": 108.228,
+      "returned_models": [
+        "gpt-6.1-sol"
+      ],
+      "errors": {},
+      "retried_calls": 0,
+      "http_retries": 0,
+      "cost": null,
+      "known_cost_estimate": null,
+      "usage_complete": true,
+      "cost_basis": "配置单价估算，非账单；服务失败的用量可能未知",
+      "currency": null
+    }
+  }
+}

@@ -1,0 +1,88 @@
+{
+  "batch": "b003",
+  "reviewer": "reviewer_b",
+  "run_pass": 1,
+  "attempt": 1,
+  "vendor": "openai",
+  "requested_model": "gpt-6.1-sol",
+  "returned_model": "gpt-6.1-sol",
+  "api": "openai",
+  "started_at": "2026-10-22T10:20:49+00:00",
+  "finished_at": "2026-10-22T10:21:31+00:00",
+  "latency_s": 42.142,
+  "http_attempts": 1,
+  "finish_reason": "stop",
+  "prompt_sha256": "258a7a2a2fcf273c7c449c9cb5dad1662688a27b946081f16c804c3eb598de85",
+  "input_tokens": 3560,
+  "output_tokens": 1014,
+  "cached_input_tokens": null,
+  "usage_available": true,
+  "raw_text": "{\n  \"items\": [\n    {\n      \"item\": \"i01\",\n      \"verdict\": \"revise\",\n      \"issues\": [\n        {\n          \"dimension\": \"tradition\",\n          \"detail\": \"text 将第8宫的主题写成“资源与价值”，这是参考表中第2宫的主题；第8宫应为“共享资源与信任”。\"\n        }\n      ],\n      \"reason\": \"海王星的想象与理想主题可用，但宫位主题需改为第8宫对应的共享资源与信任。\"\n    },\n    {\n      \"item\": \"i02\",\n      \"verdict\": \"revise\",\n      \"issues\": [\n        {\n          \"dimension\": \"theme_direction\",\n          \"detail\": \"theme_map.finance 为 -0.3，但 text 仅涉及创作、兴趣、想象与理想，没有财务偏阻含义，第5宫也无财务方向约定。\"\n        }\n      ],\n      \"reason\": \"行星与宫位主题相符，但财务负向缺少文字或项目约定的支持。\"\n    },\n    {\n      \"item\": \"i03\",\n      \"verdict\": \"revise\",\n      \"issues\": [\n        {\n          \"dimension\": \"tradition\",\n          \"detail\": \"text 将第9宫的主题写成“学习和日常沟通”，这是参考表中第3宫的主题；第9宫应为“远行、学习与视野”。\"\n        }\n      ],\n      \"reason\": \"冥王星的权力边界与深层转变主题准确，但第9宫的主题对应需修正。\"\n    },\n    {\n      \"item\": \"i04\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"火星行动力与第4宫家庭、内在基础的对应准确，主动维护与内在动力支持自我正向，家庭互动摩擦支持关系负向，三个别名均与 key 同义且没有现实预测。\"\n    },\n    {\n      \"item\": \"i05\",\n      \"verdict\": \"revise\",\n      \"issues\": [\n        {\n          \"dimension\": \"theme_direction\",\n          \"detail\": \"theme_map.career 为 0.3，但 text 的休整、内在反思、价值取舍与关系协调没有表达事业偏顺，第12宫也无事业方向约定。\"\n        }\n      ],\n      \"reason\": \"金星与第12宫的核心主题准确，但事业正向没有对应依据。\"\n    },\n    {\n      \"item\": \"i06\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"太阳与第5宫的自我表达、创作和兴趣主题相符，展现个性与成就感支持自我正向，恋爱中增进了解支持较弱的关系正向，两个别名准确且措辞非预测。\"\n    },\n    {\n      \"item\": \"i07\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"水星的信息理解与沟通、第6宫的日常工作与习惯均对应准确，正文为中性观察，四个主题标0相容。\"\n    },\n    {\n      \"item\": \"i08\",\n      \"verdict\": \"revise\",\n      \"issues\": [\n        {\n          \"dimension\": \"certainty\",\n          \"detail\": \"text 中“这一配置预示接下来几个月财运会明显好转”直接预测现实财务状况及发生时段，需删除或改为非预测性的象征反思。\"\n        }\n      ],\n      \"reason\": \"金星与第4宫的主题对应准确，但结尾对未来数月财运作出明确预测，不符合非预测性要求。\"\n    }\n  ]\n}",
+  "verdicts": {
+    "i01": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "tradition",
+          "detail": "text 将第8宫的主题写成“资源与价值”，这是参考表中第2宫的主题；第8宫应为“共享资源与信任”。"
+        }
+      ],
+      "reason": "海王星的想象与理想主题可用，但宫位主题需改为第8宫对应的共享资源与信任。"
+    },
+    "i02": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "theme_direction",
+          "detail": "theme_map.finance 为 -0.3，但 text 仅涉及创作、兴趣、想象与理想，没有财务偏阻含义，第5宫也无财务方向约定。"
+        }
+      ],
+      "reason": "行星与宫位主题相符，但财务负向缺少文字或项目约定的支持。"
+    },
+    "i03": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "tradition",
+          "detail": "text 将第9宫的主题写成“学习和日常沟通”，这是参考表中第3宫的主题；第9宫应为“远行、学习与视野”。"
+        }
+      ],
+      "reason": "冥王星的权力边界与深层转变主题准确，但第9宫的主题对应需修正。"
+    },
+    "i04": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "火星行动力与第4宫家庭、内在基础的对应准确，主动维护与内在动力支持自我正向，家庭互动摩擦支持关系负向，三个别名均与 key 同义且没有现实预测。"
+    },
+    "i05": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "theme_direction",
+          "detail": "theme_map.career 为 0.3，但 text 的休整、内在反思、价值取舍与关系协调没有表达事业偏顺，第12宫也无事业方向约定。"
+        }
+      ],
+      "reason": "金星与第12宫的核心主题准确，但事业正向没有对应依据。"
+    },
+    "i06": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "太阳与第5宫的自我表达、创作和兴趣主题相符，展现个性与成就感支持自我正向，恋爱中增进了解支持较弱的关系正向，两个别名准确且措辞非预测。"
+    },
+    "i07": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "水星的信息理解与沟通、第6宫的日常工作与习惯均对应准确，正文为中性观察，四个主题标0相容。"
+    },
+    "i08": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "certainty",
+          "detail": "text 中“这一配置预示接下来几个月财运会明显好转”直接预测现实财务状况及发生时段，需删除或改为非预测性的象征反思。"
+        }
+      ],
+      "reason": "金星与第4宫的主题对应准确，但结尾对未来数月财运作出明确预测，不符合非预测性要求。"
+    }
+  }
+}

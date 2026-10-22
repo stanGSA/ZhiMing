@@ -1,0 +1,80 @@
+{
+  "system": "tarot",
+  "rubric_sha256": "482b14b1296449261d1ab1a3b86aee2a4ad834698d9dd8a41869200d3c9df933",
+  "agreement": {
+    "items": 20,
+    "reviewed": 0,
+    "labels": {
+      "pass": 10,
+      "fail": 10
+    },
+    "kappa": null,
+    "observed_agreement": null,
+    "pairs": {},
+    "label_agreement": {
+      "reviewer_a": {
+        "accuracy": null,
+        "sensitivity": null,
+        "specificity": null
+      },
+      "reviewer_b": {
+        "accuracy": null,
+        "sensitivity": null,
+        "specificity": null
+      }
+    }
+  },
+  "rerun": {
+    "reviewer_a": null,
+    "reviewer_b": null
+  },
+  "gates": {
+    "complete": false,
+    "kappa": false,
+    "rerun": false,
+    "label_agreement": false
+  },
+  "met": false,
+  "thresholds": {
+    "kappa": 0.6,
+    "rerun": 0.9,
+    "label_agreement": 0.85
+  },
+  "disputed": [],
+  "usage": {
+    "reviewer_a": {
+      "calls": 0,
+      "input_tokens": 10030,
+      "output_tokens": 9291,
+      "latency_s": 162.953,
+      "returned_models": [],
+      "errors": {
+        "parse_error": 6
+      },
+      "retried_calls": 0,
+      "http_retries": 0,
+      "cost": null,
+      "known_cost_estimate": null,
+      "usage_complete": true,
+      "cost_basis": "配置单价估算，非账单；服务失败的用量可能未知",
+      "currency": null
+    },
+    "reviewer_b": {
+      "calls": 3,
+      "input_tokens": 10203,
+      "output_tokens": 2346,
+      "latency_s": 72.214,
+      "returned_models": [
+        "gpt-6.1-sol"
+      ],
+      "errors": {},
+      "retried_calls": 0,
+      "http_retries": 0,
+      "cost": null,
+      "known_cost_estimate": null,
+      "usage_complete": true,
+      "cost_basis": "配置单价估算，非账单；服务失败的用量可能未知",
+      "currency": null
+    }
+  }
+}

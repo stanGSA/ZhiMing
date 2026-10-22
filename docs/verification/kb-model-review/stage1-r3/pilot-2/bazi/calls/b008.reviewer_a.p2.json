@@ -1,0 +1,53 @@
+{
+  "batch": "b008",
+  "reviewer": "reviewer_a",
+  "run_pass": 2,
+  "attempt": 1,
+  "vendor": "deepseek",
+  "requested_model": "deepseek-v4-pro",
+  "returned_model": "deepseek-v4-pro",
+  "api": "openai",
+  "started_at": "2026-10-22T09:54:28+00:00",
+  "finished_at": "2026-10-22T09:55:08+00:00",
+  "latency_s": 39.873,
+  "http_attempts": 1,
+  "finish_reason": "stop",
+  "prompt_sha256": "dc919ebf7f75a3aa209ad9acd0a6677263b10eeee5b3eba1c2169672a1b82517",
+  "input_tokens": 3332,
+  "output_tokens": 2787,
+  "cached_input_tokens": 3328,
+  "usage_available": true,
+  "raw_text": "{\"items\":[{\"item\":\"i01\",\"verdict\":\"revise\",\"issues\":[{\"dimension\":\"tradition\",\"detail\":\"正文只作通用提醒，没有列出地支六合的具体成员（子丑、寅亥、卯戌、辰酉、巳申、午未），缺少该规则类条目的核心信息。\"}],\"reason\":\"缺少地支六合成员这一对象专属核心信息，换成同类关系提醒也成立。\"},{\"item\":\"i02\",\"verdict\":\"pass\",\"issues\":[],\"reason\":\"六冲成员正确，方向为中性，且无宿命化断言。\"},{\"item\":\"i03\",\"verdict\":\"pass\",\"issues\":[],\"reason\":\"地支刑成员正确，自我与工作的负向象征有文字支持，且无确定性预测。\"},{\"item\":\"i04\",\"verdict\":\"revise\",\"issues\":[{\"dimension\":\"tradition\",\"detail\":\"三会中“亥子丑对应冬季，会木”写错，亥子丑应会水。\"}],\"reason\":\"亥子丑三会的五行写错，应为水而非木。\"}]}",
+  "verdicts": {
+    "i01": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "tradition",
+          "detail": "正文只作通用提醒，没有列出地支六合的具体成员（子丑、寅亥、卯戌、辰酉、巳申、午未），缺少该规则类条目的核心信息。"
+        }
+      ],
+      "reason": "缺少地支六合成员这一对象专属核心信息，换成同类关系提醒也成立。"
+    },
+    "i02": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "六冲成员正确，方向为中性，且无宿命化断言。"
+    },
+    "i03": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "地支刑成员正确，自我与工作的负向象征有文字支持，且无确定性预测。"
+    },
+    "i04": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "tradition",
+          "detail": "三会中“亥子丑对应冬季，会木”写错，亥子丑应会水。"
+        }
+      ],
+      "reason": "亥子丑三会的五行写错，应为水而非木。"
+    }
+  }
+}

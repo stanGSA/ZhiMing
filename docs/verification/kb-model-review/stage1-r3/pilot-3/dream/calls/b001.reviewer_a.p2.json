@@ -1,0 +1,121 @@
+{
+  "batch": "b001",
+  "reviewer": "reviewer_a",
+  "run_pass": 2,
+  "attempt": 1,
+  "vendor": "deepseek",
+  "requested_model": "deepseek-v4-pro",
+  "returned_model": "deepseek-v4-pro",
+  "api": "openai",
+  "started_at": "2026-10-22T10:29:45+00:00",
+  "finished_at": "2026-10-22T10:31:50+00:00",
+  "latency_s": 125.293,
+  "http_attempts": 1,
+  "finish_reason": "stop",
+  "prompt_sha256": "2dc62aab71f805039624c062544b6bc79113f18a16c4c90fa44f09e3eda156b7",
+  "input_tokens": 3763,
+  "output_tokens": 9541,
+  "cached_input_tokens": 3712,
+  "usage_available": true,
+  "raw_text": "{\"items\":[{\"item\":\"i01\",\"verdict\":\"revise\",\"issues\":[{\"dimension\":\"certainty\",\"detail\":\"结尾“梦到它预示近期会收到好消息”是对现实事件的预测，且与前文“不预示现实结果”矛盾。\"}],\"reason\":\"存在运势预测，需删除或改为非预测表述。\"},{\"item\":\"i02\",\"verdict\":\"revise\",\"issues\":[{\"dimension\":\"consistency\",\"detail\":\"同义词“想不开”是常见其他义项，不是“自杀”的同义表达，可能导致误命中。\"}],\"reason\":\"“想不开”不应作为“自杀”的同义别名。\"},{\"item\":\"i03\",\"verdict\":\"pass\",\"issues\":[],\"reason\":\"意象解释中性且无预测，同义词为彩票具体类型，可保留。\"},{\"item\":\"i04\",\"verdict\":\"revise\",\"issues\":[{\"dimension\":\"certainty\",\"detail\":\"结尾“这个梦预示近期会有一笔意外之财”是对现实财务事件的预测。\"},{\"dimension\":\"consistency\",\"detail\":\"同义词“开枪”是使用枪的动作，不是“枪”本身的同义表达，可能误命中。\"}],\"reason\":\"存在财务预测，且“开枪”不应作为“枪”的同义别名。\"},{\"item\":\"i05\",\"verdict\":\"revise\",\"issues\":[{\"dimension\":\"consistency\",\"detail\":\"同义词“桥断了”是桥的破损情节，不是“桥”的同义表达，应移出或独立成意象。\"}],\"reason\":\"“桥断了”不应作为“桥”的同义别名。\"},{\"item\":\"i06\",\"verdict\":\"revise\",\"issues\":[{\"dimension\":\"consistency\",\"detail\":\"同义词“走丢”侧重走失/失散，不同于“迷路”的空间寻路意象，可能误命中。\"}],\"reason\":\"“走丢”不应作为“迷路”的同义别名。\"},{\"item\":\"i07\",\"verdict\":\"revise\",\"issues\":[{\"dimension\":\"theme_direction\",\"detail\":\"career 标为 -0.3，但正文只写“根基、务实或陷入困局”，没有明确的职业/事业含义；普通困局不等同于事业受阻。\"}],\"reason\":\"事业方向缺乏文字依据。\"},{\"item\":\"i08\",\"verdict\":\"pass\",\"issues\":[],\"reason\":\"思念与关系映照表述平和，同义词为具体亲属类型，无方向冲突或预测。\"},{\"item\":\"i09\",\"verdict\":\"revise\",\"issues\":[{\"dimension\":\"consistency\",\"detail\":\"同义词“杯子碎了”是破碎情节，与正文强调“破碎等情节应单独考虑”相矛盾，不应作为“杯子”的同义检索词。\"}],\"reason\":\"“杯子碎了”不应作为“杯子”的同义别名。\"},{\"item\":\"i10\",\"verdict\":\"revise\",\"issues\":[{\"dimension\":\"consistency\",\"detail\":\"同义词“狐狸精”是精怪或对人的贬称，不是“狐狸”本身，应移出。\"},{\"dimension\":\"theme_direction\",\"detail\":\"self 标为 -0.05，但正文没有明确的自我状态负向依据；对他人动机的疑虑更偏关系主题。\"}],\"reason\":\"“狐狸精”不应作为狐狸别名，且 self 负向缺乏依据。\"}]}",
+  "verdicts": {
+    "i01": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "certainty",
+          "detail": "结尾“梦到它预示近期会收到好消息”是对现实事件的预测，且与前文“不预示现实结果”矛盾。"
+        }
+      ],
+      "reason": "存在运势预测，需删除或改为非预测表述。"
+    },
+    "i02": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "consistency",
+          "detail": "同义词“想不开”是常见其他义项，不是“自杀”的同义表达，可能导致误命中。"
+        }
+      ],
+      "reason": "“想不开”不应作为“自杀”的同义别名。"
+    },
+    "i03": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "意象解释中性且无预测，同义词为彩票具体类型，可保留。"
+    },
+    "i04": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "certainty",
+          "detail": "结尾“这个梦预示近期会有一笔意外之财”是对现实财务事件的预测。"
+        },
+        {
+          "dimension": "consistency",
+          "detail": "同义词“开枪”是使用枪的动作，不是“枪”本身的同义表达，可能误命中。"
+        }
+      ],
+      "reason": "存在财务预测，且“开枪”不应作为“枪”的同义别名。"
+    },
+    "i05": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "consistency",
+          "detail": "同义词“桥断了”是桥的破损情节，不是“桥”的同义表达，应移出或独立成意象。"
+        }
+      ],
+      "reason": "“桥断了”不应作为“桥”的同义别名。"
+    },
+    "i06": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "consistency",
+          "detail": "同义词“走丢”侧重走失/失散，不同于“迷路”的空间寻路意象，可能误命中。"
+        }
+      ],
+      "reason": "“走丢”不应作为“迷路”的同义别名。"
+    },
+    "i07": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "theme_direction",
+          "detail": "career 标为 -0.3，但正文只写“根基、务实或陷入困局”，没有明确的职业/事业含义；普通困局不等同于事业受阻。"
+        }
+      ],
+      "reason": "事业方向缺乏文字依据。"
+    },
+    "i08": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "思念与关系映照表述平和，同义词为具体亲属类型，无方向冲突或预测。"
+    },
+    "i09": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "consistency",
+          "detail": "同义词“杯子碎了”是破碎情节，与正文强调“破碎等情节应单独考虑”相矛盾，不应作为“杯子”的同义检索词。"
+        }
+      ],
+      "reason": "“杯子碎了”不应作为“杯子”的同义别名。"
+    },
+    "i10": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "consistency",
+          "detail": "同义词“狐狸精”是精怪或对人的贬称，不是“狐狸”本身，应移出。"
+        },
+        {
+          "dimension": "theme_direction",
+          "detail": "self 标为 -0.05，但正文没有明确的自我状态负向依据；对他人动机的疑虑更偏关系主题。"
+        }
+      ],
+      "reason": "“狐狸精”不应作为狐狸别名，且 self 负向缺乏依据。"
+    }
+  }
+}

@@ -1,0 +1,43 @@
+{
+  "batch": "b001",
+  "reviewer": "reviewer_b",
+  "run_pass": 2,
+  "attempt": 1,
+  "vendor": "openai",
+  "requested_model": "gpt-6.1-sol",
+  "returned_model": "gpt-6.1-sol",
+  "api": "openai",
+  "started_at": "2026-10-22T07:14:27+00:00",
+  "finished_at": "2026-10-22T07:14:40+00:00",
+  "latency_s": 13.141,
+  "http_attempts": 1,
+  "finish_reason": "stop",
+  "prompt_sha256": "9ab24bf83c59e5ccc4f84a7988ea9fb64362a7f089393b1455ed962731ed9bc1",
+  "input_tokens": 2041,
+  "output_tokens": 230,
+  "cached_input_tokens": null,
+  "usage_available": true,
+  "raw_text": "{\n  \"items\": [\n    {\n      \"item\": \"i01\",\n      \"verdict\": \"revise\",\n      \"issues\": [\n        {\n          \"dimension\": \"certainty\",\n          \"detail\": \"text 中“这一配置预示你今年会迎来职位上的晋升”对现实职业事件作出预测，应删除或改为非预测性的反思提示。\"\n        }\n      ],\n      \"reason\": \"第5宫的核心主题正确，但晋升预测违反非预测性要求。\"\n    },\n    {\n      \"item\": \"i02\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"准确说明第3宫的学习与日常沟通主题，主题值为零与中性表述相容。\"\n    },\n    {\n      \"item\": \"i03\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"准确说明第2宫的资源与价值主题，财务方向为零不与中性表述冲突。\"\n    }\n  ]\n}",
+  "verdicts": {
+    "i01": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "certainty",
+          "detail": "text 中“这一配置预示你今年会迎来职位上的晋升”对现实职业事件作出预测，应删除或改为非预测性的反思提示。"
+        }
+      ],
+      "reason": "第5宫的核心主题正确，但晋升预测违反非预测性要求。"
+    },
+    "i02": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "准确说明第3宫的学习与日常沟通主题，主题值为零与中性表述相容。"
+    },
+    "i03": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "准确说明第2宫的资源与价值主题，财务方向为零不与中性表述冲突。"
+    }
+  }
+}

@@ -1,0 +1,90 @@
+{
+  "batch": "b005",
+  "reviewer": "reviewer_a",
+  "run_pass": 2,
+  "attempt": 1,
+  "vendor": "deepseek",
+  "requested_model": "deepseek-v4-pro",
+  "returned_model": "deepseek-v4-pro",
+  "api": "openai",
+  "started_at": "2026-10-22T10:27:34+00:00",
+  "finished_at": "2026-10-22T10:28:25+00:00",
+  "latency_s": 51.488,
+  "http_attempts": 1,
+  "finish_reason": "stop",
+  "prompt_sha256": "f8cec64cddbc14bb1bb450fc664f2cb12eb9b585b68e5e9aa98a374a3bf37c32",
+  "input_tokens": 3405,
+  "output_tokens": 4456,
+  "cached_input_tokens": 3328,
+  "usage_available": true,
+  "raw_text": "{\"items\": [\n  {\n    \"item\": \"i01\",\n    \"verdict\": \"revise\",\n    \"issues\": [\n      {\"dimension\": \"tradition\", \"detail\": \"尾数1在三才五行对应中应为木，不是土。\"}\n    ],\n    \"reason\": \"81数为吉、方向正向，但尾数1五行写错为土，应为木。\"\n  },\n  {\n    \"item\": \"i02\",\n    \"verdict\": \"pass\",\n    \"issues\": [],\n    \"reason\": \"28数归类为凶、尾数8对应金、方向为负且措辞无宿命预测，符合参考事实。\"\n  },\n  {\n    \"item\": \"i03\",\n    \"verdict\": \"revise\",\n    \"issues\": [\n      {\"dimension\": \"tradition\", \"detail\": \"尾数6在三才五行对应中应为土，不是水。\"}\n    ],\n    \"reason\": \"16数为吉、方向正向，但尾数6五行写错为水，应为土。\"\n  },\n  {\n    \"item\": \"i04\",\n    \"verdict\": \"revise\",\n    \"issues\": [\n      {\"dimension\": \"tradition\", \"detail\": \"55数在本项目归类中应为半吉，正文却写“常被归为‘凶’”，与参考事实不符。\"},\n      {\"dimension\": \"theme_direction\", \"detail\": \"theme_map标为0.05小正，但正文开头的“凶”为负向，方向与文字不一致。\"},\n      {\"dimension\": \"consistency\", \"detail\": \"keywords含“半吉”，正文又称“常被归为‘凶’”，互相矛盾。\"}\n    ],\n    \"reason\": \"55数应为半吉，正文写成凶并与关键词、正向theme_map冲突。\"\n  },\n  {\n    \"item\": \"i05\",\n    \"verdict\": \"revise\",\n    \"issues\": [\n      {\"dimension\": \"tradition\", \"detail\": \"48数在参考归类中应为吉，正文却写“常被归为‘凶’”，与参考事实不符。\"},\n      {\"dimension\": \"theme_direction\", \"detail\": \"theme_map为0.15正向，但正文开头的“凶”为负向，前后方向表述不一致。\"}\n    ],\n    \"reason\": \"48数应为吉，正文写成凶且前后方向矛盾。\"\n  },\n  {\n    \"item\": \"i06\",\n    \"verdict\": \"pass\",\n    \"issues\": [],\n    \"reason\": \"75数为半吉、尾数5对应土、方向小正一致，表述符合民间约定且无宿命断言。\"\n  },\n  {\n    \"item\": \"i07\",\n    \"verdict\": \"pass\",\n    \"issues\": [],\n    \"reason\": \"39数为吉、尾数9对应水、方向正向一致，表述准确且无宿命断言。\"\n  }\n]}",
+  "verdicts": {
+    "i01": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "tradition",
+          "detail": "尾数1在三才五行对应中应为木，不是土。"
+        }
+      ],
+      "reason": "81数为吉、方向正向，但尾数1五行写错为土，应为木。"
+    },
+    "i02": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "28数归类为凶、尾数8对应金、方向为负且措辞无宿命预测，符合参考事实。"
+    },
+    "i03": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "tradition",
+          "detail": "尾数6在三才五行对应中应为土，不是水。"
+        }
+      ],
+      "reason": "16数为吉、方向正向，但尾数6五行写错为水，应为土。"
+    },
+    "i04": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "tradition",
+          "detail": "55数在本项目归类中应为半吉，正文却写“常被归为‘凶’”，与参考事实不符。"
+        },
+        {
+          "dimension": "theme_direction",
+          "detail": "theme_map标为0.05小正，但正文开头的“凶”为负向，方向与文字不一致。"
+        },
+        {
+          "dimension": "consistency",
+          "detail": "keywords含“半吉”，正文又称“常被归为‘凶’”，互相矛盾。"
+        }
+      ],
+      "reason": "55数应为半吉，正文写成凶并与关键词、正向theme_map冲突。"
+    },
+    "i05": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "tradition",
+          "detail": "48数在参考归类中应为吉，正文却写“常被归为‘凶’”，与参考事实不符。"
+        },
+        {
+          "dimension": "theme_direction",
+          "detail": "theme_map为0.15正向，但正文开头的“凶”为负向，前后方向表述不一致。"
+        }
+      ],
+      "reason": "48数应为吉，正文写成凶且前后方向矛盾。"
+    },
+    "i06": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "75数为半吉、尾数5对应土、方向小正一致，表述符合民间约定且无宿命断言。"
+    },
+    "i07": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "39数为吉、尾数9对应水、方向正向一致，表述准确且无宿命断言。"
+    }
+  }
+}

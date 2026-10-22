@@ -1,0 +1,56 @@
+{
+  "schema": 1,
+  "kind": "pilot",
+  "system": "bazi",
+  "seed": 3,
+  "batch_size": 10,
+  "passes": 2,
+  "rubric_version": 5,
+  "rubric_sha256": "482b14b1296449261d1ab1a3b86aee2a4ad834698d9dd8a41869200d3c9df933",
+  "script_sha256": "b2b6fd1e29eb6842fa42d46cf1ea236fa170b354fd005c6f6294815440428261",
+  "reviewers": {
+    "reviewer_a": {
+      "vendor": "deepseek",
+      "api": "openai",
+      "model": "deepseek-v4-pro",
+      "api_key_env": "DEEPSEEK_API_KEY",
+      "temperature": null,
+      "max_tokens": 16384,
+      "thinking": "enabled",
+      "reasoning_effort": "high",
+      "base_url_host": "api.deepseek.com"
+    },
+    "reviewer_b": {
+      "vendor": "openai",
+      "api": "openai",
+      "model": "gpt-6.1-sol",
+      "api_key_env": "OPENAI_REVIEW_API_KEY",
+      "temperature": null,
+      "max_tokens": 4096,
+      "base_url_host": "codegoai.com"
+    }
+  },
+  "calibration": {
+    "lock_sha256": "687ad2f988b087e4322a3742c4e698cc62b3d3e2a302f986c7e1d2f7df2d3836",
+    "items": 20,
+    "partition": "dev"
+  },
+  "batch_count": 10,
+  "prompt_sha256": {
+    "b001": "3b5be1b4cdfc60fce3155543144fc6c9aefe02e74a19838dc83dd2eb3039f8c7",
+    "b002": "0777e5149a6eb5243bac564c6866e40d34f017fb4937e6bc54ad025ebb040d60",
+    "b003": "fcdcfbaea866f76aba2961d62523f9c1fb1e88ff0509c262c181725c90af425a",
+    "b004": "1e5d5346a2ea45346eef5b5647645d573e6581637b76ec15ceee2766c163a7cb",
+    "b005": "116f26a88e73b86d7e9aa4e2b2eb95c32b4a9d0c3b149b0c22ddd4ce26730a03",
+    "b006": "dc2da0064b1f03c5806119864038d2b3cef3ad7f6d952dec76177c2d93ef2a8b",
+    "b007": "d3528d73fb94db0473a302bf4cff4a9a59207667ccff043d43c88d0ddadb1946",
+    "b008": "e68ca2ebca7e8a71ed1d12420bd4c311c0cea0ad64eceef4ac01d4798a35a1f4",
+    "b009": "f5e1fbf4352de79097bdcc747f9b3d9f0e785f351e82d842024d72fd7221ade4",
+    "b010": "5550213c5eda11b4f3649686507f5aa4063e6f3dfa2d303e09cd521503ed9d89"
+  },
+  "created_at": "2026-10-22T10:23:03+00:00",
+  "git": {
+    "head": "ea0955ae8f93bc4239612730f260c7e752304344",
+    "dirty": true
+  }
+}

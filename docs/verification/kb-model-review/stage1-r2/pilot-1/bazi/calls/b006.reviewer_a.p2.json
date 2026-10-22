@@ -1,0 +1,48 @@
+{
+  "batch": "b006",
+  "reviewer": "reviewer_a",
+  "run_pass": 2,
+  "attempt": 1,
+  "vendor": "deepseek",
+  "requested_model": "deepseek-flash",
+  "returned_model": "deepseek-flash",
+  "api": "openai",
+  "started_at": "2026-10-22T07:02:48+00:00",
+  "finished_at": "2026-10-22T07:02:50+00:00",
+  "latency_s": 1.511,
+  "http_attempts": 1,
+  "finish_reason": "stop",
+  "prompt_sha256": "50e13f80ca1e19ea29530d0be29f372cfc44972bc4490022a9e8cae8e04535ae",
+  "input_tokens": 2322,
+  "output_tokens": 205,
+  "cached_input_tokens": 2176,
+  "usage_available": true,
+  "raw_text": "{\"items\": [{\"item\": \"i01\", \"verdict\": \"reject\", \"issues\": [{\"dimension\": \"tradition\", \"detail\": \"申的藏干应为庚、壬、戊，条目写成“庚、壬、甲”，把戊误作甲，核心成员写错。\"}], \"reason\": \"藏干成员与参考事实不符，核心信息错误。\"}, {\"item\": \"i02\", \"verdict\": \"pass\", \"issues\": [], \"reason\": \"丑藏己癸辛及五行归属正确，十神说明与免责措辞妥当。\"}, {\"item\": \"i03\", \"verdict\": \"revise\", \"issues\": [{\"dimension\": \"对象专属\", \"detail\": \"未条目的文字只说“按固定表列出”，没有写出未的藏干成员己、丁、乙，换成其他地支也同样成立。\"}], \"reason\": \"缺少该地支藏干的核心成员信息。\"}]}",
+  "verdicts": {
+    "i01": {
+      "verdict": "reject",
+      "issues": [
+        {
+          "dimension": "tradition",
+          "detail": "申的藏干应为庚、壬、戊，条目写成“庚、壬、甲”，把戊误作甲，核心成员写错。"
+        }
+      ],
+      "reason": "藏干成员与参考事实不符，核心信息错误。"
+    },
+    "i02": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "丑藏己癸辛及五行归属正确，十神说明与免责措辞妥当。"
+    },
+    "i03": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "对象专属",
+          "detail": "未条目的文字只说“按固定表列出”，没有写出未的藏干成员己、丁、乙，换成其他地支也同样成立。"
+        }
+      ],
+      "reason": "缺少该地支藏干的核心成员信息。"
+    }
+  }
+}

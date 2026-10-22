@@ -1,0 +1,121 @@
+{
+  "system": "astro",
+  "rubric_sha256": "482b14b1296449261d1ab1a3b86aee2a4ad834698d9dd8a41869200d3c9df933",
+  "agreement": {
+    "items": 20,
+    "reviewed": 20,
+    "labels": {
+      "pass": 10,
+      "fail": 10
+    },
+    "kappa": 0.9,
+    "observed_agreement": 0.95,
+    "pairs": {
+      "pass/pass": 10,
+      "reject/reject": 9,
+      "pass/reject": 1
+    },
+    "label_agreement": {
+      "reviewer_a": {
+        "accuracy": 0.95,
+        "sensitivity": 0.9,
+        "specificity": 1.0
+      },
+      "reviewer_b": {
+        "accuracy": 1.0,
+        "sensitivity": 1.0,
+        "specificity": 1.0
+      }
+    }
+  },
+  "rerun": {
+    "reviewer_a": 0.95,
+    "reviewer_b": 1.0
+  },
+  "gates": {
+    "complete": true,
+    "kappa": true,
+    "rerun": true,
+    "label_agreement": true
+  },
+  "met": true,
+  "thresholds": {
+    "kappa": 0.6,
+    "rerun": 0.9,
+    "label_agreement": 0.85
+  },
+  "disputed": [
+    {
+      "id": "cal-astro-d20",
+      "label": "fail",
+      "verdicts": {
+        "reviewer_a.p1": "pass",
+        "reviewer_a.p2": "revise",
+        "reviewer_b.p1": "revise",
+        "reviewer_b.p2": "revise"
+      },
+      "reasons": {
+        "reviewer_a.p1": "海王星与第8宫主题对应，文字中性且方向全0相容。",
+        "reviewer_a.p2": "第8宫主题描述不准确。",
+        "reviewer_b.p1": "海王星的想象与理想主题可用，但宫位主题需改为第8宫对应的共享资源与信任。",
+        "reviewer_b.p2": "海王星的象征表达可用，但第8宫的核心主题需要修正。"
+      },
+      "issues": {
+        "reviewer_a.p2": [
+          {
+            "dimension": "tradition",
+            "detail": "第8宫应为共享资源与信任，文本写成“资源与价值”，偏向第2宫主题。"
+          }
+        ],
+        "reviewer_b.p1": [
+          {
+            "dimension": "tradition",
+            "detail": "text 将第8宫的主题写成“资源与价值”，这是参考表中第2宫的主题；第8宫应为“共享资源与信任”。"
+          }
+        ],
+        "reviewer_b.p2": [
+          {
+            "dimension": "tradition",
+            "detail": "正文将第8宫的主题写为“资源与价值”，这是参考表中第2宫的主题；第8宫应为“共享资源与信任”。"
+          }
+        ]
+      }
+    }
+  ],
+  "usage": {
+    "reviewer_a": {
+      "calls": 10,
+      "input_tokens": 25616,
+      "output_tokens": 29102,
+      "latency_s": 384.38,
+      "returned_models": [
+        "deepseek-v4-pro"
+      ],
+      "errors": {},
+      "retried_calls": 0,
+      "http_retries": 0,
+      "cost": null,
+      "known_cost_estimate": null,
+      "usage_complete": true,
+      "cost_basis": "配置单价估算，非账单；服务失败的用量可能未知",
+      "currency": null
+    },
+    "reviewer_b": {
+      "calls": 10,
+      "input_tokens": 28770,
+      "output_tokens": 4195,
+      "latency_s": 250.199,
+      "returned_models": [
+        "gpt-6.1-sol"
+      ],
+      "errors": {},
+      "retried_calls": 0,
+      "http_retries": 0,
+      "cost": null,
+      "known_cost_estimate": null,
+      "usage_complete": true,
+      "cost_basis": "配置单价估算，非账单；服务失败的用量可能未知",
+      "currency": null
+    }
+  }
+}

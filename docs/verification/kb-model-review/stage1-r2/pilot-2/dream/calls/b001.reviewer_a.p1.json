@@ -1,0 +1,98 @@
+{
+  "batch": "b001",
+  "reviewer": "reviewer_a",
+  "run_pass": 1,
+  "attempt": 1,
+  "vendor": "deepseek",
+  "requested_model": "deepseek-flash",
+  "returned_model": "deepseek-flash",
+  "api": "openai",
+  "started_at": "2026-10-22T08:00:07+00:00",
+  "finished_at": "2026-10-22T08:00:11+00:00",
+  "latency_s": 4.132,
+  "http_attempts": 1,
+  "finish_reason": "stop",
+  "prompt_sha256": "71331df8762fc9c4327e286e189e2ee849cedc9c4cc4c739aeac7f4ed7bcf25e",
+  "input_tokens": 3290,
+  "output_tokens": 715,
+  "cached_input_tokens": 768,
+  "usage_available": true,
+  "raw_text": "{\"items\": [{\"item\": \"i01\", \"verdict\": \"pass\", \"issues\": [], \"reason\": \"释义与生病意象的心理联想相符，免责声明到位，theme_map 的 self 轻微负向与“疲惫、需要照顾”一致，同义词均为同一意象的常见说法。\"}, {\"item\": \"i02\", \"verdict\": \"pass\", \"issues\": [], \"reason\": \"彩票释义围绕对转机的期待且不构成购买建议，theme_map 全为 0 与中性文字相容，刮刮乐为同类物品意象。\"}, {\"item\": \"i03\", \"verdict\": \"pass\", \"issues\": [], \"reason\": \"石头象征稳固、阻碍或沉重心事符合传统联想，theme_map 全 0 与中性文字相容，大石头、岩石、石块为同一意象。\"}, {\"item\": \"i04\", \"verdict\": \"revise\", \"issues\": [{\"dimension\": \"certainty\", \"detail\": \"文末“梦到它预示近期会收到好消息”属于对现实事件的预测，违反预测维度，且与 theme_map 全 0 及前后免责矛盾。\"}], \"reason\": \"结尾的预示性断言须删除，其余释义与中性方向相容。\"}, {\"item\": \"i05\", \"verdict\": \"pass\", \"issues\": [], \"reason\": \"面试释义围绕评价与新机会的紧张，免责声明到位，theme_map 全 0 与中性文字相容，同义词为同一情境。\"}, {\"item\": \"i06\", \"verdict\": \"revise\", \"issues\": [{\"dimension\": \"synonyms\", \"detail\": \"“桥断了”是桥破损/断裂的不同情节，不是桥的同一意象说法，不能作为同义词，会误命中。\"}], \"reason\": \"同义词混入“桥断了”这一不同情节，须移除。\"}, {\"item\": \"i07\", \"verdict\": \"pass\", \"issues\": [], \"reason\": \"背叛释义聚焦关系不安全感并明确不代表现实背叛，relationship 轻微负向与文字一致，去背叛、出轨为同一或近义意象。\"}, {\"item\": \"i08\", \"verdict\": \"revise\", \"issues\": [{\"dimension\": \"synonyms\", \"detail\": \"“杯子碎了”是杯子破损的不同情节，正文也强调应单独考虑，不能作为杯子的一般同义词，会误命中。\"}], \"reason\": \"同义词混入“杯子碎了”这一不同情节，须移除。\"}, {\"item\": \"i09\", \"verdict\": \"revise\", \"issues\": [{\"dimension\": \"synonyms\", \"detail\": \"“想不开”是常见其他义项（指情绪低落或想不通），并非自杀的同义说法，不宜作检索别名。\"}], \"reason\": \"同义词“想不开”义项不同，易误命中；其余释义措辞平和、免责到位。\"}, {\"item\": \"i10\", \"verdict\": \"revise\", \"issues\": [{\"dimension\": \"certainty\", \"detail\": \"文末“这个梦预示近期会有一笔意外之财”属于对现实财务事件的预测，违反预测与财务确定性维度。\"}], \"reason\": \"结尾的意外之财预示须删除，其余释义与轻微正向 self 相容。\"}]}",
+  "verdicts": {
+    "i01": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "释义与生病意象的心理联想相符，免责声明到位，theme_map 的 self 轻微负向与“疲惫、需要照顾”一致，同义词均为同一意象的常见说法。"
+    },
+    "i02": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "彩票释义围绕对转机的期待且不构成购买建议，theme_map 全为 0 与中性文字相容，刮刮乐为同类物品意象。"
+    },
+    "i03": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "石头象征稳固、阻碍或沉重心事符合传统联想，theme_map 全 0 与中性文字相容，大石头、岩石、石块为同一意象。"
+    },
+    "i04": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "certainty",
+          "detail": "文末“梦到它预示近期会收到好消息”属于对现实事件的预测，违反预测维度，且与 theme_map 全 0 及前后免责矛盾。"
+        }
+      ],
+      "reason": "结尾的预示性断言须删除，其余释义与中性方向相容。"
+    },
+    "i05": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "面试释义围绕评价与新机会的紧张，免责声明到位，theme_map 全 0 与中性文字相容，同义词为同一情境。"
+    },
+    "i06": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "synonyms",
+          "detail": "“桥断了”是桥破损/断裂的不同情节，不是桥的同一意象说法，不能作为同义词，会误命中。"
+        }
+      ],
+      "reason": "同义词混入“桥断了”这一不同情节，须移除。"
+    },
+    "i07": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "背叛释义聚焦关系不安全感并明确不代表现实背叛，relationship 轻微负向与文字一致，去背叛、出轨为同一或近义意象。"
+    },
+    "i08": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "synonyms",
+          "detail": "“杯子碎了”是杯子破损的不同情节，正文也强调应单独考虑，不能作为杯子的一般同义词，会误命中。"
+        }
+      ],
+      "reason": "同义词混入“杯子碎了”这一不同情节，须移除。"
+    },
+    "i09": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "synonyms",
+          "detail": "“想不开”是常见其他义项（指情绪低落或想不通），并非自杀的同义说法，不宜作检索别名。"
+        }
+      ],
+      "reason": "同义词“想不开”义项不同，易误命中；其余释义措辞平和、免责到位。"
+    },
+    "i10": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "certainty",
+          "detail": "文末“这个梦预示近期会有一笔意外之财”属于对现实财务事件的预测，违反预测与财务确定性维度。"
+        }
+      ],
+      "reason": "结尾的意外之财预示须删除，其余释义与轻微正向 self 相容。"
+    }
+  }
+}

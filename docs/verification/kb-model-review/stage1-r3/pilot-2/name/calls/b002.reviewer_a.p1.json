@@ -1,0 +1,42 @@
+{
+  "batch": "b002",
+  "reviewer": "reviewer_a",
+  "run_pass": 1,
+  "attempt": 1,
+  "vendor": "deepseek",
+  "requested_model": "deepseek-v4-pro",
+  "returned_model": "deepseek-v4-pro",
+  "api": "openai",
+  "started_at": "2026-10-22T09:58:47+00:00",
+  "finished_at": "2026-10-22T09:59:14+00:00",
+  "latency_s": 27.254,
+  "http_attempts": 1,
+  "finish_reason": "stop",
+  "prompt_sha256": "7da2a08e3823b1276229814266664cdf8da17f3cf5e8063f24759a518d2ff7da",
+  "input_tokens": 2187,
+  "output_tokens": 1911,
+  "cached_input_tokens": 1152,
+  "usage_available": true,
+  "raw_text": "{\"items\": [\n  {\n    \"item\": \"i01\",\n    \"verdict\": \"revise\",\n    \"issues\": [\n      {\n        \"dimension\": \"certainty\",\n        \"detail\": \"“用这个数理的人，中年以后会财运亨通”是对现实个人财运的宿命化确定性断言，应改为民间约定或象征性表达。\"\n      },\n      {\n        \"dimension\": \"theme_direction\",\n        \"detail\": \"文本明确表达财运亨通的偏顺财务方向，但 theme_map.finance 标为 0，方向不一致。\"\n      }\n    ],\n    \"reason\": \"结尾将水数理描述为中年财运亨通，属于命运断言且与财务主题 0 方向不一致。\"\n  },\n  {\n    \"item\": \"i02\",\n    \"verdict\": \"pass\",\n    \"issues\": [],\n    \"reason\": \"三才土的核心象征与来源说明准确，无方向、预测或事实问题。\"\n  }\n]}",
+  "verdicts": {
+    "i01": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "certainty",
+          "detail": "“用这个数理的人，中年以后会财运亨通”是对现实个人财运的宿命化确定性断言，应改为民间约定或象征性表达。"
+        },
+        {
+          "dimension": "theme_direction",
+          "detail": "文本明确表达财运亨通的偏顺财务方向，但 theme_map.finance 标为 0，方向不一致。"
+        }
+      ],
+      "reason": "结尾将水数理描述为中年财运亨通，属于命运断言且与财务主题 0 方向不一致。"
+    },
+    "i02": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "三才土的核心象征与来源说明准确，无方向、预测或事实问题。"
+    }
+  }
+}

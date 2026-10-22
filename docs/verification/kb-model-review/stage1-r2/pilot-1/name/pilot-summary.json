@@ -1,0 +1,148 @@
+{
+  "system": "name",
+  "rubric_sha256": "540ccba092ad014719c09482151da49f63576976f69c322053a8f0b207183ddc",
+  "agreement": {
+    "items": 20,
+    "reviewed": 20,
+    "labels": {
+      "fail": 10,
+      "pass": 10
+    },
+    "kappa": 0.8,
+    "observed_agreement": 0.9,
+    "pairs": {
+      "reject/reject": 9,
+      "pass/pass": 9,
+      "pass/reject": 1,
+      "reject/pass": 1
+    },
+    "label_agreement": {
+      "reviewer_a": {
+        "accuracy": 0.9,
+        "sensitivity": 0.9,
+        "specificity": 0.9
+      },
+      "reviewer_b": {
+        "accuracy": 1.0,
+        "sensitivity": 1.0,
+        "specificity": 1.0
+      }
+    }
+  },
+  "rerun": {
+    "reviewer_a": 1.0,
+    "reviewer_b": 1.0
+  },
+  "gates": {
+    "complete": true,
+    "kappa": true,
+    "rerun": true,
+    "label_agreement": true
+  },
+  "met": true,
+  "thresholds": {
+    "kappa": 0.6,
+    "rerun": 0.9,
+    "label_agreement": 0.85
+  },
+  "disputed": [
+    {
+      "id": "cal-name-d12",
+      "label": "fail",
+      "verdicts": {
+        "reviewer_a.p1": "pass",
+        "reviewer_a.p2": "pass",
+        "reviewer_b.p1": "revise",
+        "reviewer_b.p2": "revise"
+      },
+      "reasons": {
+        "reviewer_a.p1": "三才五行关系描述正确，主题方向与“需要协调”及约定一致，已用民间约定和免责声明，无宿命化表述。",
+        "reviewer_a.p2": "三才土克木、水生木描述准确，文字点明民间约定与克制说法，主题方向与文字相符，无宿命化预测。",
+        "reviewer_b.p1": "组合对象与象征解释基本相符，但一处相克规则写反，需要修正。",
+        "reviewer_b.p2": "组合对象及方向基本一致，但一处相克规则写反，需要修正。"
+      },
+      "issues": {
+        "reviewer_b.p1": [
+          {
+            "dimension": "tradition",
+            "detail": "text 中“土克木”不符合参考事实，也与紧接的“天格土被人格木所克”矛盾；应改为“木克土”。"
+          }
+        ],
+        "reviewer_b.p2": [
+          {
+            "dimension": "tradition",
+            "detail": "text 中“土克木”与参考事实不符，应为“木克土”；后面的“天格土被人格木所克”是正确的，但与前述规则矛盾。"
+          }
+        ]
+      }
+    },
+    {
+      "id": "cal-name-d18",
+      "label": "pass",
+      "verdicts": {
+        "reviewer_a.p1": "revise",
+        "reviewer_a.p2": "revise",
+        "reviewer_b.p1": "pass",
+        "reviewer_b.p2": "pass"
+      },
+      "reasons": {
+        "reviewer_a.p1": "把数理自身尾数当作三才五行对应依据，属对象规则表述错误。",
+        "reviewer_a.p2": "吉凶归类与项目约定一致，但混入三才尾数五行表述易误导。",
+        "reviewer_b.p1": "28的凶数归类、尾数8对应金及负向主题均符合参考事实，且明确限定为民俗象征。",
+        "reviewer_b.p2": "28的分类、尾数五行及负向象征均符合参考事实，且明确限定为民俗解释。"
+      },
+      "issues": {
+        "reviewer_a.p1": [
+          {
+            "dimension": "tradition",
+            "detail": "“尾数8在三才五行配属中对应金”有误；三才按天格、人格、地格各自尾数定五行，并非按数理本身尾数，且 8 对应的是金没错，但“某数尾数对应某五行”的说法与三才规则不符。"
+          }
+        ],
+        "reviewer_a.p2": [
+          {
+            "dimension": "plain_language",
+            "detail": "text 称“尾数8在三才五行配属中对应金”，但按参考事实三才尾数对应为 7、8 金，8 对应金没错；问题在 28 本身被归为凶与项目归类一致，但“尾数8对应金”表述本身无误。需要指出的是，28 属于凶数，与文字一致；但该条把“尾数8对应金”作为三才五行配属混入数理释义，容易误导读者以为这是该数理吉凶的依据。"
+          }
+        ]
+      }
+    }
+  ],
+  "usage": {
+    "reviewer_a": {
+      "calls": 10,
+      "input_tokens": 22774,
+      "output_tokens": 3159,
+      "latency_s": 22.596,
+      "returned_models": [
+        "deepseek-flash"
+      ],
+      "errors": {},
+      "retried_calls": 0,
+      "http_retries": 0,
+      "cost": null,
+      "known_cost_estimate": null,
+      "usage_complete": true,
+      "cost_basis": "配置单价估算，非账单；服务失败的用量可能未知",
+      "currency": null
+    },
+    "reviewer_b": {
+      "calls": 10,
+      "input_tokens": 25806,
+      "output_tokens": 4189,
+      "latency_s": 127.112,
+      "returned_models": [
+        "gpt-6.1-sol"
+      ],
+      "errors": {
+        "service_error": 2
+      },
+      "retried_calls": 0,
+      "http_retries": 0,
+      "cost": null,
+      "known_cost_estimate": null,
+      "usage_complete": false,
+      "cost_basis": "配置单价估算，非账单；服务失败的用量可能未知",
+      "currency": null
+    }
+  }
+}

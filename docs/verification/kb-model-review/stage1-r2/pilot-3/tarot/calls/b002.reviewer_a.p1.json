@@ -1,0 +1,87 @@
+{
+  "batch": "b002",
+  "reviewer": "reviewer_a",
+  "run_pass": 1,
+  "attempt": 1,
+  "vendor": "deepseek",
+  "requested_model": "deepseek-flash",
+  "returned_model": "deepseek-flash",
+  "api": "openai",
+  "started_at": "2026-10-22T08:28:22+00:00",
+  "finished_at": "2026-10-22T08:28:26+00:00",
+  "latency_s": 4.185,
+  "http_attempts": 1,
+  "finish_reason": "stop",
+  "prompt_sha256": "d846441c277f18d607560f8e4684a8d7a47ad5401473d328a40a8dcf9877ebcd",
+  "input_tokens": 3605,
+  "output_tokens": 613,
+  "cached_input_tokens": 512,
+  "usage_available": true,
+  "raw_text": "{\"items\":[{\"item\":\"i01\",\"verdict\":\"revise\",\"issues\":[{\"dimension\":\"theme_direction\",\"detail\":\"theme_map.career 为 +0.5，但正文“难过的经历需要被承认”“为恢复留出空间”表达的是受阻/受伤，宝剑牌组虽作用于事业，但文字与正向不符；且宝剑三属宝剑牌，事业方向须能从文字看出，此处偏负。\"}],\"reason\":\"事业主题标了正向，与正文表达的难过、恢复受阻倾向相反。\"},{\"item\":\"i02\",\"verdict\":\"pass\",\"issues\":[],\"reason\":\"逆位卸下重担的方向与各主题正向一致，权杖对应事业/自我符合约定，财务正向有文字“减轻压力、放下任务”支持，免责声明不构成预测。\"},{\"item\":\"i03\",\"verdict\":\"revise\",\"issues\":[{\"dimension\":\"theme_direction\",\"detail\":\"theme_map.self 为 -0.3，但正文“独立判断与清楚的边界有助于处理问题”是偏顺/正向表述，看不出自我状态受阻，方向与文字相反。\"}],\"reason\":\"自我主题标负向，但正文表达的是有助于处理问题的正向倾向。\"},{\"item\":\"i04\",\"verdict\":\"pass\",\"issues\":[],\"reason\":\"权杖七逆位“持续防守疲惫”与其事业、自我负向一致，权杖主题约定成立，免责声明不构成预测。\"},{\"item\":\"i05\",\"verdict\":\"pass\",\"issues\":[],\"reason\":\"高塔逆位“回避改变延长压力”与自我、事业、感情负向一致，大阿卡纳三主题约定成立。\"},{\"item\":\"i06\",\"verdict\":\"revise\",\"issues\":[{\"dimension\":\"certainty\",\"detail\":\"末句“它预示你很快会在工作上得到认可”对现实事件作出确定性预测，属于宿命化断言。\"},{\"dimension\":\"theme_direction\",\"detail\":\"末句引入事业将会得到认可的预测，但 theme_map 未标 career 方向，且该预测句本身应删除；预测句与圣杯八正位“离开”主题不符。\"}],\"reason\":\"结尾“预示很快会在工作上得到认可”是现实事件预测，违反确定性要求。\"},{\"item\":\"i07\",\"verdict\":\"pass\",\"issues\":[],\"reason\":\"倒吊人逆位“拖延与无效牺牲”与自我、事业、感情负向一致，大阿卡纳主题约定成立。\"},{\"item\":\"i08\",\"verdict\":\"pass\",\"issues\":[],\"reason\":\"圣杯四逆位“重新注意选择、留出尝试空间”与感情、自我正向一致，圣杯主题约定成立。\"},{\"item\":\"i09\",\"verdict\":\"pass\",\"issues\":[],\"reason\":\"太阳正位“清晰、积极反馈有助于行动”与自我、事业、感情正向一致，大阿卡纳三主题约定成立，免责声明不构成预测。\"}]}",
+  "verdicts": {
+    "i01": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "theme_direction",
+          "detail": "theme_map.career 为 +0.5，但正文“难过的经历需要被承认”“为恢复留出空间”表达的是受阻/受伤，宝剑牌组虽作用于事业，但文字与正向不符；且宝剑三属宝剑牌，事业方向须能从文字看出，此处偏负。"
+        }
+      ],
+      "reason": "事业主题标了正向，与正文表达的难过、恢复受阻倾向相反。"
+    },
+    "i02": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "逆位卸下重担的方向与各主题正向一致，权杖对应事业/自我符合约定，财务正向有文字“减轻压力、放下任务”支持，免责声明不构成预测。"
+    },
+    "i03": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "theme_direction",
+          "detail": "theme_map.self 为 -0.3，但正文“独立判断与清楚的边界有助于处理问题”是偏顺/正向表述，看不出自我状态受阻，方向与文字相反。"
+        }
+      ],
+      "reason": "自我主题标负向，但正文表达的是有助于处理问题的正向倾向。"
+    },
+    "i04": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "权杖七逆位“持续防守疲惫”与其事业、自我负向一致，权杖主题约定成立，免责声明不构成预测。"
+    },
+    "i05": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "高塔逆位“回避改变延长压力”与自我、事业、感情负向一致，大阿卡纳三主题约定成立。"
+    },
+    "i06": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "certainty",
+          "detail": "末句“它预示你很快会在工作上得到认可”对现实事件作出确定性预测，属于宿命化断言。"
+        },
+        {
+          "dimension": "theme_direction",
+          "detail": "末句引入事业将会得到认可的预测，但 theme_map 未标 career 方向，且该预测句本身应删除；预测句与圣杯八正位“离开”主题不符。"
+        }
+      ],
+      "reason": "结尾“预示很快会在工作上得到认可”是现实事件预测，违反确定性要求。"
+    },
+    "i07": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "倒吊人逆位“拖延与无效牺牲”与自我、事业、感情负向一致，大阿卡纳主题约定成立。"
+    },
+    "i08": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "圣杯四逆位“重新注意选择、留出尝试空间”与感情、自我正向一致，圣杯主题约定成立。"
+    },
+    "i09": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "太阳正位“清晰、积极反馈有助于行动”与自我、事业、感情正向一致，大阿卡纳三主题约定成立，免责声明不构成预测。"
+    }
+  }
+}

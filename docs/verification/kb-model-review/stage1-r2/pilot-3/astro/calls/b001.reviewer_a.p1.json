@@ -1,0 +1,47 @@
+{
+  "batch": "b001",
+  "reviewer": "reviewer_a",
+  "run_pass": 1,
+  "attempt": 1,
+  "vendor": "deepseek",
+  "requested_model": "deepseek-flash",
+  "returned_model": "deepseek-flash",
+  "api": "openai",
+  "started_at": "2026-10-22T08:29:41+00:00",
+  "finished_at": "2026-10-22T08:29:42+00:00",
+  "latency_s": 1.637,
+  "http_attempts": 1,
+  "finish_reason": "stop",
+  "prompt_sha256": "c5938d343f63a27996b76d20433242f712033923fcd971f7793bfdc736c3a0da",
+  "input_tokens": 2201,
+  "output_tokens": 187,
+  "cached_input_tokens": 896,
+  "usage_available": true,
+  "raw_text": "{\"items\":[{\"item\":\"i01\",\"verdict\":\"reject\",\"issues\":[{\"dimension\":\"certainty\",\"detail\":\"“这一配置预示你今年会迎来职位上的晋升”是对现实事件的确定性预测。\"},{\"dimension\":\"theme_direction\",\"detail\":\"theme_map 全为0，但正文却断言晋升，属于对未来事业结果的预测，与无方向的中性表述不符。\"}],\"reason\":\"条目含对现实事件（今年晋升）的预测，须删除预测句。\"},{\"item\":\"i02\",\"verdict\":\"pass\",\"issues\":[],\"reason\":\"第3宫主题（学习与日常沟通）符合参考事实，无方向、无预测或宿命措辞。\"},{\"item\":\"i03\",\"verdict\":\"pass\",\"issues\":[],\"reason\":\"第2宫主题（资源与价值）符合参考事实，无方向、无预测或宿命措辞。\"}]}",
+  "verdicts": {
+    "i01": {
+      "verdict": "reject",
+      "issues": [
+        {
+          "dimension": "certainty",
+          "detail": "“这一配置预示你今年会迎来职位上的晋升”是对现实事件的确定性预测。"
+        },
+        {
+          "dimension": "theme_direction",
+          "detail": "theme_map 全为0，但正文却断言晋升，属于对未来事业结果的预测，与无方向的中性表述不符。"
+        }
+      ],
+      "reason": "条目含对现实事件（今年晋升）的预测，须删除预测句。"
+    },
+    "i02": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "第3宫主题（学习与日常沟通）符合参考事实，无方向、无预测或宿命措辞。"
+    },
+    "i03": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "第2宫主题（资源与价值）符合参考事实，无方向、无预测或宿命措辞。"
+    }
+  }
+}

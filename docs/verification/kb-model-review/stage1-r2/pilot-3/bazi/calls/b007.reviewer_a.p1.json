@@ -1,0 +1,38 @@
+{
+  "batch": "b007",
+  "reviewer": "reviewer_a",
+  "run_pass": 1,
+  "attempt": 1,
+  "vendor": "deepseek",
+  "requested_model": "deepseek-flash",
+  "returned_model": "deepseek-flash",
+  "api": "openai",
+  "started_at": "2026-10-22T08:31:31+00:00",
+  "finished_at": "2026-10-22T08:31:32+00:00",
+  "latency_s": 1.658,
+  "http_attempts": 1,
+  "finish_reason": "stop",
+  "prompt_sha256": "d3528d73fb94db0473a302bf4cff4a9a59207667ccff043d43c88d0ddadb1946",
+  "input_tokens": 2393,
+  "output_tokens": 140,
+  "cached_input_tokens": 1792,
+  "usage_available": true,
+  "raw_text": "{\"items\": [{\"item\": \"i01\", \"verdict\": \"revise\", \"issues\": [{\"dimension\": \"certainty\", \"detail\": \"“命局中出现它，预示近两年会遇到贵人相助”属于对现实事件的预测（预示、近两年会），违反 certainty 与预测维度。\"}], \"reason\": \"纳音信息正确，但末尾包含对现实事件的预测性断言，需删除。\"}, {\"item\": \"i02\", \"verdict\": \"pass\", \"issues\": [], \"reason\": \"壬寅、癸卯对应金箔金正确，无预测或宿命化措辞，主题中性合理。\"}]}",
+  "verdicts": {
+    "i01": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "certainty",
+          "detail": "“命局中出现它，预示近两年会遇到贵人相助”属于对现实事件的预测（预示、近两年会），违反 certainty 与预测维度。"
+        }
+      ],
+      "reason": "纳音信息正确，但末尾包含对现实事件的预测性断言，需删除。"
+    },
+    "i02": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "壬寅、癸卯对应金箔金正确，无预测或宿命化措辞，主题中性合理。"
+    }
+  }
+}

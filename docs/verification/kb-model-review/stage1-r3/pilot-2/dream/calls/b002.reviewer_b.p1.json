@@ -1,0 +1,106 @@
+{
+  "batch": "b002",
+  "reviewer": "reviewer_b",
+  "run_pass": 1,
+  "attempt": 1,
+  "vendor": "openai",
+  "requested_model": "gpt-6.1-sol",
+  "returned_model": "gpt-6.1-sol",
+  "api": "openai",
+  "started_at": "2026-10-22T10:07:19+00:00",
+  "finished_at": "2026-10-22T10:08:14+00:00",
+  "latency_s": 54.362,
+  "http_attempts": 1,
+  "finish_reason": "stop",
+  "prompt_sha256": "f648bc686e318d16ea6e491996c7c2e05b19ec38b268d3dd10651e4bd7811f6f",
+  "input_tokens": 3966,
+  "output_tokens": 1196,
+  "cached_input_tokens": null,
+  "usage_available": true,
+  "raw_text": "{\n  \"items\": [\n    {\n      \"item\": \"i01\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"指引、清晰感与希望支持自我正向，同义词与灯的照明意象相容，其余主题为零，未作现实预测。\"\n    },\n    {\n      \"item\": \"i02\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"开阔、理想与可能性支持自我正向，别名符合天空意象，其余主题为零且无现实预测。\"\n    },\n    {\n      \"item\": \"i03\",\n      \"verdict\": \"revise\",\n      \"issues\": [\n        {\n          \"dimension\": \"consistency\",\n          \"detail\": \"synonyms 中“包饺子”是制作食物的动作，不是“饺子”这一食物本身的同义表达。\"\n        },\n        {\n          \"dimension\": \"theme_direction\",\n          \"detail\": \"theme_map.finance 为负，但正文仅涉及团圆、家庭、满足感与照顾，没有财务受阻的含义。\"\n        }\n      ],\n      \"reason\": \"团圆与家庭支持关系正向，但财务负向缺少依据，且“包饺子”混入了不同动作意象。\"\n    },\n    {\n      \"item\": \"i04\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"各别名均指已故亲人这一人物意象，正文平和地描述思念与关系回忆，四个主题为零与文字相容。\"\n    },\n    {\n      \"item\": \"i05\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"各别名均符合空间寻路情境，方向不确定支持自我负向，其余主题为零，且明确不作现实预兆解释。\"\n    },\n    {\n      \"item\": \"i06\",\n      \"verdict\": \"revise\",\n      \"issues\": [\n        {\n          \"dimension\": \"consistency\",\n          \"detail\": \"synonyms 中“开枪”是使用枪的动作，不是“枪”这一物品的同义表达。\"\n        },\n        {\n          \"dimension\": \"certainty\",\n          \"detail\": \"正文末句“这个梦预示近期会有一笔意外之财”直接预测现实中的财务事件。\"\n        }\n      ],\n      \"reason\": \"攻击、防卫与对立可支持自我负向，但“开枪”不是物品同义词，末句还包含明确的现实预测。\"\n    },\n    {\n      \"item\": \"i07\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"各别名保留花的核心意象，美好、绽放与关系期待支持自我及关系正向，其余主题为零且无现实预测。\"\n    },\n    {\n      \"item\": \"i08\",\n      \"verdict\": \"revise\",\n      \"issues\": [\n        {\n          \"dimension\": \"theme_direction\",\n          \"detail\": \"theme_map.self 为负，但正文核心是自由、摆脱限制与自信提升，倾向偏顺；泛化提及压力和节奏不足以支持自我负向。\"\n        }\n      ],\n      \"reason\": \"飞翔的各别名符合意象，但自我负向与正文偏向自由和自信提升的核心描述不一致。\"\n    },\n    {\n      \"item\": \"i09\",\n      \"verdict\": \"revise\",\n      \"issues\": [\n        {\n          \"dimension\": \"theme_direction\",\n          \"detail\": \"theme_map.career 为负，但正文没有工作、事业推进或协作受阻的含义，“陷入困局”这一泛化感受不能单独支持事业负向。\"\n        }\n      ],\n      \"reason\": \"泥土及其相关别名与正文意象相容，但事业负向缺少对应的主题依据。\"\n    },\n    {\n      \"item\": \"i10\",\n      \"verdict\": \"revise\",\n      \"issues\": [\n        {\n          \"dimension\": \"consistency\",\n          \"detail\": \"synonyms 中“狐狸精”通常指精怪或对人的贬称，不是动物“狐狸”的同义表达，会误命中不同意象。\"\n        }\n      ],\n      \"reason\": \"试探与对他人动机的疑虑可支持自我及关系负向，但“狐狸精”不符合狐狸这一动物意象的同义词要求。\"\n    }\n  ]\n}",
+  "verdicts": {
+    "i01": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "指引、清晰感与希望支持自我正向，同义词与灯的照明意象相容，其余主题为零，未作现实预测。"
+    },
+    "i02": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "开阔、理想与可能性支持自我正向，别名符合天空意象，其余主题为零且无现实预测。"
+    },
+    "i03": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "consistency",
+          "detail": "synonyms 中“包饺子”是制作食物的动作，不是“饺子”这一食物本身的同义表达。"
+        },
+        {
+          "dimension": "theme_direction",
+          "detail": "theme_map.finance 为负，但正文仅涉及团圆、家庭、满足感与照顾，没有财务受阻的含义。"
+        }
+      ],
+      "reason": "团圆与家庭支持关系正向，但财务负向缺少依据，且“包饺子”混入了不同动作意象。"
+    },
+    "i04": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "各别名均指已故亲人这一人物意象，正文平和地描述思念与关系回忆，四个主题为零与文字相容。"
+    },
+    "i05": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "各别名均符合空间寻路情境，方向不确定支持自我负向，其余主题为零，且明确不作现实预兆解释。"
+    },
+    "i06": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "consistency",
+          "detail": "synonyms 中“开枪”是使用枪的动作，不是“枪”这一物品的同义表达。"
+        },
+        {
+          "dimension": "certainty",
+          "detail": "正文末句“这个梦预示近期会有一笔意外之财”直接预测现实中的财务事件。"
+        }
+      ],
+      "reason": "攻击、防卫与对立可支持自我负向，但“开枪”不是物品同义词，末句还包含明确的现实预测。"
+    },
+    "i07": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "各别名保留花的核心意象，美好、绽放与关系期待支持自我及关系正向，其余主题为零且无现实预测。"
+    },
+    "i08": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "theme_direction",
+          "detail": "theme_map.self 为负，但正文核心是自由、摆脱限制与自信提升，倾向偏顺；泛化提及压力和节奏不足以支持自我负向。"
+        }
+      ],
+      "reason": "飞翔的各别名符合意象，但自我负向与正文偏向自由和自信提升的核心描述不一致。"
+    },
+    "i09": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "theme_direction",
+          "detail": "theme_map.career 为负，但正文没有工作、事业推进或协作受阻的含义，“陷入困局”这一泛化感受不能单独支持事业负向。"
+        }
+      ],
+      "reason": "泥土及其相关别名与正文意象相容，但事业负向缺少对应的主题依据。"
+    },
+    "i10": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "consistency",
+          "detail": "synonyms 中“狐狸精”通常指精怪或对人的贬称，不是动物“狐狸”的同义表达，会误命中不同意象。"
+        }
+      ],
+      "reason": "试探与对他人动机的疑虑可支持自我及关系负向，但“狐狸精”不符合狐狸这一动物意象的同义词要求。"
+    }
+  }
+}

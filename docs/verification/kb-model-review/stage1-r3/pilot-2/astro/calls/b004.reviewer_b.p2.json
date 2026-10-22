@@ -1,0 +1,68 @@
+{
+  "batch": "b004",
+  "reviewer": "reviewer_b",
+  "run_pass": 2,
+  "attempt": 1,
+  "vendor": "openai",
+  "requested_model": "gpt-6.1-sol",
+  "returned_model": "gpt-6.1-sol",
+  "api": "openai",
+  "started_at": "2026-10-22T09:49:59+00:00",
+  "finished_at": "2026-10-22T09:50:13+00:00",
+  "latency_s": 13.388,
+  "http_attempts": 1,
+  "finish_reason": "stop",
+  "prompt_sha256": "6f255735a86056ed2305fe63782122b30d5876b23f16b41a8ef49f742f407c69",
+  "input_tokens": 3286,
+  "output_tokens": 571,
+  "cached_input_tokens": 3283,
+  "usage_available": true,
+  "raw_text": "{\n  \"items\": [\n    {\n      \"item\": \"i01\",\n      \"verdict\": \"revise\",\n      \"issues\": [\n        {\n          \"dimension\": \"theme_direction\",\n          \"detail\": \"theme_map.relationship 为负，但正文“感情方面主动直接，敢于表达需求”呈现偏顺倾向；“关注信任与深度，保护清楚的边界”只是建议，不能支持感情负向。\"\n        }\n      ],\n      \"reason\": \"火星在天蝎入庙的事实正确，但感情主题的负向标注与正文不符。\"\n    },\n    {\n      \"item\": \"i02\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"金星的价值取舍与关系协调、摩羯的规划与责任主题准确，四个主题均标0与中性探索文字相容。\"\n    },\n    {\n      \"item\": \"i03\",\n      \"verdict\": \"revise\",\n      \"issues\": [\n        {\n          \"dimension\": \"tradition\",\n          \"detail\": \"正文“在传统尊贵体系中，海王星在此星座为入庙”不符合参考事实：海王星属于现代占星，不在本项目采用的传统尊贵表中，不能判为摩羯入庙。\"\n        }\n      ],\n      \"reason\": \"核心象征和中性主题标注可用，但海王星在摩羯的传统入庙说法须修正。\"\n    },\n    {\n      \"item\": \"i04\",\n      \"verdict\": \"revise\",\n      \"issues\": [\n        {\n          \"dimension\": \"tradition\",\n          \"detail\": \"正文“传统上木星在双鱼为失势”写错；参考表规定木星在双鱼为入庙。\"\n        }\n      ],\n      \"reason\": \"财务正向有“看到机会、乐于扩展”支持，但木星在双鱼的尊贵属性写反。\"\n    },\n    {\n      \"item\": \"i05\",\n      \"verdict\": \"revise\",\n      \"issues\": [\n        {\n          \"dimension\": \"tradition\",\n          \"detail\": \"正文“传统上金星在金牛为失势”写错；参考表规定金星在金牛为入庙。\"\n        }\n      ],\n      \"reason\": \"感情与财务正向分别有经营和谐关系、花费有分寸的文字支持，但金星在金牛的尊贵属性须修正。\"\n    }\n  ]\n}",
+  "verdicts": {
+    "i01": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "theme_direction",
+          "detail": "theme_map.relationship 为负，但正文“感情方面主动直接，敢于表达需求”呈现偏顺倾向；“关注信任与深度，保护清楚的边界”只是建议，不能支持感情负向。"
+        }
+      ],
+      "reason": "火星在天蝎入庙的事实正确，但感情主题的负向标注与正文不符。"
+    },
+    "i02": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "金星的价值取舍与关系协调、摩羯的规划与责任主题准确，四个主题均标0与中性探索文字相容。"
+    },
+    "i03": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "tradition",
+          "detail": "正文“在传统尊贵体系中，海王星在此星座为入庙”不符合参考事实：海王星属于现代占星，不在本项目采用的传统尊贵表中，不能判为摩羯入庙。"
+        }
+      ],
+      "reason": "核心象征和中性主题标注可用，但海王星在摩羯的传统入庙说法须修正。"
+    },
+    "i04": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "tradition",
+          "detail": "正文“传统上木星在双鱼为失势”写错；参考表规定木星在双鱼为入庙。"
+        }
+      ],
+      "reason": "财务正向有“看到机会、乐于扩展”支持，但木星在双鱼的尊贵属性写反。"
+    },
+    "i05": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "tradition",
+          "detail": "正文“传统上金星在金牛为失势”写错；参考表规定金星在金牛为入庙。"
+        }
+      ],
+      "reason": "感情与财务正向分别有经营和谐关系、花费有分寸的文字支持，但金星在金牛的尊贵属性须修正。"
+    }
+  }
+}

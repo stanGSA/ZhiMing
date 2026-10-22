@@ -1,0 +1,102 @@
+{
+  "batch": "b001",
+  "reviewer": "reviewer_b",
+  "run_pass": 2,
+  "attempt": 1,
+  "vendor": "openai",
+  "requested_model": "gpt-6.1-sol",
+  "returned_model": "gpt-6.1-sol",
+  "api": "openai",
+  "started_at": "2026-10-22T10:09:05+00:00",
+  "finished_at": "2026-10-22T10:09:32+00:00",
+  "latency_s": 27.687,
+  "http_attempts": 1,
+  "finish_reason": "stop",
+  "prompt_sha256": "cc4fd1f7c69520cf19ef3a9a8e816a206b17f57c80adc1447b7d687282418342",
+  "input_tokens": 4016,
+  "output_tokens": 1244,
+  "cached_input_tokens": 4013,
+  "usage_available": true,
+  "raw_text": "{\n  \"items\": [\n    {\n      \"item\": \"i01\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"同义词属于常见患病意象，疲惫与需要休息支持自我负向，其余主题为零，且未作健康诊断。\"\n    },\n    {\n      \"item\": \"i02\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"“刮刮乐”属于彩票意象，正文仅讨论对转机的期待，四个主题均为零且没有购买或获利结论。\"\n    },\n    {\n      \"item\": \"i03\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"各同义词均指石头意象，正文兼有稳固与阻碍等联想，与各主题零方向相容，也未预测现实事件。\"\n    },\n    {\n      \"item\": \"i04\",\n      \"verdict\": \"revise\",\n      \"issues\": [\n        {\n          \"dimension\": \"certainty\",\n          \"detail\": \"text 末句“梦到它预示近期会收到好消息”直接预测现实事件，应删除；前文“不预示现实结果”的免责声明不能抵消该预测。\"\n        }\n      ],\n      \"reason\": \"伞的象征联想与零方向可以保留，但末句包含明确的现实事件预测。\"\n    },\n    {\n      \"item\": \"i05\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"同义词均指面试情境，正文以紧张和新机会作心理联想，各主题零方向可接受，未预测面试结果。\"\n    },\n    {\n      \"item\": \"i06\",\n      \"verdict\": \"revise\",\n      \"issues\": [\n        {\n          \"dimension\": \"consistency\",\n          \"detail\": \"synonyms 中“桥断了”加入桥梁损坏的独立情节，不是一般“桥”的同义表达，应移除或另设条目。\"\n        }\n      ],\n      \"reason\": \"正文与零方向相容，但“桥断了”会将不同梦境情节误匹配为一般桥意象。\"\n    },\n    {\n      \"item\": \"i07\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"同义词符合背叛的关系意象，关系中的不安全感支持感情负向，其余主题为零，且明确未推断现实背叛。\"\n    },\n    {\n      \"item\": \"i08\",\n      \"verdict\": \"revise\",\n      \"issues\": [\n        {\n          \"dimension\": \"consistency\",\n          \"detail\": \"synonyms 中“杯子碎了”包含破损情节，不是“杯子”的同义表达；正文要求单独考虑破碎，也不能消除该别名的误匹配，应移除或另设条目。\"\n        }\n      ],\n      \"reason\": \"正文联想与零方向可以保留，但破碎情节不能作为一般杯子的检索同义词。\"\n    },\n    {\n      \"item\": \"i09\",\n      \"verdict\": \"revise\",\n      \"issues\": [\n        {\n          \"dimension\": \"consistency\",\n          \"detail\": \"synonyms 中“想不开”也常指纠结、无法释怀，并不必然指自杀，作为同义词会误命中，应移除。\"\n        }\n      ],\n      \"reason\": \"自我负向有压力联想支持，风险提示措辞平和，但“想不开”不满足同一意象的检索要求。\"\n    },\n    {\n      \"item\": \"i10\",\n      \"verdict\": \"revise\",\n      \"issues\": [\n        {\n          \"dimension\": \"certainty\",\n          \"detail\": \"text 末句“这个梦预示近期会有一笔意外之财”属于对现实获财事件的预测，应删除，前文免责声明不能抵消该问题。\"\n        },\n        {\n          \"dimension\": \"theme_direction\",\n          \"detail\": \"text 末句明确表达获财的偏顺含义，却将 theme_map.finance 标为 0，文字与主题方向不一致；建议删除该预测后保留财务零方向。\"\n        }\n      ],\n      \"reason\": \"耐心等待与内心探索可支持自我正向，但末句新增获财预测，并与财务零方向不一致。\"\n    }\n  ]\n}",
+  "verdicts": {
+    "i01": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "同义词属于常见患病意象，疲惫与需要休息支持自我负向，其余主题为零，且未作健康诊断。"
+    },
+    "i02": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "“刮刮乐”属于彩票意象，正文仅讨论对转机的期待，四个主题均为零且没有购买或获利结论。"
+    },
+    "i03": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "各同义词均指石头意象，正文兼有稳固与阻碍等联想，与各主题零方向相容，也未预测现实事件。"
+    },
+    "i04": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "certainty",
+          "detail": "text 末句“梦到它预示近期会收到好消息”直接预测现实事件，应删除；前文“不预示现实结果”的免责声明不能抵消该预测。"
+        }
+      ],
+      "reason": "伞的象征联想与零方向可以保留，但末句包含明确的现实事件预测。"
+    },
+    "i05": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "同义词均指面试情境，正文以紧张和新机会作心理联想，各主题零方向可接受，未预测面试结果。"
+    },
+    "i06": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "consistency",
+          "detail": "synonyms 中“桥断了”加入桥梁损坏的独立情节，不是一般“桥”的同义表达，应移除或另设条目。"
+        }
+      ],
+      "reason": "正文与零方向相容，但“桥断了”会将不同梦境情节误匹配为一般桥意象。"
+    },
+    "i07": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "同义词符合背叛的关系意象，关系中的不安全感支持感情负向，其余主题为零，且明确未推断现实背叛。"
+    },
+    "i08": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "consistency",
+          "detail": "synonyms 中“杯子碎了”包含破损情节，不是“杯子”的同义表达；正文要求单独考虑破碎，也不能消除该别名的误匹配，应移除或另设条目。"
+        }
+      ],
+      "reason": "正文联想与零方向可以保留，但破碎情节不能作为一般杯子的检索同义词。"
+    },
+    "i09": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "consistency",
+          "detail": "synonyms 中“想不开”也常指纠结、无法释怀，并不必然指自杀，作为同义词会误命中，应移除。"
+        }
+      ],
+      "reason": "自我负向有压力联想支持，风险提示措辞平和，但“想不开”不满足同一意象的检索要求。"
+    },
+    "i10": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "certainty",
+          "detail": "text 末句“这个梦预示近期会有一笔意外之财”属于对现实获财事件的预测，应删除，前文免责声明不能抵消该问题。"
+        },
+        {
+          "dimension": "theme_direction",
+          "detail": "text 末句明确表达获财的偏顺含义，却将 theme_map.finance 标为 0，文字与主题方向不一致；建议删除该预测后保留财务零方向。"
+        }
+      ],
+      "reason": "耐心等待与内心探索可支持自我正向，但末句新增获财预测，并与财务零方向不一致。"
+    }
+  }
+}

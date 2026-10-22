@@ -1,0 +1,71 @@
+{
+  "at": "2026-10-22T08:25:52+00:00",
+  "human_reviewed": false,
+  "holdout_sha256": "535c87eaabeeec47591f4029d96cd0b990485f8157e522fc3e52db67f9733ac3",
+  "reason": "Development only; B correctly flagged unsupported finance direction in d01. Retain original labels, all pilot failures, and holdout unchanged.",
+  "changes": [
+    {
+      "id": "cal-bazi-d01",
+      "before": {
+        "id": "cal-bazi-d01",
+        "system": "bazi",
+        "partition": "dev",
+        "label": "pass",
+        "case": "boundary",
+        "base": "kb:bazi:god_pillar:比肩:month",
+        "rationale": "边界案例：十神的自我、事业方向属约定，不必在文字中写明（锚点B）。按规则逐项核对：无确定性词语，无对现实事件的预测；自我状态 +0.1 属本体系方向约定；事业 +0.1 属本体系方向约定；感情关系 -0.1 有文字“关系”；财务 -0.1 有文字“财务”。试跑1后开发集修正：锚点C应要求十神关系定义；补足底稿，保留原标签和原故意缺陷；明确符号倾向不指现实机会概率",
+        "entry": {
+          "id": "kb:bazi:god_pillar:比肩:month",
+          "system": "bazi",
+          "kind": "god_pillar",
+          "key": "比肩:month",
+          "synonyms": [],
+          "keywords": [
+            "比肩:month"
+          ],
+          "theme_map": {
+            "self": 0.1,
+            "career": 0.1,
+            "relationship": -0.1,
+            "finance": -0.1
+          },
+          "text": "以下说法均为传统象征联想，不表示现实中更容易获得机会或收入。按传统十神定义，与日主五行相同且阴阳相同的天干关系称为比肩。比肩是相对日主的传统关系标签，主题是独立与同伴：明确自己的职责，也给同伴协作空间。感情方面重视平等与独立，也容易各自坚持，宜留出协商空间；财务方面同伴分担也分享，留意合伙分配。传统上配偶星按性别区分，这里只作不分性别的倾向参考。在月柱可作为该柱位置的反思线索，不能代替全局分析。",
+          "source": "自写草稿；参考《渊海子平》《三命通会》传统术语，未复制原文；感情、财务方向由 Anthropic Claude 于2026-10-21按传统规则起草；待人工审核",
+          "license": "本项目自写",
+          "reviewed": false,
+          "version": 4
+        }
+      },
+      "after": {
+        "id": "cal-bazi-d01",
+        "system": "bazi",
+        "partition": "dev",
+        "label": "pass",
+        "case": "boundary",
+        "base": "kb:bazi:god_pillar:比肩:month",
+        "rationale": "边界案例：十神的自我、事业方向属约定，不必在文字中写明（锚点B）。按规则逐项核对：无确定性词语，无对现实事件的预测；自我状态 +0.1 属本体系方向约定；事业 +0.1 属本体系方向约定；感情关系 -0.1 有文字“关系”；财务 -0.1 有文字“财务”。试跑1后开发集修正：锚点C应要求十神关系定义；补足底稿，保留原标签和原故意缺陷；明确符号倾向不指现实机会概率；试跑2复核发现原财务分担/分享与提醒不足以支持负值，仅开发底稿明确资源分配竞争与分歧的偏阻联想，保留pass标签，不改保留集。",
+        "entry": {
+          "id": "kb:bazi:god_pillar:比肩:month",
+          "system": "bazi",
+          "kind": "god_pillar",
+          "key": "比肩:month",
+          "synonyms": [],
+          "keywords": [
+            "比肩:month"
+          ],
+          "theme_map": {
+            "self": 0.1,
+            "career": 0.1,
+            "relationship": -0.1,
+            "finance": -0.1
+          },
+          "text": "以下说法均为传统象征联想，不表示现实中更容易获得机会或收入。按传统十神定义，与日主五行相同且阴阳相同的天干关系称为比肩。比肩是相对日主的传统关系标签，主题是独立与同伴：明确自己的职责，也给同伴协作空间。感情方面重视平等与独立，也容易各自坚持，宜留出协商空间；在财务反思中，比肩可联想同伴分担资源与争取份额并存；合伙分配的竞争、分歧以及资源被分走，是这种象征解读中的偏阻面，不表示现实中会发生损失。传统上配偶星按性别区分，这里只作不分性别的倾向参考。在月柱可作为该柱位置的反思线索，不能代替全局分析。",
+          "source": "自写草稿；参考《渊海子平》《三命通会》传统术语，未复制原文；感情、财务方向由 Anthropic Claude 于2026-10-21按传统规则起草；待人工审核",
+          "license": "本项目自写",
+          "reviewed": false,
+          "version": 4
+        }
+      }
+    }
+  ]
+}

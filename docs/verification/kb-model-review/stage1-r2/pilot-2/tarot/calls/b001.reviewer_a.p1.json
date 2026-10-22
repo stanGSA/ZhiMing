@@ -1,0 +1,88 @@
+{
+  "batch": "b001",
+  "reviewer": "reviewer_a",
+  "run_pass": 1,
+  "attempt": 1,
+  "vendor": "deepseek",
+  "requested_model": "deepseek-flash",
+  "returned_model": "deepseek-flash",
+  "api": "openai",
+  "started_at": "2026-10-22T07:31:12+00:00",
+  "finished_at": "2026-10-22T07:31:18+00:00",
+  "latency_s": 5.629,
+  "http_attempts": 1,
+  "finish_reason": "stop",
+  "prompt_sha256": "e6dd84d075c9a8e214c68d43e2c1ac0af1dcfe92d2ecc81aef3ecabe1aa6ed1d",
+  "input_tokens": 3610,
+  "output_tokens": 585,
+  "cached_input_tokens": 640,
+  "usage_available": true,
+  "raw_text": "{\"items\": [{\"item\": \"i01\", \"verdict\": \"pass\", \"issues\": [], \"reason\": \"太阳正位释义符合传统牌义，主题方向为正且与文字积极倾向一致，无宿命化断言。\"}, {\"item\": \"i02\", \"verdict\": \"pass\", \"issues\": [], \"reason\": \"圣杯五正位表达失落与仍存资源，感情与自我方向为负且与文字一致，逆位对照合理。\"}, {\"item\": \"i03\", \"verdict\": \"pass\", \"issues\": [], \"reason\": \"高塔逆位强调回避改变与修补基础，三主题为负且与文字压力倾向一致。\"}, {\"item\": \"i04\", \"verdict\": \"pass\", \"issues\": [], \"reason\": \"恶魔正位指向依赖与束缚，三主题为负，文字与牌义方向一致。\"}, {\"item\": \"i05\", \"verdict\": \"revise\", \"issues\": [{\"dimension\": \"theme_direction\", \"detail\": \"self 标为 -0.3，但文字“独立判断与清楚的边界有助于处理问题”偏顺，且自我状态未见明显受阻依据，方向与文字不一致。\"}], \"reason\": \"宝剑王后正位文字偏积极，自我状态标负方向缺乏文字支持。\"}, {\"item\": \"i06\", \"verdict\": \"revise\", \"issues\": [{\"dimension\": \"certainty\", \"detail\": \"末尾“往往预示一段新感情即将到来”属对现实事件的预测性断言，与免责声明并存仍构成预测。\"}], \"reason\": \"正文含“预示新感情即将到来”的现实预测句，应删除。\"}, {\"item\": \"i07\", \"verdict\": \"pass\", \"issues\": [], \"reason\": \"权杖七逆位表达防守疲惫，事业与自我方向为负且与文字一致。\"}, {\"item\": \"i08\", \"verdict\": \"pass\", \"issues\": [], \"reason\": \"圣杯一逆位表达情感流动受阻，感情与自我方向为负，与文字相符。\"}, {\"item\": \"i09\", \"verdict\": \"revise\", \"issues\": [{\"dimension\": \"theme_direction\", \"detail\": \"finance 标为 0.3，但全文讨论惯例、标准与个人选择，无任何财务或资源相关文字，财务方向无文字依据。\"}], \"reason\": \"教皇逆位条目文字未涉及财务，finance 正方向缺乏依据。\"}, {\"item\": \"i10\", \"verdict\": \"pass\", \"issues\": [], \"reason\": \"宝剑五逆位强调减少对抗与沟通，自我与事业方向为负且与文字一致。\"}]}",
+  "verdicts": {
+    "i01": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "太阳正位释义符合传统牌义，主题方向为正且与文字积极倾向一致，无宿命化断言。"
+    },
+    "i02": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "圣杯五正位表达失落与仍存资源，感情与自我方向为负且与文字一致，逆位对照合理。"
+    },
+    "i03": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "高塔逆位强调回避改变与修补基础，三主题为负且与文字压力倾向一致。"
+    },
+    "i04": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "恶魔正位指向依赖与束缚，三主题为负，文字与牌义方向一致。"
+    },
+    "i05": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "theme_direction",
+          "detail": "self 标为 -0.3，但文字“独立判断与清楚的边界有助于处理问题”偏顺，且自我状态未见明显受阻依据，方向与文字不一致。"
+        }
+      ],
+      "reason": "宝剑王后正位文字偏积极，自我状态标负方向缺乏文字支持。"
+    },
+    "i06": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "certainty",
+          "detail": "末尾“往往预示一段新感情即将到来”属对现实事件的预测性断言，与免责声明并存仍构成预测。"
+        }
+      ],
+      "reason": "正文含“预示新感情即将到来”的现实预测句，应删除。"
+    },
+    "i07": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "权杖七逆位表达防守疲惫，事业与自我方向为负且与文字一致。"
+    },
+    "i08": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "圣杯一逆位表达情感流动受阻，感情与自我方向为负，与文字相符。"
+    },
+    "i09": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "theme_direction",
+          "detail": "finance 标为 0.3，但全文讨论惯例、标准与个人选择，无任何财务或资源相关文字，财务方向无文字依据。"
+        }
+      ],
+      "reason": "教皇逆位条目文字未涉及财务，finance 正方向缺乏依据。"
+    },
+    "i10": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "宝剑五逆位强调减少对抗与沟通，自我与事业方向为负且与文字一致。"
+    }
+  }
+}

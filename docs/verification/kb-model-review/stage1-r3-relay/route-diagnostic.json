@@ -1,0 +1,143 @@
+{
+  "at": "2026-10-22T10:50:17.141318+00:00",
+  "endpoint_host": "codegoai.com",
+  "http_attempts": 3,
+  "cost": null,
+  "operation": "Endpoint compatibility diagnostics only; not audit or calibration",
+  "rows": [
+    {
+      "case": "standard_high",
+      "endpoint_path": "/v1/chat/completions",
+      "request": {
+        "model": "deepseek-v4-pro",
+        "messages": [
+          {
+            "role": "system",
+            "content": "接口指令传递测试。你的唯一任务：严格输出 {\"probe\":\"system_forwarded_6892\"}，不能输出其他内容。"
+          },
+          {
+            "role": "user",
+            "content": "开始"
+          }
+        ],
+        "max_tokens": 2048,
+        "thinking": {
+          "type": "enabled"
+        },
+        "reasoning_effort": "high"
+      },
+      "http_status": 200,
+      "returned_model": "deepseek-v4-pro",
+      "usage": {
+        "cache_creation_input_tokens": 0,
+        "cache_read_input_tokens": 0,
+        "cached_tokens": 0,
+        "completion_thinking_tokens": 105,
+        "completion_tokens": 117,
+        "completion_tokens_details": {
+          "accepted_prediction_tokens": 0,
+          "audio_tokens": 0,
+          "cached_tokens": 0,
+          "reasoning_tokens": 105,
+          "rejected_prediction_tokens": 0
+        },
+        "credit": 0.06,
+        "prompt_cache_hit_tokens": 0,
+        "prompt_cache_miss_tokens": 109,
+        "prompt_cache_write_tokens": 0,
+        "prompt_tokens": 109,
+        "prompt_tokens_details": {
+          "accepted_prediction_tokens": 0,
+          "audio_tokens": 0,
+          "cached_tokens": 0,
+          "reasoning_tokens": 0,
+          "rejected_prediction_tokens": 0
+        },
+        "total_tokens": 226
+      },
+      "raw_text": "好的，我已准备好。请告诉我你想开始什么？",
+      "finish_reason": "stop",
+      "sentinel_returned": false,
+      "latency_s": 4.801
+    },
+    {
+      "case": "standard_disabled",
+      "endpoint_path": "/v1/chat/completions",
+      "request": {
+        "model": "deepseek-v4-pro",
+        "messages": [
+          {
+            "role": "system",
+            "content": "接口指令传递测试。你的唯一任务：严格输出 {\"probe\":\"system_forwarded_6892\"}，不能输出其他内容。"
+          },
+          {
+            "role": "user",
+            "content": "开始"
+          }
+        ],
+        "max_tokens": 2048,
+        "thinking": {
+          "type": "disabled"
+        }
+      },
+      "http_status": 200,
+      "returned_model": "deepseek-v4-pro",
+      "usage": {
+        "cache_creation_input_tokens": 0,
+        "cache_read_input_tokens": 0,
+        "cached_tokens": 0,
+        "completion_thinking_tokens": 0,
+        "completion_tokens": 9,
+        "completion_tokens_details": {
+          "accepted_prediction_tokens": 0,
+          "audio_tokens": 0,
+          "cached_tokens": 0,
+          "reasoning_tokens": 0,
+          "rejected_prediction_tokens": 0
+        },
+        "credit": 0.01,
+        "prompt_cache_hit_tokens": 0,
+        "prompt_cache_miss_tokens": 30,
+        "prompt_cache_write_tokens": 0,
+        "prompt_tokens": 30,
+        "prompt_tokens_details": {
+          "accepted_prediction_tokens": 0,
+          "audio_tokens": 0,
+          "cached_tokens": 0,
+          "reasoning_tokens": 0,
+          "rejected_prediction_tokens": 0
+        },
+        "total_tokens": 39
+      },
+      "raw_text": "你好！请问有什么可以帮你的吗？",
+      "finish_reason": "stop",
+      "sentinel_returned": false,
+      "latency_s": 3.94
+    },
+    {
+      "case": "root_chat_route",
+      "endpoint_path": "/chat/completions",
+      "request": {
+        "model": "deepseek-v4-pro",
+        "messages": [
+          {
+            "role": "system",
+            "content": "接口指令传递测试。你的唯一任务：严格输出 {\"probe\":\"system_forwarded_6892\"}，不能输出其他内容。"
+          },
+          {
+            "role": "user",
+            "content": "开始"
+          }
+        ],
+        "max_tokens": 2048,
+        "thinking": {
+          "type": "enabled"
+        },
+        "reasoning_effort": "high"
+      },
+      "http_status": 200,
+      "error": "Non-JSON or unsuccessful response, body omitted",
+      "latency_s": 0.34
+    }
+  ]
+}

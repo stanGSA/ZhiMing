@@ -1,0 +1,88 @@
+{
+  "batch": "b001",
+  "reviewer": "reviewer_a",
+  "run_pass": 1,
+  "attempt": 1,
+  "vendor": "deepseek",
+  "requested_model": "deepseek-v4-pro",
+  "returned_model": "deepseek-v4-pro",
+  "api": "openai",
+  "started_at": "2026-10-22T10:17:01+00:00",
+  "finished_at": "2026-10-22T10:18:58+00:00",
+  "latency_s": 117.168,
+  "http_attempts": 1,
+  "finish_reason": "stop",
+  "prompt_sha256": "a9c6b14687aaaa28585d21a6963316a6214db01d6d64ca7c1c9049f5759219f3",
+  "input_tokens": 3813,
+  "output_tokens": 8416,
+  "cached_input_tokens": 1536,
+  "usage_available": true,
+  "raw_text": "{\n  \"items\": [\n    {\n      \"item\": \"i01\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"恶魔正位核心含义与束缚/依赖相符，主题方向和文字一致，表达为象征性反思且无预测问题。\"\n    },\n    {\n      \"item\": \"i02\",\n      \"verdict\": \"revise\",\n      \"issues\": [\n        {\n          \"dimension\": \"theme_direction\",\n          \"detail\": \"theme_map 将 finance 标为 +0.3，但正文只讨论惯例、外部标准与个人选择，未涉及财务；大阿卡纳的方向约定也不包含财务，因此该非零主题缺乏依据。\"\n        }\n      ],\n      \"reason\": \"财务主题被标为正向但正文和体系约定均未支持，方向需修正或改为0。\"\n    },\n    {\n      \"item\": \"i03\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"圣杯五正位失落与仍有资源的含义相符，relationship/self 负向与正文一致，无断言或预测。\"\n    },\n    {\n      \"item\": \"i04\",\n      \"verdict\": \"revise\",\n      \"issues\": [\n        {\n          \"dimension\": \"certainty\",\n          \"detail\": \"末尾“这张牌出现时，往往预示一段新感情即将到来”是对现实感情事件的预测性表述，即使前有“不代表事件必然发生”，该句仍属于预测。\"\n        }\n      ],\n      \"reason\": \"包含对未来感情的预测性断言，需改为象征性、非预测表达。\"\n    },\n    {\n      \"item\": \"i05\",\n      \"verdict\": \"revise\",\n      \"issues\": [\n        {\n          \"dimension\": \"theme_direction\",\n          \"detail\": \"theme_map 将 self 标为 -0.4，但正文“清楚的方向与责任分配有助于带领行动，给执行留出空间”是正向建议，权杖国王正位传统也偏顺，缺少 self 偏阻的依据。\"\n        }\n      ],\n      \"reason\": \"self 主题方向为负与正文正向含义及权杖国王正位传统不符。\"\n    },\n    {\n      \"item\": \"i06\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"宝剑十逆位强调触底后恢复与处理基本需求，self/career 正向与文字相符，表达为象征性反思。\"\n    },\n    {\n      \"item\": \"i07\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"权杖骑士逆位涉及行动力与检查速度风险，career/self 负向可由风险提醒支持，无预测或确定性结论。\"\n    },\n    {\n      \"item\": \"i08\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"宝剑五逆位减少对抗、处理未解决责任的含义与轻微负向相符，属于象征性反思。\"\n    },\n    {\n      \"item\": \"i09\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"圣杯一逆位情感不流动、照顾容量边界的含义与 relationship/self 负向一致，无预测。\"\n    },\n    {\n      \"item\": \"i10\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"星币国王逆位过度控制或看重收益、评估长期代价与 finance/career 负向一致，表达为象征性反思。\"\n    }\n  ]\n}",
+  "verdicts": {
+    "i01": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "恶魔正位核心含义与束缚/依赖相符，主题方向和文字一致，表达为象征性反思且无预测问题。"
+    },
+    "i02": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "theme_direction",
+          "detail": "theme_map 将 finance 标为 +0.3，但正文只讨论惯例、外部标准与个人选择，未涉及财务；大阿卡纳的方向约定也不包含财务，因此该非零主题缺乏依据。"
+        }
+      ],
+      "reason": "财务主题被标为正向但正文和体系约定均未支持，方向需修正或改为0。"
+    },
+    "i03": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "圣杯五正位失落与仍有资源的含义相符，relationship/self 负向与正文一致，无断言或预测。"
+    },
+    "i04": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "certainty",
+          "detail": "末尾“这张牌出现时，往往预示一段新感情即将到来”是对现实感情事件的预测性表述，即使前有“不代表事件必然发生”，该句仍属于预测。"
+        }
+      ],
+      "reason": "包含对未来感情的预测性断言，需改为象征性、非预测表达。"
+    },
+    "i05": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "theme_direction",
+          "detail": "theme_map 将 self 标为 -0.4，但正文“清楚的方向与责任分配有助于带领行动，给执行留出空间”是正向建议，权杖国王正位传统也偏顺，缺少 self 偏阻的依据。"
+        }
+      ],
+      "reason": "self 主题方向为负与正文正向含义及权杖国王正位传统不符。"
+    },
+    "i06": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "宝剑十逆位强调触底后恢复与处理基本需求，self/career 正向与文字相符，表达为象征性反思。"
+    },
+    "i07": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "权杖骑士逆位涉及行动力与检查速度风险，career/self 负向可由风险提醒支持，无预测或确定性结论。"
+    },
+    "i08": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "宝剑五逆位减少对抗、处理未解决责任的含义与轻微负向相符，属于象征性反思。"
+    },
+    "i09": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "圣杯一逆位情感不流动、照顾容量边界的含义与 relationship/self 负向一致，无预测。"
+    },
+    "i10": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "星币国王逆位过度控制或看重收益、评估长期代价与 finance/career 负向一致，表达为象征性反思。"
+    }
+  }
+}

@@ -1,0 +1,239 @@
+{
+  "system": "tarot",
+  "rubric_sha256": "d26c6757b96a1cdfca3ac89a8b31adcb9acde41833984012806812ceb91859dc",
+  "agreement": {
+    "items": 20,
+    "reviewed": 20,
+    "labels": {
+      "pass": 10,
+      "fail": 10
+    },
+    "kappa": 0.6,
+    "observed_agreement": 0.8,
+    "pairs": {
+      "pass/pass": 10,
+      "pass/reject": 4,
+      "reject/reject": 6
+    },
+    "label_agreement": {
+      "reviewer_a": {
+        "accuracy": 0.8,
+        "sensitivity": 0.6,
+        "specificity": 1.0
+      },
+      "reviewer_b": {
+        "accuracy": 1.0,
+        "sensitivity": 1.0,
+        "specificity": 1.0
+      }
+    }
+  },
+  "rerun": {
+    "reviewer_a": 0.8,
+    "reviewer_b": 1.0
+  },
+  "gates": {
+    "complete": true,
+    "kappa": true,
+    "rerun": false,
+    "label_agreement": false
+  },
+  "met": false,
+  "thresholds": {
+    "kappa": 0.6,
+    "rerun": 0.9,
+    "label_agreement": 0.85
+  },
+  "disputed": [
+    {
+      "id": "cal-tarot-d03",
+      "label": "fail",
+      "verdicts": {
+        "reviewer_a.p1": "pass",
+        "reviewer_a.p2": "revise",
+        "reviewer_b.p1": "revise",
+        "reviewer_b.p2": "revise"
+      },
+      "reasons": {
+        "reviewer_a.p1": "权杖骑士逆位同时提及行动推动与风险检查，将career和self标为负向并不与文字冲突。",
+        "reviewer_a.p2": "逆位与正位释义完全相同却给相反方向，不能体现该牌位含义区分。",
+        "reviewer_b.p1": "同义词正确，但正文未体现逆位区别，且与自我、事业的负向标注不一致。",
+        "reviewer_b.p2": "别名正确，但正文未体现逆位特征，且自我与事业负向不能由一般风险提醒支持。"
+      },
+      "issues": {
+        "reviewer_a.p2": [
+          {
+            "dimension": "consistency",
+            "detail": "权杖骑士逆位与正位文字完全相同，但 theme_map 正逆相反，正位 +0.3、逆位 -0.4，无法体现逆位减弱或受阻的区分。"
+          }
+        ],
+        "reviewer_b.p1": [
+          {
+            "dimension": "theme_direction",
+            "detail": "theme_map.self 和 career 均为负向，但正文核心是“行动力可以推动变化”的偏顺描述；检查速度与风险只是建议，不能据此支持两项负向。"
+          },
+          {
+            "dimension": "consistency",
+            "detail": "text 与 counterpart 的正位正文完全相同，没有区分权杖骑士逆位的冲动、受阻或行动失衡等含义。"
+          }
+        ],
+        "reviewer_b.p2": [
+          {
+            "dimension": "theme_direction",
+            "detail": "theme_map.self 与 career 均为负，但正文核心为“行动力可以推动变化”，仅建议检查速度与风险，未表达冲动失控、行动受阻等负向状态。"
+          },
+          {
+            "dimension": "consistency",
+            "detail": "text 与 counterpart 的正位正文完全相同，未区分权杖骑士正逆位的含义，却配置了相反的主题方向。"
+          }
+        ]
+      }
+    },
+    {
+      "id": "cal-tarot-d12",
+      "label": "fail",
+      "verdicts": {
+        "reviewer_a.p1": "pass",
+        "reviewer_a.p2": "pass",
+        "reviewer_b.p1": "revise",
+        "reviewer_b.p2": "revise"
+      },
+      "reasons": {
+        "reviewer_a.p1": "权杖十逆位释然、卸下负担的含义与正向自我/事业/财务倾向一致，无宿命断言或错误对象信息。",
+        "reviewer_a.p2": "权杖十逆位释义符合卸下重担与舒缓压力的传统象征，theme_map 正向与文字一致。",
+        "reviewer_b.p1": "自我与事业正向符合减负释然的牌义，同义词正确，但财务正向缺少依据。",
+        "reviewer_b.p2": "自我与事业正向符合减负释然的牌义，别名正确，但财务正向缺乏依据。"
+      },
+      "issues": {
+        "reviewer_b.p1": [
+          {
+            "dimension": "theme_direction",
+            "detail": "theme_map.finance 为正向，但正文的卸下重担、责任分配和任务交接没有明确财务含义；权杖的约定主题也不包含财务，应将该主题设为 0 或补充相应释义。"
+          }
+        ],
+        "reviewer_b.p2": [
+          {
+            "dimension": "theme_direction",
+            "detail": "theme_map.finance 为正，但正文的卸下重担、责任分配与任务交接未涉及财务改善；财务也不属于权杖牌的约定主题，应改为 0 或补充明确的财务含义。"
+          }
+        ]
+      }
+    },
+    {
+      "id": "cal-tarot-d18",
+      "label": "fail",
+      "verdicts": {
+        "reviewer_a.p1": "pass",
+        "reviewer_a.p2": "revise",
+        "reviewer_b.p1": "revise",
+        "reviewer_b.p2": "revise"
+      },
+      "reasons": {
+        "reviewer_a.p1": "宝剑十逆位的恢复与处理基本需求含义与正向弱化反思方向一致，无预测性断言。",
+        "reviewer_a.p2": "主题方向为正向，但文字描述困难阶段与承受边界，方向相反，判定修订。",
+        "reviewer_b.p1": "牌名同义词正确，但正文重复正位且缺少支持自我、事业正向的象征描述。",
+        "reviewer_b.p2": "正文未体现与正位的区别，也未提供自我与事业偏顺的含义依据。"
+      },
+      "issues": {
+        "reviewer_a.p2": [
+          {
+            "dimension": "theme_direction",
+            "detail": "theme_map 中 self 和 career 均为 0.2（偏顺），但文本“一个困难阶段可能已到承受边界”表达的是阻滞与耗竭，与正向不一致。"
+          }
+        ],
+        "reviewer_b.p1": [
+          {
+            "dimension": "consistency",
+            "detail": "text 与 counterpart 正位正文完全相同，没有区分逆位与正位的含义，应明确逆位所采用的恢复、脱离低谷或其他受阻层次。"
+          },
+          {
+            "dimension": "theme_direction",
+            "detail": "theme_map.self 和 career 均为正，但正文核心仍是困难阶段达到承受边界；“先恢复并处理基本需求”只是建议，没有描述恢复进展或困境松动，不能支持这两个正向值。"
+          }
+        ],
+        "reviewer_b.p2": [
+          {
+            "dimension": "consistency",
+            "detail": "text 与 counterpart 的正位释义逐字相同，未区分宝剑十逆位的恢复、松动或其他逆位侧重。"
+          },
+          {
+            "dimension": "theme_direction",
+            "detail": "theme_map.self 和 career 均为正，但 text 核心仍是困难阶段达到承受边界；“先恢复并处理基本需求”只是行动建议，未表达恢复已开始或困境正在缓解，不能支持这两个正向值。"
+          }
+        ]
+      }
+    },
+    {
+      "id": "cal-tarot-d20",
+      "label": "fail",
+      "verdicts": {
+        "reviewer_a.p1": "pass",
+        "reviewer_a.p2": "revise",
+        "reviewer_b.p1": "revise",
+        "reviewer_b.p2": "revise"
+      },
+      "reasons": {
+        "reviewer_a.p1": "宝剑王后正位的边界与独立判断含义准确，主题方向自/事与文字倾向一致，表述节制。",
+        "reviewer_a.p2": "self 方向为负，但文字未体现自我状态的障碍或压力，判定修订。",
+        "reviewer_b.p1": "牌义、牌名同义词及事业正向相符，但自我负向与正文的建设性描述不一致。",
+        "reviewer_b.p2": "牌义、别名及事业正向相符，但自我负向与正文的建设性描述不一致。"
+      },
+      "issues": {
+        "reviewer_a.p2": [
+          {
+            "dimension": "theme_direction",
+            "detail": "theme_map 中 self 为 -0.3（偏阻），但文本“独立判断与清楚的边界有助于处理问题，也要保留倾听”整体偏向建设性与协助解决问题，未体现自我状态的阻碍。"
+          }
+        ],
+        "reviewer_b.p1": [
+          {
+            "dimension": "theme_direction",
+            "detail": "theme_map.self 为负，但 text 将独立判断与清楚边界描述为有助于处理问题，呈现正向能力；“也要保留倾听”只是提醒，不能支持自我负向。"
+          }
+        ],
+        "reviewer_b.p2": [
+          {
+            "dimension": "theme_direction",
+            "detail": "theme_map.self 为负，但 text 的核心是独立判断与清楚边界有助于处理问题，属于偏顺表达；“也要保留倾听”只是建议，不能支持自我负向。"
+          }
+        ]
+      }
+    }
+  ],
+  "usage": {
+    "reviewer_a": {
+      "calls": 6,
+      "input_tokens": 17992,
+      "output_tokens": 3186,
+      "latency_s": 47.769,
+      "returned_models": [
+        "deepseek-v4-pro"
+      ],
+      "errors": {},
+      "retried_calls": 0,
+      "http_retries": 0,
+      "cost": null,
+      "known_cost_estimate": null,
+      "usage_complete": true,
+      "cost_basis": "配置单价估算，非账单；服务失败的用量可能未知",
+      "currency": null
+    },
+    "reviewer_b": {
+      "calls": 6,
+      "input_tokens": 20406,
+      "output_tokens": 4773,
+      "latency_s": 255.031,
+      "returned_models": [
+        "gpt-6.1-sol"
+      ],
+      "errors": {},
+      "retried_calls": 0,
+      "http_retries": 0,
+      "cost": null,
+      "known_cost_estimate": null,
+      "usage_complete": true,
+      "cost_basis": "配置单价估算，非账单；服务失败的用量可能未知",
+      "currency": null
+    }
+  }
+}

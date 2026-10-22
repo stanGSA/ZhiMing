@@ -1,0 +1,43 @@
+{
+  "batch": "b005",
+  "reviewer": "reviewer_a",
+  "run_pass": 2,
+  "attempt": 1,
+  "vendor": "deepseek",
+  "requested_model": "deepseek-v4-pro",
+  "returned_model": "deepseek-v4-pro",
+  "api": "openai",
+  "started_at": "2026-10-22T09:53:38+00:00",
+  "finished_at": "2026-10-22T09:54:16+00:00",
+  "latency_s": 37.82,
+  "http_attempts": 1,
+  "finish_reason": "stop",
+  "prompt_sha256": "d91ee37aa1823c803397b5d397ccd341a2a13b08678ecbd5eb177538fe7ffd5a",
+  "input_tokens": 2960,
+  "output_tokens": 2563,
+  "cached_input_tokens": 2944,
+  "usage_available": true,
+  "raw_text": "{\"items\":[{\"item\":\"i01\",\"verdict\":\"revise\",\"issues\":[{\"dimension\":\"theme_direction\",\"detail\":\"finance 为 -0.15，但正文写“财务方面倾向通过技能与产出带来收入”，这是偏顺表达，方向相反。\"}],\"reason\":\"财务主题方向与释义文字正负不一致。\"},{\"item\":\"i02\",\"verdict\":\"pass\",\"issues\":[],\"reason\":\"十神定义准确，各主题方向与文字一致，且有免责说明。\"},{\"item\":\"i03\",\"verdict\":\"pass\",\"issues\":[],\"reason\":\"十神定义准确，感情、财务偏阻与文字一致，自我、事业正向可随约定标出。\"}]}",
+  "verdicts": {
+    "i01": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "theme_direction",
+          "detail": "finance 为 -0.15，但正文写“财务方面倾向通过技能与产出带来收入”，这是偏顺表达，方向相反。"
+        }
+      ],
+      "reason": "财务主题方向与释义文字正负不一致。"
+    },
+    "i02": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "十神定义准确，各主题方向与文字一致，且有免责说明。"
+    },
+    "i03": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "十神定义准确，感情、财务偏阻与文字一致，自我、事业正向可随约定标出。"
+    }
+  }
+}

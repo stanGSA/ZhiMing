@@ -1,0 +1,53 @@
+{
+  "batch": "b002",
+  "reviewer": "reviewer_a",
+  "run_pass": 2,
+  "attempt": 1,
+  "vendor": "deepseek",
+  "requested_model": "deepseek-flash",
+  "returned_model": "deepseek-flash",
+  "api": "openai",
+  "started_at": "2026-10-22T07:07:41+00:00",
+  "finished_at": "2026-10-22T07:07:43+00:00",
+  "latency_s": 2.196,
+  "http_attempts": 1,
+  "finish_reason": "stop",
+  "prompt_sha256": "ad589fc71880e2d886a0f69ed34d0c5c774fc26c1a2a503b8315233a7661238a",
+  "input_tokens": 1507,
+  "output_tokens": 265,
+  "cached_input_tokens": 1280,
+  "usage_available": true,
+  "raw_text": "{\"items\": [{\"item\": \"i01\", \"verdict\": \"revise\", \"issues\": [{\"dimension\": \"certainty\", \"detail\": \"theme_map 的 self 为 0.2，但正文只说明五行与配色约定，并未表达自我状态偏顺的倾向；每日运势条目按约定应保持中性（theme_map 全为 0）。\"}], \"reason\": \"每日运势条目出现非零主题方向，且方向无法从文字中看出。\"}, {\"item\": \"i02\", \"verdict\": \"revise\", \"issues\": [{\"dimension\": \"certainty\", \"detail\": \"“可以为当天带来好运”是对现实运势的确定性暗示，虽称“幸运色”约定仍暗示带来实际运气。\"}], \"reason\": \"文字暗示幸运色带来好运，违反每日运势中性、不暗示实际运气的约定。\"}, {\"item\": \"i03\", \"verdict\": \"revise\", \"issues\": [{\"dimension\": \"tradition\", \"detail\": \"金对应传统配色为白、金，条目写成“黑、蓝”，与五行配色约定不符。\"}], \"reason\": \"五行金的配色写错，应为白、金而非黑、蓝。\"}]}",
+  "verdicts": {
+    "i01": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "certainty",
+          "detail": "theme_map 的 self 为 0.2，但正文只说明五行与配色约定，并未表达自我状态偏顺的倾向；每日运势条目按约定应保持中性（theme_map 全为 0）。"
+        }
+      ],
+      "reason": "每日运势条目出现非零主题方向，且方向无法从文字中看出。"
+    },
+    "i02": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "certainty",
+          "detail": "“可以为当天带来好运”是对现实运势的确定性暗示，虽称“幸运色”约定仍暗示带来实际运气。"
+        }
+      ],
+      "reason": "文字暗示幸运色带来好运，违反每日运势中性、不暗示实际运气的约定。"
+    },
+    "i03": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "tradition",
+          "detail": "金对应传统配色为白、金，条目写成“黑、蓝”，与五行配色约定不符。"
+        }
+      ],
+      "reason": "五行金的配色写错，应为白、金而非黑、蓝。"
+    }
+  }
+}

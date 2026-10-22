@@ -1,0 +1,43 @@
+{
+  "batch": "b001",
+  "reviewer": "reviewer_b",
+  "run_pass": 1,
+  "attempt": 1,
+  "vendor": "openai",
+  "requested_model": "gpt-6.1-sol",
+  "returned_model": "gpt-6.1-sol",
+  "api": "openai",
+  "started_at": "2026-10-22T08:29:46+00:00",
+  "finished_at": "2026-10-22T08:29:59+00:00",
+  "latency_s": 13.521,
+  "http_attempts": 1,
+  "finish_reason": "stop",
+  "prompt_sha256": "c5938d343f63a27996b76d20433242f712033923fcd971f7793bfdc736c3a0da",
+  "input_tokens": 2561,
+  "output_tokens": 306,
+  "cached_input_tokens": null,
+  "usage_available": true,
+  "raw_text": "{\n  \"items\": [\n    {\n      \"item\": \"i01\",\n      \"verdict\": \"revise\",\n      \"issues\": [\n        {\n          \"dimension\": \"certainty\",\n          \"detail\": \"text 中“这一配置预示你今年会迎来职位上的晋升”是对现实职业事件及发生时间的预测，应删除或改为不预测现实结果的象征性反思。\"\n        }\n      ],\n      \"reason\": \"第5宫的创作与兴趣主题准确，但关于今年职位晋升的表述属于现实事件预测。\"\n    },\n    {\n      \"item\": \"i02\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"学习和日常沟通符合第3宫的参考定义，主题值全为0与中性释义相容，无同义词或具体事件预测问题。\"\n    },\n    {\n      \"item\": \"i03\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"资源与价值符合第2宫的参考定义，主题值全为0与中性释义相容，财务方向不强制标注，无同义词或确定性结论问题。\"\n    }\n  ]\n}",
+  "verdicts": {
+    "i01": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "certainty",
+          "detail": "text 中“这一配置预示你今年会迎来职位上的晋升”是对现实职业事件及发生时间的预测，应删除或改为不预测现实结果的象征性反思。"
+        }
+      ],
+      "reason": "第5宫的创作与兴趣主题准确，但关于今年职位晋升的表述属于现实事件预测。"
+    },
+    "i02": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "学习和日常沟通符合第3宫的参考定义，主题值全为0与中性释义相容，无同义词或具体事件预测问题。"
+    },
+    "i03": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "资源与价值符合第2宫的参考定义，主题值全为0与中性释义相容，财务方向不强制标注，无同义词或确定性结论问题。"
+    }
+  }
+}

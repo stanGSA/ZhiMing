@@ -1,0 +1,110 @@
+{
+  "batch": "b002",
+  "reviewer": "reviewer_a",
+  "run_pass": 2,
+  "attempt": 1,
+  "vendor": "deepseek",
+  "requested_model": "deepseek-v4-pro",
+  "returned_model": "deepseek-v4-pro",
+  "api": "openai",
+  "started_at": "2026-10-22T10:08:14+00:00",
+  "finished_at": "2026-10-22T10:10:16+00:00",
+  "latency_s": 122.925,
+  "http_attempts": 1,
+  "finish_reason": "stop",
+  "prompt_sha256": "f648bc686e318d16ea6e491996c7c2e05b19ec38b268d3dd10651e4bd7811f6f",
+  "input_tokens": 3535,
+  "output_tokens": 9106,
+  "cached_input_tokens": 3456,
+  "usage_available": true,
+  "raw_text": "{\n  \"items\": [\n    {\n      \"item\": \"i01\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"文字与主题方向一致，无预测或错误同义词。\"\n    },\n    {\n      \"item\": \"i02\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"开阔理想可能性的自我正向与文字一致，无明确问题。\"\n    },\n    {\n      \"item\": \"i03\",\n      \"verdict\": \"revise\",\n      \"issues\": [\n        {\n          \"dimension\": \"theme_direction\",\n          \"detail\": \"theme_map.finance 为 -0.3，但正文只提到团圆、家庭、满足感与照顾，没有财务受阻含义。\"\n        },\n        {\n          \"dimension\": \"consistency\",\n          \"detail\": \"synonyms 中的“包饺子”是制作饺子的动作/事件，与 key“饺子”不是同一意象，检索会误命中。\"\n        }\n      ],\n      \"reason\": \"财务负向无文字支撑，且包饺子非饺子同义。\"\n    },\n    {\n      \"item\": \"i04\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"敏感意象措辞平和，无方向标注或预测问题。\"\n    },\n    {\n      \"item\": \"i05\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"方向不确定与压力支持自我负向，同义词与免责均可接受。\"\n    },\n    {\n      \"item\": \"i06\",\n      \"verdict\": \"revise\",\n      \"issues\": [\n        {\n          \"dimension\": \"certainty\",\n          \"detail\": \"正文“这个梦预示近期会有一笔意外之财”是对现实事件的预测，不应写入释义。\"\n        },\n        {\n          \"dimension\": \"theme_direction\",\n          \"detail\": \"正文明确出现“意外之财”的财务正向预测，但 theme_map.finance 为 0，方向标注不一致。\"\n        },\n        {\n          \"dimension\": \"consistency\",\n          \"detail\": \"synonyms 中的“开枪”是使用枪的动作/事件，与 key“枪”不是同一意象，检索会误命中。\"\n        }\n      ],\n      \"reason\": \"含现实事件预测，且开枪非枪同义。\"\n    },\n    {\n      \"item\": \"i07\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"自我与感情关系正向均有正文支持，同义词和免责可接受。\"\n    },\n    {\n      \"item\": \"i08\",\n      \"verdict\": \"revise\",\n      \"issues\": [\n        {\n          \"dimension\": \"theme_direction\",\n          \"detail\": \"theme_map.self 为 -0.15，但正文核心是“渴望自由、摆脱限制或自信提升”，偏顺，负向缺乏充分文字支持。\"\n        }\n      ],\n      \"reason\": \"自我方向与正文偏顺核心不一致。\"\n    },\n    {\n      \"item\": \"i09\",\n      \"verdict\": \"revise\",\n      \"issues\": [\n        {\n          \"dimension\": \"theme_direction\",\n          \"detail\": \"theme_map.career 为 -0.3，正文只提到“陷入困局的感受”，未指向事业主题。\"\n        }\n      ],\n      \"reason\": \"事业负向无文字支撑。\"\n    },\n    {\n      \"item\": \"i10\",\n      \"verdict\": \"revise\",\n      \"issues\": [\n        {\n          \"dimension\": \"consistency\",\n          \"detail\": \"synonyms 中的“狐狸精”指精怪或对人的贬称，与动物意象“狐狸”不是同一意象，检索会误命中。\"\n        }\n      ],\n      \"reason\": \"同义词狐狸精不是狐狸同一意象。\"\n    }\n  ]\n}",
+  "verdicts": {
+    "i01": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "文字与主题方向一致，无预测或错误同义词。"
+    },
+    "i02": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "开阔理想可能性的自我正向与文字一致，无明确问题。"
+    },
+    "i03": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "theme_direction",
+          "detail": "theme_map.finance 为 -0.3，但正文只提到团圆、家庭、满足感与照顾，没有财务受阻含义。"
+        },
+        {
+          "dimension": "consistency",
+          "detail": "synonyms 中的“包饺子”是制作饺子的动作/事件，与 key“饺子”不是同一意象，检索会误命中。"
+        }
+      ],
+      "reason": "财务负向无文字支撑，且包饺子非饺子同义。"
+    },
+    "i04": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "敏感意象措辞平和，无方向标注或预测问题。"
+    },
+    "i05": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "方向不确定与压力支持自我负向，同义词与免责均可接受。"
+    },
+    "i06": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "certainty",
+          "detail": "正文“这个梦预示近期会有一笔意外之财”是对现实事件的预测，不应写入释义。"
+        },
+        {
+          "dimension": "theme_direction",
+          "detail": "正文明确出现“意外之财”的财务正向预测，但 theme_map.finance 为 0，方向标注不一致。"
+        },
+        {
+          "dimension": "consistency",
+          "detail": "synonyms 中的“开枪”是使用枪的动作/事件，与 key“枪”不是同一意象，检索会误命中。"
+        }
+      ],
+      "reason": "含现实事件预测，且开枪非枪同义。"
+    },
+    "i07": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "自我与感情关系正向均有正文支持，同义词和免责可接受。"
+    },
+    "i08": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "theme_direction",
+          "detail": "theme_map.self 为 -0.15，但正文核心是“渴望自由、摆脱限制或自信提升”，偏顺，负向缺乏充分文字支持。"
+        }
+      ],
+      "reason": "自我方向与正文偏顺核心不一致。"
+    },
+    "i09": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "theme_direction",
+          "detail": "theme_map.career 为 -0.3，正文只提到“陷入困局的感受”，未指向事业主题。"
+        }
+      ],
+      "reason": "事业负向无文字支撑。"
+    },
+    "i10": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "consistency",
+          "detail": "synonyms 中的“狐狸精”指精怪或对人的贬称，与动物意象“狐狸”不是同一意象，检索会误命中。"
+        }
+      ],
+      "reason": "同义词狐狸精不是狐狸同一意象。"
+    }
+  }
+}

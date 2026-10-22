@@ -1,0 +1,108 @@
+{
+  "batch": "b001",
+  "reviewer": "reviewer_b",
+  "run_pass": 1,
+  "attempt": 1,
+  "vendor": "openai",
+  "requested_model": "gpt-6.1-sol",
+  "returned_model": "gpt-6.1-sol",
+  "api": "openai",
+  "started_at": "2026-10-22T10:07:06+00:00",
+  "finished_at": "2026-10-22T10:07:49+00:00",
+  "latency_s": 43.606,
+  "http_attempts": 1,
+  "finish_reason": "stop",
+  "prompt_sha256": "cc4fd1f7c69520cf19ef3a9a8e816a206b17f57c80adc1447b7d687282418342",
+  "input_tokens": 4016,
+  "output_tokens": 1727,
+  "cached_input_tokens": null,
+  "usage_available": true,
+  "raw_text": "{\n  \"items\": [\n    {\n      \"item\": \"i01\",\n      \"verdict\": \"revise\",\n      \"issues\": [\n        {\n          \"dimension\": \"consistency\",\n          \"detail\": \"synonyms 中“发烧”是特定身体症状，不是“生病”的同义表达，可能误命中仅描述发烧的梦境；建议移出同义词。\"\n        }\n      ],\n      \"reason\": \"疲惫和需要休息支持 self 负向，健康提示也恰当，但“发烧”与条目对象并非同义。\"\n    },\n    {\n      \"item\": \"i02\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"“刮刮乐”属于彩票意象，正文表达对转机的期待而非现实财运预测，四个主题标0相容。\"\n    },\n    {\n      \"item\": \"i03\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"三个别名均指石头意象，稳固与阻碍的多向联想与四个主题标0相容，且未预测现实事件。\"\n    },\n    {\n      \"item\": \"i04\",\n      \"verdict\": \"revise\",\n      \"issues\": [\n        {\n          \"dimension\": \"certainty\",\n          \"detail\": \"text 末句“梦到它预示近期会收到好消息”直接预测现实事件，也与前句“不预示现实结果”矛盾，应删除或改为非预测性的心理联想。\"\n        }\n      ],\n      \"reason\": \"伞的象征解释、别名及中性主题设置可用，但末句包含明确的现实事件预测。\"\n    },\n    {\n      \"item\": \"i05\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"两个别名均指面试活动，评价压力与新机会的联想合理，四个主题标0不与文字冲突。\"\n    },\n    {\n      \"item\": \"i06\",\n      \"verdict\": \"revise\",\n      \"issues\": [\n        {\n          \"dimension\": \"consistency\",\n          \"detail\": \"synonyms 中“桥断了”增加了桥梁断裂这一独立情节，不是一般“桥”意象的同义词，应移除或另设条目。\"\n        }\n      ],\n      \"reason\": \"桥的过渡与连接象征及中性主题设置合理，但别名混入了断桥情节。\"\n    },\n    {\n      \"item\": \"i07\",\n      \"verdict\": \"revise\",\n      \"issues\": [\n        {\n          \"dimension\": \"consistency\",\n          \"detail\": \"synonyms 中“出轨”指向亲密关系中的不忠情节，不能与一般性的“背叛”直接视为同义；建议单独设条目或作为相关检索词处理。\"\n        }\n      ],\n      \"reason\": \"关系中的不安全感支持 relationship 负向，但“出轨”引入了不同且更具体的事件情节。\"\n    },\n    {\n      \"item\": \"i08\",\n      \"verdict\": \"revise\",\n      \"issues\": [\n        {\n          \"dimension\": \"consistency\",\n          \"detail\": \"synonyms 中“杯子碎了”属于杯子破损的独立情节，不是“杯子”的同义词；正文虽提醒破碎需单独考虑，仍不能消除该别名的误命中问题。\"\n        }\n      ],\n      \"reason\": \"正文联想与四个主题标0相容，但同义词包含了应单独解释的破碎情节。\"\n    },\n    {\n      \"item\": \"i09\",\n      \"verdict\": \"revise\",\n      \"issues\": [\n        {\n          \"dimension\": \"consistency\",\n          \"detail\": \"synonyms 中“想不开”也常指纠结、无法释怀，不必然指自杀，作为同义词会误命中，应移除。\"\n        }\n      ],\n      \"reason\": \"压力联想支持 self 负向，敏感内容与求助提示措辞恰当，但“想不开”不是可靠的同义检索别名。\"\n    },\n    {\n      \"item\": \"i10\",\n      \"verdict\": \"revise\",\n      \"issues\": [\n        {\n          \"dimension\": \"certainty\",\n          \"detail\": \"text 末句“这个梦预示近期会有一笔意外之财”属于现实财务事件预测，应删除，不能由前文“不预示现实事件”的免责声明抵消。\"\n        }\n      ],\n      \"reason\": \"别名一致，耐心等待与内心探索可支持 self 轻度正向，但末句明确预测了意外收入。\"\n    }\n  ]\n}",
+  "verdicts": {
+    "i01": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "consistency",
+          "detail": "synonyms 中“发烧”是特定身体症状，不是“生病”的同义表达，可能误命中仅描述发烧的梦境；建议移出同义词。"
+        }
+      ],
+      "reason": "疲惫和需要休息支持 self 负向，健康提示也恰当，但“发烧”与条目对象并非同义。"
+    },
+    "i02": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "“刮刮乐”属于彩票意象，正文表达对转机的期待而非现实财运预测，四个主题标0相容。"
+    },
+    "i03": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "三个别名均指石头意象，稳固与阻碍的多向联想与四个主题标0相容，且未预测现实事件。"
+    },
+    "i04": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "certainty",
+          "detail": "text 末句“梦到它预示近期会收到好消息”直接预测现实事件，也与前句“不预示现实结果”矛盾，应删除或改为非预测性的心理联想。"
+        }
+      ],
+      "reason": "伞的象征解释、别名及中性主题设置可用，但末句包含明确的现实事件预测。"
+    },
+    "i05": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "两个别名均指面试活动，评价压力与新机会的联想合理，四个主题标0不与文字冲突。"
+    },
+    "i06": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "consistency",
+          "detail": "synonyms 中“桥断了”增加了桥梁断裂这一独立情节，不是一般“桥”意象的同义词，应移除或另设条目。"
+        }
+      ],
+      "reason": "桥的过渡与连接象征及中性主题设置合理，但别名混入了断桥情节。"
+    },
+    "i07": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "consistency",
+          "detail": "synonyms 中“出轨”指向亲密关系中的不忠情节，不能与一般性的“背叛”直接视为同义；建议单独设条目或作为相关检索词处理。"
+        }
+      ],
+      "reason": "关系中的不安全感支持 relationship 负向，但“出轨”引入了不同且更具体的事件情节。"
+    },
+    "i08": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "consistency",
+          "detail": "synonyms 中“杯子碎了”属于杯子破损的独立情节，不是“杯子”的同义词；正文虽提醒破碎需单独考虑，仍不能消除该别名的误命中问题。"
+        }
+      ],
+      "reason": "正文联想与四个主题标0相容，但同义词包含了应单独解释的破碎情节。"
+    },
+    "i09": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "consistency",
+          "detail": "synonyms 中“想不开”也常指纠结、无法释怀，不必然指自杀，作为同义词会误命中，应移除。"
+        }
+      ],
+      "reason": "压力联想支持 self 负向，敏感内容与求助提示措辞恰当，但“想不开”不是可靠的同义检索别名。"
+    },
+    "i10": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "certainty",
+          "detail": "text 末句“这个梦预示近期会有一笔意外之财”属于现实财务事件预测，应删除，不能由前文“不预示现实事件”的免责声明抵消。"
+        }
+      ],
+      "reason": "别名一致，耐心等待与内心探索可支持 self 轻度正向，但末句明确预测了意外收入。"
+    }
+  }
+}

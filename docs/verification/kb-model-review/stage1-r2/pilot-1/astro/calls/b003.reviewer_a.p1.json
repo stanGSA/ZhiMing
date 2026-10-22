@@ -1,0 +1,88 @@
+{
+  "batch": "b003",
+  "reviewer": "reviewer_a",
+  "run_pass": 1,
+  "attempt": 1,
+  "vendor": "deepseek",
+  "requested_model": "deepseek-flash",
+  "returned_model": "deepseek-flash",
+  "api": "openai",
+  "started_at": "2026-10-22T06:35:41+00:00",
+  "finished_at": "2026-10-22T06:35:44+00:00",
+  "latency_s": 2.98,
+  "http_attempts": 1,
+  "finish_reason": "stop",
+  "prompt_sha256": "00ceb300cbd09a9c5cd0b7f8c8948d4d916a37954612e576409e22780dfcf1c3",
+  "input_tokens": 2690,
+  "output_tokens": 663,
+  "cached_input_tokens": 1152,
+  "usage_available": true,
+  "raw_text": "{\n \"items\": [\n  {\n   \"item\": \"i01\",\n   \"verdict\": \"revise\",\n   \"issues\": [\n    {\"dimension\": \"certainty\", \"detail\": \"“这一配置预示接下来几个月财运会明显好转”是对现实事件的确定性预测，违反预测维度。\"}\n   ],\n   \"reason\": \"含对财运好转的具体时间预测，须删去预测句改为观察性表述。\"\n  },\n  {\n   \"item\": \"i02\",\n   \"verdict\": \"pass\",\n   \"issues\": [],\n   \"reason\": \"火星第4宫核心象征与文字一致，主题方向可解，含否定式免责，无宿命化断言。\"\n  },\n  {\n   \"item\": \"i03\",\n   \"verdict\": \"pass\",\n   \"issues\": [],\n   \"reason\": \"太阳第5宫创作与自我表达内容符合传统，感情方向可从文字看出，无问题。\"\n  },\n  {\n   \"item\": \"i04\",\n   \"verdict\": \"pass\",\n   \"issues\": [],\n   \"reason\": \"水星第6宫对应日常工作与习惯，文字中性，方向均为0相容。\"\n  },\n  {\n   \"item\": \"i05\",\n   \"verdict\": \"revise\",\n   \"issues\": [\n    {\"dimension\": \"theme_direction\", \"detail\": \"theme_map 财务为 -0.3，但文字仅谈创作与兴趣中的想象表达，未体现财务受阻，方向无法从文字看出，也不属于方向约定（第5宫约定可标感情关系，非财务）。\"}\n   ],\n   \"reason\": \"财务方向标负但文字无财务倾向，方向与文字不一致。\"\n  },\n  {\n   \"item\": \"i06\",\n   \"verdict\": \"revise\",\n   \"issues\": [\n    {\"dimension\": \"theme_direction\", \"detail\": \"theme_map 事业为 0.3，但文字仅谈休整与内在反思中的价值取舍，未体现事业偏顺，第12宫也无事业方向约定。\"}\n   ],\n   \"reason\": \"事业方向标正但文字无事业倾向，方向与文字不一致。\"\n  },\n  {\n   \"item\": \"i07\",\n   \"verdict\": \"revise\",\n   \"issues\": [\n    {\"dimension\": \"tradition\", \"detail\": \"第9宫主题应为远行、学习与视野，条目写成“学习和日常沟通”，把第3宫的日常沟通与第9宫混淆。\"}\n   ],\n   \"reason\": \"宫位主题写错，将第3宫的日常沟通混入第9宫。\"\n  },\n  {\n   \"item\": \"i08\",\n   \"verdict\": \"revise\",\n   \"issues\": [\n    {\"dimension\": \"tradition\", \"detail\": \"第8宫主题为共享资源与信任，条目写成“资源与价值”，把第2宫的表示（资源与价值）与第8宫混淆。\"}\n   ],\n   \"reason\": \"第8宫主题写错，误用第2宫的“资源与价值”表述。\"\n  }\n ]\n}",
+  "verdicts": {
+    "i01": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "certainty",
+          "detail": "“这一配置预示接下来几个月财运会明显好转”是对现实事件的确定性预测，违反预测维度。"
+        }
+      ],
+      "reason": "含对财运好转的具体时间预测，须删去预测句改为观察性表述。"
+    },
+    "i02": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "火星第4宫核心象征与文字一致，主题方向可解，含否定式免责，无宿命化断言。"
+    },
+    "i03": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "太阳第5宫创作与自我表达内容符合传统，感情方向可从文字看出，无问题。"
+    },
+    "i04": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "水星第6宫对应日常工作与习惯，文字中性，方向均为0相容。"
+    },
+    "i05": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "theme_direction",
+          "detail": "theme_map 财务为 -0.3，但文字仅谈创作与兴趣中的想象表达，未体现财务受阻，方向无法从文字看出，也不属于方向约定（第5宫约定可标感情关系，非财务）。"
+        }
+      ],
+      "reason": "财务方向标负但文字无财务倾向，方向与文字不一致。"
+    },
+    "i06": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "theme_direction",
+          "detail": "theme_map 事业为 0.3，但文字仅谈休整与内在反思中的价值取舍，未体现事业偏顺，第12宫也无事业方向约定。"
+        }
+      ],
+      "reason": "事业方向标正但文字无事业倾向，方向与文字不一致。"
+    },
+    "i07": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "tradition",
+          "detail": "第9宫主题应为远行、学习与视野，条目写成“学习和日常沟通”，把第3宫的日常沟通与第9宫混淆。"
+        }
+      ],
+      "reason": "宫位主题写错，将第3宫的日常沟通混入第9宫。"
+    },
+    "i08": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "tradition",
+          "detail": "第8宫主题为共享资源与信任，条目写成“资源与价值”，把第2宫的表示（资源与价值）与第8宫混淆。"
+        }
+      ],
+      "reason": "第8宫主题写错，误用第2宫的“资源与价值”表述。"
+    }
+  }
+}

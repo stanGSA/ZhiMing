@@ -1,0 +1,43 @@
+{
+  "batch": "b005",
+  "reviewer": "reviewer_a",
+  "run_pass": 1,
+  "attempt": 1,
+  "vendor": "deepseek",
+  "requested_model": "deepseek-v4-pro",
+  "returned_model": "deepseek-v4-pro",
+  "api": "openai",
+  "started_at": "2026-10-22T10:23:09+00:00",
+  "finished_at": "2026-10-22T10:23:47+00:00",
+  "latency_s": 38.03,
+  "http_attempts": 1,
+  "finish_reason": "stop",
+  "prompt_sha256": "116f26a88e73b86d7e9aa4e2b2eb95c32b4a9d0c3b149b0c22ddd4ce26730a03",
+  "input_tokens": 2960,
+  "output_tokens": 3069,
+  "cached_input_tokens": 2048,
+  "usage_available": true,
+  "raw_text": "{\n  \"items\": [\n    {\n      \"item\": \"i01\",\n      \"verdict\": \"revise\",\n      \"issues\": [\n        {\n          \"dimension\": \"theme_direction\",\n          \"detail\": \"财务主题文字写“倾向通过技能与产出带来收入”，为偏顺含义，但 theme_map.finance 为 -0.15，方向相反。\"\n        }\n      ],\n      \"reason\": \"财务主题方向与文字相反，需修正。\"\n    },\n    {\n      \"item\": \"i02\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"核心定义正确，各主题方向与文字一致，未发现具体问题。\"\n    },\n    {\n      \"item\": \"i03\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"核心定义正确，各主题方向与文字一致，未发现具体问题。\"\n    }\n  ]\n}",
+  "verdicts": {
+    "i01": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "theme_direction",
+          "detail": "财务主题文字写“倾向通过技能与产出带来收入”，为偏顺含义，但 theme_map.finance 为 -0.15，方向相反。"
+        }
+      ],
+      "reason": "财务主题方向与文字相反，需修正。"
+    },
+    "i02": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "核心定义正确，各主题方向与文字一致，未发现具体问题。"
+    },
+    "i03": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "核心定义正确，各主题方向与文字一致，未发现具体问题。"
+    }
+  }
+}

@@ -1,0 +1,42 @@
+{
+  "batch": "b002",
+  "reviewer": "reviewer_a",
+  "run_pass": 1,
+  "attempt": 1,
+  "vendor": "deepseek",
+  "requested_model": "deepseek-flash",
+  "returned_model": "deepseek-flash",
+  "api": "openai",
+  "started_at": "2026-10-22T07:50:38+00:00",
+  "finished_at": "2026-10-22T07:50:40+00:00",
+  "latency_s": 1.594,
+  "http_attempts": 1,
+  "finish_reason": "stop",
+  "prompt_sha256": "3e7b4c8b33c6c2c08c3f17133ba19fcf1761d2dd1be84a63f7022d27b2ae6873",
+  "input_tokens": 1919,
+  "output_tokens": 166,
+  "cached_input_tokens": 768,
+  "usage_available": true,
+  "raw_text": "{\"items\": [{\"item\": \"i01\", \"verdict\": \"revise\", \"issues\": [{\"dimension\": \"certainty\", \"detail\": \"“用这个数理的人，中年以后会财运亨通”是对现实财运的确定性预测，属于宿命化断言。\"}, {\"dimension\": \"theme_direction\", \"detail\": \"正文明确断言财运亨通，但 theme_map 的 finance 为 0，方向缺失。\"}], \"reason\": \"释义含对财运的现实预测，且财务方向未按文字标出。\"}, {\"item\": \"i02\", \"verdict\": \"pass\", \"issues\": [], \"reason\": \"土的象征说明与尾数来源均准确，无预测或宿命化表述，主题中性相容。\"}]}",
+  "verdicts": {
+    "i01": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "certainty",
+          "detail": "“用这个数理的人，中年以后会财运亨通”是对现实财运的确定性预测，属于宿命化断言。"
+        },
+        {
+          "dimension": "theme_direction",
+          "detail": "正文明确断言财运亨通，但 theme_map 的 finance 为 0，方向缺失。"
+        }
+      ],
+      "reason": "释义含对财运的现实预测，且财务方向未按文字标出。"
+    },
+    "i02": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "土的象征说明与尾数来源均准确，无预测或宿命化表述，主题中性相容。"
+    }
+  }
+}

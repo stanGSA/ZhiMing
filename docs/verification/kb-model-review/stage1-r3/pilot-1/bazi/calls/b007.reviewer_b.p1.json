@@ -1,0 +1,38 @@
+{
+  "batch": "b007",
+  "reviewer": "reviewer_b",
+  "run_pass": 1,
+  "attempt": 1,
+  "vendor": "openai",
+  "requested_model": "gpt-6.1-sol",
+  "returned_model": "gpt-6.1-sol",
+  "api": "openai",
+  "started_at": "2026-10-22T08:57:07+00:00",
+  "finished_at": "2026-10-22T08:59:56+00:00",
+  "latency_s": 169.051,
+  "http_attempts": 2,
+  "finish_reason": "stop",
+  "prompt_sha256": "8bfa289b7ff4dfb69cb7ce59351f702135c94211aa25395ce12ed074d75adff5",
+  "input_tokens": 2817,
+  "output_tokens": 224,
+  "cached_input_tokens": 2814,
+  "usage_available": true,
+  "raw_text": "{\n  \"items\": [\n    {\n      \"item\": \"i01\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"壬寅、癸卯对应金箔金的归类正确，正文提供了对象专属信息，四个主题均为0与中性说明一致，无预测性断言。\"\n    },\n    {\n      \"item\": \"i02\",\n      \"verdict\": \"revise\",\n      \"issues\": [\n        {\n          \"dimension\": \"certainty\",\n          \"detail\": \"text末句“命局中出现它，预示近两年会遇到贵人相助”依据纳音对个人未来事件作出预测，应删除或改为不涉及现实预言的传统象征说明。\"\n        }\n      ],\n      \"reason\": \"庚辰、辛巳对应白蜡金的归类正确，四个主题标0无方向冲突，但末句包含明确的现实事件预测。\"\n    }\n  ]\n}",
+  "verdicts": {
+    "i01": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "壬寅、癸卯对应金箔金的归类正确，正文提供了对象专属信息，四个主题均为0与中性说明一致，无预测性断言。"
+    },
+    "i02": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "certainty",
+          "detail": "text末句“命局中出现它，预示近两年会遇到贵人相助”依据纳音对个人未来事件作出预测，应删除或改为不涉及现实预言的传统象征说明。"
+        }
+      ],
+      "reason": "庚辰、辛巳对应白蜡金的归类正确，四个主题标0无方向冲突，但末句包含明确的现实事件预测。"
+    }
+  }
+}

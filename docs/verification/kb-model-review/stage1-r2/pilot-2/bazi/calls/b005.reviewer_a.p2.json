@@ -1,0 +1,43 @@
+{
+  "batch": "b005",
+  "reviewer": "reviewer_a",
+  "run_pass": 2,
+  "attempt": 1,
+  "vendor": "deepseek",
+  "requested_model": "deepseek-flash",
+  "returned_model": "deepseek-flash",
+  "api": "openai",
+  "started_at": "2026-10-22T07:46:26+00:00",
+  "finished_at": "2026-10-22T07:46:27+00:00",
+  "latency_s": 1.673,
+  "http_attempts": 1,
+  "finish_reason": "stop",
+  "prompt_sha256": "1d27236b1fa239953e90d8bd966aabcc2dc1d6e2ae5c8c99c3ba28566e35ebf7",
+  "input_tokens": 2564,
+  "output_tokens": 211,
+  "cached_input_tokens": 2430,
+  "usage_available": true,
+  "raw_text": "{\"items\": [{\"item\": \"i01\", \"verdict\": \"revise\", \"issues\": [{\"dimension\": \"theme_direction\", \"detail\": \"theme_map 中 finance 为 -0.15（偏阻），但正文写“财务方面倾向通过技能与产出带来收入”，表达的是偏顺倾向，方向与文字不一致。\"}], \"reason\": \"财务主题标注为负向，正文却描述为通过技能产出带来收入的偏顺倾向，方向不符。\"}, {\"item\": \"i02\", \"verdict\": \"pass\", \"issues\": [], \"reason\": \"偏财定义（日主所克、阴阳相同）正确，各主题方向与文字一致，且有免责声明不构成预测。\"}, {\"item\": \"i03\", \"verdict\": \"pass\", \"issues\": [], \"reason\": \"比肩定义（同五行同阴阳）正确，感情、财务的负向标注与“各自坚持、留意合伙分配”的文字一致。\"}]}",
+  "verdicts": {
+    "i01": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "theme_direction",
+          "detail": "theme_map 中 finance 为 -0.15（偏阻），但正文写“财务方面倾向通过技能与产出带来收入”，表达的是偏顺倾向，方向与文字不一致。"
+        }
+      ],
+      "reason": "财务主题标注为负向，正文却描述为通过技能产出带来收入的偏顺倾向，方向不符。"
+    },
+    "i02": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "偏财定义（日主所克、阴阳相同）正确，各主题方向与文字一致，且有免责声明不构成预测。"
+    },
+    "i03": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "比肩定义（同五行同阴阳）正确，感情、财务的负向标注与“各自坚持、留意合伙分配”的文字一致。"
+    }
+  }
+}

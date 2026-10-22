@@ -1,0 +1,214 @@
+{
+  "iteration": 2,
+  "rubric_sha256": "be04c7fbbd2de98a1048811f4af929e2456352172059ec5151ef61904ab8e6e5",
+  "calibration_sha256": "9acac4d7943a11d4c56e918a3adce9b3e8680fe68cc9556783c21277a9a7ab14",
+  "systems": {
+    "tarot": {
+      "met": false,
+      "gates": {
+        "complete": false,
+        "kappa": false,
+        "rerun": true,
+        "label_agreement": true
+      },
+      "rerun": {
+        "reviewer_a": 1.0,
+        "reviewer_b": 1.0
+      },
+      "kappa": null,
+      "label_agreement": {
+        "reviewer_a": {
+          "accuracy": 1.0,
+          "sensitivity": 1.0,
+          "specificity": null
+        },
+        "reviewer_b": {
+          "accuracy": 1.0,
+          "sensitivity": 1.0,
+          "specificity": null
+        }
+      },
+      "complete": false,
+      "disputed": 1,
+      "reviewer_a_complete_metrics": {
+        "items": 20,
+        "accuracy": 0.95,
+        "rerun": 1.0
+      },
+      "incomplete_metrics_note": "Cross-model and B metrics use only available pairs, descriptive only; cannot satisfy completeness gate and must not be used as acceptance results."
+    },
+    "astro": {
+      "met": true,
+      "gates": {
+        "complete": true,
+        "kappa": true,
+        "rerun": true,
+        "label_agreement": true
+      },
+      "rerun": {
+        "reviewer_a": 1.0,
+        "reviewer_b": 0.9
+      },
+      "kappa": 1.0,
+      "label_agreement": {
+        "reviewer_a": {
+          "accuracy": 1.0,
+          "sensitivity": 1.0,
+          "specificity": 1.0
+        },
+        "reviewer_b": {
+          "accuracy": 1.0,
+          "sensitivity": 1.0,
+          "specificity": 1.0
+        }
+      },
+      "complete": true,
+      "disputed": 0,
+      "reviewer_a_complete_metrics": {
+        "items": 20,
+        "accuracy": 1.0,
+        "rerun": 1.0
+      },
+      "incomplete_metrics_note": null
+    },
+    "bazi": {
+      "met": false,
+      "gates": {
+        "complete": true,
+        "kappa": true,
+        "rerun": false,
+        "label_agreement": true
+      },
+      "rerun": {
+        "reviewer_a": 0.85,
+        "reviewer_b": 1.0
+      },
+      "kappa": 0.802,
+      "label_agreement": {
+        "reviewer_a": {
+          "accuracy": 0.95,
+          "sensitivity": 0.9,
+          "specificity": 1.0
+        },
+        "reviewer_b": {
+          "accuracy": 0.95,
+          "sensitivity": 1.0,
+          "specificity": 0.9
+        }
+      },
+      "complete": true,
+      "disputed": 4,
+      "reviewer_a_complete_metrics": {
+        "items": 20,
+        "accuracy": 0.95,
+        "rerun": 0.85
+      },
+      "incomplete_metrics_note": null
+    },
+    "name": {
+      "met": false,
+      "gates": {
+        "complete": false,
+        "kappa": true,
+        "rerun": true,
+        "label_agreement": true
+      },
+      "rerun": {
+        "reviewer_a": 0.95,
+        "reviewer_b": 1.0
+      },
+      "kappa": 1.0,
+      "label_agreement": {
+        "reviewer_a": {
+          "accuracy": 1.0,
+          "sensitivity": 1.0,
+          "specificity": 1.0
+        },
+        "reviewer_b": {
+          "accuracy": 1.0,
+          "sensitivity": 1.0,
+          "specificity": 1.0
+        }
+      },
+      "complete": false,
+      "disputed": 1,
+      "reviewer_a_complete_metrics": {
+        "items": 20,
+        "accuracy": 0.95,
+        "rerun": 0.95
+      },
+      "incomplete_metrics_note": "Cross-model and B metrics use only available pairs, descriptive only; cannot satisfy completeness gate and must not be used as acceptance results."
+    },
+    "dream": {
+      "met": false,
+      "gates": {
+        "complete": false,
+        "kappa": true,
+        "rerun": true,
+        "label_agreement": true
+      },
+      "rerun": {
+        "reviewer_a": 0.95,
+        "reviewer_b": 1.0
+      },
+      "kappa": 1.0,
+      "label_agreement": {
+        "reviewer_a": {
+          "accuracy": 1.0,
+          "sensitivity": 1.0,
+          "specificity": 1.0
+        },
+        "reviewer_b": {
+          "accuracy": 1.0,
+          "sensitivity": 1.0,
+          "specificity": 1.0
+        }
+      },
+      "complete": false,
+      "disputed": 0,
+      "reviewer_a_complete_metrics": {
+        "items": 20,
+        "accuracy": 1.0,
+        "rerun": 0.95
+      },
+      "incomplete_metrics_note": "Cross-model and B metrics use only available pairs, descriptive only; cannot satisfy completeness gate and must not be used as acceptance results."
+    },
+    "daily": {
+      "met": true,
+      "gates": {
+        "complete": true,
+        "kappa": true,
+        "rerun": true,
+        "label_agreement": true
+      },
+      "rerun": {
+        "reviewer_a": 1.0,
+        "reviewer_b": 1.0
+      },
+      "kappa": 1.0,
+      "label_agreement": {
+        "reviewer_a": {
+          "accuracy": 1.0,
+          "sensitivity": 1.0,
+          "specificity": 1.0
+        },
+        "reviewer_b": {
+          "accuracy": 1.0,
+          "sensitivity": 1.0,
+          "specificity": 1.0
+        }
+      },
+      "complete": true,
+      "disputed": 0,
+      "reviewer_a_complete_metrics": {
+        "items": 6,
+        "accuracy": 1.0,
+        "rerun": 1.0
+      },
+      "incomplete_metrics_note": null
+    }
+  },
+  "met": false,
+  "complete": false,
+  "archive_note": "Incomplete service output is retained and explicitly not accepted. Complete reviewer A bazi rerun=85% already fails the pre-specified gate; stopped additional long retries and will use final pilot 3 on every dev item. Partial metrics are descriptive only; no missing response is a review verdict."
+}

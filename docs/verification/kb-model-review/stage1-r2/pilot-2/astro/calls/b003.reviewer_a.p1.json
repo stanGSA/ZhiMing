@@ -1,0 +1,92 @@
+{
+  "batch": "b003",
+  "reviewer": "reviewer_a",
+  "run_pass": 1,
+  "attempt": 1,
+  "vendor": "deepseek",
+  "requested_model": "deepseek-flash",
+  "returned_model": "deepseek-flash",
+  "api": "openai",
+  "started_at": "2026-10-22T07:38:09+00:00",
+  "finished_at": "2026-10-22T07:38:12+00:00",
+  "latency_s": 3.69,
+  "http_attempts": 1,
+  "finish_reason": "stop",
+  "prompt_sha256": "c95ead0ff8a86addc40ae6a484f692a45d55ae52e9752d2ffa3145a46b86fe20",
+  "input_tokens": 2938,
+  "output_tokens": 680,
+  "cached_input_tokens": 1408,
+  "usage_available": true,
+  "raw_text": "{\"items\": [{\"item\": \"i01\", \"verdict\": \"revise\", \"issues\": [{\"dimension\": \"certainty\", \"detail\": \"“这一配置预示接下来几个月财运会明显好转”是对现实事件的确定性预测，且带“预示”类措辞，违反预测维度。\"}, {\"dimension\": \"theme_direction\", \"detail\": \"正文未给出财务偏顺依据，theme_map 财务为 0 而文字却称财运好转，方向与文字不一致；若保留财运断言则需相应主题方向，但更应删去预测。\"}], \"reason\": \"含对未来财运好转的预测，且财务方向与文字不一致，需修改。\"}, {\"item\": \"i02\", \"verdict\": \"pass\", \"issues\": [], \"reason\": \"太阳落第5宫的核心含义与创作、兴趣、自我表达及感情机会相符，主题方向与文字一致，无宿命化断言。\"}, {\"item\": \"i03\", \"verdict\": \"revise\", \"issues\": [{\"dimension\": \"theme_direction\", \"detail\": \"theme_map 中 career 为 0.3，但正文只讲休整、内在反思、价值取舍与关系协调，没有任何事业偏顺的依据，也无法从文字看出事业方向。\"}], \"reason\": \"事业主题标了正向，但文字没有支持事业偏顺的依据。\"}, {\"item\": \"i04\", \"verdict\": \"pass\", \"issues\": [], \"reason\": \"水星落第6宫对应日常工作与习惯中的信息沟通，主题全 0 与中性文字相容。\"}, {\"item\": \"i05\", \"verdict\": \"revise\", \"issues\": [{\"dimension\": \"tradition\", \"detail\": \"第8宫按本项目约定为共享资源与信任，条目写成“资源与价值”，把第2宫的主题误用于第8宫，对象宫位主题写错。\"}], \"reason\": \"第8宫主题误写为资源与价值，与参考事实的共享资源与信任不符。\"}, {\"item\": \"i06\", \"verdict\": \"revise\", \"issues\": [{\"dimension\": \"tradition\", \"detail\": \"第9宫按本项目约定为远行、学习与视野，条目写成“学习和日常沟通”，把第3宫的日常沟通误用于第9宫。\"}], \"reason\": \"第9宫主题误写为学习与日常沟通，与参考事实不符。\"}, {\"item\": \"i07\", \"verdict\": \"revise\", \"issues\": [{\"dimension\": \"theme_direction\", \"detail\": \"theme_map 中 finance 为 -0.3，但正文只讲创作与兴趣中的想象与理想，没有任何财务偏阻的依据，也无法从文字看出财务方向。\"}], \"reason\": \"财务主题标了负向，但文字没有支持财务偏阻的依据。\"}, {\"item\": \"i08\", \"verdict\": \"pass\", \"issues\": [], \"reason\": \"火星落第4宫的家庭行动力与摩擦意象符合传统象征，感情主题负向可从家庭争执边界摩擦看出，且已作免责说明，无确定性断言。\"}]}",
+  "verdicts": {
+    "i01": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "certainty",
+          "detail": "“这一配置预示接下来几个月财运会明显好转”是对现实事件的确定性预测，且带“预示”类措辞，违反预测维度。"
+        },
+        {
+          "dimension": "theme_direction",
+          "detail": "正文未给出财务偏顺依据，theme_map 财务为 0 而文字却称财运好转，方向与文字不一致；若保留财运断言则需相应主题方向，但更应删去预测。"
+        }
+      ],
+      "reason": "含对未来财运好转的预测，且财务方向与文字不一致，需修改。"
+    },
+    "i02": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "太阳落第5宫的核心含义与创作、兴趣、自我表达及感情机会相符，主题方向与文字一致，无宿命化断言。"
+    },
+    "i03": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "theme_direction",
+          "detail": "theme_map 中 career 为 0.3，但正文只讲休整、内在反思、价值取舍与关系协调，没有任何事业偏顺的依据，也无法从文字看出事业方向。"
+        }
+      ],
+      "reason": "事业主题标了正向，但文字没有支持事业偏顺的依据。"
+    },
+    "i04": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "水星落第6宫对应日常工作与习惯中的信息沟通，主题全 0 与中性文字相容。"
+    },
+    "i05": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "tradition",
+          "detail": "第8宫按本项目约定为共享资源与信任，条目写成“资源与价值”，把第2宫的主题误用于第8宫，对象宫位主题写错。"
+        }
+      ],
+      "reason": "第8宫主题误写为资源与价值，与参考事实的共享资源与信任不符。"
+    },
+    "i06": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "tradition",
+          "detail": "第9宫按本项目约定为远行、学习与视野，条目写成“学习和日常沟通”，把第3宫的日常沟通误用于第9宫。"
+        }
+      ],
+      "reason": "第9宫主题误写为学习与日常沟通，与参考事实不符。"
+    },
+    "i07": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "theme_direction",
+          "detail": "theme_map 中 finance 为 -0.3，但正文只讲创作与兴趣中的想象与理想，没有任何财务偏阻的依据，也无法从文字看出财务方向。"
+        }
+      ],
+      "reason": "财务主题标了负向，但文字没有支持财务偏阻的依据。"
+    },
+    "i08": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "火星落第4宫的家庭行动力与摩擦意象符合传统象征，感情主题负向可从家庭争执边界摩擦看出，且已作免责说明，无确定性断言。"
+    }
+  }
+}

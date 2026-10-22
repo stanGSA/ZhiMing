@@ -1,0 +1,85 @@
+{
+  "system": "astro",
+  "rubric_sha256": "be04c7fbbd2de98a1048811f4af929e2456352172059ec5151ef61904ab8e6e5",
+  "agreement": {
+    "items": 20,
+    "reviewed": 20,
+    "labels": {
+      "pass": 10,
+      "fail": 10
+    },
+    "kappa": 1.0,
+    "observed_agreement": 1.0,
+    "pairs": {
+      "pass/pass": 10,
+      "reject/reject": 10
+    },
+    "label_agreement": {
+      "reviewer_a": {
+        "accuracy": 1.0,
+        "sensitivity": 1.0,
+        "specificity": 1.0
+      },
+      "reviewer_b": {
+        "accuracy": 1.0,
+        "sensitivity": 1.0,
+        "specificity": 1.0
+      }
+    }
+  },
+  "rerun": {
+    "reviewer_a": 1.0,
+    "reviewer_b": 0.9
+  },
+  "gates": {
+    "complete": true,
+    "kappa": true,
+    "rerun": true,
+    "label_agreement": true
+  },
+  "met": true,
+  "thresholds": {
+    "kappa": 0.6,
+    "rerun": 0.9,
+    "label_agreement": 0.85
+  },
+  "disputed": [],
+  "usage": {
+    "reviewer_a": {
+      "calls": 10,
+      "input_tokens": 22936,
+      "output_tokens": 3145,
+      "latency_s": 21.763,
+      "returned_models": [
+        "deepseek-flash"
+      ],
+      "errors": {},
+      "retried_calls": 0,
+      "http_retries": 0,
+      "cost": null,
+      "known_cost_estimate": null,
+      "usage_complete": true,
+      "cost_basis": "配置单价估算，非账单；服务失败的用量可能未知",
+      "currency": null
+    },
+    "reviewer_b": {
+      "calls": 10,
+      "input_tokens": 26570,
+      "output_tokens": 4674,
+      "latency_s": 458.22,
+      "returned_models": [
+        "gpt-6.1-sol"
+      ],
+      "errors": {
+        "service_error": 2
+      },
+      "retried_calls": 0,
+      "http_retries": 4,
+      "cost": null,
+      "known_cost_estimate": null,
+      "usage_complete": false,
+      "cost_basis": "配置单价估算，非账单；服务失败的用量可能未知",
+      "currency": null
+    }
+  }
+}

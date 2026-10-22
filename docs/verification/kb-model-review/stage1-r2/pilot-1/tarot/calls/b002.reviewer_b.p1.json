@@ -1,0 +1,92 @@
+{
+  "batch": "b002",
+  "reviewer": "reviewer_b",
+  "run_pass": 1,
+  "attempt": 1,
+  "vendor": "openai",
+  "requested_model": "gpt-6.1-sol",
+  "returned_model": "gpt-6.1-sol",
+  "api": "openai",
+  "started_at": "2026-10-22T06:34:40+00:00",
+  "finished_at": "2026-10-22T06:35:01+00:00",
+  "latency_s": 21.071,
+  "http_attempts": 1,
+  "finish_reason": "stop",
+  "prompt_sha256": "ecf5e07df8feea55fd86644ea460fe4d7ccd6e18bba7a33889a8f38e09800f14",
+  "input_tokens": 3735,
+  "output_tokens": 927,
+  "cached_input_tokens": null,
+  "usage_available": true,
+  "raw_text": "{\n  \"items\": [\n    {\n      \"item\": \"i01\",\n      \"verdict\": \"revise\",\n      \"issues\": [\n        {\n          \"dimension\": \"theme_direction\",\n          \"detail\": \"theme_map.finance 为正，但 text 仅涉及负担、压力与责任分配，未表达财务方面的偏顺倾向；财务也不在权杖牌的默认主题约定内，应改为 0 或补充相应含义。\"\n        }\n      ],\n      \"reason\": \"卸下重担的逆位释义成立，但财务正向缺少文字或体系约定支持。\"\n    },\n    {\n      \"item\": \"i02\",\n      \"verdict\": \"revise\",\n      \"issues\": [\n        {\n          \"dimension\": \"theme_direction\",\n          \"detail\": \"theme_map.career 为正，与 text 中“难过的经历需要被承认”所呈现的受伤、受阻倾向不一致；沟通和恢复的建议本身不足以支持事业偏顺。\"\n        }\n      ],\n      \"reason\": \"牌义符合宝剑三正位的伤痛主题，但事业正向与文字倾向不符。\"\n    },\n    {\n      \"item\": \"i03\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"回避改变、延长压力符合高塔逆位的象征含义，主题负向与文字一致。\"\n    },\n    {\n      \"item\": \"i04\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"减少对抗与处理遗留责任符合宝剑五逆位主题，轻微负向与尚未解决的冲突相容。\"\n    },\n    {\n      \"item\": \"i05\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"清晰目标、积极反馈符合太阳正位的象征，正向主题及非预测性表述均合理。\"\n    },\n    {\n      \"item\": \"i06\",\n      \"verdict\": \"revise\",\n      \"issues\": [\n        {\n          \"dimension\": \"theme_direction\",\n          \"detail\": \"theme_map.finance 为正，但 text 的审视惯例、外部标准与个人选择未涉及财务偏顺；财务不在大阿卡纳的默认主题约定内，应改为 0 或补充相应含义。\"\n        }\n      ],\n      \"reason\": \"反思惯例符合教皇逆位，但财务正向没有文字或体系约定依据。\"\n    },\n    {\n      \"item\": \"i07\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"习惯或关系中的束缚符合恶魔正位核心象征，主题负向与文字一致。\"\n    },\n    {\n      \"item\": \"i08\",\n      \"verdict\": \"revise\",\n      \"issues\": [\n        {\n          \"dimension\": \"consistency\",\n          \"detail\": \"text 与 counterpart 的正位释义完全相同，未体现逆位的行动受阻、冲动失控或方向失衡等区别，正逆位含义未区分清楚。\"\n        },\n        {\n          \"dimension\": \"theme_direction\",\n          \"detail\": \"theme_map.career 和 self 均为负，但 text 以“行动力可以推动变化”为主，仅一般性提醒检查速度与风险，未明确表达与这些负向值相应的受阻倾向。\"\n        }\n      ],\n      \"reason\": \"逆位文字与正位重复，且不足以支持所标注的负向倾向。\"\n    },\n    {\n      \"item\": \"i09\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"拖延、无效牺牲及审视付出符合倒吊人逆位主题，负向标注与文字相容。\"\n    }\n  ]\n}",
+  "verdicts": {
+    "i01": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "theme_direction",
+          "detail": "theme_map.finance 为正，但 text 仅涉及负担、压力与责任分配，未表达财务方面的偏顺倾向；财务也不在权杖牌的默认主题约定内，应改为 0 或补充相应含义。"
+        }
+      ],
+      "reason": "卸下重担的逆位释义成立，但财务正向缺少文字或体系约定支持。"
+    },
+    "i02": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "theme_direction",
+          "detail": "theme_map.career 为正，与 text 中“难过的经历需要被承认”所呈现的受伤、受阻倾向不一致；沟通和恢复的建议本身不足以支持事业偏顺。"
+        }
+      ],
+      "reason": "牌义符合宝剑三正位的伤痛主题，但事业正向与文字倾向不符。"
+    },
+    "i03": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "回避改变、延长压力符合高塔逆位的象征含义，主题负向与文字一致。"
+    },
+    "i04": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "减少对抗与处理遗留责任符合宝剑五逆位主题，轻微负向与尚未解决的冲突相容。"
+    },
+    "i05": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "清晰目标、积极反馈符合太阳正位的象征，正向主题及非预测性表述均合理。"
+    },
+    "i06": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "theme_direction",
+          "detail": "theme_map.finance 为正，但 text 的审视惯例、外部标准与个人选择未涉及财务偏顺；财务不在大阿卡纳的默认主题约定内，应改为 0 或补充相应含义。"
+        }
+      ],
+      "reason": "反思惯例符合教皇逆位，但财务正向没有文字或体系约定依据。"
+    },
+    "i07": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "习惯或关系中的束缚符合恶魔正位核心象征，主题负向与文字一致。"
+    },
+    "i08": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "consistency",
+          "detail": "text 与 counterpart 的正位释义完全相同，未体现逆位的行动受阻、冲动失控或方向失衡等区别，正逆位含义未区分清楚。"
+        },
+        {
+          "dimension": "theme_direction",
+          "detail": "theme_map.career 和 self 均为负，但 text 以“行动力可以推动变化”为主，仅一般性提醒检查速度与风险，未明确表达与这些负向值相应的受阻倾向。"
+        }
+      ],
+      "reason": "逆位文字与正位重复，且不足以支持所标注的负向倾向。"
+    },
+    "i09": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "拖延、无效牺牲及审视付出符合倒吊人逆位主题，负向标注与文字相容。"
+    }
+  }
+}

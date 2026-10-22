@@ -1,0 +1,171 @@
+{
+  "system": "astro",
+  "rubric_sha256": "540ccba092ad014719c09482151da49f63576976f69c322053a8f0b207183ddc",
+  "agreement": {
+    "items": 20,
+    "reviewed": 20,
+    "labels": {
+      "pass": 10,
+      "fail": 10
+    },
+    "kappa": 0.7,
+    "observed_agreement": 0.85,
+    "pairs": {
+      "pass/pass": 7,
+      "reject/reject": 10,
+      "reject/pass": 3
+    },
+    "label_agreement": {
+      "reviewer_a": {
+        "accuracy": 0.85,
+        "sensitivity": 1.0,
+        "specificity": 0.7
+      },
+      "reviewer_b": {
+        "accuracy": 1.0,
+        "sensitivity": 1.0,
+        "specificity": 1.0
+      }
+    }
+  },
+  "rerun": {
+    "reviewer_a": 0.8,
+    "reviewer_b": 0.9
+  },
+  "gates": {
+    "complete": true,
+    "kappa": true,
+    "rerun": false,
+    "label_agreement": true
+  },
+  "met": false,
+  "thresholds": {
+    "kappa": 0.6,
+    "rerun": 0.9,
+    "label_agreement": 0.85
+  },
+  "disputed": [
+    {
+      "id": "cal-astro-d16",
+      "label": "pass",
+      "verdicts": {
+        "reviewer_a.p1": "revise",
+        "reviewer_a.p2": "pass",
+        "reviewer_b.p1": "pass",
+        "reviewer_b.p2": "pass"
+      },
+      "reasons": {
+        "reviewer_a.p1": "金星核心象征信息不足，主体文字为可替换的通用职业反思",
+        "reviewer_a.p2": "金星释义符合传统占星象征，主题均为中性且无确定性结论。",
+        "reviewer_b.p1": "金星的价值取舍与关系协调含义符合传统象征，主题值与中性表述相容，职业例子未被写成能力结论。",
+        "reviewer_b.p2": "金星的价值与关系协调主题符合传统象征，零方向值与文字一致，职业任务仅作为验证例子而非确定性结论。"
+      },
+      "issues": {
+        "reviewer_a.p1": [
+          {
+            "dimension": "tradition",
+            "detail": "“价值取舍与关系协调”大体符合金星象征，但整条主要内容是職業探索示例（用户体验、内容表达、协作协调），行星本身的核心象征（爱、美、和谐、吸引力、价值观）仅一笔带过，换成其他行星也可拼凑类似职业描述"
+          },
+          {
+            "dimension": "consistency",
+            "detail": "文字重心在职业，theme_map 却全为 0，与文字倾向未明确对应；虽按约定不必然标方向，但条目呈现偏题"
+          }
+        ]
+      }
+    },
+    {
+      "id": "cal-astro-d18",
+      "label": "pass",
+      "verdicts": {
+        "reviewer_a.p1": "revise",
+        "reviewer_a.p2": "pass",
+        "reviewer_b.p1": "pass",
+        "reviewer_b.p2": "pass"
+      },
+      "reasons": {
+        "reviewer_a.p1": "水星的核心象征未被充分体现，主体为可替换的职业反思模板",
+        "reviewer_a.p2": "水星释义符合传统占星象征，主题均为中性且含免责说明。",
+        "reviewer_b.p1": "水星的信息理解与沟通含义准确，主题值与中性表述一致，职业任务仅作为探索验证的例子。",
+        "reviewer_b.p2": "水星的信息理解与沟通主题准确，零方向值与中性文字一致，未将象征解释写成现实预测或能力结论。"
+      },
+      "issues": {
+        "reviewer_a.p1": [
+          {
+            "dimension": "tradition",
+            "detail": "“信息理解与沟通”符合水星，但条目主体仍是需求梳理、业务分析、技术写作等通用职业任务示例，未写出水星作为行星对象的核心象征（如心智、学习、交流、交易、逻辑）区别于同类行星的信息"
+          },
+          {
+            "dimension": "consistency",
+            "detail": "文字集中在职业应用，theme_map 全 0，方向未能从文字体现，内容与对象专属度不足"
+          }
+        ]
+      }
+    },
+    {
+      "id": "cal-astro-d19",
+      "label": "pass",
+      "verdicts": {
+        "reviewer_a.p1": "revise",
+        "reviewer_a.p2": "pass",
+        "reviewer_b.p1": "pass",
+        "reviewer_b.p2": "pass"
+      },
+      "reasons": {
+        "reviewer_a.p1": "缺乏冥王星区别于其他行星的核心象征信息，接近通用职业模板",
+        "reviewer_a.p2": "冥王星释义符合现代占星象征，主题均为中性且无宿命化表述。",
+        "reviewer_b.p1": "准确呈现冥王星在现代占星中的权力与深层转变主题，主题值中性，未作现实预测或职业适配断言。",
+        "reviewer_b.p2": "冥王星的现代占星定位及权力、深层转变主题准确，零方向值与中性反思文字一致，无现实预测或职业适配断言。"
+      },
+      "issues": {
+        "reviewer_a.p1": [
+          {
+            "dimension": "certainty",
+            "detail": "“深层转变”“权力边界”属象征内容尚可，但整条聚焦职业层面（资源权限、保密责任、组织变化），却未写冥王星区别同类行星的核心性质（如深层转化、权力与控制、隐秘与执念等传统象征），更像通用职业反思模板，换成海王星也同样成立"
+          },
+          {
+            "dimension": "consistency",
+            "detail": "key 为 Planet/Pluto，主题方向全 0 与文字中性相容，但文字主要论职业，与无方向定位虽不冲突，仍显内容偏题"
+          }
+        ]
+      }
+    }
+  ],
+  "usage": {
+    "reviewer_a": {
+      "calls": 10,
+      "input_tokens": 20456,
+      "output_tokens": 3250,
+      "latency_s": 20.312,
+      "returned_models": [
+        "deepseek-flash"
+      ],
+      "errors": {},
+      "retried_calls": 0,
+      "http_retries": 0,
+      "cost": null,
+      "known_cost_estimate": null,
+      "usage_complete": true,
+      "cost_basis": "配置单价估算，非账单；服务失败的用量可能未知",
+      "currency": null
+    },
+    "reviewer_b": {
+      "calls": 10,
+      "input_tokens": 23570,
+      "output_tokens": 4075,
+      "latency_s": 266.442,
+      "returned_models": [
+        "gpt-6.1-sol"
+      ],
+      "errors": {
+        "service_error": 6
+      },
+      "retried_calls": 0,
+      "http_retries": 0,
+      "cost": null,
+      "known_cost_estimate": null,
+      "usage_complete": false,
+      "cost_basis": "配置单价估算，非账单；服务失败的用量可能未知",
+      "currency": null
+    }
+  }
+}

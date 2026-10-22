@@ -1,0 +1,66 @@
+{
+  "batch": "b008",
+  "reviewer": "reviewer_a",
+  "run_pass": 2,
+  "attempt": 1,
+  "vendor": "deepseek",
+  "requested_model": "deepseek-flash",
+  "returned_model": "deepseek-flash",
+  "api": "openai",
+  "started_at": "2026-10-22T07:46:31+00:00",
+  "finished_at": "2026-10-22T07:46:33+00:00",
+  "latency_s": 2.92,
+  "http_attempts": 1,
+  "finish_reason": "stop",
+  "prompt_sha256": "01714ce1f188b2b20306a005ffb25086a006ae2b21f68c351777b127889f0520",
+  "input_tokens": 2968,
+  "output_tokens": 349,
+  "cached_input_tokens": 2816,
+  "usage_available": true,
+  "raw_text": "{\"items\":[{\"item\":\"i01\",\"verdict\":\"revise\",\"issues\":[{\"dimension\":\"consistency\",\"detail\":\"text 未写出六合的任意一组成员（如子丑、寅亥等），换成同类其他关系也同样成立，缺少对象专属核心信息\"},{\"dimension\":\"plain_language\",\"detail\":\"“需结合具体干支判断”含糊，没有任何可核对的六合成员信息\"}],\"reason\":\"六合条目只给通用提醒，未写出六合成对地支，属对象专属信息缺失。\"},{\"item\":\"i02\",\"verdict\":\"pass\",\"issues\":[],\"reason\":\"六冲列出六组成员，核心含义与参考事实一致，主题全为0与中性文字相容，未作宿命化预测。\"},{\"item\":\"i03\",\"verdict\":\"revise\",\"issues\":[{\"dimension\":\"theme_direction\",\"detail\":\"theme_map 中 self=-0.1、career=-0.1，但文字只作“传统解释侧重点”的象征说明和反思提示，未表达自我状态或事业方向偏阻的倾向，方向依据不足\"}],\"reason\":\"地支刑成员与自刑符合参考事实，但 self、career 的负向主题在文字中缺乏支持。\"},{\"item\":\"i04\",\"verdict\":\"revise\",\"issues\":[{\"dimension\":\"tradition\",\"detail\":\"“亥子丑对应冬季，会木”写错，亥子丑应为会水\"},{\"dimension\":\"plain_language\",\"detail\":\"三会成员与季节对应中冬季一项五行标注错误，会误导用户\"}],\"reason\":\"三会亥子丑的五行被写成木，与参考事实不符。\"}]}",
+  "verdicts": {
+    "i01": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "consistency",
+          "detail": "text 未写出六合的任意一组成员（如子丑、寅亥等），换成同类其他关系也同样成立，缺少对象专属核心信息"
+        },
+        {
+          "dimension": "plain_language",
+          "detail": "“需结合具体干支判断”含糊，没有任何可核对的六合成员信息"
+        }
+      ],
+      "reason": "六合条目只给通用提醒，未写出六合成对地支，属对象专属信息缺失。"
+    },
+    "i02": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "六冲列出六组成员，核心含义与参考事实一致，主题全为0与中性文字相容，未作宿命化预测。"
+    },
+    "i03": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "theme_direction",
+          "detail": "theme_map 中 self=-0.1、career=-0.1，但文字只作“传统解释侧重点”的象征说明和反思提示，未表达自我状态或事业方向偏阻的倾向，方向依据不足"
+        }
+      ],
+      "reason": "地支刑成员与自刑符合参考事实，但 self、career 的负向主题在文字中缺乏支持。"
+    },
+    "i04": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "tradition",
+          "detail": "“亥子丑对应冬季，会木”写错，亥子丑应为会水"
+        },
+        {
+          "dimension": "plain_language",
+          "detail": "三会成员与季节对应中冬季一项五行标注错误，会误导用户"
+        }
+      ],
+      "reason": "三会亥子丑的五行被写成木，与参考事实不符。"
+    }
+  }
+}

@@ -1,0 +1,88 @@
+{
+  "batch": "b003",
+  "reviewer": "reviewer_b",
+  "run_pass": 2,
+  "attempt": 1,
+  "vendor": "openai",
+  "requested_model": "gpt-6.1-sol",
+  "returned_model": "gpt-6.1-sol",
+  "api": "openai",
+  "started_at": "2026-10-22T07:14:52+00:00",
+  "finished_at": "2026-10-22T07:15:20+00:00",
+  "latency_s": 27.616,
+  "http_attempts": 1,
+  "finish_reason": "stop",
+  "prompt_sha256": "00ceb300cbd09a9c5cd0b7f8c8948d4d916a37954612e576409e22780dfcf1c3",
+  "input_tokens": 3040,
+  "output_tokens": 924,
+  "cached_input_tokens": null,
+  "usage_available": true,
+  "raw_text": "{\n  \"items\": [\n    {\n      \"item\": \"i01\",\n      \"verdict\": \"revise\",\n      \"issues\": [\n        {\n          \"dimension\": \"certainty\",\n          \"detail\": \"text 中“这一配置预示接下来几个月财运会明显好转”是对现实财务变化的预测，应删除或改为非预测性的反思提示。\"\n        }\n      ],\n      \"reason\": \"家庭主题与金星象征基本相符，但包含明确的现实事件预测。\"\n    },\n    {\n      \"item\": \"i02\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"火星与第4宫的象征结合准确，自我动力偏正、家庭关系摩擦偏负的方向有文字依据，且没有预测必然冲突。\"\n    },\n    {\n      \"item\": \"i03\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"创作、自我表达与恋爱主题符合太阳在第5宫的象征，主题方向与文字一致。\"\n    },\n    {\n      \"item\": \"i04\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"准确结合了水星的信息沟通性质与第6宫的日常工作、习惯主题，中性方向合理。\"\n    },\n    {\n      \"item\": \"i05\",\n      \"verdict\": \"revise\",\n      \"issues\": [\n        {\n          \"dimension\": \"theme_direction\",\n          \"detail\": \"theme_map.finance 为负，但 text 仅涉及创作、兴趣、想象与理想，没有财务受阻的含义；第5宫也不属于可直接标财务方向的约定宫位。\"\n        }\n      ],\n      \"reason\": \"财务负向缺乏文字依据或项目方向约定支持。\"\n    },\n    {\n      \"item\": \"i06\",\n      \"verdict\": \"revise\",\n      \"issues\": [\n        {\n          \"dimension\": \"theme_direction\",\n          \"detail\": \"theme_map.career 为正，但 text 仅涉及休整、内在反思、价值取舍与关系协调，没有事业偏顺的含义，第12宫也没有直接标事业方向的约定。\"\n        }\n      ],\n      \"reason\": \"事业正向无法从释义或项目方向约定中得到支持。\"\n    },\n    {\n      \"item\": \"i07\",\n      \"verdict\": \"revise\",\n      \"issues\": [\n        {\n          \"dimension\": \"tradition\",\n          \"detail\": \"text 将第9宫主题写成“学习和日常沟通”，这对应参考事实中的第3宫；第9宫应围绕远行、学习与视野展开。\"\n        }\n      ],\n      \"reason\": \"冥王星象征基本相符，但宫位主题混入了第3宫的定义。\"\n    },\n    {\n      \"item\": \"i08\",\n      \"verdict\": \"revise\",\n      \"issues\": [\n        {\n          \"dimension\": \"tradition\",\n          \"detail\": \"text 将第8宫主题写成“资源与价值”，这对应参考事实中的第2宫；第8宫应突出共享资源与信任。\"\n        }\n      ],\n      \"reason\": \"海王星象征基本相符，但未准确区分第8宫与第2宫的核心主题。\"\n    }\n  ]\n}",
+  "verdicts": {
+    "i01": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "certainty",
+          "detail": "text 中“这一配置预示接下来几个月财运会明显好转”是对现实财务变化的预测，应删除或改为非预测性的反思提示。"
+        }
+      ],
+      "reason": "家庭主题与金星象征基本相符，但包含明确的现实事件预测。"
+    },
+    "i02": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "火星与第4宫的象征结合准确，自我动力偏正、家庭关系摩擦偏负的方向有文字依据，且没有预测必然冲突。"
+    },
+    "i03": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "创作、自我表达与恋爱主题符合太阳在第5宫的象征，主题方向与文字一致。"
+    },
+    "i04": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "准确结合了水星的信息沟通性质与第6宫的日常工作、习惯主题，中性方向合理。"
+    },
+    "i05": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "theme_direction",
+          "detail": "theme_map.finance 为负，但 text 仅涉及创作、兴趣、想象与理想，没有财务受阻的含义；第5宫也不属于可直接标财务方向的约定宫位。"
+        }
+      ],
+      "reason": "财务负向缺乏文字依据或项目方向约定支持。"
+    },
+    "i06": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "theme_direction",
+          "detail": "theme_map.career 为正，但 text 仅涉及休整、内在反思、价值取舍与关系协调，没有事业偏顺的含义，第12宫也没有直接标事业方向的约定。"
+        }
+      ],
+      "reason": "事业正向无法从释义或项目方向约定中得到支持。"
+    },
+    "i07": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "tradition",
+          "detail": "text 将第9宫主题写成“学习和日常沟通”，这对应参考事实中的第3宫；第9宫应围绕远行、学习与视野展开。"
+        }
+      ],
+      "reason": "冥王星象征基本相符，但宫位主题混入了第3宫的定义。"
+    },
+    "i08": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "tradition",
+          "detail": "text 将第8宫主题写成“资源与价值”，这对应参考事实中的第2宫；第8宫应突出共享资源与信任。"
+        }
+      ],
+      "reason": "海王星象征基本相符，但未准确区分第8宫与第2宫的核心主题。"
+    }
+  }
+}

@@ -1,0 +1,98 @@
+{
+  "batch": "b002",
+  "reviewer": "reviewer_a",
+  "run_pass": 1,
+  "attempt": 1,
+  "vendor": "deepseek",
+  "requested_model": "deepseek-v4-pro",
+  "returned_model": "deepseek-v4-pro",
+  "api": "openai",
+  "started_at": "2026-10-22T09:07:42+00:00",
+  "finished_at": "2026-10-22T09:07:52+00:00",
+  "latency_s": 9.977,
+  "http_attempts": 1,
+  "finish_reason": "stop",
+  "prompt_sha256": "fc1bf1bd4c1736d03ed84861cfd2d5beb27ea6720627adef921bab759ad4077a",
+  "input_tokens": 3476,
+  "output_tokens": 779,
+  "cached_input_tokens": 1024,
+  "usage_available": true,
+  "raw_text": "```json\n{\n  \"items\": [\n    {\n      \"item\": \"i01\",\n      \"verdict\": \"revise\",\n      \"issues\": [\n        {\n          \"dimension\": \"theme_direction\",\n          \"detail\": \"text 提到团圆、家庭、满足感与照顾，未明确表达关系正向或财务受阻，却给 relationship 标 0.1、finance 标 -0.3，文字与主题方向缺少支持。\"\n        }\n      ],\n      \"reason\": \"主题方向与释义文字不一致，relationship 和 finance 的方向无法从文字中看出。\"\n    },\n    {\n      \"item\": \"i02\",\n      \"verdict\": \"revise\",\n      \"issues\": [\n        {\n          \"dimension\": \"consistency\",\n          \"detail\": \"synonyms 中将“出轨”等同为“背叛”的同义词，但出轨是背叛的一种具体情节，不是同义表达，可能导致用户误命中。\"\n        }\n      ],\n      \"reason\": \"同义词“出轨”与“背叛”不构成同义关系，会误命中。\"\n    },\n    {\n      \"item\": \"i03\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"释义与主题方向一致，对象核心含义正确，无宿命化或确定性断言。\"\n    },\n    {\n      \"item\": \"i04\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"释义与主题方向一致，对象核心含义正确，无宿命化或确定性断言。\"\n    },\n    {\n      \"item\": \"i05\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"释义与主题方向一致，对象核心含义正确，无宿命化或确定性断言。\"\n    },\n    {\n      \"item\": \"i06\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"释义与主题方向一致，对象核心含义正确，无宿命化或确定性断言。\"\n    },\n    {\n      \"item\": \"i07\",\n      \"verdict\": \"revise\",\n      \"issues\": [\n        {\n          \"dimension\": \"certainty\",\n          \"detail\": \"文本结尾出现“梦到它预示近期会收到好消息”，是对现实事件的确定性预测，属于宿命化表述。\"\n        }\n      ],\n      \"reason\": \"存在宿命化、预测性陈述，违反确定性原则。\"\n    },\n    {\n      \"item\": \"i08\",\n      \"verdict\": \"revise\",\n      \"issues\": [\n        {\n          \"dimension\": \"theme_direction\",\n          \"detail\": \"text 中“困局”是泛指词，未明确指向事业，却将 career 标为 -0.3，文字与主题方向缺少支持。\"\n        }\n      ],\n      \"reason\": \"主题方向与释义文字不一致，career 负向无法从文字中看出。\"\n    },\n    {\n      \"item\": \"i09\",\n      \"verdict\": \"revise\",\n      \"issues\": [\n        {\n          \"dimension\": \"theme_direction\",\n          \"detail\": \"text 围绕渴望自由、摆脱限制、自信提升展开，整体偏正向，却将 self 标为 -0.15，方向相反。\"\n        }\n      ],\n      \"reason\": \"self 的主题倾向与释义文字正负相反。\"\n    },\n    {\n      \"item\": \"i10\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"释义与主题方向一致，对象核心含义正确，无宿命化或确定性断言。\"\n    }\n  ]\n}",
+  "verdicts": {
+    "i01": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "theme_direction",
+          "detail": "text 提到团圆、家庭、满足感与照顾，未明确表达关系正向或财务受阻，却给 relationship 标 0.1、finance 标 -0.3，文字与主题方向缺少支持。"
+        }
+      ],
+      "reason": "主题方向与释义文字不一致，relationship 和 finance 的方向无法从文字中看出。"
+    },
+    "i02": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "consistency",
+          "detail": "synonyms 中将“出轨”等同为“背叛”的同义词，但出轨是背叛的一种具体情节，不是同义表达，可能导致用户误命中。"
+        }
+      ],
+      "reason": "同义词“出轨”与“背叛”不构成同义关系，会误命中。"
+    },
+    "i03": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "释义与主题方向一致，对象核心含义正确，无宿命化或确定性断言。"
+    },
+    "i04": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "释义与主题方向一致，对象核心含义正确，无宿命化或确定性断言。"
+    },
+    "i05": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "释义与主题方向一致，对象核心含义正确，无宿命化或确定性断言。"
+    },
+    "i06": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "释义与主题方向一致，对象核心含义正确，无宿命化或确定性断言。"
+    },
+    "i07": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "certainty",
+          "detail": "文本结尾出现“梦到它预示近期会收到好消息”，是对现实事件的确定性预测，属于宿命化表述。"
+        }
+      ],
+      "reason": "存在宿命化、预测性陈述，违反确定性原则。"
+    },
+    "i08": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "theme_direction",
+          "detail": "text 中“困局”是泛指词，未明确指向事业，却将 career 标为 -0.3，文字与主题方向缺少支持。"
+        }
+      ],
+      "reason": "主题方向与释义文字不一致，career 负向无法从文字中看出。"
+    },
+    "i09": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "theme_direction",
+          "detail": "text 围绕渴望自由、摆脱限制、自信提升展开，整体偏正向，却将 self 标为 -0.15，方向相反。"
+        }
+      ],
+      "reason": "self 的主题倾向与释义文字正负相反。"
+    },
+    "i10": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "释义与主题方向一致，对象核心含义正确，无宿命化或确定性断言。"
+    }
+  }
+}

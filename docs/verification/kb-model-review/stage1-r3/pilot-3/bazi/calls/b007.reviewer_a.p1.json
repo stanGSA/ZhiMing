@@ -1,0 +1,38 @@
+{
+  "batch": "b007",
+  "reviewer": "reviewer_a",
+  "run_pass": 1,
+  "attempt": 1,
+  "vendor": "deepseek",
+  "requested_model": "deepseek-v4-pro",
+  "returned_model": "deepseek-v4-pro",
+  "api": "openai",
+  "started_at": "2026-10-22T10:23:15+00:00",
+  "finished_at": "2026-10-22T10:23:37+00:00",
+  "latency_s": 22.597,
+  "http_attempts": 1,
+  "finish_reason": "stop",
+  "prompt_sha256": "d3528d73fb94db0473a302bf4cff4a9a59207667ccff043d43c88d0ddadb1946",
+  "input_tokens": 2471,
+  "output_tokens": 1568,
+  "cached_input_tokens": 2048,
+  "usage_available": true,
+  "raw_text": "{\"items\": [{\"item\": \"i01\", \"verdict\": \"revise\", \"issues\": [{\"dimension\": \"certainty\", \"detail\": \"末句“命局中出现它，预示近两年会遇到贵人相助”是对现实事件的预测，应改为传统象征或免责表述。\"}], \"reason\": \"文字把纳音写成对近两年遇贵人的现实预测，违反预测限制。\"}, {\"item\": \"i02\", \"verdict\": \"pass\", \"issues\": [], \"reason\": \"准确写出壬寅、癸卯对应金箔金，并限定为传统分类，无误。\"}]}",
+  "verdicts": {
+    "i01": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "certainty",
+          "detail": "末句“命局中出现它，预示近两年会遇到贵人相助”是对现实事件的预测，应改为传统象征或免责表述。"
+        }
+      ],
+      "reason": "文字把纳音写成对近两年遇贵人的现实预测，违反预测限制。"
+    },
+    "i02": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "准确写出壬寅、癸卯对应金箔金，并限定为传统分类，无误。"
+    }
+  }
+}

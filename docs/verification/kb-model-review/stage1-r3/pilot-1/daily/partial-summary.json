@@ -1,0 +1,122 @@
+{
+  "system": "daily",
+  "rubric_sha256": "d26c6757b96a1cdfca3ac89a8b31adcb9acde41833984012806812ceb91859dc",
+  "agreement": {
+    "items": 6,
+    "reviewed": 3,
+    "labels": {
+      "pass": 3,
+      "fail": 3
+    },
+    "kappa": 0.0,
+    "observed_agreement": 0.6667,
+    "pairs": {
+      "reject/reject": 2,
+      "pass/reject": 1
+    },
+    "label_agreement": {
+      "reviewer_a": {
+        "accuracy": 0.6667,
+        "sensitivity": 0.6667,
+        "specificity": null
+      },
+      "reviewer_b": {
+        "accuracy": 1.0,
+        "sensitivity": 1.0,
+        "specificity": null
+      }
+    }
+  },
+  "rerun": {
+    "reviewer_a": 0.8333,
+    "reviewer_b": 1.0
+  },
+  "gates": {
+    "complete": false,
+    "kappa": false,
+    "rerun": false,
+    "label_agreement": false
+  },
+  "met": false,
+  "thresholds": {
+    "kappa": 0.6,
+    "rerun": 0.9,
+    "label_agreement": 0.85
+  },
+  "disputed": [
+    {
+      "id": "cal-daily-d06",
+      "label": "fail",
+      "verdicts": {
+        "reviewer_a.p1": "pass",
+        "reviewer_a.p2": "revise",
+        "reviewer_b.p1": "revise",
+        "reviewer_b.p2": "revise"
+      },
+      "reasons": {
+        "reviewer_a.p1": "五行水、黑蓝配色说明准确，并明确幸运色不带来实际运气，无方向或预测问题。",
+        "reviewer_a.p2": "每日运势约定方向全中性，self 标为 0.2 需改为 0。",
+        "reviewer_b.p1": "水的配色与约定说明正确，但自我主题的非零方向违反每日运势中性约定。",
+        "reviewer_b.p2": "水的传统配色与免责声明正确，但自我主题的非零方向违反每日运势中性约定。"
+      },
+      "issues": {
+        "reviewer_a.p2": [
+          {
+            "dimension": "theme_direction",
+            "detail": "每日运势条目按项目约定 theme_map 应全为 0，i01 的 self 标为 0.2，违反约定。"
+          }
+        ],
+        "reviewer_b.p1": [
+          {
+            "dimension": "theme_direction",
+            "detail": "theme_map.self 为 0.2；按项目约定，每日运势条目的四个主题方向必须全为 0，应将该值改为 0。"
+          }
+        ],
+        "reviewer_b.p2": [
+          {
+            "dimension": "theme_direction",
+            "detail": "theme_map.self 为 0.2；每日运势条目按项目约定须保持中性，四个主题值均应为 0。"
+          }
+        ]
+      }
+    }
+  ],
+  "usage": {
+    "reviewer_a": {
+      "calls": 4,
+      "input_tokens": 7476,
+      "output_tokens": 897,
+      "latency_s": 16.302,
+      "returned_models": [
+        "deepseek-v4-pro"
+      ],
+      "errors": {},
+      "retried_calls": 0,
+      "http_retries": 0,
+      "cost": null,
+      "known_cost_estimate": null,
+      "usage_complete": true,
+      "cost_basis": "配置单价估算，非账单；服务失败的用量可能未知",
+      "currency": null
+    },
+    "reviewer_b": {
+      "calls": 3,
+      "input_tokens": 6384,
+      "output_tokens": 1001,
+      "latency_s": 371.973,
+      "returned_models": [
+        "gpt-6.1-sol"
+      ],
+      "errors": {
+        "service_error": 1
+      },
+      "retried_calls": 0,
+      "http_retries": 2,
+      "cost": null,
+      "known_cost_estimate": null,
+      "usage_complete": false,
+      "cost_basis": "配置单价估算，非账单；服务失败的用量可能未知",
+      "currency": null
+    }
+  }
+}

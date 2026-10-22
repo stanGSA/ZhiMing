@@ -1,0 +1,33 @@
+{
+  "batch": "b003",
+  "reviewer": "reviewer_b",
+  "run_pass": 1,
+  "attempt": 1,
+  "vendor": "openai",
+  "requested_model": "gpt-6.1-sol",
+  "returned_model": "gpt-6.1-sol",
+  "api": "openai",
+  "started_at": "2026-10-22T08:28:50+00:00",
+  "finished_at": "2026-10-22T08:29:01+00:00",
+  "latency_s": 10.836,
+  "http_attempts": 1,
+  "finish_reason": "stop",
+  "prompt_sha256": "0fae1ed5dc01fc2417025165de0415e9dab4f9343deb5b428c0c0d51fa7e03ff",
+  "input_tokens": 1933,
+  "output_tokens": 206,
+  "cached_input_tokens": null,
+  "usage_available": true,
+  "raw_text": "{\n  \"items\": [\n    {\n      \"item\": \"i01\",\n      \"verdict\": \"reject\",\n      \"issues\": [\n        {\n          \"dimension\": \"consistency\",\n          \"detail\": \"按 spread_positions，decision:2 对应“选 A”，synonyms 与 keywords 也指向选 A；正文却将该牌位定义为“选 B”，并全篇围绕选择 B 说明，主体与 key 不符，且出现与“选 B”牌位自身对照的问题。\"\n        }\n      ],\n      \"reason\": \"正文整体解释了另一牌位“选 B”，而非本条应对应的“选 A”，属于主体对象错误。\"\n    }\n  ]\n}",
+  "verdicts": {
+    "i01": {
+      "verdict": "reject",
+      "issues": [
+        {
+          "dimension": "consistency",
+          "detail": "按 spread_positions，decision:2 对应“选 A”，synonyms 与 keywords 也指向选 A；正文却将该牌位定义为“选 B”，并全篇围绕选择 B 说明，主体与 key 不符，且出现与“选 B”牌位自身对照的问题。"
+        }
+      ],
+      "reason": "正文整体解释了另一牌位“选 B”，而非本条应对应的“选 A”，属于主体对象错误。"
+    }
+  }
+}

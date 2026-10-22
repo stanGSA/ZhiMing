@@ -1,0 +1,53 @@
+{
+  "batch": "b002",
+  "reviewer": "reviewer_b",
+  "run_pass": 1,
+  "attempt": 1,
+  "vendor": "openai",
+  "requested_model": "gpt-6.1-sol",
+  "returned_model": "gpt-6.1-sol",
+  "api": "openai",
+  "started_at": "2026-10-22T10:31:51+00:00",
+  "finished_at": "2026-10-22T10:32:00+00:00",
+  "latency_s": 8.91,
+  "http_attempts": 1,
+  "finish_reason": "stop",
+  "prompt_sha256": "294d8923898d6602718ddac0dc4e24b19b1eda12ce1e2e428c401eb094d80afd",
+  "input_tokens": 2114,
+  "output_tokens": 345,
+  "cached_input_tokens": null,
+  "usage_available": true,
+  "raw_text": "{\n  \"items\": [\n    {\n      \"item\": \"i01\",\n      \"verdict\": \"revise\",\n      \"issues\": [\n        {\n          \"dimension\": \"certainty\",\n          \"detail\": \"text 中“可以为当天带来好运”暗示配色能带来实际运气，不符合每日运势配色仅为传统约定的要求，应删除该效果表述。\"\n        }\n      ],\n      \"reason\": \"木对应青、绿且主题值均为零符合要求，但配色带来好运的表述需要修正。\"\n    },\n    {\n      \"item\": \"i02\",\n      \"verdict\": \"revise\",\n      \"issues\": [\n        {\n          \"dimension\": \"theme_direction\",\n          \"detail\": \"theme_map.self 为 0.2；每日运势条目按项目约定须全部保持中性，应改为 0。\"\n        }\n      ],\n      \"reason\": \"水对应黑、蓝的说明正确，但自我主题的非零方向违反每日运势中性约定。\"\n    },\n    {\n      \"item\": \"i03\",\n      \"verdict\": \"revise\",\n      \"issues\": [\n        {\n          \"dimension\": \"tradition\",\n          \"detail\": \"text 中“金……传统配色为黑、蓝”写错对应关系；金的传统配色应为白、金，黑、蓝对应水。\"\n        }\n      ],\n      \"reason\": \"主题值均为零符合要求，但金的传统配色存在可修正的事实错误。\"\n    }\n  ]\n}",
+  "verdicts": {
+    "i01": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "certainty",
+          "detail": "text 中“可以为当天带来好运”暗示配色能带来实际运气，不符合每日运势配色仅为传统约定的要求，应删除该效果表述。"
+        }
+      ],
+      "reason": "木对应青、绿且主题值均为零符合要求，但配色带来好运的表述需要修正。"
+    },
+    "i02": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "theme_direction",
+          "detail": "theme_map.self 为 0.2；每日运势条目按项目约定须全部保持中性，应改为 0。"
+        }
+      ],
+      "reason": "水对应黑、蓝的说明正确，但自我主题的非零方向违反每日运势中性约定。"
+    },
+    "i03": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "tradition",
+          "detail": "text 中“金……传统配色为黑、蓝”写错对应关系；金的传统配色应为白、金，黑、蓝对应水。"
+        }
+      ],
+      "reason": "主题值均为零符合要求，但金的传统配色存在可修正的事实错误。"
+    }
+  }
+}

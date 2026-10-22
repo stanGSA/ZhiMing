@@ -1,0 +1,80 @@
+{
+  "batch": "b004",
+  "reviewer": "reviewer_a",
+  "run_pass": 1,
+  "attempt": 1,
+  "vendor": "deepseek",
+  "requested_model": "deepseek-flash",
+  "returned_model": "deepseek-flash",
+  "api": "openai",
+  "started_at": "2026-10-22T07:38:09+00:00",
+  "finished_at": "2026-10-22T07:38:12+00:00",
+  "latency_s": 3.254,
+  "http_attempts": 1,
+  "finish_reason": "stop",
+  "prompt_sha256": "1e558ad078bca27b96b00f6524f3d12193b9b14b3e8cf369d1fa8401c1106255",
+  "input_tokens": 2660,
+  "output_tokens": 597,
+  "cached_input_tokens": 1408,
+  "usage_available": true,
+  "raw_text": "{\"items\": [{\"item\": \"i01\", \"verdict\": \"revise\", \"issues\": [{\"dimension\": \"theme_direction\", \"detail\": \"theme_map 将 relationship 标为 -0.15（偏阻），但正文写“感情方面主动直接，敢于表达需求”，属于偏主动、偏顺的表达，与负向不一致\"}, {\"dimension\": \"tradition\", \"detail\": \"正文称“传统上火星在天蝎为入庙”，这一尊贵表述本身符合参考事实，但紧接其后的感情描述与 theme_map 的负向倾向相矛盾，削弱了传统信息的准确性\"}], \"reason\": \"relationship 标为负向，但正文对感情的表达偏主动、偏顺，方向与文字不一致。\"}, {\"item\": \"i02\", \"verdict\": \"pass\", \"issues\": [], \"reason\": \"金星落摩羯的核心主题与主题方向一致，主题方向均为 0、文字中性，未出现宿命化断言、预测或照抄问题。\"}, {\"item\": \"i03\", \"verdict\": \"revise\", \"issues\": [{\"dimension\": \"tradition\", \"detail\": \"正文称“在传统尊贵体系中，海王星在此星座为入庙”，但参考事实明确海王星属现代占星，不在传统尊贵表中，因此该断言错误\"}, {\"dimension\": \"certainty\", \"detail\": \"尊贵表述不应把参考表没有列出的行星与星座组合写成传统定论\"}], \"reason\": \"海王星不在传统尊贵表中，写成“入庙”与参考事实不符。\"}, {\"item\": \"i04\", \"verdict\": \"revise\", \"issues\": [{\"dimension\": \"tradition\", \"detail\": \"正文称“传统上木星在双鱼为失势”，但参考事实为木星双鱼入庙，尊贵写错，核心传统事实与参考事实相反\"}, {\"dimension\": \"theme_direction\", \"detail\": \"finance 标为 +0.2（偏顺），正文写“看到机会、乐于扩展，仍需核实成本”，方向可支持正向，但同一段把木星双鱼写成失势，使财务偏顺的传统依据被削弱\"}], \"reason\": \"木星双鱼的尊贵应为入庙，正文写成失势，与参考事实不符。\"}, {\"item\": \"i05\", \"verdict\": \"revise\", \"issues\": [{\"dimension\": \"tradition\", \"detail\": \"正文称“传统上金星在金牛为失势”，但参考事实为金星金牛入庙，尊贵写错，核心传统事实与参考事实相反\"}], \"reason\": \"金星金牛的尊贵应为入庙，正文写成失势，与参考事实不符。\"}]}",
+  "verdicts": {
+    "i01": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "theme_direction",
+          "detail": "theme_map 将 relationship 标为 -0.15（偏阻），但正文写“感情方面主动直接，敢于表达需求”，属于偏主动、偏顺的表达，与负向不一致"
+        },
+        {
+          "dimension": "tradition",
+          "detail": "正文称“传统上火星在天蝎为入庙”，这一尊贵表述本身符合参考事实，但紧接其后的感情描述与 theme_map 的负向倾向相矛盾，削弱了传统信息的准确性"
+        }
+      ],
+      "reason": "relationship 标为负向，但正文对感情的表达偏主动、偏顺，方向与文字不一致。"
+    },
+    "i02": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "金星落摩羯的核心主题与主题方向一致，主题方向均为 0、文字中性，未出现宿命化断言、预测或照抄问题。"
+    },
+    "i03": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "tradition",
+          "detail": "正文称“在传统尊贵体系中，海王星在此星座为入庙”，但参考事实明确海王星属现代占星，不在传统尊贵表中，因此该断言错误"
+        },
+        {
+          "dimension": "certainty",
+          "detail": "尊贵表述不应把参考表没有列出的行星与星座组合写成传统定论"
+        }
+      ],
+      "reason": "海王星不在传统尊贵表中，写成“入庙”与参考事实不符。"
+    },
+    "i04": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "tradition",
+          "detail": "正文称“传统上木星在双鱼为失势”，但参考事实为木星双鱼入庙，尊贵写错，核心传统事实与参考事实相反"
+        },
+        {
+          "dimension": "theme_direction",
+          "detail": "finance 标为 +0.2（偏顺），正文写“看到机会、乐于扩展，仍需核实成本”，方向可支持正向，但同一段把木星双鱼写成失势，使财务偏顺的传统依据被削弱"
+        }
+      ],
+      "reason": "木星双鱼的尊贵应为入庙，正文写成失势，与参考事实不符。"
+    },
+    "i05": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "tradition",
+          "detail": "正文称“传统上金星在金牛为失势”，但参考事实为金星金牛入庙，尊贵写错，核心传统事实与参考事实相反"
+        }
+      ],
+      "reason": "金星金牛的尊贵应为入庙，正文写成失势，与参考事实不符。"
+    }
+  }
+}

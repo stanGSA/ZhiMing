@@ -1,0 +1,53 @@
+{
+  "batch": "b008",
+  "reviewer": "reviewer_a",
+  "run_pass": 2,
+  "attempt": 1,
+  "vendor": "deepseek",
+  "requested_model": "deepseek-flash",
+  "returned_model": "deepseek-flash",
+  "api": "openai",
+  "started_at": "2026-10-22T07:02:51+00:00",
+  "finished_at": "2026-10-22T07:02:53+00:00",
+  "latency_s": 2.14,
+  "http_attempts": 1,
+  "finish_reason": "stop",
+  "prompt_sha256": "051c086d1b9f1fb478f0c3eb3153171a97b60ed9ecae2f7a736387373696bdc9",
+  "input_tokens": 2767,
+  "output_tokens": 288,
+  "cached_input_tokens": 2560,
+  "usage_available": true,
+  "raw_text": "{\"items\": [{\"item\": \"i01\", \"verdict\": \"pass\", \"issues\": [], \"reason\": \"六组地支冲列举完整，白话解释准确，有免责声明，主题全为中性方向与文字相容。\"}, {\"item\": \"i02\", \"verdict\": \"revise\", \"issues\": [{\"dimension\": \"tradition\", \"detail\": \"“亥子丑对应冬季，会木”写错，亥子丑三会应为水，核心组合对应的五行写错属对象核心信息错误。\"}], \"reason\": \"三会亥子丑的五行误写为木，应为水。\"}, {\"item\": \"i03\", \"verdict\": \"revise\", \"issues\": [{\"dimension\": \"tradition\", \"detail\": \"条目只说“一种关系、需结合具体干支判断”，未写出六合由哪六组地支构成（如子丑、寅亥等），缺少该对象区别于同类关系的核心信息。\"}], \"reason\": \"地支六合未列出具体六组配对，只有通用免责与方法说明，不满足对象专属要求。\"}, {\"item\": \"i04\", \"verdict\": \"pass\", \"issues\": [], \"reason\": \"地支刑的含义与侧重解释准确，theme_map 自我与事业为轻微负向且文字有相应倾向，免责充分。\"}]}",
+  "verdicts": {
+    "i01": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "六组地支冲列举完整，白话解释准确，有免责声明，主题全为中性方向与文字相容。"
+    },
+    "i02": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "tradition",
+          "detail": "“亥子丑对应冬季，会木”写错，亥子丑三会应为水，核心组合对应的五行写错属对象核心信息错误。"
+        }
+      ],
+      "reason": "三会亥子丑的五行误写为木，应为水。"
+    },
+    "i03": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "tradition",
+          "detail": "条目只说“一种关系、需结合具体干支判断”，未写出六合由哪六组地支构成（如子丑、寅亥等），缺少该对象区别于同类关系的核心信息。"
+        }
+      ],
+      "reason": "地支六合未列出具体六组配对，只有通用免责与方法说明，不满足对象专属要求。"
+    },
+    "i04": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "地支刑的含义与侧重解释准确，theme_map 自我与事业为轻微负向且文字有相应倾向，免责充分。"
+    }
+  }
+}

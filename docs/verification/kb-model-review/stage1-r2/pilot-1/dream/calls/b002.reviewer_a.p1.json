@@ -1,0 +1,88 @@
+{
+  "batch": "b002",
+  "reviewer": "reviewer_a",
+  "run_pass": 1,
+  "attempt": 1,
+  "vendor": "deepseek",
+  "requested_model": "deepseek-flash",
+  "returned_model": "deepseek-flash",
+  "api": "openai",
+  "started_at": "2026-10-22T07:06:09+00:00",
+  "finished_at": "2026-10-22T07:06:12+00:00",
+  "latency_s": 3.377,
+  "http_attempts": 1,
+  "finish_reason": "stop",
+  "prompt_sha256": "b350278ff0b43e30029accec9dd696515be43c1adf9e6599662dda850b8268d9",
+  "input_tokens": 3056,
+  "output_tokens": 557,
+  "cached_input_tokens": 640,
+  "usage_available": true,
+  "raw_text": "{\"items\":[{\"item\":\"i01\",\"verdict\":\"pass\",\"issues\":[],\"reason\":\"饺子释义符合团圆、家庭的传统象征，theme_map方向（关系微正、财务微负）与文字无明显矛盾，无宿命化断言。\"},{\"item\":\"i02\",\"verdict\":\"pass\",\"issues\":[],\"reason\":\"背叛释义聚焦不安全感并明确否定现实预测，relationship微负与文字一致，同义词指向同一意象。\"},{\"item\":\"i03\",\"verdict\":\"pass\",\"issues\":[],\"reason\":\"灯的指引、清晰感、希望联想符合象征传统，self微正与文字一致，无预测性措辞。\"},{\"item\":\"i04\",\"verdict\":\"pass\",\"issues\":[],\"reason\":\"去世的亲人的思念、关系映照释义平和，同义词为同一意象的常见说法，theme_map全零与中性文字相容。\"},{\"item\":\"i05\",\"verdict\":\"pass\",\"issues\":[],\"reason\":\"生病释义写疲惫、休息与照顾需求，注明不代表健康状况并建议就医，self微负与文字一致。\"},{\"item\":\"i06\",\"verdict\":\"revise\",\"issues\":[{\"dimension\":\"consistency\",\"detail\":\"同义词“想不开”是口语中“有轻生念头”的常见义项，与“梦见自杀”并非同一意象，用户说出时易误命中\"}],\"reason\":\"自杀释义措辞平和且含危机支持，但同义词“想不开”指向现实念头而非梦境意象，会造成误检索。\"},{\"item\":\"i07\",\"verdict\":\"revise\",\"issues\":[{\"dimension\":\"certainty\",\"detail\":\"结尾“梦到它预示近期会收到好消息”属对现实事件的预测，与同段“不预示现实结果”自相矛盾\"}],\"reason\":\"伞的释义主体可保留，但末句预言好消息构成预测，须删改。\"},{\"item\":\"i08\",\"verdict\":\"pass\",\"issues\":[],\"reason\":\"泥土的根基、务实、困局联想合理，career负向与“陷入困局”文字一致，同义词指向同一意象。\"},{\"item\":\"i09\",\"verdict\":\"revise\",\"issues\":[{\"dimension\":\"theme_direction\",\"detail\":\"theme_map中self为-0.15（偏阻），但文字写“渴望自由、摆脱限制或自信提升”，整体偏顺偏积极，方向与文字不一致\"}],\"reason\":\"飞的文字表达积极联想，self却标负向，方向与释义不符。\"},{\"item\":\"i10\",\"verdict\":\"pass\",\"issues\":[],\"reason\":\"天空的开阔、理想、可能性象征合理，self微正与文字一致，无预测性措辞。\"}]}",
+  "verdicts": {
+    "i01": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "饺子释义符合团圆、家庭的传统象征，theme_map方向（关系微正、财务微负）与文字无明显矛盾，无宿命化断言。"
+    },
+    "i02": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "背叛释义聚焦不安全感并明确否定现实预测，relationship微负与文字一致，同义词指向同一意象。"
+    },
+    "i03": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "灯的指引、清晰感、希望联想符合象征传统，self微正与文字一致，无预测性措辞。"
+    },
+    "i04": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "去世的亲人的思念、关系映照释义平和，同义词为同一意象的常见说法，theme_map全零与中性文字相容。"
+    },
+    "i05": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "生病释义写疲惫、休息与照顾需求，注明不代表健康状况并建议就医，self微负与文字一致。"
+    },
+    "i06": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "consistency",
+          "detail": "同义词“想不开”是口语中“有轻生念头”的常见义项，与“梦见自杀”并非同一意象，用户说出时易误命中"
+        }
+      ],
+      "reason": "自杀释义措辞平和且含危机支持，但同义词“想不开”指向现实念头而非梦境意象，会造成误检索。"
+    },
+    "i07": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "certainty",
+          "detail": "结尾“梦到它预示近期会收到好消息”属对现实事件的预测，与同段“不预示现实结果”自相矛盾"
+        }
+      ],
+      "reason": "伞的释义主体可保留，但末句预言好消息构成预测，须删改。"
+    },
+    "i08": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "泥土的根基、务实、困局联想合理，career负向与“陷入困局”文字一致，同义词指向同一意象。"
+    },
+    "i09": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "theme_direction",
+          "detail": "theme_map中self为-0.15（偏阻），但文字写“渴望自由、摆脱限制或自信提升”，整体偏顺偏积极，方向与文字不一致"
+        }
+      ],
+      "reason": "飞的文字表达积极联想，self却标负向，方向与释义不符。"
+    },
+    "i10": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "天空的开阔、理想、可能性象征合理，self微正与文字一致，无预测性措辞。"
+    }
+  }
+}

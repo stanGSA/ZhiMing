@@ -1,0 +1,88 @@
+{
+  "batch": "b002",
+  "reviewer": "reviewer_b",
+  "run_pass": 2,
+  "attempt": 1,
+  "vendor": "openai",
+  "requested_model": "gpt-6.1-sol",
+  "returned_model": "gpt-6.1-sol",
+  "api": "openai",
+  "started_at": "2026-10-22T10:18:58+00:00",
+  "finished_at": "2026-10-22T10:19:29+00:00",
+  "latency_s": 30.763,
+  "http_attempts": 1,
+  "finish_reason": "stop",
+  "prompt_sha256": "d846441c277f18d607560f8e4684a8d7a47ad5401473d328a40a8dcf9877ebcd",
+  "input_tokens": 4078,
+  "output_tokens": 913,
+  "cached_input_tokens": 4075,
+  "usage_available": true,
+  "raw_text": "{\n  \"items\": [\n    {\n      \"item\": \"i01\",\n      \"verdict\": \"revise\",\n      \"issues\": [\n        {\n          \"dimension\": \"theme_direction\",\n          \"detail\": \"theme_map.career 为正值，但正文核心是难过、受伤与恢复，偏阻；宝剑的事业主题约定可支持该主题，却不能支持正向取值。\"\n        }\n      ],\n      \"reason\": \"自我负向与受伤含义一致，但事业正向与正文倾向不符。\"\n    },\n    {\n      \"item\": \"i02\",\n      \"verdict\": \"revise\",\n      \"issues\": [\n        {\n          \"dimension\": \"theme_direction\",\n          \"detail\": \"theme_map.finance 为正值，但正文的卸下重担、责任分配与任务交接没有财务主题依据，财务也不属于权杖的默认主题，应设为0或补充相应含义。\"\n        }\n      ],\n      \"reason\": \"自我与事业正向符合压力缓解的释义，但财务正向缺乏支持。\"\n    },\n    {\n      \"item\": \"i03\",\n      \"verdict\": \"revise\",\n      \"issues\": [\n        {\n          \"dimension\": \"theme_direction\",\n          \"detail\": \"theme_map.self 为负值，但“独立判断与清楚的边界有助于处理问题”表达正向能力；“也要保留倾听”的建议不足以将自我主题解释为偏阻。\"\n        }\n      ],\n      \"reason\": \"事业正向有依据，但自我负向与正文的正向核心描述相反。\"\n    },\n    {\n      \"item\": \"i04\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"防守疲惫符合权杖七逆位，自我与事业负向均有牌组约定及文字支持，同义词准确。\"\n    },\n    {\n      \"item\": \"i05\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"回避改变与压力延长符合高塔逆位，自我、事业和关系负向符合大阿卡纳主题约定，同义词准确。\"\n    },\n    {\n      \"item\": \"i06\",\n      \"verdict\": \"revise\",\n      \"issues\": [\n        {\n          \"dimension\": \"certainty\",\n          \"detail\": \"正文末句“它预示你很快会在工作上得到认可”直接预测现实事件，前面的否定式免责声明不能消除此问题，应删除或改为非预测性的反思表述。\"\n        }\n      ],\n      \"reason\": \"离开与不满足的核心含义及自我、关系负向成立，但末句包含明确的现实事件预测。\"\n    },\n    {\n      \"item\": \"i07\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"拖延与无效牺牲符合倒吊人逆位，自我、事业和关系负向符合文字及大阿卡纳约定，同义词准确。\"\n    },\n    {\n      \"item\": \"i08\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"重新注意选择符合圣杯四逆位，自我与关系正向有文字及牌组约定支持，同义词准确，“停顿”可作主题索引。\"\n    },\n    {\n      \"item\": \"i09\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"清晰、积极反馈与行动符合太阳正位，自我、事业和关系正向符合大阿卡纳约定，同义词准确，现实检验提醒不改变核心正向。\"\n    }\n  ]\n}",
+  "verdicts": {
+    "i01": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "theme_direction",
+          "detail": "theme_map.career 为正值，但正文核心是难过、受伤与恢复，偏阻；宝剑的事业主题约定可支持该主题，却不能支持正向取值。"
+        }
+      ],
+      "reason": "自我负向与受伤含义一致，但事业正向与正文倾向不符。"
+    },
+    "i02": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "theme_direction",
+          "detail": "theme_map.finance 为正值，但正文的卸下重担、责任分配与任务交接没有财务主题依据，财务也不属于权杖的默认主题，应设为0或补充相应含义。"
+        }
+      ],
+      "reason": "自我与事业正向符合压力缓解的释义，但财务正向缺乏支持。"
+    },
+    "i03": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "theme_direction",
+          "detail": "theme_map.self 为负值，但“独立判断与清楚的边界有助于处理问题”表达正向能力；“也要保留倾听”的建议不足以将自我主题解释为偏阻。"
+        }
+      ],
+      "reason": "事业正向有依据，但自我负向与正文的正向核心描述相反。"
+    },
+    "i04": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "防守疲惫符合权杖七逆位，自我与事业负向均有牌组约定及文字支持，同义词准确。"
+    },
+    "i05": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "回避改变与压力延长符合高塔逆位，自我、事业和关系负向符合大阿卡纳主题约定，同义词准确。"
+    },
+    "i06": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "certainty",
+          "detail": "正文末句“它预示你很快会在工作上得到认可”直接预测现实事件，前面的否定式免责声明不能消除此问题，应删除或改为非预测性的反思表述。"
+        }
+      ],
+      "reason": "离开与不满足的核心含义及自我、关系负向成立，但末句包含明确的现实事件预测。"
+    },
+    "i07": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "拖延与无效牺牲符合倒吊人逆位，自我、事业和关系负向符合文字及大阿卡纳约定，同义词准确。"
+    },
+    "i08": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "重新注意选择符合圣杯四逆位，自我与关系正向有文字及牌组约定支持，同义词准确，“停顿”可作主题索引。"
+    },
+    "i09": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "清晰、积极反馈与行动符合太阳正位，自我、事业和关系正向符合大阿卡纳约定，同义词准确，现实检验提醒不改变核心正向。"
+    }
+  }
+}

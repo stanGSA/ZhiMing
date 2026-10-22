@@ -1,0 +1,121 @@
+{
+  "batch": "b001",
+  "reviewer": "reviewer_a",
+  "run_pass": 1,
+  "attempt": 1,
+  "vendor": "deepseek",
+  "requested_model": "deepseek-v4-pro",
+  "returned_model": "deepseek-v4-pro",
+  "api": "openai",
+  "started_at": "2026-10-22T10:29:08+00:00",
+  "finished_at": "2026-10-22T10:30:49+00:00",
+  "latency_s": 101.15,
+  "http_attempts": 1,
+  "finish_reason": "stop",
+  "prompt_sha256": "2dc62aab71f805039624c062544b6bc79113f18a16c4c90fa44f09e3eda156b7",
+  "input_tokens": 3763,
+  "output_tokens": 7426,
+  "cached_input_tokens": 1152,
+  "usage_available": true,
+  "raw_text": "{\n  \"items\": [\n    {\n      \"item\": \"i01\",\n      \"verdict\": \"revise\",\n      \"issues\": [\n        {\n          \"dimension\": \"certainty\",\n          \"detail\": \"正文末尾“梦到它预示近期会收到好消息”是对现实事件的预测，且与前文“不预示现实结果”自相矛盾。\"\n        }\n      ],\n      \"reason\": \"末尾含有对现实事件的预测断言，且与免责表述矛盾。\"\n    },\n    {\n      \"item\": \"i02\",\n      \"verdict\": \"revise\",\n      \"issues\": [\n        {\n          \"dimension\": \"consistency\",\n          \"detail\": \"同义词“想不开”是常见其他义项，不等于自杀，可能误命中非自杀梦境。\"\n        }\n      ],\n      \"reason\": \"同义词“想不开”并非“自杀”的同一意象，会误命中。\"\n    },\n    {\n      \"item\": \"i03\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"核心含义与“彩票”的传统心理联想相符，无预测或错误同义词。\"\n    },\n    {\n      \"item\": \"i04\",\n      \"verdict\": \"revise\",\n      \"issues\": [\n        {\n          \"dimension\": \"certainty\",\n          \"detail\": \"正文末尾“这个梦预示近期会有一笔意外之财”是对现实事件的预测。\"\n        },\n        {\n          \"dimension\": \"consistency\",\n          \"detail\": \"同义词“开枪”是使用枪的动作，不是“枪”的同义意象。\"\n        }\n      ],\n      \"reason\": \"含有现实财务预测，且同义词“开枪”与“枪”不是同一意象。\"\n    },\n    {\n      \"item\": \"i05\",\n      \"verdict\": \"revise\",\n      \"issues\": [\n        {\n          \"dimension\": \"consistency\",\n          \"detail\": \"同义词“桥断了”是桥的破损情节，不是“桥”的同义意象。\"\n        }\n      ],\n      \"reason\": \"同义词“桥断了”混入了额外破损情节，会误命中。\"\n    },\n    {\n      \"item\": \"i06\",\n      \"verdict\": \"revise\",\n      \"issues\": [\n        {\n          \"dimension\": \"consistency\",\n          \"detail\": \"同义词“走丢”强调与同行者失散或丢失，不是“迷路”的同义意象。\"\n        }\n      ],\n      \"reason\": \"同义词“走丢”混入了额外失散情节，会误命中。\"\n    },\n    {\n      \"item\": \"i07\",\n      \"verdict\": \"revise\",\n      \"issues\": [\n        {\n          \"dimension\": \"theme_direction\",\n          \"detail\": \"正文只有“陷入困局”等泛化表述，未明确指向事业，theme_map.career 标负向缺乏依据。\"\n        }\n      ],\n      \"reason\": \"事业负向方向无文字依据，普通困局不能直接支持事业主题。\"\n    },\n    {\n      \"item\": \"i08\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"核心含义与梦见去世亲人的常见心理联想一致，同义词均为同类具体意象。\"\n    },\n    {\n      \"item\": \"i09\",\n      \"verdict\": \"revise\",\n      \"issues\": [\n        {\n          \"dimension\": \"consistency\",\n          \"detail\": \"同义词“杯子碎了”是杯子破损情节，不是“杯子”的同义意象，且正文也说明需单独考虑。\"\n        }\n      ],\n      \"reason\": \"同义词“杯子碎了”混入了破损情节，会误命中。\"\n    },\n    {\n      \"item\": \"i10\",\n      \"verdict\": \"revise\",\n      \"issues\": [\n        {\n          \"dimension\": \"consistency\",\n          \"detail\": \"同义词“狐狸精”是精怪或对人的贬称，不是“狐狸”的同一意象。\"\n        },\n        {\n          \"dimension\": \"theme_direction\",\n          \"detail\": \"theme_map.self 标负向，但正文未明确自我状态受阻，缺乏依据。\"\n        }\n      ],\n      \"reason\": \"同义词“狐狸精”误命中，且自我负向方向无文字支持。\"\n    }\n  ]\n}",
+  "verdicts": {
+    "i01": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "certainty",
+          "detail": "正文末尾“梦到它预示近期会收到好消息”是对现实事件的预测，且与前文“不预示现实结果”自相矛盾。"
+        }
+      ],
+      "reason": "末尾含有对现实事件的预测断言，且与免责表述矛盾。"
+    },
+    "i02": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "consistency",
+          "detail": "同义词“想不开”是常见其他义项，不等于自杀，可能误命中非自杀梦境。"
+        }
+      ],
+      "reason": "同义词“想不开”并非“自杀”的同一意象，会误命中。"
+    },
+    "i03": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "核心含义与“彩票”的传统心理联想相符，无预测或错误同义词。"
+    },
+    "i04": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "certainty",
+          "detail": "正文末尾“这个梦预示近期会有一笔意外之财”是对现实事件的预测。"
+        },
+        {
+          "dimension": "consistency",
+          "detail": "同义词“开枪”是使用枪的动作，不是“枪”的同义意象。"
+        }
+      ],
+      "reason": "含有现实财务预测，且同义词“开枪”与“枪”不是同一意象。"
+    },
+    "i05": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "consistency",
+          "detail": "同义词“桥断了”是桥的破损情节，不是“桥”的同义意象。"
+        }
+      ],
+      "reason": "同义词“桥断了”混入了额外破损情节，会误命中。"
+    },
+    "i06": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "consistency",
+          "detail": "同义词“走丢”强调与同行者失散或丢失，不是“迷路”的同义意象。"
+        }
+      ],
+      "reason": "同义词“走丢”混入了额外失散情节，会误命中。"
+    },
+    "i07": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "theme_direction",
+          "detail": "正文只有“陷入困局”等泛化表述，未明确指向事业，theme_map.career 标负向缺乏依据。"
+        }
+      ],
+      "reason": "事业负向方向无文字依据，普通困局不能直接支持事业主题。"
+    },
+    "i08": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "核心含义与梦见去世亲人的常见心理联想一致，同义词均为同类具体意象。"
+    },
+    "i09": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "consistency",
+          "detail": "同义词“杯子碎了”是杯子破损情节，不是“杯子”的同义意象，且正文也说明需单独考虑。"
+        }
+      ],
+      "reason": "同义词“杯子碎了”混入了破损情节，会误命中。"
+    },
+    "i10": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "consistency",
+          "detail": "同义词“狐狸精”是精怪或对人的贬称，不是“狐狸”的同一意象。"
+        },
+        {
+          "dimension": "theme_direction",
+          "detail": "theme_map.self 标负向，但正文未明确自我状态受阻，缺乏依据。"
+        }
+      ],
+      "reason": "同义词“狐狸精”误命中，且自我负向方向无文字支持。"
+    }
+  }
+}

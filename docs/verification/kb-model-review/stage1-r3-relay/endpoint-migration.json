@@ -1,0 +1,54 @@
+{
+  "at": "2026-10-22T10:44:02+00:00",
+  "kind": "endpoint-migration-fixed-third-trial",
+  "owner_authorization": "我将deepseek的密钥进行替换了，走的中转站",
+  "predecessor": "docs/verification/kb-model-review/stage1-r3",
+  "previous_endpoint": "api.deepseek.com",
+  "new_endpoint_host": "codegoai.com",
+  "requested_model": "deepseek-v4-pro",
+  "iteration": 3,
+  "rubric_sha256": "482b14b1296449261d1ab1a3b86aee2a4ad834698d9dd8a41869200d3c9df933",
+  "calibration_sha256": "687ad2f988b087e4322a3742c4e698cc62b3d3e2a302f986c7e1d2f7df2d3836",
+  "holdout_sha256": "535c87eaabeeec47591f4029d96cd0b990485f8157e522fc3e52db67f9733ac3",
+  "max_transport_qualification_runs": 1,
+  "allow_rubric_or_sample_tuning": false,
+  "merge_old_and_new_verdicts": false,
+  "thresholds": {
+    "kappa": 0.6,
+    "rerun": 0.9,
+    "label_agreement": 0.85
+  },
+  "systems": {
+    "tarot": {
+      "previous_manifest_sha256": "ef5de3fa6ec44e7113e67553f5c9faf218118e128a4144321f724c6c8bed74e7",
+      "identical_blind_inputs": true,
+      "expected_calls": 12
+    },
+    "astro": {
+      "previous_manifest_sha256": "902a1fb7ceb8ffaf7b93d2adabef1d9fe5f1131cf86ed2450576164979ff2dc0",
+      "identical_blind_inputs": true,
+      "expected_calls": 20
+    },
+    "bazi": {
+      "previous_manifest_sha256": "a7e74bde69bfe28c58de786fbf43168fc38bb1e1829643f4e8beb542d35b02ef",
+      "identical_blind_inputs": true,
+      "expected_calls": 40
+    },
+    "name": {
+      "previous_manifest_sha256": "4b7e1beef33c6d6764c5f8d345237358c72b0abe3e64a7256b4576006e95c90c",
+      "identical_blind_inputs": true,
+      "expected_calls": 20
+    },
+    "dream": {
+      "previous_manifest_sha256": "64d88e43b4fa9836fa1a19bc66594675942fc067e96e4394dff1c296c375a3cb",
+      "identical_blind_inputs": true,
+      "expected_calls": 8
+    },
+    "daily": {
+      "previous_manifest_sha256": "e3b419ab61cd12650b185fdde8d1059dd8a41b8df0ff91ed9852fb4d59d70ec3",
+      "identical_blind_inputs": true,
+      "expected_calls": 8
+    }
+  },
+  "note": "The prior third trial was incomplete due to HTTP402. Endpoint change is explicitly authorized. Run the entire frozen third trial once under new endpoint-bound manifests, without changing any input, threshold, role parameter or judgment basis. Preserve all original failed and incomplete trials; no additional adaptive fourth trial or override. Only a complete same-endpoint qualification can support preregistration. Returned model labels are relay claims, not independent upstream identity proof."
+}

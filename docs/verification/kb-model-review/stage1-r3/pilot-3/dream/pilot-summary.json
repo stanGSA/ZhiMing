@@ -1,0 +1,115 @@
+{
+  "system": "dream",
+  "rubric_sha256": "482b14b1296449261d1ab1a3b86aee2a4ad834698d9dd8a41869200d3c9df933",
+  "agreement": {
+    "items": 20,
+    "reviewed": 20,
+    "labels": {
+      "fail": 10,
+      "pass": 10
+    },
+    "kappa": 0.9,
+    "observed_agreement": 0.95,
+    "pairs": {
+      "reject/reject": 10,
+      "pass/pass": 9,
+      "reject/pass": 1
+    },
+    "label_agreement": {
+      "reviewer_a": {
+        "accuracy": 0.95,
+        "sensitivity": 1.0,
+        "specificity": 0.9
+      },
+      "reviewer_b": {
+        "accuracy": 1.0,
+        "sensitivity": 1.0,
+        "specificity": 1.0
+      }
+    }
+  },
+  "rerun": {
+    "reviewer_a": 1.0,
+    "reviewer_b": 1.0
+  },
+  "gates": {
+    "complete": true,
+    "kappa": true,
+    "rerun": true,
+    "label_agreement": true
+  },
+  "met": true,
+  "thresholds": {
+    "kappa": 0.6,
+    "rerun": 0.9,
+    "label_agreement": 0.85
+  },
+  "disputed": [
+    {
+      "id": "cal-dream-d17",
+      "label": "pass",
+      "verdicts": {
+        "reviewer_a.p1": "revise",
+        "reviewer_a.p2": "revise",
+        "reviewer_b.p1": "pass",
+        "reviewer_b.p2": "pass"
+      },
+      "reasons": {
+        "reviewer_a.p1": "同义词“走丢”混入了额外失散情节，会误命中。",
+        "reviewer_a.p2": "“走丢”不应作为“迷路”的同义别名。",
+        "reviewer_b.p1": "各别名均可指空间寻路失败，方向不确定与压力支持自我负向，其他主题置零且没有现实预测。",
+        "reviewer_b.p2": "四个别名均可表达空间寻路失败，方向不确定与压力支持自我负向，其余主题标零且正文没有现实预测。"
+      },
+      "issues": {
+        "reviewer_a.p1": [
+          {
+            "dimension": "consistency",
+            "detail": "同义词“走丢”强调与同行者失散或丢失，不是“迷路”的同义意象。"
+          }
+        ],
+        "reviewer_a.p2": [
+          {
+            "dimension": "consistency",
+            "detail": "同义词“走丢”侧重走失/失散，不同于“迷路”的空间寻路意象，可能误命中。"
+          }
+        ]
+      }
+    }
+  ],
+  "usage": {
+    "reviewer_a": {
+      "calls": 4,
+      "input_tokens": 14500,
+      "output_tokens": 33802,
+      "latency_s": 454.208,
+      "returned_models": [
+        "deepseek-v4-pro"
+      ],
+      "errors": {},
+      "retried_calls": 0,
+      "http_retries": 0,
+      "cost": null,
+      "known_cost_estimate": null,
+      "usage_complete": true,
+      "cost_basis": "配置单价估算，非账单；服务失败的用量可能未知",
+      "currency": null
+    },
+    "reviewer_b": {
+      "calls": 4,
+      "input_tokens": 16392,
+      "output_tokens": 4512,
+      "latency_s": 137.411,
+      "returned_models": [
+        "gpt-6.1-sol"
+      ],
+      "errors": {},
+      "retried_calls": 0,
+      "http_retries": 0,
+      "cost": null,
+      "known_cost_estimate": null,
+      "usage_complete": true,
+      "cost_basis": "配置单价估算，非账单；服务失败的用量可能未知",
+      "currency": null
+    }
+  }
+}

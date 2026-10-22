@@ -1,0 +1,92 @@
+{
+  "batch": "b004",
+  "reviewer": "reviewer_a",
+  "run_pass": 2,
+  "attempt": 1,
+  "vendor": "deepseek",
+  "requested_model": "deepseek-v4-pro",
+  "returned_model": "deepseek-v4-pro",
+  "api": "openai",
+  "started_at": "2026-10-22T10:27:21+00:00",
+  "finished_at": "2026-10-22T10:28:29+00:00",
+  "latency_s": 68.406,
+  "http_attempts": 1,
+  "finish_reason": "stop",
+  "prompt_sha256": "e5c1840ae40c747039800e32aaa5ed7f7bedb61b812572c7c4eed97df7d90a3e",
+  "input_tokens": 3921,
+  "output_tokens": 5856,
+  "cached_input_tokens": 3840,
+  "usage_available": true,
+  "raw_text": "{\n  \"items\": [\n    {\n      \"item\": \"i01\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"五行关系与 theme_map 方向一致，无预测或事实错误。\"\n    },\n    {\n      \"item\": \"i02\",\n      \"verdict\": \"revise\",\n      \"issues\": [\n        {\n          \"dimension\": \"certainty\",\n          \"detail\": \"结尾“这样的配置预示婚姻会比较美满”是对现实婚姻的预测，且与前文“并非对现实处境的判断”矛盾。\"\n        },\n        {\n          \"dimension\": \"theme_direction\",\n          \"detail\": \"正文表达婚姻/感情正向倾向，但 theme_map.relationship 为 0，方向缺失。\"\n        }\n      ],\n      \"reason\": \"存在预测性断言且感情主题方向未标出。\"\n    },\n    {\n      \"item\": \"i03\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"五行相生关系正确，theme_map 方向与文字一致，无宿命化预测。\"\n    },\n    {\n      \"item\": \"i04\",\n      \"verdict\": \"revise\",\n      \"issues\": [\n        {\n          \"dimension\": \"certainty\",\n          \"detail\": \"结尾“这种三才配置会让人一生较为顺利”是对现实人生的确定性断言/预测，与前文免责声明矛盾。\"\n        }\n      ],\n      \"reason\": \"存在对人生整体顺遂的预测性断言。\"\n    },\n    {\n      \"item\": \"i05\",\n      \"verdict\": \"revise\",\n      \"issues\": [\n        {\n          \"dimension\": \"tradition\",\n          \"detail\": \"“土克木，即天格土被人格木所克”把五行相克方向写反：应为木克土，人格木克天格土。\"\n        }\n      ],\n      \"reason\": \"五行相克主体方向写反，属事实错误。\"\n    },\n    {\n      \"item\": \"i06\",\n      \"verdict\": \"revise\",\n      \"issues\": [\n        {\n          \"dimension\": \"certainty\",\n          \"detail\": \"结尾“这种三才配置会让人一生较为顺利”是对现实人生的确定性断言/预测，与前文免责声明矛盾。\"\n        }\n      ],\n      \"reason\": \"存在对人生整体顺遂的预测性断言。\"\n    },\n    {\n      \"item\": \"i07\",\n      \"verdict\": \"revise\",\n      \"issues\": [\n        {\n          \"dimension\": \"theme_direction\",\n          \"detail\": \"theme_map.finance 标为 0.3（正向），但正文只讨论自我、沟通与“张力较多”，没有任何财务主题或财务偏顺依据。\"\n        }\n      ],\n      \"reason\": \"财务主题方向无正文依据。\"\n    },\n    {\n      \"item\": \"i08\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"五行相生关系正确，theme_map 方向与文字一致，无事实或预测问题。\"\n    }\n  ]\n}",
+  "verdicts": {
+    "i01": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "五行关系与 theme_map 方向一致，无预测或事实错误。"
+    },
+    "i02": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "certainty",
+          "detail": "结尾“这样的配置预示婚姻会比较美满”是对现实婚姻的预测，且与前文“并非对现实处境的判断”矛盾。"
+        },
+        {
+          "dimension": "theme_direction",
+          "detail": "正文表达婚姻/感情正向倾向，但 theme_map.relationship 为 0，方向缺失。"
+        }
+      ],
+      "reason": "存在预测性断言且感情主题方向未标出。"
+    },
+    "i03": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "五行相生关系正确，theme_map 方向与文字一致，无宿命化预测。"
+    },
+    "i04": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "certainty",
+          "detail": "结尾“这种三才配置会让人一生较为顺利”是对现实人生的确定性断言/预测，与前文免责声明矛盾。"
+        }
+      ],
+      "reason": "存在对人生整体顺遂的预测性断言。"
+    },
+    "i05": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "tradition",
+          "detail": "“土克木，即天格土被人格木所克”把五行相克方向写反：应为木克土，人格木克天格土。"
+        }
+      ],
+      "reason": "五行相克主体方向写反，属事实错误。"
+    },
+    "i06": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "certainty",
+          "detail": "结尾“这种三才配置会让人一生较为顺利”是对现实人生的确定性断言/预测，与前文免责声明矛盾。"
+        }
+      ],
+      "reason": "存在对人生整体顺遂的预测性断言。"
+    },
+    "i07": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "theme_direction",
+          "detail": "theme_map.finance 标为 0.3（正向），但正文只讨论自我、沟通与“张力较多”，没有任何财务主题或财务偏顺依据。"
+        }
+      ],
+      "reason": "财务主题方向无正文依据。"
+    },
+    "i08": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "五行相生关系正确，theme_map 方向与文字一致，无事实或预测问题。"
+    }
+  }
+}

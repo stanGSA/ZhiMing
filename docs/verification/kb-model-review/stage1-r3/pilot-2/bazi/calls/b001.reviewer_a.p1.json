@@ -1,0 +1,38 @@
+{
+  "batch": "b001",
+  "reviewer": "reviewer_a",
+  "run_pass": 1,
+  "attempt": 1,
+  "vendor": "deepseek",
+  "requested_model": "deepseek-v4-pro",
+  "returned_model": "deepseek-v4-pro",
+  "api": "openai",
+  "started_at": "2026-10-22T09:50:14+00:00",
+  "finished_at": "2026-10-22T09:50:37+00:00",
+  "latency_s": 22.284,
+  "http_attempts": 1,
+  "finish_reason": "stop",
+  "prompt_sha256": "3b5be1b4cdfc60fce3155543144fc6c9aefe02e74a19838dc83dd2eb3039f8c7",
+  "input_tokens": 2667,
+  "output_tokens": 1506,
+  "cached_input_tokens": 1152,
+  "usage_available": true,
+  "raw_text": "{\"items\": [{\"item\": \"i01\", \"verdict\": \"pass\", \"issues\": [], \"reason\": \"戌的五行、藏干等信息与参考事实一致，主题方向为0且文字中性，无确定性断言。\"}, {\"item\": \"i02\", \"verdict\": \"revise\", \"issues\": [{\"dimension\": \"tradition\", \"detail\": \"首句“在传统干支体系中属金”写错，丑的五行应为土；后文“丑计入土”也与此矛盾。\"}], \"reason\": \"丑的地支五行归属写错且前后矛盾，需改为属土。\"}]}",
+  "verdicts": {
+    "i01": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "戌的五行、藏干等信息与参考事实一致，主题方向为0且文字中性，无确定性断言。"
+    },
+    "i02": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "tradition",
+          "detail": "首句“在传统干支体系中属金”写错，丑的五行应为土；后文“丑计入土”也与此矛盾。"
+        }
+      ],
+      "reason": "丑的地支五行归属写错且前后矛盾，需改为属土。"
+    }
+  }
+}

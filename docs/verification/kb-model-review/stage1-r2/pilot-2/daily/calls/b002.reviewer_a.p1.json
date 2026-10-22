@@ -1,0 +1,53 @@
+{
+  "batch": "b002",
+  "reviewer": "reviewer_a",
+  "run_pass": 1,
+  "attempt": 1,
+  "vendor": "deepseek",
+  "requested_model": "deepseek-flash",
+  "returned_model": "deepseek-flash",
+  "api": "openai",
+  "started_at": "2026-10-22T08:03:39+00:00",
+  "finished_at": "2026-10-22T08:03:41+00:00",
+  "latency_s": 2.273,
+  "http_attempts": 1,
+  "finish_reason": "stop",
+  "prompt_sha256": "9bac40b6350791ac9c0808be6cc4dae4ab8b7e0b0a07c41ecf208091183affd3",
+  "input_tokens": 1668,
+  "output_tokens": 319,
+  "cached_input_tokens": 768,
+  "usage_available": true,
+  "raw_text": "{\n  \"items\": [\n    {\n      \"item\": \"i01\",\n      \"verdict\": \"revise\",\n      \"issues\": [\n        {\n          \"dimension\": \"theme_direction\",\n          \"detail\": \"theme_map 中 self 为 0.2（偏顺），但释义文字仅说明五行配色约定，未表达自我状态偏顺的含义，主题方向缺乏文字依据。\"\n        }\n      ],\n      \"reason\": \"self 方向非零但文字未体现任何倾向，且每日运势按约定应全部中性。\"\n    },\n    {\n      \"item\": \"i02\",\n      \"verdict\": \"revise\",\n      \"issues\": [\n        {\n          \"dimension\": \"tradition\",\n          \"detail\": \"释义写“金对应决断，传统配色为黑、蓝”，但参考事实规定金对应白、金，配色写错。\"\n        }\n      ],\n      \"reason\": \"五行金传统配色应为白、金，文字误写为黑、蓝。\"\n    },\n    {\n      \"item\": \"i03\",\n      \"verdict\": \"revise\",\n      \"issues\": [\n        {\n          \"dimension\": \"certainty\",\n          \"detail\": \"释义称“可以为当天带来好运”，对现实运气作出肯定性暗示，不符合每日运势仅作传统约定说明的要求。\"\n        }\n      ],\n      \"reason\": \"文字暗示幸运色可带来好运，宿命化且违背配色仅作约定的说明。\"\n    }\n  ]\n}",
+  "verdicts": {
+    "i01": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "theme_direction",
+          "detail": "theme_map 中 self 为 0.2（偏顺），但释义文字仅说明五行配色约定，未表达自我状态偏顺的含义，主题方向缺乏文字依据。"
+        }
+      ],
+      "reason": "self 方向非零但文字未体现任何倾向，且每日运势按约定应全部中性。"
+    },
+    "i02": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "tradition",
+          "detail": "释义写“金对应决断，传统配色为黑、蓝”，但参考事实规定金对应白、金，配色写错。"
+        }
+      ],
+      "reason": "五行金传统配色应为白、金，文字误写为黑、蓝。"
+    },
+    "i03": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "certainty",
+          "detail": "释义称“可以为当天带来好运”，对现实运气作出肯定性暗示，不符合每日运势仅作传统约定说明的要求。"
+        }
+      ],
+      "reason": "文字暗示幸运色可带来好运，宿命化且违背配色仅作约定的说明。"
+    }
+  }
+}

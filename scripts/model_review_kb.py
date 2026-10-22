@@ -45,7 +45,15 @@ from knowledge.build import build
 from knowledge.review import approval, content_hash, load_ledgers, write_ledger
 from knowledge.schema import SourceEntry
 from plugins.tarot.catalogue import SPREADS
+from scripts import kb_review_calibration as calibration_set
 from scripts.kb_review_budget import BudgetExceeded, BudgetModel, ReviewBudget
+from scripts.kb_review_rubric import (
+    REVISE_PROMPT,
+    RUBRIC,
+    RUBRIC_VERSION,
+    SYSTEM_RUBRIC,
+    revise_prompt,
+)
 
 ROOT = Path(__file__).resolve().parents[1]
 RUN_ROOT = ROOT / "docs/verification/kb-model-review"
@@ -63,48 +71,6 @@ BLOCKING_CHECKS = {"certainty"}
 # while the whole system is not.
 CAMPAIGN_MARKER = "campaign-acceptance.json"
 
-RUBRIC_VERSION = 1
-RUBRIC = """你是知识库释义的审核员。项目是一个占卜/自我反思应用，释义是项目自写的草稿，面向普通用户。
-请逐条独立判断，只依据条目本身与传统常识，不要猜测其他审核员的意见。
-
-字段说明：kind/key 标明条目对象；text 是给用户看的释义；theme_map 是四个主题
-（self 自我状态、career 事业、relationship 感情关系、finance 财务）的倾向值，范围 -1 到 1，
-正数偏顺、负数偏阻，0 表示该主题没有方向。只审方向与相对大小是否与文字一致，不审具体数值。
-counterpart（若有）是同一张塔罗牌另一方向的释义，只作对照，不需要给它结论。
-
-通用维度：
-1. tradition：核心含义符合主流传统，没有把对象写错（如牌名、十神、五行、行星、星座、宫位）。
-2. theme_direction：theme_map 的正负方向与释义文字一致。
-3. certainty：没有宿命化或确定性断言（必然、注定、一定会……）。否定式免责声明（如“不代表事件必然发生”）不算。
-4. medical_legal_finance：没有医疗诊断、投资或法律方面的确定性结论。
-5. plain_language：术语附带的白话解释准确，没有误导。
-6. copying：不疑似照抄古籍整理版、现代书籍或网站原文（只能标“疑似”）。
-7. consistency：与 key、同义词、关键词不矛盾，不与同类条目重复。
-{system_rubric}
-
-结论：
-- pass：可以原样作为面向用户的草稿释义使用。
-- revise：有可以修正的问题（方向与文字不一致、措辞宿命化、白话不准、同义词会误命中等）。
-- reject：核心含义错误、文字与 key 不符、疑似抄录，或含医疗/投资/法律确定性结论。
-
-只输出一个 JSON 对象，不要输出其他文字：
-{{"items": [{{"item": "<条目编号>", "verdict": "pass|revise|reject",
-  "issues": [{{"dimension": "<维度名>", "detail": "<问题>"}}], "reason": "<一句话理由>"}}]}}
-每个条目编号恰好出现一次；verdict 为 pass 时 issues 为空列表。"""
-SYSTEM_RUBRIC = {
-    "tarot": "塔罗：正位、逆位含义区分清楚，倾向方向关系合理（结合 counterpart 判断）；"
-    "牌位条目（kind=position）与 spread_positions 给出的牌阵定义一致。",
-    "astro": "占星：行星、星座、宫位、相位的基本性质准确；行星落座、落宫的主题方向与文字一致。",
-    "bazi": "八字：天干地支、十神、五行生克、冲合刑害描述准确，不把冲合说成灾祸；十神对感情、财运的方向合理。",
-    "name": "姓名：81 数理与三才的吉凶写成民间约定，不作命运断言。",
-    "dream": "解梦：同义词不会误命中其他意象；不写预兆；死亡、疾病、怀孕等敏感意象措辞平和。",
-    "daily": "每日运势：五行配色、种子等约定写成约定，不暗示带来实际运气。",
-}
-REVISE_PROMPT = """你负责按审核意见修改一条知识库释义草稿。只修改 text、theme_map、synonyms、keywords；
-不能改变条目对象（kind/key）。theme_map 只用 self、career、relationship、finance 四个主题，范围 -1 到 1，
-0 表示没有方向。不写宿命化、确定性断言，不写医疗、投资、法律结论。修改结果会由两家审核模型重新审核。
-只输出一个 JSON 对象：{"text": "...", "theme_map": {...}, "synonyms": [...], "keywords": [...],
-"note": "<改了什么>"}"""
 
 FATALISTIC = (
     "出现这一象征意味着必然破财，结局已经注定，无法避免。",
@@ -228,6 +194,21 @@ def check_roles(roles: dict, config: dict, needed: tuple[str, ...]) -> None:
         raise ValueError("修改模型不能与审核模型同一厂商，否则会自审自改")
 
 
+def rubric_digest() -> str:
+    """What binds a run, and a preregistration, to the exact rubric the reviewers read."""
+    return sha256_bytes((RUBRIC + canonical(SYSTEM_RUBRIC) + REVISE_PROMPT).encode())
+
+
+def calibration_for(path: Path | None, system: str, partition: str = "holdout") -> dict | None:
+    """The frozen labelled items of one system and partition, ready for ``prepare``."""
+    if path is None:
+        return None
+    data, lock = calibration_set.frozen(path)
+    return dict(
+        lock=lock, partition=partition, items=calibration_set.plan_items(data, system, partition)
+    )
+
+
 def require_endpoints(roles: dict, needed: tuple[str, ...]) -> None:
     """Fail before a run directory exists, not as one logged service error per call."""
     for name in needed:
@@ -250,6 +231,11 @@ def public_spec(spec: RoleConfig) -> dict:
     data = spec.model_dump(
         exclude={"input_per_mtok", "output_per_mtok", "currency", "base_url", "base_url_env"}
     )
+    # Legacy manifests predate these optional settings. Their implicit default remains
+    # disabled; explicitly configured values are always part of the evidence identity.
+    for key in ("thinking", "reasoning_effort"):
+        if data[key] is None:
+            del data[key]
     try:
         url = spec.endpoint()
     except ValueError:
@@ -361,22 +347,29 @@ def plant(entries: list[dict], rate: float, rng: random.Random, minimum: int = 0
 def make_batches(
     entries: list[dict], planted: list[dict], size: int, rng: random.Random
 ) -> list[dict]:
-    """Batches by kind; a planted copy never shares a batch with its original."""
+    """Batches by kind; a planted or calibration copy never shares a batch with its original,
+    nor with another copy of the same original (the pair would give each other away)."""
     batches = []
     for kind in sorted({e["kind"] for e in entries}):
         members = [e["id"] for e in entries if e["kind"] == kind]
         for start in range(0, len(members), size):
-            batches.append(dict(kind=kind, refs=members[start : start + size]))
+            batches.append(dict(kind=kind, refs=members[start : start + size], originals=set()))
     for item in planted:
         kind = item["entry"]["kind"]
-        allowed = [b for b in batches if item["original"] not in b["refs"]]
+        allowed = [
+            b
+            for b in batches
+            if item["original"] not in b["refs"] and item["original"] not in b["originals"]
+        ]
         if not allowed:
             # A small re-review fits in one batch: the copy goes to a batch of its own.
-            allowed = [dict(kind=kind, refs=[])]
+            allowed = [dict(kind=kind, refs=[], originals=set())]
             batches.append(allowed[0])
         same_kind = [b for b in allowed if b["kind"] == kind] or allowed
         smallest = min(len(b["refs"]) for b in same_kind)
-        rng.choice([b for b in same_kind if len(b["refs"]) == smallest])["refs"].append(item["ref"])
+        chosen = rng.choice([b for b in same_kind if len(b["refs"]) == smallest])
+        chosen["refs"].append(item["ref"])
+        chosen["originals"].add(item["original"])
     result = []
     for index, batch in enumerate(batches, 1):
         refs = list(batch["refs"])
@@ -459,6 +452,16 @@ class Workspace:
         self.reviews = root / "knowledge/reviews"
 
 
+def source_digests(workspace: Workspace, system: str) -> dict[str, str]:
+    """Line-ending-independent hashes of one system's source files: what a run reviewed."""
+    return {
+        p.relative_to(workspace.root).as_posix(): sha256_bytes(
+            p.read_bytes().replace(b"\r\n", b"\n")
+        )
+        for p in source_paths(workspace.sources, system)
+    }
+
+
 def prepare(
     workspace: Workspace,
     config: dict,
@@ -471,8 +474,13 @@ def prepare(
     seed: int = 1,
     only_ids: list[str] | None = None,
     calibrated_by: str | None = None,
+    calibration: dict | None = None,
 ) -> dict:
-    """The full, deterministic plan of a run: entries, planted copies, batches, prompts."""
+    """The full, deterministic plan of a run: entries, planted copies, batches, prompts.
+
+    ``calibration`` is ``dict(lock=<lock record>, items=<plan items>)`` from
+    scripts.kb_review_calibration: labelled blind items mixed in like planted copies.
+    """
     entries = load_entries(workspace.sources, system)
     if not entries:
         raise ValueError(f"没有{system}条目")
@@ -485,11 +493,14 @@ def prepare(
         selected = [by_id[i] for i in sorted(set(only_ids))]
     rng = random.Random(seed)
     planted = plant(selected, plant_rate, rng, min_planted)
-    batches = make_batches(selected, planted, batch_size, rng)
-    contents = {**{e["id"]: e for e in selected}, **{p["ref"]: p["entry"] for p in planted}}
+    calibration_items = (calibration or {}).get("items", [])
+    batches = make_batches(selected, planted + calibration_items, batch_size, rng)
+    contents = {
+        **{e["id"]: e for e in selected},
+        **{p["ref"]: p["entry"] for p in (*planted, *calibration_items)},
+    }
     prompts = {b["batch"]: batch_messages(system, b, contents, by_id) for b in batches}
     roles = load_roles(config)
-    paths = source_paths(workspace.sources, system)
     found = [f for f in checks.findings(entries) if f["id"] in {e["id"] for e in selected}]
     manifest = dict(
         schema=SCHEMA,
@@ -502,7 +513,7 @@ def prepare(
         only_ids=sorted(set(only_ids)) if only_ids else None,
         calibrated_by=calibrated_by,
         rubric_version=RUBRIC_VERSION,
-        rubric_sha256=sha256_bytes((RUBRIC + canonical(SYSTEM_RUBRIC) + REVISE_PROMPT).encode()),
+        rubric_sha256=rubric_digest(),
         script_sha256=sha256_bytes(Path(__file__).read_bytes()),
         runtime_vendor=runtime_vendor(config),
         drafter_vendors=sorted(drafter_vendors(config)),
@@ -516,14 +527,18 @@ def prepare(
             for name in REVIEWERS
         },
         reviewers={name: public_spec(roles[name]) if roles[name] else None for name in REVIEWERS},
-        source_files={
-            p.relative_to(workspace.root).as_posix(): sha256_bytes(
-                p.read_bytes().replace(b"\r\n", b"\n")
-            )
-            for p in paths
-        },
+        source_files=source_digests(workspace, system),
         entry_hashes={e["id"]: content_hash(e) for e in selected},
         planted_count=len(planted),
+        calibration=(
+            dict(
+                lock_sha256=calibration["lock"]["sha256"],
+                items=len(calibration_items),
+                partition=calibration.get("partition"),
+            )
+            if calibration
+            else None
+        ),
         batch_count=len(batches),
         prompt_sha256={k: sha256_bytes(canonical(v).encode()) for k, v in prompts.items()},
     )
@@ -531,6 +546,7 @@ def prepare(
         manifest=manifest,
         entries=selected,
         planted=planted,
+        calibration=calibration_items,
         batches=batches,
         prompts=prompts,
         checks=found,
@@ -594,6 +610,7 @@ PLAN_FILES = dict(
     entries="entries.json",
     batches="batches.json",
     planted="planted.json",
+    calibration="calibration.json",
     prompts="inputs.json",
     checks="checks.json",
 )
@@ -622,6 +639,7 @@ def open_run(path: Path, plan: dict, facts: dict | None = None) -> RunDir:
         Path(__file__),
         ROOT / "harness/llm.py",
         ROOT / "scripts/kb_review_budget.py",
+        ROOT / "scripts/kb_review_rubric.py",
         ROOT / "knowledge/checks.py",
     ):
         target = path / "runner_source" / source.name
@@ -633,7 +651,11 @@ def open_run(path: Path, plan: dict, facts: dict | None = None) -> RunDir:
 
 def load_plan(path: Path) -> dict:
     manifest = read_json(path / "manifest.json")
-    plan = {key: read_json(path / name) for key, name in PLAN_FILES.items()}
+    # Runs before the calibration set existed have no calibration.json.
+    plan = {
+        key: read_json(path / name) if (path / name).is_file() or key != "calibration" else []
+        for key, name in PLAN_FILES.items()
+    }
     return dict(plan, manifest={k: v for k, v in manifest.items() if k not in RUN_FACTS})
 
 
@@ -769,6 +791,8 @@ async def execute(
     batches: list[str] | None = None,
 ) -> dict:
     """Run every missing (batch, reviewer, pass) call; finished calls are never repeated."""
+    if plan["manifest"]["reviewers"] != {name: public_spec(roles[name]) for name in REVIEWERS}:
+        raise ValueError("审核角色配置与批次 manifest 不符；更换审核方或参数须另开批次")
     make_model = make_model or (lambda role, spec: role_model(spec, timeout))
     models = {name: make_model(name, roles[name]) for name in REVIEWERS}
     wanted = [b for b in plan["batches"] if batches is None or b["batch"] in batches]
@@ -995,6 +1019,40 @@ def usage_summary(run: RunDir, roles: dict) -> dict:
     return summary
 
 
+def calibration_metrics(rows: list[dict]) -> dict:
+    """Agreement on the labelled calibration set (first pass): kappa between the reviewers
+    (pass / not pass) and, per reviewer, agreement with the frozen labels. ``rows`` hold
+    ``label`` and each reviewer's verdict; an item either reviewer lacks is left out, counted.
+    """
+    seen = [r for r in rows if all(r[role] for role in REVIEWERS)]
+
+    def flagged(row, role):
+        return row[role] != "pass"
+
+    pairs = [tuple("reject" if flagged(r, role) else "pass" for role in REVIEWERS) for r in seen]
+    fails = [r for r in seen if r["label"] == "fail"]
+    passes = [r for r in seen if r["label"] == "pass"]
+    labels = {
+        role: dict(
+            accuracy=ratio(
+                sum(flagged(r, role) == (r["label"] == "fail") for r in seen), len(seen)
+            ),
+            sensitivity=ratio(sum(flagged(r, role) for r in fails), len(fails)),
+            specificity=ratio(sum(not flagged(r, role) for r in passes), len(passes)),
+        )
+        for role in REVIEWERS
+    }
+    return dict(
+        items=len(rows),
+        reviewed=len(seen),
+        labels=dict(Counter(r["label"] for r in rows)),
+        kappa=cohen_kappa(pairs),
+        observed_agreement=ratio(sum(a == b for a, b in pairs), len(pairs)),
+        pairs=dict(Counter(f"{a}/{b}" for a, b in pairs)),
+        label_agreement=labels,
+    )
+
+
 def merge(run: RunDir, plan: dict, roles: dict) -> dict:
     verdicts = collect(run, plan)
     result = metrics(plan, verdicts)
@@ -1027,6 +1085,15 @@ def merge(run: RunDir, plan: dict, roles: dict) -> dict:
         )
         for p in plan["planted"]
     ]
+    calibration = [
+        dict(
+            ref=c["ref"],
+            id=c["id"],
+            label=c["label"],
+            **{role: first[role].get(c["ref"], {}).get("verdict") for role in REVIEWERS},
+        )
+        for c in plan.get("calibration", [])
+    ]
     by_mutation = {}
     for item in planted:
         stats = by_mutation.setdefault(
@@ -1049,6 +1116,8 @@ def merge(run: RunDir, plan: dict, roles: dict) -> dict:
         incomplete=result["incomplete"],
         planted_detail=planted,
         detection_by_mutation=by_mutation,
+        calibration=calibration_metrics(calibration) if calibration else None,
+        calibration_detail=calibration,
         usage=usage_summary(run, roles),
         code_findings=plan["checks"],
         human_reviewed_rate=0.0,
@@ -1127,6 +1196,26 @@ def render_report(summary: dict, run: RunDir) -> str:
         f"阻止通过的类型：{'、'.join(sorted(BLOCKING_CHECKS))}。",
         f"错误与重试明细见 errors.jsonl（{len(run.errors())} 条），不计入审核结论。",
     ]
+    calibration = summary.get("calibration")
+    if calibration:
+        agreement = calibration["label_agreement"]
+        lines += [
+            "",
+            "## 标注校准集（本批第一轮）",
+            "",
+            f"条目 {calibration['items']}（{json.dumps(calibration['labels'], ensure_ascii=False)}），"
+            f"两家都已给出结论 {calibration['reviewed']}；两家放行二分类 kappa "
+            f"{'无法计算' if calibration['kappa'] is None else calibration['kappa']}。"
+            "体系验收以预先登记的口径在体系汇总中计算。",
+            "",
+            "| 审核方 | 与标签一致 | 缺陷检出（fail 判为不通过） | 合格放行（pass 判为通过） |",
+            "| --- | --- | --- | --- |",
+            *[
+                f"| {role} | {show(a['accuracy'])} | {show(a['sensitivity'])} | "
+                f"{show(a['specificity'])} |"
+                for role, a in agreement.items()
+            ],
+        ]
     return "\n".join(lines) + "\n"
 
 
@@ -1185,6 +1274,7 @@ async def revise(
         Path(__file__),
         ROOT / "harness/llm.py",
         ROOT / "scripts/kb_review_budget.py",
+        ROOT / "scripts/kb_review_rubric.py",
         ROOT / "knowledge/checks.py",
     ):
         target = execution / source.name
@@ -1237,7 +1327,7 @@ async def revise(
             ] + [dict(code_check=f["check"], detail=f["detail"]) for f in item["code_findings"]]
             shown = {k: entry[k] for k in ("kind", "key", "synonyms", "keywords", "theme_map")}
             messages = [
-                dict(role="system", content=REVISE_PROMPT),
+                dict(role="system", content=revise_prompt(plan["manifest"]["system"])),
                 dict(
                     role="user",
                     content=json.dumps(
@@ -1495,6 +1585,7 @@ def main(argv: list[str] | None = None) -> Any:
         command.add_argument("--seed", type=int, default=1)
         command.add_argument("--only-ids", nargs="*")
         command.add_argument("--calibrated-by")
+        command.add_argument("--calibration", type=Path, help="已冻结的标注校准集（仅初审）")
         if name == "run":
             command.add_argument("--run-dir", type=Path, required=True)
             command.add_argument("--batches", nargs="*")
@@ -1537,6 +1628,7 @@ def main(argv: list[str] | None = None) -> Any:
             seed=args.seed,
             only_ids=args.only_ids,
             calibrated_by=args.calibrated_by,
+            calibration=calibration_for(args.calibration, args.system),
         )
         if args.command == "plan":
             output = dict(

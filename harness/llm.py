@@ -282,11 +282,19 @@ class RoleModelSpec(BaseModel):
     base_url_env: str | None = Field(default=None, pattern=r"^[A-Z][A-Z0-9_]*$")
     temperature: float | None = Field(default=None, ge=0, le=2)
     max_tokens: int = Field(default=4096, gt=0)
+    # None preserves the historical role default (DeepSeek thinking disabled).
+    thinking: Literal["disabled", "enabled"] | None = None
+    reasoning_effort: Literal["low", "high", "max"] | None = None
 
     @model_validator(mode="after")
     def one_base_url(self):
         if self.base_url and self.base_url_env:
             raise ValueError("base_url 与 base_url_env 只能配置一个")
+        if self.thinking is not None or self.reasoning_effort is not None:
+            if self.api != "openai" or self.vendor.strip().lower() != "deepseek":
+                raise ValueError("审核角色的 thinking/reasoning_effort 仅支持 DeepSeek")
+        if self.reasoning_effort is not None and self.thinking != "enabled":
+            raise ValueError("reasoning_effort requires enabled thinking")
         return self
 
     def endpoint(self) -> str | None:
@@ -315,6 +323,8 @@ def role_model(spec: RoleModelSpec, timeout: float = 120, http_client=None) -> C
         spec.model,
         timeout,
         provider="deepseek" if spec.vendor.strip().lower() == "deepseek" else "openai",
+        thinking=spec.thinking or "disabled",
+        reasoning_effort=spec.reasoning_effort,
         max_tokens=spec.max_tokens,
         api_key_env=spec.api_key_env,
         base_url=spec.endpoint(),

@@ -1,0 +1,38 @@
+{
+  "batch": "b007",
+  "reviewer": "reviewer_b",
+  "run_pass": 2,
+  "attempt": 1,
+  "vendor": "openai",
+  "requested_model": "gpt-6.1-sol",
+  "returned_model": "gpt-6.1-sol",
+  "api": "openai",
+  "started_at": "2026-10-22T07:04:12+00:00",
+  "finished_at": "2026-10-22T07:04:21+00:00",
+  "latency_s": 9.573,
+  "http_attempts": 1,
+  "finish_reason": "stop",
+  "prompt_sha256": "b27c632d90953b34e3fa47b9c91fbffed34ca4aa490b44adb8862aeb9175f90c",
+  "input_tokens": 2290,
+  "output_tokens": 191,
+  "cached_input_tokens": 2287,
+  "usage_available": true,
+  "raw_text": "{\n  \"items\": [\n    {\n      \"item\": \"i01\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"干支与纳音对应正确，分类说明清楚，主题值为中性且无现实事件预测。\"\n    },\n    {\n      \"item\": \"i02\",\n      \"verdict\": \"revise\",\n      \"issues\": [\n        {\n          \"dimension\": \"certainty\",\n          \"detail\": \"text 末句“命局中出现它，预示近两年会遇到贵人相助”依据纳音预测个人现实事件，并限定发生时间，应删除或改为不涉及事件预测的传统象征说明。\"\n        }\n      ],\n      \"reason\": \"白蜡金的干支对应正确，但末句包含对未来两年现实事件的预测。\"\n    }\n  ]\n}",
+  "verdicts": {
+    "i01": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "干支与纳音对应正确，分类说明清楚，主题值为中性且无现实事件预测。"
+    },
+    "i02": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "certainty",
+          "detail": "text 末句“命局中出现它，预示近两年会遇到贵人相助”依据纳音预测个人现实事件，并限定发生时间，应删除或改为不涉及事件预测的传统象征说明。"
+        }
+      ],
+      "reason": "白蜡金的干支对应正确，但末句包含对未来两年现实事件的预测。"
+    }
+  }
+}

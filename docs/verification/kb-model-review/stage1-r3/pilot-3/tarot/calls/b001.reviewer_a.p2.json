@@ -1,0 +1,88 @@
+{
+  "batch": "b001",
+  "reviewer": "reviewer_a",
+  "run_pass": 2,
+  "attempt": 1,
+  "vendor": "deepseek",
+  "requested_model": "deepseek-v4-pro",
+  "returned_model": "deepseek-v4-pro",
+  "api": "openai",
+  "started_at": "2026-10-22T10:18:00+00:00",
+  "finished_at": "2026-10-22T10:20:12+00:00",
+  "latency_s": 132.305,
+  "http_attempts": 1,
+  "finish_reason": "stop",
+  "prompt_sha256": "a9c6b14687aaaa28585d21a6963316a6214db01d6d64ca7c1c9049f5759219f3",
+  "input_tokens": 3813,
+  "output_tokens": 9712,
+  "cached_input_tokens": 3712,
+  "usage_available": true,
+  "raw_text": "{\"items\": [\n  {\"item\": \"i01\", \"verdict\": \"pass\", \"issues\": [], \"reason\": \"核心含义与主题方向一致，无预测或事实错误。\"},\n  {\"item\": \"i02\", \"verdict\": \"revise\", \"issues\": [{\"dimension\": \"theme_direction\", \"detail\": \"finance 标为 0.3，但文字未提及财务、资源或收益，且该主题不属于大阿卡纳约定范围，缺乏文本支持。\"}], \"reason\": \"财务主题方向缺乏依据。\"},\n  {\"item\": \"i03\", \"verdict\": \"pass\", \"issues\": [], \"reason\": \"圣杯五的失落含义与负向主题一致。\"},\n  {\"item\": \"i04\", \"verdict\": \"revise\", \"issues\": [{\"dimension\": \"certainty\", \"detail\": \"文本末尾“这张牌出现时，往往预示一段新感情即将到来”是对现实事件的预测，即使带有“往往”和象征性免责也不符合要求。\"}], \"reason\": \"含有对现实事件的预测。\"},\n  {\"item\": \"i05\", \"verdict\": \"revise\", \"issues\": [{\"dimension\": \"theme_direction\", \"detail\": \"文字整体积极正向，self 却标为 -0.4，方向与文字不符。\"}], \"reason\": \"自我状态主题方向与文字相反。\"},\n  {\"item\": \"i06\", \"verdict\": \"pass\", \"issues\": [], \"reason\": \"逆位宝剑十的恢复含义与正向主题一致。\"},\n  {\"item\": \"i07\", \"verdict\": \"pass\", \"issues\": [], \"reason\": \"逆位权杖骑士的风险提醒与负向主题一致。\"},\n  {\"item\": \"i08\", \"verdict\": \"pass\", \"issues\": [], \"reason\": \"宝剑五逆位的争执与责任处理支持负向主题。\"},\n  {\"item\": \"i09\", \"verdict\": \"pass\", \"issues\": [], \"reason\": \"圣杯一逆位的情感受阻与负向主题一致。\"},\n  {\"item\": \"i10\", \"verdict\": \"pass\", \"issues\": [], \"reason\": \"星币国王逆位的过度控制与负向主题一致。\"}\n]}",
+  "verdicts": {
+    "i01": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "核心含义与主题方向一致，无预测或事实错误。"
+    },
+    "i02": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "theme_direction",
+          "detail": "finance 标为 0.3，但文字未提及财务、资源或收益，且该主题不属于大阿卡纳约定范围，缺乏文本支持。"
+        }
+      ],
+      "reason": "财务主题方向缺乏依据。"
+    },
+    "i03": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "圣杯五的失落含义与负向主题一致。"
+    },
+    "i04": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "certainty",
+          "detail": "文本末尾“这张牌出现时，往往预示一段新感情即将到来”是对现实事件的预测，即使带有“往往”和象征性免责也不符合要求。"
+        }
+      ],
+      "reason": "含有对现实事件的预测。"
+    },
+    "i05": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "theme_direction",
+          "detail": "文字整体积极正向，self 却标为 -0.4，方向与文字不符。"
+        }
+      ],
+      "reason": "自我状态主题方向与文字相反。"
+    },
+    "i06": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "逆位宝剑十的恢复含义与正向主题一致。"
+    },
+    "i07": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "逆位权杖骑士的风险提醒与负向主题一致。"
+    },
+    "i08": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "宝剑五逆位的争执与责任处理支持负向主题。"
+    },
+    "i09": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "圣杯一逆位的情感受阻与负向主题一致。"
+    },
+    "i10": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "星币国王逆位的过度控制与负向主题一致。"
+    }
+  }
+}

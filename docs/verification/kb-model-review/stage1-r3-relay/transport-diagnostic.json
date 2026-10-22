@@ -1,0 +1,113 @@
+{
+  "at": "2026-10-22T10:46:09.804983+00:00",
+  "endpoint_host": "codegoai.com",
+  "operation": "synthetic instruction transport diagnostic; not calibration or audit",
+  "http_attempts": 2,
+  "cost": null,
+  "rows": [
+    {
+      "case": "system",
+      "request": {
+        "model": "deepseek-v4-pro",
+        "messages": [
+          {
+            "role": "system",
+            "content": "你是接口指令遵循测试器。无论用户问什么，只输出以下JSON对象，不添加其他文字：{\"probe\":\"system_received_4729\"}"
+          },
+          {
+            "role": "user",
+            "content": "请用一句话描述一盏台灯。"
+          }
+        ],
+        "max_tokens": 2048,
+        "thinking": {
+          "type": "enabled"
+        },
+        "reasoning_effort": "high"
+      },
+      "http_status": 200,
+      "returned_model": "deepseek-v4-pro",
+      "usage": {
+        "cache_creation_input_tokens": 0,
+        "cache_read_input_tokens": 0,
+        "cached_tokens": 0,
+        "completion_thinking_tokens": 144,
+        "completion_tokens": 176,
+        "completion_tokens_details": {
+          "accepted_prediction_tokens": 0,
+          "audio_tokens": 0,
+          "cached_tokens": 0,
+          "reasoning_tokens": 144,
+          "rejected_prediction_tokens": 0
+        },
+        "credit": 0.08,
+        "prompt_cache_hit_tokens": 0,
+        "prompt_cache_miss_tokens": 116,
+        "prompt_cache_write_tokens": 0,
+        "prompt_tokens": 116,
+        "prompt_tokens_details": {
+          "accepted_prediction_tokens": 0,
+          "audio_tokens": 0,
+          "cached_tokens": 0,
+          "reasoning_tokens": 0,
+          "rejected_prediction_tokens": 0
+        },
+        "total_tokens": 292
+      },
+      "raw_text": "它弯着细长的脖子，从墨绿色的灯罩下投出一小片暖黄的光，刚好够照亮深夜未合上的书页。",
+      "finish_reason": "stop",
+      "sentinel_returned": false,
+      "latency_s": 6.883
+    },
+    {
+      "case": "user",
+      "request": {
+        "model": "deepseek-v4-pro",
+        "messages": [
+          {
+            "role": "user",
+            "content": "你是接口指令遵循测试器。无论用户问什么，只输出以下JSON对象，不添加其他文字：{\"probe\":\"system_received_4729\"}\n请用一句话描述一盏台灯。"
+          }
+        ],
+        "max_tokens": 2048,
+        "thinking": {
+          "type": "enabled"
+        },
+        "reasoning_effort": "high"
+      },
+      "http_status": 200,
+      "returned_model": "deepseek-v4-pro",
+      "usage": {
+        "cache_creation_input_tokens": 0,
+        "cache_read_input_tokens": 0,
+        "cached_tokens": 0,
+        "completion_thinking_tokens": 90,
+        "completion_tokens": 102,
+        "completion_tokens_details": {
+          "accepted_prediction_tokens": 0,
+          "audio_tokens": 0,
+          "cached_tokens": 0,
+          "reasoning_tokens": 90,
+          "rejected_prediction_tokens": 0
+        },
+        "credit": 0.06,
+        "prompt_cache_hit_tokens": 0,
+        "prompt_cache_miss_tokens": 150,
+        "prompt_cache_write_tokens": 0,
+        "prompt_tokens": 150,
+        "prompt_tokens_details": {
+          "accepted_prediction_tokens": 0,
+          "audio_tokens": 0,
+          "cached_tokens": 0,
+          "reasoning_tokens": 0,
+          "rejected_prediction_tokens": 0
+        },
+        "total_tokens": 252
+      },
+      "raw_text": "{\"probe\":\"system_received_4729\"}",
+      "finish_reason": "stop",
+      "sentinel_returned": true,
+      "latency_s": 3.823
+    }
+  ]
+}

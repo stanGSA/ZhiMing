@@ -1,0 +1,43 @@
+{
+  "batch": "b010",
+  "reviewer": "reviewer_a",
+  "run_pass": 2,
+  "attempt": 1,
+  "vendor": "deepseek",
+  "requested_model": "deepseek-flash",
+  "returned_model": "deepseek-flash",
+  "api": "openai",
+  "started_at": "2026-10-22T07:46:35+00:00",
+  "finished_at": "2026-10-22T07:46:36+00:00",
+  "latency_s": 1.507,
+  "http_attempts": 1,
+  "finish_reason": "stop",
+  "prompt_sha256": "8ae675fea62c29f863f3cf0d8b9cdb957e3caa5c312564e00f85c3bc8635d4ad",
+  "input_tokens": 2226,
+  "output_tokens": 194,
+  "cached_input_tokens": 2048,
+  "usage_available": true,
+  "raw_text": "{\"items\": [{\"item\": \"i01\", \"verdict\": \"revise\", \"issues\": [{\"dimension\": \"theme_direction\", \"detail\": \"theme_map 的 finance 为 -0.15，但文字写“财务方面较容易遇到机会”，偏向顺，与负值方向相反；若想表达风险应明确为偏阻。\"}], \"reason\": \"财务主题方向为负，文字却描述为容易遇到机会（偏顺），方向不一致。\"}, {\"item\": \"i02\", \"verdict\": \"revise\", \"issues\": [{\"dimension\": \"certainty\", \"detail\": \"“它出现在流年时，预示当年会有搬迁或换工作的变动”是对现实事件的确定性预测，违反不确定/非预测要求。\"}], \"reason\": \"条目含对现实事件的预测性断言（预示搬迁或换工作），属宿命化预测。\"}]}",
+  "verdicts": {
+    "i01": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "theme_direction",
+          "detail": "theme_map 的 finance 为 -0.15，但文字写“财务方面较容易遇到机会”，偏向顺，与负值方向相反；若想表达风险应明确为偏阻。"
+        }
+      ],
+      "reason": "财务主题方向为负，文字却描述为容易遇到机会（偏顺），方向不一致。"
+    },
+    "i02": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "certainty",
+          "detail": "“它出现在流年时，预示当年会有搬迁或换工作的变动”是对现实事件的确定性预测，违反不确定/非预测要求。"
+        }
+      ],
+      "reason": "条目含对现实事件的预测性断言（预示搬迁或换工作），属宿命化预测。"
+    }
+  }
+}

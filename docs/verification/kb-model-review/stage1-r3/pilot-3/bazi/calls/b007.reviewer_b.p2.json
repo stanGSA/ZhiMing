@@ -1,0 +1,38 @@
+{
+  "batch": "b007",
+  "reviewer": "reviewer_b",
+  "run_pass": 2,
+  "attempt": 1,
+  "vendor": "openai",
+  "requested_model": "gpt-6.1-sol",
+  "returned_model": "gpt-6.1-sol",
+  "api": "openai",
+  "started_at": "2026-10-22T10:25:30+00:00",
+  "finished_at": "2026-10-22T10:25:52+00:00",
+  "latency_s": 21.255,
+  "http_attempts": 1,
+  "finish_reason": "stop",
+  "prompt_sha256": "d3528d73fb94db0473a302bf4cff4a9a59207667ccff043d43c88d0ddadb1946",
+  "input_tokens": 2817,
+  "output_tokens": 234,
+  "cached_input_tokens": 2814,
+  "usage_available": true,
+  "raw_text": "{\n  \"items\": [\n    {\n      \"item\": \"i01\",\n      \"verdict\": \"revise\",\n      \"issues\": [\n        {\n          \"dimension\": \"certainty\",\n          \"detail\": \"text 末句“命局中出现它，预示近两年会遇到贵人相助”依据纳音对现实事件作出带有明确时间范围的预测，应删除或改为非预测性的象征解释。\"\n        }\n      ],\n      \"reason\": \"庚辰、辛巳对应白蜡金的事实正确，主题值均为0无方向冲突，但末句构成对现实事件的预测。\"\n    },\n    {\n      \"item\": \"i02\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"壬寅、癸卯对应金箔金的事实正确，文字说明了纳音分类及其适用边界，四个主题均为0与正文相容，且无错误别名或确定性预测。\"\n    }\n  ]\n}",
+  "verdicts": {
+    "i01": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "certainty",
+          "detail": "text 末句“命局中出现它，预示近两年会遇到贵人相助”依据纳音对现实事件作出带有明确时间范围的预测，应删除或改为非预测性的象征解释。"
+        }
+      ],
+      "reason": "庚辰、辛巳对应白蜡金的事实正确，主题值均为0无方向冲突，但末句构成对现实事件的预测。"
+    },
+    "i02": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "壬寅、癸卯对应金箔金的事实正确，文字说明了纳音分类及其适用边界，四个主题均为0与正文相容，且无错误别名或确定性预测。"
+    }
+  }
+}

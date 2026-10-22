@@ -1,0 +1,38 @@
+{
+  "batch": "b001",
+  "reviewer": "reviewer_a",
+  "run_pass": 2,
+  "attempt": 1,
+  "vendor": "deepseek",
+  "requested_model": "deepseek-flash",
+  "returned_model": "deepseek-flash",
+  "api": "openai",
+  "started_at": "2026-10-22T07:02:42+00:00",
+  "finished_at": "2026-10-22T07:02:43+00:00",
+  "latency_s": 1.174,
+  "http_attempts": 1,
+  "finish_reason": "stop",
+  "prompt_sha256": "739b066e6e0092254ebdcdfdf79a7c5bf4afd1905d40229864d03b2fa9f3fe75",
+  "input_tokens": 2142,
+  "output_tokens": 143,
+  "cached_input_tokens": 1920,
+  "usage_available": true,
+  "raw_text": "{\"items\": [{\"item\": \"i01\", \"verdict\": \"pass\", \"issues\": [], \"reason\": \"戌的五行与藏干成员与参考事实一致，免责说明清晰，方向中性无矛盾。\"}, {\"item\": \"i02\", \"verdict\": \"reject\", \"issues\": [{\"dimension\": \"tradition\", \"detail\": \"文中称“丑……属金”，但丑为地支属土；后文又称“若按地支本身的五行属性统计，丑计入土”，自相矛盾，核心五行归属写错。\"}], \"reason\": \"丑的地支五行应为土而非金，开头对象核心属性错误。\"}]}",
+  "verdicts": {
+    "i01": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "戌的五行与藏干成员与参考事实一致，免责说明清晰，方向中性无矛盾。"
+    },
+    "i02": {
+      "verdict": "reject",
+      "issues": [
+        {
+          "dimension": "tradition",
+          "detail": "文中称“丑……属金”，但丑为地支属土；后文又称“若按地支本身的五行属性统计，丑计入土”，自相矛盾，核心五行归属写错。"
+        }
+      ],
+      "reason": "丑的地支五行应为土而非金，开头对象核心属性错误。"
+    }
+  }
+}

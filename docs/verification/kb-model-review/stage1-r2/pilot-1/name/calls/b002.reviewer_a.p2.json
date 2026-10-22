@@ -1,0 +1,42 @@
+{
+  "batch": "b002",
+  "reviewer": "reviewer_a",
+  "run_pass": 2,
+  "attempt": 1,
+  "vendor": "deepseek",
+  "requested_model": "deepseek-flash",
+  "returned_model": "deepseek-flash",
+  "api": "openai",
+  "started_at": "2026-10-22T07:05:26+00:00",
+  "finished_at": "2026-10-22T07:05:28+00:00",
+  "latency_s": 1.743,
+  "http_attempts": 1,
+  "finish_reason": "stop",
+  "prompt_sha256": "794e24bc33ac91e773dae844d1f5223677e7d24894c48e1e40e8cdf0cd14b6e3",
+  "input_tokens": 1686,
+  "output_tokens": 198,
+  "cached_input_tokens": 1536,
+  "usage_available": true,
+  "raw_text": "{\"items\": [{\"item\": \"i01\", \"verdict\": \"revise\", \"issues\": [{\"dimension\": \"certainty\", \"detail\": \"“用这个数理的人，中年以后会财运亨通”是对个人现实与财运的确定性预测，违反 certainty（也属 F 类预测）\"}, {\"dimension\": \"medical_legal_finance\", \"detail\": \"“会财运亨通”是对财务结果的确定性结论，违反本维度；此外 theme_map 中 finance 标为 0，与文字表达的财运亨通也不一致\"}], \"reason\": \"含财运亨通的宿命化预测，且与 finance 方向标注不一致。\"}, {\"item\": \"i02\", \"verdict\": \"pass\", \"issues\": [], \"reason\": \"释义与三才中土的象征相符，说明来自格数尾数并与字义五行区分，无宿命化或方向问题。\"}]}",
+  "verdicts": {
+    "i01": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "certainty",
+          "detail": "“用这个数理的人，中年以后会财运亨通”是对个人现实与财运的确定性预测，违反 certainty（也属 F 类预测）"
+        },
+        {
+          "dimension": "medical_legal_finance",
+          "detail": "“会财运亨通”是对财务结果的确定性结论，违反本维度；此外 theme_map 中 finance 标为 0，与文字表达的财运亨通也不一致"
+        }
+      ],
+      "reason": "含财运亨通的宿命化预测，且与 finance 方向标注不一致。"
+    },
+    "i02": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "释义与三才中土的象征相符，说明来自格数尾数并与字义五行区分，无宿命化或方向问题。"
+    }
+  }
+}

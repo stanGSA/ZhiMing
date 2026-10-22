@@ -15,10 +15,52 @@ from pathlib import Path
 from knowledge.review import approval, content_hash, load_ledgers, write_ledger
 from scripts import model_review_kb as review
 
+# The 2026-10-21 campaign had no preregistration; its owner-approved basis stays as recorded.
+LEGACY_BASIS = (
+    "负责人确认：按体系汇总全部初审及复审样本；通过率按当前内容哈希；"
+    "kappa按全部真实及埋错样本的放行二分类计算，原三分类指标保留"
+)
+LEGACY_KAPPA = dict(
+    scope="全部批次第一轮真实及埋错样本；第二轮另计重跑一致率",
+    classes={"pass": "放行", "revise": "不通过", "reject": "不通过"},
+    limitation="埋错样本改变类别分布，不能与仅真实条目的三分类kappa直接比较",
+    owner_reply="同意：全部样本、放行二分类（推荐）",
+)
+PREREGISTRATION = "preregistration.json"
+SYSTEMS = ("tarot", "astro", "bazi", "name", "dream", "daily")
 
-def summarize(workspace, paths, system):
+
+def deviations(manifest, prereg, system):
+    """How a batch departs from the pre-registered campaign; any departure blocks acceptance."""
+    found = []
+    for key in ("rubric_sha256", "reviewers", "passes"):
+        if manifest.get(key) != prereg[key]:
+            found.append(key)
+    for key in ("batch_size", "plant_rate", "min_planted"):
+        if manifest.get(key) != prereg["plan"][key]:
+            found.append(key)
+    carried = manifest.get("calibration")
+    if carried and (
+        carried["lock_sha256"] != prereg["calibration"]["lock_sha256"]
+        or carried.get("partition") != prereg["calibration"]["partition"]
+    ):
+        found.append("calibration")
+    # The initial review must see exactly the registered knowledge base.
+    if not manifest.get("only_ids") and manifest.get("source_files") != (
+        prereg["knowledge_base"]["source_files"].get(system)
+    ):
+        found.append("knowledge_base")
+    if system not in prereg["systems"]:
+        found.append("system")
+    return found
+
+
+def summarize(workspace, paths, system, prereg=None):
+    """``prereg`` is the run root's preregistration.json, or None for a campaign that had none
+    (2026-10-21): kappa then keeps that campaign's owner-approved basis."""
     entries = {e["id"]: e for e in review.load_entries(workspace.sources, system)}
     pairs, all_pairs, outcomes, batches = [], [], {}, []
+    calibration_rows, calibration_runs, departures = [], [], {}
     detection = {r: [0, 0] for r in review.REVIEWERS}
     rerun = {r: [0, 0] for r in review.REVIEWERS}
     merged = [0, 0]
@@ -31,6 +73,8 @@ def summarize(workspace, paths, system):
         if manifest["system"] != system:
             continue
         identities.add(review.canonical({k: manifest[k] for k in ("reviewers", "rubric_sha256")}))
+        if prereg and deviations(manifest, prereg, system):
+            departures[path.as_posix()] = deviations(manifest, prereg, system)
         expected = {
             (b["batch"], role, n)
             for b in plan["batches"]
@@ -41,12 +85,22 @@ def summarize(workspace, paths, system):
         complete &= expected == actual and manifest["passes"] == 2
         verdicts = review.collect(run, plan)
         refs = {e["id"] for e in plan["entries"]} | {p["ref"] for p in plan["planted"]}
+        blind = refs | {c["ref"] for c in plan["calibration"]}
         complete &= all(
-            set(verdicts.get((role, number), {})) == refs
+            set(verdicts.get((role, number), {})) == blind
             for role in review.REVIEWERS
             for number in (1, 2)
         )
         first = {role: verdicts.get((role, 1), {}) for role in review.REVIEWERS}
+        if plan["calibration"]:
+            calibration_runs.append(path.as_posix())
+            calibration_rows += [
+                dict(
+                    label=c["label"],
+                    **{r: first[r].get(c["ref"], {}).get("verdict") for r in review.REVIEWERS},
+                )
+                for c in plan["calibration"]
+            ]
         for ref in sorted(refs):
             if all(ref in first[r] for r in review.REVIEWERS):
                 all_pairs.append(tuple(first[r][ref]["verdict"] for r in review.REVIEWERS))
@@ -117,6 +171,20 @@ def summarize(workspace, paths, system):
             sum(a == b for a, b in pairs) / len(pairs) if pairs else None
         ),
     )
+    if calibration_rows:
+        values["calibration"] = review.calibration_metrics(calibration_rows)
+    if prereg:
+        # The pre-registered basis: reviewer agreement on the frozen, balanced labelled set.
+        expected = sum(prereg["calibration"]["by_system"].get(system, {}).values())
+        found = values.get("calibration") or dict(items=0, reviewed=0, kappa=None)
+        values["kappa_all_samples_binary"] = values["kappa"]
+        values["kappa"] = found["kappa"]
+        complete &= (
+            not departures
+            and len(calibration_runs) == 1
+            and found["items"] == expected
+            and found["reviewed"] == expected
+        )
 
     def met(value, threshold):
         return value is not None and value >= threshold
@@ -154,16 +222,11 @@ def summarize(workspace, paths, system):
         ),
         batches=batches,
         thresholds=review.GATES,
-        acceptance_basis=(
-            "负责人确认：按体系汇总全部初审及复审样本；通过率按当前内容哈希；"
-            "kappa按全部真实及埋错样本的放行二分类计算，原三分类指标保留"
-        ),
-        kappa_basis=dict(
-            scope="全部批次第一轮真实及埋错样本；第二轮另计重跑一致率",
-            classes={"pass": "放行", "revise": "不通过", "reject": "不通过"},
-            limitation="埋错样本改变类别分布，不能与仅真实条目的三分类kappa直接比较",
-            owner_reply="同意：全部样本、放行二分类（推荐）",
-        ),
+        acceptance_basis=prereg["acceptance_basis"] if prereg else LEGACY_BASIS,
+        kappa_basis=prereg["kappa_basis"] if prereg else LEGACY_KAPPA,
+        preregistered=bool(prereg),
+        deviations=departures,
+        calibration_runs=calibration_runs,
         human_reviewed_rate=0.0,
     )
     return result, outcomes, entries
@@ -276,9 +339,11 @@ def main(argv=None):
         key=lambda p: (review.read_json(p / "manifest.json").get("created_at", ""), p.name),
     )
     workspace = review.Workspace()
+    prereg_path = args.run_root / PREREGISTRATION
+    prereg = review.read_json(prereg_path) if prereg_path.is_file() else None
     summaries = []
-    for system in ("tarot", "astro", "bazi", "name", "dream", "daily"):
-        summary, outcomes, entries = summarize(workspace, paths, system)
+    for system in prereg["systems"] if prereg else SYSTEMS:
+        summary, outcomes, entries = summarize(workspace, paths, system, prereg)
         target = args.output / system
         report = target / "report.md"
         target.mkdir(parents=True, exist_ok=True)

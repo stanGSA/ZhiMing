@@ -297,6 +297,23 @@ def compute_bazi(
     }
 
 
+# The relation tables this project computes; the knowledge review rubric quotes them too.
+PAIR_RELATIONS = {
+    "天干合": ("甲己", "乙庚", "丙辛", "丁壬", "戊癸"),
+    "天干冲": ("甲庚", "乙辛", "丙壬", "丁癸"),
+    "地支六合": ("子丑", "寅亥", "卯戌", "辰酉", "巳申", "午未"),
+    "地支冲": ("子午", "丑未", "寅申", "卯酉", "辰戌", "巳亥"),
+    "地支害": ("子未", "丑午", "寅巳", "卯辰", "申亥", "酉戌"),
+    "地支破": ("子酉", "丑辰", "寅亥", "卯午", "巳申", "未戌"),
+    "地支刑": ("子卯", "寅巳", "巳申", "申寅", "丑戌", "戌未", "未丑"),
+}
+SELF_PUNISHMENT = "辰午酉亥"
+GROUP_RELATIONS = {
+    "三合": ("申子辰", "亥卯未", "寅午戌", "巳酉丑"),
+    "三会": ("寅卯辰", "巳午未", "申酉戌", "亥子丑"),
+}
+
+
 def relations(ganzhi, natal):
     result = []
     for name, original in natal.items():
@@ -304,25 +321,14 @@ def relations(ganzhi, natal):
             continue
         stem_pair = frozenset((ganzhi[0], original[0]))
         branch_pair = frozenset((ganzhi[1], original[1]))
-        for kind, pairs in {
-            "天干合": ("甲己", "乙庚", "丙辛", "丁壬", "戊癸"),
-            "天干冲": ("甲庚", "乙辛", "丙壬", "丁癸"),
-            "地支六合": ("子丑", "寅亥", "卯戌", "辰酉", "巳申", "午未"),
-            "地支冲": ("子午", "丑未", "寅申", "卯酉", "辰戌", "巳亥"),
-            "地支害": ("子未", "丑午", "寅巳", "卯辰", "申亥", "酉戌"),
-            "地支破": ("子酉", "丑辰", "寅亥", "卯午", "巳申", "未戌"),
-            "地支刑": ("子卯", "寅巳", "巳申", "申寅", "丑戌", "戌未", "未丑"),
-        }.items():
+        for kind, pairs in PAIR_RELATIONS.items():
             pair = stem_pair if kind.startswith("天干") else branch_pair
             if any(pair == frozenset(p) for p in pairs):
                 result.append(dict(type=kind, natal_pillar=name, natal_ganzhi=original))
-        if ganzhi[1] == original[1] and ganzhi[1] in "辰午酉亥":
+        if ganzhi[1] == original[1] and ganzhi[1] in SELF_PUNISHMENT:
             result.append(dict(type="自刑", natal_pillar=name, natal_ganzhi=original))
     branches = set(gz[1] for gz in natal.values() if gz) | {ganzhi[1]}
-    for kind, groups in {
-        "三合": ("申子辰", "亥卯未", "寅午戌", "巳酉丑"),
-        "三会": ("寅卯辰", "巳午未", "申酉戌", "亥子丑"),
-    }.items():
+    for kind, groups in GROUP_RELATIONS.items():
         for group in groups:
             if ganzhi[1] in group and set(group) <= branches:
                 result.append(dict(type=kind, branches=group))
