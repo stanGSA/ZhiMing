@@ -1,0 +1,165 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#f1e5cb" />
+    <meta name="description" content="知命 · 今日运势：流日干支、行运与每日一牌。" />
+    <title>知命 · 今日运势</title>
+    <link rel="icon" href="/static/favicon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="/static/base.css" />
+    <link rel="stylesheet" href="/static/theme-daily.css" />
+    <script src="/static/app.js" defer></script>
+  </head>
+  <body data-page="daily">
+    <header class="zm-header">
+      <div class="wrap zm-bar">
+        <a class="zm-brand" href="/ask" aria-label="知命 · 问道">
+          <span class="zm-mark" aria-hidden="true">知<br />命</span>
+          <span class="zm-wordmark">知命</span>
+        </a>
+        <nav class="zm-nav" aria-label="六术">
+          <a href="/ask">问道</a>
+          <a href="/bazi">八字</a>
+          <a href="/astro">星盘</a>
+          <a href="/tarot">塔罗</a>
+          <a href="/name">姓名</a>
+          <a href="/dream">解梦</a>
+          <a href="/daily" aria-current="page">运势</a>
+        </nav>
+        <div class="zm-tools">
+          <span class="zm-status" id="connection">正在连接</span>
+          <button class="btn btn-text" id="open-history" type="button">足迹</button>
+        </div>
+      </div>
+    </header>
+
+    <main class="wrap daily-main">
+      <div class="day-nav" role="group" aria-label="选择日期">
+        <button class="btn btn-ghost step" id="day-prev" type="button" aria-label="前一日" data-lock>‹</button>
+        <label class="day-picker"
+          ><span class="sr-only">选择日期</span
+          ><input id="day-pick" type="date" min="1901-01-01" max="2099-12-31" data-lock
+        /></label>
+        <button class="btn btn-ghost step" id="day-next" type="button" aria-label="后一日" data-lock>›</button>
+      </div>
+
+      <section class="almanac" aria-labelledby="day-num">
+        <div class="almanac-binding" aria-hidden="true"><span></span><span></span></div>
+        <div class="almanac-body">
+          <div class="almanac-side">
+            <span class="side-pillars" id="day-pillars">— 年 — 月 — 日</span>
+            <span class="side-lunar" id="day-lunar">农历</span>
+          </div>
+          <div class="almanac-center">
+            <span class="day-month" id="day-month">—</span>
+            <h1 class="day-num" id="day-num">—</h1>
+            <span class="day-weekday" id="day-weekday">星期—</span>
+            <span class="day-term" id="day-term">节气</span>
+          </div>
+          <div class="almanac-cells">
+            <div class="cell cell-god">
+              <span class="cell-label">流日 · 于你</span>
+              <span class="cell-big" id="day-god">—</span>
+              <span class="cell-note" id="day-god-note">确认出生日期与地点后，按你的日主推算</span>
+            </div>
+            <div class="cell cell-element">
+              <div>
+                <span class="cell-label">日元素</span>
+                <span class="cell-value"><span id="day-element">—</span></span>
+              </div>
+              <p class="cell-note" id="day-element-note"></p>
+            </div>
+            <div class="cell" id="day-transits"></div>
+            <div class="cell cell-card" id="day-card"></div>
+          </div>
+        </div>
+      </section>
+
+      <div class="daily-grid">
+        <section class="brief" aria-labelledby="brief-title">
+          <div class="section-title">
+            <h2 id="brief-title">今日提要</h2>
+          </div>
+          <div class="btn-row">
+            <button class="btn btn-primary" id="daily-ask" type="button" data-lock>看今日详解</button>
+            <a class="btn btn-ghost" href="#daily-birth">填写生辰</a>
+          </div>
+          <section class="reading" id="reading" aria-labelledby="reading-title">
+            <div class="reading-head">
+              <h3 id="reading-title">流日解读</h3>
+              <button class="btn btn-text" id="copy-reading" type="button" hidden>复制</button>
+            </div>
+            <div class="reading-content" id="reading-content">
+              <p class="reading-empty">
+                点「看今日详解」，结合流日干支、行运相位与每日一牌整理今日提要。需要出生日期与地点。
+              </p>
+            </div>
+          </section>
+        </section>
+
+        <section class="week-panel" aria-labelledby="week-title">
+          <div class="section-title">
+            <h2 id="week-title">本周流日</h2>
+          </div>
+          <div class="week-scroll">
+            <div class="week" id="week"></div>
+          </div>
+          <p class="week-note">十神以你的日主推算；流日取当地正午所在日柱。点某一天可查看那天。</p>
+        </section>
+      </div>
+
+      <div class="daily-lower">
+        <section class="paper-panel birth-panel" id="daily-birth" aria-labelledby="birth-title">
+          <div class="section-title">
+            <h2 id="birth-title">生辰</h2>
+          </div>
+          <div data-birth="daily"></div>
+        </section>
+        <section class="consult" aria-labelledby="consult-title">
+          <div class="section-title">
+            <h2 id="consult-title">问今天的一件事</h2>
+          </div>
+          <div class="messages" id="messages" role="log" aria-live="polite"></div>
+          <form class="composer" id="chat-form">
+            <label class="sr-only" for="message">你的问题</label>
+            <textarea
+              id="message"
+              rows="2"
+              maxlength="3900"
+              required
+              placeholder="比如：今天适合和同事谈加薪吗？"
+            ></textarea>
+            <div class="composer-foot">
+              <span class="hint" id="input-hint">Enter 发送 · 问题按上方所选日期解读</span>
+              <button class="btn btn-ghost" id="send" type="submit">发问</button>
+            </div>
+          </form>
+        </section>
+      </div>
+    </main>
+
+    <footer class="zm-footer">
+      <div class="wrap zm-bar">
+        <p>“幸运色”只是流日天干五行的传统配色约定，不带来实际运气 · 解读仅供参考与自我反思</p>
+        <div class="zm-controls">
+          <label class="zm-mode"
+            >体验模式<select id="provider">
+              <option value="configured">真实模型</option>
+              <option value="demo">离线演示</option>
+            </select></label
+          >
+          <button class="btn btn-text" id="new-chat" type="button">开启新对话</button>
+          <button class="btn btn-text" id="forget" type="button">清除我的记录</button>
+        </div>
+      </div>
+    </footer>
+
+    <template id="welcome">
+      <div class="welcome">
+        <h3>一日一页，顺时而行。</h3>
+        <p>流日干支与十神由历法直接推算；行运相位与每日一牌会在详解后显示，同一天结果不变。</p>
+      </div>
+    </template>
+  </body>
+</html>

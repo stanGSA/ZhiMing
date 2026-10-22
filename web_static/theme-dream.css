@@ -1,0 +1,434 @@
+/* 解梦 · 庄周梦蝶：雾灰蓝的夜色、月光、线描蝴蝶与信笺。 */
+:root {
+  --bg: #dce2e7;
+  --surface: #f3f2ec;
+  --surface-2: #eceef0;
+  --ink: #1d2838;
+  --muted: #4f5a6b;
+  --line: rgba(29, 40, 56, 0.14);
+  --line-strong: rgba(29, 40, 56, 0.35);
+  --accent: #1d2838;
+  --accent-hover: #2c3a52;
+  --accent-ink: #f5f2e9;
+  --accent-2: #44557a;
+  --moon: #f5f2e9;
+  --focus: #44557a;
+}
+
+body {
+  position: relative;
+  font-weight: 300;
+}
+.sky {
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 760px;
+  overflow: hidden;
+  pointer-events: none;
+}
+.moon {
+  position: absolute;
+  right: max(40px, calc(50% - 600px));
+  top: 110px;
+  width: 380px;
+  height: 380px;
+  border-radius: 50%;
+  background: var(--moon);
+  box-shadow: 0 0 90px 30px rgba(245, 242, 233, 0.75);
+  pointer-events: none;
+}
+.mist {
+  position: absolute;
+  border-radius: 50%;
+  background: rgba(240, 243, 246, 0.7);
+  filter: blur(26px);
+  pointer-events: none;
+}
+.mist-a {
+  left: -10%;
+  top: 380px;
+  width: 120%;
+  height: 90px;
+}
+.mist-b {
+  left: 30%;
+  top: 260px;
+  width: 80%;
+  height: 60px;
+}
+.zm-header,
+main,
+.zm-footer {
+  position: relative;
+  z-index: 1;
+}
+.zm-crescent {
+  width: 34px;
+  height: 34px;
+  fill: none;
+  stroke: var(--ink);
+}
+.zm-wordmark,
+.zm-nav a[aria-current="page"] {
+  font-weight: 400;
+}
+.zm-nav a[aria-current="page"] {
+  color: var(--ink);
+}
+
+/* Rounded, moon-soft buttons. */
+.btn-primary {
+  min-height: 56px;
+  padding: 0 40px;
+  border-radius: 28px;
+  letter-spacing: 0.5em;
+}
+.moon-icon {
+  width: 16px;
+  height: 16px;
+  fill: var(--moon);
+}
+.btn-ghost,
+.btn-tag {
+  border-radius: 22px;
+}
+.btn-tag {
+  border-color: var(--line-strong);
+  color: var(--ink);
+}
+
+/* ---------- Hero ---------- */
+.dream-hero-inner {
+  padding-top: 80px;
+  padding-bottom: 56px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 40px;
+  flex-wrap: wrap;
+}
+.dream-heading {
+  flex: 1 1 520px;
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+}
+.epigraph {
+  font-family: var(--font-italic);
+  font-style: italic;
+  font-size: 18px;
+  color: var(--accent-2);
+}
+.dream-heading h1 {
+  font-size: 54px;
+  font-weight: 300;
+  letter-spacing: 0.12em;
+  line-height: 1.35;
+}
+.dream-heading p {
+  max-width: 500px;
+  font-size: 17px;
+  line-height: 2;
+  color: var(--muted);
+}
+.butterfly {
+  flex: 0 0 300px;
+  width: 300px;
+  height: 300px;
+  margin-right: 60px;
+  transform: rotate(-14deg);
+}
+.fly {
+  fill: none;
+  stroke: #2f3f5c;
+  stroke-width: 1.1;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.fly-vein {
+  fill: none;
+  stroke: rgba(47, 63, 92, 0.45);
+  stroke-width: 0.8;
+  stroke-linecap: round;
+}
+
+/* ---------- Journal ---------- */
+.dream-body {
+  padding-bottom: 72px;
+}
+.dream-grid {
+  display: flex;
+  gap: 48px;
+  flex-wrap: wrap;
+  align-items: flex-start;
+}
+.journal {
+  flex: 1 1 620px;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+.paper {
+  padding: 26px 34px 18px;
+  border-radius: 4px;
+  background-color: var(--surface);
+  box-shadow:
+    0 1px 0 rgba(29, 40, 56, 0.08),
+    0 24px 48px rgba(29, 40, 56, 0.08);
+}
+.paper-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 8px;
+}
+.paper-head label {
+  font-size: 15px;
+  letter-spacing: 0.4em;
+  color: var(--accent-2);
+  font-weight: 400;
+}
+.paper-date {
+  font-family: var(--font-italic);
+  font-style: italic;
+  color: var(--muted);
+}
+.paper textarea {
+  width: 100%;
+  min-height: 200px;
+  resize: vertical;
+  background: transparent;
+  border: 0;
+  padding: 0;
+  color: var(--ink);
+  font-size: 19px;
+  font-weight: 300;
+  line-height: 40px;
+  background-image: repeating-linear-gradient(180deg, transparent 0 39px, rgba(68, 85, 122, 0.16) 39px 40px);
+  background-attachment: local;
+}
+.paper textarea:focus {
+  outline: none;
+}
+.paper textarea::placeholder {
+  color: #6f7a8b;
+}
+.moods {
+  border: 0;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.moods legend {
+  padding: 0;
+  margin-bottom: 12px;
+  font-size: 14px;
+  letter-spacing: 0.3em;
+  color: var(--muted);
+}
+.mood {
+  position: relative;
+  cursor: pointer;
+}
+.mood input {
+  position: absolute;
+  opacity: 0;
+  width: 1px;
+  height: 1px;
+}
+.mood span {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 0 22px;
+  border: 1px solid var(--line-strong);
+  border-radius: 22px;
+  font-size: 15px;
+}
+.mood input:checked + span {
+  background: var(--ink);
+  border-color: var(--ink);
+  color: var(--moon);
+}
+.mood input:focus-visible + span {
+  outline: 2px solid var(--focus);
+  outline-offset: 3px;
+}
+.mood input:disabled + span {
+  opacity: 0.5;
+}
+.journal-foot {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  flex-wrap: wrap;
+}
+
+/* ---------- Symbols ---------- */
+.symbols {
+  flex: 1 1 400px;
+  min-width: 0;
+}
+.symbols-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 10px;
+}
+.symbols-head h2 {
+  font-size: 20px;
+  font-weight: 400;
+  letter-spacing: 0.4em;
+}
+.symbols-head span {
+  font-size: 13px;
+  color: var(--muted);
+}
+.symbol {
+  display: flex;
+  gap: 20px;
+  padding: 20px 0;
+  border-top: 1px solid var(--line);
+}
+.symbol:last-of-type {
+  border-bottom: 1px solid var(--line);
+}
+.symbol-glyph {
+  flex: none;
+  width: 58px;
+  height: 58px;
+  border-radius: 50%;
+  border: 1px solid var(--line-strong);
+  background: rgba(245, 242, 233, 0.75);
+  display: grid;
+  place-items: center;
+  font-size: 24px;
+}
+.symbol-body {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.symbol-head {
+  display: flex;
+  gap: 10px;
+  align-items: baseline;
+  flex-wrap: wrap;
+}
+.symbol-head h3 {
+  font-size: 18px;
+  font-weight: 600;
+}
+.symbol-tag {
+  font-size: 12px;
+  color: var(--accent-2);
+  letter-spacing: 0.15em;
+}
+.symbol-source {
+  font-size: 12px;
+  color: var(--muted);
+}
+.symbol-body p {
+  font-size: 15px;
+  line-height: 1.9;
+  color: #34404f;
+}
+.symbols-empty,
+.symbols-miss,
+.diary-empty {
+  font-size: 14px;
+  line-height: 1.9;
+  color: var(--muted);
+  padding: 14px 0;
+}
+
+/* ---------- Reading, dialogue, diary ---------- */
+.dream-lower {
+  display: flex;
+  gap: 40px;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  margin-top: 56px;
+}
+.dream-lower .reading {
+  flex: 1 1 620px;
+  border: 0;
+  border-radius: 4px;
+  background: rgba(243, 242, 236, 0.85);
+}
+.dream-lower .consult {
+  flex: 1 1 360px;
+  min-width: 0;
+}
+.panel-title {
+  font-size: 18px;
+  font-weight: 400;
+  letter-spacing: 0.3em;
+  margin-bottom: 14px;
+}
+.reading-summary {
+  font-weight: 400;
+}
+.reading-subheading,
+.reading-tags span {
+  color: var(--accent-2);
+}
+.reading-tags span {
+  border-radius: 12px;
+}
+.msg-label {
+  color: var(--accent-2);
+}
+.diary {
+  margin-top: 64px;
+}
+.diary-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 20px;
+}
+.diary-item {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 22px 24px;
+  text-align: left;
+  border: 0;
+  border-radius: 4px;
+  background: rgba(245, 242, 233, 0.6);
+  cursor: pointer;
+}
+.diary-item .history-meta {
+  font-family: var(--font-italic);
+  font-style: italic;
+  font-size: 15px;
+  color: var(--accent-2);
+}
+.diary-item:hover {
+  background: rgba(245, 242, 233, 0.95);
+}
+
+@media (max-width: 760px) {
+  .moon {
+    width: 220px;
+    height: 220px;
+    right: -40px;
+    top: 120px;
+  }
+  .dream-hero-inner {
+    padding-top: 40px;
+  }
+  .dream-heading h1 {
+    font-size: 36px;
+  }
+  .butterfly {
+    display: none;
+  }
+  .paper {
+    padding: 20px 18px 12px;
+  }
+}

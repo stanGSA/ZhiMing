@@ -1,0 +1,168 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#120a16" />
+    <meta name="description" content="知命 · 塔罗：借一张牌，照见此刻。" />
+    <title>知命 · 塔罗问心</title>
+    <link rel="icon" href="/static/favicon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="/static/base.css" />
+    <link rel="stylesheet" href="/static/theme-tarot.css" />
+    <script src="/static/app.js" defer></script>
+  </head>
+  <body data-page="tarot">
+    <header class="zm-header">
+      <div class="wrap zm-bar">
+        <a class="zm-brand" href="/ask" aria-label="知命 · 问道">
+          <span class="zm-mark" aria-hidden="true">Z</span>
+          <span class="zm-wordmark">知命</span>
+        </a>
+        <nav class="zm-nav" aria-label="六术">
+          <a href="/ask">问道</a>
+          <a href="/bazi">八字</a>
+          <a href="/astro">星盘</a>
+          <a href="/tarot" aria-current="page">塔罗</a>
+          <a href="/name">姓名</a>
+          <a href="/dream">解梦</a>
+          <a href="/daily">运势</a>
+        </nav>
+        <div class="zm-tools">
+          <span class="zm-status" id="connection">正在连接</span>
+          <button class="btn btn-text" id="open-history" type="button">足迹</button>
+        </div>
+      </div>
+    </header>
+
+    <main>
+      <svg class="rose-window" viewBox="0 0 900 900" aria-hidden="true">
+        <circle cx="450" cy="450" r="440" />
+        <circle cx="450" cy="450" r="400" />
+        <circle cx="450" cy="450" r="300" />
+        <circle cx="450" cy="450" r="120" />
+        <circle cx="450" cy="100" r="50" />
+        <circle cx="625" cy="146.9" r="50" />
+        <circle cx="753.1" cy="275" r="50" />
+        <circle cx="800" cy="450" r="50" />
+        <circle cx="753.1" cy="625" r="50" />
+        <circle cx="625" cy="753.1" r="50" />
+        <circle cx="450" cy="800" r="50" />
+        <circle cx="275" cy="753.1" r="50" />
+        <circle cx="146.9" cy="625" r="50" />
+        <circle cx="100" cy="450" r="50" />
+        <circle cx="146.9" cy="275" r="50" />
+        <circle cx="275" cy="146.9" r="50" />
+        <path
+          d="M450 150 L450 330 M600 190 L510 346 M710 300 L554 390 M750 450 L570 450 M710 600 L554 510 M600 710 L510 554 M450 750 L450 570 M300 710 L390 554 M190 600 L346 510 M150 450 L330 450 M190 300 L346 390 M300 190 L390 346"
+        />
+      </svg>
+
+      <div class="wrap tarot-wrap">
+        <section class="tarot-hero" aria-labelledby="tarot-title">
+          <span class="tarot-kicker">TAROT · A MOMENT WITHIN</span>
+          <h1 id="tarot-title">借一张牌，照见此刻</h1>
+          <svg class="ornament" viewBox="0 0 260 22" aria-hidden="true">
+            <path class="orn-line" d="M0 11 L100 11 M160 11 L260 11" />
+            <path
+              class="orn-fill"
+              d="M106 11 L111 6 L116 11 L111 16 Z M144 11 L149 6 L154 11 L149 16 Z M136 11 A8 8 0 1 1 128 3 A6 6 0 1 0 136 11 Z"
+            />
+          </svg>
+          <p>塔罗不需要出生资料。静下心，问一个具体的问题；牌面是思考的起点，选择始终在你。</p>
+        </section>
+
+        <div class="spreads" id="spreads" role="group" aria-label="牌阵">
+          <button class="spread" type="button" data-spread="single" data-lock aria-pressed="false">
+            <b>单张</b><small>当下提示</small>
+          </button>
+          <button class="spread" type="button" data-spread="three_card" data-lock aria-pressed="true">
+            <b>三张</b><small>过去 · 现在 · 未来</small>
+          </button>
+          <button class="spread" type="button" data-spread="decision" data-lock aria-pressed="false">
+            <b>二选一</b><small>现状 · 选 A · 选 B</small>
+          </button>
+        </div>
+
+        <form class="tarot-question" id="chat-form">
+          <label class="question-label" for="message">your question · 所问</label>
+          <input
+            id="message"
+            type="text"
+            maxlength="4000"
+            required
+            autocomplete="off"
+            placeholder="此刻，你最想问的是什么？"
+          />
+          <span class="hint" id="input-hint">Enter 发送 · 塔罗不需要出生资料</span>
+          <div class="btn-row tarot-actions">
+            <button class="btn btn-primary" id="send" type="submit">抽牌解读</button>
+            <button class="btn btn-ghost" id="new-question" type="button" data-lock>
+              重新起问
+            </button>
+          </div>
+          <p class="spread-hint" id="spread-hint"></p>
+        </form>
+
+        <section class="tarot-spread" id="tarot-spread" aria-label="牌阵"></section>
+
+        <div class="tarot-lower">
+          <section class="reading" id="reading" aria-labelledby="reading-title">
+            <div class="reading-head">
+              <h3 id="reading-title">牌意</h3>
+              <button class="btn btn-text" id="copy-reading" type="button" hidden>复制</button>
+            </div>
+            <div class="reading-content" id="reading-content">
+              <p class="reading-empty">翻牌之后，每张牌在其位置上的意思会整理在这里。</p>
+            </div>
+          </section>
+          <section class="consult" aria-labelledby="consult-title">
+            <h2 class="panel-title" id="consult-title">问答记录</h2>
+            <div class="messages" id="messages" role="log" aria-live="polite"></div>
+          </section>
+        </div>
+      </div>
+    </main>
+
+    <footer class="zm-footer">
+      <div class="wrap zm-bar">
+        <p>追问沿用原牌面 · 牌面是象征性的反思线索，不代表事件必然发生</p>
+        <div class="zm-controls">
+          <label class="zm-mode"
+            >体验模式<select id="provider">
+              <option value="configured">真实模型</option>
+              <option value="demo">离线演示</option>
+            </select></label
+          >
+          <button class="btn btn-text" id="new-chat" type="button">开启新对话</button>
+          <button class="btn btn-text" id="forget" type="button">清除我的记录</button>
+        </div>
+      </div>
+    </footer>
+
+    <template id="welcome">
+      <div class="welcome">
+        <h3>先安静一刻，听听你真正想问什么。</h3>
+        <p>选择牌阵，写下问题。追问会沿用这组牌；想换一组牌，请点「重新起问」。</p>
+        <div class="btn-row">
+          <button class="btn btn-tag" type="button" data-question="关于今天的状态，塔罗能给我什么自我反思的提示？">
+            今日的提醒
+          </button>
+          <button
+            class="btn btn-tag"
+            type="button"
+            data-question="我最近在工作中感到停滞，想梳理现状、阻碍和可以尝试的下一步。"
+          >
+            当下的阻碍
+          </button>
+          <button
+            class="btn btn-tag"
+            type="button"
+            data-question="我正在两个选择之间犹豫，请先帮我明确两个选项和各自需要核实的条件。"
+          >
+            两个方向之间
+          </button>
+        </div>
+      </div>
+    </template>
+  </body>
+</html>
