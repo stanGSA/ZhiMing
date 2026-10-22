@@ -1,0 +1,48 @@
+{
+  "batch": "b006",
+  "reviewer": "reviewer_b",
+  "run_pass": 1,
+  "attempt": 1,
+  "vendor": "openai",
+  "requested_model": "gpt-6.1-sol",
+  "returned_model": "gpt-6.1-sol",
+  "api": "openai",
+  "started_at": "2026-10-22T10:23:58+00:00",
+  "finished_at": "2026-10-22T10:24:30+00:00",
+  "latency_s": 31.453,
+  "http_attempts": 1,
+  "finish_reason": "stop",
+  "prompt_sha256": "dc2da0064b1f03c5806119864038d2b3cef3ad7f6d952dec76177c2d93ef2a8b",
+  "input_tokens": 3208,
+  "output_tokens": 403,
+  "cached_input_tokens": null,
+  "usage_available": true,
+  "raw_text": "{\n  \"items\": [\n    {\n      \"item\": \"i01\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"丑藏己、癸、辛及其五行对应准确，同义词与条目一致，四个主题均为0且与规则说明相容，无确定性预测。\"\n    },\n    {\n      \"item\": \"i02\",\n      \"verdict\": \"revise\",\n      \"issues\": [\n        {\n          \"dimension\": \"tradition\",\n          \"detail\": \"text中“申的藏干为庚、壬、甲”有成员错误，应为庚、壬、戊；正文也因此与keywords中的“戊”不一致。\"\n        }\n      ],\n      \"reason\": \"申藏干中的“甲”应改为“戊”，属于可修正的成员事实错误；同义词和全零主题方向无问题。\"\n    },\n    {\n      \"item\": \"i03\",\n      \"verdict\": \"revise\",\n      \"issues\": [\n        {\n          \"dimension\": \"tradition\",\n          \"detail\": \"text仅说明藏干“按固定表列出”，未写明未的藏干为己、丁、乙，缺少该对象区别于其他地支的核心信息；keywords列出成员不能替代面向用户的正文释义。\"\n        }\n      ],\n      \"reason\": \"正文缺少未藏己、丁、乙的对象专属信息，应补明；同义词、关键词中的成员及全零主题方向均无问题。\"\n    }\n  ]\n}",
+  "verdicts": {
+    "i01": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "丑藏己、癸、辛及其五行对应准确，同义词与条目一致，四个主题均为0且与规则说明相容，无确定性预测。"
+    },
+    "i02": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "tradition",
+          "detail": "text中“申的藏干为庚、壬、甲”有成员错误，应为庚、壬、戊；正文也因此与keywords中的“戊”不一致。"
+        }
+      ],
+      "reason": "申藏干中的“甲”应改为“戊”，属于可修正的成员事实错误；同义词和全零主题方向无问题。"
+    },
+    "i03": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "tradition",
+          "detail": "text仅说明藏干“按固定表列出”，未写明未的藏干为己、丁、乙，缺少该对象区别于其他地支的核心信息；keywords列出成员不能替代面向用户的正文释义。"
+        }
+      ],
+      "reason": "正文缺少未藏己、丁、乙的对象专属信息，应补明；同义词、关键词中的成员及全零主题方向均无问题。"
+    }
+  }
+}

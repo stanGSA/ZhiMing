@@ -1,0 +1,38 @@
+{
+  "batch": "b001",
+  "reviewer": "reviewer_b",
+  "run_pass": 1,
+  "attempt": 1,
+  "vendor": "openai",
+  "requested_model": "gpt-6.1-sol",
+  "returned_model": "gpt-6.1-sol",
+  "api": "openai",
+  "started_at": "2026-10-22T10:23:45+00:00",
+  "finished_at": "2026-10-22T10:23:53+00:00",
+  "latency_s": 7.745,
+  "http_attempts": 1,
+  "finish_reason": "stop",
+  "prompt_sha256": "3b5be1b4cdfc60fce3155543144fc6c9aefe02e74a19838dc83dd2eb3039f8c7",
+  "input_tokens": 3055,
+  "output_tokens": 237,
+  "cached_input_tokens": 3052,
+  "usage_available": true,
+  "raw_text": "{\n  \"items\": [\n    {\n      \"item\": \"i01\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"戌属土、藏干戊辛丁及其五行对应均正确，同义词“戌土”准确，四个主题均为中性，统计口径与旺衰、喜用神的说明无误。\"\n    },\n    {\n      \"item\": \"i02\",\n      \"verdict\": \"revise\",\n      \"issues\": [\n        {\n          \"dimension\": \"tradition\",\n          \"detail\": \"text 首句“在传统干支体系中属金”有误：丑应属土，也与后文“丑计入土”矛盾；应将“属金”改为“属土”。\"\n        }\n      ],\n      \"reason\": \"丑的五行属性写错，属于可修正的单项事实错误；藏干及其五行对应正确，四个主题的中性标注与正文相容。\"\n    }\n  ]\n}",
+  "verdicts": {
+    "i01": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "戌属土、藏干戊辛丁及其五行对应均正确，同义词“戌土”准确，四个主题均为中性，统计口径与旺衰、喜用神的说明无误。"
+    },
+    "i02": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "tradition",
+          "detail": "text 首句“在传统干支体系中属金”有误：丑应属土，也与后文“丑计入土”矛盾；应将“属金”改为“属土”。"
+        }
+      ],
+      "reason": "丑的五行属性写错，属于可修正的单项事实错误；藏干及其五行对应正确，四个主题的中性标注与正文相容。"
+    }
+  }
+}

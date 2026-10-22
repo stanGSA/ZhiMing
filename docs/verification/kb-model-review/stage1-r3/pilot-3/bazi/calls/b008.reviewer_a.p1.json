@@ -1,0 +1,53 @@
+{
+  "batch": "b008",
+  "reviewer": "reviewer_a",
+  "run_pass": 1,
+  "attempt": 1,
+  "vendor": "deepseek",
+  "requested_model": "deepseek-v4-pro",
+  "returned_model": "deepseek-v4-pro",
+  "api": "openai",
+  "started_at": "2026-10-22T10:23:17+00:00",
+  "finished_at": "2026-10-22T10:23:51+00:00",
+  "latency_s": 33.565,
+  "http_attempts": 1,
+  "finish_reason": "stop",
+  "prompt_sha256": "e68ca2ebca7e8a71ed1d12420bd4c311c0cea0ad64eceef4ac01d4798a35a1f4",
+  "input_tokens": 3332,
+  "output_tokens": 2853,
+  "cached_input_tokens": 2048,
+  "usage_available": true,
+  "raw_text": "{\"items\": [{\"item\": \"i01\", \"verdict\": \"pass\", \"issues\": [], \"reason\": \"相刑成员与自刑成员符合参考事实，自我/事业负向反思有文字支撑，方向一致且无宿命或预测问题。\"}, {\"item\": \"i02\", \"verdict\": \"revise\", \"issues\": [{\"dimension\": \"tradition\", \"detail\": \"正文将亥子丑三会写为“会木”，参考事实应为亥子丑对应冬季、会水。\"}], \"reason\": \"三会中亥子丑的五行写成木，属于可修正的事实错误。\"}, {\"item\": \"i03\", \"verdict\": \"revise\", \"issues\": [{\"dimension\": \"tradition\", \"detail\": \"正文未写出地支六合的具体成员（子丑、寅亥、卯戌、辰酉、巳申、午未），只有通用免责说明，缺少该术语区别于其他关系的核心信息。\"}], \"reason\": \"地支六合条目未列出六组成员，只有泛化提醒，不满足对象专属信息要求。\"}, {\"item\": \"i04\", \"verdict\": \"pass\", \"issues\": [], \"reason\": \"地支六冲成员符合参考事实，文字为中性象征说明，theme_map 全0与文字相容，无预测或宿命问题。\"}]}",
+  "verdicts": {
+    "i01": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "相刑成员与自刑成员符合参考事实，自我/事业负向反思有文字支撑，方向一致且无宿命或预测问题。"
+    },
+    "i02": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "tradition",
+          "detail": "正文将亥子丑三会写为“会木”，参考事实应为亥子丑对应冬季、会水。"
+        }
+      ],
+      "reason": "三会中亥子丑的五行写成木，属于可修正的事实错误。"
+    },
+    "i03": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "tradition",
+          "detail": "正文未写出地支六合的具体成员（子丑、寅亥、卯戌、辰酉、巳申、午未），只有通用免责说明，缺少该术语区别于其他关系的核心信息。"
+        }
+      ],
+      "reason": "地支六合条目未列出六组成员，只有泛化提醒，不满足对象专属信息要求。"
+    },
+    "i04": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "地支六冲成员符合参考事实，文字为中性象征说明，theme_map 全0与文字相容，无预测或宿命问题。"
+    }
+  }
+}

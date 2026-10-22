@@ -1,0 +1,38 @@
+{
+  "batch": "b002",
+  "reviewer": "reviewer_b",
+  "run_pass": 1,
+  "attempt": 1,
+  "vendor": "openai",
+  "requested_model": "gpt-6.1-sol",
+  "returned_model": "gpt-6.1-sol",
+  "api": "openai",
+  "started_at": "2026-10-22T10:26:53+00:00",
+  "finished_at": "2026-10-22T10:27:01+00:00",
+  "latency_s": 8.196,
+  "http_attempts": 1,
+  "finish_reason": "stop",
+  "prompt_sha256": "7da2a08e3823b1276229814266664cdf8da17f3cf5e8063f24759a518d2ff7da",
+  "input_tokens": 2427,
+  "output_tokens": 290,
+  "cached_input_tokens": 2424,
+  "usage_available": true,
+  "raw_text": "{\n  \"items\": [\n    {\n      \"item\": \"i01\",\n      \"verdict\": \"revise\",\n      \"issues\": [\n        {\n          \"dimension\": \"certainty\",\n          \"detail\": \"text 中“用这个数理的人，中年以后会财运亨通”直接预测个人未来财运，应删除或改为不涉及现实结果预测的象征说明。\"\n        }\n      ],\n      \"reason\": \"水的象征说明可保留，但末句将数理与个人中年后的财运直接关联，构成现实事件预测。\"\n    },\n    {\n      \"item\": \"i02\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"土的稳定、承载与务实象征符合传统，格数尾数与字义五行的区分准确，四个主题均标0与正文相容，且无预测性断言。\"\n    }\n  ]\n}",
+  "verdicts": {
+    "i01": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "certainty",
+          "detail": "text 中“用这个数理的人，中年以后会财运亨通”直接预测个人未来财运，应删除或改为不涉及现实结果预测的象征说明。"
+        }
+      ],
+      "reason": "水的象征说明可保留，但末句将数理与个人中年后的财运直接关联，构成现实事件预测。"
+    },
+    "i02": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "土的稳定、承载与务实象征符合传统，格数尾数与字义五行的区分准确，四个主题均标0与正文相容，且无预测性断言。"
+    }
+  }
+}

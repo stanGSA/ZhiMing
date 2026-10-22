@@ -1,0 +1,53 @@
+{
+  "batch": "b008",
+  "reviewer": "reviewer_b",
+  "run_pass": 1,
+  "attempt": 1,
+  "vendor": "openai",
+  "requested_model": "gpt-6.1-sol",
+  "returned_model": "gpt-6.1-sol",
+  "api": "openai",
+  "started_at": "2026-10-22T10:24:18+00:00",
+  "finished_at": "2026-10-22T10:24:29+00:00",
+  "latency_s": 11.768,
+  "http_attempts": 1,
+  "finish_reason": "stop",
+  "prompt_sha256": "e68ca2ebca7e8a71ed1d12420bd4c311c0cea0ad64eceef4ac01d4798a35a1f4",
+  "input_tokens": 3859,
+  "output_tokens": 494,
+  "cached_input_tokens": null,
+  "usage_available": true,
+  "raw_text": "{\n  \"items\": [\n    {\n      \"item\": \"i01\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"相刑与自刑成员符合参考事实，同义词准确，自我苛责和工作推进阻力分别支持自我、事业负向，其余主题为零与正文相容，且未作现实预测。\"\n    },\n    {\n      \"item\": \"i02\",\n      \"verdict\": \"revise\",\n      \"issues\": [\n        {\n          \"dimension\": \"tradition\",\n          \"detail\": \"text 中“亥子丑对应冬季，会木”的五行写错，应为“会水”。\"\n        }\n      ],\n      \"reason\": \"三会的其他组合、同义词及零方向设置相容，但亥子丑的对应五行须由木改为水。\"\n    },\n    {\n      \"item\": \"i03\",\n      \"verdict\": \"revise\",\n      \"issues\": [\n        {\n          \"dimension\": \"tradition\",\n          \"detail\": \"text 仅说明其属于传统关系并作免责声明，未解释六合是地支两两相合，也未列出子丑、寅亥、卯戌、辰酉、巳申、午未六组对象专属信息；keywords 中的索引不能代替面向用户的正文释义。\"\n        }\n      ],\n      \"reason\": \"同义词、关键词中的配对及零方向设置无误，但正文缺少区别于其他干支关系的核心定义与成员信息。\"\n    },\n    {\n      \"item\": \"i04\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"六组相冲成员和同义词均准确，正文说明了相冲的专属象征且未作现实预测，四个主题均为零与其非一概不利的反思表述相容。\"\n    }\n  ]\n}",
+  "verdicts": {
+    "i01": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "相刑与自刑成员符合参考事实，同义词准确，自我苛责和工作推进阻力分别支持自我、事业负向，其余主题为零与正文相容，且未作现实预测。"
+    },
+    "i02": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "tradition",
+          "detail": "text 中“亥子丑对应冬季，会木”的五行写错，应为“会水”。"
+        }
+      ],
+      "reason": "三会的其他组合、同义词及零方向设置相容，但亥子丑的对应五行须由木改为水。"
+    },
+    "i03": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "tradition",
+          "detail": "text 仅说明其属于传统关系并作免责声明，未解释六合是地支两两相合，也未列出子丑、寅亥、卯戌、辰酉、巳申、午未六组对象专属信息；keywords 中的索引不能代替面向用户的正文释义。"
+        }
+      ],
+      "reason": "同义词、关键词中的配对及零方向设置无误，但正文缺少区别于其他干支关系的核心定义与成员信息。"
+    },
+    "i04": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "六组相冲成员和同义词均准确，正文说明了相冲的专属象征且未作现实预测，四个主题均为零与其非一概不利的反思表述相容。"
+    }
+  }
+}

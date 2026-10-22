@@ -1,0 +1,53 @@
+{
+  "batch": "b008",
+  "reviewer": "reviewer_a",
+  "run_pass": 2,
+  "attempt": 1,
+  "vendor": "deepseek",
+  "requested_model": "deepseek-v4-pro",
+  "returned_model": "deepseek-v4-pro",
+  "api": "openai",
+  "started_at": "2026-10-22T10:24:53+00:00",
+  "finished_at": "2026-10-22T10:25:32+00:00",
+  "latency_s": 38.641,
+  "http_attempts": 1,
+  "finish_reason": "stop",
+  "prompt_sha256": "e68ca2ebca7e8a71ed1d12420bd4c311c0cea0ad64eceef4ac01d4798a35a1f4",
+  "input_tokens": 3332,
+  "output_tokens": 3115,
+  "cached_input_tokens": 3328,
+  "usage_available": true,
+  "raw_text": "{\"items\": [{\"item\": \"i01\", \"verdict\": \"pass\", \"issues\": [], \"reason\": \"相刑成员和自刑成员符合参考事实，self/career 负向与文中的自我苛责、工作摩擦表述一致。\"}, {\"item\": \"i02\", \"verdict\": \"revise\", \"issues\": [{\"dimension\": \"tradition\", \"detail\": \"三会中“亥子丑对应冬季，会木”写错，应为会水；寅卯辰才是会木。\"}], \"reason\": \"地支三会冬季组合的五行属性写错，需修正为亥子丑会水。\"}, {\"item\": \"i03\", \"verdict\": \"revise\", \"issues\": [{\"dimension\": \"tradition\", \"detail\": \"正文只写通用说明，未列出地支六合的具体组合成员（子丑、寅亥、卯戌、辰酉、巳申、午未），缺少对象专属核心信息。\"}], \"reason\": \"术语类条目缺少地支六合的具体成员，换成同类关系说明也成立。\"}, {\"item\": \"i04\", \"verdict\": \"pass\", \"issues\": [], \"reason\": \"六冲成员正确，文字为中性反思提示，theme_map 为 0 与内容相容。\"}]}",
+  "verdicts": {
+    "i01": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "相刑成员和自刑成员符合参考事实，self/career 负向与文中的自我苛责、工作摩擦表述一致。"
+    },
+    "i02": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "tradition",
+          "detail": "三会中“亥子丑对应冬季，会木”写错，应为会水；寅卯辰才是会木。"
+        }
+      ],
+      "reason": "地支三会冬季组合的五行属性写错，需修正为亥子丑会水。"
+    },
+    "i03": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "tradition",
+          "detail": "正文只写通用说明，未列出地支六合的具体组合成员（子丑、寅亥、卯戌、辰酉、巳申、午未），缺少对象专属核心信息。"
+        }
+      ],
+      "reason": "术语类条目缺少地支六合的具体成员，换成同类关系说明也成立。"
+    },
+    "i04": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "六冲成员正确，文字为中性反思提示，theme_map 为 0 与内容相容。"
+    }
+  }
+}

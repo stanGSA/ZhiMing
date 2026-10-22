@@ -1,0 +1,47 @@
+{
+  "batch": "b002",
+  "reviewer": "reviewer_a",
+  "run_pass": 2,
+  "attempt": 1,
+  "vendor": "deepseek",
+  "requested_model": "deepseek-v4-pro",
+  "returned_model": "deepseek-v4-pro",
+  "api": "openai",
+  "started_at": "2026-10-22T10:27:11+00:00",
+  "finished_at": "2026-10-22T10:28:28+00:00",
+  "latency_s": 77.441,
+  "http_attempts": 1,
+  "finish_reason": "stop",
+  "prompt_sha256": "7da2a08e3823b1276229814266664cdf8da17f3cf5e8063f24759a518d2ff7da",
+  "input_tokens": 2187,
+  "output_tokens": 5666,
+  "cached_input_tokens": 2176,
+  "usage_available": true,
+  "raw_text": "{\"items\": [{\"item\": \"i01\", \"verdict\": \"revise\", \"issues\": [{\"dimension\": \"certainty\", \"detail\": \"正文“用这个数理的人，中年以后会财运亨通”是确定性现实预测，将五行象征写成个人财务结果。\"}, {\"dimension\": \"consistency\", \"detail\": \"三才五行“水”未写出本体系核心信息（对应格数尾数9、0），只有通用说明，换成其他五行也可套用。\"}], \"reason\": \"正文含命运化财务断言，且缺少水在三才中的尾数核心信息。\"}, {\"item\": \"i02\", \"verdict\": \"revise\", \"issues\": [{\"dimension\": \"consistency\", \"detail\": \"三才五行“土”未写出本体系核心信息（对应格数尾数5、6），只有象征与通用来源说明，不足以区别于其他五行。\"}], \"reason\": \"缺少土在三才中的尾数配属核心信息。\"}]}",
+  "verdicts": {
+    "i01": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "certainty",
+          "detail": "正文“用这个数理的人，中年以后会财运亨通”是确定性现实预测，将五行象征写成个人财务结果。"
+        },
+        {
+          "dimension": "consistency",
+          "detail": "三才五行“水”未写出本体系核心信息（对应格数尾数9、0），只有通用说明，换成其他五行也可套用。"
+        }
+      ],
+      "reason": "正文含命运化财务断言，且缺少水在三才中的尾数核心信息。"
+    },
+    "i02": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "consistency",
+          "detail": "三才五行“土”未写出本体系核心信息（对应格数尾数5、6），只有象征与通用来源说明，不足以区别于其他五行。"
+        }
+      ],
+      "reason": "缺少土在三才中的尾数配属核心信息。"
+    }
+  }
+}

@@ -1,0 +1,78 @@
+{
+  "batch": "b005",
+  "reviewer": "reviewer_a",
+  "run_pass": 1,
+  "attempt": 1,
+  "vendor": "deepseek",
+  "requested_model": "deepseek-v4-pro",
+  "returned_model": "deepseek-v4-pro",
+  "api": "openai",
+  "started_at": "2026-10-22T10:26:15+00:00",
+  "finished_at": "2026-10-22T10:26:50+00:00",
+  "latency_s": 34.752,
+  "http_attempts": 1,
+  "finish_reason": "stop",
+  "prompt_sha256": "f8cec64cddbc14bb1bb450fc664f2cb12eb9b585b68e5e9aa98a374a3bf37c32",
+  "input_tokens": 3405,
+  "output_tokens": 2771,
+  "cached_input_tokens": 1792,
+  "usage_available": true,
+  "raw_text": "{\"items\": [\n  {\"item\": \"i01\", \"verdict\": \"revise\", \"issues\": [{\"dimension\": \"tradition\", \"detail\": \"“尾数1在三才里对应土”写错，按项目采用的三才五行尾数规则，1、2对应木，尾数1应为木。\"}], \"reason\": \"尾数1的五行归属错误，应改为木。\"},\n  {\"item\": \"i02\", \"verdict\": \"pass\", \"issues\": [], \"reason\": \"28数凶、尾数8配金及负向提醒均符合参考事实与文字。\"},\n  {\"item\": \"i03\", \"verdict\": \"revise\", \"issues\": [{\"dimension\": \"tradition\", \"detail\": \"“尾数6在三才里对应水”写错，按项目采用的三才五行尾数规则，5、6对应土，尾数6应为土。\"}], \"reason\": \"尾数6的五行归属错误，应改为土。\"},\n  {\"item\": \"i04\", \"verdict\": \"revise\", \"issues\": [{\"dimension\": \"tradition\", \"detail\": \"“55数……常被归为‘凶’”与参考事实不符，项目采用的归类中55为半吉。\"}], \"reason\": \"55数归类写错，应为半吉而非凶。\"},\n  {\"item\": \"i05\", \"verdict\": \"revise\", \"issues\": [{\"dimension\": \"tradition\", \"detail\": \"“48数……常被归为‘凶’”与参考事实不符，项目采用的归类中48为吉。\"}], \"reason\": \"48数归类写错，应为吉而非凶。\"},\n  {\"item\": \"i06\", \"verdict\": \"pass\", \"issues\": [], \"reason\": \"75数半吉、尾数5配土及小幅正向方向均符合参考事实与文字。\"},\n  {\"item\": \"i07\", \"verdict\": \"pass\", \"issues\": [], \"reason\": \"39数吉、尾数9配水及正向方向均符合参考事实与文字。\"}\n]}",
+  "verdicts": {
+    "i01": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "tradition",
+          "detail": "“尾数1在三才里对应土”写错，按项目采用的三才五行尾数规则，1、2对应木，尾数1应为木。"
+        }
+      ],
+      "reason": "尾数1的五行归属错误，应改为木。"
+    },
+    "i02": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "28数凶、尾数8配金及负向提醒均符合参考事实与文字。"
+    },
+    "i03": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "tradition",
+          "detail": "“尾数6在三才里对应水”写错，按项目采用的三才五行尾数规则，5、6对应土，尾数6应为土。"
+        }
+      ],
+      "reason": "尾数6的五行归属错误，应改为土。"
+    },
+    "i04": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "tradition",
+          "detail": "“55数……常被归为‘凶’”与参考事实不符，项目采用的归类中55为半吉。"
+        }
+      ],
+      "reason": "55数归类写错，应为半吉而非凶。"
+    },
+    "i05": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "tradition",
+          "detail": "“48数……常被归为‘凶’”与参考事实不符，项目采用的归类中48为吉。"
+        }
+      ],
+      "reason": "48数归类写错，应为吉而非凶。"
+    },
+    "i06": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "75数半吉、尾数5配土及小幅正向方向均符合参考事实与文字。"
+    },
+    "i07": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "39数吉、尾数9配水及正向方向均符合参考事实与文字。"
+    }
+  }
+}

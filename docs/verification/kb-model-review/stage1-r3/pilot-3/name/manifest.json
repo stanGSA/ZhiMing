@@ -1,0 +1,51 @@
+{
+  "schema": 1,
+  "kind": "pilot",
+  "system": "name",
+  "seed": 3,
+  "batch_size": 10,
+  "passes": 2,
+  "rubric_version": 5,
+  "rubric_sha256": "482b14b1296449261d1ab1a3b86aee2a4ad834698d9dd8a41869200d3c9df933",
+  "script_sha256": "b2b6fd1e29eb6842fa42d46cf1ea236fa170b354fd005c6f6294815440428261",
+  "reviewers": {
+    "reviewer_a": {
+      "vendor": "deepseek",
+      "api": "openai",
+      "model": "deepseek-v4-pro",
+      "api_key_env": "DEEPSEEK_API_KEY",
+      "temperature": null,
+      "max_tokens": 16384,
+      "thinking": "enabled",
+      "reasoning_effort": "high",
+      "base_url_host": "api.deepseek.com"
+    },
+    "reviewer_b": {
+      "vendor": "openai",
+      "api": "openai",
+      "model": "gpt-6.1-sol",
+      "api_key_env": "OPENAI_REVIEW_API_KEY",
+      "temperature": null,
+      "max_tokens": 4096,
+      "base_url_host": "codegoai.com"
+    }
+  },
+  "calibration": {
+    "lock_sha256": "687ad2f988b087e4322a3742c4e698cc62b3d3e2a302f986c7e1d2f7df2d3836",
+    "items": 20,
+    "partition": "dev"
+  },
+  "batch_count": 5,
+  "prompt_sha256": {
+    "b001": "88917b6ea6159ae2e4aa014666df29c16ba5f644026b651ae7e71d539d3faf94",
+    "b002": "7da2a08e3823b1276229814266664cdf8da17f3cf5e8063f24759a518d2ff7da",
+    "b003": "b8f9c1c7fa443116fb7ed1ecd35fa18cb0a628c9ca4b1d804248cde553f08878",
+    "b004": "e5c1840ae40c747039800e32aaa5ed7f7bedb61b812572c7c4eed97df7d90a3e",
+    "b005": "f8cec64cddbc14bb1bb450fc664f2cb12eb9b585b68e5e9aa98a374a3bf37c32"
+  },
+  "created_at": "2026-10-22T10:26:02+00:00",
+  "git": {
+    "head": "ea0955ae8f93bc4239612730f260c7e752304344",
+    "dirty": true
+  }
+}

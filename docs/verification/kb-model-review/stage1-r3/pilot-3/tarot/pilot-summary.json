@@ -1,0 +1,161 @@
+{
+  "system": "tarot",
+  "rubric_sha256": "482b14b1296449261d1ab1a3b86aee2a4ad834698d9dd8a41869200d3c9df933",
+  "agreement": {
+    "items": 20,
+    "reviewed": 20,
+    "labels": {
+      "pass": 10,
+      "fail": 10
+    },
+    "kappa": 0.8,
+    "observed_agreement": 0.9,
+    "pairs": {
+      "pass/pass": 10,
+      "pass/reject": 2,
+      "reject/reject": 8
+    },
+    "label_agreement": {
+      "reviewer_a": {
+        "accuracy": 0.9,
+        "sensitivity": 0.8,
+        "specificity": 1.0
+      },
+      "reviewer_b": {
+        "accuracy": 1.0,
+        "sensitivity": 1.0,
+        "specificity": 1.0
+      }
+    }
+  },
+  "rerun": {
+    "reviewer_a": 1.0,
+    "reviewer_b": 1.0
+  },
+  "gates": {
+    "complete": true,
+    "kappa": true,
+    "rerun": true,
+    "label_agreement": true
+  },
+  "met": true,
+  "thresholds": {
+    "kappa": 0.6,
+    "rerun": 0.9,
+    "label_agreement": 0.85
+  },
+  "disputed": [
+    {
+      "id": "cal-tarot-d03",
+      "label": "fail",
+      "verdicts": {
+        "reviewer_a.p1": "pass",
+        "reviewer_a.p2": "pass",
+        "reviewer_b.p1": "revise",
+        "reviewer_b.p2": "revise"
+      },
+      "reasons": {
+        "reviewer_a.p1": "权杖骑士逆位涉及行动力与检查速度风险，career/self 负向可由风险提醒支持，无预测或确定性结论。",
+        "reviewer_a.p2": "逆位权杖骑士的风险提醒与负向主题一致。",
+        "reviewer_b.p1": "别名正确，但正文未区分正逆位，其偏顺核心也不支持事业和自我均为负向。",
+        "reviewer_b.p2": "同义词准确，但正逆位释义未区分，且两个负向主题与正文积极行动的核心倾向不符。"
+      },
+      "issues": {
+        "reviewer_b.p1": [
+          {
+            "dimension": "theme_direction",
+            "detail": "theme_map.career、self 均为负，但正文核心“行动力可以推动变化”偏顺；“需要检查速度与风险”只是提醒，不能据此改读为两个主题均偏阻。"
+          },
+          {
+            "dimension": "consistency",
+            "detail": "text 与 counterpart 中权杖骑士正位的释义完全相同，未表达逆位常见的冲动、失控、行动受阻等区别。"
+          }
+        ],
+        "reviewer_b.p2": [
+          {
+            "dimension": "consistency",
+            "detail": "text 与 counterpart 中权杖骑士正位释义完全相同，未体现逆位的冲动、行动受阻或其他逆位侧重。"
+          },
+          {
+            "dimension": "theme_direction",
+            "detail": "theme_map.career 与 self 均为负，但“行动力可以推动变化”偏顺；“需要检查速度与风险”只是核实风险的建议，不足以将核心含义改读为事业和自我受阻。"
+          }
+        ]
+      }
+    },
+    {
+      "id": "cal-tarot-d18",
+      "label": "fail",
+      "verdicts": {
+        "reviewer_a.p1": "pass",
+        "reviewer_a.p2": "pass",
+        "reviewer_b.p1": "revise",
+        "reviewer_b.p2": "revise"
+      },
+      "reasons": {
+        "reviewer_a.p1": "宝剑十逆位强调触底后恢复与处理基本需求，self/career 正向与文字相符，表达为象征性反思。",
+        "reviewer_a.p2": "逆位宝剑十的恢复含义与正向主题一致。",
+        "reviewer_b.p1": "别名正确，但逆位正文与正位重复，且两个正向主题缺少相应的偏顺描述。",
+        "reviewer_b.p2": "同义词准确，但逆位释义与正位重复，且自我、事业正向缺乏正文支持。"
+      },
+      "issues": {
+        "reviewer_b.p1": [
+          {
+            "dimension": "theme_direction",
+            "detail": "theme_map.self、career 均为正，但正文核心是困难达到承受边界；“先恢复并处理基本需求”只是建议，未表达恢复已经开始或困境有所缓解，不足以支持偏顺方向。"
+          },
+          {
+            "dimension": "consistency",
+            "detail": "text 与 counterpart 中宝剑十正位的释义完全相同，未体现逆位相对于正位的恢复、减弱、受阻或内化等区别。"
+          }
+        ],
+        "reviewer_b.p2": [
+          {
+            "dimension": "consistency",
+            "detail": "text 与 counterpart 中宝剑十正位释义完全相同，未体现逆位相对于正位的减弱、恢复、内化或其他区别。"
+          },
+          {
+            "dimension": "theme_direction",
+            "detail": "theme_map.self 与 career 均为正，但正文核心是“困难阶段”“承受边界”；“先恢复并处理基本需求”只是建议，未表达已经恢复或困境松动，不能支持两个主题偏顺。"
+          }
+        ]
+      }
+    }
+  ],
+  "usage": {
+    "reviewer_a": {
+      "calls": 6,
+      "input_tokens": 18466,
+      "output_tokens": 32277,
+      "latency_s": 451.504,
+      "returned_models": [
+        "deepseek-v4-pro"
+      ],
+      "errors": {},
+      "retried_calls": 0,
+      "http_retries": 0,
+      "cost": null,
+      "known_cost_estimate": null,
+      "usage_complete": true,
+      "cost_basis": "配置单价估算，非账单；服务失败的用量可能未知",
+      "currency": null
+    },
+    "reviewer_b": {
+      "calls": 6,
+      "input_tokens": 20406,
+      "output_tokens": 4564,
+      "latency_s": 182.93,
+      "returned_models": [
+        "gpt-6.1-sol"
+      ],
+      "errors": {},
+      "retried_calls": 0,
+      "http_retries": 0,
+      "cost": null,
+      "known_cost_estimate": null,
+      "usage_complete": true,
+      "cost_basis": "配置单价估算，非账单；服务失败的用量可能未知",
+      "currency": null
+    }
+  }
+}

@@ -1,0 +1,43 @@
+{
+  "batch": "b005",
+  "reviewer": "reviewer_a",
+  "run_pass": 2,
+  "attempt": 1,
+  "vendor": "deepseek",
+  "requested_model": "deepseek-v4-pro",
+  "returned_model": "deepseek-v4-pro",
+  "api": "openai",
+  "started_at": "2026-10-22T10:24:38+00:00",
+  "finished_at": "2026-10-22T10:25:19+00:00",
+  "latency_s": 40.723,
+  "http_attempts": 1,
+  "finish_reason": "stop",
+  "prompt_sha256": "116f26a88e73b86d7e9aa4e2b2eb95c32b4a9d0c3b149b0c22ddd4ce26730a03",
+  "input_tokens": 2960,
+  "output_tokens": 3418,
+  "cached_input_tokens": 2944,
+  "usage_available": true,
+  "raw_text": "{\n  \"items\": [\n    {\n      \"item\": \"i01\",\n      \"verdict\": \"revise\",\n      \"issues\": [\n        {\n          \"dimension\": \"theme_direction\",\n          \"detail\": \"theme_map 中 finance 为 -0.15（偏阻），但正文称“财务方面倾向通过技能与产出带来收入”，表达的是偏顺，方向不一致。\"\n        }\n      ],\n      \"reason\": \"财务主题方向与文字倾向不一致。\"\n    },\n    {\n      \"item\": \"i02\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"十神定义正确，主题方向与文字一致，没有确定性预测。\"\n    },\n    {\n      \"item\": \"i03\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"十神定义正确，主题方向与文字一致，免责声明恰当。\"\n    }\n  ]\n}",
+  "verdicts": {
+    "i01": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "theme_direction",
+          "detail": "theme_map 中 finance 为 -0.15（偏阻），但正文称“财务方面倾向通过技能与产出带来收入”，表达的是偏顺，方向不一致。"
+        }
+      ],
+      "reason": "财务主题方向与文字倾向不一致。"
+    },
+    "i02": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "十神定义正确，主题方向与文字一致，没有确定性预测。"
+    },
+    "i03": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "十神定义正确，主题方向与文字一致，免责声明恰当。"
+    }
+  }
+}

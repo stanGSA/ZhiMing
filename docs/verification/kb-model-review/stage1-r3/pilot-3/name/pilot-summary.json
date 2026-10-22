@@ -1,0 +1,108 @@
+{
+  "system": "name",
+  "rubric_sha256": "482b14b1296449261d1ab1a3b86aee2a4ad834698d9dd8a41869200d3c9df933",
+  "agreement": {
+    "items": 20,
+    "reviewed": 20,
+    "labels": {
+      "fail": 10,
+      "pass": 10
+    },
+    "kappa": 1.0,
+    "observed_agreement": 1.0,
+    "pairs": {
+      "reject/reject": 10,
+      "pass/pass": 10
+    },
+    "label_agreement": {
+      "reviewer_a": {
+        "accuracy": 1.0,
+        "sensitivity": 1.0,
+        "specificity": 1.0
+      },
+      "reviewer_b": {
+        "accuracy": 1.0,
+        "sensitivity": 1.0,
+        "specificity": 1.0
+      }
+    }
+  },
+  "rerun": {
+    "reviewer_a": 0.95,
+    "reviewer_b": 1.0
+  },
+  "gates": {
+    "complete": true,
+    "kappa": true,
+    "rerun": true,
+    "label_agreement": true
+  },
+  "met": true,
+  "thresholds": {
+    "kappa": 0.6,
+    "rerun": 0.9,
+    "label_agreement": 0.85
+  },
+  "disputed": [
+    {
+      "id": "cal-name-d05",
+      "label": "pass",
+      "verdicts": {
+        "reviewer_a.p1": "pass",
+        "reviewer_a.p2": "revise",
+        "reviewer_b.p1": "pass",
+        "reviewer_b.p2": "pass"
+      },
+      "reasons": {
+        "reviewer_a.p1": "五行土的核心象征与来源说明准确，无方向或断言问题。",
+        "reviewer_a.p2": "缺少土在三才中的尾数配属核心信息。",
+        "reviewer_b.p1": "土的稳定、承载与务实象征符合传统，格数尾数与字义五行的区分准确，四个主题均标0与正文相容，且无预测性断言。",
+        "reviewer_b.p2": "土的稳定、承载与务实象征及格数尾数来源说明相容于三才体系，四个主题均标0可与象征性介绍并存，无错误别名或现实预测。"
+      },
+      "issues": {
+        "reviewer_a.p2": [
+          {
+            "dimension": "consistency",
+            "detail": "三才五行“土”未写出本体系核心信息（对应格数尾数5、6），只有象征与通用来源说明，不足以区别于其他五行。"
+          }
+        ]
+      }
+    }
+  ],
+  "usage": {
+    "reviewer_a": {
+      "calls": 10,
+      "input_tokens": 27784,
+      "output_tokens": 38914,
+      "latency_s": 498.285,
+      "returned_models": [
+        "deepseek-v4-pro"
+      ],
+      "errors": {},
+      "retried_calls": 0,
+      "http_retries": 0,
+      "cost": null,
+      "known_cost_estimate": null,
+      "usage_complete": true,
+      "cost_basis": "配置单价估算，非账单；服务失败的用量可能未知",
+      "currency": null
+    },
+    "reviewer_b": {
+      "calls": 10,
+      "input_tokens": 30846,
+      "output_tokens": 5007,
+      "latency_s": 167.681,
+      "returned_models": [
+        "gpt-6.1-sol"
+      ],
+      "errors": {},
+      "retried_calls": 0,
+      "http_retries": 0,
+      "cost": null,
+      "known_cost_estimate": null,
+      "usage_complete": true,
+      "cost_basis": "配置单价估算，非账单；服务失败的用量可能未知",
+      "currency": null
+    }
+  }
+}

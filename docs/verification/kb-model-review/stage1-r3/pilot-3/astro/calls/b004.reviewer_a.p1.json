@@ -1,0 +1,68 @@
+{
+  "batch": "b004",
+  "reviewer": "reviewer_a",
+  "run_pass": 1,
+  "attempt": 1,
+  "vendor": "deepseek",
+  "requested_model": "deepseek-v4-pro",
+  "returned_model": "deepseek-v4-pro",
+  "api": "openai",
+  "started_at": "2026-10-22T10:20:13+00:00",
+  "finished_at": "2026-10-22T10:20:49+00:00",
+  "latency_s": 36.317,
+  "http_attempts": 1,
+  "finish_reason": "stop",
+  "prompt_sha256": "c853678b7ab1c746b67ad963eb7ec098b8ecc9ff48962119a3130e0ec09a27df",
+  "input_tokens": 2928,
+  "output_tokens": 2608,
+  "cached_input_tokens": 1792,
+  "usage_available": true,
+  "raw_text": "{\"items\": [{\"item\": \"i01\", \"verdict\": \"revise\", \"issues\": [{\"dimension\": \"tradition\", \"detail\": \"文本称“传统上木星在双鱼为失势”，与参考事实不符：木星在双鱼应为入庙。\"}], \"reason\": \"木星落双鱼的尊贵属性写反，需修正为入庙。\"}, {\"item\": \"i02\", \"verdict\": \"revise\", \"issues\": [{\"dimension\": \"tradition\", \"detail\": \"文本称“传统上金星在金牛为失势”，与参考事实不符：金星在金牛应为入庙。\"}], \"reason\": \"金星落金牛的尊贵属性写反，需修正为入庙。\"}, {\"item\": \"i03\", \"verdict\": \"revise\", \"issues\": [{\"dimension\": \"tradition\", \"detail\": \"文本称“在传统尊贵体系中，海王星在此星座为入庙”，但海王星属现代占星，不在传统尊贵表中，无法按传统尊贵判断入庙。\"}], \"reason\": \"将现代行星海王星误纳入传统尊贵体系并判断入庙，需修正。\"}, {\"item\": \"i04\", \"verdict\": \"pass\", \"issues\": [], \"reason\": \"金星落摩羯的核心含义与文字一致，未出现事实或方向错误。\"}, {\"item\": \"i05\", \"verdict\": \"revise\", \"issues\": [{\"dimension\": \"theme_direction\", \"detail\": \"theme_map 中 relationship 为 -0.15，但文字“主动直接，敢于表达需求”未体现感情方面的阻碍或冲突，方向依据不一致。\"}], \"reason\": \"感情主题标为负向但文字未写出偏阻含义，需调整方向或补充依据。\"}]}",
+  "verdicts": {
+    "i01": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "tradition",
+          "detail": "文本称“传统上木星在双鱼为失势”，与参考事实不符：木星在双鱼应为入庙。"
+        }
+      ],
+      "reason": "木星落双鱼的尊贵属性写反，需修正为入庙。"
+    },
+    "i02": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "tradition",
+          "detail": "文本称“传统上金星在金牛为失势”，与参考事实不符：金星在金牛应为入庙。"
+        }
+      ],
+      "reason": "金星落金牛的尊贵属性写反，需修正为入庙。"
+    },
+    "i03": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "tradition",
+          "detail": "文本称“在传统尊贵体系中，海王星在此星座为入庙”，但海王星属现代占星，不在传统尊贵表中，无法按传统尊贵判断入庙。"
+        }
+      ],
+      "reason": "将现代行星海王星误纳入传统尊贵体系并判断入庙，需修正。"
+    },
+    "i04": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "金星落摩羯的核心含义与文字一致，未出现事实或方向错误。"
+    },
+    "i05": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "theme_direction",
+          "detail": "theme_map 中 relationship 为 -0.15，但文字“主动直接，敢于表达需求”未体现感情方面的阻碍或冲突，方向依据不一致。"
+        }
+      ],
+      "reason": "感情主题标为负向但文字未写出偏阻含义，需调整方向或补充依据。"
+    }
+  }
+}
