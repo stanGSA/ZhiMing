@@ -1,0 +1,53 @@
+{
+  "batch": "b008",
+  "reviewer": "reviewer_b",
+  "run_pass": 2,
+  "attempt": 1,
+  "vendor": "openai",
+  "requested_model": "gpt-6.1-sol",
+  "returned_model": "gpt-6.1-sol",
+  "api": "openai",
+  "started_at": "2026-10-22T09:56:00+00:00",
+  "finished_at": "2026-10-22T09:58:46+00:00",
+  "latency_s": 166.047,
+  "http_attempts": 2,
+  "finish_reason": "stop",
+  "prompt_sha256": "dc919ebf7f75a3aa209ad9acd0a6677263b10eeee5b3eba1c2169672a1b82517",
+  "input_tokens": 3859,
+  "output_tokens": 492,
+  "cached_input_tokens": 3856,
+  "usage_available": true,
+  "raw_text": "{\n  \"items\": [\n    {\n      \"item\": \"i01\",\n      \"verdict\": \"revise\",\n      \"issues\": [\n        {\n          \"dimension\": \"tradition\",\n          \"detail\": \"text 仅说明地支六合属于传统关系分类，没有写出对象专属的六组成员。应在正文中补充子丑、寅亥、卯戌、辰酉、巳申、午未；keywords 中列出这些组合不能替代面向用户的核心释义。\"\n        }\n      ],\n      \"reason\": \"正文缺少六合的具体组合，只有通用说明与免责声明，未满足术语条目的对象专属信息要求。\"\n    },\n    {\n      \"item\": \"i02\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"六冲成员与参考事实一致，同义词准确，四个主题均为零与说明性文字相容，象征解释及反思建议未构成现实预测。\"\n    },\n    {\n      \"item\": \"i03\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"相刑及自刑成员正确，同义词准确，自我苛责与工作推进阻力分别支持 self、career 负向，其余主题为零相容，且没有将刑解释为现实灾祸。\"\n    },\n    {\n      \"item\": \"i04\",\n      \"verdict\": \"revise\",\n      \"issues\": [\n        {\n          \"dimension\": \"tradition\",\n          \"detail\": \"text 中“亥子丑对应冬季，会木”的五行对应错误，应改为“亥子丑对应冬季，会水”。\"\n        }\n      ],\n      \"reason\": \"三会的冬季组合成员正确，但对应五行误写为木，属于可修正的事实错误。\"\n    }\n  ]\n}",
+  "verdicts": {
+    "i01": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "tradition",
+          "detail": "text 仅说明地支六合属于传统关系分类，没有写出对象专属的六组成员。应在正文中补充子丑、寅亥、卯戌、辰酉、巳申、午未；keywords 中列出这些组合不能替代面向用户的核心释义。"
+        }
+      ],
+      "reason": "正文缺少六合的具体组合，只有通用说明与免责声明，未满足术语条目的对象专属信息要求。"
+    },
+    "i02": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "六冲成员与参考事实一致，同义词准确，四个主题均为零与说明性文字相容，象征解释及反思建议未构成现实预测。"
+    },
+    "i03": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "相刑及自刑成员正确，同义词准确，自我苛责与工作推进阻力分别支持 self、career 负向，其余主题为零相容，且没有将刑解释为现实灾祸。"
+    },
+    "i04": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "tradition",
+          "detail": "text 中“亥子丑对应冬季，会木”的五行对应错误，应改为“亥子丑对应冬季，会水”。"
+        }
+      ],
+      "reason": "三会的冬季组合成员正确，但对应五行误写为木，属于可修正的事实错误。"
+    }
+  }
+}

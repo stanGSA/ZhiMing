@@ -1,0 +1,78 @@
+{
+  "batch": "b005",
+  "reviewer": "reviewer_a",
+  "run_pass": 2,
+  "attempt": 1,
+  "vendor": "deepseek",
+  "requested_model": "deepseek-v4-pro",
+  "returned_model": "deepseek-v4-pro",
+  "api": "openai",
+  "started_at": "2026-10-22T10:03:53+00:00",
+  "finished_at": "2026-10-22T10:04:34+00:00",
+  "latency_s": 41.284,
+  "http_attempts": 1,
+  "finish_reason": "stop",
+  "prompt_sha256": "d5d47ddc8190947f482a7bda9d49a74e807030acf36a50fdede67ab53e6283c8",
+  "input_tokens": 3405,
+  "output_tokens": 3165,
+  "cached_input_tokens": 3328,
+  "usage_available": true,
+  "raw_text": "{\n  \"items\": [\n    {\n      \"item\": \"i01\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"28属凶、尾数8对应金，方向与文字一致，且无预测或事实错误。\"\n    },\n    {\n      \"item\": \"i02\",\n      \"verdict\": \"revise\",\n      \"issues\": [\n        {\n          \"dimension\": \"tradition\",\n          \"detail\": \"“48数在五格数理的民间取名习俗中常被归为‘凶’”与参考事实不符，本项目采用的81数理归类中48为吉。\"\n        }\n      ],\n      \"reason\": \"48的吉凶归类写错，应改为吉。\"\n    },\n    {\n      \"item\": \"i03\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"75属半吉、尾数5对应土，方向与半吉的小正值一致，且无预测或事实错误。\"\n    },\n    {\n      \"item\": \"i04\",\n      \"verdict\": \"revise\",\n      \"issues\": [\n        {\n          \"dimension\": \"tradition\",\n          \"detail\": \"“55数在五格数理的民间取名习俗中常被归为‘凶’”与参考事实不符，本项目采用的81数理归类中55为半吉。\"\n        }\n      ],\n      \"reason\": \"55的吉凶归类写错，应改为半吉。\"\n    },\n    {\n      \"item\": \"i05\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"39属吉、尾数9对应水，方向与文字一致，且无预测或事实错误。\"\n    },\n    {\n      \"item\": \"i06\",\n      \"verdict\": \"revise\",\n      \"issues\": [\n        {\n          \"dimension\": \"tradition\",\n          \"detail\": \"“尾数6在三才里对应水”与三才尾数五行规则不符，5、6对应土。\"\n        }\n      ],\n      \"reason\": \"尾数6的五行写错，应为土。\"\n    },\n    {\n      \"item\": \"i07\",\n      \"verdict\": \"revise\",\n      \"issues\": [\n        {\n          \"dimension\": \"tradition\",\n          \"detail\": \"“尾数1在三才里对应土”与三才尾数五行规则不符，1、2对应木。\"\n        }\n      ],\n      \"reason\": \"尾数1的五行写错，应为木。\"\n    }\n  ]\n}",
+  "verdicts": {
+    "i01": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "28属凶、尾数8对应金，方向与文字一致，且无预测或事实错误。"
+    },
+    "i02": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "tradition",
+          "detail": "“48数在五格数理的民间取名习俗中常被归为‘凶’”与参考事实不符，本项目采用的81数理归类中48为吉。"
+        }
+      ],
+      "reason": "48的吉凶归类写错，应改为吉。"
+    },
+    "i03": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "75属半吉、尾数5对应土，方向与半吉的小正值一致，且无预测或事实错误。"
+    },
+    "i04": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "tradition",
+          "detail": "“55数在五格数理的民间取名习俗中常被归为‘凶’”与参考事实不符，本项目采用的81数理归类中55为半吉。"
+        }
+      ],
+      "reason": "55的吉凶归类写错，应改为半吉。"
+    },
+    "i05": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "39属吉、尾数9对应水，方向与文字一致，且无预测或事实错误。"
+    },
+    "i06": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "tradition",
+          "detail": "“尾数6在三才里对应水”与三才尾数五行规则不符，5、6对应土。"
+        }
+      ],
+      "reason": "尾数6的五行写错，应为土。"
+    },
+    "i07": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "tradition",
+          "detail": "“尾数1在三才里对应土”与三才尾数五行规则不符，1、2对应木。"
+        }
+      ],
+      "reason": "尾数1的五行写错，应为木。"
+    }
+  }
+}

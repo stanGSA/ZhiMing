@@ -1,0 +1,88 @@
+{
+  "batch": "b003",
+  "reviewer": "reviewer_a",
+  "run_pass": 1,
+  "attempt": 1,
+  "vendor": "deepseek",
+  "requested_model": "deepseek-v4-pro",
+  "returned_model": "deepseek-v4-pro",
+  "api": "openai",
+  "started_at": "2026-10-22T09:46:03+00:00",
+  "finished_at": "2026-10-22T09:47:40+00:00",
+  "latency_s": 96.899,
+  "http_attempts": 1,
+  "finish_reason": "stop",
+  "prompt_sha256": "f129a23a3e31d54686f17f46f21a31e25109544c3a9a2acc2c8321182419b386",
+  "input_tokens": 3206,
+  "output_tokens": 6543,
+  "cached_input_tokens": 1152,
+  "usage_available": true,
+  "raw_text": "{\"items\": [{\"item\": \"i01\", \"verdict\": \"revise\", \"issues\": [{\"dimension\": \"certainty\", \"detail\": \"文本中“这一配置预示接下来几个月财运会明显好转”是对现实事件的财务预测，应删除或改为象征性描述。\"}], \"reason\": \"含对现实财运的预测断言。\"}, {\"item\": \"i02\", \"verdict\": \"pass\", \"issues\": [], \"reason\": \"含义与主题方向一致，无预测或事实错误。\"}, {\"item\": \"i03\", \"verdict\": \"revise\", \"issues\": [{\"dimension\": \"theme_direction\", \"detail\": \"career 标为 0.3，但正文只围绕第12宫休整与内在反思，未体现事业主题。\"}], \"reason\": \"事业方向缺乏文字依据。\"}, {\"item\": \"i04\", \"verdict\": \"pass\", \"issues\": [], \"reason\": \"含义准确，主题方向全0且无问题。\"}, {\"item\": \"i05\", \"verdict\": \"revise\", \"issues\": [{\"dimension\": \"tradition\", \"detail\": \"第8宫主题应为共享资源与信任，文本写成第2宫的“资源与价值”。\"}], \"reason\": \"第8宫主题写错为第2宫资源与价值。\"}, {\"item\": \"i06\", \"verdict\": \"revise\", \"issues\": [{\"dimension\": \"tradition\", \"detail\": \"第9宫主题应为远行、学习与视野，文本中的“日常沟通”属于第3宫主题。\"}], \"reason\": \"第9宫主题混入第3宫的日常沟通。\"}, {\"item\": \"i07\", \"verdict\": \"revise\", \"issues\": [{\"dimension\": \"theme_direction\", \"detail\": \"finance 标为 -0.3，但正文只围绕第5宫创作与兴趣，未体现财务主题或负向。\"}], \"reason\": \"财务负向方向缺乏文字依据。\"}, {\"item\": \"i08\", \"verdict\": \"pass\", \"issues\": [], \"reason\": \"含义与主题方向一致，且有免责声明。\"}]}",
+  "verdicts": {
+    "i01": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "certainty",
+          "detail": "文本中“这一配置预示接下来几个月财运会明显好转”是对现实事件的财务预测，应删除或改为象征性描述。"
+        }
+      ],
+      "reason": "含对现实财运的预测断言。"
+    },
+    "i02": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "含义与主题方向一致，无预测或事实错误。"
+    },
+    "i03": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "theme_direction",
+          "detail": "career 标为 0.3，但正文只围绕第12宫休整与内在反思，未体现事业主题。"
+        }
+      ],
+      "reason": "事业方向缺乏文字依据。"
+    },
+    "i04": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "含义准确，主题方向全0且无问题。"
+    },
+    "i05": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "tradition",
+          "detail": "第8宫主题应为共享资源与信任，文本写成第2宫的“资源与价值”。"
+        }
+      ],
+      "reason": "第8宫主题写错为第2宫资源与价值。"
+    },
+    "i06": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "tradition",
+          "detail": "第9宫主题应为远行、学习与视野，文本中的“日常沟通”属于第3宫主题。"
+        }
+      ],
+      "reason": "第9宫主题混入第3宫的日常沟通。"
+    },
+    "i07": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "theme_direction",
+          "detail": "finance 标为 -0.3，但正文只围绕第5宫创作与兴趣，未体现财务主题或负向。"
+        }
+      ],
+      "reason": "财务负向方向缺乏文字依据。"
+    },
+    "i08": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "含义与主题方向一致，且有免责声明。"
+    }
+  }
+}

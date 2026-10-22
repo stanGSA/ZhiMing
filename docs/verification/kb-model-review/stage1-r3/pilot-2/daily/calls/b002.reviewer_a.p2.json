@@ -1,0 +1,53 @@
+{
+  "batch": "b002",
+  "reviewer": "reviewer_a",
+  "run_pass": 2,
+  "attempt": 1,
+  "vendor": "deepseek",
+  "requested_model": "deepseek-v4-pro",
+  "returned_model": "deepseek-v4-pro",
+  "api": "openai",
+  "started_at": "2026-10-22T10:11:09+00:00",
+  "finished_at": "2026-10-22T10:11:43+00:00",
+  "latency_s": 34.074,
+  "http_attempts": 1,
+  "finish_reason": "stop",
+  "prompt_sha256": "2cae6ea181495dfdbcc92c5460b46a182e663bae00d9fa7d8f78e4560ce57249",
+  "input_tokens": 1936,
+  "output_tokens": 2420,
+  "cached_input_tokens": 1920,
+  "usage_available": true,
+  "raw_text": "{\"items\": [{\"item\": \"i01\", \"verdict\": \"revise\", \"issues\": [{\"dimension\": \"theme_direction\", \"detail\": \"每日运势条目按项目约定 theme_map 应全为 0，但 self 标为 0.2 非零，且文字未支持该方向。\"}], \"reason\": \"theme_map 出现非零方向，违反每日运势中性约定。\"}, {\"item\": \"i02\", \"verdict\": \"revise\", \"issues\": [{\"dimension\": \"tradition\", \"detail\": \"金的传统配色应为白、金，文中写成黑、蓝，五行配色写错。\"}], \"reason\": \"金的传统配色写错。\"}, {\"item\": \"i03\", \"verdict\": \"revise\", \"issues\": [{\"dimension\": \"certainty\", \"detail\": \"“可以为当天带来好运”暗示幸运色能影响实际运气，不符合每日运势幸运色仅传统配色的中性约定。\"}], \"reason\": \"幸运色表述暗示实际运气。\"}]}",
+  "verdicts": {
+    "i01": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "theme_direction",
+          "detail": "每日运势条目按项目约定 theme_map 应全为 0，但 self 标为 0.2 非零，且文字未支持该方向。"
+        }
+      ],
+      "reason": "theme_map 出现非零方向，违反每日运势中性约定。"
+    },
+    "i02": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "tradition",
+          "detail": "金的传统配色应为白、金，文中写成黑、蓝，五行配色写错。"
+        }
+      ],
+      "reason": "金的传统配色写错。"
+    },
+    "i03": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "certainty",
+          "detail": "“可以为当天带来好运”暗示幸运色能影响实际运气，不符合每日运势幸运色仅传统配色的中性约定。"
+        }
+      ],
+      "reason": "幸运色表述暗示实际运气。"
+    }
+  }
+}

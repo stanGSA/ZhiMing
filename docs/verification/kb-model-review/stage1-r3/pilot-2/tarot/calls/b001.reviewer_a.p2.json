@@ -1,0 +1,88 @@
+{
+  "batch": "b001",
+  "reviewer": "reviewer_a",
+  "run_pass": 2,
+  "attempt": 1,
+  "vendor": "deepseek",
+  "requested_model": "deepseek-v4-pro",
+  "returned_model": "deepseek-v4-pro",
+  "api": "openai",
+  "started_at": "2026-10-22T09:38:32+00:00",
+  "finished_at": "2026-10-22T09:39:19+00:00",
+  "latency_s": 46.825,
+  "http_attempts": 1,
+  "finish_reason": "stop",
+  "prompt_sha256": "ccd413cff1eeb8502fadf69d2578628f97bbc3f64c79a3b8b56be630214bf16e",
+  "input_tokens": 3878,
+  "output_tokens": 2781,
+  "cached_input_tokens": 3840,
+  "usage_available": true,
+  "raw_text": "{\"items\": [\n  {\"item\": \"i01\", \"verdict\": \"pass\", \"issues\": [], \"reason\": \"太阳正位核心含义与文字清晰、积极一致，theme_map方向符合大阿卡纳约定。\"},\n  {\"item\": \"i02\", \"verdict\": \"pass\", \"issues\": [], \"reason\": \"圣杯五正位的失落含义与感情、自我负向方向一致。\"},\n  {\"item\": \"i03\", \"verdict\": \"pass\", \"issues\": [], \"reason\": \"高塔逆位的回避改变与压力延长支持自我、事业、感情的负向方向。\"},\n  {\"item\": \"i04\", \"verdict\": \"pass\", \"issues\": [], \"reason\": \"恶魔正位检查束缚与依赖，符合大阿卡纳负向含义与主题方向。\"},\n  {\"item\": \"i05\", \"verdict\": \"revise\", \"issues\": [{\"dimension\": \"theme_direction\", \"detail\": \"theme_map.self 标为-0.3偏阻，但文本“独立判断与清楚的边界有助于处理问题”表达的是正向帮助，无法支持自我状态负向。\"}], \"reason\": \"自我主题方向与文字正向含义不一致。\"},\n  {\"item\": \"i06\", \"verdict\": \"revise\", \"issues\": [{\"dimension\": \"certainty\", \"detail\": \"文本“这张牌出现时，往往预示一段新感情即将到来”是对现实事件的预测句式。\"}], \"reason\": \"存在对新感情的预测性表述，应改为象征性反思线索。\"},\n  {\"item\": \"i07\", \"verdict\": \"pass\", \"issues\": [], \"reason\": \"权杖七逆位持续防守疲惫支持事业与自我负向方向。\"},\n  {\"item\": \"i08\", \"verdict\": \"pass\", \"issues\": [], \"reason\": \"圣杯一逆位情感难以流动支持感情与自我负向方向。\"},\n  {\"item\": \"i09\", \"verdict\": \"revise\", \"issues\": [{\"dimension\": \"theme_direction\", \"detail\": \"finance 标为0.3，但文本未涉及财务主题，财务也不在大阿卡纳约定主题内，无法支持该方向。\"}], \"reason\": \"财务主题方向缺乏文字或约定支持。\"},\n  {\"item\": \"i10\", \"verdict\": \"pass\", \"issues\": [], \"reason\": \"宝剑五逆位减少对抗与未解决责任支持自我、事业轻微负向方向。\"}\n]}",
+  "verdicts": {
+    "i01": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "太阳正位核心含义与文字清晰、积极一致，theme_map方向符合大阿卡纳约定。"
+    },
+    "i02": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "圣杯五正位的失落含义与感情、自我负向方向一致。"
+    },
+    "i03": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "高塔逆位的回避改变与压力延长支持自我、事业、感情的负向方向。"
+    },
+    "i04": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "恶魔正位检查束缚与依赖，符合大阿卡纳负向含义与主题方向。"
+    },
+    "i05": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "theme_direction",
+          "detail": "theme_map.self 标为-0.3偏阻，但文本“独立判断与清楚的边界有助于处理问题”表达的是正向帮助，无法支持自我状态负向。"
+        }
+      ],
+      "reason": "自我主题方向与文字正向含义不一致。"
+    },
+    "i06": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "certainty",
+          "detail": "文本“这张牌出现时，往往预示一段新感情即将到来”是对现实事件的预测句式。"
+        }
+      ],
+      "reason": "存在对新感情的预测性表述，应改为象征性反思线索。"
+    },
+    "i07": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "权杖七逆位持续防守疲惫支持事业与自我负向方向。"
+    },
+    "i08": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "圣杯一逆位情感难以流动支持感情与自我负向方向。"
+    },
+    "i09": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "theme_direction",
+          "detail": "finance 标为0.3，但文本未涉及财务主题，财务也不在大阿卡纳约定主题内，无法支持该方向。"
+        }
+      ],
+      "reason": "财务主题方向缺乏文字或约定支持。"
+    },
+    "i10": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "宝剑五逆位减少对抗与未解决责任支持自我、事业轻微负向方向。"
+    }
+  }
+}

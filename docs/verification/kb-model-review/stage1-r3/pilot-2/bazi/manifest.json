@@ -1,0 +1,56 @@
+{
+  "schema": 1,
+  "kind": "pilot",
+  "system": "bazi",
+  "seed": 2,
+  "batch_size": 10,
+  "passes": 2,
+  "rubric_version": 4,
+  "rubric_sha256": "d26c6757b96a1cdfca3ac89a8b31adcb9acde41833984012806812ceb91859dc",
+  "script_sha256": "b2b6fd1e29eb6842fa42d46cf1ea236fa170b354fd005c6f6294815440428261",
+  "reviewers": {
+    "reviewer_a": {
+      "vendor": "deepseek",
+      "api": "openai",
+      "model": "deepseek-v4-pro",
+      "api_key_env": "DEEPSEEK_API_KEY",
+      "temperature": null,
+      "max_tokens": 16384,
+      "thinking": "enabled",
+      "reasoning_effort": "high",
+      "base_url_host": "api.deepseek.com"
+    },
+    "reviewer_b": {
+      "vendor": "openai",
+      "api": "openai",
+      "model": "gpt-6.1-sol",
+      "api_key_env": "OPENAI_REVIEW_API_KEY",
+      "temperature": null,
+      "max_tokens": 4096,
+      "base_url_host": "codegoai.com"
+    }
+  },
+  "calibration": {
+    "lock_sha256": "04c047d29b848b757b7a39a78ff681668ac6063ae50e89e3ade6b96daf7d0a3f",
+    "items": 20,
+    "partition": "dev"
+  },
+  "batch_count": 10,
+  "prompt_sha256": {
+    "b001": "3b5be1b4cdfc60fce3155543144fc6c9aefe02e74a19838dc83dd2eb3039f8c7",
+    "b002": "0777e5149a6eb5243bac564c6866e40d34f017fb4937e6bc54ad025ebb040d60",
+    "b003": "fcdcfbaea866f76aba2961d62523f9c1fb1e88ff0509c262c181725c90af425a",
+    "b004": "1e5d5346a2ea45346eef5b5647645d573e6581637b76ec15ceee2766c163a7cb",
+    "b005": "d91ee37aa1823c803397b5d397ccd341a2a13b08678ecbd5eb177538fe7ffd5a",
+    "b006": "b6155702a8623cf404d57510c92d387b3949fb03dcfba8df98a37307632554fe",
+    "b007": "8bfa289b7ff4dfb69cb7ce59351f702135c94211aa25395ce12ed074d75adff5",
+    "b008": "dc919ebf7f75a3aa209ad9acd0a6677263b10eeee5b3eba1c2169672a1b82517",
+    "b009": "f5e1fbf4352de79097bdcc747f9b3d9f0e785f351e82d842024d72fd7221ade4",
+    "b010": "5550213c5eda11b4f3649686507f5aa4063e6f3dfa2d303e09cd521503ed9d89"
+  },
+  "created_at": "2026-10-22T09:50:14+00:00",
+  "git": {
+    "head": "24caeb9b766eb5de9c2de53e7288c40d26176554",
+    "dirty": true
+  }
+}

@@ -1,0 +1,157 @@
+{
+  "system": "dream",
+  "rubric_sha256": "d26c6757b96a1cdfca3ac89a8b31adcb9acde41833984012806812ceb91859dc",
+  "agreement": {
+    "items": 20,
+    "reviewed": 20,
+    "labels": {
+      "fail": 10,
+      "pass": 10
+    },
+    "kappa": 0.8,
+    "observed_agreement": 0.9,
+    "pairs": {
+      "reject/reject": 10,
+      "pass/pass": 8,
+      "pass/reject": 2
+    },
+    "label_agreement": {
+      "reviewer_a": {
+        "accuracy": 1.0,
+        "sensitivity": 1.0,
+        "specificity": 1.0
+      },
+      "reviewer_b": {
+        "accuracy": 0.9,
+        "sensitivity": 1.0,
+        "specificity": 0.8
+      }
+    }
+  },
+  "rerun": {
+    "reviewer_a": 1.0,
+    "reviewer_b": 0.85
+  },
+  "gates": {
+    "complete": true,
+    "kappa": true,
+    "rerun": false,
+    "label_agreement": true
+  },
+  "met": false,
+  "thresholds": {
+    "kappa": 0.6,
+    "rerun": 0.9,
+    "label_agreement": 0.85
+  },
+  "disputed": [
+    {
+      "id": "cal-dream-d08",
+      "label": "pass",
+      "verdicts": {
+        "reviewer_a.p1": "pass",
+        "reviewer_a.p2": "pass",
+        "reviewer_b.p1": "revise",
+        "reviewer_b.p2": "pass"
+      },
+      "reasons": {
+        "reviewer_a.p1": "核心含义与轻度自我负向一致，同义词和医疗免责恰当。",
+        "reviewer_a.p2": "核心含义与自我轻度负向一致，无预测或事实错误。",
+        "reviewer_b.p1": "疲惫和需要休息支持 self 负向，健康提示也恰当，但“发烧”与条目对象并非同义。",
+        "reviewer_b.p2": "同义词属于常见患病意象，疲惫与需要休息支持自我负向，其余主题为零，且未作健康诊断。"
+      },
+      "issues": {
+        "reviewer_b.p1": [
+          {
+            "dimension": "consistency",
+            "detail": "synonyms 中“发烧”是特定身体症状，不是“生病”的同义表达，可能误命中仅描述发烧的梦境；建议移出同义词。"
+          }
+        ]
+      }
+    },
+    {
+      "id": "cal-dream-d14",
+      "label": "pass",
+      "verdicts": {
+        "reviewer_a.p1": "pass",
+        "reviewer_a.p2": "pass",
+        "reviewer_b.p1": "revise",
+        "reviewer_b.p2": "pass"
+      },
+      "reasons": {
+        "reviewer_a.p1": "关系不安全感的方向与relationship负向相符，无预测且同义词可接受。",
+        "reviewer_a.p2": "关系不安全感与 relationship 负向一致，无预测问题。",
+        "reviewer_b.p1": "关系中的不安全感支持 relationship 负向，但“出轨”引入了不同且更具体的事件情节。",
+        "reviewer_b.p2": "同义词符合背叛的关系意象，关系中的不安全感支持感情负向，其余主题为零，且明确未推断现实背叛。"
+      },
+      "issues": {
+        "reviewer_b.p1": [
+          {
+            "dimension": "consistency",
+            "detail": "synonyms 中“出轨”指向亲密关系中的不忠情节，不能与一般性的“背叛”直接视为同义；建议单独设条目或作为相关检索词处理。"
+          }
+        ]
+      }
+    },
+    {
+      "id": "cal-dream-d15",
+      "label": "pass",
+      "verdicts": {
+        "reviewer_a.p1": "pass",
+        "reviewer_a.p2": "pass",
+        "reviewer_b.p1": "pass",
+        "reviewer_b.p2": "revise"
+      },
+      "reasons": {
+        "reviewer_a.p1": "文字与主题方向一致，无预测或同义词问题。",
+        "reviewer_a.p2": "文字与主题方向一致，无预测或错误同义词。",
+        "reviewer_b.p1": "指引、清晰感与希望支持自我正向，同义词与灯的照明意象相容，其余主题为零，未作现实预测。",
+        "reviewer_b.p2": "自我主题正向与指引、希望的联想一致，但“灯光”不是同一事物的同义表达。"
+      },
+      "issues": {
+        "reviewer_b.p2": [
+          {
+            "dimension": "consistency",
+            "detail": "synonyms 中的“灯光”指灯发出的光，不等同于“灯”这一照明器具，可能误命中仅梦见光线的情境。"
+          }
+        ]
+      }
+    }
+  ],
+  "usage": {
+    "reviewer_a": {
+      "calls": 4,
+      "input_tokens": 14186,
+      "output_tokens": 27954,
+      "latency_s": 381.752,
+      "returned_models": [
+        "deepseek-v4-pro"
+      ],
+      "errors": {},
+      "retried_calls": 0,
+      "http_retries": 0,
+      "cost": null,
+      "known_cost_estimate": null,
+      "usage_complete": true,
+      "cost_basis": "配置单价估算，非账单；服务失败的用量可能未知",
+      "currency": null
+    },
+    "reviewer_b": {
+      "calls": 4,
+      "input_tokens": 15964,
+      "output_tokens": 5525,
+      "latency_s": 164.547,
+      "returned_models": [
+        "gpt-6.1-sol"
+      ],
+      "errors": {},
+      "retried_calls": 0,
+      "http_retries": 0,
+      "cost": null,
+      "known_cost_estimate": null,
+      "usage_complete": true,
+      "cost_basis": "配置单价估算，非账单；服务失败的用量可能未知",
+      "currency": null
+    }
+  }
+}

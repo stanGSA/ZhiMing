@@ -1,0 +1,37 @@
+{
+  "batch": "b003",
+  "reviewer": "reviewer_b",
+  "run_pass": 2,
+  "attempt": 1,
+  "vendor": "openai",
+  "requested_model": "gpt-6.1-sol",
+  "returned_model": "gpt-6.1-sol",
+  "api": "openai",
+  "started_at": "2026-10-22T09:42:18+00:00",
+  "finished_at": "2026-10-22T09:42:27+00:00",
+  "latency_s": 9.215,
+  "http_attempts": 1,
+  "finish_reason": "stop",
+  "prompt_sha256": "0fae1ed5dc01fc2417025165de0415e9dab4f9343deb5b428c0c0d51fa7e03ff",
+  "input_tokens": 1933,
+  "output_tokens": 181,
+  "cached_input_tokens": 1930,
+  "usage_available": true,
+  "raw_text": "{\"items\":[{\"item\":\"i01\",\"verdict\":\"reject\",\"issues\":[{\"dimension\":\"tradition\",\"detail\":\"text 将本牌位定义为“选 B”，但 spread_positions 中第 2 位为“选 A”；主体释义整体写成了另一牌位。\"},{\"dimension\":\"consistency\",\"detail\":\"text 的“选 B”“选择 B”与 key=decision:2 及 synonyms“选择 A”“选项 A”矛盾，且将“选 B”同时写作本牌位和对照牌位。\"}],\"reason\":\"该条目应解释第 2 位“选 A”，正文却整体解释“选 B”，属于主体对象错置。\"}]}",
+  "verdicts": {
+    "i01": {
+      "verdict": "reject",
+      "issues": [
+        {
+          "dimension": "tradition",
+          "detail": "text 将本牌位定义为“选 B”，但 spread_positions 中第 2 位为“选 A”；主体释义整体写成了另一牌位。"
+        },
+        {
+          "dimension": "consistency",
+          "detail": "text 的“选 B”“选择 B”与 key=decision:2 及 synonyms“选择 A”“选项 A”矛盾，且将“选 B”同时写作本牌位和对照牌位。"
+        }
+      ],
+      "reason": "该条目应解释第 2 位“选 A”，正文却整体解释“选 B”，属于主体对象错置。"
+    }
+  }
+}

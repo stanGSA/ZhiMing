@@ -1,0 +1,43 @@
+{
+  "batch": "b005",
+  "reviewer": "reviewer_a",
+  "run_pass": 1,
+  "attempt": 1,
+  "vendor": "deepseek",
+  "requested_model": "deepseek-v4-pro",
+  "returned_model": "deepseek-v4-pro",
+  "api": "openai",
+  "started_at": "2026-10-22T09:50:37+00:00",
+  "finished_at": "2026-10-22T09:51:07+00:00",
+  "latency_s": 30.704,
+  "http_attempts": 1,
+  "finish_reason": "stop",
+  "prompt_sha256": "d91ee37aa1823c803397b5d397ccd341a2a13b08678ecbd5eb177538fe7ffd5a",
+  "input_tokens": 2960,
+  "output_tokens": 2385,
+  "cached_input_tokens": 2048,
+  "usage_available": true,
+  "raw_text": "{\"items\": [\n  {\"item\": \"i01\", \"verdict\": \"revise\", \"issues\": [{\"dimension\": \"theme_direction\", \"detail\": \"theme_map.finance 为 -0.15（偏阻），但正文“财务方面倾向通过技能与产出带来收入”表达的是偏顺/收入，方向相反。\"}], \"reason\": \"财务主题方向与正文描述相反。\"},\n  {\"item\": \"i02\", \"verdict\": \"pass\", \"issues\": [], \"reason\": \"十神定义正确，各主题方向与正文一致，且无确定性预测或医疗投资法律结论。\"},\n  {\"item\": \"i03\", \"verdict\": \"pass\", \"issues\": [], \"reason\": \"十神定义正确，感情与财务负向均有正文偏阻依据，自我与事业正向相容，且无宿命化表述。\"}\n]}",
+  "verdicts": {
+    "i01": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "theme_direction",
+          "detail": "theme_map.finance 为 -0.15（偏阻），但正文“财务方面倾向通过技能与产出带来收入”表达的是偏顺/收入，方向相反。"
+        }
+      ],
+      "reason": "财务主题方向与正文描述相反。"
+    },
+    "i02": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "十神定义正确，各主题方向与正文一致，且无确定性预测或医疗投资法律结论。"
+    },
+    "i03": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "十神定义正确，感情与财务负向均有正文偏阻依据，自我与事业正向相容，且无宿命化表述。"
+    }
+  }
+}

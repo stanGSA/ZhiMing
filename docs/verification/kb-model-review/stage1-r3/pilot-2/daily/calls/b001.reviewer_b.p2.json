@@ -1,0 +1,38 @@
+{
+  "batch": "b001",
+  "reviewer": "reviewer_b",
+  "run_pass": 2,
+  "attempt": 1,
+  "vendor": "openai",
+  "requested_model": "gpt-6.1-sol",
+  "returned_model": "gpt-6.1-sol",
+  "api": "openai",
+  "started_at": "2026-10-22T10:11:20+00:00",
+  "finished_at": "2026-10-22T10:11:51+00:00",
+  "latency_s": 30.821,
+  "http_attempts": 1,
+  "finish_reason": "stop",
+  "prompt_sha256": "0cc47c04d754e0909bfdb0055a9487a867587fdf399d53274795dee657c0a08d",
+  "input_tokens": 2156,
+  "output_tokens": 252,
+  "cached_input_tokens": 2153,
+  "usage_available": true,
+  "raw_text": "{\n  \"items\": [\n    {\n      \"item\": \"i01\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"明确说明每日提示仅适用于当天、不改变长期判断的约定，四个主题均为中性，无错误别名或现实事件预测。\"\n    },\n    {\n      \"item\": \"i02\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"清楚限定未匹配节点的检查范围，并区分其他相位与整体行运判断，四个主题均为中性，无错误别名或确定性预测。\"\n    },\n    {\n      \"item\": \"i03\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"说明出生时间未知时采用中午代理计算的约定及相关不确定性，四个主题均为中性，无错误别名或确定性断言。\"\n    }\n  ]\n}",
+  "verdicts": {
+    "i01": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "明确说明每日提示仅适用于当天、不改变长期判断的约定，四个主题均为中性，无错误别名或现实事件预测。"
+    },
+    "i02": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "清楚限定未匹配节点的检查范围，并区分其他相位与整体行运判断，四个主题均为中性，无错误别名或确定性预测。"
+    },
+    "i03": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "说明出生时间未知时采用中午代理计算的约定及相关不确定性，四个主题均为中性，无错误别名或确定性断言。"
+    }
+  }
+}

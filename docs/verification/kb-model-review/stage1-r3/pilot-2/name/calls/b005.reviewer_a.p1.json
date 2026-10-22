@@ -1,0 +1,86 @@
+{
+  "batch": "b005",
+  "reviewer": "reviewer_a",
+  "run_pass": 1,
+  "attempt": 1,
+  "vendor": "deepseek",
+  "requested_model": "deepseek-v4-pro",
+  "returned_model": "deepseek-v4-pro",
+  "api": "openai",
+  "started_at": "2026-10-22T10:00:10+00:00",
+  "finished_at": "2026-10-22T10:01:18+00:00",
+  "latency_s": 67.559,
+  "http_attempts": 1,
+  "finish_reason": "stop",
+  "prompt_sha256": "d5d47ddc8190947f482a7bda9d49a74e807030acf36a50fdede67ab53e6283c8",
+  "input_tokens": 3405,
+  "output_tokens": 4878,
+  "cached_input_tokens": 1792,
+  "usage_available": true,
+  "raw_text": "{\"items\":[\n  {\"item\":\"i01\",\"verdict\":\"pass\",\"issues\":[],\"reason\":\"28归凶、尾数8属金符合参考表，四主题按凶数统一标负且文字为负向意象。\"},\n  {\"item\":\"i02\",\"verdict\":\"revise\",\"issues\":[\n    {\"dimension\":\"tradition\",\"detail\":\"48数在参考归类中为吉数，正文却写成“常被归为‘凶’”，与事实不符。\"},\n    {\"dimension\":\"consistency\",\"detail\":\"首句归凶与后文“顺遂、获得助力”的正向寓意及正向 theme_map 相互矛盾。\"}\n  ],\"reason\":\"48应为吉数，正文错误写成凶且与正向寓意矛盾。\"},\n  {\"item\":\"i03\",\"verdict\":\"pass\",\"issues\":[],\"reason\":\"75归半吉、尾数5属土符合参考表，四主题按半吉统一标小正且文字中性偏稳。\"},\n  {\"item\":\"i04\",\"verdict\":\"revise\",\"issues\":[\n    {\"dimension\":\"tradition\",\"detail\":\"55数在参考归类中为半吉，正文却写成“常被归为‘凶’”，与事实不符。\"},\n    {\"dimension\":\"consistency\",\"detail\":\"首句归凶与后文“吉凶参半”的描述及半吉的小正向 theme_map 相互矛盾。\"}\n  ],\"reason\":\"55应为半吉，正文错误写成凶并与吉凶参半矛盾。\"},\n  {\"item\":\"i05\",\"verdict\":\"pass\",\"issues\":[],\"reason\":\"39归吉、尾数9属水符合参考表，四主题按吉数统一标正且文字为顺遂获助。\"},\n  {\"item\":\"i06\",\"verdict\":\"revise\",\"issues\":[\n    {\"dimension\":\"tradition\",\"detail\":\"尾数6在三才五行中应按5、6属土，正文写成属水。\"}\n  ],\"reason\":\"16数的尾数五行写错，6应属土而非水。\"},\n  {\"item\":\"i07\",\"verdict\":\"revise\",\"issues\":[\n    {\"dimension\":\"tradition\",\"detail\":\"尾数1在三才五行中应按1、2属木，正文写成属土。\"}\n  ],\"reason\":\"81数的尾数五行写错，1应属木而非土。\"}\n]}",
+  "verdicts": {
+    "i01": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "28归凶、尾数8属金符合参考表，四主题按凶数统一标负且文字为负向意象。"
+    },
+    "i02": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "tradition",
+          "detail": "48数在参考归类中为吉数，正文却写成“常被归为‘凶’”，与事实不符。"
+        },
+        {
+          "dimension": "consistency",
+          "detail": "首句归凶与后文“顺遂、获得助力”的正向寓意及正向 theme_map 相互矛盾。"
+        }
+      ],
+      "reason": "48应为吉数，正文错误写成凶且与正向寓意矛盾。"
+    },
+    "i03": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "75归半吉、尾数5属土符合参考表，四主题按半吉统一标小正且文字中性偏稳。"
+    },
+    "i04": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "tradition",
+          "detail": "55数在参考归类中为半吉，正文却写成“常被归为‘凶’”，与事实不符。"
+        },
+        {
+          "dimension": "consistency",
+          "detail": "首句归凶与后文“吉凶参半”的描述及半吉的小正向 theme_map 相互矛盾。"
+        }
+      ],
+      "reason": "55应为半吉，正文错误写成凶并与吉凶参半矛盾。"
+    },
+    "i05": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "39归吉、尾数9属水符合参考表，四主题按吉数统一标正且文字为顺遂获助。"
+    },
+    "i06": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "tradition",
+          "detail": "尾数6在三才五行中应按5、6属土，正文写成属水。"
+        }
+      ],
+      "reason": "16数的尾数五行写错，6应属土而非水。"
+    },
+    "i07": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "tradition",
+          "detail": "尾数1在三才五行中应按1、2属木，正文写成属土。"
+        }
+      ],
+      "reason": "81数的尾数五行写错，1应属木而非土。"
+    }
+  }
+}

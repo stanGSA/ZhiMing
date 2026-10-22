@@ -1,0 +1,118 @@
+{
+  "system": "tarot",
+  "rubric_sha256": "d26c6757b96a1cdfca3ac89a8b31adcb9acde41833984012806812ceb91859dc",
+  "agreement": {
+    "items": 20,
+    "reviewed": 20,
+    "labels": {
+      "pass": 10,
+      "fail": 10
+    },
+    "kappa": 1.0,
+    "observed_agreement": 1.0,
+    "pairs": {
+      "pass/pass": 10,
+      "reject/reject": 10
+    },
+    "label_agreement": {
+      "reviewer_a": {
+        "accuracy": 1.0,
+        "sensitivity": 1.0,
+        "specificity": 1.0
+      },
+      "reviewer_b": {
+        "accuracy": 1.0,
+        "sensitivity": 1.0,
+        "specificity": 1.0
+      }
+    }
+  },
+  "rerun": {
+    "reviewer_a": 0.95,
+    "reviewer_b": 1.0
+  },
+  "gates": {
+    "complete": false,
+    "kappa": true,
+    "rerun": true,
+    "label_agreement": true
+  },
+  "met": false,
+  "thresholds": {
+    "kappa": 0.6,
+    "rerun": 0.9,
+    "label_agreement": 0.85
+  },
+  "disputed": [
+    {
+      "id": "cal-tarot-d18",
+      "label": "fail",
+      "verdicts": {
+        "reviewer_a.p1": "revise",
+        "reviewer_a.p2": "pass",
+        "reviewer_b.p1": "revise"
+      },
+      "reasons": {
+        "reviewer_a.p1": "正逆位文字未区分，方向值却相反。",
+        "reviewer_a.p2": "恢复与处理基本需求的象征与正数方向一致，无事实或预测问题。",
+        "reviewer_b.p1": "同义词准确，但正文与正位重复，且耗尽与承受边界的表述不足以支持自我、事业正向。"
+      },
+      "issues": {
+        "reviewer_a.p1": [
+          {
+            "dimension": "tradition",
+            "detail": "与正位 counterpart 的 text 完全相同，但 theme_map 正负方向相反，未区分宝剑十正位与逆位的含义。"
+          }
+        ],
+        "reviewer_b.p1": [
+          {
+            "dimension": "theme_direction",
+            "detail": "theme_map.self 和 career 均为正，但正文核心是“困难阶段”“已到承受边界”，仅建议先恢复，未表达已经开始恢复或走出困境，不能支持这两个正向。"
+          },
+          {
+            "dimension": "consistency",
+            "detail": "text 与 counterpart 的正位释义完全相同，没有区分宝剑十逆位的恢复、减弱或内化等含义，却给出了相反主题方向。"
+          }
+        ]
+      }
+    }
+  ],
+  "usage": {
+    "reviewer_a": {
+      "calls": 6,
+      "input_tokens": 18466,
+      "output_tokens": 32835,
+      "latency_s": 566.022,
+      "returned_models": [
+        "deepseek-v4-pro"
+      ],
+      "errors": {},
+      "retried_calls": 0,
+      "http_retries": 0,
+      "cost": null,
+      "known_cost_estimate": null,
+      "usage_complete": true,
+      "cost_basis": "配置单价估算，非账单；服务失败的用量可能未知",
+      "currency": null
+    },
+    "reviewer_b": {
+      "calls": 5,
+      "input_tokens": 16423,
+      "output_tokens": 3566,
+      "latency_s": 268.763,
+      "returned_models": [
+        "gpt-6.1-sol"
+      ],
+      "errors": {
+        "service_error": 1
+      },
+      "retried_calls": 0,
+      "http_retries": 1,
+      "cost": null,
+      "known_cost_estimate": null,
+      "usage_complete": false,
+      "cost_basis": "配置单价估算，非账单；服务失败的用量可能未知",
+      "currency": null
+    }
+  }
+}

@@ -1,0 +1,48 @@
+{
+  "batch": "b006",
+  "reviewer": "reviewer_b",
+  "run_pass": 2,
+  "attempt": 1,
+  "vendor": "openai",
+  "requested_model": "gpt-6.1-sol",
+  "returned_model": "gpt-6.1-sol",
+  "api": "openai",
+  "started_at": "2026-10-22T09:55:45+00:00",
+  "finished_at": "2026-10-22T09:55:55+00:00",
+  "latency_s": 9.815,
+  "http_attempts": 1,
+  "finish_reason": "stop",
+  "prompt_sha256": "b6155702a8623cf404d57510c92d387b3949fb03dcfba8df98a37307632554fe",
+  "input_tokens": 3208,
+  "output_tokens": 323,
+  "cached_input_tokens": 3205,
+  "usage_available": true,
+  "raw_text": "{\n  \"items\": [\n    {\n      \"item\": \"i01\",\n      \"verdict\": \"revise\",\n      \"issues\": [\n        {\n          \"dimension\": \"tradition\",\n          \"detail\": \"text 中“申的藏干为庚、壬、甲”成员有误；申应藏庚、壬、戊，需将“甲”改为“戊”。\"\n        }\n      ],\n      \"reason\": \"申的藏干有一个成员写错，属于可修正的事实错误。\"\n    },\n    {\n      \"item\": \"i02\",\n      \"verdict\": \"pass\",\n      \"issues\": [],\n      \"reason\": \"丑藏己、癸、辛及其土、水、金属性准确，同义词与关键词相容，四个主题均为中性，十神说明及非确定性表述恰当。\"\n    },\n    {\n      \"item\": \"i03\",\n      \"verdict\": \"revise\",\n      \"issues\": [\n        {\n          \"dimension\": \"tradition\",\n          \"detail\": \"text 仅说明藏干通用规则，未写出 key“未”的专属藏干成员己、丁、乙；keywords 中列出成员不能替代正文的核心释义。\"\n        }\n      ],\n      \"reason\": \"正文缺少未藏己、丁、乙这一对象专属信息，不能仅用通用分类说明代替。\"\n    }\n  ]\n}",
+  "verdicts": {
+    "i01": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "tradition",
+          "detail": "text 中“申的藏干为庚、壬、甲”成员有误；申应藏庚、壬、戊，需将“甲”改为“戊”。"
+        }
+      ],
+      "reason": "申的藏干有一个成员写错，属于可修正的事实错误。"
+    },
+    "i02": {
+      "verdict": "pass",
+      "issues": [],
+      "reason": "丑藏己、癸、辛及其土、水、金属性准确，同义词与关键词相容，四个主题均为中性，十神说明及非确定性表述恰当。"
+    },
+    "i03": {
+      "verdict": "revise",
+      "issues": [
+        {
+          "dimension": "tradition",
+          "detail": "text 仅说明藏干通用规则，未写出 key“未”的专属藏干成员己、丁、乙；keywords 中列出成员不能替代正文的核心释义。"
+        }
+      ],
+      "reason": "正文缺少未藏己、丁、乙这一对象专属信息，不能仅用通用分类说明代替。"
+    }
+  }
+}
