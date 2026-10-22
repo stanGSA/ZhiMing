@@ -255,6 +255,8 @@ class ConsultService:
             "locations": dict(parent.get("locations", {})),
             "location_aliases": dict(parent.get("location_aliases", {})),
         }
+        if spec.system == "tarot" and parent.get("picks"):
+            state["picks"] = list(parent["picks"])
         if spec.system == "name" and parent.get("bazi_id"):
             # The name specialist may set its names beside the bazi already computed in this
             # reading (counts only); it never computes bazi itself.

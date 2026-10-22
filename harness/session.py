@@ -41,6 +41,8 @@ class Session:
     total_tokens: int = 0
     user_messages: list[str] = field(default_factory=list)
     default_seed: int | None = None
+    # Deck positions chosen in the browser for the next draw; start_reading consumes them.
+    pending_picks: tuple[int, ...] | None = None
     calendar_anchor: str | None = None
     calendar_timezone: str = DEFAULT_CALENDAR_TZ
     calendar_instant: datetime | None = None
@@ -138,4 +140,7 @@ class Session:
             "asked_this_turn": self.state.get("asked_this_turn", False),
             "complete": False,
         }
+        if self.pending_picks:
+            self.state["picks"] = list(self.pending_picks)
+        self.pending_picks = None
         return self.state["active_reading_id"]

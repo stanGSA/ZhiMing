@@ -37,6 +37,7 @@ from plugins.bazi.calculator import GAN, GAN_WX, WX, compute_bazi, ten_god
 from plugins.name.strokes import UnihanMissing
 from plugins.name.tools import HAN
 from plugins.name.wuge import analyze, element
+from plugins.tarot.draw import valid_picks
 
 STATIC = Path(__file__).with_name("web_static")
 COOKIE = "zhiming_session"
@@ -173,6 +174,8 @@ class ChatInput(BaseModel):
     system: Literal["auto", "bazi", "astro", "tarot", "name", "dream", "daily"] = "auto"
     birth: BirthInfo = Field(default_factory=BirthInfo)
     spread: Literal["single", "three_card", "decision"] = "three_card"
+    # Positions (0-77) chosen from the face-down deck on the tarot page, in spread order.
+    picks: list[int] | None = Field(default=None, max_length=3)
 
     @field_validator("message")
     @classmethod
@@ -180,6 +183,14 @@ class ChatInput(BaseModel):
         if not value.strip():
             raise ValueError("请先写下你的问题")
         return value.strip()
+
+    @model_validator(mode="after")
+    def picks_fit_spread(self):
+        if self.picks is not None and (
+            self.system != "tarot" or not valid_picks(self.picks, self.spread)
+        ):
+            raise ValueError("所选的牌与牌阵不符，请重新选牌")
+        return self
 
 
 class NewInput(BaseModel):
@@ -590,6 +601,8 @@ def create_web_app(
                     }
                 )
                 return {**state(session), "busy": False}
+            # Set on every request, so a choice never carries over to a later question.
+            session.runtime.session.pending_picks = tuple(body.picks) if body.picks else None
             try:
                 outcome = await asyncio.wait_for(
                     session.runtime.turn(message, safety_checked=True), timeout=360

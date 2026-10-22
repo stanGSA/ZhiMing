@@ -9,6 +9,7 @@ from app import create_runtime
 from common.schemas import Reading
 from common.validation import validate_reading
 from harness.models import ToolCall
+from plugins.tarot.draw import draw_tarot
 from tests.test_harness import execute
 
 
@@ -33,6 +34,38 @@ async def test_end_to_end_draw_save_trace(project, spread, count):
         assert all(r["session_id"] == runtime.session.id for r in records)
     finally:
         runtime.close()
+
+
+async def test_chosen_positions_decide_the_draw_once(runtime):
+    runtime.session.pending_picks = (70, 5, 33)
+    outcome = await runtime.turn("我选择的牌阵为：三张牌。用塔罗看看近期状态")
+    assert outcome.status == "submit_reading"
+    drawn = runtime.session.state["tarot_result"]
+    expected = draw_tarot("three_card", drawn["question"], drawn["seed"], [70, 5, 33])
+    assert drawn["picks"] == [70, 5, 33]
+    assert [c["card_id"] for c in drawn["cards"]] == [c["card_id"] for c in expected["cards"]]
+    stored = runtime.store.get_reading(runtime.session.user_id, outcome.data["reading_id"])
+    assert stored["tarot_json"]["picks"] == [70, 5, 33]
+    # Consumed by that reading: a later new question deals from the top again.
+    assert runtime.session.pending_picks is None
+    await runtime.turn("A offer 还是 B offer？")
+    assert "picks" not in runtime.session.state["tarot_result"]
+
+
+async def test_draw_refuses_a_spread_that_does_not_fit_the_picks(runtime):
+    runtime.session.append_user("看看近期状态")
+    runtime.session.pending_picks = (3,)
+    runtime.session.start_reading("看看近期状态")
+    denied = await execute(
+        runtime,
+        ToolCall(id="d", name="draw_tarot", arguments={"spread": "three_card", "question": "q"}),
+    )
+    assert not denied.ok
+    allowed = await execute(
+        runtime,
+        ToolCall(id="s", name="draw_tarot", arguments={"spread": "single", "question": "q"}),
+    )
+    assert allowed.ok and allowed.data["picks"] == [3]
 
 
 async def test_followup_reuses_cards_and_record(runtime):

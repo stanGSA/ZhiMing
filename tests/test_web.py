@@ -10,6 +10,7 @@ pytest.importorskip("fastapi")
 
 from app import create_runtime
 from harness.models import ModelResponse, ToolCall
+from plugins.tarot.draw import draw_tarot
 from tests.test_week6 import with_birth
 from web import BirthInfo, create_web_app
 
@@ -258,6 +259,34 @@ async def test_offline_bazi_chat_and_tarot_spread(browser):
         )
     ).json()
     assert len(tarot["reading"]["tarot"]["cards"]) == 1
+
+
+async def test_tarot_picks_decide_the_cards(browser):
+    client, _, _ = browser
+    await client.get("/api/session")
+    for bad in (
+        {"spread": "three_card", "picks": [1, 2]},
+        {"spread": "three_card", "picks": [1, 1, 2]},
+        {"spread": "single", "picks": [78]},
+        {"spread": "single", "picks": [0], "system": "auto"},
+    ):
+        body = {"message": "最近的状态", "system": "tarot", **bad}
+        assert (await client.post("/api/chat", json=body)).status_code == 422
+    result = (
+        await client.post(
+            "/api/chat",
+            json={
+                "message": "最近的状态",
+                "system": "tarot",
+                "spread": "three_card",
+                "picks": [70, 5, 33],
+            },
+        )
+    ).json()
+    drawn = result["reading"]["tarot"]
+    assert drawn["picks"] == [70, 5, 33]
+    expected = draw_tarot(drawn["spread"], drawn["question"], drawn["seed"], [70, 5, 33])
+    assert [c["card_id"] for c in drawn["cards"]] == [c["card_id"] for c in expected["cards"]]
 
 
 async def test_xinjiang_clock_not_assumed(browser):

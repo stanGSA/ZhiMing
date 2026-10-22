@@ -7,13 +7,22 @@ from harness.models import StrictInput
 from harness.registry import Tool
 from knowledge.kb import KnowledgeBase
 from plugins.base import MEANING_FIELDS, Signal
-from plugins.tarot.draw import draw_tarot
+from plugins.tarot.draw import draw_tarot, valid_picks
 from plugins.tarot.validation import validate_output
 
 
 class DrawInput(StrictInput):
     spread: Literal["single", "three_card", "decision"]
     question: str = Field(min_length=1, max_length=2000)
+
+
+def check_spread(args: DrawInput, session) -> str | None:
+    if session.state.get("requested_spread") and args.spread != session.state["requested_spread"]:
+        return "必须使用用户明确指定的牌阵"
+    picks = session.state.get("picks")
+    if picks and not valid_picks(picks, args.spread):
+        return f"用户已从牌堆中选了{len(picks)}张牌，牌阵须与之相符"
+    return None
 
 
 class TarotPlugin:
@@ -37,12 +46,7 @@ class TarotPlugin:
                 partition="tarot",
                 dependency="active_reading_id",
                 exclusive_key="tarot_drawn",
-                validator=lambda args, session: (
-                    "必须使用用户明确指定的牌阵"
-                    if session.state.get("requested_spread")
-                    and args.spread != session.state["requested_spread"]
-                    else None
-                ),
+                validator=check_spread,
                 model_result=lambda data: {k: v for k, v in data.items() if k != "signals"},
             )
         ]
@@ -77,7 +81,9 @@ class TarotPlugin:
         return signals
 
     def draw(self, args: DrawInput, session) -> dict:
-        result = draw_tarot(args.spread, args.question, session.state["seed"])
+        result = draw_tarot(
+            args.spread, args.question, session.state["seed"], session.state.get("picks")
+        )
         result["reading_id"] = session.state["active_reading_id"]
         result["kb_version"] = self.kb.version
         signals = self.extract_signals([result])

@@ -1506,7 +1506,11 @@ function pickCard(index, card) {
 async function drawCards() {
   tarotPhase = "waiting";
   renderSpread(null);
-  await send({ message: $("#tarot-question").value.trim(), extra: { spread } }, state.birth);
+  // The server shuffles the deck face down; these positions decide which cards are dealt.
+  await send(
+    { message: $("#tarot-question").value.trim(), extra: { spread, picks: [...picked] } },
+    state.birth,
+  );
 }
 
 function resetTarot() {
