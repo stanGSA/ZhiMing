@@ -190,7 +190,7 @@ def test_timezone_supports_historical_dst():
 
 
 async def test_explicit_spread_cannot_be_changed_by_model(runtime):
-    from tests.test_harness import call, execute
+    from tests.harness.test_loop_and_guard import call, execute
 
     runtime.session.append_user("只用塔罗三张牌：要不要投资股票？")
     start = await execute(runtime, call("start_reading", question="是否投资"))

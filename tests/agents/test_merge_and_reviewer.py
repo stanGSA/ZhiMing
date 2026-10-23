@@ -14,7 +14,7 @@ from harness.models import ToolCall
 from harness.session import Session
 from scripts.trace_tree import build_tree, reviewer_metrics
 from signals.merge import fingerprint, merge_signals, model_view, undisclosed
-from tests.test_multi_agent import (
+from tests.agents.test_multi_agent import (
     BIRTH,
     LOW,
     RoleModel,
@@ -31,7 +31,7 @@ from tests.test_multi_agent import (
     tarot_specialist,
     turn_results,
 )
-from tests.test_week23_integration import draft, invoke, prepare
+from tests.plugins.test_astro_bazi_integration import draft, invoke, prepare
 
 TAROT_SUMMARY = "建议先梳理现状，再做小步尝试。"
 

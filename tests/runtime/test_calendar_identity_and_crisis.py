@@ -11,8 +11,8 @@ from common.safety import SAFETY_CONFIRMATION, SAFETY_PROMPT
 from harness.models import ModelResponse
 from harness.session import Session
 from memory.store import Store
-from tests.test_week6 import ask, with_birth
-from tests.test_week23_integration import invoke
+from tests.plugins.test_astro_bazi_integration import invoke
+from tests.plugins.test_name_dream_daily import ask, with_birth
 from web import COOKIE, MAX_IDLE, create_web_app
 
 HEADERS = {"X-Zhiming-Client": "web", "Origin": "http://testserver"}

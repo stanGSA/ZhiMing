@@ -10,9 +10,9 @@ import pytest
 from knowledge.review import content_hash, load_ledgers
 from scripts import kb_review_campaign as campaign
 from scripts import model_review_kb as review
+from tests.knowledge.test_model_review import ROLES, Reviewer, complete_run, real_entries
+from tests.knowledge.test_review_revocation import TARGET, tower_run
 from tests.knowledge_fixture import copy_draft_knowledge
-from tests.test_model_review_kb import ROLES, Reviewer, complete_run, real_entries
-from tests.test_pr15_review_fixes import TARGET, tower_run
 
 
 @pytest.fixture
@@ -130,7 +130,7 @@ async def test_missing_call_or_item_cannot_calibrate(workspace, tmp_path):
 
 async def test_unanimous_single_category_kappa_is_not_accepted(workspace, tmp_path, monkeypatch):
     work, config = workspace
-    monkeypatch.setattr("tests.test_model_review_kb.DOUBTFUL", set())
+    monkeypatch.setattr("tests.knowledge.test_model_review.DOUBTFUL", set())
     reviewers = {role: Reviewer(real_entries(work), role) for role in review.REVIEWERS}
     _, run, _, _, _ = await complete_run(
         work, config, tmp_path / "unanimous", reviewers, plant_rate=0

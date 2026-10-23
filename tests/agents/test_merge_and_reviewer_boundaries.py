@@ -4,8 +4,8 @@ import pytest
 
 from common.schemas import Reading
 from signals.merge import merge_signals, undisclosed
-from tests.test_week5 import LOW, reversed_signals, sig
-from tests.test_week23_integration import invoke
+from tests.agents.test_merge_and_reviewer import LOW, reversed_signals, sig
+from tests.plugins.test_astro_bazi_integration import invoke
 
 
 @pytest.mark.parametrize(

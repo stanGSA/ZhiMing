@@ -10,7 +10,7 @@ from common.schemas import Reading
 from common.validation import validate_reading
 from harness.models import ToolCall
 from plugins.tarot.draw import draw_tarot
-from tests.test_harness import execute
+from tests.harness.test_loop_and_guard import execute
 
 
 @pytest.mark.parametrize("spread,count", [("single", 1), ("three_card", 3), ("decision", 3)])

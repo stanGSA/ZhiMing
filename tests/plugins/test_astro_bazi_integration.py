@@ -310,7 +310,7 @@ async def test_quality_review_projects_daily_events_with_daily_schema(runtime):
 
     from plugins.daily.tools import DailyPlugin
     from scripts.live_week23 import grounded_payload
-    from tests.test_week6 import ask, with_birth
+    from tests.plugins.test_name_dream_daily import ask, with_birth
 
     with_birth(runtime)
     await ask(runtime, "看看2026-10-20的每日运势。")

@@ -15,9 +15,9 @@ from scripts import draft_week6, draft_week23
 from scripts import model_review_kb as review
 from scripts.draft_sources import write_drafts
 from scripts.kb_review_budget import BudgetExceeded, BudgetModel, ReviewBudget
+from tests.knowledge.test_model_review import ROLES
+from tests.knowledge.test_review_revocation import TARGET, tower_run
 from tests.knowledge_fixture import copy_draft_knowledge
-from tests.test_model_review_kb import ROLES
-from tests.test_pr15_review_fixes import TARGET, tower_run
 
 
 @pytest.fixture

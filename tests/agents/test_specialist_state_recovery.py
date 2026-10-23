@@ -7,7 +7,7 @@ import pytest
 from common.validation import report_matches_profile
 from harness.guard import Guard
 from scripts.trace_tree import build_tree
-from tests.test_multi_agent import (
+from tests.agents.test_multi_agent import (
     BIRTH,
     LOW,
     RoleModel,

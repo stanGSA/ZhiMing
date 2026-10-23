@@ -172,7 +172,7 @@ async def test_terminal_batch_has_all_tool_responses(runtime, scripted_model):
 
 
 def test_harness_does_not_import_application_layers():
-    root = Path(__file__).resolve().parents[1] / "harness"
+    root = Path(__file__).resolve().parents[2] / "harness"
     for path in root.glob("*.py"):
         source = path.read_text(encoding="utf-8")
         assert not any(

@@ -18,7 +18,7 @@ from plugins.dream.match import BARE_FRAGMENTS, DISTINCT_HEADS, DreamMatcher
 from plugins.name.strokes import UnihanMissing, char_strokes, unihan
 from plugins.name.wuge import analyze, element, grids, relation, shuli
 from signals.merge import merge_signals
-from tests.test_week23_integration import invoke
+from tests.plugins.test_astro_bazi_integration import invoke
 
 NAMES = yaml.safe_load((ROOT / "evals/cases/name_strokes.yaml").read_text(encoding="utf-8"))
 DREAMS = yaml.safe_load((ROOT / "evals/cases/dream_annotations.yaml").read_text(encoding="utf-8"))
@@ -314,7 +314,7 @@ async def test_dream_tool_hits_misses_and_psyche_only(runtime):
 
 
 def test_dream_signals_never_cancel_timing():
-    from tests.test_week5 import sig
+    from tests.agents.test_merge_and_reviewer import sig
 
     merged = merge_signals(
         [

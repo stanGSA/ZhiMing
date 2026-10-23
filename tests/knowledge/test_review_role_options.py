@@ -9,7 +9,7 @@ import pytest
 from harness.llm import RoleModelSpec, role_model
 from scripts import kb_review_live as live
 from scripts import model_review_kb as review
-from tests.test_kb_review_r2 import SYSTEM, Models, setting  # noqa: F401
+from tests.knowledge.test_review_calibration import SYSTEM, Models, setting  # noqa: F401
 
 
 async def test_review_role_transmits_reasoning_options_and_keeps_total_usage(monkeypatch):

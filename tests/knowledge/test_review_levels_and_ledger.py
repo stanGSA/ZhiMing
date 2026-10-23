@@ -18,9 +18,9 @@ from knowledge.schema import Entry
 from plugins.base import Signal
 from plugins.dream.match import DreamMatcher
 from signals.merge import merge_signals
-from tests.test_week5 import sig
-from tests.test_week6 import daily, with_birth
-from tests.test_week23_integration import invoke
+from tests.agents.test_merge_and_reviewer import sig
+from tests.plugins.test_astro_bazi_integration import invoke
+from tests.plugins.test_name_dream_daily import daily, with_birth
 
 REVIEWERS = [
     dict(vendor="vendor-a", model="model-a", returned_model="model-a-1", verdict="pass"),

@@ -17,8 +17,8 @@ from scripts import kb_review_campaign as campaign
 from scripts import kb_review_live as live
 from scripts import model_review_kb as review
 from scripts.kb_review_rubric import ANCHORS, RUBRIC, SYSTEM_RUBRIC, revise_prompt
+from tests.knowledge.test_model_review import ROLES
 from tests.knowledge_fixture import copy_draft_knowledge
-from tests.test_model_review_kb import ROLES
 
 DRAFT = review.ROOT / "docs/verification/kb-model-review/stage1-r2/calibration.yaml"
 SYSTEM = "daily"

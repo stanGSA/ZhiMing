@@ -11,14 +11,14 @@ from knowledge.build import build
 from knowledge.kb import KnowledgeBase
 from knowledge.review import approval, load_ledgers, write_ledger
 from scripts import model_review_kb as review
-from tests.knowledge_fixture import copy_draft_knowledge
-from tests.test_model_review_kb import (
+from tests.knowledge.test_model_review import (
     IDS,
     ROLES,
     Reviewer,
     complete_run,
     real_entries,
 )
+from tests.knowledge_fixture import copy_draft_knowledge
 
 TARGET = "kb:tarot:card:the_tower:upright"
 

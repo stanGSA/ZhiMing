@@ -13,7 +13,7 @@ from common.validation import validate_reading
 from harness.guard import Guard
 from harness.models import ModelResponse, ToolCall
 from scripts.trace_tree import build_tree, specialist_metrics
-from tests.test_multi_agent import (
+from tests.agents.test_multi_agent import (
     BIRTH,
     LOW,
     ROLE_TOOLS,

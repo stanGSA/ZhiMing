@@ -11,7 +11,7 @@ pytest.importorskip("fastapi")
 from app import create_runtime
 from harness.models import ModelResponse, ToolCall
 from plugins.tarot.draw import draw_tarot
-from tests.test_week6 import with_birth
+from tests.plugins.test_name_dream_daily import with_birth
 from web import BirthInfo, create_web_app
 
 HEADERS = {"X-Zhiming-Client": "web", "Origin": "http://testserver"}

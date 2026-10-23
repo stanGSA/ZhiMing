@@ -4,9 +4,9 @@ import pytest
 
 from common.tools import render_reading
 from plugins.daily.tools import requested_date
-from tests.test_week6 import ask, with_birth
-from tests.test_week6_review import EXPLAIN, submission
-from tests.test_week23_integration import invoke
+from tests.plugins.test_astro_bazi_integration import invoke
+from tests.plugins.test_name_dream_daily import ask, with_birth
+from tests.plugins.test_name_dream_daily_accept_paths import EXPLAIN, submission
 
 ANCHOR = "2026-10-14"
 

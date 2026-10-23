@@ -318,12 +318,12 @@ async def test_first_reply_followup_and_history_paths(runtime):
 
 
 async def test_name_disclosure_only_in_folded_evidence_is_not_shown(runtime):
-    from tests.test_week6_followup_fixes import EXPLAIN, name_draft
+    from tests.plugins.test_name_dream_daily_disclosures import EXPLAIN, name_draft
 
     value = await name_draft(runtime)
     value["sections"] = [{"title": "数理", "body": "人格26，体现成长。", "ref_ids": []}]
     value["evidence"][0]["reading"] = "人格26。" + EXPLAIN
-    from tests.test_week23_integration import invoke
+    from tests.plugins.test_astro_bazi_integration import invoke
 
     rejected = await invoke(runtime, "submit_reading", value)
     assert not rejected.ok and "多种写法" in rejected.error

@@ -6,8 +6,8 @@ from agents.schemas import ReportInput
 from agents.specialists import as_reading
 from common.schemas import Reading
 from plugins.name.wuge import analyze
-from tests.test_week6 import LOW, ask, with_birth
-from tests.test_week23_integration import invoke
+from tests.plugins.test_astro_bazi_integration import invoke
+from tests.plugins.test_name_dream_daily import LOW, ask, with_birth
 
 ANCHOR = "2026-10-14"
 TOMORROW = (date.fromisoformat(ANCHOR) + timedelta(days=1)).isoformat()

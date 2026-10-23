@@ -12,8 +12,8 @@ from scripts import model_review_kb as review
 from scripts.draft_sources import write_drafts
 from scripts.draft_week23 import DIGNITY, GOD_TEXT, draft
 from signals.merge import merge_signals
-from tests.test_week6 import ask, with_birth
-from tests.test_week23_integration import invoke
+from tests.plugins.test_astro_bazi_integration import invoke
+from tests.plugins.test_name_dream_daily import ask, with_birth
 
 THEMES = ("relationship", "finance")
 OUTER = ("Uranus", "Neptune", "Pluto")

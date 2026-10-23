@@ -6,7 +6,13 @@ import pytest
 
 from common.output_policy import care_advice, care_error, certainty_claim
 from plugins.astro.validation import validate_output
-from tests.test_pr7_review_fixes import STATE, astro_reading, check, section, tarot_draft
+from tests.validation.test_layered_fact_binding import (
+    STATE,
+    astro_reading,
+    check,
+    section,
+    tarot_draft,
+)
 
 
 @pytest.mark.parametrize("field", ["sections", "evidence", "summary"])
