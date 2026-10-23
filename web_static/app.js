@@ -543,6 +543,7 @@ async function refresh() {
 
 async function startNew(provider) {
   if (busy && state) return;
+  page.onNewSession?.();
   setBusy(true);
   try {
     applyState(
@@ -572,6 +573,7 @@ function wireControls() {
   $("#copy-reading")?.addEventListener("click", copyReading);
   $("#confirm-dialog").addEventListener("close", async () => {
     if ($("#confirm-dialog").returnValue !== "confirm" || busy) return;
+    page.onNewSession?.();
     setBusy(true);
     try {
       applyState(await api("/api/session", { method: "DELETE" }), true);
@@ -1384,16 +1386,23 @@ function cardBack() {
 }
 
 let spread = "three_card";
-/* idle → picking (fan out the deck) → waiting (request sent) → reveal (tap to flip) → done */
+/* idle → picking (fan out the deck) → waiting (request sent) → reveal (tap to flip) → done.
+   A reply without cards (a clarifying question, an error) leaves the round open: question,
+   spread and chosen positions stay, and the next message in the dialogue continues it. */
 let tarotPhase = "idle";
 let picked = [];
 let flipped = new Set();
 let drawnKey = "";
+let tarotRound = 0; // bumped by every reset; a stale animation callback compares against it
+let flights = new Set();
+let pendingDraw = null; // { message, spread, picks }, fixed when the last card is chosen
+let questionDraft = null; // an unsent question set aside while a saved record is shown
 const DECK_SIZE = 78;
 const SPREAD_HINTS = {
   idle: "选择牌阵，写下一个具体的问题，再点「洗牌抽牌」。",
   picking: "",
   waiting: "牌已选定，正在静候牌意……",
+  open: "这一轮还没抽出牌。请在下方对话窗回复知命，所选的牌会沿用；想换牌请点「重新起问」。",
   reveal: "轻触牌面逐张翻开，或点「全部翻开」。",
   done: "追问请在下方对话窗；想换一组牌，请点「重新起问」。",
 };
@@ -1404,7 +1413,7 @@ function drawnCards() {
 
 function updateTarot() {
   const size = SPREAD_POSITIONS[spread].length;
-  const step = { idle: 2, picking: 3, waiting: 4, reveal: 4, done: 5 }[tarotPhase];
+  const step = { idle: 2, picking: 3, waiting: 4, open: 4, reveal: 4, done: 5 }[tarotPhase];
   $$("#tarot-steps li").forEach((item) => {
     const index = Number(item.dataset.step);
     item.classList.toggle("done", index < step);
@@ -1427,9 +1436,12 @@ function updateTarot() {
   $("#tarot-lower").classList.toggle("veiled", unturned);
   $("#reading-veil").hidden = !unturned;
   $("#reading-content").toggleAttribute("aria-hidden", unturned);
-  $("#message").placeholder = drawnCards().length
-    ? "就这组牌继续追问，比如：这张牌在提醒我什么？"
-    : "抽牌之后，可在这里就这组牌追问";
+  $("#message").placeholder =
+    tarotPhase === "open"
+      ? "在这里回复知命，所选的牌会沿用"
+      : drawnCards().length
+        ? "就这组牌继续追问，比如：这张牌在提醒我什么？"
+        : "抽牌之后，可在这里就这组牌追问";
 }
 
 function buildDeck() {
@@ -1466,15 +1478,21 @@ function pickCard(index, card) {
   const size = SPREAD_POSITIONS[spread].length;
   if (busy || tarotPhase !== "picking" || picked.length >= size) return;
   picked.push(index);
-  // Decided now, not when the animation ends: quick taps must not send the draw twice.
-  const last = picked.length === size;
+  // Fixed now, not when the animation ends: quick taps must not send the draw twice, and a
+  // round reset during the flight must neither send nor read the next round's state.
+  const draw =
+    picked.length === size
+      ? { message: $("#tarot-question").value.trim(), spread, picks: [...picked] }
+      : null;
+  const round = tarotRound;
   const target = $$("#tarot-spread .card-face")[picked.length - 1];
   const from = card.getBoundingClientRect();
   card.classList.add("taken");
   card.disabled = true;
   const done = () => {
+    if (round !== tarotRound) return;
     renderSpread(null);
-    if (last) drawCards();
+    if (draw) drawCards(draw);
   };
   if (!target || matchMedia("(prefers-reduced-motion: reduce)").matches) return done();
   // Fly a copy of the chosen card down into its slot.
@@ -1485,40 +1503,64 @@ function pickCard(index, card) {
   flyer.style.width = `${from.width}px`;
   flyer.style.height = `${from.height}px`;
   document.body.append(flyer);
-  flyer
-    .animate(
-      [
-        { transform: "translate(0, 0) scale(1)", opacity: 1 },
-        {
-          transform: `translate(${to.left - from.left}px, ${to.top - from.top}px) scale(${to.width / from.width}, ${to.height / from.height})`,
-          opacity: 1,
-        },
-      ],
-      { duration: 520, easing: "cubic-bezier(.2,.8,.2,1)" },
-    )
-    .finished.then(() => {
+  const flight = flyer.animate(
+    [
+      { transform: "translate(0, 0) scale(1)", opacity: 1 },
+      {
+        transform: `translate(${to.left - from.left}px, ${to.top - from.top}px) scale(${to.width / from.width}, ${to.height / from.height})`,
+        opacity: 1,
+      },
+    ],
+    { duration: 520, easing: "cubic-bezier(.2,.8,.2,1)" },
+  );
+  flights.add(flight);
+  flight.finished
+    .then(done, () => {}) // a cancelled flight belongs to a round that was reset
+    .finally(() => {
+      flights.delete(flight);
       flyer.remove();
-      done();
     });
   updateTarot();
 }
 
-async function drawCards() {
+function drawCards(draw) {
+  pendingDraw = draw;
   tarotPhase = "waiting";
   renderSpread(null);
   // The server shuffles the deck face down; these positions decide which cards are dealt.
-  await send(
-    { message: $("#tarot-question").value.trim(), extra: { spread, picks: [...picked] } },
+  return send(
+    { message: draw.message, extra: { spread: draw.spread, picks: draw.picks } },
     state.birth,
   );
 }
 
 function resetTarot() {
+  tarotRound += 1;
+  flights.forEach((flight) => flight.cancel());
+  flights.clear();
   tarotPhase = "idle";
   picked = [];
   flipped = new Set();
   drawnKey = "";
+  pendingDraw = null;
   $("#deck-fan").replaceChildren();
+}
+
+// Every way to a new session (重新起问, 开启新对话, switching mode, clearing records) ends the
+// round before the request, so nothing from it can still be sent.
+function newTarotSession() {
+  resetTarot();
+  $("#tarot-question").value = questionDraft || "";
+  questionDraft = null;
+  updateTarot(); // the slots follow when the new session's state arrives
+}
+
+// The reply came back without cards: keep the round so the next message continues it.
+function openRound() {
+  tarotPhase = "open";
+  renderSpread(null);
+  if (state?.messages?.at(-1)?.status === "ask_user")
+    toast("知命想先确认一些信息，请在下方对话窗回复；所选的牌会沿用。");
 }
 
 function flipCard(index) {
@@ -1537,27 +1579,31 @@ function flipCard(index) {
   updateTarot();
 }
 
-// Called on every render of the reading: a fresh draw waits face down; a restored one shows.
+// Called on every render of the reading: this round's draw waits face down; a record shown
+// from 足迹 or restored on load is face up, with its own question.
 function onTarotReading(reading) {
   const cards = reading?.tarot?.cards || [];
   if (cards.length) {
     const key = `${reading.tarot.seed}:${cards.map((card) => card.card_id).join(",")}`;
     if (key !== drawnKey) {
-      drawnKey = key;
-      spread = reading.tarot.spread || spread;
-      if (tarotPhase === "waiting") {
+      if (tarotPhase === "waiting" && reading.reading_id === state?.reading?.reading_id) {
+        // The answer to this round: the question typed above is the one these cards answer.
         tarotPhase = "reveal";
         flipped = new Set();
       } else {
+        const typed = $("#tarot-question").value.trim();
+        if (tarotPhase !== "reveal" && tarotPhase !== "done" && typed && questionDraft === null)
+          questionDraft = typed;
+        resetTarot();
         tarotPhase = "done";
         flipped = new Set(cards.map((_, index) => index));
+        // The same text the 足迹 list shows for this record.
+        $("#tarot-question").value = (reading.question || reading.tarot.question || "").split("\n")[0];
       }
-      // The first 塔罗 message of the session is the question these cards were drawn for.
-      const asked = state?.messages?.find((item) => item.role === "user" && item.system === "tarot");
-      if (!$("#tarot-question").value)
-        $("#tarot-question").value = asked?.text || (reading.tarot.question || "").split("\n")[0];
+      drawnKey = key;
+      spread = reading.tarot.spread || spread;
     }
-  } else if (tarotPhase !== "waiting") resetTarot(); // 新对话、切换模式或清除记录
+  }
   renderSpread(reading);
 }
 
@@ -2002,15 +2048,19 @@ const PAGES = {
       $("#flip-all").addEventListener("click", () =>
         drawnCards().forEach((_, index) => setTimeout(() => flipCard(index), index * 260)),
       );
-      $("#new-question").addEventListener("click", () => {
-        resetTarot();
-        $("#tarot-question").value = "";
-        startNew(state.provider);
-      });
+      $("#new-question").addEventListener("click", () => startNew(state.provider));
       renderSpread(null);
     },
+    onNewSession: newTarotSession,
     // Before a draw, the dialogue box and the suggestions feed the question above the deck.
     compose(text) {
+      if (tarotPhase === "open") {
+        if (!text) return null;
+        // Continue the same round: the reply goes as is, with the spread and positions chosen.
+        tarotPhase = "waiting";
+        renderSpread(null);
+        return { message: text, extra: { spread: pendingDraw.spread, picks: pendingDraw.picks } };
+      }
       if (drawnCards().length) return text ? { message: text } : null;
       if (tarotPhase !== "idle") {
         toast("请先从牌堆中选完牌。");
@@ -2023,14 +2073,14 @@ const PAGES = {
       return null;
     },
     draft(question) {
-      if (drawnCards().length) return false;
+      if (drawnCards().length || tarotPhase === "open") return false;
       if (tarotPhase === "idle") $("#tarot-question").value = question;
       $("#tarot-form").scrollIntoView({ behavior: "smooth", block: "center" });
       $("#tarot-question").focus({ preventScroll: true });
       return true;
     },
     onFab() {
-      if (drawnCards().length) return false;
+      if (drawnCards().length || tarotPhase === "open") return false;
       $(tarotPhase === "picking" ? "#tarot-deck" : "#tarot-form").scrollIntoView({
         behavior: "smooth",
         block: "center",
@@ -2045,15 +2095,10 @@ const PAGES = {
       return true;
     },
     onSendFailed() {
-      if (tarotPhase === "waiting") resetTarot();
-      renderSpread(null);
+      if (tarotPhase === "waiting") openRound();
     },
     onState(next) {
-      // The reply asked something back instead of drawing: start the round over.
-      if (tarotPhase === "waiting" && !next.busy && !drawnCards().length) {
-        resetTarot();
-        renderSpread(null);
-      }
+      if (tarotPhase === "waiting" && !next.busy && !drawnCards().length) openRound();
     },
     onReading: onTarotReading,
   },

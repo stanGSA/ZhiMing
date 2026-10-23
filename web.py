@@ -602,7 +602,7 @@ def create_web_app(
                 )
                 return {**state(session), "busy": False}
             # Set on every request, so a choice never carries over to a later question.
-            session.runtime.session.pending_picks = tuple(body.picks) if body.picks else None
+            session.runtime.session.choose_picks(tuple(body.picks) if body.picks else None)
             try:
                 outcome = await asyncio.wait_for(
                     session.runtime.turn(message, safety_checked=True), timeout=360
@@ -624,6 +624,7 @@ def create_web_app(
                     session.reading = {
                         "view": body.system,
                         "reading_id": outcome.data["reading_id"],
+                        "question": saved.get("question") if saved else None,
                         "output": outcome.data["reading"],
                         "tarot": saved.get("tarot_json") if saved else None,
                         "calculations": saved.get("calculations_json") if saved else None,
@@ -663,6 +664,7 @@ def create_web_app(
             raise HTTPException(404, "找不到这份解读。")
         return {
             "reading_id": reading_id,
+            "question": saved["question"],
             "output": saved["output_json"],
             "tarot": saved["tarot_json"],
             "calculations": saved.get("calculations_json"),

@@ -52,6 +52,18 @@ async def test_chosen_positions_decide_the_draw_once(runtime):
     assert "picks" not in runtime.session.state["tarot_result"]
 
 
+def test_an_open_reading_takes_the_latest_picks(runtime):
+    session = runtime.session
+    session.choose_picks((1, 2, 3))
+    session.start_reading("q")
+    assert session.state["picks"] == [1, 2, 3] and session.pending_picks is None
+    session.choose_picks((60, 8, 34))
+    assert session.state["picks"] == [60, 8, 34]
+    session.state["complete"] = True
+    session.choose_picks((5, 6, 7))
+    assert session.state["picks"] == [60, 8, 34] and session.pending_picks == (5, 6, 7)
+
+
 async def test_draw_refuses_a_spread_that_does_not_fit_the_picks(runtime):
     runtime.session.append_user("看看近期状态")
     runtime.session.pending_picks = (3,)

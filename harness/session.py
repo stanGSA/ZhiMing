@@ -119,6 +119,14 @@ class Session:
         self.messages.append({"role": "user", "content": text})
         self.state["asked_this_turn"] = False
 
+    def choose_picks(self, picks: tuple[int, ...] | None) -> None:
+        """Deck positions sent with this request. A new reading takes them at start_reading; a
+        reading still open (the reply to a clarifying question) takes them now, so the draw
+        always uses the latest choice."""
+        self.pending_picks = picks
+        if picks and self.state.get("active_reading_id") and not self.state.get("complete"):
+            self.state["picks"] = list(picks)
+
     def start_reading(self, question: str) -> str:
         previous = self.state.get("active_reading_id")
         # Fixture injection controls only the first draw, never later redraws.

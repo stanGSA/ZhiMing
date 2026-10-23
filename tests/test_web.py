@@ -287,6 +287,36 @@ async def test_tarot_picks_decide_the_cards(browser):
     assert drawn["picks"] == [70, 5, 33]
     expected = draw_tarot(drawn["spread"], drawn["question"], drawn["seed"], [70, 5, 33])
     assert [c["card_id"] for c in drawn["cards"]] == [c["card_id"] for c in expected["cards"]]
+    # Both the session's reading and a record opened from 足迹 carry the record's question.
+    assert result["reading"]["question"].startswith("最近的状态")
+    saved = (await client.get(f"/api/readings/{result['reading']['reading_id']}")).json()
+    assert saved["question"] == result["reading"]["question"]
+
+
+async def test_clarifying_reply_continues_the_round_with_the_latest_picks(browser, scripted_model):
+    client, _, runtimes = browser
+    await client.get("/api/session")
+
+    def response(name, **arguments):
+        return ModelResponse(tool_calls=[ToolCall(id=name, name=name, arguments=arguments)])
+
+    runtimes[-1].model = scripted_model(
+        [
+            response("start_reading", question="A 还是 B？"),
+            response("ask_user", question="A 和 B 分别是什么？"),
+            response("draw_tarot", spread="decision", question="A 还是 B？"),
+            response("ask_user", question="还想看哪一张？"),
+        ]
+    )
+    body = {"system": "tarot", "spread": "decision"}
+    first = await client.post(
+        "/api/chat", json={**body, "message": "A 还是 B？", "picks": [1, 2, 3]}
+    )
+    assert first.json()["messages"][-1]["status"] == "ask_user"
+    reply = {**body, "message": "A 是留在原公司，B 是去新公司", "picks": [60, 8, 34]}
+    assert (await client.post("/api/chat", json=reply)).status_code == 200
+    # The reading started in the first turn draws in the second, with the choice sent last.
+    assert runtimes[-1].session.state["tarot_result"]["picks"] == [60, 8, 34]
 
 
 async def test_xinjiang_clock_not_assumed(browser):
