@@ -573,7 +573,7 @@ function wireControls() {
   $("#copy-reading")?.addEventListener("click", copyReading);
   $("#confirm-dialog").addEventListener("close", async () => {
     if ($("#confirm-dialog").returnValue !== "confirm" || busy) return;
-    page.onNewSession?.();
+    page.onNewSession?.({ forget: true });
     setBusy(true);
     try {
       applyState(await api("/api/session", { method: "DELETE" }), true);
@@ -1547,10 +1547,11 @@ function resetTarot() {
 }
 
 // Every way to a new session (重新起问, 开启新对话, switching mode, clearing records) ends the
-// round before the request, so nothing from it can still be sent.
-function newTarotSession() {
+// round before the request, so nothing from it can still be sent. An unsent question set aside
+// while looking at a record comes back, unless the records themselves are being cleared.
+function newTarotSession({ forget = false } = {}) {
   resetTarot();
-  $("#tarot-question").value = questionDraft || "";
+  $("#tarot-question").value = forget ? "" : questionDraft || "";
   questionDraft = null;
   updateTarot(); // the slots follow when the new session's state arrives
 }
@@ -1561,6 +1562,18 @@ function openRound() {
   renderSpread(null);
   if (state?.messages?.at(-1)?.status === "ask_user")
     toast("知命想先确认一些信息，请在下方对话窗回复；所选的牌会沿用。");
+}
+
+// After a reload the round lives only on the server: take its question, spread and positions
+// back, waiting if the reply is still being written, open otherwise.
+function restoreRound(round, waiting) {
+  resetTarot();
+  spread = round.spread;
+  picked = [...round.picks];
+  pendingDraw = { message: round.question, spread: round.spread, picks: [...round.picks] };
+  $("#tarot-question").value = round.question;
+  tarotPhase = waiting ? "waiting" : "open";
+  renderSpread(null);
 }
 
 function flipCard(index) {
@@ -2097,8 +2110,10 @@ const PAGES = {
     onSendFailed() {
       if (tarotPhase === "waiting") openRound();
     },
-    onState(next) {
-      if (tarotPhase === "waiting" && !next.busy && !drawnCards().length) openRound();
+    onState(next, first) {
+      if (drawnCards().length) return;
+      if (first && next.tarot_round) restoreRound(next.tarot_round, next.busy);
+      else if (tarotPhase === "waiting" && !next.busy) openRound();
     },
     onReading: onTarotReading,
   },

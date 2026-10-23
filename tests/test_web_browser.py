@@ -92,14 +92,22 @@ def draw(page, question, *positions):
     pick(page, *positions)
 
 
-def response(name, **arguments):
-    return ModelResponse(tool_calls=[ToolCall(id=name, name=name, arguments=arguments)])
+def answered(page, action):
+    """Run an action that sends one /api/chat request; return once the page has applied the
+    answer. The thinking bubble is also .msg-assistant, so counting bubbles is not enough."""
+    with page.expect_response(lambda r: r.url.endswith("/api/chat")):
+        action()
+    expect(page.locator("#thinking")).to_have_count(0)
+    expect(page.locator("#chat-form")).to_have_attribute("aria-busy", "false")
 
 
-def test_reply_to_a_clarifying_question_continues_the_round(site, chromium):
-    base, runtimes = site
-    page, chats = open_tarot(chromium, base)
-    runtimes[-1].model = ScriptedModel(
+def reply(page, text):
+    page.fill("#message", text)
+    page.press("#message", "Enter")
+
+
+def clarifying_model():
+    return ScriptedModel(
         [
             response("start_reading", question="A 还是 B？"),
             response("ask_user", question="A 和 B 分别是什么？"),
@@ -107,18 +115,45 @@ def test_reply_to_a_clarifying_question_continues_the_round(site, chromium):
             response("ask_user", question="还想看哪一张？"),
         ]
     )
-    draw(page, "A 还是 B？", 4, 40, 70)
-    expect(page.locator("#messages .msg-assistant")).to_have_count(1)
+
+
+def response(name, **arguments):
+    return ModelResponse(tool_calls=[ToolCall(id=name, name=name, arguments=arguments)])
+
+
+def test_reply_to_a_clarifying_question_continues_the_round(site, chromium):
+    base, runtimes = site
+    page, chats = open_tarot(chromium, base)
+    runtimes[-1].model = clarifying_model()
+    answered(page, lambda: draw(page, "A 还是 B？", 4, 40, 70))
     assert page.is_hidden("#tarot-deck") and page.is_hidden("#tarot-begin")
 
-    page.fill("#message", "A 是留在原公司，B 是去新公司")
-    page.press("#message", "Enter")
-    expect(page.locator("#messages .msg-assistant")).to_have_count(2)
+    answered(page, lambda: reply(page, "A 是留在原公司，B 是去新公司"))
     # Sent straight away, with the same spread and positions; the deck never reopened.
     assert len(chats) == 2
     assert chats[1]["message"] == "A 是留在原公司，B 是去新公司"
     assert (chats[1]["spread"], chats[1]["picks"]) == ("three_card", [4, 40, 70])
     assert page.input_value("#tarot-question") == "A 还是 B？"
+    assert page.is_hidden("#tarot-deck")
+    assert runtimes[-1].session.state["tarot_result"]["picks"] == [4, 40, 70]
+
+
+def test_a_round_left_open_survives_a_reload(site, chromium):
+    base, runtimes = site
+    page, chats = open_tarot(chromium, base)
+    runtimes[-1].model = clarifying_model()
+    answered(page, lambda: draw(page, "A 还是 B？", 4, 40, 70))
+
+    page.reload()
+    # The round comes back from the server: question, chosen positions, no deck.
+    expect(page.locator("#tarot-question")).to_have_value("A 还是 B？")
+    expect(page.locator("#tarot-spread .tarot-slot.is-picked")).to_have_count(3)
+    assert page.is_hidden("#tarot-deck") and page.is_hidden("#tarot-begin")
+
+    answered(page, lambda: reply(page, "A 是留在原公司，B 是去新公司"))
+    assert len(chats) == 2
+    assert chats[1]["message"] == "A 是留在原公司，B 是去新公司"
+    assert (chats[1]["spread"], chats[1]["picks"]) == ("three_card", [4, 40, 70])
     assert page.is_hidden("#tarot-deck")
     assert runtimes[-1].session.state["tarot_result"]["picks"] == [4, 40, 70]
 
@@ -147,11 +182,10 @@ def test_starting_over_during_the_last_flight_sends_nothing(site, chromium):
 def test_a_record_from_history_shows_its_own_question(site, chromium):
     base, _ = site
     page, _ = open_tarot(chromium, base)
-    draw(page, "未来的工作状态如何", 1, 2, 3)
-    page.wait_for_selector(".flip-card")
+    answered(page, lambda: draw(page, "未来的工作状态如何", 1, 2, 3))
     page.click("#new-question")
     expect(page.locator("#tarot-question")).to_have_value("")
-    draw(page, "感情关系有哪些反思线索", 10, 20, 30)
+    answered(page, lambda: draw(page, "感情关系有哪些反思线索", 10, 20, 30))
     expect(page.locator("#history-list .history-item")).to_have_count(2)
 
     page.click("#open-history")
@@ -168,8 +202,7 @@ def test_a_record_from_history_shows_its_own_question(site, chromium):
 def test_an_unsent_question_survives_looking_at_a_record(site, chromium):
     base, _ = site
     page, _ = open_tarot(chromium, base)
-    draw(page, "下个月的重心", 5, 6, 7)
-    page.wait_for_selector(".flip-card")
+    answered(page, lambda: draw(page, "下个月的重心", 5, 6, 7))
     page.click("#new-question")
     expect(page.locator("#tarot-question")).to_have_value("")
     page.fill("#tarot-question", "还没发出的问题")
@@ -178,3 +211,20 @@ def test_an_unsent_question_survives_looking_at_a_record(site, chromium):
     expect(page.locator("#tarot-question")).to_have_value("下个月的重心")
     page.click("#new-question")
     expect(page.locator("#tarot-question")).to_have_value("还没发出的问题")
+
+
+def test_clearing_records_also_clears_an_unsent_question(site, chromium):
+    base, _ = site
+    page, _ = open_tarot(chromium, base)
+    answered(page, lambda: draw(page, "下个月的重心", 5, 6, 7))
+    page.click("#new-question")
+    expect(page.locator("#tarot-question")).to_have_value("")
+    page.fill("#tarot-question", "还没发出的私人问题")
+    page.click("#open-history")
+    page.click("#history-list .history-item")
+    expect(page.locator("#tarot-question")).to_have_value("下个月的重心")
+
+    page.click("#forget")
+    page.click("#confirm-dialog button[value=confirm]")
+    expect(page.locator("#history-list .history-item")).to_have_count(0)
+    expect(page.locator("#tarot-question")).to_have_value("")

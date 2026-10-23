@@ -295,6 +295,9 @@ class BrowserSession:
     last_birth: str = ""
     reading: dict | None = None
     chart: dict | None = None
+    # A tarot draw sent but not yet answered with cards (e.g. the model asked something back):
+    # its question, spread and positions, so a reloaded page can continue the same round.
+    tarot_round: dict | None = None
     lock: asyncio.Lock = field(default_factory=asyncio.Lock)
     touched: float = field(default_factory=time.monotonic)
 
@@ -473,6 +476,7 @@ def create_web_app(
             "birth": session.birth.model_dump(mode="json"),
             "reading": session.reading,
             "chart": session.chart,
+            "tarot_round": session.tarot_round,
             "history": session.runtime.store.reading_history(session.user_id, limit=30),
             "busy": session.lock.locked(),
         }
@@ -507,6 +511,14 @@ def create_web_app(
         session = get_session(request)
         available(session)
         async with session.lock:
+            if body.picks:
+                # The first draw opens the round; a reply within it keeps its question and
+                # takes the latest choice, as Session.choose_picks does for the reading.
+                session.tarot_round = {
+                    "question": (session.tarot_round or {}).get("question", body.message),
+                    "spread": body.spread,
+                    "picks": list(body.picks),
+                }
             # The direct/demo chart path also passes safety before any computation.
             safety_profile = {}
             if body.birth.location_id:
@@ -618,6 +630,7 @@ def create_web_app(
             if outcome:
                 answer = outcome.text or "本轮未形成解读，你可以补充信息后继续。"
                 if outcome.data.get("reading"):
+                    session.tarot_round = None
                     saved = session.runtime.store.get_reading(
                         session.user_id, outcome.data["reading_id"]
                     )
@@ -654,6 +667,7 @@ def create_web_app(
             session.last_birth = ""
             session.reading = None
             session.chart = None
+            session.tarot_round = None
         return state(session)
 
     @app.get("/api/readings/{reading_id}")
@@ -681,6 +695,7 @@ def create_web_app(
             session.last_birth = ""
             session.reading = None
             session.chart = None
+            session.tarot_round = None
         return state(session)
 
     @app.get("/api/locations")

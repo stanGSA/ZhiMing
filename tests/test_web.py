@@ -285,6 +285,7 @@ async def test_tarot_picks_decide_the_cards(browser):
     ).json()
     drawn = result["reading"]["tarot"]
     assert drawn["picks"] == [70, 5, 33]
+    assert result["tarot_round"] is None  # answered with cards: nothing left open
     expected = draw_tarot(drawn["spread"], drawn["question"], drawn["seed"], [70, 5, 33])
     assert [c["card_id"] for c in drawn["cards"]] == [c["card_id"] for c in expected["cards"]]
     # Both the session's reading and a record opened from 足迹 carry the record's question.
@@ -313,10 +314,20 @@ async def test_clarifying_reply_continues_the_round_with_the_latest_picks(browse
         "/api/chat", json={**body, "message": "A 还是 B？", "picks": [1, 2, 3]}
     )
     assert first.json()["messages"][-1]["status"] == "ask_user"
+    # The round stays open on the session, so a reloaded page can continue it.
+    assert first.json()["tarot_round"] == {
+        "question": "A 还是 B？",
+        "spread": "decision",
+        "picks": [1, 2, 3],
+    }
     reply = {**body, "message": "A 是留在原公司，B 是去新公司", "picks": [60, 8, 34]}
-    assert (await client.post("/api/chat", json=reply)).status_code == 200
+    second = (await client.post("/api/chat", json=reply)).json()
     # The reading started in the first turn draws in the second, with the choice sent last.
     assert runtimes[-1].session.state["tarot_result"]["picks"] == [60, 8, 34]
+    assert second["tarot_round"]["question"] == "A 还是 B？"
+    assert second["tarot_round"]["picks"] == [60, 8, 34]
+    renewed = (await client.post("/api/new", json={"provider": "configured"})).json()
+    assert renewed["tarot_round"] is None
 
 
 async def test_xinjiang_clock_not_assumed(browser):
