@@ -37,6 +37,7 @@ from plugins.bazi.calculator import GAN, GAN_WX, WX, compute_bazi, ten_god
 from plugins.name.strokes import UnihanMissing
 from plugins.name.tools import HAN
 from plugins.name.wuge import analyze, element
+from plugins.tarot.draw import valid_picks
 
 STATIC = Path(__file__).with_name("web_static")
 COOKIE = "zhiming_session"
@@ -173,6 +174,8 @@ class ChatInput(BaseModel):
     system: Literal["auto", "bazi", "astro", "tarot", "name", "dream", "daily"] = "auto"
     birth: BirthInfo = Field(default_factory=BirthInfo)
     spread: Literal["single", "three_card", "decision"] = "three_card"
+    # Positions (0-77) chosen from the face-down deck on the tarot page, in spread order.
+    picks: list[int] | None = Field(default=None, max_length=3)
 
     @field_validator("message")
     @classmethod
@@ -180,6 +183,14 @@ class ChatInput(BaseModel):
         if not value.strip():
             raise ValueError("请先写下你的问题")
         return value.strip()
+
+    @model_validator(mode="after")
+    def picks_fit_spread(self):
+        if self.picks is not None and (
+            self.system != "tarot" or not valid_picks(self.picks, self.spread)
+        ):
+            raise ValueError("所选的牌与牌阵不符，请重新选牌")
+        return self
 
 
 class NewInput(BaseModel):
@@ -284,6 +295,9 @@ class BrowserSession:
     last_birth: str = ""
     reading: dict | None = None
     chart: dict | None = None
+    # A tarot draw sent but not yet answered with cards (e.g. the model asked something back):
+    # its question, spread and positions, so a reloaded page can continue the same round.
+    tarot_round: dict | None = None
     lock: asyncio.Lock = field(default_factory=asyncio.Lock)
     touched: float = field(default_factory=time.monotonic)
 
@@ -462,6 +476,7 @@ def create_web_app(
             "birth": session.birth.model_dump(mode="json"),
             "reading": session.reading,
             "chart": session.chart,
+            "tarot_round": session.tarot_round,
             "history": session.runtime.store.reading_history(session.user_id, limit=30),
             "busy": session.lock.locked(),
         }
@@ -496,6 +511,14 @@ def create_web_app(
         session = get_session(request)
         available(session)
         async with session.lock:
+            if body.picks:
+                # The first draw opens the round; a reply within it keeps its question and
+                # takes the latest choice, as Session.choose_picks does for the reading.
+                session.tarot_round = {
+                    "question": (session.tarot_round or {}).get("question", body.message),
+                    "spread": body.spread,
+                    "picks": list(body.picks),
+                }
             # The direct/demo chart path also passes safety before any computation.
             safety_profile = {}
             if body.birth.location_id:
@@ -590,6 +613,8 @@ def create_web_app(
                     }
                 )
                 return {**state(session), "busy": False}
+            # Set on every request, so a choice never carries over to a later question.
+            session.runtime.session.choose_picks(tuple(body.picks) if body.picks else None)
             try:
                 outcome = await asyncio.wait_for(
                     session.runtime.turn(message, safety_checked=True), timeout=360
@@ -605,12 +630,14 @@ def create_web_app(
             if outcome:
                 answer = outcome.text or "本轮未形成解读，你可以补充信息后继续。"
                 if outcome.data.get("reading"):
+                    session.tarot_round = None
                     saved = session.runtime.store.get_reading(
                         session.user_id, outcome.data["reading_id"]
                     )
                     session.reading = {
                         "view": body.system,
                         "reading_id": outcome.data["reading_id"],
+                        "question": saved.get("question") if saved else None,
                         "output": outcome.data["reading"],
                         "tarot": saved.get("tarot_json") if saved else None,
                         "calculations": saved.get("calculations_json") if saved else None,
@@ -640,6 +667,7 @@ def create_web_app(
             session.last_birth = ""
             session.reading = None
             session.chart = None
+            session.tarot_round = None
         return state(session)
 
     @app.get("/api/readings/{reading_id}")
@@ -650,6 +678,7 @@ def create_web_app(
             raise HTTPException(404, "找不到这份解读。")
         return {
             "reading_id": reading_id,
+            "question": saved["question"],
             "output": saved["output_json"],
             "tarot": saved["tarot_json"],
             "calculations": saved.get("calculations_json"),
@@ -666,6 +695,7 @@ def create_web_app(
             session.last_birth = ""
             session.reading = None
             session.chart = None
+            session.tarot_round = None
         return state(session)
 
     @app.get("/api/locations")

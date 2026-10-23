@@ -99,22 +99,29 @@
           </div>
         </div>
 
-        <div class="name-lower">
-          <section class="consult stone" aria-labelledby="consult-title">
-            <h2 class="panel-title" id="consult-title">就此姓名发问</h2>
+        <section class="dialog-band name-lower" aria-label="就此姓名发问">
+          <section class="dialog" id="dialog" aria-labelledby="dialog-title">
+            <header class="dialog-head">
+              <span class="dialog-seal" aria-hidden="true">知</span>
+              <div class="dialog-heading">
+                <h2 id="dialog-title">就此姓名发问</h2>
+                <p>会连同上方推演的姓名一起交给知命</p>
+              </div>
+              <span class="dialog-live" data-live>正在连接</span>
+            </header>
             <div class="messages" id="messages" role="log" aria-live="polite"></div>
             <form class="composer" id="chat-form">
               <label class="sr-only" for="message">你的问题</label>
-              <textarea
-                id="message"
-                rows="2"
-                maxlength="3800"
-                placeholder="比如：人格数说明了什么样的性格线索？（留空则解读五格与三才）"
-              ></textarea>
-              <div class="composer-foot">
-                <span class="hint" id="input-hint">Enter 发送 · 会连同上方姓名一起解读</span>
-                <button class="btn btn-primary" id="send" type="submit">解读姓名</button>
+              <div class="composer-box">
+                <textarea
+                  id="message"
+                  rows="1"
+                  maxlength="3800"
+                  placeholder="比如：人格数说明了什么？（留空则解读五格三才）"
+                ></textarea>
+                <button class="btn btn-primary composer-send" id="send" type="submit">解读姓名</button>
               </div>
+              <span class="hint" id="input-hint">Enter 发送 · 会连同上方姓名一起解读</span>
             </form>
           </section>
           <section class="reading stone" id="reading" aria-labelledby="reading-title">
@@ -123,10 +130,10 @@
               <button class="btn btn-text" id="copy-reading" type="button" hidden>复制</button>
             </div>
             <div class="reading-content" id="reading-content">
-              <p class="reading-empty">推演后发问，五格与三才的解读会整理在这里。</p>
+              <p class="reading-empty" data-glyph="名">推演后发问，五格与三才的解读会整理在这里。</p>
             </div>
           </section>
-        </div>
+        </section>
       </div>
     </main>
 

@@ -322,7 +322,6 @@
 /* ---------- 大运 ---------- */
 .dayun-section {
   border-top: 1px solid rgba(207, 165, 91, 0.3);
-  margin-top: 48px;
 }
 .dayun {
   display: grid;
@@ -374,39 +373,64 @@
   line-height: 1.9;
 }
 
-/* ---------- Birth form and dialogue ---------- */
-.bazi-lower {
-  display: flex;
-  gap: 40px;
-  flex-wrap: wrap;
-  align-items: flex-start;
-  padding-top: 8px;
+/* ---------- Birth fold and dialogue ---------- */
+.bazi-hero {
+  padding-bottom: 32px;
 }
 .lacquer-panel {
   background: var(--surface);
   border: 1px solid rgba(207, 165, 91, 0.3);
-  padding: 28px 30px;
 }
-.birth-panel {
-  flex: 1 1 400px;
-  min-width: 0;
+.birth-fold {
+  margin-bottom: 40px;
 }
-.bazi-lower .consult {
-  flex: 1 1 560px;
-  min-width: 0;
+.birth-fold-toggle {
+  color: var(--gold-light);
 }
-.consult .messages {
-  max-height: 420px;
-  border-top-color: rgba(207, 165, 91, 0.45);
+.dialog-band {
+  --dialog-bg: var(--surface-2);
+  --dialog-line: rgba(207, 165, 91, 0.5);
+  --dialog-head-bg: #5a1a12;
+  --dialog-foot-bg: var(--surface);
+  --dialog-shadow: 0 0 0 4px rgba(207, 165, 91, 0.1), 0 24px 60px rgba(0, 0, 0, 0.45);
+  --seal-bg: var(--accent);
+  --seal-ink: #f3d58e;
+  --seal-line: var(--accent-2);
+  --bubble-r: 2px;
+  --bubble-ai: var(--surface);
+  --bubble-ai-line: rgba(207, 165, 91, 0.25);
+  --bubble-user: rgba(126, 36, 24, 0.55);
+  --bubble-user-line: rgba(207, 165, 91, 0.45);
+  --input-bg: #1d0f0c;
+  padding-bottom: 8px;
+}
+.dialog-head {
+  border-bottom-color: rgba(207, 165, 91, 0.4);
+}
+.dialog-heading h2 {
+  color: var(--gold-light);
+}
+.dialog-heading p {
+  color: #d9c6a6;
 }
 .msg-label {
   color: var(--accent-2);
 }
+.dialog .msg-user .msg-label {
+  color: var(--gold-light);
+}
+.btn.composer-send {
+  letter-spacing: 0.3em;
+}
 .lacquer-reading {
-  margin: 48px 0 64px;
   padding: 32px 36px;
   background: var(--surface);
   border-color: rgba(207, 165, 91, 0.35);
+}
+.ask-fab {
+  --fab-bg: var(--accent);
+  --fab-ink: #f3d58e;
+  --fab-line: var(--accent-2);
 }
 .reading-summary {
   color: #f3d58e;
@@ -428,7 +452,6 @@
   .bazi-heading h1 {
     font-size: 34px;
   }
-  .lacquer-panel,
   .lacquer-reading {
     padding: 22px 18px;
   }

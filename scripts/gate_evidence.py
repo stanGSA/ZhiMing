@@ -105,7 +105,9 @@ def assemble(live_path: Path, tests_path: Path, output: Path, api: bool = False)
                     "ok": event["result"]["ok"],
                 }
                 if item["tool"] == "draw_tarot" and item["ok"]:
-                    expected = draw_tarot(data["spread"], data["question"], data["seed"])
+                    expected = draw_tarot(
+                        data["spread"], data["question"], data["seed"], data.get("picks")
+                    )
                     item["deterministic_cards_match"] = all(
                         {k: card[k] for k in expected["cards"][i]} == expected["cards"][i]
                         for i, card in enumerate(data["cards"])

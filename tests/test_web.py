@@ -10,6 +10,7 @@ pytest.importorskip("fastapi")
 
 from app import create_runtime
 from harness.models import ModelResponse, ToolCall
+from plugins.tarot.draw import draw_tarot
 from tests.test_week6 import with_birth
 from web import BirthInfo, create_web_app
 
@@ -258,6 +259,75 @@ async def test_offline_bazi_chat_and_tarot_spread(browser):
         )
     ).json()
     assert len(tarot["reading"]["tarot"]["cards"]) == 1
+
+
+async def test_tarot_picks_decide_the_cards(browser):
+    client, _, _ = browser
+    await client.get("/api/session")
+    for bad in (
+        {"spread": "three_card", "picks": [1, 2]},
+        {"spread": "three_card", "picks": [1, 1, 2]},
+        {"spread": "single", "picks": [78]},
+        {"spread": "single", "picks": [0], "system": "auto"},
+    ):
+        body = {"message": "最近的状态", "system": "tarot", **bad}
+        assert (await client.post("/api/chat", json=body)).status_code == 422
+    result = (
+        await client.post(
+            "/api/chat",
+            json={
+                "message": "最近的状态",
+                "system": "tarot",
+                "spread": "three_card",
+                "picks": [70, 5, 33],
+            },
+        )
+    ).json()
+    drawn = result["reading"]["tarot"]
+    assert drawn["picks"] == [70, 5, 33]
+    assert result["tarot_round"] is None  # answered with cards: nothing left open
+    expected = draw_tarot(drawn["spread"], drawn["question"], drawn["seed"], [70, 5, 33])
+    assert [c["card_id"] for c in drawn["cards"]] == [c["card_id"] for c in expected["cards"]]
+    # Both the session's reading and a record opened from 足迹 carry the record's question.
+    assert result["reading"]["question"].startswith("最近的状态")
+    saved = (await client.get(f"/api/readings/{result['reading']['reading_id']}")).json()
+    assert saved["question"] == result["reading"]["question"]
+
+
+async def test_clarifying_reply_continues_the_round_with_the_latest_picks(browser, scripted_model):
+    client, _, runtimes = browser
+    await client.get("/api/session")
+
+    def response(name, **arguments):
+        return ModelResponse(tool_calls=[ToolCall(id=name, name=name, arguments=arguments)])
+
+    runtimes[-1].model = scripted_model(
+        [
+            response("start_reading", question="A 还是 B？"),
+            response("ask_user", question="A 和 B 分别是什么？"),
+            response("draw_tarot", spread="decision", question="A 还是 B？"),
+            response("ask_user", question="还想看哪一张？"),
+        ]
+    )
+    body = {"system": "tarot", "spread": "decision"}
+    first = await client.post(
+        "/api/chat", json={**body, "message": "A 还是 B？", "picks": [1, 2, 3]}
+    )
+    assert first.json()["messages"][-1]["status"] == "ask_user"
+    # The round stays open on the session, so a reloaded page can continue it.
+    assert first.json()["tarot_round"] == {
+        "question": "A 还是 B？",
+        "spread": "decision",
+        "picks": [1, 2, 3],
+    }
+    reply = {**body, "message": "A 是留在原公司，B 是去新公司", "picks": [60, 8, 34]}
+    second = (await client.post("/api/chat", json=reply)).json()
+    # The reading started in the first turn draws in the second, with the choice sent last.
+    assert runtimes[-1].session.state["tarot_result"]["picks"] == [60, 8, 34]
+    assert second["tarot_round"]["question"] == "A 还是 B？"
+    assert second["tarot_round"]["picks"] == [60, 8, 34]
+    renewed = (await client.post("/api/new", json={"provider": "configured"})).json()
+    assert renewed["tarot_round"] is None
 
 
 async def test_xinjiang_clock_not_assumed(browser):

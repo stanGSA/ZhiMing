@@ -360,41 +360,62 @@ body {
   line-height: 1.9;
 }
 
-/* ---------- Birth and dialogue ---------- */
-.astro-lower {
-  display: flex;
-  gap: 40px;
-  flex-wrap: wrap;
-  align-items: flex-start;
-  margin-top: 64px;
+/* ---------- Birth fold and dialogue ---------- */
+.astro-hero {
+  padding-bottom: 32px;
 }
 .glass {
   border: 1px solid rgba(169, 193, 234, 0.2);
   background: rgba(11, 17, 36, 0.75);
   padding: 28px 30px;
 }
-.birth-panel {
-  flex: 1 1 400px;
-  min-width: 0;
+.birth-fold.glass {
+  padding: 0;
+  margin-bottom: 40px;
 }
-.astro-lower .consult {
-  flex: 1 1 560px;
-  min-width: 0;
-}
-.panel-title {
-  font-size: 18px;
+.birth-fold-title {
   font-weight: 400;
-  letter-spacing: 0.3em;
-  margin-bottom: 18px;
 }
-.consult .messages {
-  max-height: 420px;
+.dialog-band {
+  --dialog-bg: rgba(11, 17, 36, 0.92);
+  --dialog-line: rgba(169, 193, 234, 0.32);
+  --dialog-head-bg: rgba(14, 21, 49, 0.9);
+  --dialog-shadow: 0 0 0 1px rgba(217, 197, 142, 0.08), 0 28px 70px rgba(0, 0, 0, 0.55);
+  --seal-bg: transparent;
+  --seal-ink: var(--accent-2);
+  --seal-line: rgba(217, 197, 142, 0.6);
+  --seal-r: 50%;
+  --bubble-r: 12px;
+  --bubble-ai: rgba(14, 21, 49, 0.9);
+  --bubble-ai-line: rgba(169, 193, 234, 0.18);
+  --bubble-user: rgba(127, 166, 224, 0.14);
+  --bubble-user-line: rgba(127, 166, 224, 0.4);
+  --input-bg: #070c1c;
+  --input-r: 4px;
+  margin-top: 24px;
+}
+.dialog-seal .cast-star {
+  width: 16px;
+  height: 16px;
+}
+.dialog-heading h2 {
+  font-weight: 400;
 }
 .msg-label {
   color: var(--accent-2);
 }
-#reading {
-  margin-top: 48px;
+.dialog .msg-user .msg-label {
+  color: var(--ice);
+}
+.ask-fab {
+  --fab-bg: #0e1531;
+  --fab-ink: var(--accent-2);
+  --fab-line: rgba(217, 197, 142, 0.6);
+}
+.ask-fab-seal {
+  background: transparent;
+  border: 1px solid rgba(217, 197, 142, 0.6);
+  color: var(--accent-2);
 }
 .reading-summary {
   font-weight: 400;

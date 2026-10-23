@@ -42,6 +42,38 @@ def test_invalid_inputs(spread, seed):
         draw_tarot(spread, "q", seed)
 
 
+def test_picks_deal_the_chosen_positions_of_the_shuffled_deck():
+    top = draw_tarot("three_card", "q", 42)
+    assert "picks" not in top
+    assert draw_tarot("three_card", "q", 42, [0, 1, 2])["cards"] == top["cards"]
+    # One seed lays all 78 cards face down; each position holds a different card.
+    deck = [draw_tarot("single", "q", 42, [p])["cards"][0] for p in range(len(DECK))]
+    assert len({card["card_id"] for card in deck}) == len(DECK)
+    chosen = draw_tarot("three_card", "q", 42, [70, 5, 33])
+    assert chosen["picks"] == [70, 5, 33]
+    assert [(c["card_id"], c["reversed"]) for c in chosen["cards"]] == [
+        (deck[p]["card_id"], deck[p]["reversed"]) for p in (70, 5, 33)
+    ]
+    assert [c["label"] for c in chosen["cards"]] == SPREADS["three_card"]
+    assert draw_tarot("three_card", "q", 42, [70, 5, 33]) == chosen
+
+
+@pytest.mark.parametrize(
+    "spread,picks",
+    [
+        ("single", [0, 1]),
+        ("three_card", [1, 2]),
+        ("three_card", [1, 1, 2]),
+        ("decision", [0, 1, 78]),
+        ("single", [-1]),
+        ("single", [True]),
+    ],
+)
+def test_invalid_picks(spread, picks):
+    with pytest.raises(ValueError):
+        draw_tarot(spread, "q", 42, picks)
+
+
 def test_every_possible_card_state_and_position_has_meaning(project):
     kb = KnowledgeBase(project / "data/kb.sqlite")
     try:

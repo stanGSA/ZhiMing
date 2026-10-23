@@ -443,30 +443,47 @@
 }
 
 /* ---------- Dialogue ---------- */
-.name-lower {
-  display: flex;
-  gap: 40px;
-  flex-wrap: wrap;
-  align-items: flex-start;
-  margin: 64px 0;
-}
 .stone {
   background: var(--surface);
   border: 1px solid var(--line);
   padding: 28px 30px;
 }
-.name-lower .consult {
-  flex: 1 1 520px;
-  min-width: 0;
+.name-lower {
+  margin: 56px 0 72px;
+  --dialog-bg: var(--surface);
+  --dialog-line: rgba(236, 232, 222, 0.32);
+  --dialog-shadow: 0 24px 60px rgba(0, 0, 0, 0.45);
+  --dialog-foot-bg: var(--surface-2);
+  --seal-bg: var(--seal);
+  --seal-ink: var(--accent-ink);
+  --bubble-r: 0;
+  --bubble-ai: var(--surface-2);
+  --bubble-user: rgba(184, 53, 42, 0.18);
+  --bubble-user-line: rgba(184, 53, 42, 0.55);
+  --input-bg: #171715;
 }
-.name-lower .reading {
-  flex: 1 1 520px;
-}
-.consult .messages {
-  max-height: 420px;
+.dialog-seal {
+  box-shadow:
+    inset 0 0 0 3px var(--seal),
+    inset 0 0 0 4px var(--accent-ink);
 }
 .msg-label {
   color: var(--seal);
+}
+.dialog .msg-user .msg-label {
+  color: var(--ink);
+}
+.btn.composer-send {
+  box-shadow:
+    inset 0 0 0 3px var(--accent),
+    inset 0 0 0 4px rgba(243, 233, 218, 0.7);
+}
+.ask-fab {
+  --fab-bg: var(--seal);
+  --fab-ink: var(--accent-ink);
+  --fab-line: var(--accent-ink);
+  --fab-r: 0;
+  --fab-seal-r: 0;
 }
 .reading-summary {
   font-family: var(--font-kai);

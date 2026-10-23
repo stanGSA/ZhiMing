@@ -41,6 +41,8 @@ class Session:
     total_tokens: int = 0
     user_messages: list[str] = field(default_factory=list)
     default_seed: int | None = None
+    # Deck positions chosen in the browser for the next draw; start_reading consumes them.
+    pending_picks: tuple[int, ...] | None = None
     calendar_anchor: str | None = None
     calendar_timezone: str = DEFAULT_CALENDAR_TZ
     calendar_instant: datetime | None = None
@@ -117,6 +119,14 @@ class Session:
         self.messages.append({"role": "user", "content": text})
         self.state["asked_this_turn"] = False
 
+    def choose_picks(self, picks: tuple[int, ...] | None) -> None:
+        """Deck positions sent with this request. A new reading takes them at start_reading; a
+        reading still open (the reply to a clarifying question) takes them now, so the draw
+        always uses the latest choice."""
+        self.pending_picks = picks
+        if picks and self.state.get("active_reading_id") and not self.state.get("complete"):
+            self.state["picks"] = list(picks)
+
     def start_reading(self, question: str) -> str:
         previous = self.state.get("active_reading_id")
         # Fixture injection controls only the first draw, never later redraws.
@@ -138,4 +148,7 @@ class Session:
             "asked_this_turn": self.state.get("asked_this_turn", False),
             "complete": False,
         }
+        if self.pending_picks:
+            self.state["picks"] = list(self.pending_picks)
+        self.pending_picks = None
         return self.state["active_reading_id"]

@@ -14,6 +14,7 @@ from harness.budget import Budget
 from harness.guard import Guard
 from harness.loop import run_turn
 from harness.models import ModelResponse, ToolCall
+from plugins.tarot.draw import draw_tarot
 from scripts.trace_tree import build_tree, load, specialist_metrics
 
 ROLE_TOOLS = {"astro": "compute_natal_chart", "bazi": "compute_bazi", "tarot": "draw_tarot"}
@@ -724,6 +725,39 @@ async def test_tarot_is_drawn_once_per_reading(project):
         assert outcome.status == "submit_reading", outcome.text
         draws = [e for e in results_of(runtime, "tarot") if e["call"]["name"] == "draw_tarot"]
         assert len(draws) == 1
+    finally:
+        runtime.close()
+
+
+async def test_tarot_specialist_draws_the_chosen_positions(project):
+    async def orchestrator(messages):
+        done = turn_results(messages)
+        if not done:
+            return respond(call("start_reading", question="用三张塔罗看看最近的工作状态"))
+        if len(done) == 1:
+            return respond(call("consult_specialist", system="tarot", sub_question="状态"))
+        return respond(
+            call(
+                "submit_reading",
+                **reading(
+                    first_points(done[1:2], ["tarot"]),
+                    ["tarot"],
+                    question_type="tarot",
+                    summary="建议先梳理现状，再做小步尝试。",
+                ),
+            )
+        )
+
+    runtime = make(project, RoleModel(orchestrator=orchestrator, tarot=tarot_specialist()))
+    try:
+        runtime.session.pending_picks = (12, 40, 63)
+        outcome = await runtime.turn("用三张塔罗看看最近的工作状态。")
+        assert outcome.status == "submit_reading", outcome.text
+        (draw,) = [e for e in results_of(runtime, "tarot") if e["call"]["name"] == "draw_tarot"]
+        data = draw["result"]["data"]
+        assert data["picks"] == [12, 40, 63]
+        expected = draw_tarot(data["spread"], data["question"], data["seed"], [12, 40, 63])
+        assert [c["card_id"] for c in data["cards"]] == [c["card_id"] for c in expected["cards"]]
     finally:
         runtime.close()
 
