@@ -17,7 +17,7 @@ import yaml
 from app import ROOT
 from plugins.dream.match import DreamMatcher
 from plugins.name.strokes import char_strokes
-from scripts.review_week5_datasets import LATER_TOOLS, review_multiturn
+from scripts.archive.review_week5_datasets import LATER_TOOLS, review_multiturn
 
 POLICY = {
     "confirm": "默认写法即数据集答案；存在真实的另一种写法，工具返回默认值与备选笔画，并要求说明、请用户按证件确认",
