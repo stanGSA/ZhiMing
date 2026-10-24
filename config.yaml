@@ -104,3 +104,14 @@ kb:
 paths:
   app_db: data/app.db
   runs: runs
+
+eval_judges:
+  pro:
+    vendor: deepseek
+    api: openai
+    model: deepseek-v4-pro
+    thinking: enabled
+    reasoning_effort: high
+    max_tokens: 8192
+    api_key_env: DEEPSEEK_API_KEY
+    base_url_env: DEEPSEEK_BASE_URL
