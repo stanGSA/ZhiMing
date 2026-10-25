@@ -317,6 +317,48 @@ class Gazetteer:
         return dict(status="resolved", location=matches[0])
 
 
+BIRTH_WORD = re.compile(r"出生|生于|老家")
+# Words that tie a place to where the user lives, works, moved to or consults from instead.
+OTHER_PLACE = re.compile(r"住|居|现在|目前|如今|工作|生活|咨询|按|搬|后来|之后|去了|到了|来到")
+SENTENCE_BREAK = re.compile(r"[。；;！!？?\n]")
+CLAUSE_BREAK = re.compile(r"[，,]")
+# A date and clock time may separate a birth word from the place: “出生于1993-08-17 23:20，北京”.
+BIRTH_TIME_ONLY = re.compile(
+    r"[\s\d年月日号时分秒点半刻:：\-/，,.上下午晚早凌晨中公农历于在是为的约]*"
+)
+
+
+def birth_place_mentioned(text: str, place: str) -> bool:
+    """The place is named as the birthplace, not merely in a message that mentions a birth.
+
+    In “我在北京出生，现在住在纽约” only 北京 qualifies: 纽约 is where the user lives. The
+    place must sit in the same clause as a birth word with nothing about another place in
+    between, or follow the birth word with only its date and time in between.
+    """
+    for sentence in SENTENCE_BREAK.split(text):
+        for mention in re.finditer(re.escape(place), sentence):
+            for word in BIRTH_WORD.finditer(sentence):
+                if word.start() >= mention.end():
+                    between, follows = sentence[mention.end() : word.start()], False
+                else:
+                    between, follows = sentence[word.end() : mention.start()], True
+                if OTHER_PLACE.search(between):
+                    continue
+                same_clause = not CLAUSE_BREAK.search(between) and len(between) <= 16
+                if same_clause or (follows and BIRTH_TIME_ONLY.fullmatch(between)):
+                    return True
+    return False
+
+
+def stated_xinjiang_clock(text: str) -> str | None:
+    """The birth clock the user named for a Xinjiang birthplace, if exactly one was named."""
+    beijing = "北京时间" in text or "Asia/Shanghai" in text
+    xinjiang = "新疆时间" in text or "Asia/Urumqi" in text
+    if beijing == xinjiang:
+        return None
+    return "Asia/Shanghai" if beijing else "Asia/Urumqi"
+
+
 def location_tool(gazetteer: Gazetteer, store=None):
     def resolve(args, session):
         result = gazetteer.resolve(args)
@@ -336,17 +378,23 @@ def location_tool(gazetteer: Gazetteer, store=None):
                 (
                     message
                     for message in reversed(session.user_messages)
-                    if args.query in message and re.search(r"出生|生于|出生地|老家", message)
+                    if birth_place_mentioned(message, args.query)
                 ),
                 None,
             )
             if evidence is None and session.profile.get("birth_place") == args.query:
                 evidence = session.profile["birth_place"]
             if store is not None and evidence:
+                # A saved tz is read as the birth clock. In Xinjiang the clock is either
+                # Beijing or Xinjiang time and only the user can say which, so an unstated
+                # one is cleared rather than inferred from the place.
+                clock = location["tz"]
+                if clock == "Asia/Urumqi":
+                    clock = stated_xinjiang_clock(" ".join(session.user_messages))
                 for field, value in (
                     ("birth_place", args.query),
                     ("location_id", location["location_id"]),
-                    ("tz", location["tz"]),
+                    ("tz", clock),
                     ("lat", location["lat"]),
                     ("lon", location["lon"]),
                 ):

@@ -371,6 +371,39 @@ async def test_parallel_consult_merges_persists_and_traces(project):
         runtime.close()
 
 
+async def test_conventions_saved_by_a_specialist_reach_the_orchestrator(project):
+    """The bazi expert saves the conventions it used; its report must not then look stale."""
+    question = BIRTH + "用八字看看性格。"
+
+    async def orchestrator(messages):
+        done = turn_results(messages)
+        if not done:
+            return respond(call("start_reading", question=question))
+        if len(done) == 1:
+            return respond(call("resolve_location", query="北京"))
+        if len(done) == 2:
+            location = done[1]["data"]["location"]["location_id"]
+            return respond(
+                call(
+                    "consult_specialist",
+                    system="bazi",
+                    sub_question="原局的性格倾向",
+                    location_id=location,
+                )
+            )
+        payload = reading(first_points(done[2:3], ["bazi"]), ["bazi"], question_type="trait")
+        return respond(call("submit_reading", **payload))
+
+    runtime = make(project, RoleModel(orchestrator=orchestrator, bazi=bazi_specialist()))
+    try:
+        outcome = await runtime.turn(question)
+        assert outcome.status == "submit_reading", outcome.text
+        assert runtime.session.profile["zishi_rule"] == "next_day"
+        assert runtime.store.get_profile(runtime.session.user_id)["zishi_rule"] == "next_day"
+    finally:
+        runtime.close()
+
+
 async def test_brief_is_context_not_user_evidence(project):
     async def orchestrator(messages):
         done = turn_results(messages)

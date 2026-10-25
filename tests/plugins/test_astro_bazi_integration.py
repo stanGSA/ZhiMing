@@ -205,6 +205,41 @@ async def test_xinjiang_clock_confirmation_and_explicit_override(runtime, clock,
 
 
 @pytest.mark.asyncio
+async def test_saved_zishi_rule_is_the_one_the_calculation_used(runtime):
+    birth = await prepare(runtime)
+    first = await invoke(
+        runtime, "compute_bazi", {**birth, "gender": "male", "zishi_rule": "same_day"}
+    )
+    assert first.ok
+    for _ in range(2):
+        # Later readings omit the rule: the saved one applies and is saved back unchanged.
+        assert (await invoke(runtime, "start_reading", dict(question="工作方向"))).ok
+        again = await invoke(
+            runtime, "compute_bazi", {"birth_local": birth["birth_local"], "gender": "male"}
+        )
+        assert again.ok and again.data["input"]["zishi_rule"] == "same_day"
+        assert again.data["pillars"]["day"] == first.data["pillars"]["day"]
+    assert runtime.store.get_profile(runtime.session.user_id)["zishi_rule"] == "same_day"
+
+
+@pytest.mark.asyncio
+async def test_unconfirmed_solar_time_default_never_confirms_an_overseas_birth(runtime):
+    runtime.session.append_user("我是男性，1995年12月31日23点45分在北京出生。用八字看日主。")
+    assert (await invoke(runtime, "start_reading", dict(question="日主"))).ok
+    beijing = await invoke(runtime, "resolve_location", dict(query="北京"))
+    birth = dict(birth_local="1995-12-31 23:45", gender="male")
+    location = beijing.data["location"]["location_id"]
+    assert (await invoke(runtime, "compute_bazi", {**birth, "location_id": location})).ok
+    assert runtime.store.get_profile(runtime.session.user_id).get("true_solar_time") is None
+    runtime.session.append_user("我记错了，我其实是在美国纽约出生的，出生时间不变，请重新看日主。")
+    assert (await invoke(runtime, "start_reading", dict(question="日主"))).ok
+    new_york = await invoke(runtime, "resolve_location", dict(query="纽约"))
+    location = new_york.data["location"]["location_id"]
+    result = await invoke(runtime, "compute_bazi", {**birth, "location_id": location})
+    assert result.ok and result.data["code"] == "confirm_bazi_clock"
+
+
+@pytest.mark.asyncio
 async def test_compound_refs_and_required_bazi_answers(runtime):
     birth = await prepare(runtime)
     natal = await invoke(runtime, "compute_natal_chart", birth)

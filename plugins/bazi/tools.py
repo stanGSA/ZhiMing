@@ -212,18 +212,20 @@ class BaziPlugin(MeaningPlugin):
             result, cached = self.store.cached_calculation(
                 "bazi", session.user_id, inputs, lambda: compute_bazi(**inputs)
             )
-            # Freeze the conventions actually used by a successful calculation.
-            # These fields are code-owned defaults/validated inputs, not model-authored
-            # profile updates, so the source is recorded explicitly in profile history.
-            for field, value in (
-                ("calendar_input", args.calendar),
-                ("true_solar_time", inputs["true_solar_time"]),
-                ("zishi_rule", args.zishi_rule),
-            ):
+            # Freeze the conventions this calculation actually used (zishi_rule may have come
+            # from the profile, not the arguments). The solar-time choice is kept only when
+            # the user made one: an unconfirmed default must never later stand in for the
+            # confirmation an overseas birth requires.
+            derived = {"calendar_input": args.calendar, "zishi_rule": inputs["zishi_rule"]}
+            if choice is not None:
+                derived["true_solar_time"] = inputs["true_solar_time"]
+            for field, value in derived.items():
                 if session.profile.get(field) != value:
-                    session.profile = self.store.update_derived_profile(
-                        session.user_id, field, value
-                    )
+                    self.store.update_derived_profile(session.user_id, field, value)
+                    # Only this field changes in memory, so a specialist keeps its restricted
+                    # view; the orchestrator adopts the value when the report is committed.
+                    session.profile = {**session.profile, field: value}
+                    session.state.setdefault("derived_profile", {})[field] = value
         except NeedsInput as exc:
             return exc.result()
         session.state["bazi_id"] = result["bazi_id"]
