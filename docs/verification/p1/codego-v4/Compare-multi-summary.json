@@ -1,0 +1,4323 @@
+{
+  "run_id": "20261025T132405-3eb13e50",
+  "rubric_version": "v2-2026-10-24",
+  "judge_name": "pro",
+  "judge_model": "deepseek-v4-pro",
+  "repeats": 3,
+  "mode": "multi",
+  "requested_model": "deepseek-v4-flash",
+  "source_fingerprint": "4ed1cbc5c85b35e891e305734e481cccac1b71254b474ce35fd35a55a41e520d",
+  "cases": 36,
+  "passed": 0,
+  "failed": 36,
+  "multi_agent": {
+    "consults": 99,
+    "ok_reports": 27,
+    "needs_input_reports": 2,
+    "failed_reports": 70,
+    "cancelled_consults": 0,
+    "consults_without_submission": 49,
+    "out_of_scope_attempts": 0,
+    "out_of_scope_rate": 0.0,
+    "report_compliance_rate": 0.27835051546391754,
+    "report_first_pass_rate": 0.3,
+    "report_corrected_pass_rate": 0.54,
+    "submit_attempt_pass_rate": 0.35526315789473684,
+    "max_concurrent_specialists": 3,
+    "trace_tree_complete": true
+  },
+  "reviewer_agent": {
+    "reviews": 11,
+    "verdicts": {
+      "unavailable": 7,
+      "pass_with_notes": 1,
+      "pass": 3
+    },
+    "readings_reviewed": 11,
+    "readings_revised": 0,
+    "revise_rate": 0.0,
+    "dropped_notes": 0,
+    "rejected_reviews": 0,
+    "reviewer_tokens": 31441
+  },
+  "model_calls": 462,
+  "model_request_attempts": 245,
+  "review_calls": 32,
+  "review_request_attempts": 36,
+  "input_tokens": 3216513,
+  "output_tokens": 1045515,
+  "scope": "Synthetic data; judge identity and rubric recorded. Automated review is not human calibration or independent verification of service identity.",
+  "raw_sha256": "89103f1ea7119027200496523e71eaeea0bc8022ccbf386915e9bfbb710f9abe",
+  "results": [
+    {
+      "id": "three_system_timing",
+      "repeat": 0,
+      "status": "submit_reading",
+      "checks": {
+        "expected_status": true,
+        "expected_tools": true,
+        "zero_tool_errors": false,
+        "no_model_error": true,
+        "saved": true,
+        "systems": false,
+        "valid_refs": true,
+        "trace_tree_complete": true
+      },
+      "engineering_pass": false,
+      "quality_review": {
+        "direct_answer": true,
+        "time_consistent": true,
+        "supported_conclusion": false,
+        "no_fabricated_facts": false,
+        "verdict_note": "结论仅覆盖塔罗层面的节奏与心态，未满足三体系合参与行运、流月计算要求。"
+      },
+      "quality_pass": false,
+      "passed": false,
+      "tools": [
+        "compute_bazi",
+        "compute_bazi_period",
+        "compute_natal_chart",
+        "compute_transits",
+        "consult_specialist",
+        "draw_tarot",
+        "get_profile",
+        "resolve_location",
+        "start_reading",
+        "submit_reading",
+        "submit_report",
+        "update_profile"
+      ],
+      "tool_errors": [
+        {
+          "tool": "update_profile",
+          "code": "validation_failed",
+          "error": "历法与子时规则须有原话明确支持"
+        },
+        {
+          "tool": "consult_specialist",
+          "code": "validation_failed",
+          "error": "location_id须先由resolve_location解析并确认；请先调用 resolve_location(query=\"出生地原话\")，如有同名候选用 ask_user 确认"
+        },
+        {
+          "tool": "consult_specialist",
+          "code": "validation_failed",
+          "error": "location_id须先由resolve_location解析并确认；请先调用 resolve_location(query=\"出生地原话\")，如有同名候选用 ask_user 确认"
+        },
+        {
+          "tool": "submit_report",
+          "code": "validation_failed",
+          "error": "子问题指定了时间范围，须计算本体系行运或流期，不能只用原局"
+        },
+        {
+          "tool": "submit_report",
+          "code": "validation_failed",
+          "error": "宫位不可用或与本次计算不符"
+        }
+      ],
+      "latency_s": 172.028,
+      "review_latency_s": 13.021,
+      "model_calls": 19,
+      "model_request_attempts": 8,
+      "input_tokens": 126432,
+      "output_tokens": 34067,
+      "usage_missing_calls": 0,
+      "cached_input_tokens": 3793,
+      "cached_usage_complete": true,
+      "returned_models": [
+        "deepseek-v4-flash"
+      ],
+      "review_usage": {
+        "input_tokens": 4873,
+        "output_tokens": 2201,
+        "usage_available": true,
+        "requested_model": "deepseek-v4-pro",
+        "returned_model": "deepseek-v4-pro"
+      },
+      "review_request_attempts": 1,
+      "multi_agent": {
+        "consults": 5,
+        "statuses": {
+          "ok": 1,
+          "failed": 4
+        },
+        "specialist_tool_calls": 11,
+        "out_of_scope_attempts": 0,
+        "report_submissions": 3,
+        "report_submissions_accepted": 1,
+        "consults_with_submission": 3,
+        "consults_without_submission": 2,
+        "report_first_pass": 1,
+        "report_corrected_pass": 1,
+        "report_compliance_rate": 0.2,
+        "report_first_pass_rate": 0.3333333333333333,
+        "report_corrected_pass_rate": 0.3333333333333333,
+        "submit_attempt_pass_rate": 0.3333333333333333,
+        "max_concurrent_specialists": 2,
+        "queue_ms": [
+          0.01,
+          0.006,
+          0.006,
+          0.007,
+          0.006
+        ],
+        "specialist_latency_ms": [
+          17808.12,
+          41341.648,
+          53477.376,
+          8822.38,
+          28960.042
+        ],
+        "specialist_tokens": 92411
+      },
+      "reviewer_agent": {
+        "reviews": 1,
+        "verdicts": {
+          "unavailable": 1
+        },
+        "readings_reviewed": 1,
+        "readings_revised": 0,
+        "revise_rate": 0.0,
+        "dropped_notes": 0,
+        "rejected_reviews": 0,
+        "reviewer_tokens": 0,
+        "reviewer_latency_ms": [
+          3.01
+        ]
+      }
+    },
+    {
+      "id": "unknown_time",
+      "repeat": 0,
+      "status": "ask_user",
+      "checks": {
+        "expected_status": false,
+        "expected_tools": false,
+        "zero_tool_errors": true,
+        "no_model_error": true,
+        "saved": false,
+        "systems": false,
+        "valid_refs": true,
+        "null_axes": true,
+        "no_hour": true,
+        "no_dayun": true,
+        "trace_tree_complete": true
+      },
+      "engineering_pass": false,
+      "quality_review": {
+        "direct_answer": false,
+        "time_consistent": true,
+        "supported_conclusion": false,
+        "no_fabricated_facts": true
+      },
+      "quality_pass": false,
+      "passed": false,
+      "tools": [
+        "ask_user",
+        "get_profile",
+        "resolve_location",
+        "start_reading",
+        "update_profile"
+      ],
+      "tool_errors": [],
+      "latency_s": 101.865,
+      "review_latency_s": 17.586,
+      "model_calls": 7,
+      "model_request_attempts": 7,
+      "input_tokens": 65700,
+      "output_tokens": 16747,
+      "usage_missing_calls": 0,
+      "cached_input_tokens": 2739,
+      "cached_usage_complete": true,
+      "returned_models": [
+        "deepseek-v4-flash"
+      ],
+      "review_usage": {
+        "input_tokens": 2023,
+        "output_tokens": 2735,
+        "usage_available": true,
+        "requested_model": "deepseek-v4-pro",
+        "returned_model": "deepseek-v4-pro"
+      },
+      "review_request_attempts": 1,
+      "multi_agent": {
+        "consults": 0,
+        "statuses": {},
+        "specialist_tool_calls": 0,
+        "out_of_scope_attempts": 0,
+        "report_submissions": 0,
+        "report_submissions_accepted": 0,
+        "consults_with_submission": 0,
+        "consults_without_submission": 0,
+        "report_first_pass": 0,
+        "report_corrected_pass": 0,
+        "report_compliance_rate": null,
+        "report_first_pass_rate": null,
+        "report_corrected_pass_rate": null,
+        "submit_attempt_pass_rate": null,
+        "max_concurrent_specialists": 0,
+        "queue_ms": [],
+        "specialist_latency_ms": [],
+        "specialist_tokens": 0
+      },
+      "reviewer_agent": {
+        "reviews": 0,
+        "verdicts": {},
+        "readings_reviewed": 0,
+        "readings_revised": 0,
+        "revise_rate": null,
+        "dropped_notes": 0,
+        "rejected_reviews": 0,
+        "reviewer_tokens": 0,
+        "reviewer_latency_ms": []
+      }
+    },
+    {
+      "id": "range_before_birth",
+      "repeat": 0,
+      "status": "ask_user",
+      "checks": {
+        "expected_status": false,
+        "expected_tools": false,
+        "zero_tool_errors": false,
+        "no_model_error": true,
+        "saved": false,
+        "systems": false,
+        "valid_refs": true,
+        "trace_tree_complete": true
+      },
+      "engineering_pass": false,
+      "quality_review": {
+        "direct_answer": false,
+        "time_consistent": true,
+        "supported_conclusion": false,
+        "no_fabricated_facts": true
+      },
+      "quality_pass": false,
+      "passed": false,
+      "tools": [
+        "ask_user",
+        "compute_bazi",
+        "compute_natal_chart",
+        "compute_transits",
+        "consult_specialist",
+        "get_profile",
+        "resolve_location",
+        "start_reading",
+        "update_profile"
+      ],
+      "tool_errors": [
+        {
+          "tool": "consult_specialist",
+          "code": "validation_failed",
+          "error": "location_id须先由resolve_location解析并确认；请先调用 resolve_location(query=\"出生地原话\")，如有同名候选用 ask_user 确认"
+        },
+        {
+          "tool": "consult_specialist",
+          "code": "validation_failed",
+          "error": "location_id须先由resolve_location解析并确认；请先调用 resolve_location(query=\"出生地原话\")，如有同名候选用 ask_user 确认"
+        },
+        {
+          "tool": "submit_report",
+          "code": "validation_failed",
+          "error": "本次工具结果没有该干支，不能编造"
+        },
+        {
+          "tool": "submit_report",
+          "code": "validation_failed",
+          "error": "宫位不可用或与本次计算不符"
+        },
+        {
+          "tool": "submit_report",
+          "code": "validation_failed",
+          "error": "子问题指定了时间范围，须计算本体系行运或流期，不能只用原局"
+        },
+        {
+          "tool": "submit_report",
+          "code": "validation_failed",
+          "error": "宫位不可用或与本次计算不符"
+        }
+      ],
+      "latency_s": 211.175,
+      "review_latency_s": 21.241,
+      "model_calls": 19,
+      "model_request_attempts": 10,
+      "input_tokens": 141909,
+      "output_tokens": 36292,
+      "usage_missing_calls": 0,
+      "cached_input_tokens": 5357,
+      "cached_usage_complete": true,
+      "returned_models": [
+        "deepseek-v4-flash"
+      ],
+      "review_usage": {
+        "input_tokens": 2060,
+        "output_tokens": 2854,
+        "usage_available": true,
+        "requested_model": "deepseek-v4-pro",
+        "returned_model": "deepseek-v4-pro"
+      },
+      "review_request_attempts": 1,
+      "multi_agent": {
+        "consults": 6,
+        "statuses": {
+          "failed": 6
+        },
+        "specialist_tool_calls": 9,
+        "out_of_scope_attempts": 0,
+        "report_submissions": 4,
+        "report_submissions_accepted": 0,
+        "consults_with_submission": 3,
+        "consults_without_submission": 3,
+        "report_first_pass": 0,
+        "report_corrected_pass": 0,
+        "report_compliance_rate": 0.0,
+        "report_first_pass_rate": 0.0,
+        "report_corrected_pass_rate": 0.0,
+        "submit_attempt_pass_rate": 0.0,
+        "max_concurrent_specialists": 2,
+        "queue_ms": [
+          0.006,
+          0.006,
+          0.007,
+          0.005,
+          0.005,
+          0.004
+        ],
+        "specialist_latency_ms": [
+          48473.942,
+          65701.765,
+          70252.644,
+          4.491,
+          9.384,
+          8.268
+        ],
+        "specialist_tokens": 99796
+      },
+      "reviewer_agent": {
+        "reviews": 0,
+        "verdicts": {},
+        "readings_reviewed": 0,
+        "readings_revised": 0,
+        "revise_rate": null,
+        "dropped_notes": 0,
+        "rejected_reviews": 0,
+        "reviewer_tokens": 0,
+        "reviewer_latency_ms": []
+      }
+    },
+    {
+      "id": "natural_unknown",
+      "repeat": 0,
+      "status": "limit_reached",
+      "checks": {
+        "expected_status": false,
+        "expected_tools": false,
+        "zero_tool_errors": false,
+        "no_model_error": false,
+        "saved": false,
+        "systems": false,
+        "valid_refs": true,
+        "null_axes": true,
+        "no_hour": true,
+        "no_dayun": true,
+        "trace_tree_complete": true
+      },
+      "engineering_pass": false,
+      "quality_review": {
+        "direct_answer": false,
+        "time_consistent": false,
+        "supported_conclusion": false,
+        "no_fabricated_facts": true
+      },
+      "quality_pass": false,
+      "passed": false,
+      "tools": [
+        "compute_bazi",
+        "compute_natal_chart",
+        "consult_specialist",
+        "get_profile",
+        "merge_signals",
+        "resolve_location",
+        "start_reading",
+        "submit_report",
+        "update_profile"
+      ],
+      "tool_errors": [
+        {
+          "tool": "update_profile",
+          "code": "validation_failed",
+          "error": "咨询时区须有当前居住地或按该地时间的明确原话，并先解析地点"
+        },
+        {
+          "tool": "consult_specialist",
+          "code": "validation_failed",
+          "error": "location_id须先由resolve_location解析并确认；请先调用 resolve_location(query=\"出生地原话\")，如有同名候选用 ask_user 确认"
+        },
+        {
+          "tool": "consult_specialist",
+          "code": "validation_failed",
+          "error": "location_id须先由resolve_location解析并确认；请先调用 resolve_location(query=\"出生地原话\")，如有同名候选用 ask_user 确认"
+        },
+        {
+          "tool": "submit_report",
+          "code": "invalid_arguments",
+          "error": "参数不符合 schema：points：List should have at most 12 items after validation, not 14"
+        },
+        {
+          "tool": "submit_report",
+          "code": "validation_failed",
+          "error": "行星落座或四轴与本次计算不符"
+        },
+        {
+          "tool": "submit_reading",
+          "code": "invalid_arguments",
+          "error": "参数不符合 schema：sections：Input should be a valid list"
+        },
+        {
+          "tool": "submit_reading",
+          "code": "validation_failed",
+          "error": "行星落座或四轴与本次计算不符"
+        },
+        {
+          "tool": "submit_reading",
+          "code": "validation_failed",
+          "error": "行星落座或四轴与本次计算不符"
+        }
+      ],
+      "latency_s": 186.871,
+      "review_latency_s": 9.221,
+      "model_calls": 18,
+      "model_request_attempts": 11,
+      "input_tokens": 132904,
+      "output_tokens": 37060,
+      "usage_missing_calls": 0,
+      "cached_input_tokens": 4601,
+      "cached_usage_complete": true,
+      "returned_models": [
+        "deepseek-v4-flash"
+      ],
+      "review_usage": {
+        "input_tokens": 4086,
+        "output_tokens": 1518,
+        "usage_available": true,
+        "requested_model": "deepseek-v4-pro",
+        "returned_model": "deepseek-v4-pro"
+      },
+      "review_request_attempts": 1,
+      "multi_agent": {
+        "consults": 3,
+        "statuses": {
+          "ok": 2,
+          "failed": 1
+        },
+        "specialist_tool_calls": 7,
+        "out_of_scope_attempts": 0,
+        "report_submissions": 4,
+        "report_submissions_accepted": 2,
+        "consults_with_submission": 3,
+        "consults_without_submission": 0,
+        "report_first_pass": 2,
+        "report_corrected_pass": 2,
+        "report_compliance_rate": 0.6666666666666666,
+        "report_first_pass_rate": 0.6666666666666666,
+        "report_corrected_pass_rate": 0.6666666666666666,
+        "submit_attempt_pass_rate": 0.5,
+        "max_concurrent_specialists": 2,
+        "queue_ms": [
+          0.005,
+          0.004,
+          0.005
+        ],
+        "specialist_latency_ms": [
+          29089.083,
+          43745.053,
+          32391.948
+        ],
+        "specialist_tokens": 59059
+      },
+      "reviewer_agent": {
+        "reviews": 0,
+        "verdicts": {},
+        "readings_reviewed": 0,
+        "readings_revised": 0,
+        "revise_rate": null,
+        "dropped_notes": 0,
+        "rejected_reviews": 0,
+        "reviewer_tokens": 0,
+        "reviewer_latency_ms": []
+      }
+    },
+    {
+      "id": "p1-traj-001",
+      "repeat": 0,
+      "status": "submit_reading",
+      "checks": {
+        "expected_status": true,
+        "expected_tools": true,
+        "zero_tool_errors": false,
+        "no_model_error": true,
+        "saved": true,
+        "systems": false,
+        "valid_refs": true,
+        "trace_tree_complete": true
+      },
+      "engineering_pass": false,
+      "quality_review": {
+        "error_type": "JSONDecodeError"
+      },
+      "quality_pass": false,
+      "passed": false,
+      "tools": [
+        "compute_bazi",
+        "compute_bazi_period",
+        "compute_natal_chart",
+        "compute_transits",
+        "consult_specialist",
+        "draw_tarot",
+        "get_profile",
+        "resolve_location",
+        "start_reading",
+        "submit_reading",
+        "submit_report",
+        "update_profile"
+      ],
+      "tool_errors": [
+        {
+          "tool": "update_profile",
+          "code": "validation_failed",
+          "error": "地理字段须来自已确认地点或原话"
+        },
+        {
+          "tool": "update_profile",
+          "code": "validation_failed",
+          "error": "地理字段须来自已确认地点或原话"
+        },
+        {
+          "tool": "submit_report",
+          "code": "invalid_arguments",
+          "error": "参数不符合 schema：missing：Input should be a valid list；confidence：Field required"
+        },
+        {
+          "tool": "submit_report",
+          "code": "validation_failed",
+          "error": "要点ref_id必须来自本体系本次计算的interpretations或牌面ref_id"
+        },
+        {
+          "tool": "consult_specialist",
+          "code": "validation_failed",
+          "error": "location_id须先由resolve_location解析并确认；请先调用 resolve_location(query=\"出生地原话\")，如有同名候选用 ask_user 确认"
+        },
+        {
+          "tool": "update_profile",
+          "code": "validation_failed",
+          "error": "地理字段须来自已确认地点或原话"
+        },
+        {
+          "tool": "submit_report",
+          "code": "invalid_arguments",
+          "error": "参数不符合 schema：points：Input should be a valid list"
+        },
+        {
+          "tool": "submit_report",
+          "code": "validation_failed",
+          "error": "宫位不可用或与本次计算不符"
+        },
+        {
+          "tool": "submit_reading",
+          "code": "invalid_arguments",
+          "error": "参数不符合 schema：sections：Input should be a valid list；advice：Input should be a valid list"
+        }
+      ],
+      "latency_s": 180.65,
+      "review_latency_s": 82.326,
+      "model_calls": 20,
+      "model_request_attempts": 8,
+      "input_tokens": 138935,
+      "output_tokens": 39512,
+      "usage_missing_calls": 0,
+      "cached_input_tokens": 4382,
+      "cached_usage_complete": true,
+      "returned_models": [
+        "deepseek-v4-flash"
+      ],
+      "review_usage": {},
+      "review_request_attempts": 1,
+      "multi_agent": {
+        "consults": 6,
+        "statuses": {
+          "needs_input": 1,
+          "ok": 1,
+          "failed": 4
+        },
+        "specialist_tool_calls": 12,
+        "out_of_scope_attempts": 0,
+        "report_submissions": 5,
+        "report_submissions_accepted": 1,
+        "consults_with_submission": 3,
+        "consults_without_submission": 3,
+        "report_first_pass": 0,
+        "report_corrected_pass": 1,
+        "report_compliance_rate": 0.2,
+        "report_first_pass_rate": 0.0,
+        "report_corrected_pass_rate": 0.3333333333333333,
+        "submit_attempt_pass_rate": 0.2,
+        "max_concurrent_specialists": 2,
+        "queue_ms": [
+          0.005,
+          0.004,
+          0.004,
+          0.005,
+          0.005,
+          0.007
+        ],
+        "specialist_latency_ms": [
+          8046.735,
+          36781.772,
+          54771.516,
+          57027.814,
+          6.137,
+          5256.885
+        ],
+        "specialist_tokens": 94105
+      },
+      "reviewer_agent": {
+        "reviews": 1,
+        "verdicts": {
+          "unavailable": 1
+        },
+        "readings_reviewed": 1,
+        "readings_revised": 0,
+        "revise_rate": 0.0,
+        "dropped_notes": 0,
+        "rejected_reviews": 0,
+        "reviewer_tokens": 0,
+        "reviewer_latency_ms": [
+          2.682
+        ]
+      }
+    },
+    {
+      "id": "p1-traj-002",
+      "repeat": 0,
+      "status": "submit_reading",
+      "checks": {
+        "expected_status": true,
+        "expected_tools": false,
+        "zero_tool_errors": false,
+        "no_model_error": true,
+        "saved": true,
+        "systems": false,
+        "valid_refs": true,
+        "trace_tree_complete": true
+      },
+      "engineering_pass": false,
+      "quality_review": {
+        "direct_answer": true,
+        "time_consistent": true,
+        "supported_conclusion": true,
+        "no_fabricated_facts": true
+      },
+      "quality_pass": true,
+      "passed": false,
+      "tools": [
+        "compute_bazi",
+        "compute_natal_chart",
+        "compute_transits",
+        "consult_specialist",
+        "draw_tarot",
+        "get_profile",
+        "resolve_location",
+        "start_reading",
+        "submit_reading",
+        "submit_report",
+        "update_profile"
+      ],
+      "tool_errors": [
+        {
+          "tool": "update_profile",
+          "code": "validation_failed",
+          "error": "字段值必须在 evidence 原话中，不允许臆测"
+        },
+        {
+          "tool": "submit_report",
+          "code": "validation_failed",
+          "error": "要点ref_id必须来自本体系本次计算的interpretations或牌面ref_id"
+        },
+        {
+          "tool": "submit_report",
+          "code": "validation_failed",
+          "error": "宫位不可用或与本次计算不符"
+        },
+        {
+          "tool": "submit_report",
+          "code": "validation_failed",
+          "error": "本次工具结果没有该干支，不能编造"
+        },
+        {
+          "tool": "submit_report",
+          "code": "validation_failed",
+          "error": "宫位不可用或与本次计算不符"
+        },
+        {
+          "tool": "submit_report",
+          "code": "validation_failed",
+          "error": "子问题指定了时间范围，须计算本体系行运或流期，不能只用原局"
+        },
+        {
+          "tool": "submit_report",
+          "code": "validation_failed",
+          "error": "子问题指定了时间范围，须计算本体系行运或流期，不能只用原局"
+        }
+      ],
+      "latency_s": 216.652,
+      "review_latency_s": 41.444,
+      "model_calls": 18,
+      "model_request_attempts": 4,
+      "input_tokens": 113972,
+      "output_tokens": 42342,
+      "usage_missing_calls": 0,
+      "cached_input_tokens": 2868,
+      "cached_usage_complete": true,
+      "returned_models": [
+        "deepseek-v4-flash"
+      ],
+      "review_usage": {
+        "input_tokens": 4994,
+        "output_tokens": 4691,
+        "usage_available": true,
+        "requested_model": "deepseek-v4-pro",
+        "returned_model": "deepseek-v4-pro"
+      },
+      "review_request_attempts": 1,
+      "multi_agent": {
+        "consults": 5,
+        "statuses": {
+          "ok": 1,
+          "failed": 4
+        },
+        "specialist_tool_calls": 13,
+        "out_of_scope_attempts": 0,
+        "report_submissions": 7,
+        "report_submissions_accepted": 1,
+        "consults_with_submission": 4,
+        "consults_without_submission": 1,
+        "report_first_pass": 0,
+        "report_corrected_pass": 1,
+        "report_compliance_rate": 0.2,
+        "report_first_pass_rate": 0.0,
+        "report_corrected_pass_rate": 0.25,
+        "submit_attempt_pass_rate": 0.14285714285714285,
+        "max_concurrent_specialists": 3,
+        "queue_ms": [
+          0.004,
+          0.005,
+          0.005,
+          0.005,
+          0.005
+        ],
+        "specialist_latency_ms": [
+          32127.226,
+          54727.021,
+          79230.541,
+          22100.227,
+          48842.59
+        ],
+        "specialist_tokens": 119840
+      },
+      "reviewer_agent": {
+        "reviews": 1,
+        "verdicts": {
+          "unavailable": 1
+        },
+        "readings_reviewed": 1,
+        "readings_revised": 0,
+        "revise_rate": 0.0,
+        "dropped_notes": 0,
+        "rejected_reviews": 0,
+        "reviewer_tokens": 0,
+        "reviewer_latency_ms": [
+          2.39
+        ]
+      }
+    },
+    {
+      "id": "p1-traj-003",
+      "repeat": 0,
+      "status": "limit_reached",
+      "checks": {
+        "expected_status": false,
+        "expected_tools": false,
+        "zero_tool_errors": false,
+        "no_model_error": false,
+        "saved": false,
+        "systems": false,
+        "valid_refs": true,
+        "trace_tree_complete": true
+      },
+      "engineering_pass": false,
+      "quality_review": {
+        "direct_answer": false,
+        "time_consistent": false,
+        "supported_conclusion": false,
+        "no_fabricated_facts": true
+      },
+      "quality_pass": false,
+      "passed": false,
+      "tools": [
+        "compute_bazi",
+        "compute_natal_chart",
+        "compute_transits",
+        "consult_specialist",
+        "get_profile",
+        "resolve_location",
+        "start_reading",
+        "update_profile"
+      ],
+      "tool_errors": [
+        {
+          "tool": "update_profile",
+          "code": "validation_failed",
+          "error": "历法与子时规则须有原话明确支持"
+        },
+        {
+          "tool": "update_profile",
+          "code": "validation_failed",
+          "error": "地理字段须来自已确认地点或原话"
+        },
+        {
+          "tool": "update_profile",
+          "code": "validation_failed",
+          "error": "地理字段须来自已确认地点或原话"
+        },
+        {
+          "tool": "update_profile",
+          "code": "validation_failed",
+          "error": "历法与子时规则须有原话明确支持"
+        },
+        {
+          "tool": "update_profile",
+          "code": "validation_failed",
+          "error": "历法与子时规则须有原话明确支持"
+        },
+        {
+          "tool": "consult_specialist",
+          "code": "validation_failed",
+          "error": "location_id须先由resolve_location解析并确认；请先调用 resolve_location(query=\"出生地原话\")，如有同名候选用 ask_user 确认"
+        },
+        {
+          "tool": "consult_specialist",
+          "code": "validation_failed",
+          "error": "location_id须先由resolve_location解析并确认；请先调用 resolve_location(query=\"出生地原话\")，如有同名候选用 ask_user 确认"
+        }
+      ],
+      "latency_s": 187.761,
+      "review_latency_s": 11.784,
+      "model_calls": 19,
+      "model_request_attempts": 12,
+      "input_tokens": 132199,
+      "output_tokens": 35738,
+      "usage_missing_calls": 0,
+      "cached_input_tokens": 5054,
+      "cached_usage_complete": true,
+      "returned_models": [
+        "deepseek-v4-flash"
+      ],
+      "review_usage": {
+        "input_tokens": 2028,
+        "output_tokens": 2158,
+        "usage_available": true,
+        "requested_model": "deepseek-v4-pro",
+        "returned_model": "deepseek-v4-pro"
+      },
+      "review_request_attempts": 1,
+      "multi_agent": {
+        "consults": 6,
+        "statuses": {
+          "failed": 6
+        },
+        "specialist_tool_calls": 5,
+        "out_of_scope_attempts": 0,
+        "report_submissions": 0,
+        "report_submissions_accepted": 0,
+        "consults_with_submission": 0,
+        "consults_without_submission": 6,
+        "report_first_pass": 0,
+        "report_corrected_pass": 0,
+        "report_compliance_rate": 0.0,
+        "report_first_pass_rate": null,
+        "report_corrected_pass_rate": null,
+        "submit_attempt_pass_rate": null,
+        "max_concurrent_specialists": 2,
+        "queue_ms": [
+          0.005,
+          0.004,
+          0.004,
+          0.005,
+          0.004,
+          0.005
+        ],
+        "specialist_latency_ms": [
+          48714.854,
+          88352.978,
+          4618.606,
+          9656.624,
+          9.187,
+          8.045
+        ],
+        "specialist_tokens": 61605
+      },
+      "reviewer_agent": {
+        "reviews": 0,
+        "verdicts": {},
+        "readings_reviewed": 0,
+        "readings_revised": 0,
+        "revise_rate": null,
+        "dropped_notes": 0,
+        "rejected_reviews": 0,
+        "reviewer_tokens": 0,
+        "reviewer_latency_ms": []
+      }
+    },
+    {
+      "id": "p1-traj-005",
+      "repeat": 0,
+      "status": "limit_reached",
+      "checks": {
+        "expected_status": false,
+        "expected_tools": false,
+        "zero_tool_errors": false,
+        "no_model_error": false,
+        "saved": false,
+        "systems": false,
+        "valid_refs": true,
+        "trace_tree_complete": true
+      },
+      "engineering_pass": false,
+      "quality_review": {
+        "direct_answer": false,
+        "time_consistent": false,
+        "supported_conclusion": false,
+        "no_fabricated_facts": false
+      },
+      "quality_pass": false,
+      "passed": false,
+      "tools": [
+        "compute_bazi",
+        "compute_bazi_period",
+        "compute_natal_chart",
+        "compute_transits",
+        "consult_specialist",
+        "draw_tarot",
+        "get_profile",
+        "resolve_location",
+        "start_reading",
+        "update_profile"
+      ],
+      "tool_errors": [
+        {
+          "tool": "update_profile",
+          "code": "validation_failed",
+          "error": "历法与子时规则须有原话明确支持"
+        },
+        {
+          "tool": "update_profile",
+          "code": "validation_failed",
+          "error": "历法与子时规则须有原话明确支持"
+        },
+        {
+          "tool": "read_reading",
+          "code": "missing_reading",
+          "error": "没有属于当前用户的占卜记录"
+        },
+        {
+          "tool": "consult_specialist",
+          "code": "validation_failed",
+          "error": "location_id须先由resolve_location解析并确认；请先调用 resolve_location(query=\"出生地原话\")，如有同名候选用 ask_user 确认"
+        },
+        {
+          "tool": "consult_specialist",
+          "code": "validation_failed",
+          "error": "location_id须先由resolve_location解析并确认；请先调用 resolve_location(query=\"出生地原话\")，如有同名候选用 ask_user 确认"
+        },
+        {
+          "tool": "consult_specialist",
+          "code": "validation_failed",
+          "error": "location_id须先由resolve_location解析并确认；请先调用 resolve_location(query=\"出生地原话\")，如有同名候选用 ask_user 确认"
+        },
+        {
+          "tool": "submit_report",
+          "code": "validation_failed",
+          "error": "子问题指定了时间范围，须计算本体系行运或流期，不能只用原局"
+        },
+        {
+          "tool": "submit_report",
+          "code": "validation_failed",
+          "error": "要点ref_id必须来自本体系本次计算的interpretations或牌面ref_id"
+        },
+        {
+          "tool": "submit_report",
+          "code": "validation_failed",
+          "error": "要点ref_id必须来自本体系本次计算的interpretations或牌面ref_id"
+        }
+      ],
+      "latency_s": 191.457,
+      "review_latency_s": 11.171,
+      "model_calls": 19,
+      "model_request_attempts": 10,
+      "input_tokens": 134498,
+      "output_tokens": 35817,
+      "usage_missing_calls": 0,
+      "cached_input_tokens": 4247,
+      "cached_usage_complete": true,
+      "returned_models": [
+        "deepseek-v4-flash"
+      ],
+      "review_usage": {
+        "input_tokens": 2015,
+        "output_tokens": 1727,
+        "usage_available": true,
+        "requested_model": "deepseek-v4-pro",
+        "returned_model": "deepseek-v4-pro"
+      },
+      "review_request_attempts": 1,
+      "multi_agent": {
+        "consults": 6,
+        "statuses": {
+          "failed": 6
+        },
+        "specialist_tool_calls": 8,
+        "out_of_scope_attempts": 0,
+        "report_submissions": 3,
+        "report_submissions_accepted": 0,
+        "consults_with_submission": 2,
+        "consults_without_submission": 4,
+        "report_first_pass": 0,
+        "report_corrected_pass": 0,
+        "report_compliance_rate": 0.0,
+        "report_first_pass_rate": 0.0,
+        "report_corrected_pass_rate": 0.0,
+        "submit_attempt_pass_rate": 0.0,
+        "max_concurrent_specialists": 2,
+        "queue_ms": [
+          0.004,
+          0.003,
+          0.009,
+          0.005,
+          0.005,
+          0.004
+        ],
+        "specialist_latency_ms": [
+          46896.258,
+          34061.212,
+          60784.467,
+          3.978,
+          9.934,
+          8.834
+        ],
+        "specialist_tokens": 79369
+      },
+      "reviewer_agent": {
+        "reviews": 0,
+        "verdicts": {},
+        "readings_reviewed": 0,
+        "readings_revised": 0,
+        "revise_rate": null,
+        "dropped_notes": 0,
+        "rejected_reviews": 0,
+        "reviewer_tokens": 0,
+        "reviewer_latency_ms": []
+      }
+    },
+    {
+      "id": "p1-traj-006",
+      "repeat": 0,
+      "status": "ask_user",
+      "checks": {
+        "expected_status": false,
+        "expected_tools": false,
+        "zero_tool_errors": false,
+        "no_model_error": true,
+        "saved": false,
+        "systems": false,
+        "valid_refs": true,
+        "null_axes": true,
+        "no_hour": true,
+        "no_dayun": true,
+        "trace_tree_complete": true
+      },
+      "engineering_pass": false,
+      "quality_review": {
+        "direct_answer": false,
+        "time_consistent": true,
+        "supported_conclusion": true,
+        "no_fabricated_facts": true
+      },
+      "quality_pass": false,
+      "passed": false,
+      "tools": [
+        "ask_user",
+        "get_profile",
+        "resolve_location",
+        "start_reading",
+        "update_profile"
+      ],
+      "tool_errors": [
+        {
+          "tool": "read_reading",
+          "code": "missing_reading",
+          "error": "没有属于当前用户的占卜记录"
+        },
+        {
+          "tool": "update_profile",
+          "code": "validation_failed",
+          "error": "地理字段须来自已确认地点或原话"
+        },
+        {
+          "tool": "read_reading",
+          "code": "missing_reading",
+          "error": "没有属于当前用户的占卜记录"
+        },
+        {
+          "tool": "ask_user",
+          "code": "validation_failed",
+          "error": "画像已有这些资料，不要重复追问：birth_date；直接使用画像，用户主动更正时再更新"
+        }
+      ],
+      "latency_s": 80.922,
+      "review_latency_s": 15.906,
+      "model_calls": 6,
+      "model_request_attempts": 6,
+      "input_tokens": 39640,
+      "output_tokens": 10546,
+      "usage_missing_calls": 0,
+      "cached_input_tokens": 1596,
+      "cached_usage_complete": true,
+      "returned_models": [
+        "deepseek-v4-flash"
+      ],
+      "review_usage": {
+        "input_tokens": 2007,
+        "output_tokens": 2342,
+        "usage_available": true,
+        "requested_model": "deepseek-v4-pro",
+        "returned_model": "deepseek-v4-pro"
+      },
+      "review_request_attempts": 1,
+      "multi_agent": {
+        "consults": 0,
+        "statuses": {},
+        "specialist_tool_calls": 0,
+        "out_of_scope_attempts": 0,
+        "report_submissions": 0,
+        "report_submissions_accepted": 0,
+        "consults_with_submission": 0,
+        "consults_without_submission": 0,
+        "report_first_pass": 0,
+        "report_corrected_pass": 0,
+        "report_compliance_rate": null,
+        "report_first_pass_rate": null,
+        "report_corrected_pass_rate": null,
+        "submit_attempt_pass_rate": null,
+        "max_concurrent_specialists": 0,
+        "queue_ms": [],
+        "specialist_latency_ms": [],
+        "specialist_tokens": 0
+      },
+      "reviewer_agent": {
+        "reviews": 0,
+        "verdicts": {},
+        "readings_reviewed": 0,
+        "readings_revised": 0,
+        "revise_rate": null,
+        "dropped_notes": 0,
+        "rejected_reviews": 0,
+        "reviewer_tokens": 0,
+        "reviewer_latency_ms": []
+      }
+    },
+    {
+      "id": "p1-traj-021",
+      "repeat": 0,
+      "status": "output_truncated",
+      "checks": {
+        "expected_status": false,
+        "expected_tools": false,
+        "zero_tool_errors": false,
+        "no_model_error": true,
+        "saved": false,
+        "systems": false,
+        "valid_refs": true,
+        "trace_tree_complete": true
+      },
+      "engineering_pass": false,
+      "quality_review": {
+        "direct_answer": false,
+        "time_consistent": true,
+        "supported_conclusion": false,
+        "no_fabricated_facts": true
+      },
+      "quality_pass": false,
+      "passed": false,
+      "tools": [
+        "resolve_location",
+        "start_reading",
+        "update_profile"
+      ],
+      "tool_errors": [
+        {
+          "tool": "update_profile",
+          "code": "validation_failed",
+          "error": "历法与子时规则须有原话明确支持"
+        },
+        {
+          "tool": "update_profile",
+          "code": "validation_failed",
+          "error": "历法与子时规则须有原话明确支持"
+        },
+        {
+          "tool": "update_profile",
+          "code": "validation_failed",
+          "error": "历法与子时规则须有原话明确支持"
+        },
+        {
+          "tool": "update_profile",
+          "code": "validation_failed",
+          "error": "历法与子时规则须有原话明确支持"
+        },
+        {
+          "tool": "update_profile",
+          "code": "validation_failed",
+          "error": "历法与子时规则须有原话明确支持"
+        }
+      ],
+      "latency_s": 99.269,
+      "review_latency_s": 7.839,
+      "model_calls": 5,
+      "model_request_attempts": 5,
+      "input_tokens": 28881,
+      "output_tokens": 15626,
+      "usage_missing_calls": 0,
+      "cached_input_tokens": 923,
+      "cached_usage_complete": true,
+      "returned_models": [
+        "deepseek-v4-flash"
+      ],
+      "review_usage": {
+        "input_tokens": 1927,
+        "output_tokens": 1445,
+        "usage_available": true,
+        "requested_model": "deepseek-v4-pro",
+        "returned_model": "deepseek-v4-pro"
+      },
+      "review_request_attempts": 1,
+      "multi_agent": {
+        "consults": 0,
+        "statuses": {},
+        "specialist_tool_calls": 0,
+        "out_of_scope_attempts": 0,
+        "report_submissions": 0,
+        "report_submissions_accepted": 0,
+        "consults_with_submission": 0,
+        "consults_without_submission": 0,
+        "report_first_pass": 0,
+        "report_corrected_pass": 0,
+        "report_compliance_rate": null,
+        "report_first_pass_rate": null,
+        "report_corrected_pass_rate": null,
+        "submit_attempt_pass_rate": null,
+        "max_concurrent_specialists": 0,
+        "queue_ms": [],
+        "specialist_latency_ms": [],
+        "specialist_tokens": 0
+      },
+      "reviewer_agent": {
+        "reviews": 0,
+        "verdicts": {},
+        "readings_reviewed": 0,
+        "readings_revised": 0,
+        "revise_rate": null,
+        "dropped_notes": 0,
+        "rejected_reviews": 0,
+        "reviewer_tokens": 0,
+        "reviewer_latency_ms": []
+      }
+    },
+    {
+      "id": "p1-traj-022",
+      "repeat": 0,
+      "status": "submit_reading",
+      "checks": {
+        "expected_status": true,
+        "expected_tools": true,
+        "zero_tool_errors": false,
+        "no_model_error": true,
+        "saved": true,
+        "systems": true,
+        "valid_refs": true,
+        "trace_tree_complete": true
+      },
+      "engineering_pass": false,
+      "quality_review": {
+        "direct_answer": true,
+        "time_consistent": true,
+        "supported_conclusion": true,
+        "no_fabricated_facts": true
+      },
+      "quality_pass": true,
+      "passed": false,
+      "tools": [
+        "compute_bazi",
+        "compute_natal_chart",
+        "consult_specialist",
+        "get_profile",
+        "merge_signals",
+        "resolve_location",
+        "start_reading",
+        "submit_reading",
+        "submit_report",
+        "submit_review",
+        "update_profile"
+      ],
+      "tool_errors": [
+        {
+          "tool": "update_profile",
+          "code": "validation_failed",
+          "error": "历法与子时规则须有原话明确支持"
+        },
+        {
+          "tool": "update_profile",
+          "code": "validation_failed",
+          "error": "历法与子时规则须有原话明确支持"
+        },
+        {
+          "tool": "update_profile",
+          "code": "validation_failed",
+          "error": "历法与子时规则须有原话明确支持"
+        },
+        {
+          "tool": "update_profile",
+          "code": "validation_failed",
+          "error": "历法与子时规则须有原话明确支持"
+        },
+        {
+          "tool": "consult_specialist",
+          "code": "validation_failed",
+          "error": "location_id须先由resolve_location解析并确认；请先调用 resolve_location(query=\"出生地原话\")，如有同名候选用 ask_user 确认"
+        },
+        {
+          "tool": "consult_specialist",
+          "code": "validation_failed",
+          "error": "location_id须先由resolve_location解析并确认；请先调用 resolve_location(query=\"出生地原话\")，如有同名候选用 ask_user 确认"
+        }
+      ],
+      "latency_s": 127.492,
+      "review_latency_s": 26.889,
+      "model_calls": 16,
+      "model_request_attempts": 11,
+      "input_tokens": 104366,
+      "output_tokens": 27438,
+      "usage_missing_calls": 0,
+      "cached_input_tokens": 3591,
+      "cached_usage_complete": true,
+      "returned_models": [
+        "deepseek-v4-flash"
+      ],
+      "review_usage": {
+        "input_tokens": 14755,
+        "output_tokens": 3649,
+        "usage_available": true,
+        "requested_model": "deepseek-v4-pro",
+        "returned_model": "deepseek-v4-pro"
+      },
+      "review_request_attempts": 1,
+      "multi_agent": {
+        "consults": 2,
+        "statuses": {
+          "ok": 2
+        },
+        "specialist_tool_calls": 5,
+        "out_of_scope_attempts": 0,
+        "report_submissions": 2,
+        "report_submissions_accepted": 2,
+        "consults_with_submission": 2,
+        "consults_without_submission": 0,
+        "report_first_pass": 2,
+        "report_corrected_pass": 2,
+        "report_compliance_rate": 1.0,
+        "report_first_pass_rate": 1.0,
+        "report_corrected_pass_rate": 1.0,
+        "submit_attempt_pass_rate": 1.0,
+        "max_concurrent_specialists": 2,
+        "queue_ms": [
+          0.003,
+          0.005
+        ],
+        "specialist_latency_ms": [
+          28639.186,
+          35669.517
+        ],
+        "specialist_tokens": 32271
+      },
+      "reviewer_agent": {
+        "reviews": 1,
+        "verdicts": {
+          "pass_with_notes": 1
+        },
+        "readings_reviewed": 1,
+        "readings_revised": 0,
+        "revise_rate": 0.0,
+        "dropped_notes": 0,
+        "rejected_reviews": 0,
+        "reviewer_tokens": 5570,
+        "reviewer_latency_ms": [
+          7126.86
+        ]
+      }
+    },
+    {
+      "id": "p1-traj-024",
+      "repeat": 0,
+      "status": "output_truncated",
+      "checks": {
+        "expected_status": false,
+        "expected_tools": false,
+        "zero_tool_errors": false,
+        "no_model_error": true,
+        "saved": false,
+        "systems": false,
+        "valid_refs": true,
+        "trace_tree_complete": true
+      },
+      "engineering_pass": false,
+      "quality_review": {
+        "direct_answer": false,
+        "time_consistent": false,
+        "supported_conclusion": false,
+        "no_fabricated_facts": true
+      },
+      "quality_pass": false,
+      "passed": false,
+      "tools": [
+        "get_profile",
+        "resolve_location",
+        "start_reading"
+      ],
+      "tool_errors": [
+        {
+          "tool": "read_reading",
+          "code": "missing_reading",
+          "error": "没有属于当前用户的占卜记录"
+        }
+      ],
+      "latency_s": 73.689,
+      "review_latency_s": 7.742,
+      "model_calls": 4,
+      "model_request_attempts": 4,
+      "input_tokens": 17108,
+      "output_tokens": 12765,
+      "usage_missing_calls": 0,
+      "cached_input_tokens": 688,
+      "cached_usage_complete": true,
+      "returned_models": [
+        "deepseek-v4-flash"
+      ],
+      "review_usage": {
+        "input_tokens": 1846,
+        "output_tokens": 1644,
+        "usage_available": true,
+        "requested_model": "deepseek-v4-pro",
+        "returned_model": "deepseek-v4-pro"
+      },
+      "review_request_attempts": 1,
+      "multi_agent": {
+        "consults": 0,
+        "statuses": {},
+        "specialist_tool_calls": 0,
+        "out_of_scope_attempts": 0,
+        "report_submissions": 0,
+        "report_submissions_accepted": 0,
+        "consults_with_submission": 0,
+        "consults_without_submission": 0,
+        "report_first_pass": 0,
+        "report_corrected_pass": 0,
+        "report_compliance_rate": null,
+        "report_first_pass_rate": null,
+        "report_corrected_pass_rate": null,
+        "submit_attempt_pass_rate": null,
+        "max_concurrent_specialists": 0,
+        "queue_ms": [],
+        "specialist_latency_ms": [],
+        "specialist_tokens": 0
+      },
+      "reviewer_agent": {
+        "reviews": 0,
+        "verdicts": {},
+        "readings_reviewed": 0,
+        "readings_revised": 0,
+        "revise_rate": null,
+        "dropped_notes": 0,
+        "rejected_reviews": 0,
+        "reviewer_tokens": 0,
+        "reviewer_latency_ms": []
+      }
+    },
+    {
+      "id": "three_system_timing",
+      "repeat": 1,
+      "status": "output_truncated",
+      "checks": {
+        "expected_status": false,
+        "expected_tools": false,
+        "zero_tool_errors": true,
+        "no_model_error": true,
+        "saved": false,
+        "systems": false,
+        "valid_refs": true
+      },
+      "engineering_pass": false,
+      "quality_review": {
+        "direct_answer": false,
+        "time_consistent": false,
+        "supported_conclusion": false,
+        "no_fabricated_facts": true
+      },
+      "quality_pass": false,
+      "passed": false,
+      "tools": [],
+      "tool_errors": [],
+      "latency_s": 53.911,
+      "review_latency_s": 7.973,
+      "model_calls": 1,
+      "model_request_attempts": 1,
+      "input_tokens": 3579,
+      "output_tokens": 9216,
+      "usage_missing_calls": 0,
+      "cached_input_tokens": 151,
+      "cached_usage_complete": true,
+      "returned_models": [
+        "deepseek-v4-flash"
+      ],
+      "review_usage": {
+        "input_tokens": 1874,
+        "output_tokens": 1507,
+        "usage_available": true,
+        "requested_model": "deepseek-v4-pro",
+        "returned_model": "deepseek-v4-pro"
+      },
+      "review_request_attempts": 1,
+      "multi_agent": {
+        "consults": 0,
+        "statuses": {},
+        "specialist_tool_calls": 0,
+        "out_of_scope_attempts": 0,
+        "report_submissions": 0,
+        "report_submissions_accepted": 0,
+        "consults_with_submission": 0,
+        "consults_without_submission": 0,
+        "report_first_pass": 0,
+        "report_corrected_pass": 0,
+        "report_compliance_rate": null,
+        "report_first_pass_rate": null,
+        "report_corrected_pass_rate": null,
+        "submit_attempt_pass_rate": null,
+        "max_concurrent_specialists": 0,
+        "queue_ms": [],
+        "specialist_latency_ms": [],
+        "specialist_tokens": 0
+      },
+      "reviewer_agent": {
+        "reviews": 0,
+        "verdicts": {},
+        "readings_reviewed": 0,
+        "readings_revised": 0,
+        "revise_rate": null,
+        "dropped_notes": 0,
+        "rejected_reviews": 0,
+        "reviewer_tokens": 0,
+        "reviewer_latency_ms": []
+      }
+    },
+    {
+      "id": "unknown_time",
+      "repeat": 1,
+      "status": "submit_reading",
+      "checks": {
+        "expected_status": true,
+        "expected_tools": true,
+        "zero_tool_errors": false,
+        "no_model_error": true,
+        "saved": true,
+        "systems": true,
+        "valid_refs": true,
+        "null_axes": true,
+        "no_hour": true,
+        "no_dayun": true,
+        "trace_tree_complete": true
+      },
+      "engineering_pass": false,
+      "quality_review": {
+        "error_type": "JSONDecodeError"
+      },
+      "quality_pass": false,
+      "passed": false,
+      "tools": [
+        "compute_bazi",
+        "compute_natal_chart",
+        "consult_specialist",
+        "get_profile",
+        "resolve_location",
+        "start_reading",
+        "submit_reading",
+        "submit_report",
+        "submit_review",
+        "update_profile"
+      ],
+      "tool_errors": [
+        {
+          "tool": "consult_specialist",
+          "code": "validation_failed",
+          "error": "location_id须先由resolve_location解析并确认；请先调用 resolve_location(query=\"出生地原话\")，如有同名候选用 ask_user 确认"
+        },
+        {
+          "tool": "consult_specialist",
+          "code": "validation_failed",
+          "error": "location_id须先由resolve_location解析并确认；请先调用 resolve_location(query=\"出生地原话\")，如有同名候选用 ask_user 确认"
+        },
+        {
+          "tool": "update_profile",
+          "code": "validation_failed",
+          "error": "地理字段须来自已确认地点或原话"
+        }
+      ],
+      "latency_s": 105.456,
+      "review_latency_s": 66.01,
+      "model_calls": 11,
+      "model_request_attempts": 6,
+      "input_tokens": 64248,
+      "output_tokens": 22663,
+      "usage_missing_calls": 0,
+      "cached_input_tokens": 1711,
+      "cached_usage_complete": true,
+      "returned_models": [
+        "deepseek-v4-flash"
+      ],
+      "review_usage": {},
+      "review_request_attempts": 1,
+      "multi_agent": {
+        "consults": 2,
+        "statuses": {
+          "ok": 2
+        },
+        "specialist_tool_calls": 5,
+        "out_of_scope_attempts": 0,
+        "report_submissions": 2,
+        "report_submissions_accepted": 2,
+        "consults_with_submission": 2,
+        "consults_without_submission": 0,
+        "report_first_pass": 2,
+        "report_corrected_pass": 2,
+        "report_compliance_rate": 1.0,
+        "report_first_pass_rate": 1.0,
+        "report_corrected_pass_rate": 1.0,
+        "submit_attempt_pass_rate": 1.0,
+        "max_concurrent_specialists": 2,
+        "queue_ms": [
+          0.005,
+          0.004
+        ],
+        "specialist_latency_ms": [
+          27133.824,
+          27143.52
+        ],
+        "specialist_tokens": 28906
+      },
+      "reviewer_agent": {
+        "reviews": 1,
+        "verdicts": {
+          "pass": 1
+        },
+        "readings_reviewed": 1,
+        "readings_revised": 0,
+        "revise_rate": 0.0,
+        "dropped_notes": 0,
+        "rejected_reviews": 0,
+        "reviewer_tokens": 5068,
+        "reviewer_latency_ms": [
+          5120.007
+        ]
+      }
+    },
+    {
+      "id": "range_before_birth",
+      "repeat": 1,
+      "status": "ask_user",
+      "checks": {
+        "expected_status": false,
+        "expected_tools": false,
+        "zero_tool_errors": false,
+        "no_model_error": true,
+        "saved": false,
+        "systems": false,
+        "valid_refs": true,
+        "trace_tree_complete": true
+      },
+      "engineering_pass": false,
+      "quality_review": {
+        "direct_answer": true,
+        "time_consistent": true,
+        "supported_conclusion": true,
+        "no_fabricated_facts": true
+      },
+      "quality_pass": true,
+      "passed": false,
+      "tools": [
+        "ask_user",
+        "compute_bazi",
+        "compute_bazi_period",
+        "compute_natal_chart",
+        "compute_transits",
+        "consult_specialist",
+        "get_profile",
+        "resolve_location",
+        "start_reading",
+        "update_profile"
+      ],
+      "tool_errors": [
+        {
+          "tool": "submit_report",
+          "code": "validation_failed",
+          "error": "子问题指定了时间范围，须计算本体系行运或流期，不能只用原局"
+        },
+        {
+          "tool": "submit_report",
+          "code": "validation_failed",
+          "error": "宫位不可用或与本次计算不符"
+        }
+      ],
+      "latency_s": 167.97,
+      "review_latency_s": 30.383,
+      "model_calls": 18,
+      "model_request_attempts": 7,
+      "input_tokens": 124498,
+      "output_tokens": 31740,
+      "usage_missing_calls": 0,
+      "cached_input_tokens": 3490,
+      "cached_usage_complete": true,
+      "returned_models": [
+        "deepseek-v4-flash"
+      ],
+      "review_usage": {
+        "input_tokens": 2070,
+        "output_tokens": 4288,
+        "usage_available": true,
+        "requested_model": "deepseek-v4-pro",
+        "returned_model": "deepseek-v4-pro"
+      },
+      "review_request_attempts": 1,
+      "multi_agent": {
+        "consults": 4,
+        "statuses": {
+          "failed": 4
+        },
+        "specialist_tool_calls": 12,
+        "out_of_scope_attempts": 0,
+        "report_submissions": 2,
+        "report_submissions_accepted": 0,
+        "consults_with_submission": 2,
+        "consults_without_submission": 2,
+        "report_first_pass": 0,
+        "report_corrected_pass": 0,
+        "report_compliance_rate": 0.0,
+        "report_first_pass_rate": 0.0,
+        "report_corrected_pass_rate": 0.0,
+        "submit_attempt_pass_rate": 0.0,
+        "max_concurrent_specialists": 2,
+        "queue_ms": [
+          0.004,
+          0.004,
+          0.004,
+          0.004
+        ],
+        "specialist_latency_ms": [
+          20646.935,
+          47867.873,
+          43843.948,
+          56671.591
+        ],
+        "specialist_tokens": 105330
+      },
+      "reviewer_agent": {
+        "reviews": 0,
+        "verdicts": {},
+        "readings_reviewed": 0,
+        "readings_revised": 0,
+        "revise_rate": null,
+        "dropped_notes": 0,
+        "rejected_reviews": 0,
+        "reviewer_tokens": 0,
+        "reviewer_latency_ms": []
+      }
+    },
+    {
+      "id": "natural_unknown",
+      "repeat": 1,
+      "status": "submit_reading",
+      "checks": {
+        "expected_status": true,
+        "expected_tools": true,
+        "zero_tool_errors": false,
+        "no_model_error": true,
+        "saved": true,
+        "systems": true,
+        "valid_refs": true,
+        "null_axes": true,
+        "no_hour": true,
+        "no_dayun": true,
+        "trace_tree_complete": true
+      },
+      "engineering_pass": false,
+      "quality_review": {
+        "error_type": "JSONDecodeError"
+      },
+      "quality_pass": false,
+      "passed": false,
+      "tools": [
+        "compute_bazi",
+        "compute_natal_chart",
+        "consult_specialist",
+        "get_profile",
+        "lookup_meaning",
+        "merge_signals",
+        "resolve_location",
+        "start_reading",
+        "submit_reading",
+        "submit_report",
+        "submit_review",
+        "update_profile"
+      ],
+      "tool_errors": [
+        {
+          "tool": "update_profile",
+          "code": "validation_failed",
+          "error": "出生日期时刻须由原话规范化得到"
+        },
+        {
+          "tool": "update_profile",
+          "code": "validation_failed",
+          "error": "咨询时区须有当前居住地或按该地时间的明确原话，并先解析地点"
+        },
+        {
+          "tool": "consult_specialist",
+          "code": "validation_failed",
+          "error": "location_id须先由resolve_location解析并确认；请先调用 resolve_location(query=\"出生地原话\")，如有同名候选用 ask_user 确认"
+        },
+        {
+          "tool": "consult_specialist",
+          "code": "validation_failed",
+          "error": "location_id须先由resolve_location解析并确认；请先调用 resolve_location(query=\"出生地原话\")，如有同名候选用 ask_user 确认"
+        },
+        {
+          "tool": "lookup_meaning",
+          "code": "missing_entry",
+          "error": "缺条目：精确 key 或同义词未命中"
+        },
+        {
+          "tool": "submit_report",
+          "code": "invalid_arguments",
+          "error": "参数不符合 schema：points：List should have at most 12 items after validation, not 14"
+        },
+        {
+          "tool": "submit_report",
+          "code": "validation_failed",
+          "error": "出生时辰未知，禁止编造时柱"
+        }
+      ],
+      "latency_s": 146.096,
+      "review_latency_s": 62.504,
+      "model_calls": 17,
+      "model_request_attempts": 9,
+      "input_tokens": 110616,
+      "output_tokens": 33293,
+      "usage_missing_calls": 0,
+      "cached_input_tokens": 3054,
+      "cached_usage_complete": true,
+      "returned_models": [
+        "deepseek-v4-flash"
+      ],
+      "review_usage": {},
+      "review_request_attempts": 1,
+      "multi_agent": {
+        "consults": 2,
+        "statuses": {
+          "ok": 2
+        },
+        "specialist_tool_calls": 11,
+        "out_of_scope_attempts": 0,
+        "report_submissions": 4,
+        "report_submissions_accepted": 2,
+        "consults_with_submission": 2,
+        "consults_without_submission": 0,
+        "report_first_pass": 0,
+        "report_corrected_pass": 2,
+        "report_compliance_rate": 1.0,
+        "report_first_pass_rate": 0.0,
+        "report_corrected_pass_rate": 1.0,
+        "submit_attempt_pass_rate": 0.5,
+        "max_concurrent_specialists": 2,
+        "queue_ms": [
+          0.006,
+          0.003
+        ],
+        "specialist_latency_ms": [
+          40666.676,
+          63166.978
+        ],
+        "specialist_tokens": 67024
+      },
+      "reviewer_agent": {
+        "reviews": 1,
+        "verdicts": {
+          "pass": 1
+        },
+        "readings_reviewed": 1,
+        "readings_revised": 0,
+        "revise_rate": 0.0,
+        "dropped_notes": 0,
+        "rejected_reviews": 0,
+        "reviewer_tokens": 4949,
+        "reviewer_latency_ms": [
+          4649.673
+        ]
+      }
+    },
+    {
+      "id": "p1-traj-001",
+      "repeat": 1,
+      "status": "limit_reached",
+      "checks": {
+        "expected_status": false,
+        "expected_tools": false,
+        "zero_tool_errors": false,
+        "no_model_error": false,
+        "saved": false,
+        "systems": false,
+        "valid_refs": true,
+        "trace_tree_complete": true
+      },
+      "engineering_pass": false,
+      "quality_review": {
+        "direct_answer": false,
+        "time_consistent": false,
+        "supported_conclusion": false,
+        "no_fabricated_facts": true
+      },
+      "quality_pass": false,
+      "passed": false,
+      "tools": [
+        "compute_bazi",
+        "compute_bazi_period",
+        "compute_natal_chart",
+        "compute_transits",
+        "consult_specialist",
+        "draw_tarot",
+        "get_profile",
+        "merge_signals",
+        "resolve_location",
+        "start_reading",
+        "submit_report",
+        "update_profile"
+      ],
+      "tool_errors": [
+        {
+          "tool": "update_profile",
+          "code": "validation_failed",
+          "error": "历法与子时规则须有原话明确支持"
+        },
+        {
+          "tool": "update_profile",
+          "code": "validation_failed",
+          "error": "历法与子时规则须有原话明确支持"
+        },
+        {
+          "tool": "read_reading",
+          "code": "missing_reading",
+          "error": "没有属于当前用户的占卜记录"
+        },
+        {
+          "tool": "submit_report",
+          "code": "invalid_arguments",
+          "error": "参数不符合 schema：missing：Input should be a valid list"
+        },
+        {
+          "tool": "submit_report",
+          "code": "validation_failed",
+          "error": "要点ref_id必须来自本体系本次计算的interpretations或牌面ref_id"
+        },
+        {
+          "tool": "submit_report",
+          "code": "validation_failed",
+          "error": "不能使用“注定”这类确定性说法；趋势可以写“倾向/容易/往往”，请改写后重新提交"
+        },
+        {
+          "tool": "consult_specialist",
+          "code": "validation_failed",
+          "error": "location_id须先由resolve_location解析并确认；请先调用 resolve_location(query=\"出生地原话\")，如有同名候选用 ask_user 确认"
+        },
+        {
+          "tool": "consult_specialist",
+          "code": "validation_failed",
+          "error": "location_id须先由resolve_location解析并确认；请先调用 resolve_location(query=\"出生地原话\")，如有同名候选用 ask_user 确认"
+        },
+        {
+          "tool": "compute_transits",
+          "code": "invalid_arguments",
+          "error": "参数不符合 schema：chart_id：Field required；location_id：Extra inputs are not permitted"
+        }
+      ],
+      "latency_s": 162.134,
+      "review_latency_s": 6.398,
+      "model_calls": 19,
+      "model_request_attempts": 8,
+      "input_tokens": 139912,
+      "output_tokens": 33873,
+      "usage_missing_calls": 0,
+      "cached_input_tokens": 4567,
+      "cached_usage_complete": true,
+      "returned_models": [
+        "deepseek-v4-flash"
+      ],
+      "review_usage": {
+        "input_tokens": 4373,
+        "output_tokens": 1437,
+        "usage_available": true,
+        "requested_model": "deepseek-v4-pro",
+        "returned_model": "deepseek-v4-pro"
+      },
+      "review_request_attempts": 1,
+      "multi_agent": {
+        "consults": 4,
+        "statuses": {
+          "ok": 2,
+          "failed": 2
+        },
+        "specialist_tool_calls": 12,
+        "out_of_scope_attempts": 0,
+        "report_submissions": 5,
+        "report_submissions_accepted": 2,
+        "consults_with_submission": 2,
+        "consults_without_submission": 2,
+        "report_first_pass": 1,
+        "report_corrected_pass": 2,
+        "report_compliance_rate": 0.5,
+        "report_first_pass_rate": 0.5,
+        "report_corrected_pass_rate": 1.0,
+        "submit_attempt_pass_rate": 0.4,
+        "max_concurrent_specialists": 2,
+        "queue_ms": [
+          0.006,
+          0.004,
+          0.004,
+          0.004
+        ],
+        "specialist_latency_ms": [
+          61627.567,
+          34951.604,
+          52712.229,
+          3.642
+        ],
+        "specialist_tokens": 96396
+      },
+      "reviewer_agent": {
+        "reviews": 0,
+        "verdicts": {},
+        "readings_reviewed": 0,
+        "readings_revised": 0,
+        "revise_rate": null,
+        "dropped_notes": 0,
+        "rejected_reviews": 0,
+        "reviewer_tokens": 0,
+        "reviewer_latency_ms": []
+      }
+    },
+    {
+      "id": "p1-traj-002",
+      "repeat": 1,
+      "status": "submit_reading",
+      "checks": {
+        "expected_status": true,
+        "expected_tools": false,
+        "zero_tool_errors": false,
+        "no_model_error": true,
+        "saved": true,
+        "systems": false,
+        "valid_refs": true,
+        "trace_tree_complete": true
+      },
+      "engineering_pass": false,
+      "quality_review": {
+        "direct_answer": true,
+        "time_consistent": true,
+        "supported_conclusion": true,
+        "no_fabricated_facts": false
+      },
+      "quality_pass": false,
+      "passed": false,
+      "tools": [
+        "compute_bazi",
+        "compute_natal_chart",
+        "compute_transits",
+        "consult_specialist",
+        "draw_tarot",
+        "get_profile",
+        "lookup_meaning",
+        "resolve_location",
+        "start_reading",
+        "submit_reading",
+        "submit_report",
+        "update_profile"
+      ],
+      "tool_errors": [
+        {
+          "tool": "update_profile",
+          "code": "validation_failed",
+          "error": "历法与子时规则须有原话明确支持"
+        },
+        {
+          "tool": "submit_report",
+          "code": "validation_failed",
+          "error": "要点ref_id必须来自本体系本次计算的interpretations或牌面ref_id"
+        },
+        {
+          "tool": "consult_specialist",
+          "code": "validation_failed",
+          "error": "location_id须先由resolve_location解析并确认；请先调用 resolve_location(query=\"出生地原话\")，如有同名候选用 ask_user 确认"
+        },
+        {
+          "tool": "consult_specialist",
+          "code": "validation_failed",
+          "error": "location_id须先由resolve_location解析并确认；请先调用 resolve_location(query=\"出生地原话\")，如有同名候选用 ask_user 确认"
+        },
+        {
+          "tool": "resolve_location",
+          "code": "validation_failed",
+          "error": "国家限制必须由用户明确提供，不能自行消歧"
+        },
+        {
+          "tool": "submit_report",
+          "code": "invalid_arguments",
+          "error": "参数不符合 schema：points：List should have at most 12 items after validation, not 14"
+        }
+      ],
+      "latency_s": 151.494,
+      "review_latency_s": 21.619,
+      "model_calls": 18,
+      "model_request_attempts": 7,
+      "input_tokens": 122580,
+      "output_tokens": 36689,
+      "usage_missing_calls": 0,
+      "cached_input_tokens": 3558,
+      "cached_usage_complete": true,
+      "returned_models": [
+        "deepseek-v4-flash"
+      ],
+      "review_usage": {
+        "input_tokens": 5012,
+        "output_tokens": 3064,
+        "usage_available": true,
+        "requested_model": "deepseek-v4-pro",
+        "returned_model": "deepseek-v4-pro"
+      },
+      "review_request_attempts": 1,
+      "multi_agent": {
+        "consults": 5,
+        "statuses": {
+          "ok": 1,
+          "failed": 4
+        },
+        "specialist_tool_calls": 11,
+        "out_of_scope_attempts": 0,
+        "report_submissions": 3,
+        "report_submissions_accepted": 1,
+        "consults_with_submission": 2,
+        "consults_without_submission": 3,
+        "report_first_pass": 0,
+        "report_corrected_pass": 1,
+        "report_compliance_rate": 0.2,
+        "report_first_pass_rate": 0.0,
+        "report_corrected_pass_rate": 0.5,
+        "submit_attempt_pass_rate": 0.3333333333333333,
+        "max_concurrent_specialists": 2,
+        "queue_ms": [
+          0.006,
+          0.005,
+          0.004,
+          0.004,
+          0.005
+        ],
+        "specialist_latency_ms": [
+          23265.869,
+          41613.939,
+          48056.986,
+          8343.753,
+          19639.206
+        ],
+        "specialist_tokens": 90958
+      },
+      "reviewer_agent": {
+        "reviews": 1,
+        "verdicts": {
+          "unavailable": 1
+        },
+        "readings_reviewed": 1,
+        "readings_revised": 0,
+        "revise_rate": 0.0,
+        "dropped_notes": 0,
+        "rejected_reviews": 0,
+        "reviewer_tokens": 0,
+        "reviewer_latency_ms": [
+          3.839
+        ]
+      }
+    },
+    {
+      "id": "p1-traj-003",
+      "repeat": 1,
+      "status": "output_truncated",
+      "checks": {
+        "expected_status": false,
+        "expected_tools": false,
+        "zero_tool_errors": true,
+        "no_model_error": true,
+        "saved": false,
+        "systems": false,
+        "valid_refs": true,
+        "trace_tree_complete": true
+      },
+      "engineering_pass": false,
+      "quality_review": {
+        "direct_answer": false,
+        "time_consistent": false,
+        "supported_conclusion": false,
+        "no_fabricated_facts": true
+      },
+      "quality_pass": false,
+      "passed": false,
+      "tools": [
+        "get_profile",
+        "resolve_location",
+        "start_reading"
+      ],
+      "tool_errors": [],
+      "latency_s": 90.897,
+      "review_latency_s": 10.371,
+      "model_calls": 3,
+      "model_request_attempts": 3,
+      "input_tokens": 12716,
+      "output_tokens": 11826,
+      "usage_missing_calls": 0,
+      "cached_input_tokens": 453,
+      "cached_usage_complete": true,
+      "returned_models": [
+        "deepseek-v4-flash"
+      ],
+      "review_usage": {
+        "input_tokens": 1864,
+        "output_tokens": 1389,
+        "usage_available": true,
+        "requested_model": "deepseek-v4-pro",
+        "returned_model": "deepseek-v4-pro"
+      },
+      "review_request_attempts": 1,
+      "multi_agent": {
+        "consults": 0,
+        "statuses": {},
+        "specialist_tool_calls": 0,
+        "out_of_scope_attempts": 0,
+        "report_submissions": 0,
+        "report_submissions_accepted": 0,
+        "consults_with_submission": 0,
+        "consults_without_submission": 0,
+        "report_first_pass": 0,
+        "report_corrected_pass": 0,
+        "report_compliance_rate": null,
+        "report_first_pass_rate": null,
+        "report_corrected_pass_rate": null,
+        "submit_attempt_pass_rate": null,
+        "max_concurrent_specialists": 0,
+        "queue_ms": [],
+        "specialist_latency_ms": [],
+        "specialist_tokens": 0
+      },
+      "reviewer_agent": {
+        "reviews": 0,
+        "verdicts": {},
+        "readings_reviewed": 0,
+        "readings_revised": 0,
+        "revise_rate": null,
+        "dropped_notes": 0,
+        "rejected_reviews": 0,
+        "reviewer_tokens": 0,
+        "reviewer_latency_ms": []
+      }
+    },
+    {
+      "id": "p1-traj-005",
+      "repeat": 1,
+      "status": "limit_reached",
+      "checks": {
+        "expected_status": false,
+        "expected_tools": false,
+        "zero_tool_errors": false,
+        "no_model_error": false,
+        "saved": false,
+        "systems": false,
+        "valid_refs": true,
+        "trace_tree_complete": true
+      },
+      "engineering_pass": false,
+      "quality_review": {
+        "direct_answer": false,
+        "time_consistent": false,
+        "supported_conclusion": false,
+        "no_fabricated_facts": true
+      },
+      "quality_pass": false,
+      "passed": false,
+      "tools": [
+        "compute_bazi",
+        "compute_bazi_period",
+        "compute_natal_chart",
+        "compute_transits",
+        "consult_specialist",
+        "draw_tarot",
+        "get_profile",
+        "resolve_location",
+        "start_reading",
+        "submit_report",
+        "update_profile"
+      ],
+      "tool_errors": [
+        {
+          "tool": "update_profile",
+          "code": "validation_failed",
+          "error": "历法与子时规则须有原话明确支持"
+        },
+        {
+          "tool": "update_profile",
+          "code": "validation_failed",
+          "error": "历法与子时规则须有原话明确支持"
+        },
+        {
+          "tool": "compute_bazi",
+          "code": "validation_failed",
+          "error": "出生钟表时区须来自地点、用户原话或画像；新疆地点须确认钟表时间制"
+        },
+        {
+          "tool": "submit_report",
+          "code": "validation_failed",
+          "error": "要点ref_id必须来自本体系本次计算的interpretations或牌面ref_id"
+        },
+        {
+          "tool": "submit_report",
+          "code": "validation_failed",
+          "error": "牌面方向错误：星币九应为逆位"
+        },
+        {
+          "tool": "submit_report",
+          "code": "validation_failed",
+          "error": "牌面方向错误：星币九应为逆位"
+        },
+        {
+          "tool": "consult_specialist",
+          "code": "validation_failed",
+          "error": "location_id须先由resolve_location解析并确认；请先调用 resolve_location(query=\"出生地原话\")，如有同名候选用 ask_user 确认"
+        },
+        {
+          "tool": "compute_natal_chart",
+          "code": "validation_failed",
+          "error": "重复本地时间的fold必须由用户明确确认"
+        },
+        {
+          "tool": "compute_bazi",
+          "code": "validation_failed",
+          "error": "出生日期必须来自用户原话或已有画像，不能猜测。原话中的出生时间是 1996-05-10 08:30；请按此重试"
+        },
+        {
+          "tool": "compute_bazi_period",
+          "code": "validation_failed",
+          "error": "同一reading各体系必须使用相同时间范围；不同区间请开始新问题"
+        },
+        {
+          "tool": "submit_report",
+          "code": "validation_failed",
+          "error": "行运星落座宫位未作为本次事实提供，请仅陈述已计算相位"
+        },
+        {
+          "tool": "submit_reading",
+          "code": "invalid_arguments",
+          "error": "参数不符合 schema：sections：Input should be a valid list"
+        }
+      ],
+      "latency_s": 160.307,
+      "review_latency_s": 11.015,
+      "model_calls": 21,
+      "model_request_attempts": 8,
+      "input_tokens": 127476,
+      "output_tokens": 37783,
+      "usage_missing_calls": 0,
+      "cached_input_tokens": 4145,
+      "cached_usage_complete": true,
+      "returned_models": [
+        "deepseek-v4-flash"
+      ],
+      "review_usage": {
+        "input_tokens": 2333,
+        "output_tokens": 1762,
+        "usage_available": true,
+        "requested_model": "deepseek-v4-pro",
+        "returned_model": "deepseek-v4-pro"
+      },
+      "review_request_attempts": 1,
+      "multi_agent": {
+        "consults": 6,
+        "statuses": {
+          "needs_input": 1,
+          "ok": 1,
+          "failed": 4
+        },
+        "specialist_tool_calls": 15,
+        "out_of_scope_attempts": 0,
+        "report_submissions": 5,
+        "report_submissions_accepted": 1,
+        "consults_with_submission": 2,
+        "consults_without_submission": 4,
+        "report_first_pass": 0,
+        "report_corrected_pass": 1,
+        "report_compliance_rate": 0.2,
+        "report_first_pass_rate": 0.0,
+        "report_corrected_pass_rate": 0.5,
+        "submit_attempt_pass_rate": 0.2,
+        "max_concurrent_specialists": 2,
+        "queue_ms": [
+          0.004,
+          0.004,
+          0.005,
+          0.004,
+          0.004,
+          0.003
+        ],
+        "specialist_latency_ms": [
+          9330.647,
+          47695.321,
+          18586.31,
+          48219.072,
+          8.981,
+          8.199
+        ],
+        "specialist_tokens": 94059
+      },
+      "reviewer_agent": {
+        "reviews": 0,
+        "verdicts": {},
+        "readings_reviewed": 0,
+        "readings_revised": 0,
+        "revise_rate": null,
+        "dropped_notes": 0,
+        "rejected_reviews": 0,
+        "reviewer_tokens": 0,
+        "reviewer_latency_ms": []
+      }
+    },
+    {
+      "id": "p1-traj-006",
+      "repeat": 1,
+      "status": "limit_reached",
+      "checks": {
+        "expected_status": false,
+        "expected_tools": false,
+        "zero_tool_errors": false,
+        "no_model_error": false,
+        "saved": false,
+        "systems": false,
+        "valid_refs": true,
+        "null_axes": true,
+        "no_hour": true,
+        "no_dayun": true,
+        "trace_tree_complete": true
+      },
+      "engineering_pass": false,
+      "quality_review": {
+        "direct_answer": false,
+        "time_consistent": false,
+        "supported_conclusion": false,
+        "no_fabricated_facts": true
+      },
+      "quality_pass": false,
+      "passed": false,
+      "tools": [
+        "compute_bazi",
+        "compute_bazi_period",
+        "compute_natal_chart",
+        "consult_specialist",
+        "draw_tarot",
+        "get_profile",
+        "resolve_location",
+        "start_reading",
+        "submit_report",
+        "update_profile"
+      ],
+      "tool_errors": [
+        {
+          "tool": "update_profile",
+          "code": "validation_failed",
+          "error": "历法与子时规则须有原话明确支持"
+        },
+        {
+          "tool": "read_reading",
+          "code": "missing_reading",
+          "error": "没有属于当前用户的占卜记录"
+        },
+        {
+          "tool": "submit_report",
+          "code": "validation_failed",
+          "error": "要点ref_id必须来自本体系本次计算的interpretations或牌面ref_id"
+        },
+        {
+          "tool": "consult_specialist",
+          "code": "validation_failed",
+          "error": "location_id须先由resolve_location解析并确认；请先调用 resolve_location(query=\"出生地原话\")，如有同名候选用 ask_user 确认"
+        },
+        {
+          "tool": "consult_specialist",
+          "code": "validation_failed",
+          "error": "location_id须先由resolve_location解析并确认；请先调用 resolve_location(query=\"出生地原话\")，如有同名候选用 ask_user 确认"
+        },
+        {
+          "tool": "submit_report",
+          "code": "invalid_arguments",
+          "error": "参数不符合 schema：points：Input should be a valid list"
+        },
+        {
+          "tool": "submit_report",
+          "code": "validation_failed",
+          "error": "行星落座或四轴与本次计算不符"
+        }
+      ],
+      "latency_s": 188.471,
+      "review_latency_s": 6.487,
+      "model_calls": 21,
+      "model_request_attempts": 9,
+      "input_tokens": 128281,
+      "output_tokens": 38968,
+      "usage_missing_calls": 0,
+      "cached_input_tokens": 3910,
+      "cached_usage_complete": true,
+      "returned_models": [
+        "deepseek-v4-flash"
+      ],
+      "review_usage": {
+        "input_tokens": 2718,
+        "output_tokens": 1408,
+        "usage_available": true,
+        "requested_model": "deepseek-v4-pro",
+        "returned_model": "deepseek-v4-pro"
+      },
+      "review_request_attempts": 1,
+      "multi_agent": {
+        "consults": 5,
+        "statuses": {
+          "ok": 1,
+          "failed": 4
+        },
+        "specialist_tool_calls": 11,
+        "out_of_scope_attempts": 0,
+        "report_submissions": 4,
+        "report_submissions_accepted": 1,
+        "consults_with_submission": 2,
+        "consults_without_submission": 3,
+        "report_first_pass": 0,
+        "report_corrected_pass": 1,
+        "report_compliance_rate": 0.2,
+        "report_first_pass_rate": 0.0,
+        "report_corrected_pass_rate": 0.5,
+        "submit_attempt_pass_rate": 0.25,
+        "max_concurrent_specialists": 2,
+        "queue_ms": [
+          0.005,
+          0.004,
+          0.004,
+          0.004,
+          0.004
+        ],
+        "specialist_latency_ms": [
+          27180.501,
+          17709.818,
+          48323.19,
+          7269.783,
+          34935.736
+        ],
+        "specialist_tokens": 85378
+      },
+      "reviewer_agent": {
+        "reviews": 0,
+        "verdicts": {},
+        "readings_reviewed": 0,
+        "readings_revised": 0,
+        "revise_rate": null,
+        "dropped_notes": 0,
+        "rejected_reviews": 0,
+        "reviewer_tokens": 0,
+        "reviewer_latency_ms": []
+      }
+    },
+    {
+      "id": "p1-traj-021",
+      "repeat": 1,
+      "status": "output_truncated",
+      "checks": {
+        "expected_status": false,
+        "expected_tools": false,
+        "zero_tool_errors": false,
+        "no_model_error": true,
+        "saved": false,
+        "systems": false,
+        "valid_refs": true,
+        "trace_tree_complete": true
+      },
+      "engineering_pass": false,
+      "quality_review": {
+        "direct_answer": false,
+        "time_consistent": false,
+        "supported_conclusion": false,
+        "no_fabricated_facts": true
+      },
+      "quality_pass": false,
+      "passed": false,
+      "tools": [
+        "get_profile",
+        "resolve_location",
+        "start_reading",
+        "update_profile"
+      ],
+      "tool_errors": [
+        {
+          "tool": "update_profile",
+          "code": "validation_failed",
+          "error": "历法与子时规则须有原话明确支持"
+        }
+      ],
+      "latency_s": 73.976,
+      "review_latency_s": 7.471,
+      "model_calls": 3,
+      "model_request_attempts": 3,
+      "input_tokens": 13684,
+      "output_tokens": 12462,
+      "usage_missing_calls": 0,
+      "cached_input_tokens": 453,
+      "cached_usage_complete": true,
+      "returned_models": [
+        "deepseek-v4-flash"
+      ],
+      "review_usage": {
+        "input_tokens": 1901,
+        "output_tokens": 1572,
+        "usage_available": true,
+        "requested_model": "deepseek-v4-pro",
+        "returned_model": "deepseek-v4-pro"
+      },
+      "review_request_attempts": 1,
+      "multi_agent": {
+        "consults": 0,
+        "statuses": {},
+        "specialist_tool_calls": 0,
+        "out_of_scope_attempts": 0,
+        "report_submissions": 0,
+        "report_submissions_accepted": 0,
+        "consults_with_submission": 0,
+        "consults_without_submission": 0,
+        "report_first_pass": 0,
+        "report_corrected_pass": 0,
+        "report_compliance_rate": null,
+        "report_first_pass_rate": null,
+        "report_corrected_pass_rate": null,
+        "submit_attempt_pass_rate": null,
+        "max_concurrent_specialists": 0,
+        "queue_ms": [],
+        "specialist_latency_ms": [],
+        "specialist_tokens": 0
+      },
+      "reviewer_agent": {
+        "reviews": 0,
+        "verdicts": {},
+        "readings_reviewed": 0,
+        "readings_revised": 0,
+        "revise_rate": null,
+        "dropped_notes": 0,
+        "rejected_reviews": 0,
+        "reviewer_tokens": 0,
+        "reviewer_latency_ms": []
+      }
+    },
+    {
+      "id": "p1-traj-022",
+      "repeat": 1,
+      "status": "output_truncated",
+      "checks": {
+        "expected_status": false,
+        "expected_tools": false,
+        "zero_tool_errors": true,
+        "no_model_error": true,
+        "saved": false,
+        "systems": false,
+        "valid_refs": true,
+        "trace_tree_complete": true
+      },
+      "engineering_pass": false,
+      "quality_review": {
+        "direct_answer": false,
+        "time_consistent": false,
+        "supported_conclusion": false,
+        "no_fabricated_facts": true
+      },
+      "quality_pass": false,
+      "passed": false,
+      "tools": [
+        "get_profile",
+        "resolve_location",
+        "start_reading"
+      ],
+      "tool_errors": [],
+      "latency_s": 62.065,
+      "review_latency_s": 6.383,
+      "model_calls": 2,
+      "model_request_attempts": 2,
+      "input_tokens": 8417,
+      "output_tokens": 10684,
+      "usage_missing_calls": 0,
+      "cached_input_tokens": 302,
+      "cached_usage_complete": true,
+      "returned_models": [
+        "deepseek-v4-flash"
+      ],
+      "review_usage": {
+        "input_tokens": 1925,
+        "output_tokens": 1393,
+        "usage_available": true,
+        "requested_model": "deepseek-v4-pro",
+        "returned_model": "deepseek-v4-pro"
+      },
+      "review_request_attempts": 1,
+      "multi_agent": {
+        "consults": 0,
+        "statuses": {},
+        "specialist_tool_calls": 0,
+        "out_of_scope_attempts": 0,
+        "report_submissions": 0,
+        "report_submissions_accepted": 0,
+        "consults_with_submission": 0,
+        "consults_without_submission": 0,
+        "report_first_pass": 0,
+        "report_corrected_pass": 0,
+        "report_compliance_rate": null,
+        "report_first_pass_rate": null,
+        "report_corrected_pass_rate": null,
+        "submit_attempt_pass_rate": null,
+        "max_concurrent_specialists": 0,
+        "queue_ms": [],
+        "specialist_latency_ms": [],
+        "specialist_tokens": 0
+      },
+      "reviewer_agent": {
+        "reviews": 0,
+        "verdicts": {},
+        "readings_reviewed": 0,
+        "readings_revised": 0,
+        "revise_rate": null,
+        "dropped_notes": 0,
+        "rejected_reviews": 0,
+        "reviewer_tokens": 0,
+        "reviewer_latency_ms": []
+      }
+    },
+    {
+      "id": "p1-traj-024",
+      "repeat": 1,
+      "status": "submit_reading",
+      "checks": {
+        "expected_status": true,
+        "expected_tools": true,
+        "zero_tool_errors": false,
+        "no_model_error": true,
+        "saved": true,
+        "systems": true,
+        "valid_refs": true,
+        "trace_tree_complete": true
+      },
+      "engineering_pass": false,
+      "quality_review": {
+        "error_type": "JSONDecodeError"
+      },
+      "quality_pass": false,
+      "passed": false,
+      "tools": [
+        "compute_bazi",
+        "compute_natal_chart",
+        "consult_specialist",
+        "get_profile",
+        "merge_signals",
+        "resolve_location",
+        "start_reading",
+        "submit_reading",
+        "submit_report",
+        "update_profile"
+      ],
+      "tool_errors": [
+        {
+          "tool": "update_profile",
+          "code": "validation_failed",
+          "error": "地理字段须来自已确认地点或原话"
+        },
+        {
+          "tool": "update_profile",
+          "code": "validation_failed",
+          "error": "历法与子时规则须有原话明确支持"
+        },
+        {
+          "tool": "update_profile",
+          "code": "validation_failed",
+          "error": "历法与子时规则须有原话明确支持"
+        },
+        {
+          "tool": "consult_specialist",
+          "code": "validation_failed",
+          "error": "location_id须先由resolve_location解析并确认；请先调用 resolve_location(query=\"出生地原话\")，如有同名候选用 ask_user 确认"
+        },
+        {
+          "tool": "consult_specialist",
+          "code": "validation_failed",
+          "error": "location_id须先由resolve_location解析并确认；请先调用 resolve_location(query=\"出生地原话\")，如有同名候选用 ask_user 确认"
+        },
+        {
+          "tool": "submit_reading",
+          "code": "invalid_arguments",
+          "error": "参数不符合 schema：sections：Input should be a valid list；advice：Input should be a valid list"
+        }
+      ],
+      "latency_s": 142.349,
+      "review_latency_s": 66.137,
+      "model_calls": 18,
+      "model_request_attempts": 12,
+      "input_tokens": 119839,
+      "output_tokens": 31007,
+      "usage_missing_calls": 0,
+      "cached_input_tokens": 4249,
+      "cached_usage_complete": true,
+      "returned_models": [
+        "deepseek-v4-flash"
+      ],
+      "review_usage": {},
+      "review_request_attempts": 1,
+      "multi_agent": {
+        "consults": 2,
+        "statuses": {
+          "ok": 2
+        },
+        "specialist_tool_calls": 4,
+        "out_of_scope_attempts": 0,
+        "report_submissions": 2,
+        "report_submissions_accepted": 2,
+        "consults_with_submission": 2,
+        "consults_without_submission": 0,
+        "report_first_pass": 2,
+        "report_corrected_pass": 2,
+        "report_compliance_rate": 1.0,
+        "report_first_pass_rate": 1.0,
+        "report_corrected_pass_rate": 1.0,
+        "submit_attempt_pass_rate": 1.0,
+        "max_concurrent_specialists": 2,
+        "queue_ms": [
+          0.007,
+          0.004
+        ],
+        "specialist_latency_ms": [
+          26704.719,
+          33402.0
+        ],
+        "specialist_tokens": 36857
+      },
+      "reviewer_agent": {
+        "reviews": 1,
+        "verdicts": {
+          "unavailable": 1
+        },
+        "readings_reviewed": 1,
+        "readings_revised": 0,
+        "revise_rate": 0.0,
+        "dropped_notes": 0,
+        "rejected_reviews": 0,
+        "reviewer_tokens": 5605,
+        "reviewer_latency_ms": [
+          7061.398
+        ]
+      }
+    },
+    {
+      "id": "three_system_timing",
+      "repeat": 2,
+      "status": "limit_reached",
+      "checks": {
+        "expected_status": false,
+        "expected_tools": false,
+        "zero_tool_errors": false,
+        "no_model_error": false,
+        "saved": false,
+        "systems": false,
+        "valid_refs": true,
+        "trace_tree_complete": true
+      },
+      "engineering_pass": false,
+      "quality_review": {
+        "direct_answer": false,
+        "time_consistent": false,
+        "supported_conclusion": false,
+        "no_fabricated_facts": true
+      },
+      "quality_pass": false,
+      "passed": false,
+      "tools": [
+        "compute_natal_chart",
+        "consult_specialist",
+        "draw_tarot",
+        "get_profile",
+        "resolve_location",
+        "start_reading",
+        "update_profile"
+      ],
+      "tool_errors": [
+        {
+          "tool": "update_profile",
+          "code": "validation_failed",
+          "error": "历法与子时规则须有原话明确支持"
+        },
+        {
+          "tool": "update_profile",
+          "code": "validation_failed",
+          "error": "历法与子时规则须有原话明确支持"
+        },
+        {
+          "tool": "read_reading",
+          "code": "missing_reading",
+          "error": "没有属于当前用户的占卜记录"
+        },
+        {
+          "tool": "submit_report",
+          "code": "validation_failed",
+          "error": "要点ref_id必须来自本体系本次计算的interpretations或牌面ref_id"
+        },
+        {
+          "tool": "submit_report",
+          "code": "validation_failed",
+          "error": "要点ref_id必须来自本体系本次计算的interpretations或牌面ref_id"
+        },
+        {
+          "tool": "lookup_meaning",
+          "code": "missing_entry",
+          "error": "缺条目：精确 key 或同义词未命中"
+        },
+        {
+          "tool": "lookup_meaning",
+          "code": "missing_entry",
+          "error": "缺条目：精确 key 或同义词未命中"
+        },
+        {
+          "tool": "consult_specialist",
+          "code": "validation_failed",
+          "error": "location_id须先由resolve_location解析并确认；请先调用 resolve_location(query=\"出生地原话\")，如有同名候选用 ask_user 确认"
+        },
+        {
+          "tool": "consult_specialist",
+          "code": "validation_failed",
+          "error": "location_id须先由resolve_location解析并确认；请先调用 resolve_location(query=\"出生地原话\")，如有同名候选用 ask_user 确认"
+        },
+        {
+          "tool": "submit_report",
+          "code": "validation_failed",
+          "error": "行星落座或四轴与本次计算不符"
+        }
+      ],
+      "latency_s": 208.651,
+      "review_latency_s": 6.714,
+      "model_calls": 20,
+      "model_request_attempts": 10,
+      "input_tokens": 137686,
+      "output_tokens": 42075,
+      "usage_missing_calls": 0,
+      "cached_input_tokens": 5660,
+      "cached_usage_complete": true,
+      "returned_models": [
+        "deepseek-v4-flash"
+      ],
+      "review_usage": {
+        "input_tokens": 2028,
+        "output_tokens": 1419,
+        "usage_available": true,
+        "requested_model": "deepseek-v4-pro",
+        "returned_model": "deepseek-v4-pro"
+      },
+      "review_request_attempts": 1,
+      "multi_agent": {
+        "consults": 6,
+        "statuses": {
+          "failed": 6
+        },
+        "specialist_tool_calls": 7,
+        "out_of_scope_attempts": 0,
+        "report_submissions": 3,
+        "report_submissions_accepted": 0,
+        "consults_with_submission": 2,
+        "consults_without_submission": 4,
+        "report_first_pass": 0,
+        "report_corrected_pass": 0,
+        "report_compliance_rate": 0.0,
+        "report_first_pass_rate": 0.0,
+        "report_corrected_pass_rate": 0.0,
+        "submit_attempt_pass_rate": 0.0,
+        "max_concurrent_specialists": 3,
+        "queue_ms": [
+          0.004,
+          0.004,
+          0.007,
+          0.005,
+          0.003,
+          0.004
+        ],
+        "specialist_latency_ms": [
+          39091.266,
+          40117.155,
+          58800.24,
+          14.105,
+          13.495,
+          12.939
+        ],
+        "specialist_tokens": 70524
+      },
+      "reviewer_agent": {
+        "reviews": 0,
+        "verdicts": {},
+        "readings_reviewed": 0,
+        "readings_revised": 0,
+        "revise_rate": null,
+        "dropped_notes": 0,
+        "rejected_reviews": 0,
+        "reviewer_tokens": 0,
+        "reviewer_latency_ms": []
+      }
+    },
+    {
+      "id": "unknown_time",
+      "repeat": 2,
+      "status": "limit_reached",
+      "checks": {
+        "expected_status": false,
+        "expected_tools": false,
+        "zero_tool_errors": false,
+        "no_model_error": false,
+        "saved": false,
+        "systems": false,
+        "valid_refs": true,
+        "null_axes": true,
+        "no_hour": true,
+        "no_dayun": true,
+        "trace_tree_complete": true
+      },
+      "engineering_pass": false,
+      "quality_review": {
+        "direct_answer": false,
+        "time_consistent": true,
+        "supported_conclusion": false,
+        "no_fabricated_facts": true
+      },
+      "quality_pass": false,
+      "passed": false,
+      "tools": [
+        "compute_bazi",
+        "compute_natal_chart",
+        "consult_specialist",
+        "get_profile",
+        "resolve_location",
+        "start_reading",
+        "submit_report",
+        "update_profile"
+      ],
+      "tool_errors": [
+        {
+          "tool": "submit_report",
+          "code": "invalid_arguments",
+          "error": "参数不符合 schema：points.1._ref_id_note：Extra inputs are not permitted"
+        },
+        {
+          "tool": "submit_report",
+          "code": "validation_failed",
+          "error": "行星落座或四轴与本次计算不符"
+        },
+        {
+          "tool": "submit_reading",
+          "code": "validation_failed",
+          "error": "八字所需画像已更正，须重新咨询该专家后再提交"
+        },
+        {
+          "tool": "compute_bazi",
+          "code": "validation_failed",
+          "error": "节气当天时辰未知请先追问，不能擅自确认候选"
+        },
+        {
+          "tool": "compute_bazi",
+          "code": "validation_failed",
+          "error": "节气当天时辰未知请先追问，不能擅自确认候选"
+        },
+        {
+          "tool": "compute_bazi",
+          "code": "validation_failed",
+          "error": "节气当天时辰未知请先追问，不能擅自确认候选"
+        }
+      ],
+      "latency_s": 217.459,
+      "review_latency_s": 11.043,
+      "model_calls": 20,
+      "model_request_attempts": 8,
+      "input_tokens": 131263,
+      "output_tokens": 43453,
+      "usage_missing_calls": 0,
+      "cached_input_tokens": 4516,
+      "cached_usage_complete": true,
+      "returned_models": [
+        "deepseek-v4-flash"
+      ],
+      "review_usage": {
+        "input_tokens": 1966,
+        "output_tokens": 2114,
+        "usage_available": true,
+        "requested_model": "deepseek-v4-pro",
+        "returned_model": "deepseek-v4-pro"
+      },
+      "review_request_attempts": 1,
+      "multi_agent": {
+        "consults": 5,
+        "statuses": {
+          "ok": 1,
+          "failed": 4
+        },
+        "specialist_tool_calls": 9,
+        "out_of_scope_attempts": 0,
+        "report_submissions": 3,
+        "report_submissions_accepted": 1,
+        "consults_with_submission": 2,
+        "consults_without_submission": 3,
+        "report_first_pass": 1,
+        "report_corrected_pass": 1,
+        "report_compliance_rate": 0.2,
+        "report_first_pass_rate": 0.5,
+        "report_corrected_pass_rate": 0.5,
+        "submit_attempt_pass_rate": 0.3333333333333333,
+        "max_concurrent_specialists": 2,
+        "queue_ms": [
+          0.004,
+          0.005,
+          0.004,
+          0.005,
+          0.004
+        ],
+        "specialist_latency_ms": [
+          39151.736,
+          42931.314,
+          40553.505,
+          59310.207,
+          3.707
+        ],
+        "specialist_tokens": 97455
+      },
+      "reviewer_agent": {
+        "reviews": 0,
+        "verdicts": {},
+        "readings_reviewed": 0,
+        "readings_revised": 0,
+        "revise_rate": null,
+        "dropped_notes": 0,
+        "rejected_reviews": 0,
+        "reviewer_tokens": 0,
+        "reviewer_latency_ms": []
+      }
+    },
+    {
+      "id": "range_before_birth",
+      "repeat": 2,
+      "status": "output_truncated",
+      "checks": {
+        "expected_status": false,
+        "expected_tools": false,
+        "zero_tool_errors": false,
+        "no_model_error": true,
+        "saved": false,
+        "systems": false,
+        "valid_refs": true,
+        "trace_tree_complete": true
+      },
+      "engineering_pass": false,
+      "quality_review": {
+        "direct_answer": false,
+        "time_consistent": false,
+        "supported_conclusion": false,
+        "no_fabricated_facts": true
+      },
+      "quality_pass": false,
+      "passed": false,
+      "tools": [
+        "get_profile",
+        "resolve_location",
+        "start_reading",
+        "update_profile"
+      ],
+      "tool_errors": [
+        {
+          "tool": "read_reading",
+          "code": "missing_reading",
+          "error": "没有属于当前用户的占卜记录"
+        }
+      ],
+      "latency_s": 93.737,
+      "review_latency_s": 6.902,
+      "model_calls": 6,
+      "model_request_attempts": 6,
+      "input_tokens": 29289,
+      "output_tokens": 15742,
+      "usage_missing_calls": 0,
+      "cached_input_tokens": 1175,
+      "cached_usage_complete": true,
+      "returned_models": [
+        "deepseek-v4-flash"
+      ],
+      "review_usage": {
+        "input_tokens": 1899,
+        "output_tokens": 1435,
+        "usage_available": true,
+        "requested_model": "deepseek-v4-pro",
+        "returned_model": "deepseek-v4-pro"
+      },
+      "review_request_attempts": 1,
+      "multi_agent": {
+        "consults": 0,
+        "statuses": {},
+        "specialist_tool_calls": 0,
+        "out_of_scope_attempts": 0,
+        "report_submissions": 0,
+        "report_submissions_accepted": 0,
+        "consults_with_submission": 0,
+        "consults_without_submission": 0,
+        "report_first_pass": 0,
+        "report_corrected_pass": 0,
+        "report_compliance_rate": null,
+        "report_first_pass_rate": null,
+        "report_corrected_pass_rate": null,
+        "submit_attempt_pass_rate": null,
+        "max_concurrent_specialists": 0,
+        "queue_ms": [],
+        "specialist_latency_ms": [],
+        "specialist_tokens": 0
+      },
+      "reviewer_agent": {
+        "reviews": 0,
+        "verdicts": {},
+        "readings_reviewed": 0,
+        "readings_revised": 0,
+        "revise_rate": null,
+        "dropped_notes": 0,
+        "rejected_reviews": 0,
+        "reviewer_tokens": 0,
+        "reviewer_latency_ms": []
+      }
+    },
+    {
+      "id": "natural_unknown",
+      "repeat": 2,
+      "status": "submit_reading",
+      "checks": {
+        "expected_status": true,
+        "expected_tools": true,
+        "zero_tool_errors": false,
+        "no_model_error": true,
+        "saved": true,
+        "systems": true,
+        "valid_refs": true,
+        "null_axes": true,
+        "no_hour": true,
+        "no_dayun": true,
+        "trace_tree_complete": true
+      },
+      "engineering_pass": false,
+      "quality_review": {
+        "direct_answer": true,
+        "time_consistent": true,
+        "supported_conclusion": true,
+        "no_fabricated_facts": true
+      },
+      "quality_pass": true,
+      "passed": false,
+      "tools": [
+        "compute_bazi",
+        "compute_natal_chart",
+        "consult_specialist",
+        "get_profile",
+        "merge_signals",
+        "resolve_location",
+        "start_reading",
+        "submit_reading",
+        "submit_report",
+        "submit_review",
+        "update_profile"
+      ],
+      "tool_errors": [
+        {
+          "tool": "consult_specialist",
+          "code": "validation_failed",
+          "error": "location_id须先由resolve_location解析并确认；请先调用 resolve_location(query=\"出生地原话\")，如有同名候选用 ask_user 确认"
+        },
+        {
+          "tool": "consult_specialist",
+          "code": "validation_failed",
+          "error": "location_id须先由resolve_location解析并确认；请先调用 resolve_location(query=\"出生地原话\")，如有同名候选用 ask_user 确认"
+        },
+        {
+          "tool": "submit_reading",
+          "code": "invalid_arguments",
+          "error": "参数不符合 schema：sections：Input should be a valid list"
+        }
+      ],
+      "latency_s": 162.923,
+      "review_latency_s": 56.425,
+      "model_calls": 17,
+      "model_request_attempts": 10,
+      "input_tokens": 107228,
+      "output_tokens": 34146,
+      "usage_missing_calls": 0,
+      "cached_input_tokens": 3508,
+      "cached_usage_complete": true,
+      "returned_models": [
+        "deepseek-v4-flash"
+      ],
+      "review_usage": {
+        "input_tokens": 13299,
+        "output_tokens": 7659,
+        "usage_available": true,
+        "requested_model": "deepseek-v4-pro",
+        "returned_model": "deepseek-v4-pro"
+      },
+      "review_request_attempts": 1,
+      "multi_agent": {
+        "consults": 3,
+        "statuses": {
+          "ok": 2,
+          "failed": 1
+        },
+        "specialist_tool_calls": 6,
+        "out_of_scope_attempts": 0,
+        "report_submissions": 2,
+        "report_submissions_accepted": 2,
+        "consults_with_submission": 2,
+        "consults_without_submission": 1,
+        "report_first_pass": 2,
+        "report_corrected_pass": 2,
+        "report_compliance_rate": 0.6666666666666666,
+        "report_first_pass_rate": 1.0,
+        "report_corrected_pass_rate": 1.0,
+        "submit_attempt_pass_rate": 1.0,
+        "max_concurrent_specialists": 2,
+        "queue_ms": [
+          0.004,
+          0.005,
+          0.004
+        ],
+        "specialist_latency_ms": [
+          33644.409,
+          46959.565,
+          36643.97
+        ],
+        "specialist_tokens": 48207
+      },
+      "reviewer_agent": {
+        "reviews": 1,
+        "verdicts": {
+          "pass": 1
+        },
+        "readings_reviewed": 1,
+        "readings_revised": 0,
+        "revise_rate": 0.0,
+        "dropped_notes": 0,
+        "rejected_reviews": 0,
+        "reviewer_tokens": 5273,
+        "reviewer_latency_ms": [
+          4822.444
+        ]
+      }
+    },
+    {
+      "id": "p1-traj-001",
+      "repeat": 2,
+      "status": "limit_reached",
+      "checks": {
+        "expected_status": false,
+        "expected_tools": false,
+        "zero_tool_errors": false,
+        "no_model_error": false,
+        "saved": false,
+        "systems": false,
+        "valid_refs": true,
+        "trace_tree_complete": true
+      },
+      "engineering_pass": false,
+      "quality_review": {
+        "direct_answer": false,
+        "time_consistent": false,
+        "supported_conclusion": false,
+        "no_fabricated_facts": true
+      },
+      "quality_pass": false,
+      "passed": false,
+      "tools": [
+        "compute_bazi",
+        "compute_natal_chart",
+        "compute_transits",
+        "consult_specialist",
+        "draw_tarot",
+        "get_profile",
+        "resolve_location",
+        "start_reading",
+        "submit_report",
+        "update_profile"
+      ],
+      "tool_errors": [
+        {
+          "tool": "update_profile",
+          "code": "validation_failed",
+          "error": "地理字段须来自已确认地点或原话"
+        },
+        {
+          "tool": "consult_specialist",
+          "code": "validation_failed",
+          "error": "location_id须先由resolve_location解析并确认；请先调用 resolve_location(query=\"出生地原话\")，如有同名候选用 ask_user 确认"
+        },
+        {
+          "tool": "resolve_location",
+          "code": "validation_failed",
+          "error": "国家限制必须由用户明确提供，不能自行消歧"
+        },
+        {
+          "tool": "submit_report",
+          "code": "validation_failed",
+          "error": "要点ref_id必须来自本体系本次计算的interpretations或牌面ref_id"
+        },
+        {
+          "tool": "submit_report",
+          "code": "validation_failed",
+          "error": "要点ref_id必须来自本体系本次计算的interpretations或牌面ref_id"
+        },
+        {
+          "tool": "submit_report",
+          "code": "validation_failed",
+          "error": "本次工具结果没有该干支，不能编造"
+        },
+        {
+          "tool": "submit_report",
+          "code": "validation_failed",
+          "error": "段落中的行运相位须匹配本段ref_ids引用的计算事件"
+        }
+      ],
+      "latency_s": 129.787,
+      "review_latency_s": 8.157,
+      "model_calls": 16,
+      "model_request_attempts": 7,
+      "input_tokens": 124289,
+      "output_tokens": 37357,
+      "usage_missing_calls": 0,
+      "cached_input_tokens": 4098,
+      "cached_usage_complete": true,
+      "returned_models": [
+        "deepseek-v4-flash"
+      ],
+      "review_usage": {
+        "input_tokens": 2721,
+        "output_tokens": 1527,
+        "usage_available": true,
+        "requested_model": "deepseek-v4-pro",
+        "returned_model": "deepseek-v4-pro"
+      },
+      "review_request_attempts": 1,
+      "multi_agent": {
+        "consults": 5,
+        "statuses": {
+          "failed": 4,
+          "ok": 1
+        },
+        "specialist_tool_calls": 9,
+        "out_of_scope_attempts": 0,
+        "report_submissions": 5,
+        "report_submissions_accepted": 1,
+        "consults_with_submission": 3,
+        "consults_without_submission": 2,
+        "report_first_pass": 0,
+        "report_corrected_pass": 1,
+        "report_compliance_rate": 0.2,
+        "report_first_pass_rate": 0.0,
+        "report_corrected_pass_rate": 0.3333333333333333,
+        "submit_attempt_pass_rate": 0.2,
+        "max_concurrent_specialists": 3,
+        "queue_ms": [
+          0.006,
+          0.004,
+          0.004,
+          0.004,
+          0.004
+        ],
+        "specialist_latency_ms": [
+          41518.593,
+          46855.275,
+          50011.331,
+          8.461,
+          7.758
+        ],
+        "specialist_tokens": 77813
+      },
+      "reviewer_agent": {
+        "reviews": 0,
+        "verdicts": {},
+        "readings_reviewed": 0,
+        "readings_revised": 0,
+        "revise_rate": null,
+        "dropped_notes": 0,
+        "rejected_reviews": 0,
+        "reviewer_tokens": 0,
+        "reviewer_latency_ms": []
+      }
+    },
+    {
+      "id": "p1-traj-002",
+      "repeat": 2,
+      "status": "limit_reached",
+      "checks": {
+        "expected_status": false,
+        "expected_tools": false,
+        "zero_tool_errors": false,
+        "no_model_error": false,
+        "saved": false,
+        "systems": false,
+        "valid_refs": true,
+        "trace_tree_complete": true
+      },
+      "engineering_pass": false,
+      "quality_review": {
+        "direct_answer": false,
+        "time_consistent": false,
+        "supported_conclusion": false,
+        "no_fabricated_facts": true
+      },
+      "quality_pass": false,
+      "passed": false,
+      "tools": [
+        "compute_bazi",
+        "compute_bazi_period",
+        "compute_natal_chart",
+        "compute_transits",
+        "consult_specialist",
+        "draw_tarot",
+        "get_profile",
+        "merge_signals",
+        "resolve_location",
+        "start_reading",
+        "submit_report",
+        "update_profile"
+      ],
+      "tool_errors": [
+        {
+          "tool": "update_profile",
+          "code": "validation_failed",
+          "error": "历法与子时规则须有原话明确支持"
+        },
+        {
+          "tool": "update_profile",
+          "code": "validation_failed",
+          "error": "历法与子时规则须有原话明确支持"
+        },
+        {
+          "tool": "submit_report",
+          "code": "validation_failed",
+          "error": "要点ref_id必须来自本体系本次计算的interpretations或牌面ref_id"
+        },
+        {
+          "tool": "consult_specialist",
+          "code": "validation_failed",
+          "error": "location_id须先由resolve_location解析并确认；请先调用 resolve_location(query=\"出生地原话\")，如有同名候选用 ask_user 确认"
+        },
+        {
+          "tool": "consult_specialist",
+          "code": "validation_failed",
+          "error": "location_id须先由resolve_location解析并确认；请先调用 resolve_location(query=\"出生地原话\")，如有同名候选用 ask_user 确认"
+        },
+        {
+          "tool": "submit_reading",
+          "code": "validation_failed",
+          "error": "原局柱位与干支不符"
+        }
+      ],
+      "latency_s": 171.09,
+      "review_latency_s": 7.089,
+      "model_calls": 19,
+      "model_request_attempts": 10,
+      "input_tokens": 143440,
+      "output_tokens": 35268,
+      "usage_missing_calls": 0,
+      "cached_input_tokens": 4602,
+      "cached_usage_complete": true,
+      "returned_models": [
+        "deepseek-v4-flash"
+      ],
+      "review_usage": {
+        "input_tokens": 4526,
+        "output_tokens": 1493,
+        "usage_available": true,
+        "requested_model": "deepseek-v4-pro",
+        "returned_model": "deepseek-v4-pro"
+      },
+      "review_request_attempts": 1,
+      "multi_agent": {
+        "consults": 4,
+        "statuses": {
+          "ok": 2,
+          "failed": 2
+        },
+        "specialist_tool_calls": 10,
+        "out_of_scope_attempts": 0,
+        "report_submissions": 3,
+        "report_submissions_accepted": 2,
+        "consults_with_submission": 2,
+        "consults_without_submission": 2,
+        "report_first_pass": 1,
+        "report_corrected_pass": 2,
+        "report_compliance_rate": 0.5,
+        "report_first_pass_rate": 0.5,
+        "report_corrected_pass_rate": 1.0,
+        "submit_attempt_pass_rate": 0.6666666666666666,
+        "max_concurrent_specialists": 2,
+        "queue_ms": [
+          0.004,
+          0.004,
+          0.004,
+          0.005
+        ],
+        "specialist_latency_ms": [
+          31442.358,
+          47164.714,
+          55199.086,
+          3.691
+        ],
+        "specialist_tokens": 80125
+      },
+      "reviewer_agent": {
+        "reviews": 0,
+        "verdicts": {},
+        "readings_reviewed": 0,
+        "readings_revised": 0,
+        "revise_rate": null,
+        "dropped_notes": 0,
+        "rejected_reviews": 0,
+        "reviewer_tokens": 0,
+        "reviewer_latency_ms": []
+      }
+    },
+    {
+      "id": "p1-traj-003",
+      "repeat": 2,
+      "status": "output_truncated",
+      "checks": {
+        "expected_status": false,
+        "expected_tools": false,
+        "zero_tool_errors": true,
+        "no_model_error": true,
+        "saved": false,
+        "systems": false,
+        "valid_refs": true
+      },
+      "engineering_pass": false,
+      "quality_review": {
+        "direct_answer": false,
+        "time_consistent": false,
+        "supported_conclusion": false,
+        "no_fabricated_facts": true
+      },
+      "quality_pass": false,
+      "passed": false,
+      "tools": [],
+      "tool_errors": [],
+      "latency_s": 55.531,
+      "review_latency_s": 5.871,
+      "model_calls": 1,
+      "model_request_attempts": 1,
+      "input_tokens": 3569,
+      "output_tokens": 9216,
+      "usage_missing_calls": 0,
+      "cached_input_tokens": 151,
+      "cached_usage_complete": true,
+      "returned_models": [
+        "deepseek-v4-flash"
+      ],
+      "review_usage": {
+        "input_tokens": 1864,
+        "output_tokens": 1460,
+        "usage_available": true,
+        "requested_model": "deepseek-v4-pro",
+        "returned_model": "deepseek-v4-pro"
+      },
+      "review_request_attempts": 1,
+      "multi_agent": {
+        "consults": 0,
+        "statuses": {},
+        "specialist_tool_calls": 0,
+        "out_of_scope_attempts": 0,
+        "report_submissions": 0,
+        "report_submissions_accepted": 0,
+        "consults_with_submission": 0,
+        "consults_without_submission": 0,
+        "report_first_pass": 0,
+        "report_corrected_pass": 0,
+        "report_compliance_rate": null,
+        "report_first_pass_rate": null,
+        "report_corrected_pass_rate": null,
+        "submit_attempt_pass_rate": null,
+        "max_concurrent_specialists": 0,
+        "queue_ms": [],
+        "specialist_latency_ms": [],
+        "specialist_tokens": 0
+      },
+      "reviewer_agent": {
+        "reviews": 0,
+        "verdicts": {},
+        "readings_reviewed": 0,
+        "readings_revised": 0,
+        "revise_rate": null,
+        "dropped_notes": 0,
+        "rejected_reviews": 0,
+        "reviewer_tokens": 0,
+        "reviewer_latency_ms": []
+      }
+    },
+    {
+      "id": "p1-traj-005",
+      "repeat": 2,
+      "status": "submit_reading",
+      "checks": {
+        "expected_status": true,
+        "expected_tools": true,
+        "zero_tool_errors": false,
+        "no_model_error": true,
+        "saved": true,
+        "systems": false,
+        "valid_refs": true,
+        "trace_tree_complete": true
+      },
+      "engineering_pass": false,
+      "quality_review": {
+        "direct_answer": true,
+        "time_consistent": true,
+        "supported_conclusion": true,
+        "no_fabricated_facts": true
+      },
+      "quality_pass": true,
+      "passed": false,
+      "tools": [
+        "compute_bazi",
+        "compute_bazi_period",
+        "compute_natal_chart",
+        "compute_transits",
+        "consult_specialist",
+        "draw_tarot",
+        "get_profile",
+        "resolve_location",
+        "start_reading",
+        "submit_reading",
+        "submit_report",
+        "update_profile"
+      ],
+      "tool_errors": [
+        {
+          "tool": "update_profile",
+          "code": "validation_failed",
+          "error": "历法与子时规则须有原话明确支持"
+        },
+        {
+          "tool": "update_profile",
+          "code": "validation_failed",
+          "error": "历法与子时规则须有原话明确支持"
+        },
+        {
+          "tool": "submit_report",
+          "code": "validation_failed",
+          "error": "要点ref_id必须来自本体系本次计算的interpretations或牌面ref_id"
+        },
+        {
+          "tool": "consult_specialist",
+          "code": "validation_failed",
+          "error": "location_id须先由resolve_location解析并确认；请先调用 resolve_location(query=\"出生地原话\")，如有同名候选用 ask_user 确认"
+        },
+        {
+          "tool": "consult_specialist",
+          "code": "validation_failed",
+          "error": "location_id须先由resolve_location解析并确认；请先调用 resolve_location(query=\"出生地原话\")，如有同名候选用 ask_user 确认"
+        },
+        {
+          "tool": "compute_transits",
+          "code": "validation_failed",
+          "error": "同一reading各体系必须使用相同时间范围；不同区间请开始新问题"
+        },
+        {
+          "tool": "compute_bazi_period",
+          "code": "validation_failed",
+          "error": "同一reading各体系必须使用相同时间范围；不同区间请开始新问题"
+        }
+      ],
+      "latency_s": 167.224,
+      "review_latency_s": 46.938,
+      "model_calls": 19,
+      "model_request_attempts": 8,
+      "input_tokens": 127986,
+      "output_tokens": 34834,
+      "usage_missing_calls": 0,
+      "cached_input_tokens": 4450,
+      "cached_usage_complete": true,
+      "returned_models": [
+        "deepseek-v4-flash"
+      ],
+      "review_usage": {
+        "input_tokens": 4216,
+        "output_tokens": 6311,
+        "usage_available": true,
+        "requested_model": "deepseek-v4-pro",
+        "returned_model": "deepseek-v4-pro"
+      },
+      "review_request_attempts": 1,
+      "multi_agent": {
+        "consults": 5,
+        "statuses": {
+          "ok": 1,
+          "failed": 4
+        },
+        "specialist_tool_calls": 11,
+        "out_of_scope_attempts": 0,
+        "report_submissions": 2,
+        "report_submissions_accepted": 1,
+        "consults_with_submission": 1,
+        "consults_without_submission": 4,
+        "report_first_pass": 0,
+        "report_corrected_pass": 1,
+        "report_compliance_rate": 0.2,
+        "report_first_pass_rate": 0.0,
+        "report_corrected_pass_rate": 1.0,
+        "submit_attempt_pass_rate": 0.5,
+        "max_concurrent_specialists": 2,
+        "queue_ms": [
+          0.004,
+          0.005,
+          0.004,
+          0.005,
+          0.005
+        ],
+        "specialist_latency_ms": [
+          29255.373,
+          22828.767,
+          53752.459,
+          5.975,
+          5656.764
+        ],
+        "specialist_tokens": 85655
+      },
+      "reviewer_agent": {
+        "reviews": 1,
+        "verdicts": {
+          "unavailable": 1
+        },
+        "readings_reviewed": 1,
+        "readings_revised": 0,
+        "revise_rate": 0.0,
+        "dropped_notes": 0,
+        "rejected_reviews": 0,
+        "reviewer_tokens": 0,
+        "reviewer_latency_ms": [
+          2.487
+        ]
+      }
+    },
+    {
+      "id": "p1-traj-006",
+      "repeat": 2,
+      "status": "output_truncated",
+      "checks": {
+        "expected_status": false,
+        "expected_tools": false,
+        "zero_tool_errors": true,
+        "no_model_error": true,
+        "saved": false,
+        "systems": false,
+        "valid_refs": true,
+        "null_axes": true,
+        "no_hour": true,
+        "no_dayun": true,
+        "trace_tree_complete": true
+      },
+      "engineering_pass": false,
+      "quality_review": {
+        "direct_answer": false,
+        "time_consistent": false,
+        "supported_conclusion": false,
+        "no_fabricated_facts": true
+      },
+      "quality_pass": false,
+      "passed": false,
+      "tools": [
+        "resolve_location",
+        "start_reading"
+      ],
+      "tool_errors": [],
+      "latency_s": 77.976,
+      "review_latency_s": 19.567,
+      "model_calls": 2,
+      "model_request_attempts": 2,
+      "input_tokens": 8490,
+      "output_tokens": 10677,
+      "usage_missing_calls": 0,
+      "cached_input_tokens": 302,
+      "cached_usage_complete": true,
+      "returned_models": [
+        "deepseek-v4-flash"
+      ],
+      "review_usage": {
+        "input_tokens": 1952,
+        "output_tokens": 1470,
+        "usage_available": true,
+        "requested_model": "deepseek-v4-pro",
+        "returned_model": "deepseek-v4-pro"
+      },
+      "review_request_attempts": 1,
+      "multi_agent": {
+        "consults": 0,
+        "statuses": {},
+        "specialist_tool_calls": 0,
+        "out_of_scope_attempts": 0,
+        "report_submissions": 0,
+        "report_submissions_accepted": 0,
+        "consults_with_submission": 0,
+        "consults_without_submission": 0,
+        "report_first_pass": 0,
+        "report_corrected_pass": 0,
+        "report_compliance_rate": null,
+        "report_first_pass_rate": null,
+        "report_corrected_pass_rate": null,
+        "submit_attempt_pass_rate": null,
+        "max_concurrent_specialists": 0,
+        "queue_ms": [],
+        "specialist_latency_ms": [],
+        "specialist_tokens": 0
+      },
+      "reviewer_agent": {
+        "reviews": 0,
+        "verdicts": {},
+        "readings_reviewed": 0,
+        "readings_revised": 0,
+        "revise_rate": null,
+        "dropped_notes": 0,
+        "rejected_reviews": 0,
+        "reviewer_tokens": 0,
+        "reviewer_latency_ms": []
+      }
+    },
+    {
+      "id": "p1-traj-021",
+      "repeat": 2,
+      "status": "output_truncated",
+      "checks": {
+        "expected_status": false,
+        "expected_tools": false,
+        "zero_tool_errors": true,
+        "no_model_error": true,
+        "saved": false,
+        "systems": false,
+        "valid_refs": true,
+        "trace_tree_complete": true
+      },
+      "engineering_pass": false,
+      "quality_review": {
+        "direct_answer": false,
+        "time_consistent": false,
+        "supported_conclusion": false,
+        "no_fabricated_facts": true
+      },
+      "quality_pass": false,
+      "passed": false,
+      "tools": [
+        "get_profile",
+        "resolve_location",
+        "start_reading"
+      ],
+      "tool_errors": [],
+      "latency_s": 58.179,
+      "review_latency_s": 6.937,
+      "model_calls": 2,
+      "model_request_attempts": 2,
+      "input_tokens": 8353,
+      "output_tokens": 10632,
+      "usage_missing_calls": 0,
+      "cached_input_tokens": 302,
+      "cached_usage_complete": true,
+      "returned_models": [
+        "deepseek-v4-flash"
+      ],
+      "review_usage": {
+        "input_tokens": 1845,
+        "output_tokens": 1450,
+        "usage_available": true,
+        "requested_model": "deepseek-v4-pro",
+        "returned_model": "deepseek-v4-pro"
+      },
+      "review_request_attempts": 1,
+      "multi_agent": {
+        "consults": 0,
+        "statuses": {},
+        "specialist_tool_calls": 0,
+        "out_of_scope_attempts": 0,
+        "report_submissions": 0,
+        "report_submissions_accepted": 0,
+        "consults_with_submission": 0,
+        "consults_without_submission": 0,
+        "report_first_pass": 0,
+        "report_corrected_pass": 0,
+        "report_compliance_rate": null,
+        "report_first_pass_rate": null,
+        "report_corrected_pass_rate": null,
+        "submit_attempt_pass_rate": null,
+        "max_concurrent_specialists": 0,
+        "queue_ms": [],
+        "specialist_latency_ms": [],
+        "specialist_tokens": 0
+      },
+      "reviewer_agent": {
+        "reviews": 0,
+        "verdicts": {},
+        "readings_reviewed": 0,
+        "readings_revised": 0,
+        "revise_rate": null,
+        "dropped_notes": 0,
+        "rejected_reviews": 0,
+        "reviewer_tokens": 0,
+        "reviewer_latency_ms": []
+      }
+    },
+    {
+      "id": "p1-traj-022",
+      "repeat": 2,
+      "status": "submit_reading",
+      "checks": {
+        "expected_status": true,
+        "expected_tools": true,
+        "zero_tool_errors": false,
+        "no_model_error": true,
+        "saved": true,
+        "systems": true,
+        "valid_refs": true,
+        "trace_tree_complete": true
+      },
+      "engineering_pass": false,
+      "quality_review": {
+        "direct_answer": true,
+        "time_consistent": true,
+        "supported_conclusion": true,
+        "no_fabricated_facts": true
+      },
+      "quality_pass": true,
+      "passed": false,
+      "tools": [
+        "compute_bazi",
+        "compute_natal_chart",
+        "consult_specialist",
+        "get_profile",
+        "merge_signals",
+        "resolve_location",
+        "start_reading",
+        "submit_reading",
+        "submit_report",
+        "update_profile"
+      ],
+      "tool_errors": [
+        {
+          "tool": "update_profile",
+          "code": "validation_failed",
+          "error": "历法与子时规则须有原话明确支持"
+        },
+        {
+          "tool": "consult_specialist",
+          "code": "validation_failed",
+          "error": "location_id须先由resolve_location解析并确认；请先调用 resolve_location(query=\"出生地原话\")，如有同名候选用 ask_user 确认"
+        },
+        {
+          "tool": "consult_specialist",
+          "code": "validation_failed",
+          "error": "location_id须先由resolve_location解析并确认；请先调用 resolve_location(query=\"出生地原话\")，如有同名候选用 ask_user 确认"
+        },
+        {
+          "tool": "submit_report",
+          "code": "invalid_arguments",
+          "error": "参数不符合 schema：points：Input should be a valid list"
+        },
+        {
+          "tool": "submit_reading",
+          "code": "invalid_arguments",
+          "error": "参数不符合 schema：sections：Input should be a valid list；resonances：Input should be a valid list"
+        }
+      ],
+      "latency_s": 148.027,
+      "review_latency_s": 33.33,
+      "model_calls": 17,
+      "model_request_attempts": 9,
+      "input_tokens": 118588,
+      "output_tokens": 31988,
+      "usage_missing_calls": 0,
+      "cached_input_tokens": 4181,
+      "cached_usage_complete": true,
+      "returned_models": [
+        "deepseek-v4-flash"
+      ],
+      "review_usage": {
+        "input_tokens": 15545,
+        "output_tokens": 4140,
+        "usage_available": true,
+        "requested_model": "deepseek-v4-pro",
+        "returned_model": "deepseek-v4-pro"
+      },
+      "review_request_attempts": 1,
+      "multi_agent": {
+        "consults": 2,
+        "statuses": {
+          "ok": 2
+        },
+        "specialist_tool_calls": 5,
+        "out_of_scope_attempts": 0,
+        "report_submissions": 3,
+        "report_submissions_accepted": 2,
+        "consults_with_submission": 2,
+        "consults_without_submission": 0,
+        "report_first_pass": 1,
+        "report_corrected_pass": 2,
+        "report_compliance_rate": 1.0,
+        "report_first_pass_rate": 0.5,
+        "report_corrected_pass_rate": 1.0,
+        "submit_attempt_pass_rate": 0.6666666666666666,
+        "max_concurrent_specialists": 2,
+        "queue_ms": [
+          0.003,
+          0.006
+        ],
+        "specialist_latency_ms": [
+          44590.779,
+          49423.012
+        ],
+        "specialist_tokens": 60006
+      },
+      "reviewer_agent": {
+        "reviews": 1,
+        "verdicts": {
+          "unavailable": 1
+        },
+        "readings_reviewed": 1,
+        "readings_revised": 0,
+        "revise_rate": 0.0,
+        "dropped_notes": 0,
+        "rejected_reviews": 0,
+        "reviewer_tokens": 4976,
+        "reviewer_latency_ms": [
+          5391.989
+        ]
+      }
+    },
+    {
+      "id": "p1-traj-024",
+      "repeat": 2,
+      "status": "output_truncated",
+      "checks": {
+        "expected_status": false,
+        "expected_tools": false,
+        "zero_tool_errors": true,
+        "no_model_error": true,
+        "saved": false,
+        "systems": false,
+        "valid_refs": true
+      },
+      "engineering_pass": false,
+      "quality_review": {
+        "direct_answer": false,
+        "time_consistent": false,
+        "supported_conclusion": false,
+        "no_fabricated_facts": true
+      },
+      "quality_pass": false,
+      "passed": false,
+      "tools": [],
+      "tool_errors": [],
+      "latency_s": 73.902,
+      "review_latency_s": 7.181,
+      "model_calls": 1,
+      "model_request_attempts": 1,
+      "input_tokens": 3551,
+      "output_tokens": 9216,
+      "usage_missing_calls": 0,
+      "cached_input_tokens": 151,
+      "cached_usage_complete": true,
+      "returned_models": [
+        "deepseek-v4-flash"
+      ],
+      "review_usage": {
+        "input_tokens": 1846,
+        "output_tokens": 1495,
+        "usage_available": true,
+        "requested_model": "deepseek-v4-pro",
+        "returned_model": "deepseek-v4-pro"
+      },
+      "review_request_attempts": 1,
+      "multi_agent": {
+        "consults": 0,
+        "statuses": {},
+        "specialist_tool_calls": 0,
+        "out_of_scope_attempts": 0,
+        "report_submissions": 0,
+        "report_submissions_accepted": 0,
+        "consults_with_submission": 0,
+        "consults_without_submission": 0,
+        "report_first_pass": 0,
+        "report_corrected_pass": 0,
+        "report_compliance_rate": null,
+        "report_first_pass_rate": null,
+        "report_corrected_pass_rate": null,
+        "submit_attempt_pass_rate": null,
+        "max_concurrent_specialists": 0,
+        "queue_ms": [],
+        "specialist_latency_ms": [],
+        "specialist_tokens": 0
+      },
+      "reviewer_agent": {
+        "reviews": 0,
+        "verdicts": {},
+        "readings_reviewed": 0,
+        "readings_revised": 0,
+        "revise_rate": null,
+        "dropped_notes": 0,
+        "rejected_reviews": 0,
+        "reviewer_tokens": 0,
+        "reviewer_latency_ms": []
+      }
+    }
+  ]
+}
