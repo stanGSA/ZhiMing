@@ -413,13 +413,13 @@ async def test_new_systems_hint_the_method_and_keep_birth_private(browser):
     client, _, runtimes = browser
     await client.get("/api/session")
     birth = {"date": "1995-03-21", "time": "14:30", "place": "中国浙江杭州"}
-    for system, label in (("dream", "解梦"), ("name", "姓名五格"), ("daily", "每日运势")):
+    for system, _label in (("dream", "解梦"), ("name", "姓名五格"), ("daily", "每日运势")):
         response = await client.post(
             "/api/chat", json={"message": "抽一张牌", "system": system, "birth": birth}
         )
         assert response.status_code == 200
         sent = runtimes[-1].session.user_messages[-1]
-        assert f"本次希望使用{label}来解读" in sent
+        assert runtimes[-1].session.state["selected_systems"] == [system]
         assert ("1995-03-21" in sent) is (system == "daily")
         assert response.json()["messages"][-1]["system"] == system
         await client.post("/api/new", json={"provider": "configured"})

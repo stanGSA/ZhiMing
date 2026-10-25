@@ -47,6 +47,7 @@ class Session:
     calendar_timezone: str = DEFAULT_CALENDAR_TZ
     calendar_instant: datetime | None = None
     safety_pending: bool = False
+    policy_judge: Any = None
     output_validators: dict[str, Any] = field(default_factory=dict)
     # Outer budget for the whole request; run_turn exposes its own as turn_budget.
     budget: Any = None
@@ -135,7 +136,15 @@ class Session:
         while seed == self.state.get("seed"):
             seed = secrets.randbits(64)
         self.cache.clear()
+        selection = {
+            k: self.state[k] for k in ("selected_systems", "selected_spread") if k in self.state
+        }
         self.state = {
+            **selection,
+            # Tool messages from earlier readings remain in this model conversation.
+            # Never reassign their aliases to a different calculation.
+            "ref_alias": self.state.get("ref_alias", {}),
+            "systems": selection.get("selected_systems"),
             "active_reading_id": uuid.uuid4().hex,
             "parent_reading_id": previous,
             "question": question,

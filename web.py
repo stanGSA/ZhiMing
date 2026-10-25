@@ -5,6 +5,7 @@ from __future__ import annotations
 import asyncio
 import base64
 import binascii
+import json
 import logging
 import re
 import secrets
@@ -21,7 +22,7 @@ from zoneinfo import ZoneInfo
 
 import yaml
 from fastapi import FastAPI, HTTPException, Request, Response
-from fastapi.responses import FileResponse, JSONResponse, RedirectResponse
+from fastapi.responses import FileResponse, JSONResponse, RedirectResponse, StreamingResponse
 from fastapi.staticfiles import StaticFiles
 from lunar_python import Solar
 from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
@@ -30,6 +31,7 @@ from starlette.middleware.trustedhost import TrustedHostMiddleware
 from app import ROOT, Runtime, create_runtime
 from common.regions import region_options, selected_region
 from common.time_utils import NeedsInput
+from harness.progress import progress_label
 from harness.trace import Tracer
 from memory.store import Store
 from plugins.astro.calculator import natal_chart
@@ -40,6 +42,7 @@ from plugins.name.wuge import analyze, element
 from plugins.tarot.draw import valid_picks
 
 STATIC = Path(__file__).with_name("web_static")
+EVALUATION_PROGRESS = Path("reports/p1/codego-v4/web-progress.json")
 COOKIE = "zhiming_session"
 MAX_IDLE = 12 * 3600
 # Each consultation has its own page; "/" is the entrance (login) page.
@@ -298,6 +301,11 @@ class BrowserSession:
     # A tarot draw sent but not yet answered with cards (e.g. the model asked something back):
     # its question, spread and positions, so a reloaded page can continue the same round.
     tarot_round: dict | None = None
+    progress: asyncio.Queue = field(default_factory=lambda: asyncio.Queue(maxsize=128))
+    progress_streams: dict = field(default_factory=dict)
+    progress_id: str = ""
+    progress_active: bool = False
+    progress_readers: set[str] = field(default_factory=set)
     lock: asyncio.Lock = field(default_factory=asyncio.Lock)
     touched: float = field(default_factory=time.monotonic)
 
@@ -394,6 +402,66 @@ def create_web_app(
 
     app = FastAPI(title="知命", lifespan=lifespan, docs_url=None, redoc_url=None)
     app.add_middleware(TrustedHostMiddleware, allowed_hosts=allowed_hosts)
+
+    @app.get("/api/evaluation-progress")
+    async def evaluation_progress():
+        """Return the redacted live status of the external evaluation queue."""
+        path = root / EVALUATION_PROGRESS
+        if not path.is_file():
+            return {
+                "schema_version": 1,
+                "status": "not_started",
+                "planned_cases": 0,
+                "completed_cases": 0,
+                "percent": 0,
+                "batches": [],
+                "error_count": 0,
+                "recent_errors": [],
+            }
+        try:
+            payload = json.loads(path.read_text(encoding="utf-8"))
+        except (OSError, json.JSONDecodeError):
+            return JSONResponse(
+                {"schema_version": 1, "status": "unavailable", "error_count": 1},
+                headers={"Cache-Control": "no-store"},
+            )
+        # Keep this API useful to the browser while excluding traces, prompts,
+        # answers, credentials, and arbitrary fields from the progress file.
+        batches = []
+        for batch in payload.get("batches", []):
+            batches.append(
+                {
+                    key: batch.get(key)
+                    for key in ("name", "expected", "completed", "terminal", "status", "last_case")
+                    if key in batch
+                }
+            )
+        errors = []
+        for error in payload.get("recent_errors", [])[-100:]:
+            item = {
+                key: error.get(key)
+                for key in ("batch", "case", "repeat", "kind", "tool", "code", "message")
+                if key in error
+            }
+            errors.append(item)
+        response = {
+            key: payload.get(key)
+            for key in (
+                "schema_version",
+                "updated",
+                "status",
+                "active_job",
+                "runtime_model",
+                "judge_model",
+                "planned_cases",
+                "completed_cases",
+                "percent",
+                "error_count",
+            )
+            if key in payload
+        }
+        response.update({"batches": batches, "recent_errors": errors})
+        return JSONResponse(response, headers={"Cache-Control": "no-store"})
 
     @app.middleware("http")
     async def local_requests(request: Request, call_next):
@@ -494,6 +562,7 @@ def create_web_app(
             key = secrets.token_urlsafe(32)
             user_id = "web-" + secrets.token_hex(16)
             session = BrowserSession(user_id, build(user_id, provider), provider)
+            attach_progress(session)
             sessions[key] = session
             response.set_cookie(
                 COOKIE,
@@ -506,151 +575,237 @@ def create_web_app(
         touch(session)
         return state(session)
 
+    def attach_progress(session):
+        def listen(record):
+            label = progress_label(record)
+            if label and session.progress_active:
+                if session.progress.full():
+                    session.progress.get_nowait()
+                session.progress.put_nowait({"label": label})
+
+        session.runtime.tracer.listeners.append(listen)
+
+    def progress_queue(session, identity):
+        if not identity:
+            return session.progress
+        if not re.fullmatch(r"[A-Za-z0-9_-]{1,80}", identity):
+            raise HTTPException(400, "进度请求编号无效")
+        if identity == session.progress_id:
+            return session.progress
+        if identity not in session.progress_streams:
+            if len(session.progress_streams) >= 8:
+                raise HTTPException(429, "进度连接过多")
+            session.progress_streams[identity] = asyncio.Queue(maxsize=128)
+        return session.progress_streams[identity]
+
+    @app.get("/api/progress")
+    async def progress(request: Request, request_id: str = ""):
+        session = get_session(request)
+        queue = progress_queue(session, request_id)
+        if request_id in session.progress_readers:
+            raise HTTPException(409, "此请求已有进度连接")
+        session.progress_readers.add(request_id)
+
+        async def events():
+            try:
+                while not await request.is_disconnected():
+                    if (
+                        request_id == session.progress_id
+                        and not session.progress_active
+                        and queue.empty()
+                    ):
+                        yield "event: done\ndata: {}\n\n"
+                        break
+                    try:
+                        item = await asyncio.wait_for(queue.get(), 15)
+                    except TimeoutError:
+                        yield ": ping\n\n"
+                        continue
+                    if item is None:
+                        yield "event: done\ndata: {}\n\n"
+                        break
+                    yield f"data: {json.dumps(item, ensure_ascii=False)}\n\n"
+
+            finally:
+                session.progress_readers.discard(request_id)
+                if session.progress_streams.get(request_id) is queue:
+                    session.progress_streams.pop(request_id, None)
+
+        return StreamingResponse(
+            events(),
+            media_type="text/event-stream",
+            headers={"Cache-Control": "no-store", "X-Accel-Buffering": "no"},
+        )
+
     @app.post("/api/chat")
     async def chat(body: ChatInput, request: Request):
         session = get_session(request)
         available(session)
         async with session.lock:
-            if body.picks:
-                # The first draw opens the round; a reply within it keeps its question and
-                # takes the latest choice, as Session.choose_picks does for the reading.
-                session.tarot_round = {
-                    "question": (session.tarot_round or {}).get("question", body.message),
-                    "spread": body.spread,
-                    "picks": list(body.picks),
-                }
-            # The direct/demo chart path also passes safety before any computation.
-            safety_profile = {}
-            if body.birth.location_id:
-                safety_profile["tz"] = selected_region(body.birth.location_id)["tz"]
-            safety = await session.runtime.safety_response(body.message, safety_profile)
-            if safety is not None:
-                session.messages.extend(
-                    [
-                        {"role": "user", "text": body.message, "system": body.system},
+            identity = request.headers.get("x-zhiming-progress", "")
+            queue = progress_queue(session, identity)
+            session.progress = queue
+            session.progress_id = identity
+            if identity:
+                session.progress_streams.pop(identity, None)
+            while not session.progress.empty():
+                session.progress.get_nowait()
+            session.progress_active = True
+            session.progress.put_nowait({"label": "正在理解你的问题"})
+            try:
+                if body.picks:
+                    # The first draw opens the round; a reply within it keeps its question and
+                    # takes the latest choice, as Session.choose_picks does for the reading.
+                    session.tarot_round = {
+                        "question": (session.tarot_round or {}).get("question", body.message),
+                        "spread": body.spread,
+                        "picks": list(body.picks),
+                    }
+                # The direct/demo chart path also passes safety before any computation.
+                safety_profile = {}
+                if body.birth.location_id:
+                    safety_profile["tz"] = selected_region(body.birth.location_id)["tz"]
+                safety = await session.runtime.safety_response(body.message, safety_profile)
+                if safety is not None:
+                    session.messages.extend(
+                        [
+                            {"role": "user", "text": body.message, "system": body.system},
+                            {
+                                "role": "assistant",
+                                "text": safety.text,
+                                "status": safety.status,
+                                "system": body.system,
+                            },
+                        ]
+                    )
+                    return {**state(session), "busy": False}
+                chart_question = None
+                if body.system in ("bazi", "astro"):
+                    try:
+                        session.chart = body.birth.chart(body.system)
+                    except NeedsInput as exc:
+                        session.chart = None
+                        chart_question = exc.question
+                evidence = body.birth.evidence()
+                message = body.message
+                if evidence and body.system in BIRTH_SYSTEMS:
+                    message += "\n\n我在出生信息表中填写的资料：" + evidence + "。"
+                session.runtime.session.state["selected_systems"] = (
+                    [body.system] if body.system != "auto" else None
+                )
+                session.runtime.session.state["selected_spread"] = (
+                    body.spread if body.system == "tarot" else None
+                )
+                if body.system == "tarot":
+                    message += (
+                        "\n我选择的牌阵为："
+                        + {
+                            "single": "单张牌",
+                            "three_card": "三张牌",
+                            "decision": "A/B二选一决策牌阵",
+                        }[body.spread]
+                        + "。"
+                    )
+                session.birth = body.birth
+                session.messages.append(
+                    {"role": "user", "text": body.message, "system": body.system}
+                )
+                if session.provider == "demo" and body.system in DEMO_UNSUPPORTED:
+                    # The offline demo only draws tarot; never answer a dream or name with cards.
+                    session.messages.append(
                         {
                             "role": "assistant",
-                            "text": safety.text,
-                            "status": safety.status,
+                            "text": DEMO_UNSUPPORTED[body.system],
+                            "status": "demo_unsupported",
                             "system": body.system,
-                        },
-                    ]
-                )
-                return {**state(session), "busy": False}
-            chart_question = None
-            if body.system in ("bazi", "astro"):
-                try:
-                    session.chart = body.birth.chart(body.system)
-                except NeedsInput as exc:
-                    session.chart = None
-                    chart_question = exc.question
-            evidence = body.birth.evidence()
-            message = body.message
-            if evidence and body.system in BIRTH_SYSTEMS:
-                message += "\n\n我在出生信息表中填写的资料：" + evidence + "。"
-            if body.system != "auto":
-                message += "\n本次希望使用" + SYSTEM_LABELS[body.system] + "来解读。"
-            if body.system == "tarot":
-                message += (
-                    "\n我选择的牌阵为："
-                    + {"single": "单张牌", "three_card": "三张牌", "decision": "A/B二选一决策牌阵"}[
-                        body.spread
-                    ]
-                    + "。"
-                )
-            session.birth = body.birth
-            session.messages.append({"role": "user", "text": body.message, "system": body.system})
-            if session.provider == "demo" and body.system in DEMO_UNSUPPORTED:
-                # The offline demo only draws tarot; never answer a dream or name with cards.
-                session.messages.append(
-                    {
-                        "role": "assistant",
-                        "text": DEMO_UNSUPPORTED[body.system],
-                        "status": "demo_unsupported",
-                        "system": body.system,
-                    }
-                )
-                return {**state(session), "busy": False}
-            if session.provider == "demo" and body.system in ("bazi", "astro"):
-                if chart_question:
-                    answer = chart_question
-                elif body.system == "bazi":
-                    pillars = session.chart["result"]["pillars"]
-                    answer = (
-                        "你的"
-                        + ("四柱" if "time" in pillars else "三柱")
-                        + "为："
-                        + "，".join(
-                            label + str(pillars[key])
-                            for key, label in (
-                                ("year", "年柱"),
-                                ("month", "月柱"),
-                                ("day", "日柱"),
-                                ("time", "时柱"),
+                        }
+                    )
+                    return {**state(session), "busy": False}
+                if session.provider == "demo" and body.system in ("bazi", "astro"):
+                    if chart_question:
+                        answer = chart_question
+                    elif body.system == "bazi":
+                        pillars = session.chart["result"]["pillars"]
+                        answer = (
+                            "你的"
+                            + ("四柱" if "time" in pillars else "三柱")
+                            + "为："
+                            + "，".join(
+                                label + str(pillars[key])
+                                for key, label in (
+                                    ("year", "年柱"),
+                                    ("month", "月柱"),
+                                    ("day", "日柱"),
+                                    ("time", "时柱"),
+                                )
+                                if key in pillars
                             )
-                            if key in pillars
+                            + "。日主为"
+                            + session.chart["result"]["day_master"]
+                            + "。"
                         )
-                        + "。日主为"
-                        + session.chart["result"]["day_master"]
-                        + "。"
-                    )
-                else:
-                    answer = (
-                        "本命星盘已计算："
-                        + "，".join(
-                            p["body_zh"] + "在" + p["sign_zh"] + "座"
-                            for p in session.chart["result"]["planets"][:2]
+                    else:
+                        answer = (
+                            "本命星盘已计算："
+                            + "，".join(
+                                p["body_zh"] + "在" + p["sign_zh"] + "座"
+                                for p in session.chart["result"]["planets"][:2]
+                            )
+                            + "。"
                         )
-                        + "。"
+                    answer += "\n当前为离线排盘，未调用模型解读；深度咨询可切换真实模型。"
+                    session.messages.append(
+                        {
+                            "role": "assistant",
+                            "text": answer,
+                            "status": "chart_only",
+                            "system": body.system,
+                        }
                     )
-                answer += "\n当前为离线排盘，未调用模型解读；深度咨询可切换真实模型。"
+                    return {**state(session), "busy": False}
+                # Set on every request, so a choice never carries over to a later question.
+                session.runtime.session.choose_picks(tuple(body.picks) if body.picks else None)
+                try:
+                    outcome = await asyncio.wait_for(
+                        session.runtime.turn(message, safety_checked=True), timeout=360
+                    )
+                    session.last_birth = evidence
+                except TimeoutError:
+                    outcome = None
+                    answer = "本轮解读超时，已保留对话。你可以稍后继续。"
+                except Exception:
+                    logger.exception("Browser turn failed")
+                    outcome = None
+                    answer = "这次解读暂时未能完成。请检查模型连接，或切换离线演示后重试。"
+                if outcome:
+                    answer = outcome.text or "本轮未形成解读，你可以补充信息后继续。"
+                    if outcome.data.get("reading"):
+                        session.tarot_round = None
+                        saved = session.runtime.store.get_reading(
+                            session.user_id, outcome.data["reading_id"]
+                        )
+                        session.reading = {
+                            "view": body.system,
+                            "reading_id": outcome.data["reading_id"],
+                            "question": saved.get("question") if saved else None,
+                            "output": outcome.data["reading"],
+                            "tarot": saved.get("tarot_json") if saved else None,
+                            "calculations": saved.get("calculations_json") if saved else None,
+                        }
                 session.messages.append(
                     {
                         "role": "assistant",
                         "text": answer,
-                        "status": "chart_only",
+                        "status": outcome.status if outcome else "error",
                         "system": body.system,
                     }
                 )
-                return {**state(session), "busy": False}
-            # Set on every request, so a choice never carries over to a later question.
-            session.runtime.session.choose_picks(tuple(body.picks) if body.picks else None)
-            try:
-                outcome = await asyncio.wait_for(
-                    session.runtime.turn(message, safety_checked=True), timeout=360
-                )
-                session.last_birth = evidence
-            except TimeoutError:
-                outcome = None
-                answer = "本轮解读超时，已保留对话。你可以稍后继续。"
-            except Exception:
-                logger.exception("Browser turn failed")
-                outcome = None
-                answer = "这次解读暂时未能完成。请检查模型连接，或切换离线演示后重试。"
-            if outcome:
-                answer = outcome.text or "本轮未形成解读，你可以补充信息后继续。"
-                if outcome.data.get("reading"):
-                    session.tarot_round = None
-                    saved = session.runtime.store.get_reading(
-                        session.user_id, outcome.data["reading_id"]
-                    )
-                    session.reading = {
-                        "view": body.system,
-                        "reading_id": outcome.data["reading_id"],
-                        "question": saved.get("question") if saved else None,
-                        "output": outcome.data["reading"],
-                        "tarot": saved.get("tarot_json") if saved else None,
-                        "calculations": saved.get("calculations_json") if saved else None,
-                    }
-            session.messages.append(
-                {
-                    "role": "assistant",
-                    "text": answer,
-                    "status": outcome.status if outcome else "error",
-                    "system": body.system,
-                }
-            )
-            session.touched = time.monotonic()
+                session.touched = time.monotonic()
+            finally:
+                session.progress_active = False
+                if session.progress.full():
+                    session.progress.get_nowait()
+                session.progress.put_nowait(None)
         return state(session)
 
     @app.post("/api/new")
@@ -662,6 +817,7 @@ def create_web_app(
             replacement.session.safety_pending = session.runtime.session.safety_pending
             await close(session)
             session.runtime = replacement
+            attach_progress(session)
             session.provider = body.provider
             session.messages.clear()
             session.last_birth = ""

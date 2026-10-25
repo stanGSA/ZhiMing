@@ -34,6 +34,8 @@ class Tool:
     parallel_safe: bool = False
     commit: Callable[[ToolResult, Session], ToolResult] | None = None
 
+    available: Callable[[Session], bool] | None = None
+
     def schema(self) -> dict[str, Any]:
         return {
             "type": "function",
@@ -60,6 +62,7 @@ class Registry:
             for t in self.tools.values()
             if session.role in t.roles
             and (session.partition is None or t.partition in (None, session.partition))
+            and (t.available is None or t.available(session))
         ]
 
     async def run(self, name: str, arguments: BaseModel, session: Session) -> ToolResult:

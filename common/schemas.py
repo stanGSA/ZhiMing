@@ -10,6 +10,8 @@ class EmptyInput(StrictInput):
 
 
 class StartInput(StrictInput):
+    systems: list[Literal["astro", "bazi", "tarot", "name", "dream", "daily"]] | None = None
+    requested_spread: Literal["single", "three_card", "decision"] | None = None
     question: str = Field(min_length=1, max_length=2000)
     parent_reading_id: str | None = Field(
         default=None,
@@ -30,15 +32,8 @@ class ProfileInput(StrictInput):
         "birth_local_dt",
         "birth_place",
         "time_known",
-        "tz",
-        "calendar_input",
-        "zishi_rule",
-        "true_solar_time",
-        "prefs_json",
-        "lat",
-        "lon",
-        "location_id",
         "consultation_tz",
+        "prefs_json",
         "system_weights",
     ]
     value: Any
@@ -55,7 +50,11 @@ class ReadInput(StrictInput):
 
 class Evidence(StrictInput):
     ref_id: str
-    reading: str = Field(min_length=1, max_length=500)
+    reading: str = Field(
+        default="",
+        max_length=500,
+        description="可省略，由代码根据本次 ref_id 渲染事实附录；旧文本仍受事实校验",
+    )
 
 
 class Confidence(StrictInput):
@@ -98,6 +97,21 @@ class Section(StrictInput):
 
 
 class Reading(StrictInput):
+    verdict: (
+        Literal[
+            "favorable",
+            "steady",
+            "pressured",
+            "volatile",
+            "suitable",
+            "not_now",
+            "conditional",
+            "prefer_a",
+            "prefer_b",
+            "describe",
+        ]
+        | None
+    ) = Field(default=None, description="summary第一句的表态，须与首句一致")
     question_type: Literal["timing", "decision", "trait", "tarot", "daily", "name", "dream"]
     systems_used: list[str] = Field(min_length=1)
     summary: str = Field(

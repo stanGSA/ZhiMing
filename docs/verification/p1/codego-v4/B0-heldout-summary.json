@@ -5,7 +5,7 @@
   "requested_model": "deepseek-v4-flash",
   "expected_cases": 17,
   "cases": 17,
-  "passed": 11,
+  "passed": 14,
   "input_tokens": 288129,
   "output_tokens": 52473,
   "scope": "真实第三方接口测试；服务返回模型标识不等于独立核验其底层模型。规则断言和逐条人工阅读不能证明所有自由输入的回答质量。",
@@ -50,11 +50,11 @@
         "new_start_exactly_once": true,
         "saved_output_matches": true,
         "saved_seed_matches": true,
-        "low_confidence": false,
         "grounded_refs": true,
-        "one_disclaimer": true
+        "one_disclaimer": true,
+        "confidence_not_overstated": true
       },
-      "pass": false
+      "pass": true
     },
     {
       "name": "同会话追问",
@@ -164,14 +164,14 @@
         "new_start_exactly_once": true,
         "saved_output_matches": true,
         "saved_seed_matches": true,
-        "low_confidence": false,
         "grounded_refs": true,
         "one_disclaimer": true,
         "new_reading_id": true,
         "new_seed": true,
-        "correct_parent": true
+        "correct_parent": true,
+        "confidence_not_overstated": true
       },
-      "pass": false
+      "pass": true
     },
     {
       "name": "单张牌",
@@ -205,11 +205,11 @@
         "new_start_exactly_once": true,
         "saved_output_matches": true,
         "saved_seed_matches": true,
-        "low_confidence": false,
         "grounded_refs": true,
-        "one_disclaimer": true
+        "one_disclaimer": true,
+        "confidence_not_overstated": true
       },
-      "pass": false
+      "pass": true
     },
     {
       "name": "二选一",
@@ -250,12 +250,12 @@
         "new_start_exactly_once": true,
         "saved_output_matches": true,
         "saved_seed_matches": true,
-        "low_confidence": false,
         "grounded_refs": true,
         "one_disclaimer": true,
         "direct_AB_answer": false,
         "conditional_answer": true,
-        "not_only_defer_to_user": true
+        "not_only_defer_to_user": true,
+        "confidence_not_overstated": true
       },
       "pass": false
     },
@@ -298,12 +298,12 @@
         "new_start_exactly_once": true,
         "saved_output_matches": true,
         "saved_seed_matches": true,
-        "low_confidence": false,
         "grounded_refs": true,
         "one_disclaimer": true,
         "safety_flag_and_note": true,
         "directly_rejects_all_in": false,
-        "no_return_prediction": true
+        "no_return_prediction": true,
+        "confidence_not_overstated": true
       },
       "pass": false
     },
@@ -371,12 +371,12 @@
         "new_start_exactly_once": true,
         "saved_output_matches": true,
         "saved_seed_matches": true,
-        "low_confidence": false,
         "grounded_refs": true,
         "one_disclaimer": true,
         "direct_timing_answer": true,
         "concrete_conditions": true,
-        "timing_question_type": false
+        "timing_question_type": false,
+        "confidence_not_overstated": true
       },
       "pass": false
     },

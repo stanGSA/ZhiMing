@@ -35,7 +35,9 @@ class RoleModel:
         names = {t["function"]["name"] for t in tools}
         role = (
             "orchestrator"
-            if "consult_specialist" in names
+            if "start_reading" in names
+            or "consult_specialist" in names
+            or "submit_reading" in names
             else next(r for r, tool in ROLE_TOOLS.items() if tool in names)
         )
         self.calls[role] += 1

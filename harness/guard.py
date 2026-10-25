@@ -5,6 +5,7 @@ import json
 from pydantic import BaseModel, ValidationError
 
 from harness.models import ToolCall, ToolResult
+from harness.refs import transform
 from harness.registry import Registry
 from harness.session import Session
 
@@ -17,9 +18,20 @@ class Guard:
         self, call: ToolCall, session: Session
     ) -> tuple[BaseModel | None, ToolResult | None, str]:
         if call.argument_error:
+            try:
+                json.loads(call.raw_arguments or "")
+                detail = "须为 JSON 对象"
+            except (json.JSONDecodeError, TypeError) as exc:
+                detail = (
+                    f"{exc.msg}，第 {exc.pos} 个字符附近"
+                    if isinstance(exc, json.JSONDecodeError)
+                    else "参数须为 JSON 字符串"
+                )
             return (
                 None,
-                ToolResult.failure("invalid_arguments", "工具参数必须是合法JSON对象，请修正后重试"),
+                ToolResult.failure(
+                    "invalid_arguments", f"工具参数必须是合法JSON对象（{detail}），请修正后重试"
+                ),
                 "",
             )
         tool = self.registry.tools.get(call.name)
@@ -30,9 +42,11 @@ class Guard:
         if session.partition and tool.partition not in (None, session.partition):
             return None, ToolResult.failure("partition_denied", "不能访问其他体系的工具"), ""
         try:
-            args = tool.input_model.model_validate(call.arguments)
+            args = tool.input_model.model_validate(transform(call.arguments, session, restore=True))
         except ValidationError as exc:
-            fields = ", ".join(".".join(map(str, e["loc"])) for e in exc.errors())
+            fields = "；".join(
+                f"{'.'.join(map(str, e['loc']))}：{e['msg']}" for e in exc.errors()[:5]
+            )
             return None, ToolResult.failure("invalid_arguments", f"参数不符合 schema：{fields}"), ""
         if session.partition and hasattr(args, "system") and args.system != session.partition:
             return None, ToolResult.failure("partition_denied", "不能查询其他知识分区"), ""

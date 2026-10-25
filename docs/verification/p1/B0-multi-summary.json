@@ -1,0 +1,4881 @@
+{
+  "run_id": "20261024T075435-44641b40",
+  "rubric_version": "v2-2026-10-24",
+  "judge_name": "pro",
+  "judge_model": "deepseek-v4-pro",
+  "repeats": 3,
+  "mode": "multi",
+  "requested_model": "deepseek-flash",
+  "source_fingerprint": "cb1b13f5bf5d7d07d598e75c150c2a6bb5bbc1dee4e509ea6cdb10cd16294356",
+  "cases": 60,
+  "passed": 2,
+  "failed": 58,
+  "multi_agent": {
+    "consults": 34,
+    "ok_reports": 11,
+    "needs_input_reports": 7,
+    "failed_reports": 16,
+    "cancelled_consults": 0,
+    "consults_without_submission": 11,
+    "out_of_scope_attempts": 0,
+    "out_of_scope_rate": 0.0,
+    "report_compliance_rate": 0.4074074074074074,
+    "report_first_pass_rate": 0.30434782608695654,
+    "report_corrected_pass_rate": 0.4782608695652174,
+    "submit_attempt_pass_rate": 0.3333333333333333,
+    "max_concurrent_specialists": 3,
+    "trace_tree_complete": true
+  },
+  "reviewer_agent": {
+    "reviews": 7,
+    "verdicts": {
+      "pass": 3,
+      "unavailable": 2,
+      "pass_with_notes": 2
+    },
+    "readings_reviewed": 7,
+    "readings_revised": 0,
+    "revise_rate": 0.0,
+    "dropped_notes": 0,
+    "rejected_reviews": 2,
+    "reviewer_tokens": 20562
+  },
+  "model_calls": 235,
+  "model_request_attempts": 166,
+  "review_calls": 16,
+  "review_request_attempts": 60,
+  "input_tokens": 1607123,
+  "output_tokens": 183091,
+  "scope": "Synthetic data; judge identity and rubric recorded. Automated review is not human calibration or independent verification of service identity.",
+  "raw_sha256": "bac1f7da926435cf97538ff7b061a6546d06fb20fa030329c85c4d4085134635",
+  "results": [
+    {
+      "id": "astro_trait",
+      "repeat": 0,
+      "status": "limit_reached",
+      "checks": {
+        "expected_status": false,
+        "expected_tools": false,
+        "zero_tool_errors": false,
+        "no_model_error": false,
+        "saved": false,
+        "systems": false,
+        "valid_refs": true,
+        "trace_tree_complete": true
+      },
+      "engineering_pass": false,
+      "quality_review": {
+        "direct_answer": false,
+        "time_consistent": true,
+        "supported_conclusion": false,
+        "no_fabricated_facts": true
+      },
+      "quality_pass": false,
+      "passed": false,
+      "tools": [
+        "compute_natal_chart",
+        "consult_specialist",
+        "lookup_meaning",
+        "resolve_location",
+        "start_reading",
+        "update_profile"
+      ],
+      "tool_errors": [
+        {
+          "tool": "update_profile",
+          "code": "validation_failed",
+          "error": "字段值必须在 evidence 原话中，不允许臆测"
+        },
+        {
+          "tool": "update_profile",
+          "code": "validation_failed",
+          "error": "地理字段须来自已确认地点或原话"
+        },
+        {
+          "tool": "consult_specialist",
+          "code": "validation_failed",
+          "error": "location_id须先由resolve_location解析并确认"
+        },
+        {
+          "tool": "consult_specialist",
+          "code": "validation_failed",
+          "error": "location_id须先由resolve_location解析并确认"
+        },
+        {
+          "tool": "consult_specialist",
+          "code": "validation_failed",
+          "error": "location_id须先由resolve_location解析并确认"
+        },
+        {
+          "tool": "consult_specialist",
+          "code": "validation_failed",
+          "error": "location_id须先由resolve_location解析并确认"
+        },
+        {
+          "tool": "update_profile",
+          "code": "validation_failed",
+          "error": "地理字段须来自已确认地点或原话"
+        },
+        {
+          "tool": "lookup_meaning",
+          "code": "missing_entry",
+          "error": "缺条目：精确 key 或同义词未命中"
+        },
+        {
+          "tool": "lookup_meaning",
+          "code": "missing_entry",
+          "error": "缺条目：精确 key 或同义词未命中"
+        },
+        {
+          "tool": "submit_report",
+          "code": "invalid_arguments",
+          "error": "参数不符合 schema：points"
+        },
+        {
+          "tool": "submit_report",
+          "code": "invalid_arguments",
+          "error": "参数不符合 schema：points"
+        },
+        {
+          "tool": "submit_report",
+          "code": "validation_failed",
+          "error": "行星落座或四轴与本次计算不符"
+        }
+      ],
+      "latency_s": 60.36,
+      "review_latency_s": 11.918,
+      "model_calls": 19,
+      "model_request_attempts": 12,
+      "input_tokens": 130346,
+      "output_tokens": 7741,
+      "usage_missing_calls": 0,
+      "cached_input_tokens": 107648,
+      "returned_models": [
+        "deepseek-flash"
+      ],
+      "review_usage": {
+        "input_tokens": 658,
+        "output_tokens": 1038,
+        "usage_available": true,
+        "requested_model": "deepseek-v4-pro",
+        "returned_model": "deepseek-v4-pro"
+      },
+      "review_request_attempts": 1,
+      "multi_agent": {
+        "consults": 3,
+        "statuses": {
+          "needs_input": 1,
+          "failed": 2
+        },
+        "specialist_tool_calls": 9,
+        "out_of_scope_attempts": 0,
+        "report_submissions": 3,
+        "report_submissions_accepted": 0,
+        "consults_with_submission": 2,
+        "consults_without_submission": 1,
+        "report_first_pass": 0,
+        "report_corrected_pass": 0,
+        "report_compliance_rate": 0.0,
+        "report_first_pass_rate": 0.0,
+        "report_corrected_pass_rate": 0.0,
+        "submit_attempt_pass_rate": 0.0,
+        "max_concurrent_specialists": 1,
+        "queue_ms": [
+          0.012,
+          0.007,
+          0.007
+        ],
+        "specialist_latency_ms": [
+          880.622,
+          25057.873,
+          13196.759
+        ],
+        "specialist_tokens": 52564
+      },
+      "reviewer_agent": {
+        "reviews": 0,
+        "verdicts": {},
+        "readings_reviewed": 0,
+        "readings_revised": 0,
+        "revise_rate": null,
+        "dropped_notes": 0,
+        "rejected_reviews": 0,
+        "reviewer_tokens": 0,
+        "reviewer_latency_ms": []
+      }
+    },
+    {
+      "id": "astro_followup",
+      "repeat": 0,
+      "status": "text",
+      "checks": {
+        "expected_status": false,
+        "expected_tools": false,
+        "zero_tool_errors": false,
+        "no_model_error": true,
+        "saved": false,
+        "systems": false,
+        "valid_refs": true,
+        "no_recalculation": true,
+        "response_saved": false
+      },
+      "engineering_pass": false,
+      "quality_review": {
+        "direct_answer": false,
+        "time_consistent": true,
+        "supported_conclusion": true,
+        "no_fabricated_facts": true
+      },
+      "quality_pass": false,
+      "passed": false,
+      "tools": [],
+      "tool_errors": [
+        {
+          "tool": "read_reading",
+          "code": "missing_reading",
+          "error": "没有属于当前用户的占卜记录"
+        }
+      ],
+      "latency_s": 3.043,
+      "review_latency_s": 65.615,
+      "model_calls": 2,
+      "model_request_attempts": 2,
+      "input_tokens": 11482,
+      "output_tokens": 222,
+      "usage_missing_calls": 0,
+      "cached_input_tokens": 11136,
+      "returned_models": [
+        "deepseek-flash"
+      ],
+      "review_usage": {
+        "input_tokens": 735,
+        "output_tokens": 5991,
+        "usage_available": true,
+        "requested_model": "deepseek-v4-pro",
+        "returned_model": "deepseek-v4-pro"
+      },
+      "review_request_attempts": 1,
+      "multi_agent": {
+        "consults": 0,
+        "statuses": {},
+        "specialist_tool_calls": 0,
+        "out_of_scope_attempts": 0,
+        "report_submissions": 0,
+        "report_submissions_accepted": 0,
+        "consults_with_submission": 0,
+        "consults_without_submission": 0,
+        "report_first_pass": 0,
+        "report_corrected_pass": 0,
+        "report_compliance_rate": null,
+        "report_first_pass_rate": null,
+        "report_corrected_pass_rate": null,
+        "submit_attempt_pass_rate": null,
+        "max_concurrent_specialists": 0,
+        "queue_ms": [],
+        "specialist_latency_ms": [],
+        "specialist_tokens": 0
+      },
+      "reviewer_agent": {
+        "reviews": 0,
+        "verdicts": {},
+        "readings_reviewed": 0,
+        "readings_revised": 0,
+        "revise_rate": null,
+        "dropped_notes": 0,
+        "rejected_reviews": 0,
+        "reviewer_tokens": 0,
+        "reviewer_latency_ms": []
+      }
+    },
+    {
+      "id": "bazi_trait",
+      "repeat": 0,
+      "status": "submit_reading",
+      "checks": {
+        "expected_status": true,
+        "expected_tools": true,
+        "zero_tool_errors": false,
+        "no_model_error": true,
+        "saved": true,
+        "systems": true,
+        "valid_refs": true,
+        "trace_tree_complete": true
+      },
+      "engineering_pass": false,
+      "quality_review": {
+        "direct_answer": true,
+        "time_consistent": true,
+        "supported_conclusion": true,
+        "no_fabricated_facts": true
+      },
+      "quality_pass": true,
+      "passed": false,
+      "tools": [
+        "compute_bazi",
+        "consult_specialist",
+        "resolve_location",
+        "start_reading",
+        "submit_reading",
+        "submit_report",
+        "submit_review",
+        "update_profile"
+      ],
+      "tool_errors": [
+        {
+          "tool": "update_profile",
+          "code": "validation_failed",
+          "error": "历法与子时规则须有原话明确支持"
+        },
+        {
+          "tool": "update_profile",
+          "code": "validation_failed",
+          "error": "历法与子时规则须有原话明确支持"
+        },
+        {
+          "tool": "submit_reading",
+          "code": "validation_failed",
+          "error": "免责声明由应用统一添加，正文不要重复"
+        },
+        {
+          "tool": "submit_reading",
+          "code": "invalid_arguments",
+          "error": "参数不符合 schema：summary, evidence"
+        }
+      ],
+      "latency_s": 41.289,
+      "review_latency_s": 45.734,
+      "model_calls": 9,
+      "model_request_attempts": 6,
+      "input_tokens": 59002,
+      "output_tokens": 6792,
+      "usage_missing_calls": 0,
+      "cached_input_tokens": 52352,
+      "returned_models": [
+        "deepseek-flash"
+      ],
+      "review_usage": {
+        "input_tokens": 6422,
+        "output_tokens": 4228,
+        "usage_available": true,
+        "requested_model": "deepseek-v4-pro",
+        "returned_model": "deepseek-v4-pro"
+      },
+      "review_request_attempts": 1,
+      "multi_agent": {
+        "consults": 1,
+        "statuses": {
+          "ok": 1
+        },
+        "specialist_tool_calls": 3,
+        "out_of_scope_attempts": 0,
+        "report_submissions": 1,
+        "report_submissions_accepted": 1,
+        "consults_with_submission": 1,
+        "consults_without_submission": 0,
+        "report_first_pass": 1,
+        "report_corrected_pass": 1,
+        "report_compliance_rate": 1.0,
+        "report_first_pass_rate": 1.0,
+        "report_corrected_pass_rate": 1.0,
+        "submit_attempt_pass_rate": 1.0,
+        "max_concurrent_specialists": 1,
+        "queue_ms": [
+          0.008
+        ],
+        "specialist_latency_ms": [
+          12909.121
+        ],
+        "specialist_tokens": 9090
+      },
+      "reviewer_agent": {
+        "reviews": 1,
+        "verdicts": {
+          "pass": 1
+        },
+        "readings_reviewed": 1,
+        "readings_revised": 0,
+        "revise_rate": 0.0,
+        "dropped_notes": 0,
+        "rejected_reviews": 0,
+        "reviewer_tokens": 2499,
+        "reviewer_latency_ms": [
+          919.285
+        ]
+      }
+    },
+    {
+      "id": "bazi_followup",
+      "repeat": 0,
+      "status": "submit_reading",
+      "checks": {
+        "expected_status": true,
+        "expected_tools": true,
+        "zero_tool_errors": false,
+        "no_model_error": true,
+        "saved": true,
+        "systems": true,
+        "valid_refs": true,
+        "no_recalculation": true,
+        "response_saved": true,
+        "trace_tree_complete": true
+      },
+      "engineering_pass": false,
+      "quality_review": {
+        "direct_answer": true,
+        "time_consistent": true,
+        "supported_conclusion": true,
+        "no_fabricated_facts": true
+      },
+      "quality_pass": true,
+      "passed": false,
+      "tools": [
+        "read_reading",
+        "submit_reading"
+      ],
+      "tool_errors": [
+        {
+          "tool": "submit_reading",
+          "code": "validation_failed",
+          "error": "不能使用“一定是”这类确定性说法；趋势可以写“倾向/容易/往往”，请改写后重新提交"
+        }
+      ],
+      "latency_s": 21.811,
+      "review_latency_s": 36.65,
+      "model_calls": 3,
+      "model_request_attempts": 3,
+      "input_tokens": 33387,
+      "output_tokens": 4150,
+      "usage_missing_calls": 0,
+      "cached_input_tokens": 26112,
+      "returned_models": [
+        "deepseek-flash"
+      ],
+      "review_usage": {
+        "input_tokens": 6347,
+        "output_tokens": 3265,
+        "usage_available": true,
+        "requested_model": "deepseek-v4-pro",
+        "returned_model": "deepseek-v4-pro"
+      },
+      "review_request_attempts": 1,
+      "multi_agent": {
+        "consults": 0,
+        "statuses": {},
+        "specialist_tool_calls": 0,
+        "out_of_scope_attempts": 0,
+        "report_submissions": 0,
+        "report_submissions_accepted": 0,
+        "consults_with_submission": 0,
+        "consults_without_submission": 0,
+        "report_first_pass": 0,
+        "report_corrected_pass": 0,
+        "report_compliance_rate": null,
+        "report_first_pass_rate": null,
+        "report_corrected_pass_rate": null,
+        "submit_attempt_pass_rate": null,
+        "max_concurrent_specialists": 0,
+        "queue_ms": [],
+        "specialist_latency_ms": [],
+        "specialist_tokens": 0
+      },
+      "reviewer_agent": {
+        "reviews": 0,
+        "verdicts": {},
+        "readings_reviewed": 0,
+        "readings_revised": 0,
+        "revise_rate": null,
+        "dropped_notes": 0,
+        "rejected_reviews": 0,
+        "reviewer_tokens": 0,
+        "reviewer_latency_ms": []
+      }
+    },
+    {
+      "id": "astro_timing",
+      "repeat": 0,
+      "status": "limit_reached",
+      "checks": {
+        "expected_status": false,
+        "expected_tools": false,
+        "zero_tool_errors": false,
+        "no_model_error": false,
+        "saved": false,
+        "systems": false,
+        "valid_refs": true,
+        "trace_tree_complete": true
+      },
+      "engineering_pass": false,
+      "quality_review": {
+        "direct_answer": false,
+        "time_consistent": true,
+        "supported_conclusion": false,
+        "no_fabricated_facts": true
+      },
+      "quality_pass": false,
+      "passed": false,
+      "tools": [
+        "ask_user",
+        "compute_natal_chart",
+        "compute_transits",
+        "consult_specialist",
+        "daily_fortune",
+        "lookup_meaning",
+        "resolve_location",
+        "start_reading",
+        "update_profile"
+      ],
+      "tool_errors": [
+        {
+          "tool": "consult_specialist",
+          "code": "validation_failed",
+          "error": "location_id须先由resolve_location解析并确认"
+        },
+        {
+          "tool": "submit_report",
+          "code": "validation_failed",
+          "error": "宫位不可用或与本次计算不符"
+        },
+        {
+          "tool": "submit_report",
+          "code": "validation_failed",
+          "error": "行运日期与所述相位不符，不能编造或混用UTC与当地日期"
+        },
+        {
+          "tool": "submit_reading",
+          "code": "validation_failed",
+          "error": "必须先调用确定性计算工具"
+        },
+        {
+          "tool": "daily_fortune",
+          "code": "validation_failed",
+          "error": "日期须与用户所问一致：2026-11-30"
+        }
+      ],
+      "latency_s": 97.937,
+      "review_latency_s": 23.94,
+      "model_calls": 26,
+      "model_request_attempts": 15,
+      "input_tokens": 209019,
+      "output_tokens": 8645,
+      "usage_missing_calls": 0,
+      "cached_input_tokens": 154880,
+      "returned_models": [
+        "deepseek-flash"
+      ],
+      "review_usage": {
+        "input_tokens": 760,
+        "output_tokens": 2139,
+        "usage_available": true,
+        "requested_model": "deepseek-v4-pro",
+        "returned_model": "deepseek-v4-pro"
+      },
+      "review_request_attempts": 1,
+      "multi_agent": {
+        "consults": 5,
+        "statuses": {
+          "needs_input": 1,
+          "failed": 4
+        },
+        "specialist_tool_calls": 12,
+        "out_of_scope_attempts": 0,
+        "report_submissions": 2,
+        "report_submissions_accepted": 0,
+        "consults_with_submission": 2,
+        "consults_without_submission": 3,
+        "report_first_pass": 0,
+        "report_corrected_pass": 0,
+        "report_compliance_rate": 0.0,
+        "report_first_pass_rate": 0.0,
+        "report_corrected_pass_rate": 0.0,
+        "submit_attempt_pass_rate": 0.0,
+        "max_concurrent_specialists": 1,
+        "queue_ms": [
+          0.007,
+          0.007,
+          0.007,
+          0.008,
+          0.005
+        ],
+        "specialist_latency_ms": [
+          2289.389,
+          15377.706,
+          28430.429,
+          25427.077,
+          4.491
+        ],
+        "specialist_tokens": 96010
+      },
+      "reviewer_agent": {
+        "reviews": 0,
+        "verdicts": {},
+        "readings_reviewed": 0,
+        "readings_revised": 0,
+        "revise_rate": null,
+        "dropped_notes": 0,
+        "rejected_reviews": 0,
+        "reviewer_tokens": 0,
+        "reviewer_latency_ms": []
+      }
+    },
+    {
+      "id": "bazi_timing",
+      "repeat": 0,
+      "status": "submit_reading",
+      "checks": {
+        "expected_status": true,
+        "expected_tools": true,
+        "zero_tool_errors": false,
+        "no_model_error": true,
+        "saved": true,
+        "systems": true,
+        "valid_refs": true,
+        "trace_tree_complete": true
+      },
+      "engineering_pass": false,
+      "quality_review": {
+        "error_type": "JSONDecodeError"
+      },
+      "quality_pass": false,
+      "passed": false,
+      "tools": [
+        "compute_bazi",
+        "compute_bazi_period",
+        "consult_specialist",
+        "resolve_location",
+        "start_reading",
+        "submit_reading",
+        "submit_report",
+        "submit_review",
+        "update_profile"
+      ],
+      "tool_errors": [
+        {
+          "tool": "update_profile",
+          "code": "validation_failed",
+          "error": "原话对bazi没有明确且一致的偏好（注意否定说法）"
+        },
+        {
+          "tool": "consult_specialist",
+          "code": "validation_failed",
+          "error": "location_id须先由resolve_location解析并确认"
+        }
+      ],
+      "latency_s": 39.702,
+      "review_latency_s": 87.959,
+      "model_calls": 10,
+      "model_request_attempts": 6,
+      "input_tokens": 62989,
+      "output_tokens": 6471,
+      "usage_missing_calls": 0,
+      "cached_input_tokens": 50560,
+      "returned_models": [
+        "deepseek-flash"
+      ],
+      "review_usage": {},
+      "review_request_attempts": 1,
+      "multi_agent": {
+        "consults": 1,
+        "statuses": {
+          "ok": 1
+        },
+        "specialist_tool_calls": 4,
+        "out_of_scope_attempts": 0,
+        "report_submissions": 1,
+        "report_submissions_accepted": 1,
+        "consults_with_submission": 1,
+        "consults_without_submission": 0,
+        "report_first_pass": 1,
+        "report_corrected_pass": 1,
+        "report_compliance_rate": 1.0,
+        "report_first_pass_rate": 1.0,
+        "report_corrected_pass_rate": 1.0,
+        "submit_attempt_pass_rate": 1.0,
+        "max_concurrent_specialists": 1,
+        "queue_ms": [
+          0.006
+        ],
+        "specialist_latency_ms": [
+          14427.652
+        ],
+        "specialist_tokens": 19696
+      },
+      "reviewer_agent": {
+        "reviews": 1,
+        "verdicts": {
+          "pass": 1
+        },
+        "readings_reviewed": 1,
+        "readings_revised": 0,
+        "revise_rate": 0.0,
+        "dropped_notes": 0,
+        "rejected_reviews": 0,
+        "reviewer_tokens": 2784,
+        "reviewer_latency_ms": [
+          679.35
+        ]
+      }
+    },
+    {
+      "id": "three_system_timing",
+      "repeat": 0,
+      "status": "submit_reading",
+      "checks": {
+        "expected_status": true,
+        "expected_tools": true,
+        "zero_tool_errors": false,
+        "no_model_error": true,
+        "saved": true,
+        "systems": false,
+        "valid_refs": true,
+        "trace_tree_complete": true
+      },
+      "engineering_pass": false,
+      "quality_review": {
+        "error_type": "JSONDecodeError"
+      },
+      "quality_pass": false,
+      "passed": false,
+      "tools": [
+        "compute_bazi",
+        "compute_bazi_period",
+        "compute_natal_chart",
+        "compute_transits",
+        "consult_specialist",
+        "draw_tarot",
+        "get_profile",
+        "merge_signals",
+        "resolve_location",
+        "start_reading",
+        "submit_reading",
+        "submit_report",
+        "update_profile"
+      ],
+      "tool_errors": [
+        {
+          "tool": "update_profile",
+          "code": "validation_failed",
+          "error": "历法与子时规则须有原话明确支持"
+        },
+        {
+          "tool": "update_profile",
+          "code": "validation_failed",
+          "error": "历法与子时规则须有原话明确支持"
+        },
+        {
+          "tool": "compute_bazi",
+          "code": "invalid_arguments",
+          "error": "工具参数必须是合法JSON对象，请修正后重试"
+        },
+        {
+          "tool": "submit_report",
+          "code": "validation_failed",
+          "error": "要点ref_id必须来自本体系本次计算的interpretations或牌面ref_id"
+        },
+        {
+          "tool": "compute_bazi_period",
+          "code": "validation_failed",
+          "error": "计算日期范围必须与用户明确指定范围一致"
+        },
+        {
+          "tool": "submit_report",
+          "code": "validation_failed",
+          "error": "要点ref_id必须来自本体系本次计算的interpretations或牌面ref_id"
+        },
+        {
+          "tool": "submit_report",
+          "code": "validation_failed",
+          "error": "宫位不可用或与本次计算不符"
+        },
+        {
+          "tool": "submit_report",
+          "code": "invalid_arguments",
+          "error": "工具参数必须是合法JSON对象，请修正后重试"
+        }
+      ],
+      "latency_s": 86.548,
+      "review_latency_s": 94.059,
+      "model_calls": 20,
+      "model_request_attempts": 6,
+      "input_tokens": 141199,
+      "output_tokens": 16868,
+      "usage_missing_calls": 0,
+      "cached_input_tokens": 99584,
+      "returned_models": [
+        "deepseek-flash"
+      ],
+      "review_usage": {},
+      "review_request_attempts": 1,
+      "multi_agent": {
+        "consults": 4,
+        "statuses": {
+          "ok": 2,
+          "failed": 2
+        },
+        "specialist_tool_calls": 15,
+        "out_of_scope_attempts": 0,
+        "report_submissions": 6,
+        "report_submissions_accepted": 2,
+        "consults_with_submission": 4,
+        "consults_without_submission": 0,
+        "report_first_pass": 1,
+        "report_corrected_pass": 2,
+        "report_compliance_rate": 0.5,
+        "report_first_pass_rate": 0.25,
+        "report_corrected_pass_rate": 0.5,
+        "submit_attempt_pass_rate": 0.3333333333333333,
+        "max_concurrent_specialists": 3,
+        "queue_ms": [
+          0.003,
+          0.007,
+          0.004,
+          0.004
+        ],
+        "specialist_latency_ms": [
+          23950.0,
+          27127.209,
+          28137.611,
+          26518.649
+        ],
+        "specialist_tokens": 101263
+      },
+      "reviewer_agent": {
+        "reviews": 1,
+        "verdicts": {
+          "unavailable": 1
+        },
+        "readings_reviewed": 1,
+        "readings_revised": 0,
+        "revise_rate": 0.0,
+        "dropped_notes": 0,
+        "rejected_reviews": 0,
+        "reviewer_tokens": 0,
+        "reviewer_latency_ms": [
+          2.705
+        ]
+      }
+    },
+    {
+      "id": "unknown_time",
+      "repeat": 0,
+      "status": "submit_reading",
+      "checks": {
+        "expected_status": true,
+        "expected_tools": true,
+        "zero_tool_errors": false,
+        "no_model_error": true,
+        "saved": true,
+        "systems": true,
+        "valid_refs": true,
+        "null_axes": true,
+        "no_hour": true,
+        "no_dayun": true,
+        "trace_tree_complete": true
+      },
+      "engineering_pass": false,
+      "quality_review": {
+        "direct_answer": true,
+        "time_consistent": true,
+        "supported_conclusion": true,
+        "no_fabricated_facts": true
+      },
+      "quality_pass": true,
+      "passed": false,
+      "tools": [
+        "compute_bazi",
+        "compute_natal_chart",
+        "consult_specialist",
+        "get_profile",
+        "merge_signals",
+        "resolve_location",
+        "start_reading",
+        "submit_reading",
+        "submit_report",
+        "submit_review"
+      ],
+      "tool_errors": [
+        {
+          "tool": "submit_report",
+          "code": "validation_failed",
+          "error": "要点ref_id必须来自本体系本次计算的interpretations或牌面ref_id"
+        },
+        {
+          "tool": "submit_report",
+          "code": "validation_failed",
+          "error": "出生时间未知，不能使用宫位或四轴解读"
+        },
+        {
+          "tool": "submit_report",
+          "code": "validation_failed",
+          "error": "行星落座或四轴与本次计算不符"
+        },
+        {
+          "tool": "submit_report",
+          "code": "invalid_arguments",
+          "error": "工具参数必须是合法JSON对象，请修正后重试"
+        },
+        {
+          "tool": "submit_review",
+          "code": "validation_failed",
+          "error": "有小修建议时用pass_with_notes"
+        }
+      ],
+      "latency_s": 83.116,
+      "review_latency_s": 73.654,
+      "model_calls": 16,
+      "model_request_attempts": 5,
+      "input_tokens": 105769,
+      "output_tokens": 15581,
+      "usage_missing_calls": 0,
+      "cached_input_tokens": 80128,
+      "returned_models": [
+        "deepseek-flash"
+      ],
+      "review_usage": {
+        "input_tokens": 14227,
+        "output_tokens": 6412,
+        "usage_available": true,
+        "requested_model": "deepseek-v4-pro",
+        "returned_model": "deepseek-v4-pro"
+      },
+      "review_request_attempts": 1,
+      "multi_agent": {
+        "consults": 3,
+        "statuses": {
+          "ok": 2,
+          "failed": 1
+        },
+        "specialist_tool_calls": 11,
+        "out_of_scope_attempts": 0,
+        "report_submissions": 6,
+        "report_submissions_accepted": 2,
+        "consults_with_submission": 3,
+        "consults_without_submission": 0,
+        "report_first_pass": 1,
+        "report_corrected_pass": 2,
+        "report_compliance_rate": 0.6666666666666666,
+        "report_first_pass_rate": 0.3333333333333333,
+        "report_corrected_pass_rate": 0.6666666666666666,
+        "submit_attempt_pass_rate": 0.3333333333333333,
+        "max_concurrent_specialists": 2,
+        "queue_ms": [
+          0.003,
+          0.006,
+          0.005
+        ],
+        "specialist_latency_ms": [
+          11993.02,
+          27982.255,
+          24061.79
+        ],
+        "specialist_tokens": 70589
+      },
+      "reviewer_agent": {
+        "reviews": 1,
+        "verdicts": {
+          "pass_with_notes": 1
+        },
+        "readings_reviewed": 1,
+        "readings_revised": 0,
+        "revise_rate": 0.0,
+        "dropped_notes": 0,
+        "rejected_reviews": 1,
+        "reviewer_tokens": 7453,
+        "reviewer_latency_ms": [
+          2230.694
+        ]
+      }
+    },
+    {
+      "id": "missing_birth",
+      "repeat": 0,
+      "status": "ask_user",
+      "checks": {
+        "expected_status": true,
+        "expected_tools": true,
+        "zero_tool_errors": true,
+        "no_model_error": true
+      },
+      "engineering_pass": true,
+      "quality_review": {
+        "direct_answer": true,
+        "time_consistent": true,
+        "supported_conclusion": true,
+        "no_fabricated_facts": true
+      },
+      "quality_pass": true,
+      "passed": true,
+      "tools": [
+        "ask_user"
+      ],
+      "tool_errors": [],
+      "latency_s": 1.442,
+      "review_latency_s": 9.842,
+      "model_calls": 1,
+      "model_request_attempts": 1,
+      "input_tokens": 5664,
+      "output_tokens": 106,
+      "usage_missing_calls": 0,
+      "cached_input_tokens": 5504,
+      "returned_models": [
+        "deepseek-flash"
+      ],
+      "review_usage": {
+        "input_tokens": 573,
+        "output_tokens": 947,
+        "usage_available": true,
+        "requested_model": "deepseek-v4-pro",
+        "returned_model": "deepseek-v4-pro"
+      },
+      "review_request_attempts": 1,
+      "multi_agent": {
+        "consults": 0,
+        "statuses": {},
+        "specialist_tool_calls": 0,
+        "out_of_scope_attempts": 0,
+        "report_submissions": 0,
+        "report_submissions_accepted": 0,
+        "consults_with_submission": 0,
+        "consults_without_submission": 0,
+        "report_first_pass": 0,
+        "report_corrected_pass": 0,
+        "report_compliance_rate": null,
+        "report_first_pass_rate": null,
+        "report_corrected_pass_rate": null,
+        "submit_attempt_pass_rate": null,
+        "max_concurrent_specialists": 0,
+        "queue_ms": [],
+        "specialist_latency_ms": [],
+        "specialist_tokens": 0
+      },
+      "reviewer_agent": {
+        "reviews": 0,
+        "verdicts": {},
+        "readings_reviewed": 0,
+        "readings_revised": 0,
+        "revise_rate": null,
+        "dropped_notes": 0,
+        "rejected_reviews": 0,
+        "reviewer_tokens": 0,
+        "reviewer_latency_ms": []
+      }
+    },
+    {
+      "id": "ambiguous_place",
+      "repeat": 0,
+      "status": "ask_user",
+      "checks": {
+        "expected_status": true,
+        "expected_tools": true,
+        "zero_tool_errors": true,
+        "no_model_error": true
+      },
+      "engineering_pass": true,
+      "quality_review": {
+        "direct_answer": false,
+        "time_consistent": true,
+        "supported_conclusion": true,
+        "no_fabricated_facts": true
+      },
+      "quality_pass": false,
+      "passed": false,
+      "tools": [
+        "ask_user",
+        "get_profile",
+        "resolve_location"
+      ],
+      "tool_errors": [],
+      "latency_s": 3.104,
+      "review_latency_s": 18.41,
+      "model_calls": 2,
+      "model_request_attempts": 2,
+      "input_tokens": 12035,
+      "output_tokens": 186,
+      "usage_missing_calls": 0,
+      "cached_input_tokens": 11136,
+      "returned_models": [
+        "deepseek-flash"
+      ],
+      "review_usage": {
+        "input_tokens": 615,
+        "output_tokens": 1506,
+        "usage_available": true,
+        "requested_model": "deepseek-v4-pro",
+        "returned_model": "deepseek-v4-pro"
+      },
+      "review_request_attempts": 1,
+      "multi_agent": {
+        "consults": 0,
+        "statuses": {},
+        "specialist_tool_calls": 0,
+        "out_of_scope_attempts": 0,
+        "report_submissions": 0,
+        "report_submissions_accepted": 0,
+        "consults_with_submission": 0,
+        "consults_without_submission": 0,
+        "report_first_pass": 0,
+        "report_corrected_pass": 0,
+        "report_compliance_rate": null,
+        "report_first_pass_rate": null,
+        "report_corrected_pass_rate": null,
+        "submit_attempt_pass_rate": null,
+        "max_concurrent_specialists": 0,
+        "queue_ms": [],
+        "specialist_latency_ms": [],
+        "specialist_tokens": 0
+      },
+      "reviewer_agent": {
+        "reviews": 0,
+        "verdicts": {},
+        "readings_reviewed": 0,
+        "readings_revised": 0,
+        "revise_rate": null,
+        "dropped_notes": 0,
+        "rejected_reviews": 0,
+        "reviewer_tokens": 0,
+        "reviewer_latency_ms": []
+      }
+    },
+    {
+      "id": "dst_gap",
+      "repeat": 0,
+      "status": "ask_user",
+      "checks": {
+        "expected_status": true,
+        "expected_tools": true,
+        "zero_tool_errors": true,
+        "no_model_error": true,
+        "trace_tree_complete": true
+      },
+      "engineering_pass": true,
+      "quality_review": {
+        "direct_answer": true,
+        "time_consistent": true,
+        "supported_conclusion": true,
+        "no_fabricated_facts": true
+      },
+      "quality_pass": true,
+      "passed": true,
+      "tools": [
+        "ask_user",
+        "compute_bazi",
+        "consult_specialist",
+        "resolve_location",
+        "start_reading",
+        "update_profile"
+      ],
+      "tool_errors": [],
+      "latency_s": 6.616,
+      "review_latency_s": 34.359,
+      "model_calls": 4,
+      "model_request_attempts": 3,
+      "input_tokens": 21034,
+      "output_tokens": 753,
+      "usage_missing_calls": 0,
+      "cached_input_tokens": 19840,
+      "returned_models": [
+        "deepseek-flash"
+      ],
+      "review_usage": {
+        "input_tokens": 717,
+        "output_tokens": 3105,
+        "usage_available": true,
+        "requested_model": "deepseek-v4-pro",
+        "returned_model": "deepseek-v4-pro"
+      },
+      "review_request_attempts": 1,
+      "multi_agent": {
+        "consults": 1,
+        "statuses": {
+          "needs_input": 1
+        },
+        "specialist_tool_calls": 1,
+        "out_of_scope_attempts": 0,
+        "report_submissions": 0,
+        "report_submissions_accepted": 0,
+        "consults_with_submission": 0,
+        "consults_without_submission": 1,
+        "report_first_pass": 0,
+        "report_corrected_pass": 0,
+        "report_compliance_rate": null,
+        "report_first_pass_rate": null,
+        "report_corrected_pass_rate": null,
+        "submit_attempt_pass_rate": null,
+        "max_concurrent_specialists": 1,
+        "queue_ms": [
+          0.006
+        ],
+        "specialist_latency_ms": [
+          943.752
+        ],
+        "specialist_tokens": 2795
+      },
+      "reviewer_agent": {
+        "reviews": 0,
+        "verdicts": {},
+        "readings_reviewed": 0,
+        "readings_revised": 0,
+        "revise_rate": null,
+        "dropped_notes": 0,
+        "rejected_reviews": 0,
+        "reviewer_tokens": 0,
+        "reviewer_latency_ms": []
+      }
+    },
+    {
+      "id": "dst_fold",
+      "repeat": 0,
+      "status": "ask_user",
+      "checks": {
+        "expected_status": true,
+        "expected_tools": true,
+        "zero_tool_errors": false,
+        "no_model_error": true,
+        "trace_tree_complete": true
+      },
+      "engineering_pass": false,
+      "quality_review": {
+        "direct_answer": true,
+        "time_consistent": true,
+        "supported_conclusion": true,
+        "no_fabricated_facts": true
+      },
+      "quality_pass": true,
+      "passed": false,
+      "tools": [
+        "ask_user",
+        "compute_natal_chart",
+        "consult_specialist",
+        "get_profile",
+        "resolve_location",
+        "start_reading",
+        "update_profile"
+      ],
+      "tool_errors": [
+        {
+          "tool": "consult_specialist",
+          "code": "validation_failed",
+          "error": "location_id须先由resolve_location解析并确认"
+        },
+        {
+          "tool": "update_profile",
+          "code": "validation_failed",
+          "error": "原话对astro没有明确且一致的偏好（注意否定说法）"
+        },
+        {
+          "tool": "consult_specialist",
+          "code": "validation_failed",
+          "error": "location_id须先由resolve_location解析并确认"
+        }
+      ],
+      "latency_s": 11.26,
+      "review_latency_s": 31.086,
+      "model_calls": 9,
+      "model_request_attempts": 8,
+      "input_tokens": 54991,
+      "output_tokens": 1294,
+      "usage_missing_calls": 0,
+      "cached_input_tokens": 52992,
+      "returned_models": [
+        "deepseek-flash"
+      ],
+      "review_usage": {
+        "input_tokens": 764,
+        "output_tokens": 3089,
+        "usage_available": true,
+        "requested_model": "deepseek-v4-pro",
+        "returned_model": "deepseek-v4-pro"
+      },
+      "review_request_attempts": 1,
+      "multi_agent": {
+        "consults": 1,
+        "statuses": {
+          "needs_input": 1
+        },
+        "specialist_tool_calls": 1,
+        "out_of_scope_attempts": 0,
+        "report_submissions": 0,
+        "report_submissions_accepted": 0,
+        "consults_with_submission": 0,
+        "consults_without_submission": 1,
+        "report_first_pass": 0,
+        "report_corrected_pass": 0,
+        "report_compliance_rate": null,
+        "report_first_pass_rate": null,
+        "report_corrected_pass_rate": null,
+        "submit_attempt_pass_rate": null,
+        "max_concurrent_specialists": 1,
+        "queue_ms": [
+          0.005
+        ],
+        "specialist_latency_ms": [
+          1152.234
+        ],
+        "specialist_tokens": 2260
+      },
+      "reviewer_agent": {
+        "reviews": 0,
+        "verdicts": {},
+        "readings_reviewed": 0,
+        "readings_revised": 0,
+        "revise_rate": null,
+        "dropped_notes": 0,
+        "rejected_reviews": 0,
+        "reviewer_tokens": 0,
+        "reviewer_latency_ms": []
+      }
+    },
+    {
+      "id": "lunar_confirm",
+      "repeat": 0,
+      "status": "limit_reached",
+      "checks": {
+        "expected_status": false,
+        "expected_tools": false,
+        "zero_tool_errors": false,
+        "no_model_error": false,
+        "trace_tree_complete": true
+      },
+      "engineering_pass": false,
+      "quality_review": {
+        "direct_answer": false,
+        "time_consistent": true,
+        "supported_conclusion": false,
+        "no_fabricated_facts": true
+      },
+      "quality_pass": false,
+      "passed": false,
+      "tools": [
+        "consult_specialist",
+        "daily_fortune",
+        "resolve_location",
+        "start_reading"
+      ],
+      "tool_errors": [
+        {
+          "tool": "consult_specialist",
+          "code": "missing_dependency",
+          "error": "需要本次有效的 active_reading_id"
+        },
+        {
+          "tool": "consult_specialist",
+          "code": "validation_failed",
+          "error": "location_id须先由resolve_location解析并确认"
+        },
+        {
+          "tool": "consult_specialist",
+          "code": "validation_failed",
+          "error": "location_id须先由resolve_location解析并确认"
+        },
+        {
+          "tool": "compute_bazi",
+          "code": "validation_failed",
+          "error": "出生日期必须来自用户原话或已有画像，不能猜测"
+        },
+        {
+          "tool": "compute_bazi",
+          "code": "validation_failed",
+          "error": "出生日期必须来自用户原话或已有画像，不能猜测"
+        },
+        {
+          "tool": "compute_bazi",
+          "code": "validation_failed",
+          "error": "出生日期必须来自用户原话或已有画像，不能猜测"
+        },
+        {
+          "tool": "compute_bazi",
+          "code": "validation_failed",
+          "error": "出生日期必须来自用户原话或已有画像，不能猜测"
+        },
+        {
+          "tool": "lookup_meaning",
+          "code": "missing_entry",
+          "error": "缺条目：精确 key 或同义词未命中"
+        },
+        {
+          "tool": "compute_bazi",
+          "code": "validation_failed",
+          "error": "出生日期必须来自用户原话或已有画像，不能猜测"
+        },
+        {
+          "tool": "compute_bazi",
+          "code": "validation_failed",
+          "error": "出生日期必须来自用户原话或已有画像，不能猜测"
+        },
+        {
+          "tool": "compute_bazi",
+          "code": "validation_failed",
+          "error": "出生日期必须来自用户原话或已有画像，不能猜测"
+        },
+        {
+          "tool": "compute_bazi",
+          "code": "validation_failed",
+          "error": "出生日期必须来自用户原话或已有画像，不能猜测"
+        },
+        {
+          "tool": "compute_bazi",
+          "code": "validation_failed",
+          "error": "出生日期必须来自用户原话或已有画像，不能猜测"
+        },
+        {
+          "tool": "compute_bazi",
+          "code": "validation_failed",
+          "error": "出生日期必须来自用户原话或已有画像，不能猜测"
+        },
+        {
+          "tool": "submit_report",
+          "code": "validation_failed",
+          "error": "须先调用本体系的计算或抽牌工具，再提交报告"
+        },
+        {
+          "tool": "compute_bazi",
+          "code": "validation_failed",
+          "error": "出生日期必须来自用户原话或已有画像，不能猜测"
+        },
+        {
+          "tool": "compute_bazi",
+          "code": "validation_failed",
+          "error": "出生日期必须来自用户原话或已有画像，不能猜测"
+        },
+        {
+          "tool": "compute_bazi",
+          "code": "validation_failed",
+          "error": "出生日期必须来自用户原话或已有画像，不能猜测"
+        },
+        {
+          "tool": "compute_bazi",
+          "code": "validation_failed",
+          "error": "出生日期必须来自用户原话或已有画像，不能猜测"
+        },
+        {
+          "tool": "compute_bazi",
+          "code": "validation_failed",
+          "error": "出生日期必须来自用户原话或已有画像，不能猜测"
+        },
+        {
+          "tool": "compute_bazi",
+          "code": "validation_failed",
+          "error": "出生日期必须来自用户原话或已有画像，不能猜测"
+        },
+        {
+          "tool": "submit_reading",
+          "code": "validation_failed",
+          "error": "必须先调用确定性计算工具"
+        },
+        {
+          "tool": "submit_reading",
+          "code": "validation_failed",
+          "error": "必须先调用确定性计算工具"
+        },
+        {
+          "tool": "submit_reading",
+          "code": "validation_failed",
+          "error": "必须先调用确定性计算工具"
+        }
+      ],
+      "latency_s": 54.113,
+      "review_latency_s": 11.47,
+      "model_calls": 30,
+      "model_request_attempts": 12,
+      "input_tokens": 143734,
+      "output_tokens": 7857,
+      "usage_missing_calls": 0,
+      "cached_input_tokens": 137728,
+      "returned_models": [
+        "deepseek-flash"
+      ],
+      "review_usage": {
+        "input_tokens": 620,
+        "output_tokens": 1005,
+        "usage_available": true,
+        "requested_model": "deepseek-v4-pro",
+        "returned_model": "deepseek-v4-pro"
+      },
+      "review_request_attempts": 1,
+      "multi_agent": {
+        "consults": 3,
+        "statuses": {
+          "failed": 3
+        },
+        "specialist_tool_calls": 18,
+        "out_of_scope_attempts": 0,
+        "report_submissions": 1,
+        "report_submissions_accepted": 0,
+        "consults_with_submission": 1,
+        "consults_without_submission": 2,
+        "report_first_pass": 0,
+        "report_corrected_pass": 0,
+        "report_compliance_rate": 0.0,
+        "report_first_pass_rate": 0.0,
+        "report_corrected_pass_rate": 0.0,
+        "submit_attempt_pass_rate": 0.0,
+        "max_concurrent_specialists": 1,
+        "queue_ms": [
+          0.005,
+          0.005,
+          0.006
+        ],
+        "specialist_latency_ms": [
+          6641.952,
+          11176.683,
+          6885.33
+        ],
+        "specialist_tokens": 60466
+      },
+      "reviewer_agent": {
+        "reviews": 0,
+        "verdicts": {},
+        "readings_reviewed": 0,
+        "readings_revised": 0,
+        "revise_rate": null,
+        "dropped_notes": 0,
+        "rejected_reviews": 0,
+        "reviewer_tokens": 0,
+        "reviewer_latency_ms": []
+      }
+    },
+    {
+      "id": "investment_new",
+      "repeat": 0,
+      "status": "submit_reading",
+      "checks": {
+        "expected_status": true,
+        "expected_tools": true,
+        "zero_tool_errors": false,
+        "no_model_error": true,
+        "saved": true,
+        "systems": true,
+        "valid_refs": true,
+        "trace_tree_complete": true,
+        "safety_flag": true
+      },
+      "engineering_pass": false,
+      "quality_review": {
+        "direct_answer": true,
+        "time_consistent": true,
+        "supported_conclusion": true,
+        "no_fabricated_facts": false
+      },
+      "quality_pass": false,
+      "passed": false,
+      "tools": [
+        "compute_bazi",
+        "consult_specialist",
+        "get_profile",
+        "lookup_meaning",
+        "resolve_location",
+        "start_reading",
+        "submit_reading",
+        "submit_report",
+        "submit_review"
+      ],
+      "tool_errors": [
+        {
+          "tool": "compute_bazi",
+          "code": "invalid_arguments",
+          "error": "工具参数必须是合法JSON对象，请修正后重试"
+        },
+        {
+          "tool": "submit_report",
+          "code": "validation_failed",
+          "error": "要点ref_id必须来自本体系本次计算的interpretations或牌面ref_id"
+        },
+        {
+          "tool": "submit_review",
+          "code": "validation_failed",
+          "error": "有小修建议时用pass_with_notes"
+        }
+      ],
+      "latency_s": 37.132,
+      "review_latency_s": 60.809,
+      "model_calls": 12,
+      "model_request_attempts": 4,
+      "input_tokens": 58959,
+      "output_tokens": 5484,
+      "usage_missing_calls": 0,
+      "cached_input_tokens": 51712,
+      "returned_models": [
+        "deepseek-flash"
+      ],
+      "review_usage": {
+        "input_tokens": 6233,
+        "output_tokens": 5293,
+        "usage_available": true,
+        "requested_model": "deepseek-v4-pro",
+        "returned_model": "deepseek-v4-pro"
+      },
+      "review_request_attempts": 1,
+      "multi_agent": {
+        "consults": 1,
+        "statuses": {
+          "ok": 1
+        },
+        "specialist_tool_calls": 10,
+        "out_of_scope_attempts": 0,
+        "report_submissions": 2,
+        "report_submissions_accepted": 1,
+        "consults_with_submission": 1,
+        "consults_without_submission": 0,
+        "report_first_pass": 0,
+        "report_corrected_pass": 1,
+        "report_compliance_rate": 1.0,
+        "report_first_pass_rate": 0.0,
+        "report_corrected_pass_rate": 1.0,
+        "submit_attempt_pass_rate": 0.5,
+        "max_concurrent_specialists": 1,
+        "queue_ms": [
+          0.006
+        ],
+        "specialist_latency_ms": [
+          18873.99
+        ],
+        "specialist_tokens": 31947
+      },
+      "reviewer_agent": {
+        "reviews": 1,
+        "verdicts": {
+          "pass_with_notes": 1
+        },
+        "readings_reviewed": 1,
+        "readings_revised": 0,
+        "revise_rate": 0.0,
+        "dropped_notes": 0,
+        "rejected_reviews": 1,
+        "reviewer_tokens": 5182,
+        "reviewer_latency_ms": [
+          2022.803
+        ]
+      }
+    },
+    {
+      "id": "natural_astro",
+      "repeat": 0,
+      "status": "ask_user",
+      "checks": {
+        "expected_status": false,
+        "expected_tools": false,
+        "zero_tool_errors": false,
+        "no_model_error": true,
+        "saved": false,
+        "systems": false,
+        "valid_refs": true,
+        "trace_tree_complete": true
+      },
+      "engineering_pass": false,
+      "quality_review": {
+        "direct_answer": false,
+        "time_consistent": true,
+        "supported_conclusion": true,
+        "no_fabricated_facts": true
+      },
+      "quality_pass": false,
+      "passed": false,
+      "tools": [
+        "ask_user",
+        "compute_bazi",
+        "compute_natal_chart",
+        "consult_specialist",
+        "draw_tarot",
+        "resolve_location",
+        "start_reading",
+        "submit_report",
+        "update_profile"
+      ],
+      "tool_errors": [
+        {
+          "tool": "update_profile",
+          "code": "validation_failed",
+          "error": "地理字段须来自已确认地点或原话"
+        },
+        {
+          "tool": "consult_specialist",
+          "code": "validation_failed",
+          "error": "location_id须先由resolve_location解析并确认"
+        },
+        {
+          "tool": "consult_specialist",
+          "code": "validation_failed",
+          "error": "location_id须先由resolve_location解析并确认"
+        },
+        {
+          "tool": "submit_report",
+          "code": "invalid_arguments",
+          "error": "参数不符合 schema：points"
+        },
+        {
+          "tool": "submit_report",
+          "code": "validation_failed",
+          "error": "宫位不可用或与本次计算不符"
+        },
+        {
+          "tool": "submit_report",
+          "code": "validation_failed",
+          "error": "宫位不可用或与本次计算不符"
+        },
+        {
+          "tool": "submit_report",
+          "code": "validation_failed",
+          "error": "宫位不可用或与本次计算不符"
+        },
+        {
+          "tool": "submit_report",
+          "code": "validation_failed",
+          "error": "要点ref_id必须来自本体系本次计算的interpretations或牌面ref_id"
+        }
+      ],
+      "latency_s": 86.539,
+      "review_latency_s": 50.587,
+      "model_calls": 23,
+      "model_request_attempts": 11,
+      "input_tokens": 144032,
+      "output_tokens": 12811,
+      "usage_missing_calls": 0,
+      "cached_input_tokens": 120320,
+      "returned_models": [
+        "deepseek-flash"
+      ],
+      "review_usage": {
+        "input_tokens": 2004,
+        "output_tokens": 4177,
+        "usage_available": true,
+        "requested_model": "deepseek-v4-pro",
+        "returned_model": "deepseek-v4-pro"
+      },
+      "review_request_attempts": 1,
+      "multi_agent": {
+        "consults": 5,
+        "statuses": {
+          "needs_input": 1,
+          "failed": 2,
+          "ok": 2
+        },
+        "specialist_tool_calls": 12,
+        "out_of_scope_attempts": 0,
+        "report_submissions": 7,
+        "report_submissions_accepted": 2,
+        "consults_with_submission": 4,
+        "consults_without_submission": 1,
+        "report_first_pass": 1,
+        "report_corrected_pass": 2,
+        "report_compliance_rate": 0.5,
+        "report_first_pass_rate": 0.25,
+        "report_corrected_pass_rate": 0.5,
+        "submit_attempt_pass_rate": 0.2857142857142857,
+        "max_concurrent_specialists": 1,
+        "queue_ms": [
+          0.017,
+          0.006,
+          0.005,
+          0.006,
+          0.006
+        ],
+        "specialist_latency_ms": [
+          1024.267,
+          21457.056,
+          21621.08,
+          11941.618,
+          14238.76
+        ],
+        "specialist_tokens": 74823
+      },
+      "reviewer_agent": {
+        "reviews": 0,
+        "verdicts": {},
+        "readings_reviewed": 0,
+        "readings_revised": 0,
+        "revise_rate": null,
+        "dropped_notes": 0,
+        "rejected_reviews": 0,
+        "reviewer_tokens": 0,
+        "reviewer_latency_ms": []
+      }
+    },
+    {
+      "id": "natural_bazi",
+      "repeat": 0,
+      "status": "ask_user",
+      "checks": {
+        "expected_status": false,
+        "expected_tools": false,
+        "zero_tool_errors": false,
+        "no_model_error": true,
+        "saved": false,
+        "systems": false,
+        "valid_refs": true,
+        "trace_tree_complete": true
+      },
+      "engineering_pass": false,
+      "quality_review": {
+        "direct_answer": false,
+        "time_consistent": true,
+        "supported_conclusion": false,
+        "no_fabricated_facts": true
+      },
+      "quality_pass": false,
+      "passed": false,
+      "tools": [
+        "ask_user",
+        "compute_bazi",
+        "consult_specialist",
+        "resolve_location",
+        "start_reading",
+        "update_profile"
+      ],
+      "tool_errors": [
+        {
+          "tool": "update_profile",
+          "code": "validation_failed",
+          "error": "地理字段须来自已确认地点或原话"
+        },
+        {
+          "tool": "consult_specialist",
+          "code": "validation_failed",
+          "error": "location_id须先由resolve_location解析并确认"
+        },
+        {
+          "tool": "update_profile",
+          "code": "validation_failed",
+          "error": "地理字段须来自已确认地点或原话"
+        },
+        {
+          "tool": "update_profile",
+          "code": "validation_failed",
+          "error": "地理字段须来自已确认地点或原话"
+        },
+        {
+          "tool": "consult_specialist",
+          "code": "validation_failed",
+          "error": "location_id须先由resolve_location解析并确认"
+        },
+        {
+          "tool": "compute_bazi",
+          "code": "validation_failed",
+          "error": "出生钟表时区须来自地点、用户原话或画像；新疆地点须确认钟表时间制"
+        },
+        {
+          "tool": "compute_bazi",
+          "code": "validation_failed",
+          "error": "出生钟表时区须来自地点、用户原话或画像；新疆地点须确认钟表时间制"
+        },
+        {
+          "tool": "compute_bazi",
+          "code": "validation_failed",
+          "error": "出生钟表时区须来自地点、用户原话或画像；新疆地点须确认钟表时间制"
+        },
+        {
+          "tool": "consult_specialist",
+          "code": "validation_failed",
+          "error": "location_id须先由resolve_location解析并确认"
+        },
+        {
+          "tool": "consult_specialist",
+          "code": "validation_failed",
+          "error": "location_id须先由resolve_location解析并确认"
+        },
+        {
+          "tool": "compute_bazi",
+          "code": "invalid_arguments",
+          "error": "工具参数必须是合法JSON对象，请修正后重试"
+        },
+        {
+          "tool": "compute_bazi",
+          "code": "validation_failed",
+          "error": "出生钟表时区须来自地点、用户原话或画像；新疆地点须确认钟表时间制"
+        }
+      ],
+      "latency_s": 23.378,
+      "review_latency_s": 38.83,
+      "model_calls": 18,
+      "model_request_attempts": 11,
+      "input_tokens": 97249,
+      "output_tokens": 2799,
+      "usage_missing_calls": 0,
+      "cached_input_tokens": 93056,
+      "returned_models": [
+        "deepseek-flash"
+      ],
+      "review_usage": {
+        "input_tokens": 638,
+        "output_tokens": 3215,
+        "usage_available": true,
+        "requested_model": "deepseek-v4-pro",
+        "returned_model": "deepseek-v4-pro"
+      },
+      "review_request_attempts": 1,
+      "multi_agent": {
+        "consults": 2,
+        "statuses": {
+          "needs_input": 2
+        },
+        "specialist_tool_calls": 7,
+        "out_of_scope_attempts": 0,
+        "report_submissions": 0,
+        "report_submissions_accepted": 0,
+        "consults_with_submission": 0,
+        "consults_without_submission": 2,
+        "report_first_pass": 0,
+        "report_corrected_pass": 0,
+        "report_compliance_rate": null,
+        "report_first_pass_rate": null,
+        "report_corrected_pass_rate": null,
+        "submit_attempt_pass_rate": null,
+        "max_concurrent_specialists": 1,
+        "queue_ms": [
+          0.006,
+          0.017
+        ],
+        "specialist_latency_ms": [
+          3974.513,
+          3740.257
+        ],
+        "specialist_tokens": 21806
+      },
+      "reviewer_agent": {
+        "reviews": 0,
+        "verdicts": {},
+        "readings_reviewed": 0,
+        "readings_revised": 0,
+        "revise_rate": null,
+        "dropped_notes": 0,
+        "rejected_reviews": 0,
+        "reviewer_tokens": 0,
+        "reviewer_latency_ms": []
+      }
+    },
+    {
+      "id": "profile_reuse",
+      "repeat": 0,
+      "status": "submit_reading",
+      "checks": {
+        "expected_status": true,
+        "expected_tools": true,
+        "zero_tool_errors": false,
+        "no_model_error": true,
+        "saved": true,
+        "systems": true,
+        "valid_refs": true,
+        "trace_tree_complete": true
+      },
+      "engineering_pass": false,
+      "quality_review": {
+        "direct_answer": true,
+        "time_consistent": true,
+        "supported_conclusion": true,
+        "no_fabricated_facts": true
+      },
+      "quality_pass": true,
+      "passed": false,
+      "tools": [
+        "compute_bazi",
+        "compute_bazi_period",
+        "consult_specialist",
+        "merge_signals",
+        "resolve_location",
+        "start_reading",
+        "submit_reading",
+        "submit_report",
+        "submit_review"
+      ],
+      "tool_errors": [
+        {
+          "tool": "submit_reading",
+          "code": "validation_failed",
+          "error": "sections 的 ref_ids 必须来自本次工具生成的信号"
+        },
+        {
+          "tool": "submit_reading",
+          "code": "validation_failed",
+          "error": "不能使用“必然”这类确定性说法；趋势可以写“倾向/容易/往往”，请改写后重新提交"
+        },
+        {
+          "tool": "submit_reading",
+          "code": "validation_failed",
+          "error": "不能使用“必然”这类确定性说法；趋势可以写“倾向/容易/往往”，请改写后重新提交"
+        }
+      ],
+      "latency_s": 68.433,
+      "review_latency_s": 72.82,
+      "model_calls": 11,
+      "model_request_attempts": 7,
+      "input_tokens": 93599,
+      "output_tokens": 14606,
+      "usage_missing_calls": 0,
+      "cached_input_tokens": 81536,
+      "returned_models": [
+        "deepseek-flash"
+      ],
+      "review_usage": {
+        "input_tokens": 10794,
+        "output_tokens": 6566,
+        "usage_available": true,
+        "requested_model": "deepseek-v4-pro",
+        "returned_model": "deepseek-v4-pro"
+      },
+      "review_request_attempts": 1,
+      "multi_agent": {
+        "consults": 1,
+        "statuses": {
+          "ok": 1
+        },
+        "specialist_tool_calls": 4,
+        "out_of_scope_attempts": 0,
+        "report_submissions": 1,
+        "report_submissions_accepted": 1,
+        "consults_with_submission": 1,
+        "consults_without_submission": 0,
+        "report_first_pass": 1,
+        "report_corrected_pass": 1,
+        "report_compliance_rate": 1.0,
+        "report_first_pass_rate": 1.0,
+        "report_corrected_pass_rate": 1.0,
+        "submit_attempt_pass_rate": 1.0,
+        "max_concurrent_specialists": 1,
+        "queue_ms": [
+          0.006
+        ],
+        "specialist_latency_ms": [
+          15485.308
+        ],
+        "specialist_tokens": 19209
+      },
+      "reviewer_agent": {
+        "reviews": 1,
+        "verdicts": {
+          "pass": 1
+        },
+        "readings_reviewed": 1,
+        "readings_revised": 0,
+        "revise_rate": 0.0,
+        "dropped_notes": 0,
+        "rejected_reviews": 0,
+        "reviewer_tokens": 2644,
+        "reviewer_latency_ms": [
+          1247.079
+        ]
+      }
+    },
+    {
+      "id": "range_before_birth",
+      "repeat": 0,
+      "status": "submit_reading",
+      "checks": {
+        "expected_status": true,
+        "expected_tools": true,
+        "zero_tool_errors": false,
+        "no_model_error": true,
+        "saved": true,
+        "systems": false,
+        "valid_refs": true,
+        "trace_tree_complete": true
+      },
+      "engineering_pass": false,
+      "quality_review": {
+        "direct_answer": true,
+        "time_consistent": true,
+        "supported_conclusion": true,
+        "no_fabricated_facts": true
+      },
+      "quality_pass": true,
+      "passed": false,
+      "tools": [
+        "compute_bazi",
+        "compute_bazi_period",
+        "compute_natal_chart",
+        "compute_transits",
+        "consult_specialist",
+        "get_profile",
+        "lookup_meaning",
+        "merge_signals",
+        "resolve_location",
+        "start_reading",
+        "submit_reading",
+        "submit_report",
+        "update_profile"
+      ],
+      "tool_errors": [
+        {
+          "tool": "consult_specialist",
+          "code": "validation_failed",
+          "error": "location_id须先由resolve_location解析并确认"
+        },
+        {
+          "tool": "consult_specialist",
+          "code": "validation_failed",
+          "error": "location_id须先由resolve_location解析并确认"
+        },
+        {
+          "tool": "consult_specialist",
+          "code": "validation_failed",
+          "error": "location_id须先由resolve_location解析并确认"
+        },
+        {
+          "tool": "consult_specialist",
+          "code": "validation_failed",
+          "error": "location_id须先由resolve_location解析并确认"
+        },
+        {
+          "tool": "submit_report",
+          "code": "invalid_arguments",
+          "error": "参数不符合 schema：analysis, points"
+        },
+        {
+          "tool": "submit_report",
+          "code": "validation_failed",
+          "error": "宫位不可用或与本次计算不符"
+        }
+      ],
+      "latency_s": 83.753,
+      "review_latency_s": 73.944,
+      "model_calls": 19,
+      "model_request_attempts": 9,
+      "input_tokens": 153449,
+      "output_tokens": 11877,
+      "usage_missing_calls": 0,
+      "cached_input_tokens": 114560,
+      "returned_models": [
+        "deepseek-flash"
+      ],
+      "review_usage": {
+        "input_tokens": 11404,
+        "output_tokens": 6667,
+        "usage_available": true,
+        "requested_model": "deepseek-v4-pro",
+        "returned_model": "deepseek-v4-pro"
+      },
+      "review_request_attempts": 1,
+      "multi_agent": {
+        "consults": 3,
+        "statuses": {
+          "failed": 2,
+          "ok": 1
+        },
+        "specialist_tool_calls": 11,
+        "out_of_scope_attempts": 0,
+        "report_submissions": 3,
+        "report_submissions_accepted": 1,
+        "consults_with_submission": 3,
+        "consults_without_submission": 0,
+        "report_first_pass": 1,
+        "report_corrected_pass": 1,
+        "report_compliance_rate": 0.3333333333333333,
+        "report_first_pass_rate": 0.3333333333333333,
+        "report_corrected_pass_rate": 0.3333333333333333,
+        "submit_attempt_pass_rate": 0.3333333333333333,
+        "max_concurrent_specialists": 2,
+        "queue_ms": [
+          0.006,
+          0.017,
+          0.005
+        ],
+        "specialist_latency_ms": [
+          25830.338,
+          27905.336,
+          26520.504
+        ],
+        "specialist_tokens": 89265
+      },
+      "reviewer_agent": {
+        "reviews": 1,
+        "verdicts": {
+          "unavailable": 1
+        },
+        "readings_reviewed": 1,
+        "readings_revised": 0,
+        "revise_rate": 0.0,
+        "dropped_notes": 0,
+        "rejected_reviews": 0,
+        "reviewer_tokens": 0,
+        "reviewer_latency_ms": [
+          2.28
+        ]
+      }
+    },
+    {
+      "id": "overseas_bazi",
+      "repeat": 0,
+      "status": "model_error",
+      "checks": {
+        "expected_status": false,
+        "expected_tools": false,
+        "zero_tool_errors": true,
+        "no_model_error": false,
+        "saved": false,
+        "systems": false,
+        "valid_refs": true
+      },
+      "engineering_pass": false,
+      "quality_review": {
+        "error_type": "APIStatusError"
+      },
+      "quality_pass": false,
+      "passed": false,
+      "tools": [
+        "resolve_location",
+        "update_profile"
+      ],
+      "tool_errors": [],
+      "latency_s": 2.597,
+      "review_latency_s": 0.387,
+      "model_calls": 1,
+      "model_request_attempts": 2,
+      "input_tokens": 5673,
+      "output_tokens": 205,
+      "usage_missing_calls": 0,
+      "cached_input_tokens": 5504,
+      "returned_models": [
+        "deepseek-flash"
+      ],
+      "review_usage": {},
+      "review_request_attempts": 1,
+      "multi_agent": {
+        "consults": 0,
+        "statuses": {},
+        "specialist_tool_calls": 0,
+        "out_of_scope_attempts": 0,
+        "report_submissions": 0,
+        "report_submissions_accepted": 0,
+        "consults_with_submission": 0,
+        "consults_without_submission": 0,
+        "report_first_pass": 0,
+        "report_corrected_pass": 0,
+        "report_compliance_rate": null,
+        "report_first_pass_rate": null,
+        "report_corrected_pass_rate": null,
+        "submit_attempt_pass_rate": null,
+        "max_concurrent_specialists": 0,
+        "queue_ms": [],
+        "specialist_latency_ms": [],
+        "specialist_tokens": 0
+      },
+      "reviewer_agent": {
+        "reviews": 0,
+        "verdicts": {},
+        "readings_reviewed": 0,
+        "readings_revised": 0,
+        "revise_rate": null,
+        "dropped_notes": 0,
+        "rejected_reviews": 0,
+        "reviewer_tokens": 0,
+        "reviewer_latency_ms": []
+      }
+    },
+    {
+      "id": "natural_unknown",
+      "repeat": 0,
+      "status": "model_error",
+      "checks": {
+        "expected_status": false,
+        "expected_tools": false,
+        "zero_tool_errors": true,
+        "no_model_error": false,
+        "saved": false,
+        "systems": false,
+        "valid_refs": true,
+        "null_axes": true,
+        "no_hour": true,
+        "no_dayun": true
+      },
+      "engineering_pass": false,
+      "quality_review": {
+        "error_type": "APIStatusError"
+      },
+      "quality_pass": false,
+      "passed": false,
+      "tools": [],
+      "tool_errors": [],
+      "latency_s": 0.484,
+      "review_latency_s": 0.382,
+      "model_calls": 0,
+      "model_request_attempts": 1,
+      "input_tokens": 0,
+      "output_tokens": 0,
+      "usage_missing_calls": 0,
+      "cached_input_tokens": 0,
+      "returned_models": [],
+      "review_usage": {},
+      "review_request_attempts": 1,
+      "multi_agent": {
+        "consults": 0,
+        "statuses": {},
+        "specialist_tool_calls": 0,
+        "out_of_scope_attempts": 0,
+        "report_submissions": 0,
+        "report_submissions_accepted": 0,
+        "consults_with_submission": 0,
+        "consults_without_submission": 0,
+        "report_first_pass": 0,
+        "report_corrected_pass": 0,
+        "report_compliance_rate": null,
+        "report_first_pass_rate": null,
+        "report_corrected_pass_rate": null,
+        "submit_attempt_pass_rate": null,
+        "max_concurrent_specialists": 0,
+        "queue_ms": [],
+        "specialist_latency_ms": [],
+        "specialist_tokens": 0
+      },
+      "reviewer_agent": {
+        "reviews": 0,
+        "verdicts": {},
+        "readings_reviewed": 0,
+        "readings_revised": 0,
+        "revise_rate": null,
+        "dropped_notes": 0,
+        "rejected_reviews": 0,
+        "reviewer_tokens": 0,
+        "reviewer_latency_ms": []
+      }
+    },
+    {
+      "id": "astro_trait",
+      "repeat": 1,
+      "status": "model_error",
+      "checks": {
+        "expected_status": false,
+        "expected_tools": false,
+        "zero_tool_errors": true,
+        "no_model_error": false,
+        "saved": false,
+        "systems": false,
+        "valid_refs": true
+      },
+      "engineering_pass": false,
+      "quality_review": {
+        "error_type": "APIStatusError"
+      },
+      "quality_pass": false,
+      "passed": false,
+      "tools": [],
+      "tool_errors": [],
+      "latency_s": 0.449,
+      "review_latency_s": 0.393,
+      "model_calls": 0,
+      "model_request_attempts": 1,
+      "input_tokens": 0,
+      "output_tokens": 0,
+      "usage_missing_calls": 0,
+      "cached_input_tokens": 0,
+      "returned_models": [],
+      "review_usage": {},
+      "review_request_attempts": 1,
+      "multi_agent": {
+        "consults": 0,
+        "statuses": {},
+        "specialist_tool_calls": 0,
+        "out_of_scope_attempts": 0,
+        "report_submissions": 0,
+        "report_submissions_accepted": 0,
+        "consults_with_submission": 0,
+        "consults_without_submission": 0,
+        "report_first_pass": 0,
+        "report_corrected_pass": 0,
+        "report_compliance_rate": null,
+        "report_first_pass_rate": null,
+        "report_corrected_pass_rate": null,
+        "submit_attempt_pass_rate": null,
+        "max_concurrent_specialists": 0,
+        "queue_ms": [],
+        "specialist_latency_ms": [],
+        "specialist_tokens": 0
+      },
+      "reviewer_agent": {
+        "reviews": 0,
+        "verdicts": {},
+        "readings_reviewed": 0,
+        "readings_revised": 0,
+        "revise_rate": null,
+        "dropped_notes": 0,
+        "rejected_reviews": 0,
+        "reviewer_tokens": 0,
+        "reviewer_latency_ms": []
+      }
+    },
+    {
+      "id": "astro_followup",
+      "repeat": 1,
+      "status": "model_error",
+      "checks": {
+        "expected_status": false,
+        "expected_tools": false,
+        "zero_tool_errors": true,
+        "no_model_error": false,
+        "saved": false,
+        "systems": false,
+        "valid_refs": true,
+        "no_recalculation": true,
+        "response_saved": false
+      },
+      "engineering_pass": false,
+      "quality_review": {
+        "error_type": "APIStatusError"
+      },
+      "quality_pass": false,
+      "passed": false,
+      "tools": [],
+      "tool_errors": [],
+      "latency_s": 0.515,
+      "review_latency_s": 0.397,
+      "model_calls": 0,
+      "model_request_attempts": 1,
+      "input_tokens": 0,
+      "output_tokens": 0,
+      "usage_missing_calls": 0,
+      "cached_input_tokens": 0,
+      "returned_models": [],
+      "review_usage": {},
+      "review_request_attempts": 1,
+      "multi_agent": {
+        "consults": 0,
+        "statuses": {},
+        "specialist_tool_calls": 0,
+        "out_of_scope_attempts": 0,
+        "report_submissions": 0,
+        "report_submissions_accepted": 0,
+        "consults_with_submission": 0,
+        "consults_without_submission": 0,
+        "report_first_pass": 0,
+        "report_corrected_pass": 0,
+        "report_compliance_rate": null,
+        "report_first_pass_rate": null,
+        "report_corrected_pass_rate": null,
+        "submit_attempt_pass_rate": null,
+        "max_concurrent_specialists": 0,
+        "queue_ms": [],
+        "specialist_latency_ms": [],
+        "specialist_tokens": 0
+      },
+      "reviewer_agent": {
+        "reviews": 0,
+        "verdicts": {},
+        "readings_reviewed": 0,
+        "readings_revised": 0,
+        "revise_rate": null,
+        "dropped_notes": 0,
+        "rejected_reviews": 0,
+        "reviewer_tokens": 0,
+        "reviewer_latency_ms": []
+      }
+    },
+    {
+      "id": "bazi_trait",
+      "repeat": 1,
+      "status": "model_error",
+      "checks": {
+        "expected_status": false,
+        "expected_tools": false,
+        "zero_tool_errors": true,
+        "no_model_error": false,
+        "saved": false,
+        "systems": false,
+        "valid_refs": true
+      },
+      "engineering_pass": false,
+      "quality_review": {
+        "error_type": "APIStatusError"
+      },
+      "quality_pass": false,
+      "passed": false,
+      "tools": [],
+      "tool_errors": [],
+      "latency_s": 0.454,
+      "review_latency_s": 0.397,
+      "model_calls": 0,
+      "model_request_attempts": 1,
+      "input_tokens": 0,
+      "output_tokens": 0,
+      "usage_missing_calls": 0,
+      "cached_input_tokens": 0,
+      "returned_models": [],
+      "review_usage": {},
+      "review_request_attempts": 1,
+      "multi_agent": {
+        "consults": 0,
+        "statuses": {},
+        "specialist_tool_calls": 0,
+        "out_of_scope_attempts": 0,
+        "report_submissions": 0,
+        "report_submissions_accepted": 0,
+        "consults_with_submission": 0,
+        "consults_without_submission": 0,
+        "report_first_pass": 0,
+        "report_corrected_pass": 0,
+        "report_compliance_rate": null,
+        "report_first_pass_rate": null,
+        "report_corrected_pass_rate": null,
+        "submit_attempt_pass_rate": null,
+        "max_concurrent_specialists": 0,
+        "queue_ms": [],
+        "specialist_latency_ms": [],
+        "specialist_tokens": 0
+      },
+      "reviewer_agent": {
+        "reviews": 0,
+        "verdicts": {},
+        "readings_reviewed": 0,
+        "readings_revised": 0,
+        "revise_rate": null,
+        "dropped_notes": 0,
+        "rejected_reviews": 0,
+        "reviewer_tokens": 0,
+        "reviewer_latency_ms": []
+      }
+    },
+    {
+      "id": "bazi_followup",
+      "repeat": 1,
+      "status": "model_error",
+      "checks": {
+        "expected_status": false,
+        "expected_tools": false,
+        "zero_tool_errors": true,
+        "no_model_error": false,
+        "saved": false,
+        "systems": false,
+        "valid_refs": true,
+        "no_recalculation": true,
+        "response_saved": false
+      },
+      "engineering_pass": false,
+      "quality_review": {
+        "error_type": "APIStatusError"
+      },
+      "quality_pass": false,
+      "passed": false,
+      "tools": [],
+      "tool_errors": [],
+      "latency_s": 0.468,
+      "review_latency_s": 0.396,
+      "model_calls": 0,
+      "model_request_attempts": 1,
+      "input_tokens": 0,
+      "output_tokens": 0,
+      "usage_missing_calls": 0,
+      "cached_input_tokens": 0,
+      "returned_models": [],
+      "review_usage": {},
+      "review_request_attempts": 1,
+      "multi_agent": {
+        "consults": 0,
+        "statuses": {},
+        "specialist_tool_calls": 0,
+        "out_of_scope_attempts": 0,
+        "report_submissions": 0,
+        "report_submissions_accepted": 0,
+        "consults_with_submission": 0,
+        "consults_without_submission": 0,
+        "report_first_pass": 0,
+        "report_corrected_pass": 0,
+        "report_compliance_rate": null,
+        "report_first_pass_rate": null,
+        "report_corrected_pass_rate": null,
+        "submit_attempt_pass_rate": null,
+        "max_concurrent_specialists": 0,
+        "queue_ms": [],
+        "specialist_latency_ms": [],
+        "specialist_tokens": 0
+      },
+      "reviewer_agent": {
+        "reviews": 0,
+        "verdicts": {},
+        "readings_reviewed": 0,
+        "readings_revised": 0,
+        "revise_rate": null,
+        "dropped_notes": 0,
+        "rejected_reviews": 0,
+        "reviewer_tokens": 0,
+        "reviewer_latency_ms": []
+      }
+    },
+    {
+      "id": "astro_timing",
+      "repeat": 1,
+      "status": "model_error",
+      "checks": {
+        "expected_status": false,
+        "expected_tools": false,
+        "zero_tool_errors": true,
+        "no_model_error": false,
+        "saved": false,
+        "systems": false,
+        "valid_refs": true
+      },
+      "engineering_pass": false,
+      "quality_review": {
+        "error_type": "APIStatusError"
+      },
+      "quality_pass": false,
+      "passed": false,
+      "tools": [],
+      "tool_errors": [],
+      "latency_s": 0.477,
+      "review_latency_s": 0.391,
+      "model_calls": 0,
+      "model_request_attempts": 1,
+      "input_tokens": 0,
+      "output_tokens": 0,
+      "usage_missing_calls": 0,
+      "cached_input_tokens": 0,
+      "returned_models": [],
+      "review_usage": {},
+      "review_request_attempts": 1,
+      "multi_agent": {
+        "consults": 0,
+        "statuses": {},
+        "specialist_tool_calls": 0,
+        "out_of_scope_attempts": 0,
+        "report_submissions": 0,
+        "report_submissions_accepted": 0,
+        "consults_with_submission": 0,
+        "consults_without_submission": 0,
+        "report_first_pass": 0,
+        "report_corrected_pass": 0,
+        "report_compliance_rate": null,
+        "report_first_pass_rate": null,
+        "report_corrected_pass_rate": null,
+        "submit_attempt_pass_rate": null,
+        "max_concurrent_specialists": 0,
+        "queue_ms": [],
+        "specialist_latency_ms": [],
+        "specialist_tokens": 0
+      },
+      "reviewer_agent": {
+        "reviews": 0,
+        "verdicts": {},
+        "readings_reviewed": 0,
+        "readings_revised": 0,
+        "revise_rate": null,
+        "dropped_notes": 0,
+        "rejected_reviews": 0,
+        "reviewer_tokens": 0,
+        "reviewer_latency_ms": []
+      }
+    },
+    {
+      "id": "bazi_timing",
+      "repeat": 1,
+      "status": "model_error",
+      "checks": {
+        "expected_status": false,
+        "expected_tools": false,
+        "zero_tool_errors": true,
+        "no_model_error": false,
+        "saved": false,
+        "systems": false,
+        "valid_refs": true
+      },
+      "engineering_pass": false,
+      "quality_review": {
+        "error_type": "APIStatusError"
+      },
+      "quality_pass": false,
+      "passed": false,
+      "tools": [],
+      "tool_errors": [],
+      "latency_s": 0.49,
+      "review_latency_s": 0.376,
+      "model_calls": 0,
+      "model_request_attempts": 1,
+      "input_tokens": 0,
+      "output_tokens": 0,
+      "usage_missing_calls": 0,
+      "cached_input_tokens": 0,
+      "returned_models": [],
+      "review_usage": {},
+      "review_request_attempts": 1,
+      "multi_agent": {
+        "consults": 0,
+        "statuses": {},
+        "specialist_tool_calls": 0,
+        "out_of_scope_attempts": 0,
+        "report_submissions": 0,
+        "report_submissions_accepted": 0,
+        "consults_with_submission": 0,
+        "consults_without_submission": 0,
+        "report_first_pass": 0,
+        "report_corrected_pass": 0,
+        "report_compliance_rate": null,
+        "report_first_pass_rate": null,
+        "report_corrected_pass_rate": null,
+        "submit_attempt_pass_rate": null,
+        "max_concurrent_specialists": 0,
+        "queue_ms": [],
+        "specialist_latency_ms": [],
+        "specialist_tokens": 0
+      },
+      "reviewer_agent": {
+        "reviews": 0,
+        "verdicts": {},
+        "readings_reviewed": 0,
+        "readings_revised": 0,
+        "revise_rate": null,
+        "dropped_notes": 0,
+        "rejected_reviews": 0,
+        "reviewer_tokens": 0,
+        "reviewer_latency_ms": []
+      }
+    },
+    {
+      "id": "three_system_timing",
+      "repeat": 1,
+      "status": "model_error",
+      "checks": {
+        "expected_status": false,
+        "expected_tools": false,
+        "zero_tool_errors": true,
+        "no_model_error": false,
+        "saved": false,
+        "systems": false,
+        "valid_refs": true
+      },
+      "engineering_pass": false,
+      "quality_review": {
+        "error_type": "APIStatusError"
+      },
+      "quality_pass": false,
+      "passed": false,
+      "tools": [],
+      "tool_errors": [],
+      "latency_s": 0.419,
+      "review_latency_s": 0.391,
+      "model_calls": 0,
+      "model_request_attempts": 1,
+      "input_tokens": 0,
+      "output_tokens": 0,
+      "usage_missing_calls": 0,
+      "cached_input_tokens": 0,
+      "returned_models": [],
+      "review_usage": {},
+      "review_request_attempts": 1,
+      "multi_agent": {
+        "consults": 0,
+        "statuses": {},
+        "specialist_tool_calls": 0,
+        "out_of_scope_attempts": 0,
+        "report_submissions": 0,
+        "report_submissions_accepted": 0,
+        "consults_with_submission": 0,
+        "consults_without_submission": 0,
+        "report_first_pass": 0,
+        "report_corrected_pass": 0,
+        "report_compliance_rate": null,
+        "report_first_pass_rate": null,
+        "report_corrected_pass_rate": null,
+        "submit_attempt_pass_rate": null,
+        "max_concurrent_specialists": 0,
+        "queue_ms": [],
+        "specialist_latency_ms": [],
+        "specialist_tokens": 0
+      },
+      "reviewer_agent": {
+        "reviews": 0,
+        "verdicts": {},
+        "readings_reviewed": 0,
+        "readings_revised": 0,
+        "revise_rate": null,
+        "dropped_notes": 0,
+        "rejected_reviews": 0,
+        "reviewer_tokens": 0,
+        "reviewer_latency_ms": []
+      }
+    },
+    {
+      "id": "unknown_time",
+      "repeat": 1,
+      "status": "model_error",
+      "checks": {
+        "expected_status": false,
+        "expected_tools": false,
+        "zero_tool_errors": true,
+        "no_model_error": false,
+        "saved": false,
+        "systems": false,
+        "valid_refs": true,
+        "null_axes": true,
+        "no_hour": true,
+        "no_dayun": true
+      },
+      "engineering_pass": false,
+      "quality_review": {
+        "error_type": "APIStatusError"
+      },
+      "quality_pass": false,
+      "passed": false,
+      "tools": [],
+      "tool_errors": [],
+      "latency_s": 0.488,
+      "review_latency_s": 0.445,
+      "model_calls": 0,
+      "model_request_attempts": 1,
+      "input_tokens": 0,
+      "output_tokens": 0,
+      "usage_missing_calls": 0,
+      "cached_input_tokens": 0,
+      "returned_models": [],
+      "review_usage": {},
+      "review_request_attempts": 1,
+      "multi_agent": {
+        "consults": 0,
+        "statuses": {},
+        "specialist_tool_calls": 0,
+        "out_of_scope_attempts": 0,
+        "report_submissions": 0,
+        "report_submissions_accepted": 0,
+        "consults_with_submission": 0,
+        "consults_without_submission": 0,
+        "report_first_pass": 0,
+        "report_corrected_pass": 0,
+        "report_compliance_rate": null,
+        "report_first_pass_rate": null,
+        "report_corrected_pass_rate": null,
+        "submit_attempt_pass_rate": null,
+        "max_concurrent_specialists": 0,
+        "queue_ms": [],
+        "specialist_latency_ms": [],
+        "specialist_tokens": 0
+      },
+      "reviewer_agent": {
+        "reviews": 0,
+        "verdicts": {},
+        "readings_reviewed": 0,
+        "readings_revised": 0,
+        "revise_rate": null,
+        "dropped_notes": 0,
+        "rejected_reviews": 0,
+        "reviewer_tokens": 0,
+        "reviewer_latency_ms": []
+      }
+    },
+    {
+      "id": "missing_birth",
+      "repeat": 1,
+      "status": "model_error",
+      "checks": {
+        "expected_status": false,
+        "expected_tools": false,
+        "zero_tool_errors": true,
+        "no_model_error": false
+      },
+      "engineering_pass": false,
+      "quality_review": {
+        "error_type": "APIStatusError"
+      },
+      "quality_pass": false,
+      "passed": false,
+      "tools": [],
+      "tool_errors": [],
+      "latency_s": 0.437,
+      "review_latency_s": 0.406,
+      "model_calls": 0,
+      "model_request_attempts": 1,
+      "input_tokens": 0,
+      "output_tokens": 0,
+      "usage_missing_calls": 0,
+      "cached_input_tokens": 0,
+      "returned_models": [],
+      "review_usage": {},
+      "review_request_attempts": 1,
+      "multi_agent": {
+        "consults": 0,
+        "statuses": {},
+        "specialist_tool_calls": 0,
+        "out_of_scope_attempts": 0,
+        "report_submissions": 0,
+        "report_submissions_accepted": 0,
+        "consults_with_submission": 0,
+        "consults_without_submission": 0,
+        "report_first_pass": 0,
+        "report_corrected_pass": 0,
+        "report_compliance_rate": null,
+        "report_first_pass_rate": null,
+        "report_corrected_pass_rate": null,
+        "submit_attempt_pass_rate": null,
+        "max_concurrent_specialists": 0,
+        "queue_ms": [],
+        "specialist_latency_ms": [],
+        "specialist_tokens": 0
+      },
+      "reviewer_agent": {
+        "reviews": 0,
+        "verdicts": {},
+        "readings_reviewed": 0,
+        "readings_revised": 0,
+        "revise_rate": null,
+        "dropped_notes": 0,
+        "rejected_reviews": 0,
+        "reviewer_tokens": 0,
+        "reviewer_latency_ms": []
+      }
+    },
+    {
+      "id": "ambiguous_place",
+      "repeat": 1,
+      "status": "model_error",
+      "checks": {
+        "expected_status": false,
+        "expected_tools": false,
+        "zero_tool_errors": true,
+        "no_model_error": false
+      },
+      "engineering_pass": false,
+      "quality_review": {
+        "error_type": "APIStatusError"
+      },
+      "quality_pass": false,
+      "passed": false,
+      "tools": [],
+      "tool_errors": [],
+      "latency_s": 0.55,
+      "review_latency_s": 0.387,
+      "model_calls": 0,
+      "model_request_attempts": 1,
+      "input_tokens": 0,
+      "output_tokens": 0,
+      "usage_missing_calls": 0,
+      "cached_input_tokens": 0,
+      "returned_models": [],
+      "review_usage": {},
+      "review_request_attempts": 1,
+      "multi_agent": {
+        "consults": 0,
+        "statuses": {},
+        "specialist_tool_calls": 0,
+        "out_of_scope_attempts": 0,
+        "report_submissions": 0,
+        "report_submissions_accepted": 0,
+        "consults_with_submission": 0,
+        "consults_without_submission": 0,
+        "report_first_pass": 0,
+        "report_corrected_pass": 0,
+        "report_compliance_rate": null,
+        "report_first_pass_rate": null,
+        "report_corrected_pass_rate": null,
+        "submit_attempt_pass_rate": null,
+        "max_concurrent_specialists": 0,
+        "queue_ms": [],
+        "specialist_latency_ms": [],
+        "specialist_tokens": 0
+      },
+      "reviewer_agent": {
+        "reviews": 0,
+        "verdicts": {},
+        "readings_reviewed": 0,
+        "readings_revised": 0,
+        "revise_rate": null,
+        "dropped_notes": 0,
+        "rejected_reviews": 0,
+        "reviewer_tokens": 0,
+        "reviewer_latency_ms": []
+      }
+    },
+    {
+      "id": "dst_gap",
+      "repeat": 1,
+      "status": "model_error",
+      "checks": {
+        "expected_status": false,
+        "expected_tools": false,
+        "zero_tool_errors": true,
+        "no_model_error": false
+      },
+      "engineering_pass": false,
+      "quality_review": {
+        "error_type": "APIStatusError"
+      },
+      "quality_pass": false,
+      "passed": false,
+      "tools": [],
+      "tool_errors": [],
+      "latency_s": 0.496,
+      "review_latency_s": 0.383,
+      "model_calls": 0,
+      "model_request_attempts": 1,
+      "input_tokens": 0,
+      "output_tokens": 0,
+      "usage_missing_calls": 0,
+      "cached_input_tokens": 0,
+      "returned_models": [],
+      "review_usage": {},
+      "review_request_attempts": 1,
+      "multi_agent": {
+        "consults": 0,
+        "statuses": {},
+        "specialist_tool_calls": 0,
+        "out_of_scope_attempts": 0,
+        "report_submissions": 0,
+        "report_submissions_accepted": 0,
+        "consults_with_submission": 0,
+        "consults_without_submission": 0,
+        "report_first_pass": 0,
+        "report_corrected_pass": 0,
+        "report_compliance_rate": null,
+        "report_first_pass_rate": null,
+        "report_corrected_pass_rate": null,
+        "submit_attempt_pass_rate": null,
+        "max_concurrent_specialists": 0,
+        "queue_ms": [],
+        "specialist_latency_ms": [],
+        "specialist_tokens": 0
+      },
+      "reviewer_agent": {
+        "reviews": 0,
+        "verdicts": {},
+        "readings_reviewed": 0,
+        "readings_revised": 0,
+        "revise_rate": null,
+        "dropped_notes": 0,
+        "rejected_reviews": 0,
+        "reviewer_tokens": 0,
+        "reviewer_latency_ms": []
+      }
+    },
+    {
+      "id": "dst_fold",
+      "repeat": 1,
+      "status": "model_error",
+      "checks": {
+        "expected_status": false,
+        "expected_tools": false,
+        "zero_tool_errors": true,
+        "no_model_error": false
+      },
+      "engineering_pass": false,
+      "quality_review": {
+        "error_type": "APIStatusError"
+      },
+      "quality_pass": false,
+      "passed": false,
+      "tools": [],
+      "tool_errors": [],
+      "latency_s": 0.486,
+      "review_latency_s": 0.38,
+      "model_calls": 0,
+      "model_request_attempts": 1,
+      "input_tokens": 0,
+      "output_tokens": 0,
+      "usage_missing_calls": 0,
+      "cached_input_tokens": 0,
+      "returned_models": [],
+      "review_usage": {},
+      "review_request_attempts": 1,
+      "multi_agent": {
+        "consults": 0,
+        "statuses": {},
+        "specialist_tool_calls": 0,
+        "out_of_scope_attempts": 0,
+        "report_submissions": 0,
+        "report_submissions_accepted": 0,
+        "consults_with_submission": 0,
+        "consults_without_submission": 0,
+        "report_first_pass": 0,
+        "report_corrected_pass": 0,
+        "report_compliance_rate": null,
+        "report_first_pass_rate": null,
+        "report_corrected_pass_rate": null,
+        "submit_attempt_pass_rate": null,
+        "max_concurrent_specialists": 0,
+        "queue_ms": [],
+        "specialist_latency_ms": [],
+        "specialist_tokens": 0
+      },
+      "reviewer_agent": {
+        "reviews": 0,
+        "verdicts": {},
+        "readings_reviewed": 0,
+        "readings_revised": 0,
+        "revise_rate": null,
+        "dropped_notes": 0,
+        "rejected_reviews": 0,
+        "reviewer_tokens": 0,
+        "reviewer_latency_ms": []
+      }
+    },
+    {
+      "id": "lunar_confirm",
+      "repeat": 1,
+      "status": "model_error",
+      "checks": {
+        "expected_status": false,
+        "expected_tools": false,
+        "zero_tool_errors": true,
+        "no_model_error": false
+      },
+      "engineering_pass": false,
+      "quality_review": {
+        "error_type": "APIStatusError"
+      },
+      "quality_pass": false,
+      "passed": false,
+      "tools": [],
+      "tool_errors": [],
+      "latency_s": 0.553,
+      "review_latency_s": 0.386,
+      "model_calls": 0,
+      "model_request_attempts": 1,
+      "input_tokens": 0,
+      "output_tokens": 0,
+      "usage_missing_calls": 0,
+      "cached_input_tokens": 0,
+      "returned_models": [],
+      "review_usage": {},
+      "review_request_attempts": 1,
+      "multi_agent": {
+        "consults": 0,
+        "statuses": {},
+        "specialist_tool_calls": 0,
+        "out_of_scope_attempts": 0,
+        "report_submissions": 0,
+        "report_submissions_accepted": 0,
+        "consults_with_submission": 0,
+        "consults_without_submission": 0,
+        "report_first_pass": 0,
+        "report_corrected_pass": 0,
+        "report_compliance_rate": null,
+        "report_first_pass_rate": null,
+        "report_corrected_pass_rate": null,
+        "submit_attempt_pass_rate": null,
+        "max_concurrent_specialists": 0,
+        "queue_ms": [],
+        "specialist_latency_ms": [],
+        "specialist_tokens": 0
+      },
+      "reviewer_agent": {
+        "reviews": 0,
+        "verdicts": {},
+        "readings_reviewed": 0,
+        "readings_revised": 0,
+        "revise_rate": null,
+        "dropped_notes": 0,
+        "rejected_reviews": 0,
+        "reviewer_tokens": 0,
+        "reviewer_latency_ms": []
+      }
+    },
+    {
+      "id": "investment_new",
+      "repeat": 1,
+      "status": "model_error",
+      "checks": {
+        "expected_status": false,
+        "expected_tools": false,
+        "zero_tool_errors": true,
+        "no_model_error": false,
+        "saved": false,
+        "systems": false,
+        "valid_refs": true,
+        "safety_flag": false
+      },
+      "engineering_pass": false,
+      "quality_review": {
+        "error_type": "APIStatusError"
+      },
+      "quality_pass": false,
+      "passed": false,
+      "tools": [],
+      "tool_errors": [],
+      "latency_s": 0.439,
+      "review_latency_s": 0.391,
+      "model_calls": 0,
+      "model_request_attempts": 1,
+      "input_tokens": 0,
+      "output_tokens": 0,
+      "usage_missing_calls": 0,
+      "cached_input_tokens": 0,
+      "returned_models": [],
+      "review_usage": {},
+      "review_request_attempts": 1,
+      "multi_agent": {
+        "consults": 0,
+        "statuses": {},
+        "specialist_tool_calls": 0,
+        "out_of_scope_attempts": 0,
+        "report_submissions": 0,
+        "report_submissions_accepted": 0,
+        "consults_with_submission": 0,
+        "consults_without_submission": 0,
+        "report_first_pass": 0,
+        "report_corrected_pass": 0,
+        "report_compliance_rate": null,
+        "report_first_pass_rate": null,
+        "report_corrected_pass_rate": null,
+        "submit_attempt_pass_rate": null,
+        "max_concurrent_specialists": 0,
+        "queue_ms": [],
+        "specialist_latency_ms": [],
+        "specialist_tokens": 0
+      },
+      "reviewer_agent": {
+        "reviews": 0,
+        "verdicts": {},
+        "readings_reviewed": 0,
+        "readings_revised": 0,
+        "revise_rate": null,
+        "dropped_notes": 0,
+        "rejected_reviews": 0,
+        "reviewer_tokens": 0,
+        "reviewer_latency_ms": []
+      }
+    },
+    {
+      "id": "natural_astro",
+      "repeat": 1,
+      "status": "model_error",
+      "checks": {
+        "expected_status": false,
+        "expected_tools": false,
+        "zero_tool_errors": true,
+        "no_model_error": false,
+        "saved": false,
+        "systems": false,
+        "valid_refs": true
+      },
+      "engineering_pass": false,
+      "quality_review": {
+        "error_type": "APIStatusError"
+      },
+      "quality_pass": false,
+      "passed": false,
+      "tools": [],
+      "tool_errors": [],
+      "latency_s": 0.478,
+      "review_latency_s": 0.386,
+      "model_calls": 0,
+      "model_request_attempts": 1,
+      "input_tokens": 0,
+      "output_tokens": 0,
+      "usage_missing_calls": 0,
+      "cached_input_tokens": 0,
+      "returned_models": [],
+      "review_usage": {},
+      "review_request_attempts": 1,
+      "multi_agent": {
+        "consults": 0,
+        "statuses": {},
+        "specialist_tool_calls": 0,
+        "out_of_scope_attempts": 0,
+        "report_submissions": 0,
+        "report_submissions_accepted": 0,
+        "consults_with_submission": 0,
+        "consults_without_submission": 0,
+        "report_first_pass": 0,
+        "report_corrected_pass": 0,
+        "report_compliance_rate": null,
+        "report_first_pass_rate": null,
+        "report_corrected_pass_rate": null,
+        "submit_attempt_pass_rate": null,
+        "max_concurrent_specialists": 0,
+        "queue_ms": [],
+        "specialist_latency_ms": [],
+        "specialist_tokens": 0
+      },
+      "reviewer_agent": {
+        "reviews": 0,
+        "verdicts": {},
+        "readings_reviewed": 0,
+        "readings_revised": 0,
+        "revise_rate": null,
+        "dropped_notes": 0,
+        "rejected_reviews": 0,
+        "reviewer_tokens": 0,
+        "reviewer_latency_ms": []
+      }
+    },
+    {
+      "id": "natural_bazi",
+      "repeat": 1,
+      "status": "model_error",
+      "checks": {
+        "expected_status": false,
+        "expected_tools": false,
+        "zero_tool_errors": true,
+        "no_model_error": false,
+        "saved": false,
+        "systems": false,
+        "valid_refs": true
+      },
+      "engineering_pass": false,
+      "quality_review": {
+        "error_type": "APIStatusError"
+      },
+      "quality_pass": false,
+      "passed": false,
+      "tools": [],
+      "tool_errors": [],
+      "latency_s": 0.465,
+      "review_latency_s": 0.396,
+      "model_calls": 0,
+      "model_request_attempts": 1,
+      "input_tokens": 0,
+      "output_tokens": 0,
+      "usage_missing_calls": 0,
+      "cached_input_tokens": 0,
+      "returned_models": [],
+      "review_usage": {},
+      "review_request_attempts": 1,
+      "multi_agent": {
+        "consults": 0,
+        "statuses": {},
+        "specialist_tool_calls": 0,
+        "out_of_scope_attempts": 0,
+        "report_submissions": 0,
+        "report_submissions_accepted": 0,
+        "consults_with_submission": 0,
+        "consults_without_submission": 0,
+        "report_first_pass": 0,
+        "report_corrected_pass": 0,
+        "report_compliance_rate": null,
+        "report_first_pass_rate": null,
+        "report_corrected_pass_rate": null,
+        "submit_attempt_pass_rate": null,
+        "max_concurrent_specialists": 0,
+        "queue_ms": [],
+        "specialist_latency_ms": [],
+        "specialist_tokens": 0
+      },
+      "reviewer_agent": {
+        "reviews": 0,
+        "verdicts": {},
+        "readings_reviewed": 0,
+        "readings_revised": 0,
+        "revise_rate": null,
+        "dropped_notes": 0,
+        "rejected_reviews": 0,
+        "reviewer_tokens": 0,
+        "reviewer_latency_ms": []
+      }
+    },
+    {
+      "id": "profile_reuse",
+      "repeat": 1,
+      "status": "model_error",
+      "checks": {
+        "expected_status": false,
+        "expected_tools": false,
+        "zero_tool_errors": true,
+        "no_model_error": false,
+        "saved": false,
+        "systems": false,
+        "valid_refs": true
+      },
+      "engineering_pass": false,
+      "quality_review": {
+        "error_type": "APIStatusError"
+      },
+      "quality_pass": false,
+      "passed": false,
+      "tools": [],
+      "tool_errors": [],
+      "latency_s": 0.43,
+      "review_latency_s": 0.395,
+      "model_calls": 0,
+      "model_request_attempts": 1,
+      "input_tokens": 0,
+      "output_tokens": 0,
+      "usage_missing_calls": 0,
+      "cached_input_tokens": 0,
+      "returned_models": [],
+      "review_usage": {},
+      "review_request_attempts": 1,
+      "multi_agent": {
+        "consults": 0,
+        "statuses": {},
+        "specialist_tool_calls": 0,
+        "out_of_scope_attempts": 0,
+        "report_submissions": 0,
+        "report_submissions_accepted": 0,
+        "consults_with_submission": 0,
+        "consults_without_submission": 0,
+        "report_first_pass": 0,
+        "report_corrected_pass": 0,
+        "report_compliance_rate": null,
+        "report_first_pass_rate": null,
+        "report_corrected_pass_rate": null,
+        "submit_attempt_pass_rate": null,
+        "max_concurrent_specialists": 0,
+        "queue_ms": [],
+        "specialist_latency_ms": [],
+        "specialist_tokens": 0
+      },
+      "reviewer_agent": {
+        "reviews": 0,
+        "verdicts": {},
+        "readings_reviewed": 0,
+        "readings_revised": 0,
+        "revise_rate": null,
+        "dropped_notes": 0,
+        "rejected_reviews": 0,
+        "reviewer_tokens": 0,
+        "reviewer_latency_ms": []
+      }
+    },
+    {
+      "id": "range_before_birth",
+      "repeat": 1,
+      "status": "model_error",
+      "checks": {
+        "expected_status": false,
+        "expected_tools": false,
+        "zero_tool_errors": true,
+        "no_model_error": false,
+        "saved": false,
+        "systems": false,
+        "valid_refs": true
+      },
+      "engineering_pass": false,
+      "quality_review": {
+        "error_type": "APIStatusError"
+      },
+      "quality_pass": false,
+      "passed": false,
+      "tools": [],
+      "tool_errors": [],
+      "latency_s": 0.516,
+      "review_latency_s": 0.385,
+      "model_calls": 0,
+      "model_request_attempts": 1,
+      "input_tokens": 0,
+      "output_tokens": 0,
+      "usage_missing_calls": 0,
+      "cached_input_tokens": 0,
+      "returned_models": [],
+      "review_usage": {},
+      "review_request_attempts": 1,
+      "multi_agent": {
+        "consults": 0,
+        "statuses": {},
+        "specialist_tool_calls": 0,
+        "out_of_scope_attempts": 0,
+        "report_submissions": 0,
+        "report_submissions_accepted": 0,
+        "consults_with_submission": 0,
+        "consults_without_submission": 0,
+        "report_first_pass": 0,
+        "report_corrected_pass": 0,
+        "report_compliance_rate": null,
+        "report_first_pass_rate": null,
+        "report_corrected_pass_rate": null,
+        "submit_attempt_pass_rate": null,
+        "max_concurrent_specialists": 0,
+        "queue_ms": [],
+        "specialist_latency_ms": [],
+        "specialist_tokens": 0
+      },
+      "reviewer_agent": {
+        "reviews": 0,
+        "verdicts": {},
+        "readings_reviewed": 0,
+        "readings_revised": 0,
+        "revise_rate": null,
+        "dropped_notes": 0,
+        "rejected_reviews": 0,
+        "reviewer_tokens": 0,
+        "reviewer_latency_ms": []
+      }
+    },
+    {
+      "id": "overseas_bazi",
+      "repeat": 1,
+      "status": "model_error",
+      "checks": {
+        "expected_status": false,
+        "expected_tools": false,
+        "zero_tool_errors": true,
+        "no_model_error": false,
+        "saved": false,
+        "systems": false,
+        "valid_refs": true
+      },
+      "engineering_pass": false,
+      "quality_review": {
+        "error_type": "APIStatusError"
+      },
+      "quality_pass": false,
+      "passed": false,
+      "tools": [],
+      "tool_errors": [],
+      "latency_s": 0.597,
+      "review_latency_s": 0.389,
+      "model_calls": 0,
+      "model_request_attempts": 1,
+      "input_tokens": 0,
+      "output_tokens": 0,
+      "usage_missing_calls": 0,
+      "cached_input_tokens": 0,
+      "returned_models": [],
+      "review_usage": {},
+      "review_request_attempts": 1,
+      "multi_agent": {
+        "consults": 0,
+        "statuses": {},
+        "specialist_tool_calls": 0,
+        "out_of_scope_attempts": 0,
+        "report_submissions": 0,
+        "report_submissions_accepted": 0,
+        "consults_with_submission": 0,
+        "consults_without_submission": 0,
+        "report_first_pass": 0,
+        "report_corrected_pass": 0,
+        "report_compliance_rate": null,
+        "report_first_pass_rate": null,
+        "report_corrected_pass_rate": null,
+        "submit_attempt_pass_rate": null,
+        "max_concurrent_specialists": 0,
+        "queue_ms": [],
+        "specialist_latency_ms": [],
+        "specialist_tokens": 0
+      },
+      "reviewer_agent": {
+        "reviews": 0,
+        "verdicts": {},
+        "readings_reviewed": 0,
+        "readings_revised": 0,
+        "revise_rate": null,
+        "dropped_notes": 0,
+        "rejected_reviews": 0,
+        "reviewer_tokens": 0,
+        "reviewer_latency_ms": []
+      }
+    },
+    {
+      "id": "natural_unknown",
+      "repeat": 1,
+      "status": "model_error",
+      "checks": {
+        "expected_status": false,
+        "expected_tools": false,
+        "zero_tool_errors": true,
+        "no_model_error": false,
+        "saved": false,
+        "systems": false,
+        "valid_refs": true,
+        "null_axes": true,
+        "no_hour": true,
+        "no_dayun": true
+      },
+      "engineering_pass": false,
+      "quality_review": {
+        "error_type": "APIStatusError"
+      },
+      "quality_pass": false,
+      "passed": false,
+      "tools": [],
+      "tool_errors": [],
+      "latency_s": 0.458,
+      "review_latency_s": 0.383,
+      "model_calls": 0,
+      "model_request_attempts": 1,
+      "input_tokens": 0,
+      "output_tokens": 0,
+      "usage_missing_calls": 0,
+      "cached_input_tokens": 0,
+      "returned_models": [],
+      "review_usage": {},
+      "review_request_attempts": 1,
+      "multi_agent": {
+        "consults": 0,
+        "statuses": {},
+        "specialist_tool_calls": 0,
+        "out_of_scope_attempts": 0,
+        "report_submissions": 0,
+        "report_submissions_accepted": 0,
+        "consults_with_submission": 0,
+        "consults_without_submission": 0,
+        "report_first_pass": 0,
+        "report_corrected_pass": 0,
+        "report_compliance_rate": null,
+        "report_first_pass_rate": null,
+        "report_corrected_pass_rate": null,
+        "submit_attempt_pass_rate": null,
+        "max_concurrent_specialists": 0,
+        "queue_ms": [],
+        "specialist_latency_ms": [],
+        "specialist_tokens": 0
+      },
+      "reviewer_agent": {
+        "reviews": 0,
+        "verdicts": {},
+        "readings_reviewed": 0,
+        "readings_revised": 0,
+        "revise_rate": null,
+        "dropped_notes": 0,
+        "rejected_reviews": 0,
+        "reviewer_tokens": 0,
+        "reviewer_latency_ms": []
+      }
+    },
+    {
+      "id": "astro_trait",
+      "repeat": 2,
+      "status": "model_error",
+      "checks": {
+        "expected_status": false,
+        "expected_tools": false,
+        "zero_tool_errors": true,
+        "no_model_error": false,
+        "saved": false,
+        "systems": false,
+        "valid_refs": true
+      },
+      "engineering_pass": false,
+      "quality_review": {
+        "error_type": "APIStatusError"
+      },
+      "quality_pass": false,
+      "passed": false,
+      "tools": [],
+      "tool_errors": [],
+      "latency_s": 0.436,
+      "review_latency_s": 0.385,
+      "model_calls": 0,
+      "model_request_attempts": 1,
+      "input_tokens": 0,
+      "output_tokens": 0,
+      "usage_missing_calls": 0,
+      "cached_input_tokens": 0,
+      "returned_models": [],
+      "review_usage": {},
+      "review_request_attempts": 1,
+      "multi_agent": {
+        "consults": 0,
+        "statuses": {},
+        "specialist_tool_calls": 0,
+        "out_of_scope_attempts": 0,
+        "report_submissions": 0,
+        "report_submissions_accepted": 0,
+        "consults_with_submission": 0,
+        "consults_without_submission": 0,
+        "report_first_pass": 0,
+        "report_corrected_pass": 0,
+        "report_compliance_rate": null,
+        "report_first_pass_rate": null,
+        "report_corrected_pass_rate": null,
+        "submit_attempt_pass_rate": null,
+        "max_concurrent_specialists": 0,
+        "queue_ms": [],
+        "specialist_latency_ms": [],
+        "specialist_tokens": 0
+      },
+      "reviewer_agent": {
+        "reviews": 0,
+        "verdicts": {},
+        "readings_reviewed": 0,
+        "readings_revised": 0,
+        "revise_rate": null,
+        "dropped_notes": 0,
+        "rejected_reviews": 0,
+        "reviewer_tokens": 0,
+        "reviewer_latency_ms": []
+      }
+    },
+    {
+      "id": "astro_followup",
+      "repeat": 2,
+      "status": "model_error",
+      "checks": {
+        "expected_status": false,
+        "expected_tools": false,
+        "zero_tool_errors": true,
+        "no_model_error": false,
+        "saved": false,
+        "systems": false,
+        "valid_refs": true,
+        "no_recalculation": true,
+        "response_saved": false
+      },
+      "engineering_pass": false,
+      "quality_review": {
+        "error_type": "APIStatusError"
+      },
+      "quality_pass": false,
+      "passed": false,
+      "tools": [],
+      "tool_errors": [],
+      "latency_s": 0.434,
+      "review_latency_s": 0.371,
+      "model_calls": 0,
+      "model_request_attempts": 1,
+      "input_tokens": 0,
+      "output_tokens": 0,
+      "usage_missing_calls": 0,
+      "cached_input_tokens": 0,
+      "returned_models": [],
+      "review_usage": {},
+      "review_request_attempts": 1,
+      "multi_agent": {
+        "consults": 0,
+        "statuses": {},
+        "specialist_tool_calls": 0,
+        "out_of_scope_attempts": 0,
+        "report_submissions": 0,
+        "report_submissions_accepted": 0,
+        "consults_with_submission": 0,
+        "consults_without_submission": 0,
+        "report_first_pass": 0,
+        "report_corrected_pass": 0,
+        "report_compliance_rate": null,
+        "report_first_pass_rate": null,
+        "report_corrected_pass_rate": null,
+        "submit_attempt_pass_rate": null,
+        "max_concurrent_specialists": 0,
+        "queue_ms": [],
+        "specialist_latency_ms": [],
+        "specialist_tokens": 0
+      },
+      "reviewer_agent": {
+        "reviews": 0,
+        "verdicts": {},
+        "readings_reviewed": 0,
+        "readings_revised": 0,
+        "revise_rate": null,
+        "dropped_notes": 0,
+        "rejected_reviews": 0,
+        "reviewer_tokens": 0,
+        "reviewer_latency_ms": []
+      }
+    },
+    {
+      "id": "bazi_trait",
+      "repeat": 2,
+      "status": "model_error",
+      "checks": {
+        "expected_status": false,
+        "expected_tools": false,
+        "zero_tool_errors": true,
+        "no_model_error": false,
+        "saved": false,
+        "systems": false,
+        "valid_refs": true
+      },
+      "engineering_pass": false,
+      "quality_review": {
+        "error_type": "APIStatusError"
+      },
+      "quality_pass": false,
+      "passed": false,
+      "tools": [],
+      "tool_errors": [],
+      "latency_s": 0.449,
+      "review_latency_s": 0.375,
+      "model_calls": 0,
+      "model_request_attempts": 1,
+      "input_tokens": 0,
+      "output_tokens": 0,
+      "usage_missing_calls": 0,
+      "cached_input_tokens": 0,
+      "returned_models": [],
+      "review_usage": {},
+      "review_request_attempts": 1,
+      "multi_agent": {
+        "consults": 0,
+        "statuses": {},
+        "specialist_tool_calls": 0,
+        "out_of_scope_attempts": 0,
+        "report_submissions": 0,
+        "report_submissions_accepted": 0,
+        "consults_with_submission": 0,
+        "consults_without_submission": 0,
+        "report_first_pass": 0,
+        "report_corrected_pass": 0,
+        "report_compliance_rate": null,
+        "report_first_pass_rate": null,
+        "report_corrected_pass_rate": null,
+        "submit_attempt_pass_rate": null,
+        "max_concurrent_specialists": 0,
+        "queue_ms": [],
+        "specialist_latency_ms": [],
+        "specialist_tokens": 0
+      },
+      "reviewer_agent": {
+        "reviews": 0,
+        "verdicts": {},
+        "readings_reviewed": 0,
+        "readings_revised": 0,
+        "revise_rate": null,
+        "dropped_notes": 0,
+        "rejected_reviews": 0,
+        "reviewer_tokens": 0,
+        "reviewer_latency_ms": []
+      }
+    },
+    {
+      "id": "bazi_followup",
+      "repeat": 2,
+      "status": "model_error",
+      "checks": {
+        "expected_status": false,
+        "expected_tools": false,
+        "zero_tool_errors": true,
+        "no_model_error": false,
+        "saved": false,
+        "systems": false,
+        "valid_refs": true,
+        "no_recalculation": true,
+        "response_saved": false
+      },
+      "engineering_pass": false,
+      "quality_review": {
+        "error_type": "APIStatusError"
+      },
+      "quality_pass": false,
+      "passed": false,
+      "tools": [],
+      "tool_errors": [],
+      "latency_s": 0.426,
+      "review_latency_s": 0.388,
+      "model_calls": 0,
+      "model_request_attempts": 1,
+      "input_tokens": 0,
+      "output_tokens": 0,
+      "usage_missing_calls": 0,
+      "cached_input_tokens": 0,
+      "returned_models": [],
+      "review_usage": {},
+      "review_request_attempts": 1,
+      "multi_agent": {
+        "consults": 0,
+        "statuses": {},
+        "specialist_tool_calls": 0,
+        "out_of_scope_attempts": 0,
+        "report_submissions": 0,
+        "report_submissions_accepted": 0,
+        "consults_with_submission": 0,
+        "consults_without_submission": 0,
+        "report_first_pass": 0,
+        "report_corrected_pass": 0,
+        "report_compliance_rate": null,
+        "report_first_pass_rate": null,
+        "report_corrected_pass_rate": null,
+        "submit_attempt_pass_rate": null,
+        "max_concurrent_specialists": 0,
+        "queue_ms": [],
+        "specialist_latency_ms": [],
+        "specialist_tokens": 0
+      },
+      "reviewer_agent": {
+        "reviews": 0,
+        "verdicts": {},
+        "readings_reviewed": 0,
+        "readings_revised": 0,
+        "revise_rate": null,
+        "dropped_notes": 0,
+        "rejected_reviews": 0,
+        "reviewer_tokens": 0,
+        "reviewer_latency_ms": []
+      }
+    },
+    {
+      "id": "astro_timing",
+      "repeat": 2,
+      "status": "model_error",
+      "checks": {
+        "expected_status": false,
+        "expected_tools": false,
+        "zero_tool_errors": true,
+        "no_model_error": false,
+        "saved": false,
+        "systems": false,
+        "valid_refs": true
+      },
+      "engineering_pass": false,
+      "quality_review": {
+        "error_type": "APIStatusError"
+      },
+      "quality_pass": false,
+      "passed": false,
+      "tools": [],
+      "tool_errors": [],
+      "latency_s": 0.505,
+      "review_latency_s": 0.379,
+      "model_calls": 0,
+      "model_request_attempts": 1,
+      "input_tokens": 0,
+      "output_tokens": 0,
+      "usage_missing_calls": 0,
+      "cached_input_tokens": 0,
+      "returned_models": [],
+      "review_usage": {},
+      "review_request_attempts": 1,
+      "multi_agent": {
+        "consults": 0,
+        "statuses": {},
+        "specialist_tool_calls": 0,
+        "out_of_scope_attempts": 0,
+        "report_submissions": 0,
+        "report_submissions_accepted": 0,
+        "consults_with_submission": 0,
+        "consults_without_submission": 0,
+        "report_first_pass": 0,
+        "report_corrected_pass": 0,
+        "report_compliance_rate": null,
+        "report_first_pass_rate": null,
+        "report_corrected_pass_rate": null,
+        "submit_attempt_pass_rate": null,
+        "max_concurrent_specialists": 0,
+        "queue_ms": [],
+        "specialist_latency_ms": [],
+        "specialist_tokens": 0
+      },
+      "reviewer_agent": {
+        "reviews": 0,
+        "verdicts": {},
+        "readings_reviewed": 0,
+        "readings_revised": 0,
+        "revise_rate": null,
+        "dropped_notes": 0,
+        "rejected_reviews": 0,
+        "reviewer_tokens": 0,
+        "reviewer_latency_ms": []
+      }
+    },
+    {
+      "id": "bazi_timing",
+      "repeat": 2,
+      "status": "model_error",
+      "checks": {
+        "expected_status": false,
+        "expected_tools": false,
+        "zero_tool_errors": true,
+        "no_model_error": false,
+        "saved": false,
+        "systems": false,
+        "valid_refs": true
+      },
+      "engineering_pass": false,
+      "quality_review": {
+        "error_type": "APIStatusError"
+      },
+      "quality_pass": false,
+      "passed": false,
+      "tools": [],
+      "tool_errors": [],
+      "latency_s": 0.556,
+      "review_latency_s": 0.381,
+      "model_calls": 0,
+      "model_request_attempts": 1,
+      "input_tokens": 0,
+      "output_tokens": 0,
+      "usage_missing_calls": 0,
+      "cached_input_tokens": 0,
+      "returned_models": [],
+      "review_usage": {},
+      "review_request_attempts": 1,
+      "multi_agent": {
+        "consults": 0,
+        "statuses": {},
+        "specialist_tool_calls": 0,
+        "out_of_scope_attempts": 0,
+        "report_submissions": 0,
+        "report_submissions_accepted": 0,
+        "consults_with_submission": 0,
+        "consults_without_submission": 0,
+        "report_first_pass": 0,
+        "report_corrected_pass": 0,
+        "report_compliance_rate": null,
+        "report_first_pass_rate": null,
+        "report_corrected_pass_rate": null,
+        "submit_attempt_pass_rate": null,
+        "max_concurrent_specialists": 0,
+        "queue_ms": [],
+        "specialist_latency_ms": [],
+        "specialist_tokens": 0
+      },
+      "reviewer_agent": {
+        "reviews": 0,
+        "verdicts": {},
+        "readings_reviewed": 0,
+        "readings_revised": 0,
+        "revise_rate": null,
+        "dropped_notes": 0,
+        "rejected_reviews": 0,
+        "reviewer_tokens": 0,
+        "reviewer_latency_ms": []
+      }
+    },
+    {
+      "id": "three_system_timing",
+      "repeat": 2,
+      "status": "model_error",
+      "checks": {
+        "expected_status": false,
+        "expected_tools": false,
+        "zero_tool_errors": true,
+        "no_model_error": false,
+        "saved": false,
+        "systems": false,
+        "valid_refs": true
+      },
+      "engineering_pass": false,
+      "quality_review": {
+        "error_type": "APIStatusError"
+      },
+      "quality_pass": false,
+      "passed": false,
+      "tools": [],
+      "tool_errors": [],
+      "latency_s": 0.436,
+      "review_latency_s": 0.402,
+      "model_calls": 0,
+      "model_request_attempts": 1,
+      "input_tokens": 0,
+      "output_tokens": 0,
+      "usage_missing_calls": 0,
+      "cached_input_tokens": 0,
+      "returned_models": [],
+      "review_usage": {},
+      "review_request_attempts": 1,
+      "multi_agent": {
+        "consults": 0,
+        "statuses": {},
+        "specialist_tool_calls": 0,
+        "out_of_scope_attempts": 0,
+        "report_submissions": 0,
+        "report_submissions_accepted": 0,
+        "consults_with_submission": 0,
+        "consults_without_submission": 0,
+        "report_first_pass": 0,
+        "report_corrected_pass": 0,
+        "report_compliance_rate": null,
+        "report_first_pass_rate": null,
+        "report_corrected_pass_rate": null,
+        "submit_attempt_pass_rate": null,
+        "max_concurrent_specialists": 0,
+        "queue_ms": [],
+        "specialist_latency_ms": [],
+        "specialist_tokens": 0
+      },
+      "reviewer_agent": {
+        "reviews": 0,
+        "verdicts": {},
+        "readings_reviewed": 0,
+        "readings_revised": 0,
+        "revise_rate": null,
+        "dropped_notes": 0,
+        "rejected_reviews": 0,
+        "reviewer_tokens": 0,
+        "reviewer_latency_ms": []
+      }
+    },
+    {
+      "id": "unknown_time",
+      "repeat": 2,
+      "status": "model_error",
+      "checks": {
+        "expected_status": false,
+        "expected_tools": false,
+        "zero_tool_errors": true,
+        "no_model_error": false,
+        "saved": false,
+        "systems": false,
+        "valid_refs": true,
+        "null_axes": true,
+        "no_hour": true,
+        "no_dayun": true
+      },
+      "engineering_pass": false,
+      "quality_review": {
+        "error_type": "APIStatusError"
+      },
+      "quality_pass": false,
+      "passed": false,
+      "tools": [],
+      "tool_errors": [],
+      "latency_s": 0.463,
+      "review_latency_s": 0.402,
+      "model_calls": 0,
+      "model_request_attempts": 1,
+      "input_tokens": 0,
+      "output_tokens": 0,
+      "usage_missing_calls": 0,
+      "cached_input_tokens": 0,
+      "returned_models": [],
+      "review_usage": {},
+      "review_request_attempts": 1,
+      "multi_agent": {
+        "consults": 0,
+        "statuses": {},
+        "specialist_tool_calls": 0,
+        "out_of_scope_attempts": 0,
+        "report_submissions": 0,
+        "report_submissions_accepted": 0,
+        "consults_with_submission": 0,
+        "consults_without_submission": 0,
+        "report_first_pass": 0,
+        "report_corrected_pass": 0,
+        "report_compliance_rate": null,
+        "report_first_pass_rate": null,
+        "report_corrected_pass_rate": null,
+        "submit_attempt_pass_rate": null,
+        "max_concurrent_specialists": 0,
+        "queue_ms": [],
+        "specialist_latency_ms": [],
+        "specialist_tokens": 0
+      },
+      "reviewer_agent": {
+        "reviews": 0,
+        "verdicts": {},
+        "readings_reviewed": 0,
+        "readings_revised": 0,
+        "revise_rate": null,
+        "dropped_notes": 0,
+        "rejected_reviews": 0,
+        "reviewer_tokens": 0,
+        "reviewer_latency_ms": []
+      }
+    },
+    {
+      "id": "missing_birth",
+      "repeat": 2,
+      "status": "model_error",
+      "checks": {
+        "expected_status": false,
+        "expected_tools": false,
+        "zero_tool_errors": true,
+        "no_model_error": false
+      },
+      "engineering_pass": false,
+      "quality_review": {
+        "error_type": "APIStatusError"
+      },
+      "quality_pass": false,
+      "passed": false,
+      "tools": [],
+      "tool_errors": [],
+      "latency_s": 0.432,
+      "review_latency_s": 0.413,
+      "model_calls": 0,
+      "model_request_attempts": 1,
+      "input_tokens": 0,
+      "output_tokens": 0,
+      "usage_missing_calls": 0,
+      "cached_input_tokens": 0,
+      "returned_models": [],
+      "review_usage": {},
+      "review_request_attempts": 1,
+      "multi_agent": {
+        "consults": 0,
+        "statuses": {},
+        "specialist_tool_calls": 0,
+        "out_of_scope_attempts": 0,
+        "report_submissions": 0,
+        "report_submissions_accepted": 0,
+        "consults_with_submission": 0,
+        "consults_without_submission": 0,
+        "report_first_pass": 0,
+        "report_corrected_pass": 0,
+        "report_compliance_rate": null,
+        "report_first_pass_rate": null,
+        "report_corrected_pass_rate": null,
+        "submit_attempt_pass_rate": null,
+        "max_concurrent_specialists": 0,
+        "queue_ms": [],
+        "specialist_latency_ms": [],
+        "specialist_tokens": 0
+      },
+      "reviewer_agent": {
+        "reviews": 0,
+        "verdicts": {},
+        "readings_reviewed": 0,
+        "readings_revised": 0,
+        "revise_rate": null,
+        "dropped_notes": 0,
+        "rejected_reviews": 0,
+        "reviewer_tokens": 0,
+        "reviewer_latency_ms": []
+      }
+    },
+    {
+      "id": "ambiguous_place",
+      "repeat": 2,
+      "status": "model_error",
+      "checks": {
+        "expected_status": false,
+        "expected_tools": false,
+        "zero_tool_errors": true,
+        "no_model_error": false
+      },
+      "engineering_pass": false,
+      "quality_review": {
+        "error_type": "APIStatusError"
+      },
+      "quality_pass": false,
+      "passed": false,
+      "tools": [],
+      "tool_errors": [],
+      "latency_s": 0.437,
+      "review_latency_s": 0.384,
+      "model_calls": 0,
+      "model_request_attempts": 1,
+      "input_tokens": 0,
+      "output_tokens": 0,
+      "usage_missing_calls": 0,
+      "cached_input_tokens": 0,
+      "returned_models": [],
+      "review_usage": {},
+      "review_request_attempts": 1,
+      "multi_agent": {
+        "consults": 0,
+        "statuses": {},
+        "specialist_tool_calls": 0,
+        "out_of_scope_attempts": 0,
+        "report_submissions": 0,
+        "report_submissions_accepted": 0,
+        "consults_with_submission": 0,
+        "consults_without_submission": 0,
+        "report_first_pass": 0,
+        "report_corrected_pass": 0,
+        "report_compliance_rate": null,
+        "report_first_pass_rate": null,
+        "report_corrected_pass_rate": null,
+        "submit_attempt_pass_rate": null,
+        "max_concurrent_specialists": 0,
+        "queue_ms": [],
+        "specialist_latency_ms": [],
+        "specialist_tokens": 0
+      },
+      "reviewer_agent": {
+        "reviews": 0,
+        "verdicts": {},
+        "readings_reviewed": 0,
+        "readings_revised": 0,
+        "revise_rate": null,
+        "dropped_notes": 0,
+        "rejected_reviews": 0,
+        "reviewer_tokens": 0,
+        "reviewer_latency_ms": []
+      }
+    },
+    {
+      "id": "dst_gap",
+      "repeat": 2,
+      "status": "model_error",
+      "checks": {
+        "expected_status": false,
+        "expected_tools": false,
+        "zero_tool_errors": true,
+        "no_model_error": false
+      },
+      "engineering_pass": false,
+      "quality_review": {
+        "error_type": "APIStatusError"
+      },
+      "quality_pass": false,
+      "passed": false,
+      "tools": [],
+      "tool_errors": [],
+      "latency_s": 0.448,
+      "review_latency_s": 0.503,
+      "model_calls": 0,
+      "model_request_attempts": 1,
+      "input_tokens": 0,
+      "output_tokens": 0,
+      "usage_missing_calls": 0,
+      "cached_input_tokens": 0,
+      "returned_models": [],
+      "review_usage": {},
+      "review_request_attempts": 1,
+      "multi_agent": {
+        "consults": 0,
+        "statuses": {},
+        "specialist_tool_calls": 0,
+        "out_of_scope_attempts": 0,
+        "report_submissions": 0,
+        "report_submissions_accepted": 0,
+        "consults_with_submission": 0,
+        "consults_without_submission": 0,
+        "report_first_pass": 0,
+        "report_corrected_pass": 0,
+        "report_compliance_rate": null,
+        "report_first_pass_rate": null,
+        "report_corrected_pass_rate": null,
+        "submit_attempt_pass_rate": null,
+        "max_concurrent_specialists": 0,
+        "queue_ms": [],
+        "specialist_latency_ms": [],
+        "specialist_tokens": 0
+      },
+      "reviewer_agent": {
+        "reviews": 0,
+        "verdicts": {},
+        "readings_reviewed": 0,
+        "readings_revised": 0,
+        "revise_rate": null,
+        "dropped_notes": 0,
+        "rejected_reviews": 0,
+        "reviewer_tokens": 0,
+        "reviewer_latency_ms": []
+      }
+    },
+    {
+      "id": "dst_fold",
+      "repeat": 2,
+      "status": "model_error",
+      "checks": {
+        "expected_status": false,
+        "expected_tools": false,
+        "zero_tool_errors": true,
+        "no_model_error": false
+      },
+      "engineering_pass": false,
+      "quality_review": {
+        "error_type": "APIStatusError"
+      },
+      "quality_pass": false,
+      "passed": false,
+      "tools": [],
+      "tool_errors": [],
+      "latency_s": 0.704,
+      "review_latency_s": 0.373,
+      "model_calls": 0,
+      "model_request_attempts": 1,
+      "input_tokens": 0,
+      "output_tokens": 0,
+      "usage_missing_calls": 0,
+      "cached_input_tokens": 0,
+      "returned_models": [],
+      "review_usage": {},
+      "review_request_attempts": 1,
+      "multi_agent": {
+        "consults": 0,
+        "statuses": {},
+        "specialist_tool_calls": 0,
+        "out_of_scope_attempts": 0,
+        "report_submissions": 0,
+        "report_submissions_accepted": 0,
+        "consults_with_submission": 0,
+        "consults_without_submission": 0,
+        "report_first_pass": 0,
+        "report_corrected_pass": 0,
+        "report_compliance_rate": null,
+        "report_first_pass_rate": null,
+        "report_corrected_pass_rate": null,
+        "submit_attempt_pass_rate": null,
+        "max_concurrent_specialists": 0,
+        "queue_ms": [],
+        "specialist_latency_ms": [],
+        "specialist_tokens": 0
+      },
+      "reviewer_agent": {
+        "reviews": 0,
+        "verdicts": {},
+        "readings_reviewed": 0,
+        "readings_revised": 0,
+        "revise_rate": null,
+        "dropped_notes": 0,
+        "rejected_reviews": 0,
+        "reviewer_tokens": 0,
+        "reviewer_latency_ms": []
+      }
+    },
+    {
+      "id": "lunar_confirm",
+      "repeat": 2,
+      "status": "model_error",
+      "checks": {
+        "expected_status": false,
+        "expected_tools": false,
+        "zero_tool_errors": true,
+        "no_model_error": false
+      },
+      "engineering_pass": false,
+      "quality_review": {
+        "error_type": "APIStatusError"
+      },
+      "quality_pass": false,
+      "passed": false,
+      "tools": [],
+      "tool_errors": [],
+      "latency_s": 0.428,
+      "review_latency_s": 0.407,
+      "model_calls": 0,
+      "model_request_attempts": 1,
+      "input_tokens": 0,
+      "output_tokens": 0,
+      "usage_missing_calls": 0,
+      "cached_input_tokens": 0,
+      "returned_models": [],
+      "review_usage": {},
+      "review_request_attempts": 1,
+      "multi_agent": {
+        "consults": 0,
+        "statuses": {},
+        "specialist_tool_calls": 0,
+        "out_of_scope_attempts": 0,
+        "report_submissions": 0,
+        "report_submissions_accepted": 0,
+        "consults_with_submission": 0,
+        "consults_without_submission": 0,
+        "report_first_pass": 0,
+        "report_corrected_pass": 0,
+        "report_compliance_rate": null,
+        "report_first_pass_rate": null,
+        "report_corrected_pass_rate": null,
+        "submit_attempt_pass_rate": null,
+        "max_concurrent_specialists": 0,
+        "queue_ms": [],
+        "specialist_latency_ms": [],
+        "specialist_tokens": 0
+      },
+      "reviewer_agent": {
+        "reviews": 0,
+        "verdicts": {},
+        "readings_reviewed": 0,
+        "readings_revised": 0,
+        "revise_rate": null,
+        "dropped_notes": 0,
+        "rejected_reviews": 0,
+        "reviewer_tokens": 0,
+        "reviewer_latency_ms": []
+      }
+    },
+    {
+      "id": "investment_new",
+      "repeat": 2,
+      "status": "model_error",
+      "checks": {
+        "expected_status": false,
+        "expected_tools": false,
+        "zero_tool_errors": true,
+        "no_model_error": false,
+        "saved": false,
+        "systems": false,
+        "valid_refs": true,
+        "safety_flag": false
+      },
+      "engineering_pass": false,
+      "quality_review": {
+        "error_type": "APIStatusError"
+      },
+      "quality_pass": false,
+      "passed": false,
+      "tools": [],
+      "tool_errors": [],
+      "latency_s": 0.433,
+      "review_latency_s": 0.383,
+      "model_calls": 0,
+      "model_request_attempts": 1,
+      "input_tokens": 0,
+      "output_tokens": 0,
+      "usage_missing_calls": 0,
+      "cached_input_tokens": 0,
+      "returned_models": [],
+      "review_usage": {},
+      "review_request_attempts": 1,
+      "multi_agent": {
+        "consults": 0,
+        "statuses": {},
+        "specialist_tool_calls": 0,
+        "out_of_scope_attempts": 0,
+        "report_submissions": 0,
+        "report_submissions_accepted": 0,
+        "consults_with_submission": 0,
+        "consults_without_submission": 0,
+        "report_first_pass": 0,
+        "report_corrected_pass": 0,
+        "report_compliance_rate": null,
+        "report_first_pass_rate": null,
+        "report_corrected_pass_rate": null,
+        "submit_attempt_pass_rate": null,
+        "max_concurrent_specialists": 0,
+        "queue_ms": [],
+        "specialist_latency_ms": [],
+        "specialist_tokens": 0
+      },
+      "reviewer_agent": {
+        "reviews": 0,
+        "verdicts": {},
+        "readings_reviewed": 0,
+        "readings_revised": 0,
+        "revise_rate": null,
+        "dropped_notes": 0,
+        "rejected_reviews": 0,
+        "reviewer_tokens": 0,
+        "reviewer_latency_ms": []
+      }
+    },
+    {
+      "id": "natural_astro",
+      "repeat": 2,
+      "status": "model_error",
+      "checks": {
+        "expected_status": false,
+        "expected_tools": false,
+        "zero_tool_errors": true,
+        "no_model_error": false,
+        "saved": false,
+        "systems": false,
+        "valid_refs": true
+      },
+      "engineering_pass": false,
+      "quality_review": {
+        "error_type": "APIStatusError"
+      },
+      "quality_pass": false,
+      "passed": false,
+      "tools": [],
+      "tool_errors": [],
+      "latency_s": 0.441,
+      "review_latency_s": 0.385,
+      "model_calls": 0,
+      "model_request_attempts": 1,
+      "input_tokens": 0,
+      "output_tokens": 0,
+      "usage_missing_calls": 0,
+      "cached_input_tokens": 0,
+      "returned_models": [],
+      "review_usage": {},
+      "review_request_attempts": 1,
+      "multi_agent": {
+        "consults": 0,
+        "statuses": {},
+        "specialist_tool_calls": 0,
+        "out_of_scope_attempts": 0,
+        "report_submissions": 0,
+        "report_submissions_accepted": 0,
+        "consults_with_submission": 0,
+        "consults_without_submission": 0,
+        "report_first_pass": 0,
+        "report_corrected_pass": 0,
+        "report_compliance_rate": null,
+        "report_first_pass_rate": null,
+        "report_corrected_pass_rate": null,
+        "submit_attempt_pass_rate": null,
+        "max_concurrent_specialists": 0,
+        "queue_ms": [],
+        "specialist_latency_ms": [],
+        "specialist_tokens": 0
+      },
+      "reviewer_agent": {
+        "reviews": 0,
+        "verdicts": {},
+        "readings_reviewed": 0,
+        "readings_revised": 0,
+        "revise_rate": null,
+        "dropped_notes": 0,
+        "rejected_reviews": 0,
+        "reviewer_tokens": 0,
+        "reviewer_latency_ms": []
+      }
+    },
+    {
+      "id": "natural_bazi",
+      "repeat": 2,
+      "status": "model_error",
+      "checks": {
+        "expected_status": false,
+        "expected_tools": false,
+        "zero_tool_errors": true,
+        "no_model_error": false,
+        "saved": false,
+        "systems": false,
+        "valid_refs": true
+      },
+      "engineering_pass": false,
+      "quality_review": {
+        "error_type": "APIStatusError"
+      },
+      "quality_pass": false,
+      "passed": false,
+      "tools": [],
+      "tool_errors": [],
+      "latency_s": 0.44,
+      "review_latency_s": 0.396,
+      "model_calls": 0,
+      "model_request_attempts": 1,
+      "input_tokens": 0,
+      "output_tokens": 0,
+      "usage_missing_calls": 0,
+      "cached_input_tokens": 0,
+      "returned_models": [],
+      "review_usage": {},
+      "review_request_attempts": 1,
+      "multi_agent": {
+        "consults": 0,
+        "statuses": {},
+        "specialist_tool_calls": 0,
+        "out_of_scope_attempts": 0,
+        "report_submissions": 0,
+        "report_submissions_accepted": 0,
+        "consults_with_submission": 0,
+        "consults_without_submission": 0,
+        "report_first_pass": 0,
+        "report_corrected_pass": 0,
+        "report_compliance_rate": null,
+        "report_first_pass_rate": null,
+        "report_corrected_pass_rate": null,
+        "submit_attempt_pass_rate": null,
+        "max_concurrent_specialists": 0,
+        "queue_ms": [],
+        "specialist_latency_ms": [],
+        "specialist_tokens": 0
+      },
+      "reviewer_agent": {
+        "reviews": 0,
+        "verdicts": {},
+        "readings_reviewed": 0,
+        "readings_revised": 0,
+        "revise_rate": null,
+        "dropped_notes": 0,
+        "rejected_reviews": 0,
+        "reviewer_tokens": 0,
+        "reviewer_latency_ms": []
+      }
+    },
+    {
+      "id": "profile_reuse",
+      "repeat": 2,
+      "status": "model_error",
+      "checks": {
+        "expected_status": false,
+        "expected_tools": false,
+        "zero_tool_errors": true,
+        "no_model_error": false,
+        "saved": false,
+        "systems": false,
+        "valid_refs": true
+      },
+      "engineering_pass": false,
+      "quality_review": {
+        "error_type": "APIStatusError"
+      },
+      "quality_pass": false,
+      "passed": false,
+      "tools": [],
+      "tool_errors": [],
+      "latency_s": 0.428,
+      "review_latency_s": 0.385,
+      "model_calls": 0,
+      "model_request_attempts": 1,
+      "input_tokens": 0,
+      "output_tokens": 0,
+      "usage_missing_calls": 0,
+      "cached_input_tokens": 0,
+      "returned_models": [],
+      "review_usage": {},
+      "review_request_attempts": 1,
+      "multi_agent": {
+        "consults": 0,
+        "statuses": {},
+        "specialist_tool_calls": 0,
+        "out_of_scope_attempts": 0,
+        "report_submissions": 0,
+        "report_submissions_accepted": 0,
+        "consults_with_submission": 0,
+        "consults_without_submission": 0,
+        "report_first_pass": 0,
+        "report_corrected_pass": 0,
+        "report_compliance_rate": null,
+        "report_first_pass_rate": null,
+        "report_corrected_pass_rate": null,
+        "submit_attempt_pass_rate": null,
+        "max_concurrent_specialists": 0,
+        "queue_ms": [],
+        "specialist_latency_ms": [],
+        "specialist_tokens": 0
+      },
+      "reviewer_agent": {
+        "reviews": 0,
+        "verdicts": {},
+        "readings_reviewed": 0,
+        "readings_revised": 0,
+        "revise_rate": null,
+        "dropped_notes": 0,
+        "rejected_reviews": 0,
+        "reviewer_tokens": 0,
+        "reviewer_latency_ms": []
+      }
+    },
+    {
+      "id": "range_before_birth",
+      "repeat": 2,
+      "status": "model_error",
+      "checks": {
+        "expected_status": false,
+        "expected_tools": false,
+        "zero_tool_errors": true,
+        "no_model_error": false,
+        "saved": false,
+        "systems": false,
+        "valid_refs": true
+      },
+      "engineering_pass": false,
+      "quality_review": {
+        "error_type": "APIStatusError"
+      },
+      "quality_pass": false,
+      "passed": false,
+      "tools": [],
+      "tool_errors": [],
+      "latency_s": 0.494,
+      "review_latency_s": 0.383,
+      "model_calls": 0,
+      "model_request_attempts": 1,
+      "input_tokens": 0,
+      "output_tokens": 0,
+      "usage_missing_calls": 0,
+      "cached_input_tokens": 0,
+      "returned_models": [],
+      "review_usage": {},
+      "review_request_attempts": 1,
+      "multi_agent": {
+        "consults": 0,
+        "statuses": {},
+        "specialist_tool_calls": 0,
+        "out_of_scope_attempts": 0,
+        "report_submissions": 0,
+        "report_submissions_accepted": 0,
+        "consults_with_submission": 0,
+        "consults_without_submission": 0,
+        "report_first_pass": 0,
+        "report_corrected_pass": 0,
+        "report_compliance_rate": null,
+        "report_first_pass_rate": null,
+        "report_corrected_pass_rate": null,
+        "submit_attempt_pass_rate": null,
+        "max_concurrent_specialists": 0,
+        "queue_ms": [],
+        "specialist_latency_ms": [],
+        "specialist_tokens": 0
+      },
+      "reviewer_agent": {
+        "reviews": 0,
+        "verdicts": {},
+        "readings_reviewed": 0,
+        "readings_revised": 0,
+        "revise_rate": null,
+        "dropped_notes": 0,
+        "rejected_reviews": 0,
+        "reviewer_tokens": 0,
+        "reviewer_latency_ms": []
+      }
+    },
+    {
+      "id": "overseas_bazi",
+      "repeat": 2,
+      "status": "model_error",
+      "checks": {
+        "expected_status": false,
+        "expected_tools": false,
+        "zero_tool_errors": true,
+        "no_model_error": false,
+        "saved": false,
+        "systems": false,
+        "valid_refs": true
+      },
+      "engineering_pass": false,
+      "quality_review": {
+        "error_type": "APIStatusError"
+      },
+      "quality_pass": false,
+      "passed": false,
+      "tools": [],
+      "tool_errors": [],
+      "latency_s": 0.458,
+      "review_latency_s": 0.43,
+      "model_calls": 0,
+      "model_request_attempts": 1,
+      "input_tokens": 0,
+      "output_tokens": 0,
+      "usage_missing_calls": 0,
+      "cached_input_tokens": 0,
+      "returned_models": [],
+      "review_usage": {},
+      "review_request_attempts": 1,
+      "multi_agent": {
+        "consults": 0,
+        "statuses": {},
+        "specialist_tool_calls": 0,
+        "out_of_scope_attempts": 0,
+        "report_submissions": 0,
+        "report_submissions_accepted": 0,
+        "consults_with_submission": 0,
+        "consults_without_submission": 0,
+        "report_first_pass": 0,
+        "report_corrected_pass": 0,
+        "report_compliance_rate": null,
+        "report_first_pass_rate": null,
+        "report_corrected_pass_rate": null,
+        "submit_attempt_pass_rate": null,
+        "max_concurrent_specialists": 0,
+        "queue_ms": [],
+        "specialist_latency_ms": [],
+        "specialist_tokens": 0
+      },
+      "reviewer_agent": {
+        "reviews": 0,
+        "verdicts": {},
+        "readings_reviewed": 0,
+        "readings_revised": 0,
+        "revise_rate": null,
+        "dropped_notes": 0,
+        "rejected_reviews": 0,
+        "reviewer_tokens": 0,
+        "reviewer_latency_ms": []
+      }
+    },
+    {
+      "id": "natural_unknown",
+      "repeat": 2,
+      "status": "model_error",
+      "checks": {
+        "expected_status": false,
+        "expected_tools": false,
+        "zero_tool_errors": true,
+        "no_model_error": false,
+        "saved": false,
+        "systems": false,
+        "valid_refs": true,
+        "null_axes": true,
+        "no_hour": true,
+        "no_dayun": true
+      },
+      "engineering_pass": false,
+      "quality_review": {
+        "error_type": "APIStatusError"
+      },
+      "quality_pass": false,
+      "passed": false,
+      "tools": [],
+      "tool_errors": [],
+      "latency_s": 0.594,
+      "review_latency_s": 0.421,
+      "model_calls": 0,
+      "model_request_attempts": 1,
+      "input_tokens": 0,
+      "output_tokens": 0,
+      "usage_missing_calls": 0,
+      "cached_input_tokens": 0,
+      "returned_models": [],
+      "review_usage": {},
+      "review_request_attempts": 1,
+      "multi_agent": {
+        "consults": 0,
+        "statuses": {},
+        "specialist_tool_calls": 0,
+        "out_of_scope_attempts": 0,
+        "report_submissions": 0,
+        "report_submissions_accepted": 0,
+        "consults_with_submission": 0,
+        "consults_without_submission": 0,
+        "report_first_pass": 0,
+        "report_corrected_pass": 0,
+        "report_compliance_rate": null,
+        "report_first_pass_rate": null,
+        "report_corrected_pass_rate": null,
+        "submit_attempt_pass_rate": null,
+        "max_concurrent_specialists": 0,
+        "queue_ms": [],
+        "specialist_latency_ms": [],
+        "specialist_tokens": 0
+      },
+      "reviewer_agent": {
+        "reviews": 0,
+        "verdicts": {},
+        "readings_reviewed": 0,
+        "readings_revised": 0,
+        "revise_rate": null,
+        "dropped_notes": 0,
+        "rejected_reviews": 0,
+        "reviewer_tokens": 0,
+        "reviewer_latency_ms": []
+      }
+    }
+  ]
+}

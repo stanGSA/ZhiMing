@@ -1,6 +1,7 @@
 from common.location import Gazetteer, LocationInput, location_tool
 from common.regions import region_data, region_options, selected_region
 from harness.session import Session
+from memory.store import Store
 
 
 def test_county_resolves_from_user_evidence_without_substituting_city():
@@ -19,6 +20,24 @@ def test_county_resolves_from_user_evidence_without_substituting_city():
         gazetteer.resolve(LocationInput(query="中国 · 安徽省 · 阜阳市 · 临泉县"))["location"]
         == result["location"]
     )
+
+
+def test_resolved_birth_location_is_saved_by_code(tmp_path):
+    store = Store(tmp_path / "memory.sqlite")
+    session = Session(user_id="birth-location")
+    session.append_user("我出生在北京，请用八字看看性格。")
+    tool = location_tool(Gazetteer(), store)
+    args = LocationInput(query="北京")
+    assert tool.validator(args, session) is None
+    result = tool.handler(args, session)
+    assert result["status"] == "resolved"
+    saved = store.get_profile(session.user_id)
+    assert saved["birth_place"] == "北京"
+    assert saved["location_id"] == result["location"]["location_id"]
+    assert saved["tz"] == result["location"]["tz"]
+    assert saved["lat"] == result["location"]["lat"]
+    assert saved["lon"] == result["location"]["lon"]
+    store.close()
 
 
 def test_hierarchy_integrity_and_foreign_city_scope():

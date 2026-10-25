@@ -86,14 +86,17 @@ async def test_profile_calendar_conventions_and_synthetic_tag(runtime):
     for field, value, evidence in [
         ("zishi_rule", "next_day", "按23点换日"),
         ("calendar_input", "solar", "公历"),
-        ("prefs_json", {"birth_data_is_synthetic": True}, "合成资料"),
     ]:
         assert (
             await invoke(runtime, "update_profile", field=field, value=value, evidence=evidence)
-        ).ok
-    assert not (
+        ).code == "invalid_arguments"
+    assert (
         await invoke(
-            runtime, "update_profile", field="zishi_rule", value="same_day", evidence="按23点换日"
+            runtime,
+            "update_profile",
+            field="prefs_json",
+            value={"birth_data_is_synthetic": True},
+            evidence="合成资料",
         )
     ).ok
 

@@ -12,11 +12,16 @@ from plugins.tarot.validation import validate_output
 
 
 class DrawInput(StrictInput):
-    spread: Literal["single", "three_card", "decision"]
+    spread: Literal["single", "three_card", "decision"] | None = Field(
+        default=None,
+        description="省略时使用用户指定牌阵，否则默认three_card；single单张，three_card过去现在未来，decision现状/A/B",
+    )
     question: str = Field(min_length=1, max_length=2000)
 
 
 def check_spread(args: DrawInput, session) -> str | None:
+    if args.spread is None:
+        args.spread = session.state.get("requested_spread") or "three_card"
     if session.state.get("requested_spread") and args.spread != session.state["requested_spread"]:
         return "必须使用用户明确指定的牌阵"
     picks = session.state.get("picks")

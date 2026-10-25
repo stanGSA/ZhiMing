@@ -26,6 +26,7 @@ class ToolResult(BaseModel):
 
 
 class ModelResponse(BaseModel):
+    planned: bool = False  # Code-generated tool step; no model invocation or billed usage.
     text: str = ""
     model: str | None = None
     tool_calls: list[ToolCall] = Field(default_factory=list)

@@ -128,6 +128,7 @@ async def test_decision_direction_and_conditions_are_warnings(runtime):
         ("更倾向A。", "现实条件"),
     ):
         draft["summary"] = summary
+        draft["verdict"] = "describe" if "没有明确" in summary else "prefer_a"
         assert validate_reading(Reading.model_validate(draft), runtime.session) is None
         assert any(warning in w for w in runtime.session.state["output_warnings"])
 
@@ -137,6 +138,7 @@ async def test_timing_first_sentence_is_a_warning(runtime):
     assert out.status == "submit_reading"
     draft = copy.deepcopy(out.data["reading"])
     draft["summary"] = "先梳理现状，做好准备。"
+    draft["verdict"] = "describe"
     assert validate_reading(Reading.model_validate(draft), runtime.session) is None
     assert any("时机问题" in w for w in runtime.session.state["output_warnings"])
 
