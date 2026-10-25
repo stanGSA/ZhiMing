@@ -6,6 +6,7 @@ from dataclasses import dataclass
 from agents.schemas import ReportInput
 from common.output_policy import care_error, certainty_error, normalize_report
 from common.schemas import Evidence, Reading, Safety, Section
+from common.stages import install
 from harness.registry import Registry, Tool
 
 SHARED_RULES = """你在隔离的子会话中工作：只看得到编排者给的子问题（JSON）和本体系需要的画像字段，看不到其它专家的结果，也不能直接询问用户。
@@ -199,4 +200,6 @@ def build_specialists(plugins, lookup_tool: Tool) -> dict[str, SpecialistSpec]:
         specs[plugin.name] = SpecialistSpec(
             system=plugin.name, registry=registry, **SPEC_CONFIG[plugin.name]
         )
+    for spec in specs.values():
+        install(spec.registry)
     return specs

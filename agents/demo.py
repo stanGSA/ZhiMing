@@ -31,7 +31,11 @@ class DemoModel:
                 tool_calls=[ToolCall(id=uuid.uuid4().hex, name=name, arguments=arguments)]
             )
 
-        if "submit_report" in available:
+        if (
+            "submit_report" in available
+            or any(t in available for t in ("draw_tarot",))
+            and "start_reading" not in available
+        ):
             return self.specialist(messages, results, call)
         if "submit_review" in available:
             # Offline rule baseline standing in for the reviewer model.
@@ -147,6 +151,13 @@ class DemoModel:
             else "tarot",
             "systems_used": ["tarot"],
             "summary": summary,
+            "verdict": "not_now"
+            if safety
+            else f"prefer_{choice.lower()}"
+            if spread == "decision"
+            else "conditional"
+            if "有条件适合" in summary
+            else "describe",
             "sections": sections or [],
             "evidence": evidence,
             "resonances": [],

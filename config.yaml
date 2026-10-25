@@ -18,6 +18,7 @@ model_options:
   reviewer:
     max_tokens: 2048
 limits:
+  specialist_mode: agent      # agent | lite；对照实验前保持默认
   orchestrator_max_steps: 12
   request_token_budget: 180000
   request_timeout_s: 300
@@ -104,3 +105,18 @@ kb:
 paths:
   app_db: data/app.db
   runs: runs
+
+eval_judges:
+  pro:
+    vendor: deepseek
+    api: openai
+    model: deepseek-v4-pro
+    thinking: enabled
+    reasoning_effort: high
+    max_tokens: 8192
+    api_key_env: DEEPSEEK_API_KEY
+    base_url_env: DEEPSEEK_BASE_URL
+
+policy_judge:
+  enabled: false  # 校准报告完成前保留严格正则；可显式开启两级判定
+  timeout_s: 30

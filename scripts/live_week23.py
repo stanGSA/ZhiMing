@@ -4,6 +4,7 @@ import argparse
 import asyncio
 import hashlib
 import json
+import re
 import shutil
 import time
 import uuid
@@ -14,18 +15,39 @@ import yaml
 from dotenv import load_dotenv
 
 from app import ROOT, build_model, create_runtime
+from harness.llm import RoleModelSpec, role_model
 from knowledge.build import build
 from plugins.astro.tools import AstroPlugin
 from plugins.daily.tools import DailyPlugin
 from scripts.live_test import records
 from scripts.trace_tree import build_tree, reviewer_metrics, specialist_metrics
 
+RUBRIC_VERSION = "v2-2026-10-24"
 RUBRIC = """你是测试评审，只根据给定原问题、输出、确定性计算事实及引用释义判定。输出严格JSON：
 {"direct_answer":bool,"time_consistent":bool,"supported_conclusion":bool,"no_fabricated_facts":bool,"reasons":["逐项具体理由"]}。
-direct_answer要求summary第一句正面回答所问方向/是否/具体符号；追问信息场景应只问必要资料，不编结论。
-time_consistent要求使用用户指定范围、节气流月边界不当成公历整月；不能把精确相位当现实事件日期。性格和信息追问无范围也可true。
-supported_conclusion要求每个体系的关键判断有实际计算与所引用释义支持；单个相位不可论证确定录用，五行计数不能判断喜用神。现实建议允许，但必须是条件建议而非已知个人事实。引用存在但内容不相干应false。
-no_fabricated_facts要求不编造出生信息、星体落座/宫位、干支十神、起运、家庭或工作经历；未知时辰不解释宫位四轴时柱。保守免责声明不能代替作答。不要因为HTTP/格式/工具成功就判质量合格。"""
+direct_answer：summary第一句正面回答所问方向、是否、A或B、或所问的具体符号；追问信息场景应只问必要资料，不编结论。
+time_consistent：使用用户指定范围；节气流月边界不当成公历整月；不把精确相位日期当现实事件日期。性格和信息追问无范围也可true。
+supported_conclusion：每个体系的关键判断有实际计算与所引用释义支持。允许在计算事实之上做传统推理（十神生克、冲合刑害、相位叠加、牌阵承接）；允许根据月令与五行分布推断喜用倾向并给补益建议，前提是写明依据、用“倾向”表述、不说成程序算出的喜用神；只凭五行个数下旺衰或喜用定论应false。单个相位或牌面不能论证确定的录用或结果。引用存在但内容不相干应false。
+no_fabricated_facts：不编造出生信息、星体落座或宫位、干支十神、起运、家庭或工作经历；未知时辰不解释宫位、四轴、时柱。把结论落到用户可能遇到的场景时，写成条件句（“如果你正在……容易……”）或建议是允许的；把这些场景写成用户已知的经历，或预言必然发生的具体事件，应false。保守免责声明不能代替作答。不要因为HTTP、格式或工具成功就判质量合格。"""
+
+
+def extract_json_object(text: str) -> dict:
+    """Extract one JSON object from plain or fenced judge output."""
+    text = text.strip()
+    if text.startswith("```"):
+        text = re.sub(r"^```(?:json)?\s*|\s*```$", "", text, flags=re.IGNORECASE)
+    decoder = json.JSONDecoder()
+    for index, char in enumerate(text):
+        if char != "{":
+            continue
+        try:
+            value, _ = decoder.raw_decode(text[index:])
+        except json.JSONDecodeError:
+            continue
+        if isinstance(value, dict):
+            return value
+    raise ValueError("评委回复中没有可解析的JSON对象")
+
 
 CASES = [
     dict(
@@ -274,13 +296,33 @@ def grounded_payload(runtime, outcome):
     return facts
 
 
-async def evaluate(output, selected=None, judge=True, natural=False, mode="single"):
+async def evaluate(
+    output,
+    selected=None,
+    judge=True,
+    natural=False,
+    mode="single",
+    repeats=1,
+    judge_name=None,
+    extra_cases=None,
+):
+    if repeats < 1:
+        raise ValueError("repeats must be positive")
     load_dotenv(ROOT / ".env")
     output = output / (datetime.now(UTC).strftime("%Y%m%dT%H%M%S") + "-" + uuid.uuid4().hex[:8])
     output.mkdir(parents=True, exist_ok=True)
     source_files = sorted(
         p
-        for folder in ("harness", "agents", "common", "plugins", "knowledge", "memory", "scripts")
+        for folder in (
+            "harness",
+            "agents",
+            "common",
+            "plugins",
+            "knowledge",
+            "memory",
+            "scripts",
+            "evals/cases",
+        )
         for p in (ROOT / folder).rglob("*")
         if p.suffix in (".py", ".yaml")
     ) + [ROOT / "app.py", ROOT / "config.yaml", ROOT / "uv.lock"]
@@ -295,15 +337,26 @@ async def evaluate(output, selected=None, judge=True, natural=False, mode="singl
     workspace.mkdir()
     shutil.copyfile(ROOT / "config.yaml", workspace / "config.yaml")
     build(ROOT / "knowledge/sources", workspace / "data/kb.sqlite", ROOT / "knowledge/rules")
-    cases = [
-        c for c in CASES + (NATURAL_CASES if natural else []) if not selected or c["id"] in selected
-    ]
+    source_cases = (
+        extra_cases if extra_cases is not None else CASES + (NATURAL_CASES if natural else [])
+    )
+    cases = [c for c in source_cases if not selected or c["id"] in selected]
     runtimes = {}
     rows = []
     config = yaml.safe_load((ROOT / "config.yaml").read_text(encoding="utf-8"))
+    is_multi = mode in ("multi", "multi-lite")
+    if mode == "multi-lite":
+        workspace_config = yaml.safe_load((workspace / "config.yaml").read_text(encoding="utf-8"))
+        workspace_config["limits"]["specialist_mode"] = "lite"
+        (workspace / "config.yaml").write_text(
+            yaml.safe_dump(workspace_config, allow_unicode=True), encoding="utf-8"
+        )
     model_name = config["models"]["orchestrator"]
     review_model = None
-    if judge:
+    if judge and judge_name:
+        spec = RoleModelSpec(**config["eval_judges"][judge_name])
+        review_model = role_model(spec, 120)
+    elif judge:
         review_model = build_model(
             config["llm"]["provider"],
             config["models"].get("reviewer") or model_name,
@@ -312,199 +365,227 @@ async def evaluate(output, selected=None, judge=True, natural=False, mode="singl
             "reviewer",
         )
     try:
-        for case in cases:
-            user_id = f"week23-{output.name}-{case.get('parent', case['id'])}"
-            runtime = create_runtime(
-                root=workspace,
-                user_id=user_id,
-                model_name=model_name,
-                mode=mode,
-            )
-            runtimes[case["id"]] = runtime
-            started = time.perf_counter()
-            outcome = await runtime.turn(case["question"])
-            clarification = None
-            if outcome.status == "ask_user" and case["id"] in ("astro_trait", "astro_timing"):
-                clarification = "出生地点确认是美国纽约市（New York City），候选编号5128581；公历1995-12-31 23:45为确定的当地出生时间。咨询区间使用America/New_York时区。请继续回答原问题。"
-                outcome = await runtime.turn(clarification)
-            if outcome.status == "ask_user" and case.get("clarification"):
-                clarification = case["clarification"]
-                outcome = await runtime.turn(clarification)
-            elapsed = time.perf_counter() - started
-            events = records(runtime)
-            calls = [e for e in events if e["event"] == "tool_result"]
-            usage = [e for e in events if e["event"] == "model_response"]
-            tools = {e["call"]["name"] for e in calls if e["result"]["ok"]}
-            errors = [
-                dict(
-                    tool=e["call"]["name"],
-                    code=e["result"].get("code"),
-                    error=e["result"].get("error"),
+        for repeat in range(repeats):
+            for case in cases:
+                user_id = f"week23-{output.name}-r{repeat}-{case.get('parent', case['id'])}"
+                runtime = create_runtime(
+                    root=workspace,
+                    user_id=user_id,
+                    model_name=model_name,
+                    mode="multi" if is_multi else "single",
                 )
-                for e in calls
-                if not e["result"]["ok"]
-            ]
-            saved = runtime.store.get_reading(
-                user_id, runtime.session.state.get("active_reading_id", "")
-            )
-            checks = dict(
-                expected_status=outcome.status
-                == ("ask_user" if case.get("ask") else "submit_reading"),
-                expected_tools=case["tools"] <= tools,
-                zero_tool_errors=not errors,
-                no_model_error=not any(
-                    e["event"] in ("model_error", "limit_reached") for e in events
-                ),
-            )
-            if not case.get("ask"):
-                checks.update(
-                    saved=bool(saved),
-                    systems=set(outcome.data.get("reading", {}).get("systems_used", []))
-                    == case["systems"],
-                    valid_refs=all(
-                        e["ref_id"] in runtime.session.state["allowed_refs"]
-                        for e in outcome.data.get("reading", {}).get("evidence", [])
+                runtimes[(repeat, case["id"])] = runtime
+                started = time.perf_counter()
+                outcome = await runtime.turn(case["question"])
+                clarification = None
+                if outcome.status == "ask_user" and case["id"] in ("astro_trait", "astro_timing"):
+                    clarification = "出生地点确认是美国纽约市（New York City），候选编号5128581；公历1995-12-31 23:45为确定的当地出生时间。咨询区间使用America/New_York时区。请继续回答原问题。"
+                    outcome = await runtime.turn(clarification)
+                if outcome.status == "ask_user" and case.get("clarification"):
+                    clarification = case["clarification"]
+                    outcome = await runtime.turn(clarification)
+                elapsed = time.perf_counter() - started
+                events = records(runtime)
+                calls = [e for e in events if e["event"] == "tool_result"]
+                usage = [e for e in events if e["event"] == "model_response"]
+                tools = {e["call"]["name"] for e in calls if e["result"]["ok"]}
+                errors = [
+                    dict(
+                        tool=e["call"]["name"],
+                        code=e["result"].get("code"),
+                        error=e["result"].get("error"),
+                    )
+                    for e in calls
+                    if not e["result"]["ok"]
+                ]
+                saved = runtime.store.get_reading(
+                    user_id, runtime.session.state.get("active_reading_id", "")
+                )
+                checks = dict(
+                    expected_status=outcome.status
+                    == ("ask_user" if case.get("ask") else "submit_reading"),
+                    expected_tools=case["tools"] <= tools,
+                    zero_tool_errors=not errors,
+                    no_model_error=not any(
+                        e["event"] in ("model_error", "limit_reached")
+                        for e in events
+                        if e["session_id"] == runtime.session.id
                     ),
                 )
-            if case.get("followup"):
-                checks.update(
-                    no_recalculation=not bool(
-                        tools
-                        & {"start_reading", "compute_natal_chart", "compute_bazi", "draw_tarot"}
-                    ),
-                    response_saved=bool(
-                        runtime.store.get_response(user_id, outcome.data.get("response_id", ""))
-                    ),
-                )
-            if case.get("unknown"):
-                checks.update(
-                    null_axes=runtime.session.state.get("natal_result", {}).get("axes") is None,
-                    no_hour=not runtime.session.state.get("bazi_result", {})
-                    .get("pillars", {})
-                    .get("time"),
-                    no_dayun=runtime.session.state.get("bazi_result", {}).get("dayun") is None,
-                )
-            reading_id = runtime.session.state.get("active_reading_id")
-            if mode == "multi" and reading_id:
-                checks["trace_tree_complete"] = not build_tree(events, reading_id)["problems"]
-            if case.get("risk"):
-                checks["safety_flag"] = (
-                    outcome.data.get("reading", {}).get("safety", {}).get("flag") is True
-                )
-            facts = grounded_payload(runtime, outcome)
-            review = None
-            review_usage = {}
-            review_elapsed = 0
-            review_attempts_before = review_model.request_attempts if review_model else 0
-            if review_model:
-                review_start = time.perf_counter()
-                try:
-                    reply = await review_model.chat(
-                        [
-                            dict(role="system", content=RUBRIC),
-                            dict(
-                                role="user",
-                                content=json.dumps(
-                                    dict(
-                                        question=case["question"],
-                                        clarification=clarification,
-                                        answer=outcome.text,
-                                        structured=outcome.data.get("reading"),
-                                        facts=facts,
-                                    ),
-                                    ensure_ascii=False,
+                if not case.get("ask"):
+                    checks.update(
+                        saved=bool(saved),
+                        systems=set(outcome.data.get("reading", {}).get("systems_used", []))
+                        == case["systems"],
+                        valid_refs=all(
+                            e["ref_id"] in runtime.session.state["allowed_refs"]
+                            for e in outcome.data.get("reading", {}).get("evidence", [])
+                        ),
+                    )
+                if case.get("followup"):
+                    checks.update(
+                        no_recalculation=not bool(
+                            tools
+                            & {"start_reading", "compute_natal_chart", "compute_bazi", "draw_tarot"}
+                        ),
+                        response_saved=bool(
+                            runtime.store.get_response(user_id, outcome.data.get("response_id", ""))
+                        ),
+                    )
+                if case.get("unknown"):
+                    checks.update(
+                        null_axes=runtime.session.state.get("natal_result", {}).get("axes") is None,
+                        no_hour=not runtime.session.state.get("bazi_result", {})
+                        .get("pillars", {})
+                        .get("time"),
+                        no_dayun=runtime.session.state.get("bazi_result", {}).get("dayun") is None,
+                    )
+                reading_id = runtime.session.state.get("active_reading_id")
+                if is_multi and reading_id:
+                    checks["trace_tree_complete"] = not build_tree(events, reading_id)["problems"]
+                if case.get("risk"):
+                    checks["safety_flag"] = (
+                        outcome.data.get("reading", {}).get("safety", {}).get("flag") is True
+                    )
+                facts = grounded_payload(runtime, outcome)
+                review = None
+                review_usage = {}
+                review_elapsed = 0
+                review_attempts_before = review_model.request_attempts if review_model else 0
+                if review_model:
+                    review_start = time.perf_counter()
+                    messages = [
+                        dict(role="system", content=RUBRIC),
+                        dict(
+                            role="user",
+                            content=json.dumps(
+                                dict(
+                                    question=case["question"],
+                                    clarification=clarification,
+                                    answer=outcome.text,
+                                    structured=outcome.data.get("reading"),
+                                    facts=facts,
                                 ),
+                                ensure_ascii=False,
                             ),
-                        ],
-                        [],
-                    )
-                    review = json.loads(
-                        reply.text.strip().removeprefix("```json").removesuffix("```")
-                    )
-                    review_usage = dict(
-                        input_tokens=reply.input_tokens,
-                        output_tokens=reply.output_tokens,
-                        usage_available=reply.usage_available,
-                        requested_model=review_model.model,
-                        returned_model=reply.model,
-                    )
-                except Exception as exc:
-                    review = dict(error_type=type(exc).__name__)
-                review_elapsed = time.perf_counter() - review_start
-            quality_pass = (
-                bool(
-                    review
-                    and all(
-                        review.get(k) is True
-                        for k in (
-                            "direct_answer",
-                            "time_consistent",
-                            "supported_conclusion",
-                            "no_fabricated_facts",
+                        ),
+                    ]
+                    parse_error = None
+                    for attempt in range(2):
+                        try:
+                            reply = await review_model.chat(messages, [])
+                            review_usage = dict(
+                                input_tokens=(review_usage.get("input_tokens", 0) or 0)
+                                + (reply.input_tokens or 0),
+                                output_tokens=(review_usage.get("output_tokens", 0) or 0)
+                                + (reply.output_tokens or 0),
+                                usage_available=review_usage.get("usage_available", True)
+                                and reply.usage_available,
+                                requested_model=review_model.model,
+                                returned_model=reply.model,
+                                parse_attempts=attempt + 1,
+                            )
+                            review = extract_json_object(reply.text)
+                            required = (
+                                "direct_answer",
+                                "time_consistent",
+                                "supported_conclusion",
+                                "no_fabricated_facts",
+                            )
+                            if not all(type(review.get(key)) is bool for key in required):
+                                raise ValueError("评委JSON缺少有效的布尔判定字段")
+                            parse_error = None
+                            break
+                        except ValueError as exc:
+                            parse_error = exc
+                        except Exception as exc:
+                            review = {"error_type": type(exc).__name__, "scored": False}
+                            break
+                    if parse_error is not None:
+                        review = {
+                            "error_type": type(parse_error).__name__,
+                            "scored": False,
+                            "parse_attempts": 2,
+                        }
+                    review_elapsed = time.perf_counter() - review_start
+                quality_pass = (
+                    bool(
+                        review
+                        and all(
+                            review.get(k) is True
+                            for k in (
+                                "direct_answer",
+                                "time_consistent",
+                                "supported_conclusion",
+                                "no_fabricated_facts",
+                            )
                         )
                     )
+                    if judge and review and review.get("scored", True)
+                    else None
                 )
-                if judge
-                else None
-            )
-            row = dict(
-                id=case["id"],
-                question=case["question"],
-                clarification=clarification,
-                status=outcome.status,
-                checks=checks,
-                engineering_pass=all(checks.values()),
-                quality_review=review,
-                quality_pass=quality_pass,
-                passed=all(checks.values()) and quality_pass is True,
-                tools=sorted(tools),
-                tool_errors=errors,
-                latency_s=round(elapsed, 3),
-                review_latency_s=round(review_elapsed, 3),
-                model_calls=len(usage),
-                model_request_attempts=runtime.model.request_attempts,
-                input_tokens=sum(e["input_tokens"] or 0 for e in usage),
-                output_tokens=sum(e["output_tokens"] or 0 for e in usage),
-                usage_missing_calls=sum(not e.get("usage_available", True) for e in usage),
-                cached_input_tokens=sum(e.get("cached_input_tokens") or 0 for e in usage),
-                returned_models=sorted(
-                    {e["returned_model"] for e in usage if e.get("returned_model")}
-                ),
-                review_usage=review_usage,
-                review_request_attempts=(review_model.request_attempts - review_attempts_before)
-                if review_model
-                else 0,
-                multi_agent=specialist_metrics(events) if mode == "multi" else None,
-                # Week 5 lenient reviewer agent (not the rubric judge above).
-                reviewer_agent=reviewer_metrics(events) if mode == "multi" else None,
-                answer=outcome.text,
-                structured=outcome.data.get("reading"),
-                calculated_facts=facts,
-                trace=str(runtime.tracer.user_dir(user_id) / f"{runtime.session.id}.jsonl"),
-            )
-            rows.append(row)
-            (output / "progress.json").write_text(
-                json.dumps(rows, ensure_ascii=False, indent=2), encoding="utf-8"
-            )
-            print(
-                json.dumps(
-                    {
-                        k: row[k]
-                        for k in (
-                            "id",
-                            "status",
-                            "engineering_pass",
-                            "quality_pass",
-                            "tools",
-                            "tool_errors",
-                            "latency_s",
-                            "model_calls",
-                        )
-                    },
-                    ensure_ascii=False,
-                ),
-                flush=True,
-            )
+                row = dict(
+                    id=case["id"],
+                    repeat=repeat,
+                    question=case["question"],
+                    clarification=clarification,
+                    status=outcome.status,
+                    checks=checks,
+                    engineering_pass=all(checks.values()),
+                    quality_review=review,
+                    quality_pass=quality_pass,
+                    passed=all(checks.values()) and quality_pass is True,
+                    tools=sorted(tools),
+                    tool_errors=errors,
+                    latency_s=round(elapsed, 3),
+                    review_latency_s=round(review_elapsed, 3),
+                    model_calls=len(usage),
+                    model_request_attempts=runtime.model.request_attempts,
+                    input_tokens=sum(e["input_tokens"] or 0 for e in usage),
+                    output_tokens=sum(e["output_tokens"] or 0 for e in usage),
+                    usage_missing_calls=sum(not e.get("usage_available", True) for e in usage),
+                    cached_input_tokens=sum(e.get("cached_input_tokens") or 0 for e in usage),
+                    cached_usage_complete=all(
+                        e.get("cached_input_tokens") is not None for e in usage
+                    ),
+                    returned_models=sorted(
+                        {e["returned_model"] for e in usage if e.get("returned_model")}
+                    ),
+                    review_usage=review_usage,
+                    review_request_attempts=(review_model.request_attempts - review_attempts_before)
+                    if review_model
+                    else 0,
+                    multi_agent=specialist_metrics(events) if is_multi else None,
+                    # Week 5 lenient reviewer agent (not the rubric judge above).
+                    reviewer_agent=reviewer_metrics(events) if is_multi else None,
+                    answer=outcome.text,
+                    structured=outcome.data.get("reading"),
+                    calculated_facts=facts,
+                    trace=str(runtime.tracer.user_dir(user_id) / f"{runtime.session.id}.jsonl"),
+                )
+                rows.append(row)
+                (output / "progress.json").write_text(
+                    json.dumps(rows, ensure_ascii=False, indent=2), encoding="utf-8"
+                )
+                print(
+                    json.dumps(
+                        {
+                            k: row[k]
+                            for k in (
+                                "id",
+                                "status",
+                                "engineering_pass",
+                                "quality_pass",
+                                "tools",
+                                "tool_errors",
+                                "latency_s",
+                                "model_calls",
+                            )
+                        },
+                        ensure_ascii=False,
+                    ),
+                    flush=True,
+                )
     finally:
         for runtime in runtimes.values():
             await runtime.close_model()
@@ -513,6 +594,10 @@ async def evaluate(output, selected=None, judge=True, natural=False, mode="singl
             await review_model.close()
     report = dict(
         run_id=output.name,
+        rubric_version=RUBRIC_VERSION,
+        judge_name=judge_name,
+        judge_model=getattr(review_model, "model", None),
+        repeats=repeats,
         mode=mode,
         requested_model=model_name,
         source_fingerprint=hashlib.sha256(
@@ -521,8 +606,8 @@ async def evaluate(output, selected=None, judge=True, natural=False, mode="singl
         cases=len(rows),
         passed=sum(r["passed"] for r in rows),
         failed=sum(not r["passed"] for r in rows),
-        multi_agent=aggregate_metrics(rows) if mode == "multi" else None,
-        reviewer_agent=aggregate_reviews(rows) if mode == "multi" else None,
+        multi_agent=aggregate_metrics(rows) if is_multi else None,
+        reviewer_agent=aggregate_reviews(rows) if is_multi else None,
         results=rows,
         model_calls=sum(r["model_calls"] for r in rows),
         model_request_attempts=sum(r["model_request_attempts"] for r in rows),
@@ -534,7 +619,7 @@ async def evaluate(output, selected=None, judge=True, natural=False, mode="singl
         output_tokens=sum(
             r["output_tokens"] + r["review_usage"].get("output_tokens", 0) for r in rows
         ),
-        scope="Synthetic data; same requested model for agent/rubric judge, not independent identity or human review; final answers also require separate inspection.",
+        scope="Synthetic data; judge identity and rubric recorded. Automated review is not human calibration or independent verification of service identity.",
     )
     (output / "live.json").write_text(
         json.dumps(report, ensure_ascii=False, indent=2), encoding="utf-8"
@@ -556,10 +641,28 @@ def main():
         action="store_true",
         help="Include unprompted natural-language and profile reuse cases",
     )
-    parser.add_argument("--mode", choices=["single", "multi"], default="single")
+    parser.add_argument("--mode", choices=["single", "multi", "multi-lite"], default="single")
+    parser.add_argument("--judge", dest="judge_name")
+    parser.add_argument("--repeats", type=int, default=1)
+    parser.add_argument("--dataset", type=Path, help="可选：独立多体系实验题目YAML")
     args = parser.parse_args()
+    extra_cases = None
+    if args.dataset:
+        extra_cases = yaml.safe_load(args.dataset.read_text(encoding="utf-8"))["cases"]
+        for case in extra_cases:
+            case["tools"] = set(case["tools"])
+            case["systems"] = set(case["systems"])
     report = asyncio.run(
-        evaluate(args.output, args.cases, not args.no_judge, args.natural, args.mode)
+        evaluate(
+            args.output,
+            args.cases,
+            not args.no_judge,
+            args.natural,
+            args.mode,
+            args.repeats,
+            args.judge_name,
+            extra_cases,
+        )
     )
     raise SystemExit(0 if report["passed"] == report["cases"] else 1)
 

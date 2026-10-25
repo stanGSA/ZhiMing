@@ -1,5 +1,6 @@
 import re
 
+from common.evidence import fill_evidence
 from common.facts import validate_calculation_facts
 from common.output_policy import (
     authored_texts,
@@ -54,6 +55,8 @@ def validate_reading(reading, session) -> str | None:
     state = session.state
     if not state.get("tarot_result") and not state.get("calculations"):
         return "必须先调用确定性计算工具"
+    if fill_evidence(reading, state):
+        return "evidence ref_id没有本次可渲染的计算事实，请使用工具返回的ref_id"
     normalize_reading(reading, state)
     actual_systems = {s["system"] for s in state["signals"]}
     if set(reading.systems_used) != actual_systems or len(reading.systems_used) != len(
@@ -85,13 +88,13 @@ def validate_reading(reading, session) -> str | None:
         if "有条件适合" in first and not decision and not SUITABILITY.search(asked):
             warn(state, "非时机问题的第一句宜直接回答所问，不套用“有条件适合”")
     if state.get("response_mode") != "followup" and decision:
-        if not re.search(r"(?:倾向|优先|更支持|建议选择|先核实)\s*[AB]", first):
+        if reading.verdict not in ("prefer_a", "prefer_b"):
             warn(state, "二选一summary第一句宜明确A/B倾向并写现实条件")
         if not re.search(r"前提|条件|如果|若|先核实|待.*确认", reading.summary):
             warn(state, "二选一宜说明暂定建议的现实条件")
     if state.get("response_mode") != "followup" and reading.question_type == "timing":
         if re.search(r"是否|适合|适宜|什么时候|何时|时机", state["question"]):
-            if not re.search(r"适合|适宜|可以|不宜|暂缓|建议(?:开始|启动|等待|推迟)", first):
+            if reading.verdict not in ("suitable", "not_now", "conditional"):
                 warn(state, "时机问题summary第一句宜直接回答行动倾向并说明现实前提")
     # Recorded only: the verdict, layer titles and actions are read first and must not need
     # training to understand. A term the user asked about may be named.
@@ -120,7 +123,16 @@ def validate_reading(reading, session) -> str | None:
     error = validate_calculation_facts(reading, state)
     if error:
         return error
-    error = certainty_error(authored_texts(reading)) or care_error(authored_texts(reading))
+    if session.policy_judge is not None:
+        from common.policy_judge import HARD, candidates
+
+        texts = authored_texts(reading)
+        if any(HARD.search(text) for text in texts):
+            return "不能给出确定性结果或停药建议，请改写"
+        state["policy_candidates"] = candidates(texts)
+        error = None
+    else:
+        error = certainty_error(authored_texts(reading)) or care_error(authored_texts(reading))
     if error:
         return error
     current_question = session.user_messages[-1] if session.user_messages else ""

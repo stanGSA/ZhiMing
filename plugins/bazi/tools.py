@@ -33,10 +33,16 @@ class BaziInput(BirthInput):
     gender: Literal["male", "female"] | None = None
     true_solar_time: bool = Field(
         default=False,
-        description="用户确认用真太阳时则true；明确不用/关闭真太阳时即选择本工具的固定UTC+8口径，传false，无须再追问是否同意固定UTC+8。两者都传原始当地出生时间，由工具内部转换。",
+        description="默认false（固定UTC+8）；只有用户明确确认真太阳时才传true。海外出生须先确认口径。由排盘代码记录实际采用值，不要调用update_profile写入。",
     )
-    zishi_rule: Literal["next_day", "same_day"] = "next_day"
-    calendar: Literal["solar", "lunar"] = "solar"
+    zishi_rule: Literal["next_day", "same_day"] = Field(
+        default="next_day",
+        description="默认next_day（子初23点换日）；仅用户明确要求子正换日才传same_day。成功排盘后由代码记录，不要调用update_profile写入。",
+    )
+    calendar: Literal["solar", "lunar"] = Field(
+        default="solar",
+        description="默认公历；仅用户明确说农历时改为lunar并设置calendar_confirmed=true。成功计算后由代码保存实际采用口径。",
+    )
     lunar_date: str | None = None
     calendar_confirmed: bool = False
     leap_month: bool | None = None
@@ -206,6 +212,18 @@ class BaziPlugin(MeaningPlugin):
             result, cached = self.store.cached_calculation(
                 "bazi", session.user_id, inputs, lambda: compute_bazi(**inputs)
             )
+            # Freeze the conventions actually used by a successful calculation.
+            # These fields are code-owned defaults/validated inputs, not model-authored
+            # profile updates, so the source is recorded explicitly in profile history.
+            for field, value in (
+                ("calendar_input", args.calendar),
+                ("true_solar_time", inputs["true_solar_time"]),
+                ("zishi_rule", args.zishi_rule),
+            ):
+                if session.profile.get(field) != value:
+                    session.profile = self.store.update_derived_profile(
+                        session.user_id, field, value
+                    )
         except NeedsInput as exc:
             return exc.result()
         session.state["bazi_id"] = result["bazi_id"]

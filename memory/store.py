@@ -144,6 +144,21 @@ class Store:
             )
         return {**profile, "version": version}
 
+    def update_derived_profile(self, user_id: str, field: str, value) -> dict:
+        """Persist code-derived defaults without invalidating user-input profile versions."""
+        profile = self.get_profile(user_id)
+        version = profile.pop("version")
+        profile[field] = value
+        encoded = json.dumps(profile, ensure_ascii=False)
+        now = datetime.now(UTC).isoformat()
+        with self.db:
+            self.db.execute(
+                "INSERT INTO profiles VALUES(?,?,?,?) ON CONFLICT(user_id) DO UPDATE SET "
+                "profile_json=excluded.profile_json,updated_at=excluded.updated_at",
+                (user_id, encoded, version, now),
+            )
+        return {**profile, "version": version}
+
     def save_reading(
         self,
         session,

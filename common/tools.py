@@ -4,6 +4,7 @@ import json
 import re
 
 from agents.reviewer import packet_from_reading, revise_message
+from common.domain_rules import rules_for
 from common.input_evidence import (
     clock_in,
     gender_evidence,
@@ -239,8 +240,14 @@ def common_tools(store, kb: KnowledgeBase, mode: str = "single", reviewer=None) 
             if re.search(r"单张|一张", request)
             else None
         )
+        session.state["systems"] = session.state.get("systems") or args.systems
+        spread = session.state.get("selected_spread") or args.requested_spread or spread
         session.state["requested_spread"] = spread
         result = {"reading_id": reading_id, "question": args.question, "requested_spread": spread}
+        result["systems"] = session.state.get("systems")
+        result["domain_rules"] = rules_for(
+            session.state.get("systems") or ["astro", "bazi", "tarot", "name", "dream", "daily"]
+        )
         if previous:
             result["previous_reading"] = previous_view(previous)
         return result
@@ -490,6 +497,7 @@ def common_tools(store, kb: KnowledgeBase, mode: str = "single", reviewer=None) 
         # restored one (calculations, specialist reports, consult caches).
         session.state = dict(
             asked_this_turn=session.state.get("asked_this_turn", False),
+            ref_alias=session.state.get("ref_alias", {}),
             question_message_index=max(0, len(session.user_messages) - 1),
             specialist_reports=store.specialist_reports(session.user_id, result["reading_id"]),
         )
@@ -559,7 +567,15 @@ def common_tools(store, kb: KnowledgeBase, mode: str = "single", reviewer=None) 
         return messages[index] if 0 <= index < len(messages) else session.state["question"]
 
     async def submit(args, session):
+        if session.policy_judge is not None:
+            from common.output_policy import authored_texts
+
+            failure = await session.policy_judge.check(authored_texts(args), session)
+            if failure:
+                return failure
         output = args.model_dump(mode="json")
+        if output.get("verdict") is None:
+            output.pop("verdict", None)
         state = session.state
         response_id = None
         review = None
@@ -620,7 +636,7 @@ def common_tools(store, kb: KnowledgeBase, mode: str = "single", reviewer=None) 
         ),
         Tool(
             "update_profile",
-            "仅保存用户明确提供的信息，必须给出原话 evidence。",
+            "仅保存用户明确提供的姓名、性别、出生日期地点、是否知道时辰、当前咨询时区、偏好JSON或体系权重；evidence须为原话连续片段。出生地经纬度/时区/location_id由resolve_location自动保存，公历口径、真太阳时与子时规则由成功排盘自动保存，不要在此写入。",
             ProfileInput,
             update_profile,
             validator=profile_validator,
@@ -670,7 +686,7 @@ def common_tools(store, kb: KnowledgeBase, mode: str = "single", reviewer=None) 
         Tool(
             "submit_reading",
             "提交完整解读或保存原牌追问：summary定调并直接回答，sections分层推演，advice行动建议，"
-            "closing收尾，evidence为所引用计算事实的附录。",
+            "closing收尾；evidence仅填ref_id即可由代码渲染事实附录；verdict须与summary第一句一致。",
             Reading,
             submit,
             terminal=True,

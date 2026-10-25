@@ -1,0 +1,23 @@
+currency: USD
+checked_date: '2026-10-24'
+source: https://api-docs.deepseek.com/quick_start/pricing
+rate_period: off_peak
+scope: 官方直连；2026-10-24为周六，全天非高峰。仅模型token估算，不等于账单。跨到高峰批次须重新选择费率。
+models:
+  deepseek-flash:
+    input_per_mtok: 0.15
+    cached_input_per_mtok: 0.003
+    output_per_mtok: 0.6
+  deepseek-v4-pro:
+    input_per_mtok: 0.66
+    cached_input_per_mtok: 0.022
+    output_per_mtok: 1.98
+peak_models:
+  deepseek-flash:
+    input_per_mtok: 0.3
+    cached_input_per_mtok: 0.006
+    output_per_mtok: 1.2
+  deepseek-v4-pro:
+    input_per_mtok: 1.32
+    cached_input_per_mtok: 0.044
+    output_per_mtok: 3.96

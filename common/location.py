@@ -317,7 +317,7 @@ class Gazetteer:
         return dict(status="resolved", location=matches[0])
 
 
-def location_tool(gazetteer: Gazetteer):
+def location_tool(gazetteer: Gazetteer, store=None):
     def resolve(args, session):
         result = gazetteer.resolve(args)
         for candidate in result.get("candidates", []):
@@ -330,6 +330,28 @@ def location_tool(gazetteer: Gazetteer):
             session.state.setdefault("location_aliases", {})[location["location_id"]] = sorted(
                 gazetteer.names[location["location_id"]] | {args.query}
             )
+            # Persist resolved birth coordinates only when the query is tied to an
+            # explicit birth-place utterance (or to the user's existing birth-place profile).
+            evidence = next(
+                (
+                    message
+                    for message in reversed(session.user_messages)
+                    if args.query in message and re.search(r"出生|生于|出生地|老家", message)
+                ),
+                None,
+            )
+            if evidence is None and session.profile.get("birth_place") == args.query:
+                evidence = session.profile["birth_place"]
+            if store is not None and evidence:
+                for field, value in (
+                    ("birth_place", args.query),
+                    ("location_id", location["location_id"]),
+                    ("tz", location["tz"]),
+                    ("lat", location["lat"]),
+                    ("lon", location["lon"]),
+                ):
+                    session.profile = store.update_profile(session.user_id, field, value, evidence)
+                session.refresh_calendar()
         return result
 
     def validate(args, session):

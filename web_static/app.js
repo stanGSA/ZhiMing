@@ -114,6 +114,7 @@ async function api(path, options = {}) {
       headers: {
         "Content-Type": "application/json",
         "X-Zhiming-Client": "web",
+        ...options.headers,
       },
     });
   } catch {
@@ -304,9 +305,18 @@ async function send({ message, extra = {} }, birth) {
   let handled = false;
   $("#message").value = "";
   fitComposer();
+  const progressId = crypto.randomUUID();
+  const progress = new EventSource(`/api/progress?request_id=${progressId}`);
+  progress.onmessage = (event) => {
+    const label = JSON.parse(event.data).label;
+    const text = $("#thinking .thinking span");
+    if (text && typeof label === "string") text.textContent = label;
+  };
+  progress.addEventListener("done", () => progress.close());
   try {
     const next = await api("/api/chat", {
       method: "POST",
+      headers: { "X-Zhiming-Progress": progressId },
       body: JSON.stringify({ message, system: SYSTEM, birth, ...extra }),
     });
     applyState(next);
@@ -325,6 +335,8 @@ async function send({ message, extra = {} }, birth) {
     setBusy(false);
     toast(error.message);
     page.onSendFailed?.();
+  } finally {
+    progress.close();
   }
   if (!busy && window.innerWidth > 760) $("#message").focus({ preventScroll: handled });
 }

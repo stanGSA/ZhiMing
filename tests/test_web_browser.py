@@ -228,3 +228,27 @@ def test_clearing_records_also_clears_an_unsent_question(site, chromium):
     page.click("#confirm-dialog button[value=confirm]")
     expect(page.locator("#history-list .history-item")).to_have_count(0)
     expect(page.locator("#tarot-question")).to_have_value("")
+
+
+def test_thinking_bubble_shows_progress_labels(site, chromium):
+    base, _ = site
+    page, _ = open_tarot(chromium, base)
+    page.route(
+        "**/api/progress?*",
+        lambda route: route.fulfill(
+            status=200,
+            content_type="text/event-stream",
+            body='data: {"label":"事实核对未通过，正在改写"}\n\n',
+        ),
+    )
+    page.evaluate("""() => {
+      const realFetch=window.fetch;
+      window.fetch=async (input, options) => {
+        if (String(input).endsWith('/api/chat')) await new Promise(resolve=>setTimeout(resolve,1500));
+        return realFetch(input,options);
+      };
+    }""")
+    draw(page, "看近期状态", 0, 1, 2)
+    expect(page.locator("#thinking .thinking span")).to_have_text("事实核对未通过，正在改写")
+    expect(page.locator("#thinking")).to_have_count(0, timeout=20000)
+    page.close()

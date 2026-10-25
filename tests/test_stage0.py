@@ -237,7 +237,7 @@ async def test_invalid_timezone_rejected_and_legacy_value_cannot_block_crisis(pr
                 "update_profile",
                 {"field": "tz", "value": value, "evidence": "我的时区是PST，住在America"},
             )
-            assert not result.ok and "IANA" in result.error
+            assert not result.ok and result.code == "invalid_arguments"
         assert "tz" not in runtime.store.get_profile("synthetic-tz")
         assert consultation_timezone_evidence("按America/Argentina时间", runtime.session) is None
         runtime.store.update_profile("synthetic-tz", "tz", "PST", "旧版本写入")
@@ -280,12 +280,9 @@ async def test_daily_saves_unsaved_birth_timezone_before_dating_today(runtime, s
     first = await invoke(runtime, "daily_fortune", {"date": "2026-10-21", "location_id": "la"})
     assert first.code == "calendar_timezone_mismatch"
     assert "tz=America/Los_Angeles" in first.error
-    saved = await invoke(
-        runtime,
-        "update_profile",
-        {"field": "tz", "value": "America/Los_Angeles", "evidence": "我出生在洛杉矶"},
-    )
-    assert saved.ok, saved.error
+    saved = await invoke(runtime, "resolve_location", {"query": "洛杉矶"})
+    assert saved.ok and saved.data["status"] == "resolved"
+    assert runtime.store.get_profile(runtime.session.user_id)["tz"] == "America/Los_Angeles"
     assert runtime.session.calendar_anchor == "2026-10-20"
     stale = await invoke(runtime, "daily_fortune", {"date": "2026-10-21", "location_id": "la"})
     assert not stale.ok and "2026-10-20" in stale.error

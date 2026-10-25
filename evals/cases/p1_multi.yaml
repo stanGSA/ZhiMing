@@ -1,0 +1,147 @@
+version: 1
+scope: 4 existing week23 cases + 8 trajectory cases rewritten with synthetic profile
+  facts and explicit dates; serial comparisons only
+cases:
+- id: three_system_timing
+  question: 合成资料：男性，公历1993-08-17 23:20，北京出生。请用占星、八字和三张塔罗一起回答2026-11-01至2026-11-30是否适合启动求职，计算该区间行运及流月，按23点换日、不用真太阳时，给有依据的现实条件。
+  tools:
+  - compute_bazi
+  - compute_bazi_period
+  - compute_natal_chart
+  - compute_transits
+  - draw_tarot
+  - submit_reading
+  systems:
+  - astro
+  - bazi
+  - tarot
+- id: unknown_time
+  question: 合成资料：公历1998-04-12，北京出生，出生时间不知道，已确认无法补充。请用占星和八字分析工作方向，不提供性别，不解释宫位上升时柱，也不排大运。
+  tools:
+  - compute_bazi
+  - compute_natal_chart
+  - submit_reading
+  systems:
+  - astro
+  - bazi
+  unknown: true
+- id: range_before_birth
+  question: 看2026-11-01至2026-11-30适合求职吗？我生于1993年8月17日晚上11点20分，北京，男性。用占星和八字一起看看。
+  tools:
+  - compute_bazi
+  - compute_bazi_period
+  - compute_natal_chart
+  - compute_transits
+  - submit_reading
+  systems:
+  - astro
+  - bazi
+- id: natural_unknown
+  question: 1998年4月12日北京出生，出生时辰不知道，也查不到。用占星和八字看看工作方式。
+  tools:
+  - compute_bazi
+  - compute_natal_chart
+  - submit_reading
+  systems:
+  - astro
+  - bazi
+  unknown: true
+- id: p1-traj-001
+  source: trajectory.yaml/traj-001
+  question: 合成资料：女性，公历1996-05-10 08:30，成都出生。请用占星、八字和三张塔罗回答2026-11-01至2026-11-30是否适合跳槽。按23点换日，不用真太阳时。
+  tools:
+  - compute_bazi
+  - compute_bazi_period
+  - compute_natal_chart
+  - compute_transits
+  - draw_tarot
+  - submit_reading
+  systems:
+  - astro
+  - bazi
+  - tarot
+- id: p1-traj-002
+  source: trajectory.yaml/traj-002
+  question: 合成资料：男性，公历1991-11-02 21:15，南京出生。请用占星、八字和三张塔罗回答2026-11-01至2026-12-31感情是否容易有进展。按23点换日，不用真太阳时。
+  tools:
+  - compute_bazi
+  - compute_bazi_period
+  - compute_natal_chart
+  - compute_transits
+  - draw_tarot
+  - submit_reading
+  systems:
+  - astro
+  - bazi
+  - tarot
+- id: p1-traj-003
+  source: trajectory.yaml/traj-003
+  question: 合成资料：女性，公历1996-05-10 08:30，成都出生。请用占星和八字回答2026-11-01至2027-01-31是否适合搬家，给有依据的条件建议，不预测具体事件。按23点换日，不用真太阳时。
+  tools:
+  - compute_bazi
+  - compute_bazi_period
+  - compute_natal_chart
+  - compute_transits
+  - submit_reading
+  systems:
+  - astro
+  - bazi
+- id: p1-traj-005
+  source: trajectory.yaml/traj-005
+  question: 合成资料：女性，公历1996-05-10 08:30，成都出生。请用占星、八字和单张塔罗回答2026-11-06当天面试的准备重点与压力倾向，不预测录用。按23点换日，不用真太阳时。
+  tools:
+  - compute_bazi
+  - compute_bazi_period
+  - compute_natal_chart
+  - compute_transits
+  - draw_tarot
+  - submit_reading
+  systems:
+  - astro
+  - bazi
+  - tarot
+- id: p1-traj-006
+  source: trajectory.yaml/traj-006
+  question: 合成资料：男性，公历1993-08-17，上海出生。出生时辰不知道，已经确认查不到，不解释宫位、四轴或时柱。请用占星、八字和三张塔罗回答2026-12-01至2026-12-31是否适合开工作室。按23点换日，不用真太阳时。
+  tools:
+  - compute_bazi
+  - compute_bazi_period
+  - compute_natal_chart
+  - compute_transits
+  - draw_tarot
+  - submit_reading
+  systems:
+  - astro
+  - bazi
+  - tarot
+  unknown: true
+- id: p1-traj-021
+  source: trajectory.yaml/traj-021
+  question: 合成资料：女性，公历1996-05-10 08:30，成都出生。请用占星和八字说明适合怎样的工作方式，不预测录用。按23点换日，不用真太阳时。
+  tools:
+  - compute_bazi
+  - compute_natal_chart
+  - submit_reading
+  systems:
+  - astro
+  - bazi
+- id: p1-traj-022
+  source: trajectory.yaml/traj-022
+  question: 合成资料：男性，公历1991-11-02 21:15，南京出生。请用占星和八字说明性格的优点、容易遇到的挑战和应对方式。按23点换日，不用真太阳时。
+  tools:
+  - compute_bazi
+  - compute_natal_chart
+  - submit_reading
+  systems:
+  - astro
+  - bazi
+- id: p1-traj-024
+  source: trajectory.yaml/traj-024
+  question: 合成资料：男性，公历1991-11-02 21:15，南京出生。请用占星和八字说明感情里的沟通方式与需要留意的习惯。按23点换日，不用真太阳时。
+  tools:
+  - compute_bazi
+  - compute_natal_chart
+  - submit_reading
+  systems:
+  - astro
+  - bazi

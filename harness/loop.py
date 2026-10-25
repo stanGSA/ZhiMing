@@ -8,6 +8,7 @@ from contextvars import ContextVar
 from harness.budget import Budget
 from harness.guard import Guard
 from harness.models import ToolCall, ToolResult, TurnOutcome
+from harness.refs import transform
 from harness.registry import Registry
 from harness.session import Session
 from harness.trace import Tracer
@@ -104,16 +105,18 @@ async def run_turn(
         except asyncio.CancelledError:
             budget.release(estimate)
             raise
-        session.model_calls += 1
+        if not response.planned:
+            session.model_calls += 1
         used = response.input_tokens + response.output_tokens
         budget.settle(estimate, used)
         if admission and used > estimate:
             tracer.log(session, "budget_overrun", step=step, estimate=estimate, actual=used)
-        last_input, last_count = response.input_tokens, len(session.messages)
+        if not response.planned:
+            last_input, last_count = response.input_tokens, len(session.messages)
         session.total_tokens += used
         tracer.log(
             session,
-            "model_response",
+            "tool_plan" if response.planned else "model_response",
             step=step,
             input_tokens=response.input_tokens if response.usage_available else None,
             output_tokens=response.output_tokens if response.usage_available else None,
@@ -198,6 +201,9 @@ async def run_turn(
                         projected = result.model_copy(
                             update={"data": tool.model_result(result.data)}
                         )
+                    projected = projected.model_copy(
+                        update={"data": transform(projected.data, session)}
+                    )
                     session.messages.append(
                         {
                             "role": "tool",

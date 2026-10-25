@@ -26,6 +26,7 @@ from common.safety import (
     contact_region,
     support_text,
 )
+from common.stages import install
 from common.tools import common_tools
 from harness.budget import Budget
 from harness.llm import AnthropicModel, OpenAIModel
@@ -312,13 +313,19 @@ def create_runtime(
     daily = DailyPlugin(kb, store)
     session.output_validators = {plugin.name: plugin.validate_output for plugin in plugins}
     tracer = Tracer(root / config["paths"]["runs"])
+    if config.get("policy_judge", {}).get("enabled"):
+        from common.policy_judge import PolicyJudge
+
+        session.policy_judge = PolicyJudge(
+            model, tracer, config["policy_judge"].get("timeout_s", 30)
+        )
     reviewer = (
         ReviewerService(reviewer_model, tracer, review_config, config["limits"])
         if reviewing
         else None
     )
     shared = common_tools(store, kb, mode, reviewer)
-    tools = [*shared, location_tool(Gazetteer()), *daily.tools]
+    tools = [*shared, location_tool(Gazetteer(), store), *daily.tools]
     if mode == "single":
         tools.extend(tool for plugin in plugins for tool in plugin.tools)
     else:
@@ -328,6 +335,7 @@ def create_runtime(
         tools.append(ConsultService(specialists, specialist_model, tracer, config["limits"]).tool())
     for tool in tools:
         registry.register(tool)
+    install(registry)
     return Runtime(
         session,
         registry,

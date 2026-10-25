@@ -133,10 +133,14 @@ async def test_overseas_choice_matches_effective_parameter(runtime, reply, wrong
 async def test_solar_choice_profile_and_current_override(runtime):
     birth = await la_birth(runtime)
     runtime.session.append_user("按真太阳时")
-    saved = await invoke(
+    forbidden = await invoke(
         runtime, "update_profile", field="true_solar_time", value=True, evidence="按真太阳时"
     )
-    assert saved.ok
+    assert forbidden.code == "invalid_arguments"
+    result = await invoke(runtime, "compute_bazi", **birth)
+    assert result.ok and result.data["input"]["true_solar_time"] is True
+    profile = runtime.store.get_profile(runtime.session.user_id)
+    assert profile["true_solar_time"] is True and profile["zishi_rule"] == "next_day"
     runtime.session.append_user("这次不用真太阳时，按固定UTC+8")
     result = await invoke(runtime, "compute_bazi", **birth)
     assert result.ok and result.data["input"]["true_solar_time"] is False

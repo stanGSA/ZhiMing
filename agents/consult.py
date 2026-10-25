@@ -8,13 +8,15 @@ from types import SimpleNamespace
 
 from pydantic import ValidationError
 
+from agents.lite import LiteModel
 from agents.schemas import ConsultInput, SpecialistReport
 from agents.specialists import CONTINUE_PROMPT, SpecialistSpec
 from common.validation import report_matches_profile
 from harness.loop import CURRENT_CALL_ID, run_turn
 from harness.models import ToolResult, TurnOutcome
+from harness.refs import transform
 from harness.registry import Tool
-from plugins.context import range_provenance
+from plugins.context import location_choices, range_provenance, resolve_birth_location
 
 FAILURES = {
     "timeout": "专家超时",
@@ -132,12 +134,15 @@ def computed_results(child, spec: SpecialistSpec) -> list[dict]:
             continue
         payload = json.loads(message["content"])
         if payload["ok"] and payload["data"].get("status") != "needs_input":
-            results.append({"tool": name, "data": payload["data"]})
+            results.append({"tool": name, "data": transform(payload["data"], child, restore=True)})
     return results
 
 
 class ConsultService:
     def __init__(self, specs: dict[str, SpecialistSpec], model, tracer, limits: dict):
+        self.specialist_mode = limits.get("specialist_mode", "agent")
+        if self.specialist_mode not in ("agent", "lite"):
+            raise ValueError("specialist_mode 必须是 agent 或 lite")
         self.specs = specs
         self.model = model
         self.tracer = tracer
@@ -200,8 +205,9 @@ class ConsultService:
             return f"未接入该体系专家，可用：{'、'.join(self.specs)}"
         if state.get("response_mode") == "followup":
             return "追问请用read_reading读取原记录作答，不再咨询专家或重新计算"
+        resolve_birth_location(args, session)
         if args.location_id and args.location_id not in state.get("locations", {}):
-            return "location_id须先由resolve_location解析并确认"
+            return "location_id须先由resolve_location解析并确认；" + location_choices(session)
         if args.spread and args.system != "tarot":
             return "spread只用于塔罗专家"
         requested = state.get("requested_spread")
@@ -433,7 +439,10 @@ class ConsultService:
                         run_turn(
                             child,
                             brief,
-                            self.model,
+                            LiteModel(self.model, child, spec.system, args)
+                            if self.specialist_mode == "lite"
+                            and spec.system in ("astro", "bazi", "tarot")
+                            else self.model,
                             spec.registry,
                             self.tracer,
                             self.max_steps,

@@ -4,7 +4,13 @@ import re
 
 from pydantic import Field
 
-from common.input_evidence import question_range, reading_text, supported_birth
+from common.input_evidence import (
+    DATE,
+    birth_mentions,
+    question_range,
+    reading_text,
+    supported_birth,
+)
 from common.location import consultation_timezone_evidence
 from common.time_utils import NeedsInput, date_range
 from harness.models import StrictInput
@@ -22,10 +28,69 @@ class BirthInput(StrictInput):
     fold: int | None = Field(default=None, ge=0, le=1)
 
 
+def location_choices(session):
+    locations = session.state.get("locations", {})
+    choices = "、".join(
+        f"{key}（{value.get('display_name') or value.get('name') or value.get('tz')}）"
+        for key, value in locations.items()
+    )
+    return (
+        "可用的 location_id：" + choices
+        if choices
+        else '请先调用 resolve_location(query="出生地原话")，如有同名候选用 ask_user 确认'
+    )
+
+
+def resolve_birth_location(args, session):
+    if args.location_id:
+        return
+    locations = session.state.get("locations", {})
+    confirmed = session.profile.get("location_id")
+    if confirmed in locations:
+        args.location_id = confirmed
+    elif len(locations) == 1:
+        args.location_id = next(iter(locations))
+
+
+def inferred_birth(session):
+    text = reading_text(session)
+    mentions = set()
+    for clause in re.split(r"[。；;\n]", text):
+        dates = list(re.finditer(DATE, clause))
+        for i, match in enumerate(dates):
+            left = dates[i - 1].end() if i else 0
+            right = dates[i + 1].start() if i + 1 < len(dates) else len(clause)
+            prefix = re.split(r"[，,]", clause[max(left, match.start() - 24) : match.start()])[-1]
+            suffix = clause[match.end() : right]
+            # A meeting/travel clock later in the question is not a birth clock.
+            if not (
+                re.search(r"出生|生于|生辰|生日", prefix)
+                or re.search(r"出生|生于|生辰|生日", suffix[:24])
+            ):
+                continue
+            mentions.update(birth_mentions(clause[match.start() : right]))
+    # A range date without a clock must not be chosen as a birth date.
+    if len({day for day, _ in mentions}) > 1:
+        return None
+    precise = {(day, clock) for day, clock in mentions if clock}
+    if len(precise) == 1:
+        day, clock = precise.pop()
+        return f"{day} {clock}"
+    if len(mentions) == 1:
+        day, clock = mentions.pop()
+        if session.profile.get("time_known") is False or re.search(
+            r"时[辰间].{0,6}(?:不知道|未知|不知)|(?:不知道|未知|不知).{0,6}时[辰间]",
+            reading_text(session),
+        ):
+            return day
+    return None
+
+
 def birth_values(args, session):
     profile = session.profile
+    resolve_birth_location(args, session)
     values = dict(
-        birth_local=args.birth_local or profile.get("birth_local_dt"),
+        birth_local=args.birth_local or profile.get("birth_local_dt") or inferred_birth(session),
         tz=args.tz or profile.get("tz"),
         lat=args.lat if args.lat is not None else profile.get("lat"),
         lon=args.lon if args.lon is not None else profile.get("lon"),
@@ -36,7 +101,7 @@ def birth_values(args, session):
     )
     location = session.state.get("locations", {}).get(args.location_id)
     if args.location_id and location is None:
-        raise NeedsInput("unresolved_location", "请先解析出生地并确认候选。")
+        raise NeedsInput("unresolved_location", location_choices(session))
     if location:
         values.update({k: location[k] for k in ("tz", "lat", "lon")})
         text = " ".join(session.user_messages)
@@ -63,13 +128,20 @@ def birth_values(args, session):
 def birth_provenance(args, session):
     text = " ".join(session.user_messages)
     # Preserve punctuation equivalence without allowing fabricated dates or hours.
+    resolve_birth_location(args, session)
+    if not args.birth_local and not session.profile.get("birth_local_dt"):
+        args.birth_local = inferred_birth(session)
     birth = args.birth_local
     if birth and birth != session.profile.get("birth_local_dt"):
         known = args.time_known and len(birth) > 10
         if not supported_birth(birth, text, known) and not supported_birth(
             birth, str(session.profile.get("birth_local_dt", "")), known
         ):
-            return "出生日期必须来自用户原话或已有画像，不能猜测"
+            return "出生日期必须来自用户原话或已有画像，不能猜测。" + (
+                f"原话中的出生时间是 {inferred_birth(session)}；请按此重试"
+                if inferred_birth(session)
+                else "请调用 ask_user 确认出生时间"
+            )
     if (
         not args.time_known
         and session.profile.get("time_known") is not False

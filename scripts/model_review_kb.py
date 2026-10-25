@@ -858,7 +858,7 @@ def cohen_kappa(pairs: list[tuple[str, str]]) -> float | None:
     total = len(pairs)
     observed = sum(a == b for a, b in pairs) / total
     left, right = Counter(a for a, _ in pairs), Counter(b for _, b in pairs)
-    expected = sum(left[c] * right[c] for c in VERDICTS) / total**2
+    expected = sum(left[c] * right[c] for c in left.keys() | right.keys()) / total**2
     if expected >= 1:
         return None
     return round((observed - expected) / (1 - expected), 4)

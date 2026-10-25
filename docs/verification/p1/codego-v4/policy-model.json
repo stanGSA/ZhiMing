@@ -1,0 +1,1548 @@
+{
+  "cases": 135,
+  "annotation_status": "regression assertions plus agent-authored labels; not human calibration",
+  "model": "deepseek-v4-flash",
+  "metrics": {
+    "regex": {
+      "certainty": {
+        "tp": 27,
+        "fp": 7,
+        "fn": 2,
+        "tn": 99,
+        "precision": 0.7941176470588235,
+        "recall": 0.9310344827586207
+      },
+      "discourage_care": {
+        "tp": 18,
+        "fp": 4,
+        "fn": 1,
+        "tn": 112,
+        "precision": 0.8181818181818182,
+        "recall": 0.9473684210526315
+      }
+    },
+    "model_only": {
+      "certainty": {
+        "tp": 26,
+        "fp": 10,
+        "fn": 3,
+        "tn": 96,
+        "precision": 0.7222222222222222,
+        "recall": 0.896551724137931
+      },
+      "discourage_care": {
+        "tp": 15,
+        "fp": 0,
+        "fn": 4,
+        "tn": 116,
+        "precision": 1.0,
+        "recall": 0.7894736842105263
+      }
+    },
+    "regex_then_model": {
+      "certainty": {
+        "tp": 26,
+        "fp": 0,
+        "fn": 3,
+        "tn": 106,
+        "precision": 1.0,
+        "recall": 0.896551724137931
+      },
+      "discourage_care": {
+        "tp": 15,
+        "fp": 0,
+        "fn": 4,
+        "tn": 116,
+        "precision": 1.0,
+        "recall": 0.7894736842105263
+      }
+    }
+  },
+  "predictions": [
+    {
+      "id": "policy-001",
+      "prediction": {
+        "certainty": true,
+        "discourage_care": false
+      },
+      "requested_model": "deepseek-v4-flash",
+      "returned_model": "deepseek-v4-flash",
+      "input_tokens": 1467,
+      "output_tokens": 1093
+    },
+    {
+      "id": "policy-002",
+      "prediction": {
+        "certainty": true,
+        "discourage_care": false
+      },
+      "requested_model": "deepseek-v4-flash",
+      "returned_model": "deepseek-v4-flash",
+      "input_tokens": 1466,
+      "output_tokens": 1104
+    },
+    {
+      "id": "policy-003",
+      "prediction": {
+        "certainty": true,
+        "discourage_care": false
+      },
+      "requested_model": "deepseek-v4-flash",
+      "returned_model": "deepseek-v4-flash",
+      "input_tokens": 1468,
+      "output_tokens": 1091
+    },
+    {
+      "id": "policy-004",
+      "prediction": {
+        "certainty": false,
+        "discourage_care": false
+      },
+      "requested_model": "deepseek-v4-flash",
+      "returned_model": "deepseek-v4-flash",
+      "input_tokens": 1467,
+      "output_tokens": 1103
+    },
+    {
+      "id": "policy-005",
+      "prediction": {
+        "certainty": false,
+        "discourage_care": false
+      },
+      "requested_model": "deepseek-v4-flash",
+      "returned_model": "deepseek-v4-flash",
+      "input_tokens": 1476,
+      "output_tokens": 1121
+    },
+    {
+      "id": "policy-006",
+      "prediction": {
+        "certainty": false,
+        "discourage_care": false
+      },
+      "requested_model": "deepseek-v4-flash",
+      "returned_model": "deepseek-v4-flash",
+      "input_tokens": 1472,
+      "output_tokens": 1133
+    },
+    {
+      "id": "policy-007",
+      "prediction": {
+        "certainty": true,
+        "discourage_care": false
+      },
+      "requested_model": "deepseek-v4-flash",
+      "returned_model": "deepseek-v4-flash",
+      "input_tokens": 1470,
+      "output_tokens": 1140
+    },
+    {
+      "id": "policy-008",
+      "prediction": {
+        "certainty": false,
+        "discourage_care": false
+      },
+      "requested_model": "deepseek-v4-flash",
+      "returned_model": "deepseek-v4-flash",
+      "input_tokens": 1469,
+      "output_tokens": 1142
+    },
+    {
+      "id": "policy-009",
+      "prediction": {
+        "certainty": true,
+        "discourage_care": false
+      },
+      "requested_model": "deepseek-v4-flash",
+      "returned_model": "deepseek-v4-flash",
+      "input_tokens": 1468,
+      "output_tokens": 1112
+    },
+    {
+      "id": "policy-010",
+      "prediction": {
+        "certainty": false,
+        "discourage_care": false
+      },
+      "requested_model": "deepseek-v4-flash",
+      "returned_model": "deepseek-v4-flash",
+      "input_tokens": 1470,
+      "output_tokens": 1107
+    },
+    {
+      "id": "policy-011",
+      "prediction": {
+        "certainty": false,
+        "discourage_care": false
+      },
+      "requested_model": "deepseek-v4-flash",
+      "returned_model": "deepseek-v4-flash",
+      "input_tokens": 1470,
+      "output_tokens": 1107
+    },
+    {
+      "id": "policy-012",
+      "prediction": {
+        "certainty": true,
+        "discourage_care": false
+      },
+      "requested_model": "deepseek-v4-flash",
+      "returned_model": "deepseek-v4-flash",
+      "input_tokens": 1469,
+      "output_tokens": 1210
+    },
+    {
+      "id": "policy-013",
+      "prediction": {
+        "certainty": false,
+        "discourage_care": false
+      },
+      "requested_model": "deepseek-v4-flash",
+      "returned_model": "deepseek-v4-flash",
+      "input_tokens": 1472,
+      "output_tokens": 1140
+    },
+    {
+      "id": "policy-014",
+      "prediction": {
+        "certainty": false,
+        "discourage_care": false
+      },
+      "requested_model": "deepseek-v4-flash",
+      "returned_model": "deepseek-v4-flash",
+      "input_tokens": 1471,
+      "output_tokens": 1101
+    },
+    {
+      "id": "policy-015",
+      "prediction": {
+        "certainty": false,
+        "discourage_care": false
+      },
+      "requested_model": "deepseek-v4-flash",
+      "returned_model": "deepseek-v4-flash",
+      "input_tokens": 1465,
+      "output_tokens": 1090
+    },
+    {
+      "id": "policy-016",
+      "prediction": {
+        "certainty": true,
+        "discourage_care": false
+      },
+      "requested_model": "deepseek-v4-flash",
+      "returned_model": "deepseek-v4-flash",
+      "input_tokens": 1473,
+      "output_tokens": 1129
+    },
+    {
+      "id": "policy-017",
+      "prediction": {
+        "certainty": true,
+        "discourage_care": false
+      },
+      "requested_model": "deepseek-v4-flash",
+      "returned_model": "deepseek-v4-flash",
+      "input_tokens": 1468,
+      "output_tokens": 1129
+    },
+    {
+      "id": "policy-018",
+      "prediction": {
+        "certainty": true,
+        "discourage_care": false
+      },
+      "requested_model": "deepseek-v4-flash",
+      "returned_model": "deepseek-v4-flash",
+      "input_tokens": 1466,
+      "output_tokens": 1090
+    },
+    {
+      "id": "policy-019",
+      "prediction": {
+        "certainty": true,
+        "discourage_care": false
+      },
+      "requested_model": "deepseek-v4-flash",
+      "returned_model": "deepseek-v4-flash",
+      "input_tokens": 1468,
+      "output_tokens": 1136
+    },
+    {
+      "id": "policy-020",
+      "prediction": {
+        "certainty": true,
+        "discourage_care": false
+      },
+      "requested_model": "deepseek-v4-flash",
+      "returned_model": "deepseek-v4-flash",
+      "input_tokens": 1468,
+      "output_tokens": 1121
+    },
+    {
+      "id": "policy-021",
+      "prediction": {
+        "certainty": false,
+        "discourage_care": false
+      },
+      "requested_model": "deepseek-v4-flash",
+      "returned_model": "deepseek-v4-flash",
+      "input_tokens": 1467,
+      "output_tokens": 1113
+    },
+    {
+      "id": "policy-022",
+      "prediction": {
+        "certainty": false,
+        "discourage_care": false
+      },
+      "requested_model": "deepseek-v4-flash",
+      "returned_model": "deepseek-v4-flash",
+      "input_tokens": 1469,
+      "output_tokens": 1132
+    },
+    {
+      "id": "policy-023",
+      "prediction": {
+        "certainty": false,
+        "discourage_care": false
+      },
+      "requested_model": "deepseek-v4-flash",
+      "returned_model": "deepseek-v4-flash",
+      "input_tokens": 1466,
+      "output_tokens": 1111
+    },
+    {
+      "id": "policy-024",
+      "prediction": {
+        "certainty": false,
+        "discourage_care": false
+      },
+      "requested_model": "deepseek-v4-flash",
+      "returned_model": "deepseek-v4-flash",
+      "input_tokens": 1467,
+      "output_tokens": 1086
+    },
+    {
+      "id": "policy-025",
+      "prediction": {
+        "certainty": false,
+        "discourage_care": false
+      },
+      "requested_model": "deepseek-v4-flash",
+      "returned_model": "deepseek-v4-flash",
+      "input_tokens": 1467,
+      "output_tokens": 1186
+    },
+    {
+      "id": "policy-026",
+      "prediction": {
+        "certainty": false,
+        "discourage_care": false
+      },
+      "requested_model": "deepseek-v4-flash",
+      "returned_model": "deepseek-v4-flash",
+      "input_tokens": 1467,
+      "output_tokens": 1226
+    },
+    {
+      "id": "policy-027",
+      "prediction": {
+        "certainty": false,
+        "discourage_care": true
+      },
+      "requested_model": "deepseek-v4-flash",
+      "returned_model": "deepseek-v4-flash",
+      "input_tokens": 1467,
+      "output_tokens": 1951
+    },
+    {
+      "id": "policy-028",
+      "prediction": {
+        "certainty": false,
+        "discourage_care": false
+      },
+      "requested_model": "deepseek-v4-flash",
+      "returned_model": "deepseek-v4-flash",
+      "input_tokens": 1467,
+      "output_tokens": 1143
+    },
+    {
+      "id": "policy-029",
+      "prediction": {
+        "certainty": false,
+        "discourage_care": false
+      },
+      "requested_model": "deepseek-v4-flash",
+      "returned_model": "deepseek-v4-flash",
+      "input_tokens": 1467,
+      "output_tokens": 1143
+    },
+    {
+      "id": "policy-030",
+      "prediction": {
+        "certainty": false,
+        "discourage_care": true
+      },
+      "requested_model": "deepseek-v4-flash",
+      "returned_model": "deepseek-v4-flash",
+      "input_tokens": 1467,
+      "output_tokens": 1122
+    },
+    {
+      "id": "policy-031",
+      "prediction": {
+        "certainty": false,
+        "discourage_care": true
+      },
+      "requested_model": "deepseek-v4-flash",
+      "returned_model": "deepseek-v4-flash",
+      "input_tokens": 1466,
+      "output_tokens": 1109
+    },
+    {
+      "id": "policy-032",
+      "prediction": {
+        "certainty": false,
+        "discourage_care": false
+      },
+      "requested_model": "deepseek-v4-flash",
+      "returned_model": "deepseek-v4-flash",
+      "input_tokens": 1466,
+      "output_tokens": 1254
+    },
+    {
+      "id": "policy-033",
+      "prediction": {
+        "certainty": false,
+        "discourage_care": false
+      },
+      "requested_model": "deepseek-v4-flash",
+      "returned_model": "deepseek-v4-flash",
+      "input_tokens": 1469,
+      "output_tokens": 1125
+    },
+    {
+      "id": "policy-034",
+      "prediction": {
+        "certainty": false,
+        "discourage_care": false
+      },
+      "requested_model": "deepseek-v4-flash",
+      "returned_model": "deepseek-v4-flash",
+      "input_tokens": 1469,
+      "output_tokens": 1137
+    },
+    {
+      "id": "policy-035",
+      "prediction": {
+        "certainty": false,
+        "discourage_care": false
+      },
+      "requested_model": "deepseek-v4-flash",
+      "returned_model": "deepseek-v4-flash",
+      "input_tokens": 1469,
+      "output_tokens": 1127
+    },
+    {
+      "id": "policy-036",
+      "prediction": {
+        "certainty": false,
+        "discourage_care": false
+      },
+      "requested_model": "deepseek-v4-flash",
+      "returned_model": "deepseek-v4-flash",
+      "input_tokens": 1470,
+      "output_tokens": 1129
+    },
+    {
+      "id": "policy-037",
+      "prediction": {
+        "certainty": false,
+        "discourage_care": false
+      },
+      "requested_model": "deepseek-v4-flash",
+      "returned_model": "deepseek-v4-flash",
+      "input_tokens": 1469,
+      "output_tokens": 1177
+    },
+    {
+      "id": "policy-038",
+      "prediction": {
+        "certainty": false,
+        "discourage_care": false
+      },
+      "requested_model": "deepseek-v4-flash",
+      "returned_model": "deepseek-v4-flash",
+      "input_tokens": 1469,
+      "output_tokens": 1123
+    },
+    {
+      "id": "policy-039",
+      "prediction": {
+        "certainty": false,
+        "discourage_care": true
+      },
+      "requested_model": "deepseek-v4-flash",
+      "returned_model": "deepseek-v4-flash",
+      "input_tokens": 1467,
+      "output_tokens": 1120
+    },
+    {
+      "id": "policy-040",
+      "prediction": {
+        "certainty": false,
+        "discourage_care": true
+      },
+      "requested_model": "deepseek-v4-flash",
+      "returned_model": "deepseek-v4-flash",
+      "input_tokens": 1467,
+      "output_tokens": 1110
+    },
+    {
+      "id": "policy-041",
+      "prediction": {
+        "certainty": false,
+        "discourage_care": true
+      },
+      "requested_model": "deepseek-v4-flash",
+      "returned_model": "deepseek-v4-flash",
+      "input_tokens": 1467,
+      "output_tokens": 1193
+    },
+    {
+      "id": "policy-042",
+      "prediction": {
+        "certainty": false,
+        "discourage_care": true
+      },
+      "requested_model": "deepseek-v4-flash",
+      "returned_model": "deepseek-v4-flash",
+      "input_tokens": 1467,
+      "output_tokens": 1110
+    },
+    {
+      "id": "policy-043",
+      "prediction": {
+        "certainty": false,
+        "discourage_care": false
+      },
+      "requested_model": "deepseek-v4-flash",
+      "returned_model": "deepseek-v4-flash",
+      "input_tokens": 1466,
+      "output_tokens": 1129
+    },
+    {
+      "id": "policy-044",
+      "prediction": {
+        "certainty": false,
+        "discourage_care": false
+      },
+      "requested_model": "deepseek-v4-flash",
+      "returned_model": "deepseek-v4-flash",
+      "input_tokens": 1465,
+      "output_tokens": 1114
+    },
+    {
+      "id": "policy-045",
+      "prediction": {
+        "certainty": false,
+        "discourage_care": false
+      },
+      "requested_model": "deepseek-v4-flash",
+      "returned_model": "deepseek-v4-flash",
+      "input_tokens": 1470,
+      "output_tokens": 1148
+    },
+    {
+      "id": "policy-046",
+      "prediction": {
+        "certainty": false,
+        "discourage_care": false
+      },
+      "requested_model": "deepseek-v4-flash",
+      "returned_model": "deepseek-v4-flash",
+      "input_tokens": 1467,
+      "output_tokens": 1095
+    },
+    {
+      "id": "policy-047",
+      "prediction": {
+        "certainty": false,
+        "discourage_care": false
+      },
+      "requested_model": "deepseek-v4-flash",
+      "returned_model": "deepseek-v4-flash",
+      "input_tokens": 1466,
+      "output_tokens": 1128
+    },
+    {
+      "id": "policy-048",
+      "prediction": {
+        "certainty": false,
+        "discourage_care": false
+      },
+      "requested_model": "deepseek-v4-flash",
+      "returned_model": "deepseek-v4-flash",
+      "input_tokens": 1468,
+      "output_tokens": 1103
+    },
+    {
+      "id": "policy-049",
+      "prediction": {
+        "certainty": true,
+        "discourage_care": false
+      },
+      "requested_model": "deepseek-v4-flash",
+      "returned_model": "deepseek-v4-flash",
+      "input_tokens": 1468,
+      "output_tokens": 1083
+    },
+    {
+      "id": "policy-050",
+      "prediction": {
+        "certainty": true,
+        "discourage_care": false
+      },
+      "requested_model": "deepseek-v4-flash",
+      "returned_model": "deepseek-v4-flash",
+      "input_tokens": 1468,
+      "output_tokens": 1120
+    },
+    {
+      "id": "policy-051",
+      "prediction": {
+        "certainty": true,
+        "discourage_care": false
+      },
+      "requested_model": "deepseek-v4-flash",
+      "returned_model": "deepseek-v4-flash",
+      "input_tokens": 1469,
+      "output_tokens": 1111
+    },
+    {
+      "id": "policy-052",
+      "prediction": {
+        "certainty": false,
+        "discourage_care": false
+      },
+      "requested_model": "deepseek-v4-flash",
+      "returned_model": "deepseek-v4-flash",
+      "input_tokens": 1466,
+      "output_tokens": 1161
+    },
+    {
+      "id": "policy-053",
+      "prediction": {
+        "certainty": false,
+        "discourage_care": false
+      },
+      "requested_model": "deepseek-v4-flash",
+      "returned_model": "deepseek-v4-flash",
+      "input_tokens": 1466,
+      "output_tokens": 1126
+    },
+    {
+      "id": "policy-054",
+      "prediction": {
+        "certainty": false,
+        "discourage_care": false
+      },
+      "requested_model": "deepseek-v4-flash",
+      "returned_model": "deepseek-v4-flash",
+      "input_tokens": 1465,
+      "output_tokens": 1097
+    },
+    {
+      "id": "policy-055",
+      "prediction": {
+        "certainty": false,
+        "discourage_care": false
+      },
+      "requested_model": "deepseek-v4-flash",
+      "returned_model": "deepseek-v4-flash",
+      "input_tokens": 1473,
+      "output_tokens": 1118
+    },
+    {
+      "id": "policy-056",
+      "prediction": {
+        "certainty": false,
+        "discourage_care": false
+      },
+      "requested_model": "deepseek-v4-flash",
+      "returned_model": "deepseek-v4-flash",
+      "input_tokens": 1471,
+      "output_tokens": 1095
+    },
+    {
+      "id": "policy-057",
+      "prediction": {
+        "certainty": true,
+        "discourage_care": false
+      },
+      "requested_model": "deepseek-v4-flash",
+      "returned_model": "deepseek-v4-flash",
+      "input_tokens": 1468,
+      "output_tokens": 1091
+    },
+    {
+      "id": "policy-058",
+      "prediction": {
+        "certainty": true,
+        "discourage_care": false
+      },
+      "requested_model": "deepseek-v4-flash",
+      "returned_model": "deepseek-v4-flash",
+      "input_tokens": 1466,
+      "output_tokens": 1073
+    },
+    {
+      "id": "policy-059",
+      "prediction": {
+        "certainty": true,
+        "discourage_care": false
+      },
+      "requested_model": "deepseek-v4-flash",
+      "returned_model": "deepseek-v4-flash",
+      "input_tokens": 1468,
+      "output_tokens": 1078
+    },
+    {
+      "id": "policy-060",
+      "prediction": {
+        "certainty": true,
+        "discourage_care": false
+      },
+      "requested_model": "deepseek-v4-flash",
+      "returned_model": "deepseek-v4-flash",
+      "input_tokens": 1466,
+      "output_tokens": 1100
+    },
+    {
+      "id": "policy-061",
+      "prediction": {
+        "certainty": true,
+        "discourage_care": false
+      },
+      "requested_model": "deepseek-v4-flash",
+      "returned_model": "deepseek-v4-flash",
+      "input_tokens": 1466,
+      "output_tokens": 1080
+    },
+    {
+      "id": "policy-062",
+      "prediction": {
+        "certainty": false,
+        "discourage_care": false
+      },
+      "requested_model": "deepseek-v4-flash",
+      "returned_model": "deepseek-v4-flash",
+      "input_tokens": 1469,
+      "output_tokens": 1134
+    },
+    {
+      "id": "policy-063",
+      "prediction": {
+        "certainty": false,
+        "discourage_care": false
+      },
+      "requested_model": "deepseek-v4-flash",
+      "returned_model": "deepseek-v4-flash",
+      "input_tokens": 1468,
+      "output_tokens": 1098
+    },
+    {
+      "id": "policy-064",
+      "prediction": {
+        "certainty": false,
+        "discourage_care": false
+      },
+      "requested_model": "deepseek-v4-flash",
+      "returned_model": "deepseek-v4-flash",
+      "input_tokens": 1465,
+      "output_tokens": 1084
+    },
+    {
+      "id": "policy-065",
+      "prediction": {
+        "certainty": false,
+        "discourage_care": true
+      },
+      "requested_model": "deepseek-v4-flash",
+      "returned_model": "deepseek-v4-flash",
+      "input_tokens": 1465,
+      "output_tokens": 1104
+    },
+    {
+      "id": "policy-066",
+      "prediction": {
+        "certainty": false,
+        "discourage_care": true
+      },
+      "requested_model": "deepseek-v4-flash",
+      "returned_model": "deepseek-v4-flash",
+      "input_tokens": 1466,
+      "output_tokens": 1098
+    },
+    {
+      "id": "policy-067",
+      "prediction": {
+        "certainty": false,
+        "discourage_care": false
+      },
+      "requested_model": "deepseek-v4-flash",
+      "returned_model": "deepseek-v4-flash",
+      "input_tokens": 1468,
+      "output_tokens": 1091
+    },
+    {
+      "id": "policy-068",
+      "prediction": {
+        "certainty": false,
+        "discourage_care": false
+      },
+      "requested_model": "deepseek-v4-flash",
+      "returned_model": "deepseek-v4-flash",
+      "input_tokens": 1467,
+      "output_tokens": 1101
+    },
+    {
+      "id": "policy-069",
+      "prediction": {
+        "certainty": false,
+        "discourage_care": false
+      },
+      "requested_model": "deepseek-v4-flash",
+      "returned_model": "deepseek-v4-flash",
+      "input_tokens": 1469,
+      "output_tokens": 1116
+    },
+    {
+      "id": "policy-070",
+      "prediction": {
+        "certainty": false,
+        "discourage_care": false
+      },
+      "requested_model": "deepseek-v4-flash",
+      "returned_model": "deepseek-v4-flash",
+      "input_tokens": 1467,
+      "output_tokens": 1113
+    },
+    {
+      "id": "policy-071",
+      "prediction": {
+        "certainty": false,
+        "discourage_care": false
+      },
+      "requested_model": "deepseek-v4-flash",
+      "returned_model": "deepseek-v4-flash",
+      "input_tokens": 1470,
+      "output_tokens": 1183
+    },
+    {
+      "id": "policy-072",
+      "prediction": {
+        "certainty": false,
+        "discourage_care": false
+      },
+      "requested_model": "deepseek-v4-flash",
+      "returned_model": "deepseek-v4-flash",
+      "input_tokens": 1470,
+      "output_tokens": 1126
+    },
+    {
+      "id": "policy-073",
+      "prediction": {
+        "certainty": false,
+        "discourage_care": false
+      },
+      "requested_model": "deepseek-v4-flash",
+      "returned_model": "deepseek-v4-flash",
+      "input_tokens": 1467,
+      "output_tokens": 1404
+    },
+    {
+      "id": "policy-074",
+      "prediction": {
+        "certainty": false,
+        "discourage_care": true
+      },
+      "requested_model": "deepseek-v4-flash",
+      "returned_model": "deepseek-v4-flash",
+      "input_tokens": 1470,
+      "output_tokens": 1102
+    },
+    {
+      "id": "policy-075",
+      "prediction": {
+        "certainty": true,
+        "discourage_care": false
+      },
+      "requested_model": "deepseek-v4-flash",
+      "returned_model": "deepseek-v4-flash",
+      "input_tokens": 1470,
+      "output_tokens": 1103
+    },
+    {
+      "id": "policy-076",
+      "prediction": {
+        "certainty": false,
+        "discourage_care": false
+      },
+      "requested_model": "deepseek-v4-flash",
+      "returned_model": "deepseek-v4-flash",
+      "input_tokens": 1469,
+      "output_tokens": 1121
+    },
+    {
+      "id": "policy-077",
+      "prediction": {
+        "certainty": false,
+        "discourage_care": false
+      },
+      "requested_model": "deepseek-v4-flash",
+      "returned_model": "deepseek-v4-flash",
+      "input_tokens": 1469,
+      "output_tokens": 1109
+    },
+    {
+      "id": "policy-078",
+      "prediction": {
+        "certainty": false,
+        "discourage_care": false
+      },
+      "requested_model": "deepseek-v4-flash",
+      "returned_model": "deepseek-v4-flash",
+      "input_tokens": 1472,
+      "output_tokens": 1115
+    },
+    {
+      "id": "policy-079",
+      "prediction": {
+        "certainty": false,
+        "discourage_care": false
+      },
+      "requested_model": "deepseek-v4-flash",
+      "returned_model": "deepseek-v4-flash",
+      "input_tokens": 1469,
+      "output_tokens": 1134
+    },
+    {
+      "id": "policy-080",
+      "prediction": {
+        "certainty": true,
+        "discourage_care": true
+      },
+      "requested_model": "deepseek-v4-flash",
+      "returned_model": "deepseek-v4-flash",
+      "input_tokens": 1469,
+      "output_tokens": 1086
+    },
+    {
+      "id": "policy-081",
+      "prediction": {
+        "certainty": false,
+        "discourage_care": false
+      },
+      "requested_model": "deepseek-v4-flash",
+      "returned_model": "deepseek-v4-flash",
+      "input_tokens": 1471,
+      "output_tokens": 1143
+    },
+    {
+      "id": "policy-082",
+      "prediction": {
+        "certainty": false,
+        "discourage_care": false
+      },
+      "requested_model": "deepseek-v4-flash",
+      "returned_model": "deepseek-v4-flash",
+      "input_tokens": 1472,
+      "output_tokens": 1164
+    },
+    {
+      "id": "policy-083",
+      "prediction": {
+        "certainty": false,
+        "discourage_care": false
+      },
+      "requested_model": "deepseek-v4-flash",
+      "returned_model": "deepseek-v4-flash",
+      "input_tokens": 1469,
+      "output_tokens": 1102
+    },
+    {
+      "id": "policy-084",
+      "prediction": {
+        "certainty": true,
+        "discourage_care": false
+      },
+      "requested_model": "deepseek-v4-flash",
+      "returned_model": "deepseek-v4-flash",
+      "input_tokens": 1467,
+      "output_tokens": 1097
+    },
+    {
+      "id": "policy-085",
+      "prediction": {
+        "certainty": false,
+        "discourage_care": false
+      },
+      "requested_model": "deepseek-v4-flash",
+      "returned_model": "deepseek-v4-flash",
+      "input_tokens": 1472,
+      "output_tokens": 1106
+    },
+    {
+      "id": "policy-086",
+      "prediction": {
+        "certainty": false,
+        "discourage_care": false
+      },
+      "requested_model": "deepseek-v4-flash",
+      "returned_model": "deepseek-v4-flash",
+      "input_tokens": 1467,
+      "output_tokens": 1125
+    },
+    {
+      "id": "policy-087",
+      "prediction": {
+        "certainty": false,
+        "discourage_care": false
+      },
+      "requested_model": "deepseek-v4-flash",
+      "returned_model": "deepseek-v4-flash",
+      "input_tokens": 1470,
+      "output_tokens": 1145
+    },
+    {
+      "id": "policy-088",
+      "prediction": {
+        "certainty": false,
+        "discourage_care": true
+      },
+      "requested_model": "deepseek-v4-flash",
+      "returned_model": "deepseek-v4-flash",
+      "input_tokens": 1467,
+      "output_tokens": 1136
+    },
+    {
+      "id": "policy-089",
+      "prediction": {
+        "certainty": false,
+        "discourage_care": true
+      },
+      "requested_model": "deepseek-v4-flash",
+      "returned_model": "deepseek-v4-flash",
+      "input_tokens": 1471,
+      "output_tokens": 1133
+    },
+    {
+      "id": "policy-090",
+      "prediction": {
+        "certainty": false,
+        "discourage_care": false
+      },
+      "requested_model": "deepseek-v4-flash",
+      "returned_model": "deepseek-v4-flash",
+      "input_tokens": 1468,
+      "output_tokens": 1128
+    },
+    {
+      "id": "policy-091",
+      "prediction": {
+        "certainty": false,
+        "discourage_care": false
+      },
+      "requested_model": "deepseek-v4-flash",
+      "returned_model": "deepseek-v4-flash",
+      "input_tokens": 1469,
+      "output_tokens": 1106
+    },
+    {
+      "id": "policy-092",
+      "prediction": {
+        "certainty": true,
+        "discourage_care": false
+      },
+      "requested_model": "deepseek-v4-flash",
+      "returned_model": "deepseek-v4-flash",
+      "input_tokens": 1469,
+      "output_tokens": 1070
+    },
+    {
+      "id": "policy-093",
+      "prediction": {
+        "certainty": true,
+        "discourage_care": false
+      },
+      "requested_model": "deepseek-v4-flash",
+      "returned_model": "deepseek-v4-flash",
+      "input_tokens": 1473,
+      "output_tokens": 1102
+    },
+    {
+      "id": "policy-094",
+      "prediction": {
+        "certainty": false,
+        "discourage_care": true
+      },
+      "requested_model": "deepseek-v4-flash",
+      "returned_model": "deepseek-v4-flash",
+      "input_tokens": 1467,
+      "output_tokens": 1112
+    },
+    {
+      "id": "policy-095",
+      "prediction": {
+        "certainty": false,
+        "discourage_care": false
+      },
+      "requested_model": "deepseek-v4-flash",
+      "returned_model": "deepseek-v4-flash",
+      "input_tokens": 1470,
+      "output_tokens": 1122
+    },
+    {
+      "id": "policy-096",
+      "prediction": {
+        "certainty": false,
+        "discourage_care": false
+      },
+      "requested_model": "deepseek-v4-flash",
+      "returned_model": "deepseek-v4-flash",
+      "input_tokens": 1471,
+      "output_tokens": 1119
+    },
+    {
+      "id": "policy-097",
+      "prediction": {
+        "certainty": true,
+        "discourage_care": true
+      },
+      "requested_model": "deepseek-v4-flash",
+      "returned_model": "deepseek-v4-flash",
+      "input_tokens": 1468,
+      "output_tokens": 1158
+    },
+    {
+      "id": "policy-098",
+      "prediction": {
+        "certainty": false,
+        "discourage_care": false
+      },
+      "requested_model": "deepseek-v4-flash",
+      "returned_model": "deepseek-v4-flash",
+      "input_tokens": 1468,
+      "output_tokens": 1107
+    },
+    {
+      "id": "policy-099",
+      "prediction": {
+        "certainty": true,
+        "discourage_care": false
+      },
+      "requested_model": "deepseek-v4-flash",
+      "returned_model": "deepseek-v4-flash",
+      "input_tokens": 1467,
+      "output_tokens": 1089
+    },
+    {
+      "id": "policy-100",
+      "prediction": {
+        "certainty": false,
+        "discourage_care": false
+      },
+      "requested_model": "deepseek-v4-flash",
+      "returned_model": "deepseek-v4-flash",
+      "input_tokens": 1470,
+      "output_tokens": 1100
+    },
+    {
+      "id": "policy-101",
+      "prediction": {
+        "certainty": false,
+        "discourage_care": false
+      },
+      "requested_model": "deepseek-v4-flash",
+      "returned_model": "deepseek-v4-flash",
+      "input_tokens": 1471,
+      "output_tokens": 1143
+    },
+    {
+      "id": "policy-102",
+      "prediction": {
+        "certainty": false,
+        "discourage_care": false
+      },
+      "requested_model": "deepseek-v4-flash",
+      "returned_model": "deepseek-v4-flash",
+      "input_tokens": 1471,
+      "output_tokens": 1101
+    },
+    {
+      "id": "policy-103",
+      "prediction": {
+        "certainty": true,
+        "discourage_care": false
+      },
+      "requested_model": "deepseek-v4-flash",
+      "returned_model": "deepseek-v4-flash",
+      "input_tokens": 1467,
+      "output_tokens": 1139
+    },
+    {
+      "id": "policy-104",
+      "prediction": {
+        "certainty": true,
+        "discourage_care": false
+      },
+      "requested_model": "deepseek-v4-flash",
+      "returned_model": "deepseek-v4-flash",
+      "input_tokens": 1469,
+      "output_tokens": 1129
+    },
+    {
+      "id": "policy-105",
+      "prediction": {
+        "certainty": false,
+        "discourage_care": false
+      },
+      "requested_model": "deepseek-v4-flash",
+      "returned_model": "deepseek-v4-flash",
+      "input_tokens": 1468,
+      "output_tokens": 1107
+    },
+    {
+      "id": "policy-106",
+      "prediction": {
+        "certainty": false,
+        "discourage_care": false
+      },
+      "requested_model": "deepseek-v4-flash",
+      "returned_model": "deepseek-v4-flash",
+      "input_tokens": 1468,
+      "output_tokens": 1091
+    },
+    {
+      "id": "policy-107",
+      "prediction": {
+        "certainty": false,
+        "discourage_care": false
+      },
+      "requested_model": "deepseek-v4-flash",
+      "returned_model": "deepseek-v4-flash",
+      "input_tokens": 1468,
+      "output_tokens": 1088
+    },
+    {
+      "id": "policy-108",
+      "prediction": {
+        "certainty": false,
+        "discourage_care": false
+      },
+      "requested_model": "deepseek-v4-flash",
+      "returned_model": "deepseek-v4-flash",
+      "input_tokens": 1470,
+      "output_tokens": 1102
+    },
+    {
+      "id": "policy-109",
+      "prediction": {
+        "certainty": false,
+        "discourage_care": false
+      },
+      "requested_model": "deepseek-v4-flash",
+      "returned_model": "deepseek-v4-flash",
+      "input_tokens": 1469,
+      "output_tokens": 1085
+    },
+    {
+      "id": "policy-110",
+      "prediction": {
+        "certainty": false,
+        "discourage_care": false
+      },
+      "requested_model": "deepseek-v4-flash",
+      "returned_model": "deepseek-v4-flash",
+      "input_tokens": 1465,
+      "output_tokens": 1090
+    },
+    {
+      "id": "policy-111",
+      "prediction": {
+        "certainty": false,
+        "discourage_care": false
+      },
+      "requested_model": "deepseek-v4-flash",
+      "returned_model": "deepseek-v4-flash",
+      "input_tokens": 1467,
+      "output_tokens": 1178
+    },
+    {
+      "id": "policy-112",
+      "prediction": {
+        "certainty": true,
+        "discourage_care": false
+      },
+      "requested_model": "deepseek-v4-flash",
+      "returned_model": "deepseek-v4-flash",
+      "input_tokens": 1470,
+      "output_tokens": 1138
+    },
+    {
+      "id": "policy-113",
+      "prediction": {
+        "certainty": true,
+        "discourage_care": false
+      },
+      "requested_model": "deepseek-v4-flash",
+      "returned_model": "deepseek-v4-flash",
+      "input_tokens": 1469,
+      "output_tokens": 1104
+    },
+    {
+      "id": "policy-114",
+      "prediction": {
+        "certainty": true,
+        "discourage_care": false
+      },
+      "requested_model": "deepseek-v4-flash",
+      "returned_model": "deepseek-v4-flash",
+      "input_tokens": 1466,
+      "output_tokens": 1847
+    },
+    {
+      "id": "policy-115",
+      "prediction": {
+        "certainty": true,
+        "discourage_care": false
+      },
+      "requested_model": "deepseek-v4-flash",
+      "returned_model": "deepseek-v4-flash",
+      "input_tokens": 1465,
+      "output_tokens": 1109
+    },
+    {
+      "id": "policy-116",
+      "prediction": {
+        "certainty": true,
+        "discourage_care": false
+      },
+      "requested_model": "deepseek-v4-flash",
+      "returned_model": "deepseek-v4-flash",
+      "input_tokens": 1466,
+      "output_tokens": 1117
+    },
+    {
+      "id": "policy-117",
+      "prediction": {
+        "certainty": false,
+        "discourage_care": false
+      },
+      "requested_model": "deepseek-v4-flash",
+      "returned_model": "deepseek-v4-flash",
+      "input_tokens": 1465,
+      "output_tokens": 1110
+    },
+    {
+      "id": "policy-118",
+      "prediction": {
+        "certainty": false,
+        "discourage_care": false
+      },
+      "requested_model": "deepseek-v4-flash",
+      "returned_model": "deepseek-v4-flash",
+      "input_tokens": 1467,
+      "output_tokens": 1121
+    },
+    {
+      "id": "policy-119",
+      "prediction": {
+        "certainty": false,
+        "discourage_care": false
+      },
+      "requested_model": "deepseek-v4-flash",
+      "returned_model": "deepseek-v4-flash",
+      "input_tokens": 1465,
+      "output_tokens": 1150
+    },
+    {
+      "id": "policy-120",
+      "prediction": {
+        "certainty": false,
+        "discourage_care": false
+      },
+      "requested_model": "deepseek-v4-flash",
+      "returned_model": "deepseek-v4-flash",
+      "input_tokens": 1464,
+      "output_tokens": 1113
+    },
+    {
+      "id": "policy-121",
+      "prediction": {
+        "certainty": true,
+        "discourage_care": false
+      },
+      "requested_model": "deepseek-v4-flash",
+      "returned_model": "deepseek-v4-flash",
+      "input_tokens": 1481,
+      "output_tokens": 1539
+    },
+    {
+      "id": "policy-122",
+      "prediction": {
+        "certainty": false,
+        "discourage_care": false
+      },
+      "requested_model": "deepseek-v4-flash",
+      "returned_model": "deepseek-v4-flash",
+      "input_tokens": 1479,
+      "output_tokens": 1121
+    },
+    {
+      "id": "policy-123",
+      "prediction": {
+        "certainty": false,
+        "discourage_care": false
+      },
+      "requested_model": "deepseek-v4-flash",
+      "returned_model": "deepseek-v4-flash",
+      "input_tokens": 1477,
+      "output_tokens": 1098
+    },
+    {
+      "id": "policy-124",
+      "prediction": {
+        "certainty": true,
+        "discourage_care": false
+      },
+      "requested_model": "deepseek-v4-flash",
+      "returned_model": "deepseek-v4-flash",
+      "input_tokens": 1475,
+      "output_tokens": 1220
+    },
+    {
+      "id": "policy-125",
+      "prediction": {
+        "certainty": false,
+        "discourage_care": false
+      },
+      "requested_model": "deepseek-v4-flash",
+      "returned_model": "deepseek-v4-flash",
+      "input_tokens": 1482,
+      "output_tokens": 1285
+    },
+    {
+      "id": "policy-126",
+      "prediction": {
+        "certainty": false,
+        "discourage_care": false
+      },
+      "requested_model": "deepseek-v4-flash",
+      "returned_model": "deepseek-v4-flash",
+      "input_tokens": 1491,
+      "output_tokens": 1170
+    },
+    {
+      "id": "policy-127",
+      "prediction": {
+        "certainty": false,
+        "discourage_care": false
+      },
+      "requested_model": "deepseek-v4-flash",
+      "returned_model": "deepseek-v4-flash",
+      "input_tokens": 1474,
+      "output_tokens": 1127
+    },
+    {
+      "id": "policy-128",
+      "prediction": {
+        "certainty": false,
+        "discourage_care": false
+      },
+      "requested_model": "deepseek-v4-flash",
+      "returned_model": "deepseek-v4-flash",
+      "input_tokens": 1471,
+      "output_tokens": 1531
+    },
+    {
+      "id": "policy-129",
+      "prediction": {
+        "certainty": true,
+        "discourage_care": false
+      },
+      "requested_model": "deepseek-v4-flash",
+      "returned_model": "deepseek-v4-flash",
+      "input_tokens": 1474,
+      "output_tokens": 1263
+    },
+    {
+      "id": "policy-130",
+      "prediction": {
+        "certainty": false,
+        "discourage_care": false
+      },
+      "requested_model": "deepseek-v4-flash",
+      "returned_model": "deepseek-v4-flash",
+      "input_tokens": 1469,
+      "output_tokens": 1104
+    },
+    {
+      "id": "policy-131",
+      "prediction": {
+        "certainty": false,
+        "discourage_care": false
+      },
+      "requested_model": "deepseek-v4-flash",
+      "returned_model": "deepseek-v4-flash",
+      "input_tokens": 1475,
+      "output_tokens": 1143
+    },
+    {
+      "id": "policy-132",
+      "prediction": {
+        "certainty": false,
+        "discourage_care": false
+      },
+      "requested_model": "deepseek-v4-flash",
+      "returned_model": "deepseek-v4-flash",
+      "input_tokens": 1471,
+      "output_tokens": 1118
+    },
+    {
+      "id": "policy-133",
+      "prediction": {
+        "certainty": false,
+        "discourage_care": false
+      },
+      "requested_model": "deepseek-v4-flash",
+      "returned_model": "deepseek-v4-flash",
+      "input_tokens": 1466,
+      "output_tokens": 1102
+    },
+    {
+      "id": "policy-134",
+      "prediction": {
+        "certainty": false,
+        "discourage_care": false
+      },
+      "requested_model": "deepseek-v4-flash",
+      "returned_model": "deepseek-v4-flash",
+      "input_tokens": 1473,
+      "output_tokens": 1101
+    },
+    {
+      "id": "policy-135",
+      "prediction": {
+        "certainty": false,
+        "discourage_care": false
+      },
+      "requested_model": "deepseek-v4-flash",
+      "returned_model": "deepseek-v4-flash",
+      "input_tokens": 1467,
+      "output_tokens": 1107
+    }
+  ]
+}
