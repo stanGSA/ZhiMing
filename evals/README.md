@@ -85,11 +85,11 @@ python gen_names.py  ../cases/name_strokes.yaml
 
 ## 项目当前执行范围（Week2 / Week3，2026-10-13）
 
-上文数据集自带的验证说明不等于本次运行结果。当前实际计算验收由`python -m scripts.verify_week23`逐项读取原始11盘、50例；不运行生成器覆盖金标。占星另用Skyfield/JPL DE440s、统一TT与视位置口径独立对照。详细误差和逐例状态见`docs/verification/week23/computations.json`。
+上文数据集自带的验证说明不等于本次运行结果。当前实际计算验收由`python -m scripts.archive.verify_week23`逐项读取原始11盘、50例；不运行生成器覆盖金标。占星另用Skyfield/JPL DE440s、统一TT与视位置口径独立对照。详细误差和逐例状态见`docs/verification/week23/computations.json`。
 
 `python -m evals.run --suite trajectory`回放当前可用三体系的50条标注路线，经过实际guard、registry、计算器、存储及trace；30条依赖未实现工具或解梦历史而跳过，逐题记录原因。它不是模型自主路由F1，也不评估自然语言质量。相对日期使用明确的集成测试区间，H_timing/H_decision为新生成合成历史；first_action题止于追问，不编造后续输入。
 
-`python -m scripts.live_week23`使用现有兼容接口和gpt-6.1-sol测试14个合成场景，另以固定四项rubric评审最终回答；工程和质量分开计分。评审是同一请求模型，不是人工审核或独立模型。`scripts.review_week23`可以对保留的原答案提供完整计算证据重新评审，结果写入独立文件，原判定不覆盖。`scripts.live_test`保留第一周17场景回归。未执行完整80题真实轨迹、完整30题安全语义评审及后续体系数据集，不声称这些检查通过。
+`python -m scripts.live_week23`使用现有兼容接口和gpt-6.1-sol测试14个合成场景，另以固定四项rubric评审最终回答；工程和质量分开计分。评审是同一请求模型，不是人工审核或独立模型。`scripts.archive.review_week23`可以对保留的原答案提供完整计算证据重新评审，结果写入独立文件，原判定不覆盖。`scripts.live_test`保留第一周17场景回归。未执行完整80题真实轨迹、完整30题安全语义评审及后续体系数据集，不声称这些检查通过。
 
 ## 第六周执行范围（2026-10-14）
 
