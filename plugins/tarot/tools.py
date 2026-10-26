@@ -85,6 +85,18 @@ class TarotPlugin:
                     )
         return signals
 
+    def annotate(self, result: dict) -> list[str]:
+        """Attach each card's meaning and citable ref_id; returns the entries used. No session."""
+        refs = []
+        for card in result["cards"]:
+            orientation = "reversed" if card["reversed"] else "upright"
+            card["meaning_key"] = f"{card['card_id']}:{orientation}"
+            card["ref_id"] = f"tarot:{result['reading_id']}:pos{card['pos']}:{card['meaning_key']}"
+            entry = self.kb.lookup("tarot", "card", card["meaning_key"])
+            card["meaning"] = {k: entry[k] for k in MEANING_FIELDS}
+            refs.append(entry["ref_id"])
+        return refs
+
     def draw(self, args: DrawInput, session) -> dict:
         result = draw_tarot(
             args.spread, args.question, session.state["seed"], session.state.get("picks")
@@ -92,13 +104,7 @@ class TarotPlugin:
         result["reading_id"] = session.state["active_reading_id"]
         result["kb_version"] = self.kb.version
         signals = self.extract_signals([result])
-        for card in result["cards"]:
-            orientation = "reversed" if card["reversed"] else "upright"
-            card["meaning_key"] = f"{card['card_id']}:{orientation}"
-            card["ref_id"] = f"tarot:{result['reading_id']}:pos{card['pos']}:{card['meaning_key']}"
-            entry = self.kb.lookup("tarot", "card", card["meaning_key"])
-            card["meaning"] = {k: entry[k] for k in MEANING_FIELDS}
-            session.state["kb_refs"].add(entry["ref_id"])
+        session.state["kb_refs"].update(self.annotate(result))
         session.state["tarot_result"] = result
         session.state["signals"].extend(signal.model_dump(mode="json") for signal in signals)
         session.state["allowed_refs"].update(s.ref_id for s in signals)

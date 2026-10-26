@@ -109,16 +109,31 @@ class DreamPlugin:
         return signals
 
     def lookup(self, args, session):
+        result = self.match_symbols([(item.phrase, item.symbol) for item in args.symbols])
+        signals = self.extract_signals([result])
+        state = session.state
+        old = {s["ref_id"] for s in state["signals"]}
+        state["signals"].extend(s.model_dump(mode="json") for s in signals if s.ref_id not in old)
+        state["allowed_refs"].update(s.ref_id for s in signals)
+        state["kb_refs"].update(s.kb_ref for s in signals)
+        state["kb_version"] = self.kb.version
+        key = f"dream_result:{result['dream_id']}"
+        state[key] = result
+        state.setdefault("calculations", {})[key] = result
+        return result
+
+    def match_symbols(self, items):
+        """Hits, misses and their knowledge entries for (phrase, symbol) pairs; no session."""
         hits, misses = [], []
-        for item in args.symbols:
-            match = {**self.matcher.match(item.symbol), "phrase": item.phrase}
+        for phrase, symbol in items:
+            match = {**self.matcher.match(symbol), "phrase": phrase}
             if match["key"] is None:
                 if match["query"] not in misses:
                     misses.append(match["query"])
             elif match["key"] not in [h["key"] for h in hits]:
                 hits.append(match)
         payload = json.dumps(
-            [self.kb.version, [[i.phrase, i.symbol] for i in args.symbols]], ensure_ascii=False
+            [self.kb.version, [[phrase, symbol] for phrase, symbol in items]], ensure_ascii=False
         )
         dream_id = "dr" + hashlib.sha256(payload.encode()).hexdigest()[:12]
         result = dict(
@@ -161,14 +176,4 @@ class DreamPlugin:
                     meaning={k: entry[k] for k in MEANING_FIELDS},
                 )
             )
-        signals = self.extract_signals([result])
-        state = session.state
-        old = {s["ref_id"] for s in state["signals"]}
-        state["signals"].extend(s.model_dump(mode="json") for s in signals if s.ref_id not in old)
-        state["allowed_refs"].update(s.ref_id for s in signals)
-        state["kb_refs"].update(s.kb_ref for s in signals)
-        state["kb_version"] = self.kb.version
-        key = f"dream_result:{dream_id}"
-        state[key] = result
-        state.setdefault("calculations", {})[key] = result
         return result

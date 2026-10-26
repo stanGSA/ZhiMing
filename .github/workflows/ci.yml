@@ -15,7 +15,7 @@ jobs:
         with:
           version: '0.13.0'
           python-version: '3.11'
-      - run: uv sync --locked --extra llm --extra web
+      - run: uv sync --locked --extra llm --extra web --extra mcp
       - uses: actions/cache@v4
         with:
           path: |
@@ -26,9 +26,9 @@ jobs:
       - run: uv run python -m scripts.fetch_data
       - run: uv run python -m knowledge.build
       - run: uv run python -m scripts.doctor
-      - run: uv run ruff check harness agents common plugins knowledge memory signals scripts tests app.py cli.py web.py evals
-      - run: uv run ruff format --check harness agents common plugins knowledge memory signals scripts tests app.py cli.py web.py evals
+      - run: uv run ruff check harness agents common plugins knowledge memory signals scripts tests app.py cli.py web.py evals mcp_server
+      - run: uv run ruff format --check harness agents common plugins knowledge memory signals scripts tests app.py cli.py web.py evals mcp_server
       # Browser regressions (tests/web/test_web_browser.py) run on Linux; elsewhere they skip.
       - if: runner.os == 'Linux'
         run: uv run playwright install --with-deps chromium
-      - run: uv run --extra web pytest -q
+      - run: uv run --extra web --extra mcp pytest -q

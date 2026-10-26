@@ -153,6 +153,18 @@ class OpenAIModel:
         )
 
 
+# Anthropic stop_reason in the OpenAI finish_reason vocabulary the loop checks. A response cut
+# off by the context window is as incomplete as one cut off by max_tokens; values without an
+# OpenAI counterpart (pause_turn, refusal) are kept as they are.
+ANTHROPIC_FINISH_REASONS = {
+    "max_tokens": "length",
+    "model_context_window_exceeded": "length",
+    "tool_use": "tool_calls",
+    "end_turn": "stop",
+    "stop_sequence": "stop",
+}
+
+
 def anthropic_messages(messages: list[dict[str, Any]]) -> tuple[str, list[dict[str, Any]]]:
     system = "\n".join(m.get("content", "") for m in messages if m["role"] == "system")
     converted = []
@@ -256,12 +268,20 @@ class AnthropicModel:
             for block in result.content
             if block.type == "tool_use"
         ]
+        usage = result.usage
+        cache_read = getattr(usage, "cache_read_input_tokens", None)
+        # Anthropic's input_tokens excludes cache reads and writes. Report the whole prompt, as
+        # OpenAI's prompt_tokens does, so budgets and cache-hit rates use one definition.
         return ModelResponse(
             text=text,
             model=result.model,
+            finish_reason=ANTHROPIC_FINISH_REASONS.get(result.stop_reason, result.stop_reason),
             tool_calls=calls,
-            input_tokens=result.usage.input_tokens,
-            output_tokens=result.usage.output_tokens,
+            input_tokens=usage.input_tokens
+            + (cache_read or 0)
+            + (getattr(usage, "cache_creation_input_tokens", None) or 0),
+            output_tokens=usage.output_tokens,
+            cached_input_tokens=cache_read,
         )
 
 

@@ -4,6 +4,11 @@ import httpx
 import pytest
 
 from harness.llm import AnthropicModel, OpenAIModel, anthropic_messages
+from harness.loop import run_turn
+from harness.models import StrictInput
+from harness.registry import Registry, Tool
+from harness.session import Session
+from harness.trace import Tracer
 
 
 @pytest.mark.parametrize("system_role", ["system", "developer"])
@@ -110,6 +115,131 @@ async def test_anthropic_sdk_protocol_with_mock_http(monkeypatch):
         assert received[0]["system"] == "sys"
     finally:
         await adapter.client.close()
+
+
+def anthropic_adapter(monkeypatch, content, stop_reason, usage=None):
+    """An adapter whose HTTP client returns one fixed Messages API response to every call."""
+    from anthropic import AsyncAnthropic
+
+    monkeypatch.setenv("ANTHROPIC_API_KEY", "test-placeholder")
+    adapter = AnthropicModel("test-model")
+    adapter.calls = 0
+
+    def respond(request):
+        adapter.calls += 1
+        return httpx.Response(
+            200,
+            json={
+                "id": "test",
+                "type": "message",
+                "role": "assistant",
+                "model": "test-model",
+                "content": content,
+                "stop_reason": stop_reason,
+                "stop_sequence": None,
+                "usage": usage or {"input_tokens": 11, "output_tokens": 4},
+            },
+        )
+
+    adapter.client = AsyncAnthropic(
+        api_key="test-placeholder",
+        base_url="https://example.test",
+        http_client=httpx.AsyncClient(transport=httpx.MockTransport(respond)),
+    )
+    return adapter
+
+
+async def test_anthropic_max_tokens_stops_before_partial_tool_call(monkeypatch, tmp_path):
+    # Cut off mid tool_use: the API still returns the block, with whatever input it had parsed.
+    # Here the partial input even passes the schema, so only the stop reason can catch it.
+    adapter = anthropic_adapter(
+        monkeypatch,
+        [
+            {"type": "text", "text": "我先提交解读。"},
+            {"type": "tool_use", "id": "tool-cut", "name": "submit", "input": {"text": "下个月"}},
+        ],
+        "max_tokens",
+    )
+
+    class Draft(StrictInput):
+        text: str
+        advice: list[str] = []
+
+    executed = []
+    registry = Registry()
+    registry.register(
+        Tool(
+            "submit",
+            "submit a reading",
+            Draft,
+            lambda args, session: executed.append(args) or {"ok": True},
+        )
+    )
+    session = Session(user_id="test")
+    try:
+        result = await run_turn(
+            session, "下个月适合跳槽吗？", adapter, registry, Tracer(tmp_path), max_steps=2
+        )
+    finally:
+        await adapter.close()
+    assert result.status == "output_truncated"
+    assert executed == [] and adapter.calls == 1
+    assert not any(m["role"] == "tool" for m in session.messages)
+    trace = [
+        json.loads(line)
+        for line in next(tmp_path.rglob("*.jsonl")).read_text(encoding="utf-8").splitlines()
+    ]
+    assert [row["finish_reason"] for row in trace if row["event"] == "model_response"] == ["length"]
+
+
+@pytest.mark.parametrize(
+    "stop_reason,finish_reason",
+    [
+        ("tool_use", "tool_calls"),
+        ("end_turn", "stop"),
+        ("stop_sequence", "stop"),
+        ("max_tokens", "length"),
+        ("model_context_window_exceeded", "length"),
+        ("pause_turn", "pause_turn"),
+        ("refusal", "refusal"),
+    ],
+)
+async def test_anthropic_stop_reason_maps_to_finish_reason(monkeypatch, stop_reason, finish_reason):
+    adapter = anthropic_adapter(monkeypatch, [{"type": "text", "text": "ok"}], stop_reason)
+    try:
+        result = await adapter.chat([{"role": "user", "content": "test"}], [])
+    finally:
+        await adapter.close()
+    assert result.finish_reason == finish_reason
+
+
+async def test_anthropic_cache_reads_reported_like_openai(monkeypatch):
+    adapter = anthropic_adapter(
+        monkeypatch,
+        [{"type": "text", "text": "ok"}],
+        "end_turn",
+        {
+            "input_tokens": 11,
+            "output_tokens": 4,
+            "cache_read_input_tokens": 30,
+            "cache_creation_input_tokens": 5,
+        },
+    )
+    try:
+        cached = await adapter.chat([{"role": "user", "content": "test"}], [])
+    finally:
+        await adapter.close()
+    # Same definition as OpenAI's prompt_tokens / cached_tokens: the cached part of the whole
+    # prompt, so a cache-hit rate can never exceed 100% and the budget counts every token.
+    assert cached.input_tokens == 46 and cached.cached_input_tokens == 30
+    assert cached.output_tokens == 4
+
+    adapter = anthropic_adapter(monkeypatch, [{"type": "text", "text": "ok"}], "end_turn")
+    try:
+        unreported = await adapter.chat([{"role": "user", "content": "test"}], [])
+    finally:
+        await adapter.close()
+    assert unreported.input_tokens == 11 and unreported.cached_input_tokens is None
 
 
 def test_anthropic_parallel_tool_messages_are_grouped():
