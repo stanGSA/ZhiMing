@@ -1024,13 +1024,13 @@ main {
   align-self: flex-start;
   min-width: 260px;
 }
-/* A chart page keeps its draw button on the folded birth bar; once the fold is open, the form's
+/* The birth bar keeps its action beside the summary; once the fold is open, the form's
    own submit button below the fields takes its place. */
 .birth-bar {
   position: relative;
 }
 .birth-bar > .birth-fold:not([open]) > summary {
-  padding-right: 256px;
+  padding-right: var(--birth-action-space, 256px);
 }
 .birth-draw {
   position: absolute;

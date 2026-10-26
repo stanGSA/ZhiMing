@@ -373,8 +373,14 @@
 }
 
 /* ---------- Birth fold ---------- */
-.birth-fold.paper-panel {
+.birth-bar {
+  --birth-action-space: 320px;
   margin-bottom: 28px;
+}
+.birth-bar > .birth-fold:not([open]) > summary {
+  min-height: 76px;
+}
+.birth-fold.paper-panel {
   background: var(--surface);
   border-color: var(--line-strong);
 }

@@ -42,40 +42,41 @@
             <h1 id="name-title">一笔一画，皆有其数</h1>
             <p>笔画依《康熙字典》繁体与部首原形计数，如“阝”按“阜”八画、“辶”按“辵”七画。</p>
           </div>
-          <form class="name-form" id="name-form" aria-label="输入姓名">
-            <label class="mi-field">
-              <span>姓</span>
-              <input
-                id="name-surname"
-                class="mi-input mi-surname"
-                type="text"
-                maxlength="2"
-                autocomplete="family-name"
-                required
-                data-lock
-              />
-            </label>
-            <label class="mi-field">
-              <span>名</span>
-              <input
-                id="name-given"
-                class="mi-input mi-given"
-                type="text"
-                maxlength="3"
-                autocomplete="given-name"
-                required
-                data-lock
-              />
-            </label>
-            <button class="seal" type="submit" aria-label="推演五格" data-lock>推<br />演</button>
-            <p class="name-feedback" id="name-feedback" role="status">复姓请把两个字都填在“姓”里。</p>
-          </form>
         </div>
       </section>
 
       <div class="wrap">
         <div class="dialog-band name-lower">
           <div class="band-work">
+            <form class="name-form" id="name-form" aria-label="输入姓名">
+              <label class="mi-field">
+                <span>姓</span>
+                <input
+                  id="name-surname"
+                  class="mi-input mi-surname"
+                  type="text"
+                  maxlength="2"
+                  autocomplete="family-name"
+                  required
+                  data-lock
+                />
+              </label>
+              <label class="mi-field">
+                <span>名</span>
+                <input
+                  id="name-given"
+                  class="mi-input mi-given"
+                  type="text"
+                  maxlength="3"
+                  autocomplete="given-name"
+                  required
+                  data-lock
+                />
+              </label>
+              <button class="seal" type="submit" aria-label="推演五格" data-lock>推<br />演</button>
+              <p class="name-feedback" id="name-feedback" role="status">复姓请把两个字都填在“姓”里。</p>
+            </form>
+
             <p class="name-empty" id="name-empty" data-glyph="名">
               填写姓与名，按朱印「推演」，即可看到康熙笔画、五格与三才。
             </p>

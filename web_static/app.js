@@ -856,8 +856,8 @@ function openBirthFold() {
   fold.scrollIntoView({ behavior: "smooth", block: "start" });
 }
 
-// The draw button on the birth bar submits the folded form; an unfinished one is opened instead.
-function drawChart() {
+// The birth bar's action submits the folded form; an unfinished one is opened instead.
+function submitBirthFromBar() {
   if (busy || !state) return;
   if (!$("#birth-date").value || !selectedLocation) {
     openBirthFold();
@@ -2267,7 +2267,7 @@ function init() {
   emptyReading = $("#reading-content")?.cloneNode(true) || null;
   const host = $("[data-birth]");
   if (host) buildBirthForm(host, host.dataset.birth);
-  $("#draw-chart")?.addEventListener("click", drawChart);
+  $("[data-birth-submit]")?.addEventListener("click", submitBirthFromBar);
   wireControls();
   initComposer();
   $$('a[href^="#"]').forEach((link) => {

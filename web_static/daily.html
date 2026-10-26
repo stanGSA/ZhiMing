@@ -44,14 +44,19 @@
         <button class="btn btn-ghost step" id="day-next" type="button" aria-label="后一日" data-lock>›</button>
       </div>
 
-      <details class="birth-fold paper-panel" id="daily-birth" data-birth-fold>
-        <summary>
-          <span class="birth-fold-title">生辰</span>
-          <span class="birth-fold-summary" data-birth-summary>尚未填写 · 填写后按你的日主推算流日十神</span>
-          <span class="birth-fold-toggle">填写 / 修改</span>
-        </summary>
-        <div class="birth-fold-body"><div data-birth="daily"></div></div>
-      </details>
+      <div class="birth-bar">
+        <details class="birth-fold paper-panel" id="daily-birth" data-birth-fold>
+          <summary>
+            <span class="birth-fold-title">生辰</span>
+            <span class="birth-fold-summary" data-birth-summary>尚未填写 · 填写后按你的日主推算流日十神</span>
+            <span class="birth-fold-toggle">填写 / 修改</span>
+          </summary>
+          <div class="birth-fold-body"><div data-birth="daily"></div></div>
+        </details>
+        <button class="btn btn-primary birth-draw" id="confirm-birth" type="button" data-birth-submit data-lock>
+          确认生辰，查看流日
+        </button>
+      </div>
 
       <div class="dialog-band daily-dialog">
         <div class="band-work">

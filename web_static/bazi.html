@@ -43,14 +43,19 @@
         </div>
       </section>
 
-      <details class="birth-fold lacquer-panel" id="bazi-birth" data-birth-fold>
-        <summary>
-          <span class="birth-fold-title">生辰</span>
-          <span class="birth-fold-summary" data-birth-summary>尚未填写 · 公历生日、出生时间与出生地</span>
-          <span class="birth-fold-toggle">填写 / 修改</span>
-        </summary>
-        <div class="birth-fold-body"><div data-birth="bazi"></div></div>
-      </details>
+      <div class="birth-bar">
+        <details class="birth-fold lacquer-panel" id="bazi-birth" data-birth-fold>
+          <summary>
+            <span class="birth-fold-title">生辰</span>
+            <span class="birth-fold-summary" data-birth-summary>尚未填写 · 公历生日、出生时间与出生地</span>
+            <span class="birth-fold-toggle">填写 / 修改</span>
+          </summary>
+          <div class="birth-fold-body"><div data-birth="bazi"></div></div>
+        </details>
+        <button class="btn btn-primary birth-draw" id="draw-chart" type="button" data-birth-submit data-lock>
+          排出我的八字
+        </button>
+      </div>
 
       <div class="dialog-band">
         <div class="band-work">
