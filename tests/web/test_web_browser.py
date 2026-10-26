@@ -1,4 +1,4 @@
-"""塔罗页在真实浏览器里的回归：澄清后继续同一轮、飞牌途中重新起问、足迹切换时同步所问。
+"""真实浏览器回归：塔罗对话、会话轮询、排盘滚动与折叠表单校验。
 
 需要 Playwright 与 Chromium；未安装浏览器时跳过（CI 只在 Ubuntu 上安装）。"""
 
@@ -251,4 +251,101 @@ def test_thinking_bubble_shows_progress_labels(site, chromium):
     draw(page, "看近期状态", 0, 1, 2)
     expect(page.locator("#thinking .thinking span")).to_have_text("事实核对未通过，正在改写")
     expect(page.locator("#thinking")).to_have_count(0, timeout=20000)
+    page.close()
+
+
+def test_busy_session_on_ask_keeps_polling_without_a_transcript(site, chromium):
+    base, _ = site
+    page = chromium.new_page()
+    calls, errors = [], []
+    page.on("pageerror", lambda error: errors.append(str(error)))
+
+    def session(route):
+        response = route.fetch()
+        data = response.json()
+        data["busy"] = not calls
+        calls.append(data["busy"])
+        route.fulfill(response=response, json=data)
+
+    page.route("**/api/session**", session)
+    page.goto(f"{base}/ask?provider=demo")
+    expect(page.locator("#messages")).to_have_count(0)
+    expect(page.locator("#birth-date")).to_be_disabled()
+    expect(page.locator("#birth-date")).to_be_enabled(timeout=10000)
+    expect(page.locator("#connection")).to_have_text("离线演示")
+    expect(page.locator("#toast")).to_be_hidden()
+    assert calls == [True, False]
+    assert not errors
+    page.close()
+
+
+def open_saved_birth(chromium, base, slug, width=1280):
+    page = chromium.new_page(viewport={"width": width, "height": 844}, reduced_motion="reduce")
+    page.goto(f"{base}/{slug}?provider=demo")
+    expect(page.locator("#birth-country")).to_be_enabled()
+    result = page.request.put(
+        f"{base}/api/birth",
+        data={
+            "date": "2001-11-25",
+            "time": "10:11",
+            "unknown_time": False,
+            "location_id": "1803361",
+            "gender": "male",
+        },
+        headers={"X-Zhiming-Client": "web", "Origin": base},
+    )
+    assert result.ok, result.text()
+    page.reload()
+    expect(page.locator("#birth-district")).to_have_value("1803361")
+    expect(page.locator("#birth-country")).to_be_enabled()
+    expect(page.locator("[data-birth-fold]")).not_to_have_attribute("open", "")
+    return page
+
+
+@pytest.mark.parametrize("slug", ["astro", "bazi"])
+@pytest.mark.parametrize("width", [390, 1280])
+def test_drawing_scrolls_to_the_chart_result(site, chromium, slug, width):
+    base, _ = site
+    page = open_saved_birth(chromium, base, slug, width)
+    if slug == "bazi":
+        page.locator("[data-birth-fold] > summary").click()
+    with page.expect_response(lambda r: r.url.endswith("/api/chart")) as response:
+        page.locator("#draw-chart" if slug == "astro" else "#birth-form button").click()
+    assert response.value.ok, response.value.text()
+    assert not response.value.json().get("question")
+    expect(page.locator("[data-birth-fold]")).not_to_have_attribute("open", "")
+    expect(page.locator("#astro-empty" if slug == "astro" else "#bazi-empty")).to_be_hidden()
+    # The result starts at the viewport top even when the birth bar wraps on mobile.
+    page.wait_for_function(
+        "() => Math.abs(document.querySelector('.band-work').getBoundingClientRect().top) < 2",
+        timeout=5000,
+    )
+    page.close()
+
+
+@pytest.mark.parametrize("date", ["1800-01-01", "9999-12-31"])
+def test_external_draw_opens_invalid_folded_birth_form(site, chromium, date):
+    base, _ = site
+    page = open_saved_birth(chromium, base, "astro")
+    errors, charts = [], []
+    page.on("console", lambda msg: errors.append(msg.text) if msg.type == "error" else None)
+    page.on("request", lambda r: charts.append(r.url) if r.url.endswith("/api/chart") else None)
+    page.locator("[data-birth-fold] > summary").click()
+    page.fill("#birth-date", date)
+    page.locator("[data-birth-fold] > summary").click()
+    page.click("#draw-chart")
+    expect(page.locator("[data-birth-fold]")).to_have_attribute("open", "")
+    expect(page.locator("#birth-date")).to_be_visible()
+    expect(page.locator("#birth-date")).to_be_focused()
+    assert page.locator("#birth-date").evaluate("el => !el.validity.valid")
+    assert charts == []
+    assert not errors
+    # Correcting the revealed field allows the same external button to draw normally.
+    page.fill("#birth-date", "2001-11-25")
+    page.locator("[data-birth-fold] > summary").click()
+    with page.expect_response(lambda r: r.url.endswith("/api/chart")) as response:
+        page.click("#draw-chart")
+    assert response.value.ok, response.value.text()
+    expect(page.locator("#astro-empty")).to_be_hidden()
+    assert len(charts) == 1
     page.close()

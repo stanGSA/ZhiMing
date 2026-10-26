@@ -257,13 +257,15 @@ function showMessage(message) {
 
 function showThinking() {
   $("#thinking")?.remove();
+  const box = $("#messages");
+  if (!box) return;
   const item = node("article", "msg msg-assistant");
   item.id = "thinking";
   item.append(node("span", "msg-label", "答"));
   const dots = node("div", "thinking");
   dots.append(node("i"), node("i"), node("i"), node("span", "", page.thinking || "正在观照你的问题……"));
   item.append(dots);
-  $("#messages").append(item);
+  box.append(item);
   scrollTranscript();
 }
 
@@ -773,7 +775,7 @@ async function submitBirth(mode) {
       toast(result.question || (mode === "bazi" ? "四柱已排出。" : "本命星图已绘出。"));
       if (!result.question) {
         foldBirth(birth, false);
-        $("[data-birth-fold]")?.nextElementSibling?.scrollIntoView({ behavior: "smooth", block: "start" });
+        $(".band-work")?.scrollIntoView({ behavior: "smooth", block: "start" });
       }
     } else {
       const result = await api("/api/birth", { method: "PUT", body: JSON.stringify(birth) });
@@ -862,6 +864,7 @@ function drawChart() {
     toast("请先填写出生日期与出生地点。");
     return;
   }
+  if (!validateBirth()) return;
   $("#birth-form").requestSubmit();
 }
 
