@@ -680,13 +680,30 @@ main {
 
 /* ---------- Dialogue window ----------
    One framed chat window per consultation page: header, scrolling bubbles and a composer docked
-   at the bottom. Themes tune it through the --dialog-*, --bubble-* and --fab-* tokens. */
+   at the bottom. Themes tune it through the --dialog-*, --bubble-* and --fab-* tokens.
+   The band puts the page's own drawing (chart, cards, name or almanac) on the left, the window
+   beside it on the right, and the reading across the full width below both. */
 .dialog-band {
   --dialog-height: clamp(520px, calc(100vh - 56px), 680px);
   display: grid;
-  grid-template-columns: minmax(0, 1.08fr) minmax(0, 1fr);
-  gap: 32px;
+  grid-template-columns: minmax(0, 1fr) clamp(360px, 36%, 460px);
+  grid-template-areas:
+    "work ask"
+    "reading reading";
+  gap: 40px;
   align-items: start;
+}
+.band-work {
+  grid-area: work;
+  min-width: 0;
+}
+.band-ask {
+  grid-area: ask;
+  align-self: stretch;
+  min-width: 0;
+}
+.dialog-band > .reading {
+  grid-area: reading;
 }
 .dialog {
   position: sticky;
@@ -865,6 +882,10 @@ main {
 .dialog .composer textarea:disabled {
   opacity: 0.6;
 }
+/* Beside the drawing the window is narrow: leave room for a placeholder that wraps to two lines. */
+.band-ask .composer textarea {
+  min-height: 70px;
+}
 .btn.composer-send {
   flex: none;
   min-height: 44px;
@@ -875,12 +896,17 @@ main {
   padding-left: 2px;
 }
 
-/* The reading beside the window keeps the same height, so an empty one still reads as a panel. */
+/* The reading below spans the band; its text keeps a readable measure, and an empty one still
+   reads as a panel. */
 .dialog-band .reading {
-  min-height: var(--dialog-height);
+  min-height: 260px;
+}
+.dialog-band .reading-content {
+  max-width: 960px;
 }
 .dialog-band .reading-content:has(> .reading-empty:only-child) {
   flex: 1;
+  max-width: none;
   justify-content: center;
   align-items: center;
   text-align: center;
@@ -997,6 +1023,22 @@ main {
 .birth-fold-body .birth-form > .btn-primary {
   align-self: flex-start;
   min-width: 260px;
+}
+/* A chart page keeps its draw button on the folded birth bar; once the fold is open, the form's
+   own submit button below the fields takes its place. */
+.birth-bar {
+  position: relative;
+}
+.birth-bar > .birth-fold:not([open]) > summary {
+  padding-right: 256px;
+}
+.birth-draw {
+  position: absolute;
+  top: 10px;
+  right: 16px;
+}
+.birth-bar:has(> .birth-fold[open]) > .birth-draw {
+  display: none;
 }
 
 /* ---------- Footer ---------- */
@@ -1147,6 +1189,12 @@ main {
   .dialog-band {
     grid-template-columns: minmax(0, 1fr);
   }
+  .dialog-band {
+    grid-template-areas:
+      "work"
+      "ask"
+      "reading";
+  }
   .dialog {
     position: static;
     height: auto;
@@ -1238,6 +1286,14 @@ main {
   .birth-fold-body .birth-form > .btn-primary {
     align-self: stretch;
     min-width: 0;
+  }
+  .birth-bar > .birth-fold:not([open]) > summary {
+    padding-right: 16px;
+  }
+  .birth-draw {
+    position: static;
+    width: 100%;
+    margin-top: 10px;
   }
   .ask-fab {
     right: 16px;

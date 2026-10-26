@@ -82,6 +82,22 @@
   line-height: 2;
   color: #2c3a3a;
 }
+.btn.hero-cta {
+  align-self: flex-start;
+  min-height: 52px;
+  padding: 0 30px;
+  color: var(--accent-ink);
+  box-shadow:
+    inset 0 0 0 3px var(--accent),
+    inset 0 0 0 4px #c9a45c;
+}
+.btn.hero-cta:hover {
+  color: var(--accent-ink);
+  background: var(--accent-hover);
+  box-shadow:
+    inset 0 0 0 3px var(--accent-hover),
+    inset 0 0 0 4px #c9a45c;
+}
 .hero-mountains {
   width: 100%;
   height: 300px;
@@ -122,41 +138,155 @@
   stop-color: #b4844c;
 }
 
-/* ---------- Dialogue ---------- */
-.consult {
-  padding-top: 48px;
-}
-.dialog-band {
-  --dialog-bg: var(--surface);
-  --dialog-line: rgba(28, 42, 44, 0.32);
-  --dialog-shadow: 0 22px 50px rgba(28, 42, 44, 0.14);
-  --dialog-foot-bg: var(--surface-2);
-  --seal-bg: var(--cinnabar);
-  --seal-ink: #f7efdc;
-  --bubble-r: 2px;
-  --bubble-ai: #fbf6e9;
-  --bubble-user: rgba(31, 76, 107, 0.1);
-  --bubble-user-line: rgba(31, 76, 107, 0.32);
-  --input-bg: #fbf6e9;
-}
-.dialog {
+/* ---------- 生辰档案: the first step, risen onto the foot of the mountains ---------- */
+.enroll {
+  position: relative;
+  z-index: 2;
+  margin-top: -84px;
+  display: grid;
+  grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.4fr);
+  background: var(--surface);
+  border: 1px solid rgba(28, 42, 44, 0.32);
   border-top: 3px double var(--ink);
   border-bottom: 3px double var(--ink);
+  box-shadow: 0 26px 60px rgba(28, 42, 44, 0.18);
+  scroll-margin-top: 24px;
 }
-.btn.composer-send {
+.enroll-intro {
+  padding: 36px 36px 32px;
+  background: var(--surface-2);
+  border-right: 1px solid var(--line);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.enroll-step {
+  font-family: var(--font-sans);
+  font-size: 13px;
+  letter-spacing: 0.3em;
+  color: var(--cinnabar);
+}
+.enroll-title {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+.enroll-seal {
+  flex: none;
+  width: 52px;
+  height: 52px;
+  display: grid;
+  place-items: center;
+  background: var(--cinnabar);
+  color: #f7efdc;
+  font-size: 16px;
+  line-height: 1.1;
+  font-weight: 600;
+  text-align: center;
+  box-shadow:
+    inset 0 0 0 3px var(--cinnabar),
+    inset 0 0 0 4px #f7efdc;
+}
+.enroll-title h2 {
+  font-size: 32px;
+  font-weight: 900;
+  letter-spacing: 0.22em;
+  line-height: 1.3;
+}
+.enroll-intro p {
+  font-size: 16px;
+  line-height: 1.95;
+  color: #2c3a3a;
+}
+.enroll-uses {
+  display: flex;
+  flex-direction: column;
+  border-top: 1px solid var(--line);
+}
+.enroll-uses li {
+  display: flex;
+  align-items: baseline;
+  gap: 14px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--line);
+  font-size: 14px;
+  color: var(--muted);
+}
+.enroll-uses b {
+  flex: none;
+  font-size: 16px;
+  letter-spacing: 0.2em;
+  color: var(--accent);
+}
+.enroll-intro .enroll-note {
+  margin-top: auto;
+  font-family: var(--font-sans);
+  font-size: 12px;
+  line-height: 1.8;
+  color: var(--muted);
+}
+.enroll-body {
+  position: relative;
+  padding: 32px 36px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  min-width: 0;
+}
+.enroll-status {
+  display: flex;
+  justify-content: flex-end;
+}
+.enroll .profile-status {
+  padding: 2px 12px;
+  border: 1px solid currentColor;
+  font-size: 12px;
+  letter-spacing: 0.2em;
+  color: var(--cinnabar);
+}
+.enroll.filled .profile-status {
+  color: var(--malachite);
+}
+.enroll-form .birth-form > .btn-primary {
+  align-self: flex-start;
+  min-width: 280px;
+  min-height: 52px;
+  font-size: 16px;
   box-shadow:
     inset 0 0 0 3px var(--accent),
     inset 0 0 0 4px #c9a45c;
 }
-.btn.composer-send:not(:disabled):hover {
+.enroll-form .birth-form > .btn-primary:not(:disabled):hover {
   box-shadow:
     inset 0 0 0 3px var(--accent-hover),
     inset 0 0 0 4px #c9a45c;
 }
-.ask-fab {
-  --fab-line: #c9a45c;
+.enroll.filled .enroll-form {
+  border-top: 1px solid var(--line);
+  padding-top: 4px;
 }
+.enroll-saved {
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+}
+.enroll-saved .btn-ghost {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+.enroll-next {
+  padding: 0 6px;
+  font-size: 15px;
+  letter-spacing: 0.15em;
+  color: var(--accent);
+}
+.enroll-next:hover {
+  color: var(--cinnabar);
+}
+
+/* ---------- A record opened from 足迹 ---------- */
 .reading {
+  margin-top: 28px;
   background: var(--surface-2);
   border-color: rgba(28, 42, 44, 0.3);
 }
@@ -167,16 +297,11 @@
   color: var(--malachite);
 }
 .reading-subheading,
-.reading-list li::before,
-.msg-label {
+.reading-list li::before {
   color: var(--cinnabar);
 }
-.msg-user .msg-label {
-  color: var(--accent);
-}
-.btn-tag {
-  border-color: rgba(31, 76, 107, 0.35);
-  color: var(--accent);
+.record .reading-followups {
+  display: none;
 }
 
 /* ---------- 六术 index ---------- */
@@ -252,17 +377,9 @@
   color: var(--cinnabar);
 }
 
-/* ---------- Recent & profile ---------- */
-.lower {
-  display: flex;
-  gap: 48px;
-  flex-wrap: wrap;
-  align-items: flex-start;
-  padding-top: 0;
-}
+/* ---------- Recent ---------- */
 .recent {
-  flex: 1 1 620px;
-  min-width: 0;
+  padding-top: 0;
 }
 .recent-item {
   width: 100%;
@@ -286,62 +403,47 @@
 .recent-item:hover .history-question {
   color: var(--accent);
 }
-.recent-empty,
-.profile-empty {
+.recent-empty {
   color: var(--muted);
   line-height: 1.9;
   padding: 12px 0;
 }
-.profile {
-  flex: 1 1 380px;
-  min-width: 0;
-  border: 1px solid rgba(28, 42, 44, 0.3);
-  background: var(--surface-2);
-  padding: 28px;
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-}
-.profile-head {
-  display: flex;
-  justify-content: space-between;
-  align-items: baseline;
-}
-.profile-head h2 {
-  font-size: 20px;
-  letter-spacing: 0.3em;
-}
-.profile-status {
-  font-family: var(--font-sans);
-  font-size: 12px;
-  color: var(--malachite);
-}
 .profile-dl {
   display: grid;
-  grid-template-columns: 64px minmax(0, 1fr);
-  row-gap: 10px;
-  font-size: 15px;
+  grid-template-columns: 72px minmax(0, 1fr);
+  row-gap: 12px;
+  font-size: 17px;
 }
 .profile-dl dt {
   color: var(--muted);
-}
-.profile .btn-ghost {
-  align-self: flex-start;
-  border-color: var(--accent);
-  color: var(--accent);
-}
-.profile-form summary {
-  cursor: pointer;
-  font-size: 14px;
   letter-spacing: 0.2em;
-  color: var(--muted);
-  min-height: 32px;
-}
-.profile-form[open] summary {
-  margin-bottom: 14px;
 }
 
+@media (max-width: 1100px) {
+  .enroll {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .enroll-intro {
+    border-right: 0;
+    border-bottom: 1px solid var(--line);
+  }
+}
 @media (max-width: 760px) {
+  .enroll {
+    margin-top: -40px;
+  }
+  .enroll-intro,
+  .enroll-body {
+    padding: 24px 18px;
+  }
+  .enroll-title h2 {
+    font-size: 26px;
+    letter-spacing: 0.14em;
+  }
+  .enroll-form .birth-form > .btn-primary {
+    align-self: stretch;
+    min-width: 0;
+  }
   .hero-inner {
     padding-top: 32px;
     gap: 20px;

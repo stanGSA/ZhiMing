@@ -71,76 +71,81 @@
           <p>塔罗不需要出生资料。静下心，问一个具体的问题；牌面是思考的起点，选择始终在你。</p>
         </section>
 
-        <ol class="tarot-steps" id="tarot-steps" aria-label="抽牌步骤">
-          <li data-step="1"><b>壹</b><span>选牌阵</span></li>
-          <li data-step="2"><b>贰</b><span>写下所问</span></li>
-          <li data-step="3"><b>叁</b><span>从牌堆选牌</span></li>
-          <li data-step="4"><b>肆</b><span>翻牌见意</span></li>
-        </ol>
+        <div class="dialog-band tarot-lower" id="tarot-lower">
+          <div class="band-work tarot-work">
+            <ol class="tarot-steps" id="tarot-steps" aria-label="抽牌步骤">
+              <li data-step="1"><b>壹</b><span>选牌阵</span></li>
+              <li data-step="2"><b>贰</b><span>写下所问</span></li>
+              <li data-step="3"><b>叁</b><span>从牌堆选牌</span></li>
+              <li data-step="4"><b>肆</b><span>翻牌见意</span></li>
+            </ol>
 
-        <div class="spreads" id="spreads" role="group" aria-label="牌阵">
-          <button class="spread" type="button" data-spread="single" data-lock aria-pressed="false">
-            <b>单张</b><small>当下提示</small>
-          </button>
-          <button class="spread" type="button" data-spread="three_card" data-lock aria-pressed="true">
-            <b>三张</b><small>过去 · 现在 · 未来</small>
-          </button>
-          <button class="spread" type="button" data-spread="decision" data-lock aria-pressed="false">
-            <b>二选一</b><small>现状 · 选 A · 选 B</small>
-          </button>
-        </div>
+            <div class="spreads" id="spreads" role="group" aria-label="牌阵">
+              <button class="spread" type="button" data-spread="single" data-lock aria-pressed="false">
+                <b>单张</b><small>当下提示</small>
+              </button>
+              <button class="spread" type="button" data-spread="three_card" data-lock aria-pressed="true">
+                <b>三张</b><small>过去 · 现在 · 未来</small>
+              </button>
+              <button class="spread" type="button" data-spread="decision" data-lock aria-pressed="false">
+                <b>二选一</b><small>现状 · 选 A · 选 B</small>
+              </button>
+            </div>
 
-        <form class="tarot-question" id="tarot-form">
-          <label class="question-label" for="tarot-question">your question · 所问</label>
-          <input
-            id="tarot-question"
-            type="text"
-            maxlength="3800"
-            autocomplete="off"
-            placeholder="此刻，你最想问的是什么？"
-            data-lock
-          />
-          <div class="btn-row tarot-actions">
-            <button class="btn btn-primary" id="tarot-begin" type="submit" data-lock>洗牌抽牌</button>
-            <button class="btn btn-ghost" id="new-question" type="button" data-lock>重新起问</button>
-          </div>
-          <p class="spread-hint" id="spread-hint"></p>
-        </form>
-
-        <section class="tarot-deck" id="tarot-deck" aria-labelledby="deck-hint" hidden>
-          <p class="deck-hint" id="deck-hint"></p>
-          <div class="deck-fan" id="deck-fan" role="group"></div>
-          <p class="deck-note">牌已洗好、背面朝上。你点中的位置，就是抽到的那张牌。</p>
-        </section>
-
-        <section class="tarot-spread" id="tarot-spread" aria-label="牌阵"></section>
-        <button class="btn btn-ghost flip-all" id="flip-all" type="button" hidden>全部翻开</button>
-
-        <section class="dialog-band tarot-lower" id="tarot-lower" aria-label="牌意与追问">
-          <section class="dialog" id="dialog" aria-labelledby="dialog-title">
-            <header class="dialog-head">
-              <span class="dialog-seal" aria-hidden="true">✦</span>
-              <div class="dialog-heading">
-                <h2 id="dialog-title">问答 · 就这组牌追问</h2>
-                <p>追问会沿用这组牌；想换一组牌，请点「重新起问」</p>
+            <form class="tarot-question" id="tarot-form">
+              <label class="question-label" for="tarot-question">your question · 所问</label>
+              <input
+                id="tarot-question"
+                type="text"
+                maxlength="3800"
+                autocomplete="off"
+                placeholder="此刻，你最想问的是什么？"
+                data-lock
+              />
+              <div class="btn-row tarot-actions">
+                <button class="btn btn-primary" id="tarot-begin" type="submit" data-lock>洗牌抽牌</button>
+                <button class="btn btn-ghost" id="new-question" type="button" data-lock>重新起问</button>
               </div>
-              <span class="dialog-live" data-live>正在连接</span>
-            </header>
-            <div class="messages" id="messages" role="log" aria-live="polite"></div>
-            <form class="composer" id="chat-form">
-              <label class="sr-only" for="message">追问</label>
-              <div class="composer-box">
-                <textarea
-                  id="message"
-                  rows="1"
-                  maxlength="4000"
-                  placeholder="抽牌之后，可在这里就这组牌追问"
-                ></textarea>
-                <button class="btn btn-primary composer-send" id="send" type="submit">追问</button>
-              </div>
-              <span class="hint" id="input-hint">Enter 发送 · 塔罗不需要出生资料</span>
+              <p class="spread-hint" id="spread-hint"></p>
             </form>
-          </section>
+
+            <section class="tarot-deck" id="tarot-deck" aria-labelledby="deck-hint" hidden>
+              <p class="deck-hint" id="deck-hint"></p>
+              <div class="deck-fan" id="deck-fan" role="group"></div>
+              <p class="deck-note">牌已洗好、背面朝上。你点中的位置，就是抽到的那张牌。</p>
+            </section>
+
+            <section class="tarot-spread" id="tarot-spread" aria-label="牌阵"></section>
+            <button class="btn btn-ghost flip-all" id="flip-all" type="button" hidden>全部翻开</button>
+          </div>
+
+          <aside class="band-ask" aria-label="牌意与追问">
+            <section class="dialog" id="dialog" aria-labelledby="dialog-title">
+              <header class="dialog-head">
+                <span class="dialog-seal" aria-hidden="true">✦</span>
+                <div class="dialog-heading">
+                  <h2 id="dialog-title">问答 · 就这组牌追问</h2>
+                  <p>追问会沿用这组牌；想换一组牌，请点「重新起问」</p>
+                </div>
+                <span class="dialog-live" data-live>正在连接</span>
+              </header>
+              <div class="messages" id="messages" role="log" aria-live="polite"></div>
+              <form class="composer" id="chat-form">
+                <label class="sr-only" for="message">追问</label>
+                <div class="composer-box">
+                  <textarea
+                    id="message"
+                    rows="1"
+                    maxlength="4000"
+                    placeholder="抽牌之后，可在这里就这组牌追问"
+                  ></textarea>
+                  <button class="btn btn-primary composer-send" id="send" type="submit">追问</button>
+                </div>
+                <span class="hint" id="input-hint">Enter 发送 · 塔罗不需要出生资料</span>
+              </form>
+            </section>
+          </aside>
+
           <section class="reading" id="reading" aria-labelledby="reading-title">
             <div class="reading-head">
               <h3 id="reading-title">牌意</h3>
@@ -151,7 +156,7 @@
             </div>
             <p class="reading-veil" id="reading-veil" hidden>翻开全部牌面后，牌意自现</p>
           </section>
-        </section>
+        </div>
       </div>
     </main>
 

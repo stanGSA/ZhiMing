@@ -79,7 +79,6 @@ main {
 }
 .tarot-wrap {
   position: relative;
-  max-width: 1240px;
   padding-top: 64px;
   padding-bottom: 72px;
   display: flex;
@@ -124,6 +123,14 @@ main {
   font-size: 16px;
   line-height: 1.9;
   color: var(--muted);
+}
+
+/* ---------- The left of the band: steps, spread, question, deck and cards ---------- */
+.tarot-work {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 36px;
 }
 
 /* ---------- Steps ---------- */
@@ -580,7 +587,6 @@ main {
 /* ---------- Reading and record ---------- */
 .tarot-lower {
   width: 100%;
-  margin-top: 16px;
   --dialog-bg: rgba(28, 16, 34, 0.94);
   --dialog-line: rgba(200, 168, 102, 0.45);
   --dialog-r: 24px 24px 6px 6px;
@@ -664,6 +670,33 @@ main {
 .ask-fab-seal {
   background: var(--accent);
   color: var(--accent-ink);
+}
+
+/* Beside the dialogue window the cards and the fanned deck are drawn a little smaller, so three
+   cards stay on one row and the fan's ends stay clear of the window. */
+@media (min-width: 1101px) {
+  .tarot-spread {
+    gap: 24px;
+  }
+  .tarot-slot > .card-face,
+  .tarot-slot > .flip-card {
+    zoom: 0.86;
+  }
+  .deck-fan {
+    height: 260px;
+  }
+  .deck-card {
+    --angle: calc((var(--i) - 38.5) * 0.75deg);
+  }
+}
+@media (min-width: 1101px) and (max-width: 1240px) {
+  .tarot-slot > .card-face,
+  .tarot-slot > .flip-card {
+    zoom: 0.76;
+  }
+  .deck-card {
+    --angle: calc((var(--i) - 38.5) * 0.6deg);
+  }
 }
 
 @media (max-width: 760px) {

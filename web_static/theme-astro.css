@@ -118,15 +118,13 @@ body {
   letter-spacing: 0.04em;
 }
 
-/* ---------- Plate and wheel ---------- */
+/* ---------- Plate and wheel: the left of the band, wheel above its data ---------- */
 .astro-board {
   display: flex;
-  gap: 56px;
-  flex-wrap: wrap;
-  align-items: flex-start;
+  flex-direction: column;
+  gap: 48px;
 }
 .plate {
-  flex: 1 1 580px;
   min-width: 0;
   position: relative;
   border: 1px solid var(--line);
@@ -259,7 +257,6 @@ body {
 
 /* ---------- Data ---------- */
 .astro-data {
-  flex: 1 1 420px;
   min-width: 0;
   display: flex;
   flex-direction: column;
@@ -371,6 +368,8 @@ body {
 }
 .birth-fold.glass {
   padding: 0;
+}
+.birth-bar {
   margin-bottom: 40px;
 }
 .birth-fold-title {
@@ -392,7 +391,6 @@ body {
   --bubble-user-line: rgba(127, 166, 224, 0.4);
   --input-bg: #070c1c;
   --input-r: 4px;
-  margin-top: 24px;
 }
 .dialog-seal .cast-star {
   width: 16px;
