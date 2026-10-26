@@ -63,6 +63,9 @@ async def test_lists_every_tool_read_only(server):
         tools = (await client.list_tools()).tools
     assert {tool.name for tool in tools} == TOOLS
     assert all(tool.annotations.readOnlyHint for tool in tools)
+    # A draw without a seed is random; the other tools repeat their result.
+    assert next(t for t in tools if t.name == "draw_tarot").annotations.idempotentHint is False
+    assert all(t.annotations.idempotentHint is True for t in tools if t.name != "draw_tarot")
     schema = next(t for t in tools if t.name == "compute_natal_chart").inputSchema
     assert schema["required"] == ["birth"]
 

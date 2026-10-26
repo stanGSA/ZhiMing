@@ -211,7 +211,9 @@ def build_server(kb_path: Path | None = None, gazetteer: Gazetteer | None = None
             leap_month=leap_month,
         )
 
-    @server.tool(annotations=ToolAnnotations(readOnlyHint=True, openWorldHint=False))
+    @server.tool(
+        annotations=ToolAnnotations(readOnlyHint=True, idempotentHint=False, openWorldHint=False)
+    )
     def draw_tarot(
         question: Annotated[str, Field(min_length=1, max_length=2000)],
         spread: Annotated[
