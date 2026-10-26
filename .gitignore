@@ -11,7 +11,12 @@ __pycache__/
 .ruff_cache/
 data/
 runs/
-reports/
+# Generated reports stay local, except the evaluation summary the README cites.
+reports/*
+!reports/eval/
+reports/eval/*
+!reports/eval/summary.md
+!reports/eval/summary.json
 *.egg-info/
 
 # Local databases, credentials, caches and generated files.

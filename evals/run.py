@@ -5,6 +5,7 @@ import asyncio
 import json
 import shutil
 import tempfile
+import time
 from datetime import UTC, datetime
 from pathlib import Path
 
@@ -40,7 +41,9 @@ async def evaluate(output: Path, mode: str = "single") -> dict:
                 root=workspace, user_id=case["id"], provider="demo", seed=42, mode=mode
             )
             try:
+                started = time.perf_counter()
                 result = await runtime.turn(case["question"])
+                latency = time.perf_counter() - started
                 traces = list(runtime.tracer.user_dir(case["id"]).glob("*.jsonl"))
                 records = [
                     json.loads(line)
@@ -86,6 +89,7 @@ async def evaluate(output: Path, mode: str = "single") -> dict:
                         "specialist_f1": specialist_score,
                         "spread": spread,
                         "expected_spread": case["expected"]["tarot_spread"],
+                        "latency_s": round(latency, 3),
                         "pass": result.status == "submit_reading"
                         and score == 1
                         and specialist_score in (None, 1)

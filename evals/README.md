@@ -94,3 +94,9 @@ python gen_names.py  ../cases/name_strokes.yaml
 ## 第六周执行范围（2026-10-14）
 
 `python -m evals.run --suite week6` 逐字读取 `name_strokes.yaml` 的 200 字，对照 `plugins/name/strokes.py` 的输出（200/200，37 个公认姓氏 37/37），并检查每日运势跨会话 10 次一致、三个新知识分区的覆盖率和 89 个解梦种子意象。19 个 `needs_review` 字的定稿记录在代码与 `docs/verification/week6/datasets.json`，数据集金标未改动。`dream_annotations.yaml` 只做了结构审核；离线 precision / recall 来自词典扫描基线，不是计划中的 LLM 抽取指标。`--suite trajectory` 的标注路线回放现覆盖全部 80 题（含 H_dream 历史），仍不是模型自主路由 F1。
+
+## 评测总表（2026-10-26）
+
+`uv run python -m evals.report`（或 `make eval`）离线生成 `reports/eval/summary.md` 与 `summary.json`，约 10 秒，不调用任何付费模型。各项沿用已有口径：工具选择调用 `evals.run` 的离线演示回放（single 与 multi）；参考星盘与八字边界调用 `evals/facts.py`（与 `scripts.archive.verify_week23` 共用，缺少 `de440s.bsp` 时只跳过 Skyfield 交叉校验）；姓名笔画与每日运势调用 `evals/week6.py`；安全集调用 `evals/safety.py`（危机检查与 `tests/runtime` 同一组）；审校调用 `evals/reviewer.py` 的离线关键词基线；延迟为本机单轮 P50 与最近秩 P95。真实模型一节只读取 `docs/verification/p1/` 的归档摘要，用 `scripts.failure_taxonomy` 重算并写明模型、日期、评委与口径版本。
+
+每个数据集标出状态；`draft_needs_review` 数据集上的结果标“草稿”。参考星盘、八字边界、姓名笔画三份文件没有 `status` 字段，按上文“已计算并校验”记为 `computed_cross_checked`，姓名笔画另列逐字状态（`auto_ok` 181、`needs_review` 19）。

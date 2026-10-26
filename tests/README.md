@@ -16,7 +16,7 @@ uv run pytest -q tests/harness        # 只跑某个模块
 | `plugins/` | 塔罗、占星与八字计算和集成、姓名五格、解梦、每日运势 |
 | `knowledge/` | 知识库构建、审核三态与账本、模型交叉审核、校准与活动验收 |
 | `web/` | 网页 API、朋友体验分享、浏览器回归（Playwright，仅 Linux CI 运行） |
-| `tooling/` | `scripts/` 下的诊断、数据下载和对照工具 |
+| `tooling/` | `scripts/` 下的诊断、数据下载和对照工具，`evals.report` 评测总表 |
 
 `tests/plugins/test_astro_bazi_calculations.py` 中的 Skyfield 独立核验以及 `tests/tooling/test_scripts.py` 的 doctor 检查需要 `data/ephe/de440s.bsp`，请先运行 `python -m scripts.fetch_data`。
 
