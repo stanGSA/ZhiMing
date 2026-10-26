@@ -80,6 +80,90 @@ Linux / 已安装 uv 的环境：`uv sync --locked --extra llm`，然后 `uv run
 
 适配器统一 tool calling、消息历史与 token 统计，针对瞬态连接、限流和服务器错误最多尝试三次；当前单次超时90秒，可在config.yaml调整。SDK HTTP 协议有本地 MockTransport 测试；显式运行 `python -m scripts.live_test --model deepseek-flash` 执行17个严格场景，每次结果保存在 reports/review-fix/独立run_id，保留失败记录。任何工具错误使场景失败，并核对实际入库、种子与引用；同样记录接口返回的cached_tokens，缺失记为未知。自动化 pytest 强制离线，不会调用付费模型。
 
+## MCP server：确定性插件
+
+排盘、流期、抽牌、姓名五格、解梦意象匹配、每日运势和释义查询也包成了 [MCP](https://modelcontextprotocol.io) server，Claude Desktop 等 MCP 客户端可以直接调用。全程不经过语言模型：结果由代码计算，同样的输入得到同样的结果（塔罗传入 `seed` 才能复现）；每条释义带 `ref_id`、正文和审核级别，`review.confidence_cap` 是按所用释义的最低审核级别得出的置信度上限，与对话中的解读同一口径。
+
+### 安装与运行
+
+```bash
+uv sync --locked --extra mcp          # 可与 --extra llm --extra web 一起装
+uv run python -m scripts.fetch_data   # 星历、地名与 Unihan 数据
+uv run python -m knowledge.build      # 知识库
+uv run python -m mcp_server           # stdio 传输：通常由 MCP 客户端启动，手动运行会一直等待输入
+```
+
+依赖为官方 Python SDK `mcp` 的 FastMCP，版本范围 `mcp>=1.30.0,<2`（mcp 2 把 FastMCP 改名为 MCPServer 并调整了接口）。Windows 用 `setup.ps1` 安装过的环境，把第一行换成 `& .\.bootstrap\Scripts\uv.exe sync --locked --extra llm --extra web --extra mcp`。
+
+### Claude Desktop 配置
+
+在 Claude Desktop 的「设置 → 开发者 → 编辑配置」打开 `claude_desktop_config.json`（macOS 位于 `~/Library/Application Support/Claude/`，Windows 位于 `%APPDATA%\Claude\`），加入下面一段，把路径换成自己的，保存后重启 Claude Desktop。`command` 请写 uv 的绝对路径，图形界面程序不一定继承终端的 PATH（macOS 用 `which uv` 查看）。`--extra mcp` 保证每次启动时依赖齐全，即使之后重新同步过环境。
+
+macOS：
+
+```json
+{
+  "mcpServers": {
+    "zhiming": {
+      "command": "/Users/<用户名>/.local/bin/uv",
+      "args": ["--directory", "/Users/<用户名>/ZhiMing", "run", "--extra", "mcp", "python", "-m", "mcp_server"]
+    }
+  }
+}
+```
+
+Windows（`setup.ps1` 把 uv 装在仓库的 `.bootstrap` 里；自行安装的 uv 用 `where.exe uv` 查看路径）：
+
+```json
+{
+  "mcpServers": {
+    "zhiming": {
+      "command": "C:\\Users\\<用户名>\\ZhiMing\\.bootstrap\\Scripts\\uv.exe",
+      "args": ["--directory", "C:\\Users\\<用户名>\\ZhiMing", "run", "--extra", "mcp", "python", "-m", "mcp_server"],
+      "env": { "PYTHONUTF8": "1" }
+    }
+  }
+}
+```
+
+连接成功后，对话输入框的工具菜单里会出现 `zhiming` 的十个工具。启动失败时，Claude Desktop 的 MCP 日志（macOS `~/Library/Logs/Claude/`，Windows `%APPDATA%\Claude\logs\`）会显示原因，最常见的是还没有构建知识库。
+
+### 工具
+
+| 工具 | 作用 | 主要参数 |
+| --- | --- | --- |
+| `resolve_location` | 解析出生地，返回 `location_id`、经纬度与时区；同名地点返回候选 | `query`、`country`、`admin1`、`candidate_id` |
+| `compute_natal_chart` | 本命盘：行星落座与宫位、四轴、相位 | `birth` |
+| `compute_transits` | 区间内行运对本命的精确相位 | `birth`、`start`、`end`、`tz`、`orb`、`bodies` |
+| `compute_bazi` | 八字四柱、十神、藏干、纳音、五行计数、大运 | `birth`、`gender`、`true_solar_time`、`zishi_rule`、`calendar`、`lunar_date`、`leap_month` 等 |
+| `compute_bazi_period` | 流年、节气流月或流日，与原局的十神与冲合刑害 | `birth`、`start`、`end`、`tz`、`granularity` 等 |
+| `draw_tarot` | 抽牌（单张、三张、二选一） | `question`、`spread`、`seed`、`picks` |
+| `analyze_name` | 康熙笔画、五格数理、三才五行 | `surname`、`given`、`forms` |
+| `lookup_dream_symbols` | 梦境意象与知识库匹配，未收录的不解读 | `symbols` |
+| `daily_fortune` | 当天行运相位、流日干支与十神、每日一牌 | `birth`、`date`、`tz`、`user_key` 等 |
+| `lookup_meaning` | 按 system/kind/key 精确查释义 | `system`、`kind`、`key` |
+
+`birth` 包括 `birth_local`（出生地当地钟表时间，`YYYY-MM-DD HH:MM`）、`time_known`，以及地点：`resolve_location` 返回的 `location_id`（新疆另填 `clock_tz`），或直接给出 `tz` 与 `lon`（星盘另需 `lat`）；夏令时重复时刻用 `fold`。`compute_transits`、`compute_bazi_period`、`daily_fortune` 的 `tz` 是咨询日期所用的时区，不一定是出生地时区。
+
+### 与对话运行时的区别
+
+- **来源校验**：对话里出生资料必须来自用户原话，这是 Guard 的来源校验，用来防止模型编造。MCP 调用方直接给出结构化参数，没有原话可以核对，所以 MCP 走与会话无关的计算入口 `plugins/direct.py`（与网页「直接排盘」共用出生资料换算），不建会话，不调用运行时的工具，也不经过 Guard；运行时的校验一处没改。请只把用户本人提供的资料传给这些工具。
+- **需要本人决定的事项**仍返回 `status: needs_input` 和要转问的问题：同名地点、新疆出生钟表、海外出生是否用真太阳时、节气当天时辰未知、无法确定笔画的字等。
+- **参数错误**返回错误结果，结构化内容为 `{"ok": false, "code": "invalid_arguments", "error": "…", "details": [{"field": "birth.lat", "message": "…"}]}`；其他错误码有 `unknown_location`、`missing_entry`、`data_missing`。
+- **不保存数据**：没有画像、记录和缓存。`chart_id`、`bazi_id`、`draw_id` 是输入的哈希，同样输入编号相同，与对话运行时数据库中的记录无关。每日一牌由 `user_key`（省略时由出生资料生成）和日期决定。
+- 不传 `seed` 的抽牌随机生成一个小于 2^53 的种子并随结果返回，JSON 客户端可以原样传回复现同一组牌。
+
+### 许可与对外服务
+
+星盘计算依赖 Swiss Ephemeris（`pyswisseph` 与 `sepl_18.se1`、`semo_18.se1` 星历文件），它采用 AGPL-3.0 与 Swiss Ephemeris 商业许可（Astrodienst AG）双许可。在自己电脑上通过 stdio 自用不涉及向他人提供服务。若把这个 MCP server 或网页版部署成供他人通过网络使用的服务：
+
+- 按 AGPL-3.0 第 13 条，须向通过网络与服务交互的用户提供完整的对应源代码（含你的修改），整体以 AGPL 兼容的条款提供；不愿公开源码则需向 Astrodienst 购买商业许可；
+- 把程序或修改版分发给他人时，同样须附源码并保留许可声明；
+- 本仓库目前没有 LICENSE 文件（《项目完善计划书》F6），对外提供服务前应先确定项目许可；
+- 其他数据：GeoNames 地名为 CC BY 4.0，须署名；Unicode Unihan 按 Unicode License；JPL DE440s 为美国政府公开数据。
+
+以上是使用时的注意事项，不是法律意见。
+
 ## 隐私、当前限制和后续工作
 
 用户数据落盘在本地；真实模型 API 会收到执行任务需要的对话、画像与工具结果。`/forget` 删除当前用户在应用数据库、trace 和内存中的数据，并压缩 SQLite；不能删除第三方模型服务留存、系统备份或已导出的报告。

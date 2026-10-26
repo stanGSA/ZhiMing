@@ -242,7 +242,24 @@ class MeaningPlugin:
     required_profile = set()  # Conditional birth requirements are handled with needs_input.
 
     def attach(self, result, atoms, session, result_key):
-        result["interpretations"] = []
+        result["interpretations"] = self.interpret(result, atoms)
+        signals = self.extract_signals([result])
+        # Reusing a persistent chart must not create duplicate signals within a reading.
+        old_refs = {s["ref_id"] for s in session.state["signals"]}
+        session.state["signals"].extend(
+            s.model_dump(mode="json") for s in signals if s.ref_id not in old_refs
+        )
+        session.state["allowed_refs"].update(s.ref_id for s in signals)
+        session.state["kb_refs"].update(s.kb_ref for s in signals)
+        session.state["kb_refs"].update(ref for s in signals for ref in s.kb_refs)
+        session.state["kb_version"] = self.kb.version
+        session.state[result_key] = result
+        session.state.setdefault("calculations", {})[result_key] = result
+        return result
+
+    def interpret(self, result, atoms):
+        """Knowledge entries for each calculated fact; no session, so direct callers share it."""
+        interpretations = []
         for fact, kind, key, horizon, timeframe in atoms:
             entry = self.kb.lookup(self.name, kind, key)
             if entry is None:
@@ -276,7 +293,7 @@ class MeaningPlugin:
             meaning["reviewed"] = all(c["reviewed"] for c in components)
             meaning["review_status"] = lowest(c["review_status"] for c in components)
             meaning["component_refs"] = [c["ref_id"] for c in components]
-            result["interpretations"].append(
+            interpretations.append(
                 dict(
                     ref_id=ref,
                     fact=fact,
@@ -287,19 +304,7 @@ class MeaningPlugin:
                     meaning=meaning,
                 )
             )
-        signals = self.extract_signals([result])
-        # Reusing a persistent chart must not create duplicate signals within a reading.
-        old_refs = {s["ref_id"] for s in session.state["signals"]}
-        session.state["signals"].extend(
-            s.model_dump(mode="json") for s in signals if s.ref_id not in old_refs
-        )
-        session.state["allowed_refs"].update(s.ref_id for s in signals)
-        session.state["kb_refs"].update(s.kb_ref for s in signals)
-        session.state["kb_refs"].update(ref for s in signals for ref in s.kb_refs)
-        session.state["kb_version"] = self.kb.version
-        session.state[result_key] = result
-        session.state.setdefault("calculations", {})[result_key] = result
-        return result
+        return interpretations
 
     def compound_keys(self, result, kind, key, fact):
         return []

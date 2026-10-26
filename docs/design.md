@@ -19,6 +19,8 @@ flowchart LR
 
 工具错误作为结构化结果返给模型；模型故障、步数和 token 上限返回明确失败状态。两家适配器按同一口径返回结束原因与用量：Anthropic 的 `stop_reason` 映射为 OpenAI 的 `finish_reason`（`max_tokens` 与 `model_context_window_exceeded` → `length`，`tool_use` → `tool_calls`，`end_turn` 与 `stop_sequence` → `stop`，其余原样保留），输出被截断时本轮以 `output_truncated` 结束，不执行可能残缺的工具调用；`input_tokens` 是整段输入（Anthropic 另加缓存读写的部分），`cached_input_tokens` 是其中命中缓存的部分。计算后不能用普通文本绕过 `submit_reading`。同一批工具中终止工具后的调用不执行，但仍补齐工具响应，保持两家模型的协议完整。
 
+网页的直接排盘和 MCP server（`mcp_server/`）不经过对话：调用方直接给出结构化参数，没有用户原话可供来源校验核对，因此走与会话无关的计算入口 `plugins/direct.py`。它复用各插件的计算器、事实原子与释义组装（`interpret`），不建会话、不调用运行时工具、不经过 Guard；运行时工具与 Guard 的校验不受影响。需要本人决定的事项（同名地点、新疆钟表、海外真太阳时等）同样返回 `needs_input`。
+
 基础工具：`start_reading`、`get_profile`、`update_profile`、`read_reading`、`lookup_meaning`、`draw_tarot`、`ask_user`、`submit_reading`。用户身份由会话注入，模型不能通过参数指定其他用户。画像写入检查原话证据与字段值，支持中文日期、时刻、性别及排盘口径规范化。
 
 ## 知识库与数据

@@ -229,48 +229,7 @@ class BaziPlugin(MeaningPlugin):
         except NeedsInput as exc:
             return exc.result()
         session.state["bazi_id"] = result["bazi_id"]
-        atoms = []
-        atoms.append(
-            (f"day_master:{result['day_master']}", "convention", "day_master", "trait", None)
-        )
-        atoms.append(
-            (
-                f"zishi:{result['input']['zishi_rule']}",
-                "convention",
-                f"zishi_{result['input']['zishi_rule']}",
-                "trait",
-                None,
-            )
-        )
-        if result["dayun"]:
-            atoms.append(
-                (
-                    f"dayun:{result['dayun']['start_solar']}:{result['dayun']['sequence'][0]['ganzhi']}",
-                    "convention",
-                    "dayun",
-                    "trait",
-                    None,
-                )
-            )
-        if result.get("alternatives"):
-            atoms.append(("unknown_time_candidates", "convention", "unknown_time", "trait", None))
-            for i, candidate in enumerate(result["alternatives"]):
-                for pillar, gz in candidate.items():
-                    atoms.append((f"candidate{i}:{pillar}:{gz}", "stem", gz[0], "trait", None))
-        for pillar, gz in result["pillars"].items():
-            if gz:
-                atoms.extend(
-                    [
-                        (f"{pillar}:{gz}:gan", "stem", gz[0], "trait", None),
-                        (f"{pillar}:{gz}:zhi", "branch", gz[1], "trait", None),
-                    ]
-                )
-                if pillar != "day":
-                    god = result["ten_gods_stems"][pillar]
-                    atoms.append(
-                        (f"{pillar}:{gz}:{god}", "god_pillar", f"{god}:{pillar}", "trait", None)
-                    )
-        result = self.attach(result, atoms, session, "bazi_result")
+        result = self.attach(result, chart_atoms(result), session, "bazi_result")
         result["cache_reused"] = cached
         return result
 
@@ -284,30 +243,78 @@ class BaziPlugin(MeaningPlugin):
             )
         except NeedsInput as exc:
             return exc.result()
-        atoms = []
-        for p in result["periods"]:
-            for pillar, gz in p["pillars"].items():
-                god = p["ten_gods"][pillar]
+        session.state["timeframe"] = (args.start, args.end)
+        session.state["timeframe_tz"] = result["tz"]
+        return self.attach(result, period_atoms(result), session, "bazi_period_result")
+
+
+# Calculated facts that get a knowledge entry: (fact, kind, key, horizon, timeframe).
+def chart_atoms(result):
+    atoms = []
+    atoms.append((f"day_master:{result['day_master']}", "convention", "day_master", "trait", None))
+    atoms.append(
+        (
+            f"zishi:{result['input']['zishi_rule']}",
+            "convention",
+            f"zishi_{result['input']['zishi_rule']}",
+            "trait",
+            None,
+        )
+    )
+    if result["dayun"]:
+        atoms.append(
+            (
+                f"dayun:{result['dayun']['start_solar']}:{result['dayun']['sequence'][0]['ganzhi']}",
+                "convention",
+                "dayun",
+                "trait",
+                None,
+            )
+        )
+    if result.get("alternatives"):
+        atoms.append(("unknown_time_candidates", "convention", "unknown_time", "trait", None))
+        for i, candidate in enumerate(result["alternatives"]):
+            for pillar, gz in candidate.items():
+                atoms.append((f"candidate{i}:{pillar}:{gz}", "stem", gz[0], "trait", None))
+    for pillar, gz in result["pillars"].items():
+        if gz:
+            atoms.extend(
+                [
+                    (f"{pillar}:{gz}:gan", "stem", gz[0], "trait", None),
+                    (f"{pillar}:{gz}:zhi", "branch", gz[1], "trait", None),
+                ]
+            )
+            if pillar != "day":
+                god = result["ten_gods_stems"][pillar]
+                atoms.append(
+                    (f"{pillar}:{gz}:{god}", "god_pillar", f"{god}:{pillar}", "trait", None)
+                )
+    return atoms
+
+
+def period_atoms(result):
+    atoms = []
+    for p in result["periods"]:
+        for pillar, gz in p["pillars"].items():
+            god = p["ten_gods"][pillar]
+            atoms.append(
+                (
+                    f"period:{p['start_utc']}:{pillar}:{gz}:{god}",
+                    "ten_god",
+                    god,
+                    "timing",
+                    f"{p['start_utc']}/{p['end_utc']}",
+                )
+            )
+            for relation in p["relations"][pillar]:
+                kind = relation["type"]
                 atoms.append(
                     (
-                        f"period:{p['start_utc']}:{pillar}:{gz}:{god}",
-                        "ten_god",
-                        god,
+                        f"period:{p['start_utc']}:{pillar}:{gz}:{kind}:{relation.get('natal_pillar', relation.get('branches'))}",
+                        "relation",
+                        kind,
                         "timing",
                         f"{p['start_utc']}/{p['end_utc']}",
                     )
                 )
-                for relation in p["relations"][pillar]:
-                    kind = relation["type"]
-                    atoms.append(
-                        (
-                            f"period:{p['start_utc']}:{pillar}:{gz}:{kind}:{relation.get('natal_pillar', relation.get('branches'))}",
-                            "relation",
-                            kind,
-                            "timing",
-                            f"{p['start_utc']}/{p['end_utc']}",
-                        )
-                    )
-        session.state["timeframe"] = (args.start, args.end)
-        session.state["timeframe_tz"] = result["tz"]
-        return self.attach(result, atoms, session, "bazi_period_result")
+    return atoms

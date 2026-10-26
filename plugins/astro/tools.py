@@ -196,38 +196,7 @@ class AstroPlugin(MeaningPlugin):
         except NeedsInput as exc:
             return exc.result()
         session.state["chart_id"] = result["chart_id"]
-        atoms = []
-        for p in result["planets"]:
-            atoms.append(
-                (
-                    f"{p['body']}:{p['sign']}",
-                    "planet_sign",
-                    f"{p['body']}:{p['sign']}",
-                    "trait",
-                    None,
-                )
-            )
-            if p["house"] is not None:
-                atoms.append(
-                    (
-                        f"{p['body']}:house{p['house']}",
-                        "planet_house",
-                        f"{p['body']}:{p['house']}",
-                        "trait",
-                        None,
-                    )
-                )
-        for i, a in enumerate(result["aspects"]):
-            atoms.append(
-                (
-                    f"natal_aspect{i}:{a['a']}:{a['b']}:{a['type']}",
-                    "aspect",
-                    a["type"],
-                    "trait",
-                    None,
-                )
-            )
-        result = self.attach(result, atoms, session, "natal_result")
+        result = self.attach(result, natal_atoms(result), session, "natal_result")
         result["cache_reused"] = cached
         return result
 
@@ -246,27 +215,69 @@ class AstroPlugin(MeaningPlugin):
             )
         except NeedsInput as exc:
             return exc.result()
-        atoms = [
-            (
-                f"transit:{e['exact_utc']}:{e['transit_body']}:{e['natal_body']}:{e['aspect']}",
-                "aspect",
-                e["aspect"],
-                "timing",
-                e["exact_date"],
-            )
-            for e in result["events"]
-        ]
-        # An empty interval is valid; explicitly include a neutral, grounded range fact.
-        if not atoms:
-            atoms = [
-                (
-                    f"transit:{args.start}:{args.end}:no_exact_events",
-                    "transit",
-                    "no_exact_events",
-                    "timing",
-                    f"{args.start}/{args.end}",
-                )
-            ]
         session.state["timeframe"] = (args.start, args.end)
         session.state["timeframe_tz"] = result["tz"]
-        return self.attach(result, atoms, session, "transit_result")
+        return self.attach(
+            result, transit_atoms(result, args.start, args.end), session, "transit_result"
+        )
+
+
+# Calculated facts that get a knowledge entry: (fact, kind, key, horizon, timeframe).
+def natal_atoms(result):
+    atoms = []
+    for p in result["planets"]:
+        atoms.append(
+            (
+                f"{p['body']}:{p['sign']}",
+                "planet_sign",
+                f"{p['body']}:{p['sign']}",
+                "trait",
+                None,
+            )
+        )
+        if p["house"] is not None:
+            atoms.append(
+                (
+                    f"{p['body']}:house{p['house']}",
+                    "planet_house",
+                    f"{p['body']}:{p['house']}",
+                    "trait",
+                    None,
+                )
+            )
+    for i, a in enumerate(result["aspects"]):
+        atoms.append(
+            (
+                f"natal_aspect{i}:{a['a']}:{a['b']}:{a['type']}",
+                "aspect",
+                a["type"],
+                "trait",
+                None,
+            )
+        )
+    return atoms
+
+
+def transit_atoms(result, start, end):
+    atoms = [
+        (
+            f"transit:{e['exact_utc']}:{e['transit_body']}:{e['natal_body']}:{e['aspect']}",
+            "aspect",
+            e["aspect"],
+            "timing",
+            e["exact_date"],
+        )
+        for e in result["events"]
+    ]
+    # An empty interval is valid; explicitly include a neutral, grounded range fact.
+    if not atoms:
+        atoms = [
+            (
+                f"transit:{start}:{end}:no_exact_events",
+                "transit",
+                "no_exact_events",
+                "timing",
+                f"{start}/{end}",
+            )
+        ]
+    return atoms

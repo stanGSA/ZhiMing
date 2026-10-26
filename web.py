@@ -36,6 +36,7 @@ from harness.trace import Tracer
 from memory.store import Store
 from plugins.astro.calculator import natal_chart
 from plugins.bazi.calculator import GAN, GAN_WX, WX, compute_bazi, ten_god
+from plugins.direct import birth_inputs
 from plugins.name.strokes import UnihanMissing
 from plugins.name.tools import HAN
 from plugins.name.wuge import analyze, element
@@ -149,15 +150,14 @@ class BirthInfo(BaseModel):
         if not self.date or not self.location_id:
             raise NeedsInput("missing_birth", "请先填写公历出生日期，并逐级选择出生地点。")
         location = selected_region(self.location_id)
-        if location["tz"] == "Asia/Urumqi" and not self.clock_tz:
-            raise NeedsInput("confirm_clock_timezone", "请确认出生钟表使用北京时间还是新疆时间。")
-        inputs = dict(
-            birth_local=self.date.isoformat() + ("T" + self.time if self.time else ""),
-            time_known=bool(self.time) and not self.unknown_time,
-            tz=self.clock_tz or location["tz"],
-            lon=location["lon"],
+        inputs = birth_inputs(
+            self.date.isoformat() + ("T" + self.time if self.time else ""),
+            bool(self.time) and not self.unknown_time,
+            location,
+            self.clock_tz,
         )
         if system == "bazi":
+            inputs.pop("lat")
             result = compute_bazi(
                 **inputs,
                 gender=self.gender or None,
@@ -165,7 +165,7 @@ class BirthInfo(BaseModel):
                 zishi_rule=self.zishi_rule,
             )
         else:
-            result = natal_chart(**inputs, lat=location["lat"])
+            result = natal_chart(**inputs)
         return dict(
             system=system, result=result, location=location, birth=self.model_dump(mode="json")
         )

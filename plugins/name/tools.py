@@ -177,24 +177,34 @@ class NamePlugin(MeaningPlugin):
                 day_master=chart.get("day_master"),
                 note="并列三才五行与原局天干地支五行计数；五行计数不是旺衰权重，补益五行属传统推断，须说明依据",
             )
-        atoms = [
-            (
-                f"{grid}:{result['grids'][grid]}",
-                "shuli",
-                str(shuli(result["grids"][grid])),
-                "trait",
-                None,
-            )
-            for grid in GRIDS
-        ]
-        atoms.append(
-            (f"三才:{result['sancai']['key']}", "sancai", result["sancai"]["key"], "trait", None)
+        return self.attach(
+            result,
+            name_atoms(result, bool(args.bazi_id)),
+            session,
+            f"name_result:{result['name_id']}",
         )
-        atoms.append(("笔画规则", "convention", "stroke_rule", "trait", None))
-        if result["compound_surname"]:
-            atoms.append(("复姓", "convention", "compound_surname", "trait", None))
-        for item in result["ambiguities"]:
-            atoms.append((f"写法:{item['char']}", "convention", "ambiguous_form", "trait", None))
-        if args.bazi_id:
-            atoms.append(("八字对照", "convention", "bazi_compare", "trait", None))
-        return self.attach(result, atoms, session, f"name_result:{result['name_id']}")
+
+
+def name_atoms(result, bazi_compare=False):
+    """Calculated facts that get a knowledge entry: (fact, kind, key, horizon, timeframe)."""
+    atoms = [
+        (
+            f"{grid}:{result['grids'][grid]}",
+            "shuli",
+            str(shuli(result["grids"][grid])),
+            "trait",
+            None,
+        )
+        for grid in GRIDS
+    ]
+    atoms.append(
+        (f"三才:{result['sancai']['key']}", "sancai", result["sancai"]["key"], "trait", None)
+    )
+    atoms.append(("笔画规则", "convention", "stroke_rule", "trait", None))
+    if result["compound_surname"]:
+        atoms.append(("复姓", "convention", "compound_surname", "trait", None))
+    for item in result["ambiguities"]:
+        atoms.append((f"写法:{item['char']}", "convention", "ambiguous_form", "trait", None))
+    if bazi_compare:
+        atoms.append(("八字对照", "convention", "bazi_compare", "trait", None))
+    return atoms

@@ -50,6 +50,7 @@ flowchart TB
 - **事实绑定**（各插件的 `validation.py`、[`common/validation.py`](common/validation.py)）：牌名、正逆位、干支、落座宫位、相位与日期、引用的 `ref_id` 只能来自本次工具结果，写错由代码退回。免责声明、`<br>` 这类表达层问题由 [`common/output_policy.py`](common/output_policy.py) 自动修正，不退回，避免模型越改越含糊。
 - **专家隔离与状态一致**（[`agents/consult.py`](agents/consult.py)）：专家只能看到本体系的工具、释义分区和所需画像字段。成功的报告按体系原子替换信号与引用，失败的重试保留此前有效的报告；塔罗每条记录只抽一次，报告失败或请求取消都不能换牌重抽。子会话的 trace 通过 `ContextVar` 挂到发起它的那次工具调用下，可以重建完整调用树。
 - **跨体系张力由代码计算**（[`signals/merge.py`](signals/merge.py)）：各体系的信号按时间区间对齐后计算共振与张力，multi 模式的最终回答必须披露每一条张力；用户偏好的体系权重只改变综合倾向，不能把分歧藏起来。
+- **确定性插件的 MCP server**（[`mcp_server/`](mcp_server/)）：排盘、抽牌、五格、解梦匹配、每日运势和释义查询可由 Claude Desktop 等 MCP 客户端直接调用，不经过语言模型；调用方给出结构化参数，走与会话无关的计算入口 [`plugins/direct.py`](plugins/direct.py)，运行时的来源校验与 Guard 不变。配置见 [使用指南](docs/usage.md#mcp-server确定性插件)；Swiss Ephemeris 为 AGPL，对外提供服务前请先看其中的许可说明。
 - **安全边界**（[`common/safety.py`](common/safety.py)）：识别到危机表达立即停止占卜，用户单独确认安全后才恢复咨询；求助热线按用户所在地区选择。不对健康、法律、投资、生死作确定性预测。
 
 更细的约束、计算口径与各阶段设计见 [设计与约定](docs/design.md)。
@@ -74,7 +75,7 @@ uv run python -m evals.report    # 写出 reports/eval/summary.md 与 summary.js
 | 高风险提示 | 代码层识别 3/25（草稿） | 只有命中关键词规则的题会被代码强制加安全说明，其余依赖模型自行标注 |
 | 审校离线基线 | 漏拦 6.7%，过度干预 6.7%（草稿） | 关键词规则基线，不是 LLM 审校 |
 | 工具选择 | 集合 F1 1.000，只适用 12/80 题（草稿） | 离线演示只回放塔罗题，验证流程，不代表模型的工具选择 |
-| 测试 | 940 项离线测试 | Ubuntu 与 Windows CI，不调用付费模型（[测试说明](tests/README.md)） |
+| 测试 | 954 项离线测试 | Ubuntu 与 Windows CI，不调用付费模型（[测试说明](tests/README.md)） |
 
 **真实模型**（P1 中转接口活动，20 题 × 3 次，只读[归档摘要](docs/verification/p1/README.md)）
 
@@ -138,7 +139,8 @@ uv run python -m scripts.doctor         # 环境、数据与知识库自检
 | --- | --- |
 | [`harness/`](harness/) | 与领域无关的 agent 运行时：循环、工具注册、Guard、预算、会话、trace、OpenAI/Anthropic 适配器 |
 | [`agents/`](agents/) | 编排者与专家提示词、专家咨询、宽松审校、离线演示模型 |
-| [`plugins/`](plugins/) | 六个确定性占术插件：计算、工具定义与输出校验 |
+| [`plugins/`](plugins/) | 六个确定性占术插件：计算、工具定义与输出校验；`direct.py` 为与会话无关的计算入口 |
+| [`mcp_server/`](mcp_server/) | 确定性插件的 MCP server（stdio） |
 | [`knowledge/`](knowledge/) | 释义源文件、规则、审核账本与知识库构建 |
 | [`signals/`](signals/) | 跨体系信号合并 |
 | [`common/`](common/) | 公共工具、地点解析、安全与回答校验 |
@@ -152,7 +154,7 @@ uv run python -m scripts.doctor         # 环境、数据与知识库自检
 ## 文档
 
 - [设计与约定](docs/design.md)：运行路径、知识库、多 Agent、合并与审校、各插件的计算口径
-- [使用指南](docs/usage.md)：网页、朋友体验、命令行、真实模型、隐私与限制
+- [使用指南](docs/usage.md)：网页、朋友体验、命令行、真实模型、MCP server、隐私与限制
 - [项目计划书](docs/占卜Agent项目计划书.md)：最初的范围、架构与评估设计
 - [文档索引](docs/README.md)：各阶段验收报告与评审整改记录
 - [验收材料](docs/verification/README.md)、[评估数据集](evals/README.md)
