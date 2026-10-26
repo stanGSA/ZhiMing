@@ -526,6 +526,10 @@ class ConsultService:
             if error:
                 report = {**report, "status": "failed", "failure": error, "signals": []}
             else:
+                # Conventions the specialist's calculation saved (e.g. the bazi zishi rule)
+                # are part of the report's profile dependencies; the orchestrator's view of
+                # the profile must carry them too, or the report would look stale.
+                session.profile = {**session.profile, **child_state.get("derived_profile", {})}
                 revoke(state, system)
                 merge(state, child_state, system)
                 state.setdefault("specialist_facts", {}).pop(system, None)

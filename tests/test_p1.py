@@ -15,7 +15,7 @@ from harness.refs import transform
 from harness.session import Session
 from harness.trace import Tracer
 from plugins.context import BirthInput, birth_provenance, inferred_birth
-from tests.test_week23_integration import invoke
+from tests.plugins.test_astro_bazi_integration import invoke
 from web import create_web_app
 
 
@@ -489,7 +489,7 @@ async def test_policy_cancel_preserves_unknown_usage_charge(tmp_path):
 async def test_ref_only_evidence_covers_all_computation_plugins(runtime, system):
     from common.evidence import fill_evidence
     from common.schemas import Reading
-    from tests.test_week23_integration import draft, prepare
+    from tests.plugins.test_astro_bazi_integration import draft, prepare
 
     birth = await prepare(runtime)
     if system in ("astro", "bazi"):
