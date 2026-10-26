@@ -2,8 +2,10 @@ import pytest
 
 from common.location import Gazetteer, LocationInput, birth_place_mentioned, location_tool
 from common.regions import region_data, region_options, selected_region
+from common.time_utils import NeedsInput
 from harness.session import Session
 from memory.store import Store
+from plugins.context import BirthInput, birth_provenance, birth_values
 
 
 def test_county_resolves_from_user_evidence_without_substituting_city():
@@ -89,6 +91,48 @@ def test_xinjiang_birthplace_never_saves_an_unconfirmed_clock(tmp_path):
     session.append_user("我确认使用北京时间。")
     tool.handler(args, session)
     assert store.get_profile(session.user_id)["tz"] == "Asia/Shanghai"
+    store.close()
+
+
+def test_xinjiang_clock_ignores_choices_before_birthplace_correction(tmp_path):
+    store = Store(tmp_path / "memory.sqlite")
+    session = Session(user_id="corrected-birthplace")
+    tool = location_tool(Gazetteer(), store)
+    session.append_user("我在北京出生，出生钟表用北京时间。")
+    tool.handler(LocationInput(query="北京"), session)
+    session.append_user("出生地记错了，我其实在乌鲁木齐出生，时间不变。")
+    location = tool.handler(LocationInput(query="乌鲁木齐"), session)["location"]
+    assert store.get_profile(session.user_id)["tz"] is None
+    birth = BirthInput(location_id=location["location_id"])
+    with pytest.raises(NeedsInput) as missing:
+        birth_values(birth, session)
+    assert missing.value.code == "confirm_clock_timezone"
+    old_clock = birth.model_copy(update={"tz": "Asia/Shanghai"})
+    assert birth_provenance(old_clock, session)
+    with pytest.raises(NeedsInput) as missing:
+        birth_values(old_clock, session)
+    assert missing.value.code == "confirm_clock_timezone"
+    # The later answer overrides the older clock instead of creating a conflict.
+    session.append_user("我确认出生钟表用新疆时间。")
+    assert birth_values(birth, session)["tz"] == "Asia/Urumqi"
+    tool.handler(LocationInput(query="乌鲁木齐"), session)
+    assert store.get_profile(session.user_id)["tz"] == "Asia/Urumqi"
+    store.close()
+
+
+def test_xinjiang_confirmed_clock_survives_a_new_session(tmp_path):
+    store = Store(tmp_path / "memory.sqlite")
+    session = Session(user_id="saved-xinjiang-clock")
+    tool = location_tool(Gazetteer(), store)
+    session.append_user("乌鲁木齐出生，出生钟表用北京时间。")
+    location = tool.handler(LocationInput(query="乌鲁木齐"), session)["location"]
+    later = Session(user_id=session.user_id, profile=store.get_profile(session.user_id))
+    later.append_user("请用我的出生资料看工作方向。")
+    tool.handler(LocationInput(query="乌鲁木齐"), later)
+    assert store.get_profile(session.user_id)["tz"] == "Asia/Shanghai"
+    assert birth_values(BirthInput(location_id=location["location_id"]), later)["tz"] == (
+        "Asia/Shanghai"
+    )
     store.close()
 
 

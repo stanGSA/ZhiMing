@@ -359,6 +359,30 @@ def stated_xinjiang_clock(text: str) -> str | None:
     return "Asia/Shanghai" if beijing else "Asia/Urumqi"
 
 
+def xinjiang_birth_clock(session, location_id: str) -> str | None:
+    """Use clock answers since this birthplace was named, then its saved confirmation.
+
+    A clock stated for an earlier birthplace cannot confirm a corrected one. Later
+    replies take precedence, and an explicit ambiguity must not reuse the saved value.
+    """
+    aliases = session.state.get("location_aliases", {}).get(location_id, [])
+    start = session.state.get("question_message_index", 0)
+    for index in range(len(session.user_messages) - 1, -1, -1):
+        if any(birth_place_mentioned(session.user_messages[index], name) for name in aliases):
+            start = index
+            break
+    for message in reversed(session.user_messages[start:]):
+        if any(
+            name in message for name in ("北京时间", "新疆时间", "Asia/Shanghai", "Asia/Urumqi")
+        ):
+            return stated_xinjiang_clock(message)
+    if session.profile.get("location_id") == location_id:
+        clock = session.profile.get("tz")
+        if clock in ("Asia/Shanghai", "Asia/Urumqi"):
+            return clock
+    return None
+
+
 def location_tool(gazetteer: Gazetteer, store=None):
     def resolve(args, session):
         result = gazetteer.resolve(args)
@@ -390,7 +414,7 @@ def location_tool(gazetteer: Gazetteer, store=None):
                 # one is cleared rather than inferred from the place.
                 clock = location["tz"]
                 if clock == "Asia/Urumqi":
-                    clock = stated_xinjiang_clock(" ".join(session.user_messages))
+                    clock = xinjiang_birth_clock(session, location["location_id"])
                 for field, value in (
                     ("birth_place", args.query),
                     ("location_id", location["location_id"]),

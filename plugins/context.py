@@ -11,7 +11,7 @@ from common.input_evidence import (
     reading_text,
     supported_birth,
 )
-from common.location import consultation_timezone_evidence
+from common.location import consultation_timezone_evidence, xinjiang_birth_clock
 from common.time_utils import NeedsInput, date_range
 from harness.models import StrictInput
 from knowledge.review import lowest
@@ -104,14 +104,10 @@ def birth_values(args, session):
         raise NeedsInput("unresolved_location", location_choices(session))
     if location:
         values.update({k: location[k] for k in ("tz", "lat", "lon")})
-        text = " ".join(session.user_messages)
         clock_tz = args.tz or profile.get("tz")
         if location["tz"] == "Asia/Urumqi":
-            beijing = "北京时间" in text or "Asia/Shanghai" in text
-            xinjiang = "新疆时间" in text or "Asia/Urumqi" in text
-            if beijing != xinjiang:
-                clock_tz = "Asia/Shanghai" if beijing else "Asia/Urumqi"
-            elif not clock_tz or beijing == xinjiang and beijing:
+            clock_tz = xinjiang_birth_clock(session, args.location_id)
+            if clock_tz is None or (args.tz and args.tz != clock_tz):
                 raise NeedsInput(
                     "confirm_clock_timezone",
                     "请确认出生钟表时间使用北京时间（Asia/Shanghai）还是新疆时间（Asia/Urumqi）。",
@@ -155,6 +151,13 @@ def birth_provenance(args, session):
         rf"fold\s*=\s*{args.fold}|{'回拨前' if args.fold == 0 else '回拨后'}", text
     ):
         return "重复本地时间的fold必须由用户明确确认"
+    location = session.state.get("locations", {}).get(args.location_id, {})
+    if (
+        location.get("tz") == "Asia/Urumqi"
+        and args.tz
+        and args.tz != xinjiang_birth_clock(session, args.location_id)
+    ):
+        return "新疆出生钟表时区须由当前出生资料的用户确认，不能沿用旧出生地的选择"
     if args.tz and args.tz != session.profile.get("tz"):
         aliases = {"Asia/Shanghai": "北京时间", "Asia/Urumqi": "新疆时间", "Etc/GMT-8": "UTC+8"}
         location = session.state.get("locations", {}).get(args.location_id, {})
