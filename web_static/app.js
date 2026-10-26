@@ -324,8 +324,10 @@ async function send({ message, extra = {} }, birth) {
     handled = next.messages.at(-1)?.status === "submit_reading" && Boolean(page.onAnswered?.());
     if (next.messages.at(-1)?.status === "submit_reading" && !handled) {
       toast("解读已整理好。");
-      if (window.innerWidth <= 1100)
-        $("#reading")?.scrollIntoView({ behavior: "smooth", block: "start" });
+      // The reading spans the page below the dialogue window: bring it into view, and keep it
+      // there when the composer takes focus again.
+      handled = Boolean($("#reading"));
+      $("#reading")?.scrollIntoView({ behavior: "smooth", block: "start" });
     }
   } catch (error) {
     $("#thinking")?.remove();
@@ -852,6 +854,17 @@ function openBirthFold() {
   fold.scrollIntoView({ behavior: "smooth", block: "start" });
 }
 
+// The draw button on the birth bar submits the folded form; an unfinished one is opened instead.
+function drawChart() {
+  if (busy || !state) return;
+  if (!$("#birth-date").value || !selectedLocation) {
+    openBirthFold();
+    toast("请先填写出生日期与出生地点。");
+    return;
+  }
+  $("#birth-form").requestSubmit();
+}
+
 function fillBirthForm(birth) {
   $("#birth-date").value = birth.date || "";
   $("#birth-time").value = birth.time || "";
@@ -976,15 +989,19 @@ async function restoreLocation(identity) {
 
 /* ---------- 问道 · 首页 ---------- */
 
-function renderProfile(birth) {
+/* The 生辰档案 panel leads the page: an empty profile shows its form straight away, a saved one
+   its summary, with the form behind 修改生辰. */
+function renderProfile(birth, editing = false) {
+  const filled = Boolean(birth?.date);
+  $("#enroll").classList.toggle("filled", filled);
+  $("#profile-status").textContent = filled ? "已保存" : "未填写";
+  $("#hero-enroll").textContent = filled ? "查看生辰档案" : "录入生辰档案";
+  $("#enroll-saved").hidden = !filled;
+  $("#birth-details").hidden = filled && !editing;
+  $("#edit-birth").textContent = filled && editing ? "收起" : "修改生辰";
   const list = $("#profile-list");
-  if (!list) return;
   list.replaceChildren();
-  $("#profile-status").textContent = birth?.date ? "已保存" : "未填写";
-  if (!birth?.date) {
-    list.append(node("p", "profile-empty", "尚未填写生辰。八字、星盘与运势会用到它，问道时也可一并参考。"));
-    return;
-  }
+  if (!filled) return;
   const rows = [
     ["公历", `${birth.date} ${birth.time || "时辰不详"}`],
     ["出生地", birth.place || "地点待补充"],
@@ -1001,7 +1018,7 @@ function renderRecent(history) {
   if (!list) return;
   list.replaceChildren();
   if (!history.length) {
-    list.append(node("p", "recent-empty", "还没有解读记录。写下第一个问题吧。"));
+    list.append(node("p", "recent-empty", "还没有解读记录。从六术中择一门发问，解读会记在这里。"));
     return;
   }
   history.slice(0, 5).forEach((item) => list.append(historyButton(item, "recent-item")));
@@ -1414,9 +1431,9 @@ const SPREAD_HINTS = {
   idle: "选择牌阵，写下一个具体的问题，再点「洗牌抽牌」。",
   picking: "",
   waiting: "牌已选定，正在静候牌意……",
-  open: "这一轮还没抽出牌。请在下方对话窗回复知命，所选的牌会沿用；想换牌请点「重新起问」。",
+  open: "这一轮还没抽出牌。请在对话窗回复知命，所选的牌会沿用；想换牌请点「重新起问」。",
   reveal: "轻触牌面逐张翻开，或点「全部翻开」。",
-  done: "追问请在下方对话窗；想换一组牌，请点「重新起问」。",
+  done: "追问请在对话窗；想换一组牌，请点「重新起问」。",
 };
 
 function drawnCards() {
@@ -1573,7 +1590,7 @@ function openRound() {
   tarotPhase = "open";
   renderSpread(null);
   if (state?.messages?.at(-1)?.status === "ask_user")
-    toast("知命想先确认一些信息，请在下方对话窗回复；所选的牌会沿用。");
+    toast("知命想先确认一些信息，请在对话窗回复；所选的牌会沿用。");
 }
 
 // After a reload the round lives only on the server: take its question, spread and positions
@@ -2012,7 +2029,7 @@ function renderDaily(reading) {
 const PAGES = {
   ask: {
     onState(next, first) {
-      renderProfile(next.birth);
+      renderProfile(next.birth, !first && !$("#birth-details").hidden);
       if (first)
         api("/api/almanac", { method: "POST", body: "{}" })
           .then((day) => {
@@ -2025,11 +2042,22 @@ const PAGES = {
     },
     onHistory: renderRecent,
     onBirthSaved: renderProfile,
+    // There is no dialogue here: a reading shows only when a record is opened from 足迹.
+    onReading(reading) {
+      $("#reading").hidden = !reading;
+    },
     init() {
-      $("#edit-birth").addEventListener("click", () => {
-        $("#birth-details").open = true;
-        $("#birth-details").scrollIntoView({ behavior: "smooth", block: "start" });
+      $("#hero-enroll").addEventListener("click", (event) => {
+        event.preventDefault();
+        $("#enroll").scrollIntoView({ behavior: "smooth", block: "start" });
+        if (!$("#birth-details").hidden) $("#birth-date").focus({ preventScroll: true });
       });
+      $("#edit-birth").addEventListener("click", () => {
+        const editing = $("#birth-details").hidden;
+        renderProfile(state.birth, editing);
+        if (editing) $("#birth-date").focus();
+      });
+      $("#close-reading").addEventListener("click", () => renderReading(null));
     },
   },
   bazi: {
@@ -2236,6 +2264,7 @@ function init() {
   emptyReading = $("#reading-content")?.cloneNode(true) || null;
   const host = $("[data-birth]");
   if (host) buildBirthForm(host, host.dataset.birth);
+  $("#draw-chart")?.addEventListener("click", drawChart);
   wireControls();
   initComposer();
   $$('a[href^="#"]').forEach((link) => {

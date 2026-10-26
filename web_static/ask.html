@@ -44,8 +44,9 @@
           <div class="hero-copy">
             <span class="hero-date" id="today-line">今日 · 正在推算</span>
             <p>
-              心有所问，不必先想好用哪一门。写下来，知命会从八字、星盘、塔罗等六术中择其相宜者，合而观之。
+              先录下生辰，八字、星盘与运势都从出生时空起算；再从六术中择一门而入，就具体的事发问。
             </p>
+            <a class="btn btn-primary hero-cta" id="hero-enroll" href="#enroll">录入生辰档案</a>
           </div>
         </div>
         <svg
@@ -86,48 +87,35 @@
       </section>
 
       <div class="wrap">
-        <section class="section consult" aria-labelledby="consult-title">
-          <div class="section-title">
-            <h2 id="consult-title">问答</h2>
-            <span class="note">一问一答，解读整理在右</span>
+        <section class="enroll" id="enroll" aria-labelledby="enroll-title">
+          <div class="enroll-intro">
+            <span class="enroll-step">第一步 · 先录生辰</span>
+            <div class="enroll-title">
+              <span class="enroll-seal" aria-hidden="true">生<br />辰</span>
+              <h2 id="enroll-title">录入生辰档案</h2>
+            </div>
+            <p>八字排盘、本命星图与每日运势都从出生时空起算。录一次，各页自动带入，不必重复填写。</p>
+            <ul class="enroll-uses">
+              <li><b>八字</b>四柱、五行与十年大运</li>
+              <li><b>星盘</b>行星落点、宫位与上升</li>
+              <li><b>运势</b>按你的日主推算流日十神</li>
+            </ul>
+            <p class="enroll-note">只保存在本次浏览器会话中，可随时在页脚「清除我的记录」。</p>
           </div>
-          <div class="dialog-band">
-            <section class="dialog" id="dialog" aria-labelledby="dialog-title">
-              <header class="dialog-head">
-                <span class="dialog-seal" aria-hidden="true">知</span>
-                <div class="dialog-heading">
-                  <h2 id="dialog-title">与知命对话</h2>
-                  <p>不必先选哪一门，知命会择其相宜者合而观之</p>
-                </div>
-                <span class="dialog-live" data-live>正在连接</span>
-              </header>
-              <div class="messages" id="messages" role="log" aria-live="polite"></div>
-              <form class="composer" id="chat-form">
-                <label class="sr-only" for="message">你的问题</label>
-                <div class="composer-box">
-                  <textarea
-                    id="message"
-                    rows="1"
-                    maxlength="4000"
-                    required
-                    placeholder="写下此刻萦绕心头的事，越具体越好"
-                  ></textarea>
-                  <button class="btn btn-primary composer-send" id="send" type="submit">发问</button>
-                </div>
-                <span class="hint" id="input-hint">Enter 发送 · Shift + Enter 换行</span>
-              </form>
-            </section>
-            <section class="reading" id="reading" aria-labelledby="reading-title">
-              <div class="reading-head">
-                <h3 id="reading-title">此间解读</h3>
-                <button class="btn btn-text" id="copy-reading" type="button" hidden>复制</button>
+          <div class="enroll-body">
+            <div class="enroll-status">
+              <span class="profile-status" id="profile-status">未填写</span>
+            </div>
+            <div class="enroll-saved" id="enroll-saved" hidden>
+              <div id="profile-list"></div>
+              <div class="btn-row">
+                <button class="btn btn-ghost" id="edit-birth" type="button" data-lock>修改生辰</button>
+                <a class="enroll-next" href="/bazi">排八字 →</a>
+                <a class="enroll-next" href="/astro">绘星盘 →</a>
+                <a class="enroll-next" href="/daily">看运势 →</a>
               </div>
-              <div class="reading-content" id="reading-content">
-                <p class="reading-empty" data-glyph="道">
-                  发问之后，定调、分层分析与可行之事会整理在这里。
-                </p>
-              </div>
-            </section>
+            </div>
+            <div class="enroll-form" id="birth-details"><div data-birth="save"></div></div>
           </div>
         </section>
 
@@ -165,27 +153,22 @@
           </div>
         </section>
 
-        <div class="section lower">
-          <section class="recent" aria-labelledby="recent-title">
-            <div class="section-title">
-              <h2 id="recent-title">近来所问</h2>
+        <section class="section recent" aria-labelledby="recent-title">
+          <div class="section-title">
+            <h2 id="recent-title">近来所问</h2>
+          </div>
+          <div class="recent-list" id="recent-list"></div>
+          <section class="reading record" id="reading" aria-labelledby="reading-title" hidden>
+            <div class="reading-head">
+              <h3 id="reading-title">足迹回看</h3>
+              <div class="btn-row">
+                <button class="btn btn-text" id="copy-reading" type="button" hidden>复制</button>
+                <button class="btn btn-text" id="close-reading" type="button">收起</button>
+              </div>
             </div>
-            <div class="recent-list" id="recent-list"></div>
+            <div class="reading-content" id="reading-content"></div>
           </section>
-
-          <aside class="profile" aria-labelledby="profile-title">
-            <div class="profile-head">
-              <h2 id="profile-title">生辰档案</h2>
-              <span class="profile-status" id="profile-status">未填写</span>
-            </div>
-            <div id="profile-list"></div>
-            <button class="btn btn-ghost" id="edit-birth" type="button" data-lock>填写 / 修改</button>
-            <details class="profile-form" id="birth-details">
-              <summary>出生资料</summary>
-              <div data-birth="save"></div>
-            </details>
-          </aside>
-        </div>
+        </section>
       </div>
     </main>
 
@@ -204,42 +187,5 @@
         </div>
       </div>
     </footer>
-
-    <template id="welcome">
-      <div class="welcome">
-        <h3>你好，有缘相见。</h3>
-        <p>命理如一面镜，照见可能，也照见自己。人生的岔路，或此刻的小小困惑，都可以从这里说起。</p>
-        <div class="btn-row">
-          <button
-            class="btn btn-tag"
-            type="button"
-            data-question="最近在考虑职业方向，如何看清当下、找到适合自己的下一步？"
-          >
-            事业与方向
-          </button>
-          <button
-            class="btn btn-tag"
-            type="button"
-            data-question="我想梳理一下当前的感情状态，有哪些值得留意的地方？"
-          >
-            感情与关系
-          </button>
-          <button
-            class="btn btn-tag"
-            type="button"
-            data-question="我想了解自己的性格特点与优势，需要提供哪些出生信息？"
-          >
-            认识自己
-          </button>
-          <button
-            class="btn btn-tag"
-            type="button"
-            data-question="请抽一张塔罗牌，为我今天的自我反思提供一个线索。"
-          >
-            今日一问
-          </button>
-        </div>
-      </div>
-    </template>
   </body>
 </html>

@@ -109,15 +109,13 @@
   line-height: 1.9;
 }
 
-/* ---------- Four plaques ---------- */
+/* ---------- Four plaques: the left of the band, elements and day master beneath ---------- */
 .bazi-board {
   display: flex;
-  gap: 40px;
-  flex-wrap: wrap;
-  align-items: stretch;
+  flex-direction: column;
+  gap: 24px;
 }
 .pillars {
-  flex: 1 1 720px;
   min-width: 0;
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -214,11 +212,14 @@
 
 /* ---------- Five elements and day master ---------- */
 .bazi-side {
-  flex: 1 1 340px;
   min-width: 0;
   display: flex;
-  flex-direction: column;
+  flex-wrap: wrap;
   gap: 18px;
+}
+.bazi-side > section {
+  flex: 1 1 280px;
+  min-width: 0;
 }
 .panel-head {
   display: flex;
@@ -279,7 +280,6 @@
   text-align: right;
 }
 .dm-panel {
-  flex: 1;
   background: var(--surface);
   border: 1px solid rgba(207, 165, 91, 0.3);
   padding: 24px 26px;

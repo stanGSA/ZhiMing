@@ -74,56 +74,63 @@
       </section>
 
       <div class="wrap">
-        <p class="name-empty" id="name-empty">填写姓与名，按朱印「推演」，即可看到康熙笔画、五格与三才。</p>
+        <div class="dialog-band name-lower">
+          <div class="band-work">
+            <p class="name-empty" id="name-empty" data-glyph="名">
+              填写姓与名，按朱印「推演」，即可看到康熙笔画、五格与三才。
+            </p>
 
-        <div id="name-board" hidden>
-          <section class="steles" id="name-chars" aria-label="康熙笔画"></section>
-          <div class="name-forms" id="name-forms" hidden></div>
+            <div id="name-board" hidden>
+              <section class="steles" id="name-chars" aria-label="康熙笔画"></section>
+              <div class="name-forms" id="name-forms" hidden></div>
 
-          <div class="name-grid">
-            <section class="wuge-panel" aria-labelledby="wuge-title">
-              <h2 id="wuge-title">五格剖象</h2>
-              <div class="wuge-scroll">
-                <div class="wuge" id="wuge" role="img" aria-label="五格剖象图"></div>
+              <div class="name-grid">
+                <section class="wuge-panel" aria-labelledby="wuge-title">
+                  <h2 id="wuge-title">五格剖象</h2>
+                  <div class="wuge-scroll">
+                    <div class="wuge" id="wuge" role="img" aria-label="五格剖象图"></div>
+                  </div>
+                </section>
+                <aside class="sancai-panel" aria-labelledby="sancai-title">
+                  <div class="panel-head">
+                    <h2 id="sancai-title">三才</h2>
+                    <span>取天、人、地格尾数</span>
+                  </div>
+                  <div class="sancai-flow" id="sancai-flow"></div>
+                  <p class="sancai-rule">尾数 1、2 属木，3、4 属火，5、6 属土，7、8 属金，9、0 属水。</p>
+                  <p class="sancai-note" id="sancai-note"></p>
+                </aside>
               </div>
-            </section>
-            <aside class="sancai-panel" aria-labelledby="sancai-title">
-              <div class="panel-head">
-                <h2 id="sancai-title">三才</h2>
-                <span>取天、人、地格尾数</span>
-              </div>
-              <div class="sancai-flow" id="sancai-flow"></div>
-              <p class="sancai-rule">尾数 1、2 属木，3、4 属火，5、6 属土，7、8 属金，9、0 属水。</p>
-              <p class="sancai-note" id="sancai-note"></p>
-            </aside>
+            </div>
           </div>
-        </div>
 
-        <section class="dialog-band name-lower" aria-label="就此姓名发问">
-          <section class="dialog" id="dialog" aria-labelledby="dialog-title">
-            <header class="dialog-head">
-              <span class="dialog-seal" aria-hidden="true">知</span>
-              <div class="dialog-heading">
-                <h2 id="dialog-title">就此姓名发问</h2>
-                <p>会连同上方推演的姓名一起交给知命</p>
-              </div>
-              <span class="dialog-live" data-live>正在连接</span>
-            </header>
-            <div class="messages" id="messages" role="log" aria-live="polite"></div>
-            <form class="composer" id="chat-form">
-              <label class="sr-only" for="message">你的问题</label>
-              <div class="composer-box">
-                <textarea
-                  id="message"
-                  rows="1"
-                  maxlength="3800"
-                  placeholder="比如：人格数说明了什么？（留空则解读五格三才）"
-                ></textarea>
-                <button class="btn btn-primary composer-send" id="send" type="submit">解读姓名</button>
-              </div>
-              <span class="hint" id="input-hint">Enter 发送 · 会连同上方姓名一起解读</span>
-            </form>
-          </section>
+          <aside class="band-ask" aria-label="就此姓名发问">
+            <section class="dialog" id="dialog" aria-labelledby="dialog-title">
+              <header class="dialog-head">
+                <span class="dialog-seal" aria-hidden="true">知</span>
+                <div class="dialog-heading">
+                  <h2 id="dialog-title">就此姓名发问</h2>
+                  <p>会连同上方推演的姓名一起交给知命</p>
+                </div>
+                <span class="dialog-live" data-live>正在连接</span>
+              </header>
+              <div class="messages" id="messages" role="log" aria-live="polite"></div>
+              <form class="composer" id="chat-form">
+                <label class="sr-only" for="message">你的问题</label>
+                <div class="composer-box">
+                  <textarea
+                    id="message"
+                    rows="1"
+                    maxlength="3800"
+                    placeholder="比如：人格数说明了什么？（留空则解读五格三才）"
+                  ></textarea>
+                  <button class="btn btn-primary composer-send" id="send" type="submit">解读姓名</button>
+                </div>
+                <span class="hint" id="input-hint">Enter 发送 · 会连同上方姓名一起解读</span>
+              </form>
+            </section>
+          </aside>
+
           <section class="reading stone" id="reading" aria-labelledby="reading-title">
             <div class="reading-head">
               <h3 id="reading-title">姓名解读</h3>
@@ -133,7 +140,7 @@
               <p class="reading-empty" data-glyph="名">推演后发问，五格与三才的解读会整理在这里。</p>
             </div>
           </section>
-        </section>
+        </div>
       </div>
     </main>
 

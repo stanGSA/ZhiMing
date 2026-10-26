@@ -53,64 +53,68 @@
         <div class="birth-fold-body"><div data-birth="daily"></div></div>
       </details>
 
-      <section class="almanac" aria-labelledby="day-num">
-        <div class="almanac-binding" aria-hidden="true"><span></span><span></span></div>
-        <div class="almanac-body">
-          <div class="almanac-side">
-            <span class="side-pillars" id="day-pillars">— 年 — 月 — 日</span>
-            <span class="side-lunar" id="day-lunar">农历</span>
-          </div>
-          <div class="almanac-center">
-            <span class="day-month" id="day-month">—</span>
-            <h1 class="day-num" id="day-num">—</h1>
-            <span class="day-weekday" id="day-weekday">星期—</span>
-            <span class="day-term" id="day-term">节气</span>
-          </div>
-          <div class="almanac-cells">
-            <div class="cell cell-god">
-              <span class="cell-label">流日 · 于你</span>
-              <span class="cell-big" id="day-god">—</span>
-              <span class="cell-note" id="day-god-note">确认出生日期与地点后，按你的日主推算</span>
-            </div>
-            <div class="cell cell-element">
-              <div>
-                <span class="cell-label">日元素</span>
-                <span class="cell-value"><span id="day-element">—</span></span>
+      <div class="dialog-band daily-dialog">
+        <div class="band-work">
+          <section class="almanac" aria-labelledby="day-num">
+            <div class="almanac-binding" aria-hidden="true"><span></span><span></span></div>
+            <div class="almanac-body">
+              <div class="almanac-side">
+                <span class="side-pillars" id="day-pillars">— 年 — 月 — 日</span>
+                <span class="side-lunar" id="day-lunar">农历</span>
               </div>
-              <p class="cell-note" id="day-element-note"></p>
+              <div class="almanac-center">
+                <span class="day-month" id="day-month">—</span>
+                <h1 class="day-num" id="day-num">—</h1>
+                <span class="day-weekday" id="day-weekday">星期—</span>
+                <span class="day-term" id="day-term">节气</span>
+              </div>
+              <div class="almanac-cells">
+                <div class="cell cell-god">
+                  <span class="cell-label">流日 · 于你</span>
+                  <span class="cell-big" id="day-god">—</span>
+                  <span class="cell-note" id="day-god-note">确认出生日期与地点后，按你的日主推算</span>
+                </div>
+                <div class="cell cell-element">
+                  <div>
+                    <span class="cell-label">日元素</span>
+                    <span class="cell-value"><span id="day-element">—</span></span>
+                  </div>
+                  <p class="cell-note" id="day-element-note"></p>
+                </div>
+                <div class="cell" id="day-transits"></div>
+                <div class="cell cell-card" id="day-card"></div>
+              </div>
             </div>
-            <div class="cell" id="day-transits"></div>
-            <div class="cell cell-card" id="day-card"></div>
-          </div>
+          </section>
         </div>
-      </section>
 
-      <section class="dialog-band daily-dialog" aria-label="问今天的一件事">
-        <section class="dialog" id="dialog" aria-labelledby="dialog-title">
-          <header class="dialog-head">
-            <span class="dialog-seal" aria-hidden="true">问</span>
-            <div class="dialog-heading">
-              <h2 id="dialog-title">问今天的一件事</h2>
-              <p>问题按上方所选日期解读</p>
-            </div>
-            <span class="dialog-live" data-live>正在连接</span>
-          </header>
-          <div class="messages" id="messages" role="log" aria-live="polite"></div>
-          <form class="composer" id="chat-form">
-            <label class="sr-only" for="message">你的问题</label>
-            <div class="composer-box">
-              <textarea
-                id="message"
-                rows="1"
-                maxlength="3900"
-                required
-                placeholder="比如：今天适合和同事谈加薪吗？"
-              ></textarea>
-              <button class="btn btn-primary composer-send" id="send" type="submit">发问</button>
-            </div>
-            <span class="hint" id="input-hint">Enter 发送 · 问题按上方所选日期解读</span>
-          </form>
-        </section>
+        <aside class="band-ask" aria-label="问今天的一件事">
+          <section class="dialog" id="dialog" aria-labelledby="dialog-title">
+            <header class="dialog-head">
+              <span class="dialog-seal" aria-hidden="true">问</span>
+              <div class="dialog-heading">
+                <h2 id="dialog-title">问今天的一件事</h2>
+                <p>问题按上方所选日期解读</p>
+              </div>
+              <span class="dialog-live" data-live>正在连接</span>
+            </header>
+            <div class="messages" id="messages" role="log" aria-live="polite"></div>
+            <form class="composer" id="chat-form">
+              <label class="sr-only" for="message">你的问题</label>
+              <div class="composer-box">
+                <textarea
+                  id="message"
+                  rows="1"
+                  maxlength="3900"
+                  required
+                  placeholder="比如：今天适合和同事谈加薪吗？"
+                ></textarea>
+                <button class="btn btn-primary composer-send" id="send" type="submit">发问</button>
+              </div>
+              <span class="hint" id="input-hint">Enter 发送 · 问题按上方所选日期解读</span>
+            </form>
+          </section>
+        </aside>
 
         <section class="reading" id="reading" aria-labelledby="reading-title">
           <div class="reading-head">
@@ -127,7 +131,7 @@
             </p>
           </div>
         </section>
-      </section>
+      </div>
 
       <section class="week-panel section" aria-labelledby="week-title">
         <div class="section-title">
