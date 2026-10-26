@@ -298,6 +298,7 @@ class BrowserSession:
     last_birth: str = ""
     reading: dict | None = None
     chart: dict | None = None
+    name_analysis: dict | None = None
     # A tarot draw sent but not yet answered with cards (e.g. the model asked something back):
     # its question, spread and positions, so a reloaded page can continue the same round.
     tarot_round: dict | None = None
@@ -544,6 +545,7 @@ def create_web_app(
             "birth": session.birth.model_dump(mode="json"),
             "reading": session.reading,
             "chart": session.chart,
+            "name_analysis": session.name_analysis,
             "tarot_round": session.tarot_round,
             "history": session.runtime.store.reading_history(session.user_id, limit=30),
             "busy": session.lock.locked(),
@@ -824,6 +826,7 @@ def create_web_app(
             session.reading = None
             session.chart = None
             session.tarot_round = None
+            session.name_analysis = None
         return state(session)
 
     @app.get("/api/readings/{reading_id}")
@@ -852,6 +855,7 @@ def create_web_app(
             session.reading = None
             session.chart = None
             session.tarot_round = None
+            session.name_analysis = None
         return state(session)
 
     @app.get("/api/locations")
@@ -898,6 +902,7 @@ def create_web_app(
     @app.post("/api/name")
     async def name_grids(body: NameQuery, request: Request):
         session = get_session(request)
+        available(session)
         if session.runtime.session.safety_pending:
             return {
                 "result": None,
@@ -918,6 +923,13 @@ def create_web_app(
                 "code": "unknown_name_char",
             }
         result["elements"] = {grid: element(number) for grid, number in result["grids"].items()}
+        # Keep the original choices so confirmed variants can still be changed after navigation.
+        choices = (
+            analyze(body.surname, body.given).get("ambiguities", [])
+            if body.forms
+            else result["ambiguities"]
+        )
+        session.name_analysis = {"result": result, "forms": dict(body.forms), "choices": choices}
         return {"result": result}
 
     @app.post("/api/almanac")

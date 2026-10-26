@@ -1704,6 +1704,17 @@ let nameResult = null;
 let nameForms = {};
 let nameChoices = [];
 
+function restoreName(saved) {
+  nameForms = saved?.forms || {};
+  nameChoices = saved?.choices || [];
+  $("#name-surname").value = saved?.result.surname || "";
+  $("#name-given").value = saved?.result.given || "";
+  $("#name-feedback").textContent = saved
+    ? `“${saved.result.full_name}”已按康熙笔画推演。`
+    : "复姓请把两个字都填在“姓”里。";
+  renderName(saved?.result || null);
+}
+
 function elementOfNumber(number) {
   return ELEMENTS[Math.floor(((number - 1) % 10) / 2)];
 }
@@ -1877,6 +1888,7 @@ async function runName(fresh = true) {
       return;
     }
     if (fresh) nameChoices = data.result.ambiguities;
+    state.name_analysis = { result: data.result, forms: { ...nameForms }, choices: nameChoices };
     $("#name-feedback").textContent = `“${surname}${given}”已按康熙笔画推演。`;
     renderName(data.result);
   } catch (error) {
@@ -2162,6 +2174,10 @@ const PAGES = {
   },
   name: {
     hint: "Enter 发送 · 会连同上方姓名一起解读",
+    onState(next, first) {
+      if (first && next.name_analysis) restoreName(next.name_analysis);
+      else if (!next.name_analysis && !next.reading) restoreName(null);
+    },
     init() {
       $("#name-form").addEventListener("submit", (event) => {
         event.preventDefault();

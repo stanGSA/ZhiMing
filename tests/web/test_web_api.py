@@ -460,6 +460,29 @@ async def test_name_grids_are_calculated_without_a_model(browser):
         assert (await client.post("/api/name", json=payload)).status_code == 422
 
 
+async def test_name_analysis_is_kept_in_its_session_and_cleared_on_new_or_forget(browser):
+    client, app, _ = browser
+    assert (await client.get("/api/session")).json()["name_analysis"] is None
+    payload = {"surname": "赵", "given": "杰", "forms": {"杰": "杰"}}
+    for endpoint in ("/api/new", "/api/session"):
+        response = await client.post("/api/name", json=payload)
+        assert response.status_code == 200
+        saved = (await client.get("/api/session")).json()["name_analysis"]
+        assert saved["result"] == response.json()["result"]
+        assert saved["forms"] == payload["forms"]
+        assert any(choice["char"] == "杰" for choice in saved["choices"])
+        async with httpx.AsyncClient(
+            transport=httpx.ASGITransport(app=app), base_url="http://testserver", headers=HEADERS
+        ) as other:
+            assert (await other.get("/api/session")).json()["name_analysis"] is None
+        if endpoint == "/api/new":
+            cleared = await client.post(endpoint, json={"provider": "demo"})
+        else:
+            cleared = await client.delete(endpoint)
+        assert cleared.json()["name_analysis"] is None
+        assert (await client.get("/api/session")).json()["name_analysis"] is None
+
+
 async def test_almanac_day_and_personal_ten_gods(browser):
     client, _, _ = browser
     await client.get("/api/session")

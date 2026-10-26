@@ -349,3 +349,42 @@ def test_external_draw_opens_invalid_folded_birth_form(site, chromium, date):
     expect(page.locator("#astro-empty")).to_be_hidden()
     assert len(charts) == 1
     page.close()
+
+
+def test_name_calculation_and_chosen_form_survive_navigation_and_reload(site, chromium):
+    base, _ = site
+    page = chromium.new_page()
+    page.goto(f"{base}/name?provider=demo")
+    expect(page.locator("#name-surname")).to_be_enabled()
+    page.fill("#name-surname", "赵")
+    page.fill("#name-given", "杰")
+    with page.expect_response(lambda r: r.url.endswith("/api/name")):
+        page.get_by_role("button", name="推演五格").click()
+    expect(page.locator("#name-board")).to_be_visible()
+    with page.expect_response(lambda r: r.url.endswith("/api/name")):
+        page.locator('#name-forms input[value="杰"]').check()
+    expect(page.locator("#name-chars")).to_contain_text("八画")
+    original = page.locator("#name-board").inner_text()
+
+    page.locator('.zm-nav a[href="/ask"]').click()
+    expect(page.locator("#connection")).to_have_text("离线演示")
+    page.locator('.zm-nav a[href="/name"]').click()
+    for reload in (False, True):
+        if reload:
+            page.reload()
+        expect(page.locator("#name-surname")).to_have_value("赵")
+        expect(page.locator("#name-given")).to_have_value("杰")
+        expect(page.locator("#name-board")).to_be_visible()
+        expect(page.locator('#name-forms input[value="杰"]')).to_be_checked()
+        expect(page.locator('#name-forms input[value="傑"]')).not_to_be_checked()
+        assert page.locator("#name-board").inner_text() == original
+
+    page.click("#forget")
+    page.click("#confirm-dialog button[value=confirm]")
+    expect(page.locator("#name-board")).to_be_hidden()
+    expect(page.locator("#name-surname")).to_have_value("")
+    page.reload()
+    expect(page.locator("#name-surname")).to_be_enabled()
+    expect(page.locator("#name-board")).to_be_hidden()
+    expect(page.locator("#name-given")).to_have_value("")
+    page.close()
