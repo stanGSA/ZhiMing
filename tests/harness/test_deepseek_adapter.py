@@ -16,6 +16,7 @@ from harness.trace import Tracer
 
 @pytest.mark.parametrize("thinking,effort", [("disabled", None), ("enabled", "low")])
 async def test_deepseek_wire_protocol_and_reasoning_replay(monkeypatch, thinking, effort):
+    monkeypatch.delenv("DEEPSEEK_BASE_URL", raising=False)
     monkeypatch.setenv("DEEPSEEK_API_KEY", "deepseek-test")
     monkeypatch.setenv("OPENAI_API_KEY", "old-test")
     monkeypatch.setenv("OPENAI_BASE_URL", "https://old.test")

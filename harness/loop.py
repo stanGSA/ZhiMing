@@ -6,6 +6,8 @@ from collections.abc import Callable
 from contextvars import ContextVar
 
 from harness.budget import Budget
+from harness.context import compact_context
+from harness.failures import failure, model_failure
 from harness.guard import Guard
 from harness.models import ToolCall, ToolResult, TurnOutcome
 from harness.refs import transform
@@ -74,17 +76,24 @@ async def run_turn(
 
     def timed_out(step: int) -> TurnOutcome:
         tracer.log(session, "timeout", step=step)
-        return TurnOutcome(status="timeout", text=TIMEOUT_TEXT)
+        return failure(
+            session, "timeout", "request_timeout", "本轮达到请求时限，请稍后继续或缩小问题范围。"
+        )
 
     last_input, last_count = None, 0
+    limit_reason = "step_limit"
     for step in range(max_steps):
         if budget.expired():
             return timed_out(step)
+        if compact_context(session, registry):
+            last_input, last_count = None, 0
+            tracer.log(session, "context_compacted", step=step)
         tools = registry.schemas(session)
         estimate = (
             estimate_call(session.messages, tools, last_input, last_count) if admission else 0
         )
         if not budget.admit(estimate):
+            limit_reason = "token_budget"
             tracer.log(
                 session, "budget_denied", step=step, estimate=estimate, remaining=budget.remaining()
             )
@@ -99,9 +108,7 @@ async def run_turn(
                 return timed_out(step)
             # API exceptions can contain request headers or credentials: never log their text.
             tracer.log(session, "model_error", error_type=type(exc).__name__, step=step)
-            return TurnOutcome(
-                status="model_error", text="模型调用失败，请检查模型配置、网络及密钥。"
-            )
+            return model_failure(session, exc)
         except asyncio.CancelledError:
             budget.release(estimate)
             raise
@@ -137,12 +144,15 @@ async def run_turn(
         if budget.expired():
             return timed_out(step)  # A response that arrives after the deadline is not acted on.
         if budget.overdrawn():
+            limit_reason = "token_budget"
             break  # Do not execute side effects from an over-budget response.
         if response.finish_reason == "length":
             tracer.log(session, "output_truncated", step=step)
-            return TurnOutcome(
-                status="output_truncated",
-                text="模型输出达到单次上限，尚未形成完整结果；请缩小问题范围或调整输出上限。",
+            return failure(
+                session,
+                "output_truncated",
+                "output_limit",
+                "模型输出达到单次上限；请缩小问题范围或调整单次输出上限。",
             )
         if not response.tool_calls:
             if session.state.get("active_reading_id") and not session.state.get("complete"):
@@ -243,11 +253,15 @@ async def run_turn(
         if terminal:
             session.messages.append({"role": "assistant", "content": terminal.text})
             return terminal
-    tracer.log(session, "limit_reached", tokens=budget.used, max_steps=max_steps)
-    return TurnOutcome(
-        status="limit_reached",
-        text="本轮达到步数或 token 上限，尚未形成通过校验的解读。已有抽牌保留，可以继续。",
+    tracer.log(
+        session, "limit_reached", reason=limit_reason, tokens=budget.used, max_steps=max_steps
     )
+    text = (
+        f"本轮达到执行步数上限（{max_steps}步），尚未完成解读；可继续当前问题或缩小范围。"
+        if limit_reason == "step_limit"
+        else "本轮达到请求token预算，尚未完成解读；可缩小问题范围后继续，下一轮预算会重置。"
+    )
+    return failure(session, "limit_reached", limit_reason, text)
 
 
 def is_parallel(registry: Registry, call: ToolCall) -> bool:

@@ -99,6 +99,17 @@ def birth_values(args, session):
         else profile.get("time_known", args.time_known),
         fold=args.fold,
     )
+    if getattr(session, "birth_binding", None):
+        bound = session.birth_binding["profile"]
+        values.update(
+            birth_local=bound["birth_local_dt"],
+            tz=bound["tz"],
+            lat=bound["lat"],
+            lon=bound["lon"],
+            time_known=bound["time_known"],
+        )
+        if not bound["location_id"] or not bound["tz"]:
+            raise NeedsInput("missing_birth_location", "请在出生表单中选择地点及出生钟表时间制。")
     location = session.state.get("locations", {}).get(args.location_id)
     if args.location_id and location is None:
         raise NeedsInput("unresolved_location", location_choices(session))
@@ -122,6 +133,34 @@ def birth_values(args, session):
 
 
 def birth_provenance(args, session):
+    if getattr(session, "birth_binding", None):
+        bound = session.birth_binding["profile"]
+        mapping = dict(
+            birth_local="birth_local_dt",
+            location_id="location_id",
+            tz="tz",
+            lat="lat",
+            lon="lon",
+            time_known="time_known",
+            gender="gender",
+            true_solar_time="true_solar_time",
+            zishi_rule="zishi_rule",
+            dayun_time_basis="dayun_time_basis",
+        )
+        for arg, field in mapping.items():
+            if not hasattr(args, arg):
+                continue
+            expected = bound[field]
+            supplied = getattr(args, arg)
+            if arg == "birth_local" and supplied and expected:
+                supplied = supplied.replace("T", " ")[:16]
+                expected = expected.replace("T", " ")[:16]
+            if arg in args.model_fields_set and supplied is not None and supplied != expected:
+                return f"{arg}与本次出生表单不一致，请省略该参数，使用当前表单资料。"
+            if bound[field] is not None:
+                setattr(args, arg, bound[field])
+        if getattr(args, "calendar", "solar") != "solar":
+            return "本次出生表单为公历，请使用calendar=solar。"
     text = " ".join(session.user_messages)
     # Preserve punctuation equivalence without allowing fabricated dates or hours.
     resolve_birth_location(args, session)

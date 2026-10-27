@@ -29,8 +29,10 @@ from common.safety import (
 from common.stages import install
 from common.tools import common_tools
 from harness.budget import Budget
+from harness.context import compact_context
+from harness.failures import failure
 from harness.llm import AnthropicModel, OpenAIModel
-from harness.loop import TIMEOUT_TEXT, run_turn
+from harness.loop import run_turn
 from harness.models import TurnOutcome
 from harness.registry import Registry
 from harness.session import Session
@@ -76,6 +78,8 @@ class Runtime:
                 and m.get("content")
             ]
             self.session.messages = stable + conversation[-6:]
+        elif compact_context(self.session, self.registry):
+            self.tracer.log(self.session, "context_compacted")
 
     async def safety_response(
         self, message: str, profile: dict | None = None
@@ -174,7 +178,12 @@ class Runtime:
             return await asyncio.wait_for(turn, self.request_timeout_s)
         except TimeoutError:
             self.tracer.log(self.session, "request_timeout", timeout_s=self.request_timeout_s)
-            return TurnOutcome(status="timeout", text=TIMEOUT_TEXT)
+            return failure(
+                self.session,
+                "timeout",
+                "request_timeout",
+                "本轮达到请求时限，请稍后继续或缩小问题范围。",
+            )
 
     def forget(self) -> None:
         self.store.forget(self.session.user_id)
@@ -187,6 +196,8 @@ class Runtime:
         self.session.cache.clear()
         self.session.user_messages.clear()
         self.session.total_tokens = 0
+        self.session.birth_binding = None
+        self.session.pinned_reading_id = None
 
     def close(self):
         self.kb.close()

@@ -211,6 +211,8 @@ def render_reading(output: dict) -> str:
 
 def common_tools(store, kb: KnowledgeBase, mode: str = "single", reviewer=None) -> list[Tool]:
     def start_validator(args, session):
+        if session.pinned_reading_id:
+            return "本次正在追问指定历史解读，请使用read_reading，不要开启新记录。"
         current = session.user_messages[-1]
         if (
             session.state.get("tarot_drawn")
@@ -302,10 +304,15 @@ def common_tools(store, kb: KnowledgeBase, mode: str = "single", reviewer=None) 
 
     def get_profile(args, session):
         session.profile = store.get_profile(session.user_id)
+        if session.birth_binding:
+            session.profile.update(session.birth_binding["profile"])
         session.refresh_calendar()
         return {"profile": session.profile}
 
     def profile_validator(args, session):
+        if session.birth_binding and args.field in session.birth_binding["profile"]:
+            if args.value != session.birth_binding["profile"][args.field]:
+                return "出生资料已绑定本次表单，请先修改表单后再开始新的解读。"
         if not any(args.evidence in message for message in session.user_messages):
             return "evidence 必须是用户原话的连续子串"
         if args.field in ("zishi_rule", "calendar_input"):
@@ -470,7 +477,13 @@ def common_tools(store, kb: KnowledgeBase, mode: str = "single", reviewer=None) 
         return {"text": args.question}
 
     def read(args, session):
-        reading_id = args.reading_id or session.state.get("active_reading_id")
+        if session.pinned_reading_id and args.reading_id not in (None, session.pinned_reading_id):
+            return ToolResult.failure(
+                "reading_mismatch", "本次问题已绑定历史解读，不能切换到其他记录。"
+            )
+        reading_id = (
+            session.pinned_reading_id or args.reading_id or session.state.get("active_reading_id")
+        )
         if not reading_id:
             recent = store.recent_readings(session.user_id, limit=1)
             reading_id = recent[0]["reading_id"] if recent else None

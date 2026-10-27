@@ -220,7 +220,7 @@ async def test_region_cascade_and_deterministic_birth_chart(browser):
     }
     assert data["chart"]["result"]["day_master"] == "壬水"
     assert runtimes[-1].session.model_calls == 0
-    assert (await client.get("/api/session")).json()["chart"] == data["chart"]
+    assert (await client.get("/api/session?system=bazi")).json()["chart"] == data["chart"]
     astro = (await client.post("/api/chart", json={"system": "astro", "birth": birth})).json()
     assert len(astro["chart"]["result"]["planets"]) == 10
     assert astro["chart"]["result"]["asc"] is not None
@@ -296,7 +296,7 @@ async def test_tarot_picks_decide_the_cards(browser):
 
 async def test_clarifying_reply_continues_the_round_with_the_latest_picks(browser, scripted_model):
     client, _, runtimes = browser
-    await client.get("/api/session")
+    await client.get("/api/session?system=tarot")
 
     def response(name, **arguments):
         return ModelResponse(tool_calls=[ToolCall(id=name, name=name, arguments=arguments)])
@@ -326,7 +326,9 @@ async def test_clarifying_reply_continues_the_round_with_the_latest_picks(browse
     assert runtimes[-1].session.state["tarot_result"]["picks"] == [60, 8, 34]
     assert second["tarot_round"]["question"] == "A 还是 B？"
     assert second["tarot_round"]["picks"] == [60, 8, 34]
-    renewed = (await client.post("/api/new", json={"provider": "configured"})).json()
+    renewed = (
+        await client.post("/api/new", json={"provider": "configured", "system": "tarot"})
+    ).json()
     assert renewed["tarot_round"] is None
 
 
@@ -467,7 +469,7 @@ async def test_name_analysis_is_kept_in_its_session_and_cleared_on_new_or_forget
     for endpoint in ("/api/new", "/api/session"):
         response = await client.post("/api/name", json=payload)
         assert response.status_code == 200
-        saved = (await client.get("/api/session")).json()["name_analysis"]
+        saved = (await client.get("/api/session?system=name")).json()["name_analysis"]
         assert saved["result"] == response.json()["result"]
         assert saved["forms"] == payload["forms"]
         assert any(choice["char"] == "杰" for choice in saved["choices"])
@@ -476,11 +478,11 @@ async def test_name_analysis_is_kept_in_its_session_and_cleared_on_new_or_forget
         ) as other:
             assert (await other.get("/api/session")).json()["name_analysis"] is None
         if endpoint == "/api/new":
-            cleared = await client.post(endpoint, json={"provider": "demo"})
+            cleared = await client.post(endpoint, json={"provider": "demo", "system": "name"})
         else:
             cleared = await client.delete(endpoint)
         assert cleared.json()["name_analysis"] is None
-        assert (await client.get("/api/session")).json()["name_analysis"] is None
+        assert (await client.get("/api/session?system=name")).json()["name_analysis"] is None
 
 
 async def test_almanac_day_and_personal_ten_gods(browser):
@@ -520,7 +522,7 @@ async def test_birth_profile_is_saved_for_every_page(browser):
     birth = {"date": "1994-03-18", "time": "08:30", "location_id": "6607381"}
     chart = (await client.post("/api/chart", json={"system": "bazi", "birth": birth})).json()
     assert chart["chart"]["result"]["day_master"] == "癸水"
-    same = (await client.put("/api/birth", json=birth)).json()
+    same = (await client.put("/api/birth?system=bazi", json=birth)).json()
     assert same["chart"] is not None and same["birth"]["place"].endswith("西湖区")
     changed = (await client.put("/api/birth", json={**birth, "time": "09:30"})).json()
     assert changed["chart"] is None

@@ -43,7 +43,9 @@ class DemoModel:
 
             packet = json.loads(question)
             return call("submit_review", rule_review(packet))
-        if re.search(r"第二张|第一张|第三张|第[123]张|这张牌|什么意思|刚才.*牌", question):
+        if re.search(r"第二张|第一张|第三张|第[123]张|这张牌|什么意思|刚才.*牌", question) or (
+            "read_reading" in available and "start_reading" not in available
+        ):
             read = next(
                 (r["data"].get("reading") for r in results if r["ok"] and "reading" in r["data"]),
                 None,

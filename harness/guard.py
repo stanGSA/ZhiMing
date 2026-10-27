@@ -17,6 +17,14 @@ class Guard:
     def check(
         self, call: ToolCall, session: Session
     ) -> tuple[BaseModel | None, ToolResult | None, str]:
+        if session.birth_binding:
+            session.profile.update(
+                {
+                    k: v
+                    for k, v in session.birth_binding["profile"].items()
+                    if session.role == "orchestrator" or k in session.profile
+                }
+            )
         if call.argument_error:
             try:
                 json.loads(call.raw_arguments or "")
@@ -37,6 +45,20 @@ class Guard:
         tool = self.registry.tools.get(call.name)
         if tool is None:
             return None, ToolResult.failure("unknown_tool", "工具未注册"), ""
+        if session.pinned_reading_id and call.name not in {
+            "read_reading",
+            "lookup_meaning",
+            "submit_reading",
+            "get_profile",
+            "ask_user",
+        }:
+            return (
+                None,
+                ToolResult.failure(
+                    "followup_only", "本次问题只解释所选历史记录；重新计算请开启新对话。"
+                ),
+                "",
+            )
         if session.role not in tool.roles:
             return None, ToolResult.failure("permission_denied", "当前角色无权调用该工具"), ""
         if session.partition and tool.partition not in (None, session.partition):

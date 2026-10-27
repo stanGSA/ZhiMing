@@ -48,6 +48,9 @@ class Session:
     calendar_instant: datetime | None = None
     safety_pending: bool = False
     policy_judge: Any = None
+    # Trusted browser form snapshot for this request, independent of model-written profile.
+    birth_binding: dict[str, Any] | None = None
+    pinned_reading_id: str | None = None
     output_validators: dict[str, Any] = field(default_factory=dict)
     # Outer budget for the whole request; run_turn exposes its own as turn_budget.
     budget: Any = None
@@ -85,6 +88,8 @@ class Session:
             calendar_timezone=self.calendar_timezone,
             calendar_instant=self.calendar_instant,
             output_validators=self.output_validators,
+            birth_binding=self.birth_binding if partition in ("astro", "bazi") else None,
+            pinned_reading_id=self.pinned_reading_id,
             budget=budget,
             parent_call_id=parent_call_id,
             continue_prompt=continue_prompt,
@@ -157,6 +162,9 @@ class Session:
             "asked_this_turn": self.state.get("asked_this_turn", False),
             "complete": False,
         }
+        if self.birth_binding and self.birth_binding.get("location"):
+            location = self.birth_binding["location"]
+            self.state["locations"] = {location["location_id"]: dict(location)}
         if self.pending_picks:
             self.state["picks"] = list(self.pending_picks)
         self.pending_picks = None

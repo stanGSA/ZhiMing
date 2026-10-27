@@ -127,9 +127,12 @@ class Store:
         )
 
     def update_profile(self, user_id: str, field: str, value, evidence: str) -> dict:
+        return self.update_profile_fields(user_id, {field: value}, evidence)
+
+    def update_profile_fields(self, user_id: str, values: dict, evidence: str) -> dict:
         profile = self.get_profile(user_id)
         version = profile.pop("version") + 1
-        profile[field] = value
+        profile.update(values)
         encoded = json.dumps(profile, ensure_ascii=False)
         now = datetime.now(UTC).isoformat()
         with self.db:
@@ -326,6 +329,22 @@ class Store:
         result = dict(row)
         result["output_json"] = json.loads(result["output_json"])
         return result
+
+    def reading_responses(self, user_id: str, reading_id: str) -> list[dict]:
+        rows = self.db.execute(
+            "SELECT response_id,question,output_json,created_at FROM reading_responses "
+            "WHERE user_id=? AND reading_id=? ORDER BY created_at,response_id",
+            (user_id, reading_id),
+        ).fetchall()
+        return [
+            dict(
+                response_id=r["response_id"],
+                question=r["question"],
+                output=json.loads(r["output_json"]),
+                created_at=r["created_at"],
+            )
+            for r in rows
+        ]
 
     def touch_web_identity(self, user_id: str, expires_at: float) -> None:
         with self.db:

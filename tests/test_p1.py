@@ -241,7 +241,7 @@ async def test_sse_demo_sequence_and_cookie_isolation(project):
             json={"message": "抽三张牌看近期状态", "system": "tarot", "spread": "three_card"},
         )
         assert answer.status_code == 200
-        response = await client.get("/api/progress")
+        response = await client.get("/api/progress?system=tarot")
         labels = [
             json.loads(line[6:])["label"]
             for line in response.text.splitlines()
@@ -249,6 +249,7 @@ async def test_sse_demo_sequence_and_cookie_isolation(project):
         ]
         assert labels[0] == "正在理解你的问题" and "正在抽牌" in labels and "解读已完成" in labels
         assert "ref_id" not in response.text and "抽三张牌看近期状态" not in response.text
+        assert "正在抽牌" not in (await client.get("/api/progress?system=bazi")).text
     async with httpx.AsyncClient(
         transport=httpx.ASGITransport(app=app), base_url="http://testserver"
     ) as other:

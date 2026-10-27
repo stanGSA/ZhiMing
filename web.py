@@ -30,7 +30,9 @@ from starlette.middleware.trustedhost import TrustedHostMiddleware
 
 from app import ROOT, Runtime, create_runtime
 from common.regions import region_options, selected_region
+from common.schemas import ReadInput
 from common.time_utils import NeedsInput
+from harness.failures import failure
 from harness.progress import progress_label
 from harness.trace import Tracer
 from memory.store import Store
@@ -171,10 +173,14 @@ class BirthInfo(BaseModel):
         )
 
 
+SystemName = Literal["auto", "bazi", "astro", "tarot", "name", "dream", "daily"]
+
+
 class ChatInput(BaseModel):
     model_config = ConfigDict(extra="forbid")
     message: str = Field(min_length=1, max_length=4000)
-    system: Literal["auto", "bazi", "astro", "tarot", "name", "dream", "daily"] = "auto"
+    system: SystemName = "auto"
+    reading_id: str | None = Field(default=None, min_length=1, max_length=80)
     birth: BirthInfo = Field(default_factory=BirthInfo)
     spread: Literal["single", "three_card", "decision"] = "three_card"
     # Positions (0-77) chosen from the face-down deck on the tarot page, in spread order.
@@ -198,6 +204,7 @@ class ChatInput(BaseModel):
 
 class NewInput(BaseModel):
     provider: Literal["configured", "demo"] = "configured"
+    system: SystemName = "auto"
 
 
 class ChartInput(BaseModel):
@@ -309,6 +316,11 @@ class BrowserSession:
     progress_readers: set[str] = field(default_factory=set)
     lock: asyncio.Lock = field(default_factory=asyncio.Lock)
     touched: float = field(default_factory=time.monotonic)
+    system: str = "auto"
+    owner: BrowserSession | None = field(default=None, repr=False)
+    contexts: dict[str, BrowserSession] = field(default_factory=dict, repr=False)
+    safety_pending: bool = False
+    bound_birth: BirthInfo | None = None
 
 
 def create_web_app(
@@ -354,12 +366,13 @@ def create_web_app(
                     store.adopt_web_identities(now + MAX_IDLE)
                 for user_id in store.expired_web_identities(now):
                     active = [(k, s) for k, s in sessions.items() if s.user_id == user_id]
-                    if any(s.lock.locked() for _, s in active):
+                    if any(c.lock.locked() for _, s in active for c in family(s)):
                         continue
                     try:
                         for key, session in active:
                             sessions.pop(key, None)
-                            await close(session)
+                            for context in family(session):
+                                await close(context)
                         # Trace first: forget() also drops the deadline row, so any failure
                         # before it leaves the identity listed and the next pass retries.
                         tracer = Tracer(root / config["paths"]["runs"])
@@ -398,7 +411,8 @@ def create_web_app(
         cleanup.cancel()
         await asyncio.gather(cleanup, return_exceptions=True)
         for session in sessions.values():
-            await close(session)
+            for context in family(session):
+                await close(context)
         sessions.clear()
 
     app = FastAPI(title="知命", lifespan=lifespan, docs_url=None, redoc_url=None)
@@ -527,23 +541,170 @@ def create_web_app(
         session.touched = time.monotonic()
         session.runtime.store.touch_web_identity(session.user_id, time.time() + MAX_IDLE)
 
-    def get_session(request: Request):
+    def family(session):
+        root_session = session.owner or session
+        return [root_session, *root_session.contexts.values()]
+
+    def context_for(root_session, system):
+        if system == "auto":
+            return root_session
+        if system not in root_session.contexts:
+            context = BrowserSession(
+                root_session.user_id,
+                build(root_session.user_id, root_session.provider),
+                root_session.provider,
+                system=system,
+                owner=root_session,
+            )
+            attach_progress(context)
+            root_session.contexts[system] = context
+        return root_session.contexts[system]
+
+    def get_session(request: Request, system: str | None = None):
         session = sessions.get(request.cookies.get(COOKIE, ""))
         if session is None:
             raise HTTPException(401, "会话已过期，请刷新页面重新开始。")
         touch(session)
-        return session
+        selected = system or request.query_params.get("system", "auto")
+        if selected not in ("auto", *SYSTEM_LABELS):
+            raise HTTPException(422, "咨询功能无效")
+        context = context_for(session, selected)
+        session.safety_pending = session.safety_pending or any(
+            c.runtime.session.safety_pending for c in family(session)
+        )
+        context.runtime.session.safety_pending = session.safety_pending
+        return context
+
+    def share_birth(session, birth):
+        owner = session.owner or session
+        if birth != owner.birth:
+            for context in family(owner):
+                context.chart = None
+        owner.birth = birth
+
+    def bind_birth(session, birth, *, authoritative=False):
+        runtime = session.runtime
+        target = runtime.session
+        target.profile = runtime.store.get_profile(session.user_id)
+        target.birth_binding = None
+        if not birth.date and not authoritative:
+            return
+        location = selected_region(birth.location_id) if birth.location_id else None
+        tz = (birth.clock_tz or location["tz"]) if location else None
+        if location and location["tz"] == "Asia/Urumqi" and not birth.clock_tz:
+            tz = None
+        values = dict(
+            birth_local_dt=(birth.date.isoformat() + (" " + birth.time if birth.time else ""))
+            if birth.date
+            else None,
+            time_known=bool(birth.time) and not birth.unknown_time,
+            birth_place=birth.place or None,
+            location_id=location["location_id"] if location else None,
+            tz=tz,
+            lat=location["lat"] if location else None,
+            lon=location["lon"] if location else None,
+            gender=birth.gender or None,
+            true_solar_time=birth.true_solar_time,
+            zishi_rule=birth.zishi_rule,
+            calendar_input="solar",
+            dayun_time_basis="civil",
+            lunar_date=None,
+            leap_month=None,
+        )
+        changed = any(target.profile.get(k) != v for k, v in values.items())
+        # Old calculations cannot be continued after their birth inputs change. Saved
+        # readings remain available through the explicit history follow-up path.
+        bound_before = session.bound_birth
+        has_birth_results = any(
+            target.state.get(k) for k in ("bazi_id", "chart_id", "daily_result")
+        )
+        if (
+            has_birth_results
+            and ((bound_before is not None and bound_before != birth) or changed)
+            and target.state.get("active_reading_id")
+        ):
+            selected = {
+                k: v
+                for k, v in target.state.items()
+                if k in ("selected_systems", "selected_spread", "ref_alias")
+            }
+            # Keep an unfinished draw even when its accompanying birth calculation is
+            # corrected. The model must never silently redraw an existing set of cards.
+            kept_tarot = target.state.get("specialist_facts", {}).get("tarot", {})
+            pending_tarot = target.state.get("tarot_result") or kept_tarot.get("values", {}).get(
+                "tarot_result"
+            )
+            if pending_tarot and not target.state.get("complete"):
+                keep = {
+                    k: target.state[k]
+                    for k in (
+                        "active_reading_id",
+                        "parent_reading_id",
+                        "question",
+                        "question_message_index",
+                        "seed",
+                        "requested_spread",
+                        "tarot_drawn",
+                        "tarot_result",
+                        "systems",
+                    )
+                    if k in target.state
+                }
+                signals = [
+                    s for s in target.state.get("signals", []) if s["system"] == "tarot"
+                ] or kept_tarot.get("signals", [])
+                selected.update(
+                    keep,
+                    signals=signals,
+                    complete=False,
+                    allowed_refs={s["ref_id"] for s in signals},
+                    kb_refs={s["kb_ref"] for s in signals},
+                    facts=[c["name"] for c in pending_tarot["cards"]],
+                    tarot_result=pending_tarot,
+                    tarot_drawn=True,
+                    kb_version=target.state.get("kb_version") or pending_tarot.get("kb_version"),
+                )
+                if kept_tarot:
+                    selected["specialist_facts"] = {"tarot": kept_tarot}
+            target.state = selected
+            target.cache.clear()
+            target.messages = [m for m in target.messages if m["role"] == "system"]
+            session.reading = None
+        if changed:
+            target.profile = runtime.store.update_profile_fields(
+                session.user_id, values, birth.evidence()
+            )
+        target.birth_binding = {"profile": values, "location": location}
+        session.bound_birth = birth.model_copy(deep=True)
+        if location:
+            target.state.setdefault("locations", {})[location["location_id"]] = location
+
+    def shared_safety(session):
+        owner = session.owner or session
+        owner.safety_pending = session.runtime.session.safety_pending
+        for context in family(owner):
+            context.runtime.session.safety_pending = owner.safety_pending
 
     def available(session):
         if session.lock.locked():
             raise HTTPException(409, "正在解读，请等待本轮完成。")
 
     def state(session):
+        reading = session.reading
+        if reading:
+            reading = {
+                **reading,
+                "responses": session.runtime.store.reading_responses(
+                    session.user_id, reading["reading_id"]
+                ),
+            }
         return {
+            "system": session.system,
+            "followup_reading_id": session.runtime.session.pinned_reading_id,
             "provider": session.provider,
             "messages": session.messages,
-            "birth": session.birth.model_dump(mode="json"),
-            "reading": session.reading,
+            "birth": (session.owner or session).birth.model_dump(mode="json"),
+            "reading": reading,
             "chart": session.chart,
             "name_analysis": session.name_analysis,
             "tarot_round": session.tarot_round,
@@ -556,6 +717,7 @@ def create_web_app(
         request: Request,
         response: Response,
         provider: Literal["configured", "demo"] = "configured",
+        system: SystemName = "auto",
     ):
         session = sessions.get(request.cookies.get(COOKIE, ""))
         if session is None:
@@ -575,7 +737,7 @@ def create_web_app(
                 max_age=MAX_IDLE,
             )
         touch(session)
-        return state(session)
+        return state(context_for(session, system))
 
     def attach_progress(session):
         def listen(record):
@@ -641,9 +803,16 @@ def create_web_app(
 
     @app.post("/api/chat")
     async def chat(body: ChatInput, request: Request):
-        session = get_session(request)
+        session = get_session(request, body.system)
         available(session)
         async with session.lock:
+            saved_target = None
+            if body.reading_id:
+                saved_target = session.runtime.store.get_reading(session.user_id, body.reading_id)
+                if not saved_target:
+                    raise HTTPException(404, "找不到这份解读。")
+                if body.system != "auto" and body.system not in saved_target["systems_used"]:
+                    raise HTTPException(422, "请在对应功能页面继续这份解读。")
             identity = request.headers.get("x-zhiming-progress", "")
             queue = progress_queue(session, identity)
             session.progress = queue
@@ -668,6 +837,7 @@ def create_web_app(
                 if body.birth.location_id:
                     safety_profile["tz"] = selected_region(body.birth.location_id)["tz"]
                 safety = await session.runtime.safety_response(body.message, safety_profile)
+                shared_safety(session)
                 if safety is not None:
                     session.messages.extend(
                         [
@@ -682,7 +852,13 @@ def create_web_app(
                     )
                     return {**state(session), "busy": False}
                 chart_question = None
-                if body.system in ("bazi", "astro"):
+                if (
+                    "birth" in body.model_fields_set
+                    and body.system in BIRTH_SYSTEMS
+                    and not saved_target
+                ):
+                    share_birth(session, body.birth)
+                if body.system in ("bazi", "astro") and not saved_target:
                     try:
                         session.chart = body.birth.chart(body.system)
                     except NeedsInput as exc:
@@ -690,7 +866,7 @@ def create_web_app(
                         chart_question = exc.question
                 evidence = body.birth.evidence()
                 message = body.message
-                if evidence and body.system in BIRTH_SYSTEMS:
+                if evidence and body.system in BIRTH_SYSTEMS and not saved_target:
                     message += "\n\n我在出生信息表中填写的资料：" + evidence + "。"
                 session.runtime.session.state["selected_systems"] = (
                     [body.system] if body.system != "auto" else None
@@ -708,16 +884,51 @@ def create_web_app(
                         }[body.spread]
                         + "。"
                     )
-                session.birth = body.birth
+                session.runtime.session.pinned_reading_id = body.reading_id
+                if saved_target:
+                    try:
+                        restored = await session.runtime.registry.run(
+                            "read_reading",
+                            ReadInput(reading_id=body.reading_id),
+                            session.runtime.session,
+                        )
+                    except (FileNotFoundError, ValueError) as exc:
+                        raise HTTPException(
+                            409, "这份解读的历史数据暂时无法恢复，请检查对应知识库版本。"
+                        ) from exc
+                    if not restored.ok:
+                        raise HTTPException(409, "无法恢复这份解读，请刷新后重试。")
+                    # run_turn appends the pending user question after this restoration.
+                    session.runtime.session.state["question_message_index"] = len(
+                        session.runtime.session.user_messages
+                    )
+                    session.reading = {
+                        "view": body.system,
+                        "reading_id": body.reading_id,
+                        "question": saved_target["question"],
+                        "output": saved_target["output_json"],
+                        "tarot": saved_target["tarot_json"],
+                        "calculations": saved_target.get("calculations_json"),
+                    }
+                    session.runtime.session.birth_binding = None
+                    message += f"\n本次只追问历史解读 {body.reading_id}；请先read_reading读取该记录，不要重新计算。"
+                elif body.system in BIRTH_SYSTEMS:
+                    bind_birth(session, body.birth, authoritative=body.system in ("bazi", "astro"))
                 session.messages.append(
                     {"role": "user", "text": body.message, "system": body.system}
                 )
-                if session.provider == "demo" and body.system in DEMO_UNSUPPORTED:
+                if session.provider == "demo" and (
+                    body.system in DEMO_UNSUPPORTED
+                    or (saved_target and body.system in ("bazi", "astro"))
+                ):
                     # The offline demo only draws tarot; never answer a dream or name with cards.
                     session.messages.append(
                         {
                             "role": "assistant",
-                            "text": DEMO_UNSUPPORTED[body.system],
+                            "text": DEMO_UNSUPPORTED.get(
+                                body.system,
+                                "历史解读已恢复；离线演示仅支持排盘，继续解读请切换真实模型后从足迹选择这份记录。",
+                            ),
                             "status": "demo_unsupported",
                             "system": body.system,
                         }
@@ -773,8 +984,12 @@ def create_web_app(
                     )
                     session.last_birth = evidence
                 except TimeoutError:
-                    outcome = None
-                    answer = "本轮解读超时，已保留对话。你可以稍后继续。"
+                    outcome = failure(
+                        session.runtime.session,
+                        "timeout",
+                        "request_timeout",
+                        "本轮达到请求时限，请稍后继续或缩小问题范围。",
+                    )
                 except Exception:
                     logger.exception("Browser turn failed")
                     outcome = None
@@ -799,6 +1014,7 @@ def create_web_app(
                         "role": "assistant",
                         "text": answer,
                         "status": outcome.status if outcome else "error",
+                        "failure": outcome.data.get("failure") if outcome else None,
                         "system": body.system,
                     }
                 )
@@ -812,7 +1028,7 @@ def create_web_app(
 
     @app.post("/api/new")
     async def new_chat(body: NewInput, request: Request):
-        session = get_session(request)
+        session = get_session(request, body.system)
         available(session)
         async with session.lock:
             replacement = build(session.user_id, body.provider)
@@ -827,6 +1043,7 @@ def create_web_app(
             session.chart = None
             session.tarot_round = None
             session.name_analysis = None
+            session.bound_birth = None
         return state(session)
 
     @app.get("/api/readings/{reading_id}")
@@ -841,21 +1058,33 @@ def create_web_app(
             "output": saved["output_json"],
             "tarot": saved["tarot_json"],
             "calculations": saved.get("calculations_json"),
+            "responses": session.runtime.store.reading_responses(session.user_id, reading_id),
         }
 
     @app.delete("/api/session")
     async def forget(request: Request):
         session = get_session(request)
-        available(session)
+        for context in family(session):
+            available(context)
         async with session.lock:
             session.runtime.forget()
-            session.messages.clear()
-            session.birth = BirthInfo()
-            session.last_birth = ""
-            session.reading = None
-            session.chart = None
-            session.tarot_round = None
-            session.name_analysis = None
+            for context in family(session):
+                if context is not session:
+                    # The database and traces are already removed for the shared identity.
+                    context.runtime.session.profile = {"version": 0}
+                    context.runtime.session.messages = [
+                        {"role": "system", "content": context.runtime.system_prompt}
+                    ]
+                    context.runtime.session.state.clear()
+                    context.runtime.session.cache.clear()
+                    context.runtime.session.user_messages.clear()
+                context.runtime.session.birth_binding = None
+                context.runtime.session.pinned_reading_id = None
+                context.bound_birth = None
+                context.messages.clear()
+                context.last_birth = ""
+                context.reading = context.chart = context.tarot_round = context.name_analysis = None
+            (session.owner or session).birth = BirthInfo()
         return state(session)
 
     @app.get("/api/locations")
@@ -871,7 +1100,7 @@ def create_web_app(
 
     @app.post("/api/chart")
     async def chart(body: ChartInput, request: Request):
-        session = get_session(request)
+        session = get_session(request, body.system)
         available(session)
         async with session.lock:
             if session.runtime.session.safety_pending:
@@ -880,7 +1109,7 @@ def create_web_app(
                     "question": "请先在对话中确认此刻安全，再继续排盘。",
                     "code": "safety_confirmation_required",
                 }
-            session.birth = body.birth
+            share_birth(session, body.birth)
             session.chart = None
             try:
                 session.chart = body.birth.chart(body.system)
@@ -893,15 +1122,12 @@ def create_web_app(
         session = get_session(request)
         available(session)
         async with session.lock:
-            if body != session.birth:
-                # A chart drawn from the previous birth data no longer belongs to this profile.
-                session.chart = None
-            session.birth = body
-        return {"birth": session.birth.model_dump(mode="json"), "chart": session.chart}
+            share_birth(session, body)
+        return {"birth": body.model_dump(mode="json"), "chart": session.chart}
 
     @app.post("/api/name")
     async def name_grids(body: NameQuery, request: Request):
-        session = get_session(request)
+        session = get_session(request, "name")
         available(session)
         if session.runtime.session.safety_pending:
             return {
@@ -934,7 +1160,7 @@ def create_web_app(
 
     @app.post("/api/almanac")
     async def day_almanac(body: AlmanacInput, request: Request):
-        session = get_session(request)
+        session = get_session(request, "daily")
         day = body.date or datetime.now(ZoneInfo("Asia/Shanghai")).date()
         day_master, question = None, None
         if body.birth.date and body.birth.location_id:

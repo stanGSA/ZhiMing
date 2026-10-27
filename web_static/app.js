@@ -28,6 +28,7 @@ const CN_DIGITS = "〇一二三四五六七八九";
 let state = null;
 let busy = false;
 let currentReading = null;
+let followupReadingId = null;
 let toastTimer;
 let refreshTimer;
 let selectedLocation = null;
@@ -107,6 +108,10 @@ function toast(message) {
 }
 
 async function api(path, options = {}) {
+  const scoped = new URL(path, location.origin);
+  if (["/api/session", "/api/birth"].includes(scoped.pathname))
+    scoped.searchParams.set("system", SYSTEM);
+  path = scoped.pathname + scoped.search;
   let response;
   try {
     response = await fetch(path, {
@@ -308,7 +313,7 @@ async function send({ message, extra = {} }, birth) {
   $("#message").value = "";
   fitComposer();
   const progressId = crypto.randomUUID();
-  const progress = new EventSource(`/api/progress?request_id=${progressId}`);
+  const progress = new EventSource(`/api/progress?request_id=${progressId}&system=${SYSTEM}`);
   progress.onmessage = (event) => {
     const label = JSON.parse(event.data).label;
     const text = $("#thinking .thinking span");
@@ -319,7 +324,8 @@ async function send({ message, extra = {} }, birth) {
     const next = await api("/api/chat", {
       method: "POST",
       headers: { "X-Zhiming-Progress": progressId },
-      body: JSON.stringify({ message, system: SYSTEM, birth, ...extra }),
+      body: JSON.stringify({ message, system: SYSTEM, birth, ...extra,
+        ...(followupReadingId ? { reading_id: followupReadingId } : {}) }),
     });
     applyState(next);
     // A page may take over what happens next (塔罗 turns the view to its face-down cards).
@@ -449,6 +455,36 @@ function renderReading(reading) {
     }
     content.append(followups);
   }
+  if (reading.responses?.length) {
+    const details = node("details", "reading-details");
+    details.append(node("summary", "", `历次追问（${reading.responses.length} 次）`));
+    for (const response of reading.responses) {
+      details.append(node("h4", "reading-subheading", response.question.split("\n")[0]),
+        node("p", "reading-section", response.output.summary));
+      for (const section of response.output.sections || [])
+        details.append(node("h4", "reading-subheading", section.title), node("p", "reading-section", section.body));
+      addList(details, "可行之事", response.output.advice);
+      addList(details, "解读依据", response.output.evidence?.map((item) => item.reading));
+    }
+    content.append(details);
+  }
+  if ($("#chat-form")) {
+    const resume = button(followupReadingId === reading.reading_id ? "正在追问这份解读" : "继续这份解读", "btn btn-tag");
+    resume.setAttribute("data-lock", "");
+    resume.disabled = busy;
+    resume.addEventListener("click", () => {
+      followupReadingId = reading.reading_id;
+      $("#message").placeholder = "写下关于这份解读的追问……";
+      draft("请进一步解释这份解读");
+      toast("后续问题已绑定这份解读；开启新对话可结束追问。");
+    });
+    content.append(resume);
+  } else {
+    const resume = node("a", "btn btn-tag", "继续这份解读");
+    const target = output.systems_used?.[0] || "tarot";
+    resume.href = `/${target}?reading_id=${encodeURIComponent(reading.reading_id)}`;
+    content.append(resume);
+  }
 }
 
 async function copyReading() {
@@ -523,6 +559,7 @@ function renderHistory(history) {
 
 function applyState(next, first = false) {
   state = next;
+  followupReadingId = next.followup_reading_id || null;
   if ($("#provider")) $("#provider").value = next.provider;
   const status = $("#connection");
   if (status) {
@@ -564,9 +601,10 @@ async function startNew(provider) {
   try {
     applyState(
       await (state
-        ? api("/api/new", { method: "POST", body: JSON.stringify({ provider }) })
+        ? api("/api/new", { method: "POST", body: JSON.stringify({ provider, system: SYSTEM }) })
         : api(`/api/session?provider=${encodeURIComponent(provider)}`)),
     );
+    followupReadingId = null;
     if ($("#message")) $("#message").value = "";
     toast(
       provider === "demo"
@@ -593,6 +631,7 @@ function wireControls() {
     setBusy(true);
     try {
       applyState(await api("/api/session", { method: "DELETE" }), true);
+      followupReadingId = null;
       setBirthFeedback("", false);
       if ($("#message")) $("#message").value = "";
       toast("当前会话的生辰、解读和对话已清除。");
@@ -2300,10 +2339,16 @@ function init() {
   const wanted = params.get("provider");
   if (wanted) history.replaceState(null, "", location.pathname + location.hash);
   api(`/api/session?provider=${wanted === "demo" ? "demo" : "configured"}`)
-    .then((next) => {
+    .then(async (next) => {
       applyState(next, true);
       if ((wanted === "demo" || wanted === "configured") && next.provider !== wanted)
         startNew(wanted);
+      if (params.get("reading_id") && $("#chat-form")) {
+        const reading = await api(`/api/readings/${encodeURIComponent(params.get("reading_id"))}`);
+        followupReadingId = reading.reading_id;
+        renderReading(reading);
+        toast("后续问题已绑定所选历史解读。");
+      }
     })
     .catch((error) => {
       const status = $("#connection");

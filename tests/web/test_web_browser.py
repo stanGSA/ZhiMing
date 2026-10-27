@@ -213,6 +213,31 @@ def test_an_unsent_question_survives_looking_at_a_record(site, chromium):
     expect(page.locator("#tarot-question")).to_have_value("还没发出的问题")
 
 
+def test_explicit_history_followup_sends_the_selected_record_and_survives_reload(site, chromium):
+    base, _ = site
+    page, chats = open_tarot(chromium, base)
+    answered(page, lambda: draw(page, "旧记录的工作状态", 1, 2, 3))
+    original = page.request.get(f"{base}/api/session?system=tarot").json()["reading"]
+    page.click("#new-question")
+    expect(page.locator("#tarot-question")).to_have_value("")
+    answered(page, lambda: draw(page, "新记录的感情线索", 10, 20, 30))
+    page.click("#open-history")
+    page.click("#history-list .history-item:has-text('旧记录的工作状态')")
+    page.get_by_role("button", name="继续这份解读", exact=True).click()
+    answered(page, lambda: reply(page, "第一张牌具体什么意思？"))
+    assert chats[-1]["reading_id"] == original["reading_id"]
+    current = page.request.get(f"{base}/api/session?system=tarot").json()
+    assert current["reading"]["tarot"] == original["tarot"]
+    assert len(current["reading"]["responses"]) == 1
+    expect(page.get_by_text("历次追问（1 次）", exact=True)).to_be_visible()
+    page.reload()
+    expect(page.locator("#send")).to_be_enabled()
+    answered(page, lambda: reply(page, "第二张牌具体什么意思？"))
+    assert chats[-1]["reading_id"] == original["reading_id"]
+    expect(page.get_by_text("历次追问（2 次）", exact=True)).to_be_visible()
+    page.close()
+
+
 def test_clearing_records_also_clears_an_unsent_question(site, chromium):
     base, _ = site
     page, _ = open_tarot(chromium, base)
@@ -244,7 +269,7 @@ def test_thinking_bubble_shows_progress_labels(site, chromium):
     page.evaluate("""() => {
       const realFetch=window.fetch;
       window.fetch=async (input, options) => {
-        if (String(input).endsWith('/api/chat')) await new Promise(resolve=>setTimeout(resolve,1500));
+        if (new URL(String(input), location.origin).pathname === '/api/chat') await new Promise(resolve=>setTimeout(resolve,1500));
         return realFetch(input,options);
       };
     }""")
