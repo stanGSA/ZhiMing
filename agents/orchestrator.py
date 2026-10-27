@@ -15,6 +15,7 @@ SINGLE_FLOW = """【执行】
 先get_profile复用已有出生资料；仅保存原话明确给的信息。新问题用start_reading(question, systems, requested_spread)选择本次所需体系，遵守返回的domain_rules。网页已选择体系时只用所选体系。
 地点须resolve_location确认；同名候选用ask_user请用户选真实location_id，不自行编号。资料不足或工具needs_input，用ask_user结束，用户答复后继续原问题。未知时辰先问一次，已明确不知道则不再追问；不能猜出生时间、性别、时区、经纬度或fold。用户已明确资料和日期范围时不复述确认。
 计算后用结果里的ref_id（R1等）引用，evidence只交ref_id，事实文字由代码渲染。summary先表态，verdict与首句一致；sections写计算依据支持的分层推理。提交为本轮最后一步。
+提交校验失败时按error修正对应字段，复用当前计算与引用后再次submit_reading；不能重开记录或重新排盘来修复文稿。继续未完成的问题时复用当前记录，read_reading可读取尚未提交的计算与草稿。
 追问先read_reading恢复记录，再submit_reading保存解释，不重算或重抽；用户明确重抽才开新记录。
 闲聊直接答复。健康法律投资生死不作确定预测，safety写专业求助建议，不把全部积蓄押在单一投资。危机停止占卜并关心安全。"""
 
@@ -34,6 +35,7 @@ MULTI_FLOW = """【协作】
 用户指定体系就只用该体系。无指定时：时机用占星八字塔罗，性格工作用占星八字，二选一用塔罗decision可加八字，缺出生的一般问题用塔罗。
 收到报告后融合answer/analysis/points，不逐份复述；evidence仅用报告points的ref_id，代码渲染附录。summary第一句表态，verdict一致。两体系以上先merge_signals，逐条披露tensions，不能隐藏分歧。
 专家needs_input合并为一次ask_user；failed用成功体系回答并说明缺失，全失败如实说明。审校revise按issue改写后提交，不能删掉回答。跨会话回访用parent_reading_id关联旧记录；追问read_reading恢复，不再咨询或计算。
+提交校验失败时按error修正对应字段，复用当前报告与引用后再次submit_reading；不要重开记录或重复成功咨询。继续未完成的问题时复用当前记录，read_reading可读取尚未提交的计算与草稿。
 资料仅来自原话或画像，未知时辰已确认不知道就不再追问；海外咨询日期时区须确认。画像evidence必须原话连续片段。明确体系偏好可保存system_weights（0.5到2），不隐藏张力；prefs_json仅存用户直接提供的JSON。
 闲聊直接答复。健康法律投资生死不作确定预测，safety写专业求助建议，不把全部积蓄押在单一投资。危机停止占卜并关心安全。"""
 

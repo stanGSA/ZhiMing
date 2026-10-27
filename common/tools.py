@@ -215,6 +215,13 @@ def common_tools(store, kb: KnowledgeBase, mode: str = "single", reviewer=None) 
             return "本次正在追问指定历史解读，请使用read_reading，不要开启新记录。"
         current = session.user_messages[-1]
         if (
+            session.state.get("calculations")
+            and not session.state.get("complete")
+            and (session.state.get("failed_submission") or {}).get("user_message_index")
+            == len(session.user_messages) - 1
+        ):
+            return "当前问题已有计算且尚未提交，请复用当前记录修正submit_reading；不要重开记录或重新排盘。"
+        if (
             session.state.get("tarot_drawn")
             and not session.state.get("complete")
             and not re.search(r"重抽|重新抽|重新占", current)
@@ -488,6 +495,27 @@ def common_tools(store, kb: KnowledgeBase, mode: str = "single", reviewer=None) 
             recent = store.recent_readings(session.user_id, limit=1)
             reading_id = recent[0]["reading_id"] if recent else None
         result = store.get_reading(session.user_id, reading_id) if reading_id else None
+        if (
+            not result
+            and reading_id
+            and reading_id == session.state.get("active_reading_id")
+            and not session.state.get("complete")
+        ):
+            state = session.state
+            draft = state.get("failed_submission") or {}
+            return {
+                "reading": {
+                    "status": "in_progress",
+                    "reading_id": reading_id,
+                    "question": state.get("question"),
+                    "calculations_json": state.get("calculations", {}),
+                    "tarot_json": state.get("tarot_result"),
+                    "chart_id": state.get("chart_id"),
+                    "bazi_id": state.get("bazi_id"),
+                    "output_json": draft.get("arguments"),
+                    "validation_error": draft.get("error"),
+                }
+            }
         if not result:
             return ToolResult.failure("missing_reading", "没有属于当前用户的占卜记录")
         # Older saved draws may predate inline meanings; use their pinned edition.
@@ -693,6 +721,8 @@ def common_tools(store, kb: KnowledgeBase, mode: str = "single", reviewer=None) 
                         "chart_id",
                         "bazi_id",
                         "merge",
+                        "status",
+                        "validation_error",
                     )
                 }
             },

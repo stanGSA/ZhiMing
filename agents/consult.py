@@ -21,6 +21,7 @@ from plugins.context import location_choices, range_provenance, resolve_birth_lo
 FAILURES = {
     "timeout": "专家超时",
     "limit_reached": "专家达到步数或预算上限，未提交有效报告",
+    "validation_stalled": "专家连续校验未通过，已停止重复尝试并保留计算",
     "model_error": "专家模型调用失败",
     "usage_unavailable": "模型服务未返回用量",
     "output_truncated": "专家输出达到单次上限，未提交完整报告",

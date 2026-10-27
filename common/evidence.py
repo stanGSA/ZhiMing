@@ -1,5 +1,7 @@
 """Render omitted evidence text from the current calculation, without model invention."""
 
+import re
+
 
 def fact_text(item):
     # The appendix records facts, while interpretation stays in authored sections.
@@ -28,11 +30,17 @@ def fact_text(item):
         "convention": "约定",
     }
     text = str(item["fact"])
+    period = re.fullmatch(r"period:(.+):(year|month|day|time):([^:]+):([^:]+)(?::([^:]+))?", text)
+    if period:
+        instant, pillar, ganzhi, detail, target = period.groups()
+        scope = {"year": "流年", "month": "节气流月", "day": "流日", "time": "流时"}
+        text = f"流期（UTC）：{instant}；{scope[pillar]}：{ganzhi}；{detail}"
+        if target:
+            text += f"；作用于原局{labels.get(target, target)}"
+        return text
     if text.startswith("transit:"):
         text = "行运（UTC）：" + text[len("transit:") :]
     for token, label in labels.items():
-        import re
-
         text = re.sub(
             rf"(?<![A-Za-z_]){re.escape(token)}(?![A-Za-z_])", lambda _, label=label: label, text
         )

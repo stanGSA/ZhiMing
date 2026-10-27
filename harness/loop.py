@@ -10,6 +10,7 @@ from harness.context import compact_context
 from harness.failures import failure, model_failure
 from harness.guard import Guard
 from harness.models import ToolCall, ToolResult, TurnOutcome
+from harness.recovery import ToolRecovery
 from harness.refs import transform
 from harness.registry import Registry
 from harness.session import Session
@@ -57,6 +58,7 @@ async def run_turn(
         # the user said; provenance checks only ever read session.user_messages.
         session.messages.append({"role": "user", "content": user_msg})
     guard = Guard(registry)
+    recovery = ToolRecovery()
     budget = Budget(token_budget, parent=session.budget)
     session.turn_budget = budget
     # With admission the estimated cost of each call is held before it is made, so concurrent
@@ -206,6 +208,12 @@ async def run_turn(
                             session.cache[key] = result
                         if tool.exclusive_key:
                             session.state[tool.exclusive_key] = True
+                    result, stalled = recovery.observe(call, result, tool, session)
+                    if stalled is not None and terminal is None:
+                        terminal = stalled
+                        tracer.log(
+                            session, "recovery_stalled", step=step, tool=call.name, code=result.code
+                        )
                     projected = result
                     if result.ok and tool and tool.model_result:
                         projected = result.model_copy(

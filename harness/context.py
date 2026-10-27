@@ -40,6 +40,9 @@ def compact_context(session, registry, limit=CONTEXT_CHAR_LIMIT, *, force=False)
             }
         ),
         "last_errors": [],
+        # Keep the whole failed draft: generic truncation would silently drop sections or
+        # turn a long JSON string into an invalid patch target on a continuation request.
+        "failed_submission": state.get("failed_submission"),
     }
     projectors = {
         "natal_result": "compute_natal_chart",
