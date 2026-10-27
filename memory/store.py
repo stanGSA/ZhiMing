@@ -6,6 +6,10 @@ from datetime import UTC, datetime
 from pathlib import Path
 
 
+class StaleBirthError(ValueError):
+    """A browser result no longer belongs to the current birth revision."""
+
+
 class Store:
     def __init__(self, path: Path):
         path.parent.mkdir(parents=True, exist_ok=True)
@@ -53,10 +57,11 @@ class Store:
                 # Week 5: the cross-system table as computed when the reading was saved, so a
                 # later weight or rule change never rewrites what an old reading said.
                 ("merge_json", "TEXT NOT NULL DEFAULT '{}'"),
+                ("birth_context_json", "TEXT NOT NULL DEFAULT '{}'"),
             ):
                 if name not in columns:
                     self.db.execute(f"ALTER TABLE readings ADD COLUMN {name} {definition}")
-            self.db.execute("PRAGMA user_version=4")
+            self.db.execute("PRAGMA user_version=5")
 
     def cached_calculation(self, system, user_id, inputs, calculate):
         import hashlib
@@ -173,8 +178,9 @@ class Store:
     ) -> None:
         state = session.state
         with self.db:
+            self.check_birth_version(session)
             self.db.execute(
-                "INSERT INTO readings(reading_id,user_id,session_id,parent_reading_id,question,question_type,systems_used,tarot_json,signals_json,output_json,kb_version,profile_version,mode,created_at,chart_id,bazi_id,calculations_json,merge_json) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
+                "INSERT INTO readings(reading_id,user_id,session_id,parent_reading_id,question,question_type,systems_used,tarot_json,signals_json,output_json,kb_version,profile_version,mode,created_at,chart_id,bazi_id,calculations_json,merge_json,birth_context_json) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
                 (
                     state["active_reading_id"],
                     session.user_id,
@@ -194,6 +200,12 @@ class Store:
                     state.get("bazi_id"),
                     json.dumps(state.get("calculations", {}), ensure_ascii=False),
                     json.dumps(merge or {}, ensure_ascii=False, default=str),
+                    json.dumps(
+                        (session.birth_context or {})
+                        if set(output["systems_used"]) & {"bazi", "astro", "daily"}
+                        else {},
+                        ensure_ascii=False,
+                    ),
                 ),
             )
             # Reviews happen before the reading exists; they are written in the same
@@ -246,6 +258,7 @@ class Store:
             "output_json",
             "calculations_json",
             "merge_json",
+            "birth_context_json",
         ):
             if field in result:
                 result[field] = json.loads(result[field]) if result[field] else None
@@ -318,6 +331,16 @@ class Store:
                 ),
             )
         return response_id
+
+    @staticmethod
+    def check_birth_version(session) -> None:
+        if (
+            session.birth_version_valid is not None
+            and not session.pinned_reading_id
+            and session.state.get("response_mode") != "followup"
+            and not session.birth_version_valid()
+        ):
+            raise StaleBirthError("出生资料已更新，本轮结果不能作为当前解读提交。")
 
     def get_response(self, user_id: str, response_id: str) -> dict | None:
         row = self.db.execute(

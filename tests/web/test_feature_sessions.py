@@ -68,7 +68,12 @@ async def test_current_form_overrides_old_profile_and_rejects_stale_arguments(
     changed = (
         await client.post(
             "/api/chat",
-            json={"message": "更正出生时间", "system": "bazi", "birth": {**BIRTH, "time": "12:30"}},
+            json={
+                "message": "更正出生时间",
+                "system": "bazi",
+                "birth": {**BIRTH, "time": "12:30"},
+                "expected_birth_version": data["birth_version"],
+            },
         )
     ).json()
     assert runtime.session.state["active_reading_id"] != previous
@@ -115,6 +120,7 @@ async def test_unknown_time_and_missing_location_never_reuse_previous_birth(
             "message": "地点还没选择",
             "system": "bazi",
             "birth": {"date": BIRTH["date"], "unknown_time": True},
+            "expected_birth_version": 1,
         },
     )
     computed = results(runtime, "compute_bazi")[-1]
@@ -207,7 +213,12 @@ async def test_shared_birth_keeps_separate_chart_slots(browser):
     ]
     assert (await client.get("/api/session?system=bazi")).json()["chart"] == bazi
     assert (await client.get("/api/session?system=astro")).json()["chart"] == astro
-    await client.put("/api/birth?system=bazi", json={**BIRTH, "time": "12:30"})
+    changed = await client.put(
+        "/api/birth?system=bazi",
+        json={**BIRTH, "time": "12:30"},
+        headers={"X-Zhiming-Birth-Version": "1"},
+    )
+    assert changed.status_code == 200
     assert (await client.get("/api/session?system=astro")).json()["chart"] is None
 
 
@@ -324,7 +335,11 @@ async def test_correcting_birth_keeps_an_unfinished_auto_tarot_draw(browser, scr
     )
     await client.post(
         "/api/chat",
-        json={"message": "更正出生时刻，保持原来的牌面", "birth": {**BIRTH, "time": "12:30"}},
+        json={
+            "message": "更正出生时刻，保持原来的牌面",
+            "birth": {**BIRTH, "time": "12:30"},
+            "expected_birth_version": 1,
+        },
     )
     assert runtime.session.state["active_reading_id"] == reading_id
     assert runtime.session.state["tarot_result"] == original

@@ -225,7 +225,16 @@ async def test_region_cascade_and_deterministic_birth_chart(browser):
     assert len(astro["chart"]["result"]["planets"]) == 10
     assert astro["chart"]["result"]["asc"] is not None
     unknown = {**birth, "unknown_time": True}
-    astro = (await client.post("/api/chart", json={"system": "astro", "birth": unknown})).json()
+    astro = (
+        await client.post(
+            "/api/chart",
+            json={
+                "system": "astro",
+                "birth": unknown,
+                "expected_birth_version": data["birth_version"],
+            },
+        )
+    ).json()
     assert astro["chart"]["result"]["asc"] is None
     assert astro["chart"]["result"]["cusps"] is None
     assert (
@@ -347,7 +356,16 @@ async def test_xinjiang_clock_not_assumed(browser):
     assert response["chart"] is None
     assert response["code"] == "confirm_clock_timezone"
     birth["clock_tz"] = "Asia/Shanghai"
-    response = (await client.post("/api/chart", json={"system": "bazi", "birth": birth})).json()
+    response = (
+        await client.post(
+            "/api/chart",
+            json={
+                "system": "bazi",
+                "birth": birth,
+                "expected_birth_version": response["birth_version"],
+            },
+        )
+    ).json()
     assert response["chart"]["result"]["pillars"]["time"] == "乙巳"
 
 
@@ -524,7 +542,13 @@ async def test_birth_profile_is_saved_for_every_page(browser):
     assert chart["chart"]["result"]["day_master"] == "癸水"
     same = (await client.put("/api/birth?system=bazi", json=birth)).json()
     assert same["chart"] is not None and same["birth"]["place"].endswith("西湖区")
-    changed = (await client.put("/api/birth", json={**birth, "time": "09:30"})).json()
+    changed = (
+        await client.put(
+            "/api/birth",
+            json={**birth, "time": "09:30"},
+            headers={"X-Zhiming-Birth-Version": str(same["birth_version"])},
+        )
+    ).json()
     assert changed["chart"] is None
     assert (await client.get("/api/session")).json()["birth"]["time"] == "09:30"
     assert (await client.put("/api/birth", json={"time": "09:30"})).status_code == 422

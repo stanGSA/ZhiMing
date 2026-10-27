@@ -532,6 +532,7 @@ def common_tools(store, kb: KnowledgeBase, mode: str = "single", reviewer=None) 
             complete=False,
             response_mode="followup",
         )
+        session.birth_context = result.get("birth_context_json") or None
         calculations = result.get("calculations_json") or {}
         session.state["calculations"] = calculations
         session.state.update(calculations)
@@ -580,6 +581,12 @@ def common_tools(store, kb: KnowledgeBase, mode: str = "single", reviewer=None) 
         return messages[index] if 0 <= index < len(messages) else session.state["question"]
 
     async def submit(args, session):
+        from memory.store import StaleBirthError
+
+        try:
+            store.check_birth_version(session)
+        except StaleBirthError as exc:
+            return ToolResult.failure("birth_version_conflict", str(exc))
         if session.policy_judge is not None:
             from common.output_policy import authored_texts
 
@@ -608,14 +615,17 @@ def common_tools(store, kb: KnowledgeBase, mode: str = "single", reviewer=None) 
                     return ToolResult.failure(
                         "review_revise", revise_message(review, reviewer.max_rounds)
                     )
-            store.save_reading(
-                session,
-                output,
-                mode,
-                state.get("specialist_reports"),
-                merge=merged,
-                reviews=notes,
-            )
+            try:
+                store.save_reading(
+                    session,
+                    output,
+                    mode,
+                    state.get("specialist_reports"),
+                    merge=merged,
+                    reviews=notes,
+                )
+            except StaleBirthError as exc:
+                return ToolResult.failure("birth_version_conflict", str(exc))
         state["complete"] = True
         state["output"] = output
         return {

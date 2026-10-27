@@ -50,6 +50,9 @@ class Session:
     policy_judge: Any = None
     # Trusted browser form snapshot for this request, independent of model-written profile.
     birth_binding: dict[str, Any] | None = None
+    # Browser provenance travels separately from the model-editable profile/state.
+    birth_context: dict[str, Any] | None = None
+    birth_version_valid: Any = None
     pinned_reading_id: str | None = None
     output_validators: dict[str, Any] = field(default_factory=dict)
     # Outer budget for the whole request; run_turn exposes its own as turn_budget.
@@ -89,6 +92,8 @@ class Session:
             calendar_instant=self.calendar_instant,
             output_validators=self.output_validators,
             birth_binding=self.birth_binding if partition in ("astro", "bazi") else None,
+            birth_context=self.birth_context if partition in ("astro", "bazi") else None,
+            birth_version_valid=self.birth_version_valid,
             pinned_reading_id=self.pinned_reading_id,
             budget=budget,
             parent_call_id=parent_call_id,

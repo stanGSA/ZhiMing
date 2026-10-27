@@ -105,11 +105,12 @@ class BirthInfo(BaseModel):
     @classmethod
     def valid_time(cls, value):
         if value:
-            datetime.strptime(value, "%H:%M")
+            value = datetime.strptime(value, "%H:%M").strftime("%H:%M")
         return value
 
     @model_validator(mode="after")
     def consistent(self):
+        self.place = self.place.strip()
         if self.time and not self.date:
             raise ValueError("填写出生时刻前请先填写日期")
         if self.unknown_time:
@@ -120,6 +121,11 @@ class BirthInfo(BaseModel):
             if self.clock_tz and location["tz"] != "Asia/Urumqi":
                 raise ValueError("此地点无需指定新疆钟表时间制")
         return self
+
+    def canonical(self):
+        values = self.model_dump(mode="json")
+        values["unknown_time"] = not bool(self.time)
+        return values
 
     def evidence(self) -> str:
         parts = []
@@ -182,6 +188,7 @@ class ChatInput(BaseModel):
     system: SystemName = "auto"
     reading_id: str | None = Field(default=None, min_length=1, max_length=80)
     birth: BirthInfo = Field(default_factory=BirthInfo)
+    expected_birth_version: int | None = Field(default=None, ge=0)
     spread: Literal["single", "three_card", "decision"] = "three_card"
     # Positions (0-77) chosen from the face-down deck on the tarot page, in spread order.
     picks: list[int] | None = Field(default=None, max_length=3)
@@ -210,6 +217,7 @@ class NewInput(BaseModel):
 class ChartInput(BaseModel):
     system: Literal["bazi", "astro"]
     birth: BirthInfo
+    expected_birth_version: int | None = Field(default=None, ge=0)
 
 
 class NameQuery(BaseModel):
@@ -321,6 +329,11 @@ class BrowserSession:
     contexts: dict[str, BrowserSession] = field(default_factory=dict, repr=False)
     safety_pending: bool = False
     bound_birth: BirthInfo | None = None
+    birth_version: int = 0
+    birth_lock: asyncio.Lock = field(default_factory=asyncio.Lock)
+    active_birth_requests: set[str] = field(default_factory=set)
+    birth_stale: bool = False
+    session_revision: int = 0
 
 
 def create_web_app(
@@ -575,20 +588,46 @@ def create_web_app(
         context.runtime.session.safety_pending = session.safety_pending
         return context
 
-    def share_birth(session, birth):
+    def expected_birth_version(request, explicit=None):
+        if explicit is not None:
+            return explicit
+        value = request.headers.get("x-zhiming-birth-version")
+        if value is None:
+            return None
+        if not value.isdecimal():
+            raise HTTPException(422, "出生资料版本无效")
+        return int(value)
+
+    def birth_conflict(code, message):
+        raise HTTPException(409, {"code": code, "message": message})
+
+    def share_birth(session, birth, expected):
+        """Caller holds the owner's short birth_lock; no model calls in this section."""
         owner = session.owner or session
-        if birth != owner.birth:
+        changed = birth.canonical() != owner.birth.canonical()
+        if expected is not None and expected != owner.birth_version:
+            birth_conflict("birth_version_conflict", "出生资料已在其他页面更新，请同步后重新提交。")
+        if changed:
+            # Initial imports remain compatible; every later mutation needs a revision.
+            if owner.birth_version and expected is None:
+                birth_conflict("birth_version_required", "修改出生资料前请先同步当前资料版本。")
+            if owner.active_birth_requests:
+                birth_conflict("birth_in_use", "正在按当前生辰解读，请等待完成后再修改出生资料。")
+            # A database failure must not advance the in-memory birth revision.
+            values, _ = birth_profile(birth)
+            profile = session.runtime.store.get_profile(session.user_id)
+            if any(profile.get(k) != v for k, v in values.items()):
+                session.runtime.store.update_profile_fields(
+                    session.user_id, values, birth.evidence()
+                )
+            owner.birth = birth.model_copy(deep=True)
+            owner.birth_version += 1
             for context in family(owner):
                 context.chart = None
-        owner.birth = birth
+                if not context.runtime.session.pinned_reading_id:
+                    invalidate_birth(context)
 
-    def bind_birth(session, birth, *, authoritative=False):
-        runtime = session.runtime
-        target = runtime.session
-        target.profile = runtime.store.get_profile(session.user_id)
-        target.birth_binding = None
-        if not birth.date and not authoritative:
-            return
+    def birth_profile(birth):
         location = selected_region(birth.location_id) if birth.location_id else None
         tz = (birth.clock_tz or location["tz"]) if location else None
         if location and location["tz"] == "Asia/Urumqi" and not birth.clock_tz:
@@ -611,18 +650,20 @@ def create_web_app(
             lunar_date=None,
             leap_month=None,
         )
-        changed = any(target.profile.get(k) != v for k, v in values.items())
-        # Old calculations cannot be continued after their birth inputs change. Saved
-        # readings remain available through the explicit history follow-up path.
-        bound_before = session.bound_birth
-        has_birth_results = any(
-            target.state.get(k) for k in ("bazi_id", "chart_id", "daily_result")
+        return values, location
+
+    def invalidate_birth(session):
+        target = session.runtime.session
+        dependent = any(target.state.get(k) for k in ("bazi_id", "chart_id", "daily_result"))
+        dependent = (
+            dependent
+            or bool(set(target.state.get("specialist_facts", {})) & {"bazi", "astro", "daily"})
+            or bool(
+                set((session.reading or {}).get("output", {}).get("systems_used", []))
+                & {"bazi", "astro", "daily"}
+            )
         )
-        if (
-            has_birth_results
-            and ((bound_before is not None and bound_before != birth) or changed)
-            and target.state.get("active_reading_id")
-        ):
+        if dependent:
             selected = {
                 k: v
                 for k, v in target.state.items()
@@ -670,6 +711,25 @@ def create_web_app(
             target.cache.clear()
             target.messages = [m for m in target.messages if m["role"] == "system"]
             session.reading = None
+            session.birth_stale = True
+            for message in session.messages:
+                message["stale"] = True
+        target.birth_binding = None
+        target.birth_context = None
+        target.birth_version_valid = None
+        session.bound_birth = None
+
+    def bind_birth(session, birth, *, authoritative=False):
+        runtime = session.runtime
+        target = runtime.session
+        target.profile = runtime.store.get_profile(session.user_id)
+        target.birth_binding = None
+        if not birth.date and not authoritative:
+            return
+        values, location = birth_profile(birth)
+        changed = any(target.profile.get(k) != v for k, v in values.items())
+        if session.bound_birth is not None and session.bound_birth.canonical() != birth.canonical():
+            invalidate_birth(session)
         if changed:
             target.profile = runtime.store.update_profile_fields(
                 session.user_id, values, birth.evidence()
@@ -697,9 +757,14 @@ def create_web_app(
                 "responses": session.runtime.store.reading_responses(
                     session.user_id, reading["reading_id"]
                 ),
+                "stale": reading_is_stale(session, reading.get("birth_context")),
             }
         return {
             "system": session.system,
+            "session_epoch": session.runtime.session.id,
+            "session_revision": session.session_revision,
+            "birth_version": (session.owner or session).birth_version,
+            "birth_stale": session.birth_stale,
             "followup_reading_id": session.runtime.session.pinned_reading_id,
             "provider": session.provider,
             "messages": session.messages,
@@ -711,6 +776,9 @@ def create_web_app(
             "history": session.runtime.store.reading_history(session.user_id, limit=30),
             "busy": session.lock.locked(),
         }
+
+    def reading_is_stale(session, context):
+        return bool(context) and context.get("version") != (session.owner or session).birth_version
 
     @app.get("/api/session")
     async def session_info(
@@ -804,6 +872,7 @@ def create_web_app(
     @app.post("/api/chat")
     async def chat(body: ChatInput, request: Request):
         session = get_session(request, body.system)
+        owner = session.owner or session
         available(session)
         async with session.lock:
             saved_target = None
@@ -823,6 +892,8 @@ def create_web_app(
                 session.progress.get_nowait()
             session.progress_active = True
             session.progress.put_nowait({"label": "正在理解你的问题"})
+            uses_birth = False
+            birth_version = None
             try:
                 if body.picks:
                     # The first draw opens the round; a reply within it keeps its question and
@@ -852,15 +923,25 @@ def create_web_app(
                     )
                     return {**state(session), "busy": False}
                 chart_question = None
-                if (
-                    "birth" in body.model_fields_set
-                    and body.system in BIRTH_SYSTEMS
-                    and not saved_target
-                ):
-                    share_birth(session, body.birth)
+                if not saved_target:
+                    session.runtime.session.pinned_reading_id = None
+                if body.system in BIRTH_SYSTEMS and not saved_target:
+                    async with owner.birth_lock:
+                        if "birth" in body.model_fields_set:
+                            share_birth(
+                                session,
+                                body.birth,
+                                expected_birth_version(request, body.expected_birth_version),
+                            )
+                        else:
+                            body.birth = owner.birth.model_copy(deep=True)
+                        birth_version = owner.birth_version
+                        owner.active_birth_requests.add(session.system)
+                        uses_birth = True
                 if body.system in ("bazi", "astro") and not saved_target:
                     try:
                         session.chart = body.birth.chart(body.system)
+                        session.chart["birth_version"] = birth_version
                     except NeedsInput as exc:
                         session.chart = None
                         chart_question = exc.question
@@ -909,11 +990,21 @@ def create_web_app(
                         "output": saved_target["output_json"],
                         "tarot": saved_target["tarot_json"],
                         "calculations": saved_target.get("calculations_json"),
+                        "birth_context": saved_target.get("birth_context_json"),
+                        "historical": True,
                     }
                     session.runtime.session.birth_binding = None
+                    session.runtime.session.birth_version_valid = None
                     message += f"\n本次只追问历史解读 {body.reading_id}；请先read_reading读取该记录，不要重新计算。"
                 elif body.system in BIRTH_SYSTEMS:
                     bind_birth(session, body.birth, authoritative=body.system in ("bazi", "astro"))
+                    session.runtime.session.birth_context = {
+                        "version": birth_version,
+                        "birth": body.birth.model_dump(mode="json"),
+                    }
+                    session.runtime.session.birth_version_valid = lambda: (
+                        owner.birth_version == birth_version
+                    )
                 session.messages.append(
                     {"role": "user", "text": body.message, "system": body.system}
                 )
@@ -1008,7 +1099,10 @@ def create_web_app(
                             "output": outcome.data["reading"],
                             "tarot": saved.get("tarot_json") if saved else None,
                             "calculations": saved.get("calculations_json") if saved else None,
+                            "birth_context": saved.get("birth_context_json") if saved else None,
+                            "historical": bool(saved_target),
                         }
+                        session.birth_stale = False
                 session.messages.append(
                     {
                         "role": "assistant",
@@ -1020,6 +1114,9 @@ def create_web_app(
                 )
                 session.touched = time.monotonic()
             finally:
+                if uses_birth:
+                    async with owner.birth_lock:
+                        owner.active_birth_requests.discard(session.system)
                 session.progress_active = False
                 if session.progress.full():
                     session.progress.get_nowait()
@@ -1035,6 +1132,7 @@ def create_web_app(
             replacement.session.safety_pending = session.runtime.session.safety_pending
             await close(session)
             session.runtime = replacement
+            session.session_revision += 1
             attach_progress(session)
             session.provider = body.provider
             session.messages.clear()
@@ -1044,6 +1142,7 @@ def create_web_app(
             session.tarot_round = None
             session.name_analysis = None
             session.bound_birth = None
+            session.birth_stale = False
         return state(session)
 
     @app.get("/api/readings/{reading_id}")
@@ -1058,6 +1157,9 @@ def create_web_app(
             "output": saved["output_json"],
             "tarot": saved["tarot_json"],
             "calculations": saved.get("calculations_json"),
+            "birth_context": saved.get("birth_context_json"),
+            "historical": True,
+            "stale": reading_is_stale(session, saved.get("birth_context_json")),
             "responses": session.runtime.store.reading_responses(session.user_id, reading_id),
         }
 
@@ -1069,6 +1171,7 @@ def create_web_app(
         async with session.lock:
             session.runtime.forget()
             for context in family(session):
+                context.session_revision += 1
                 if context is not session:
                     # The database and traces are already removed for the shared identity.
                     context.runtime.session.profile = {"version": 0}
@@ -1080,11 +1183,16 @@ def create_web_app(
                     context.runtime.session.user_messages.clear()
                 context.runtime.session.birth_binding = None
                 context.runtime.session.pinned_reading_id = None
+                context.runtime.session.birth_context = None
+                context.runtime.session.birth_version_valid = None
                 context.bound_birth = None
+                context.birth_stale = False
                 context.messages.clear()
                 context.last_birth = ""
                 context.reading = context.chart = context.tarot_round = context.name_analysis = None
-            (session.owner or session).birth = BirthInfo()
+            owner = session.owner or session
+            owner.birth = BirthInfo()
+            owner.birth_version += 1
         return state(session)
 
     @app.get("/api/locations")
@@ -1105,25 +1213,39 @@ def create_web_app(
         async with session.lock:
             if session.runtime.session.safety_pending:
                 return {
+                    **state(session),
+                    "busy": False,
                     "chart": None,
                     "question": "请先在对话中确认此刻安全，再继续排盘。",
                     "code": "safety_confirmation_required",
                 }
-            share_birth(session, body.birth)
-            session.chart = None
-            try:
-                session.chart = body.birth.chart(body.system)
-            except NeedsInput as exc:
-                return {"chart": None, "question": exc.question, "code": exc.code}
-        return {"chart": session.chart}
+            async with (session.owner or session).birth_lock:
+                share_birth(
+                    session,
+                    body.birth,
+                    expected_birth_version(request, body.expected_birth_version),
+                )
+                session.chart = None
+                try:
+                    session.chart = body.birth.chart(body.system)
+                    session.chart["birth_version"] = (session.owner or session).birth_version
+                except NeedsInput as exc:
+                    return {
+                        **state(session),
+                        "busy": False,
+                        "question": exc.question,
+                        "code": exc.code,
+                    }
+        return state(session)
 
     @app.put("/api/birth")
     async def save_birth(body: BirthInfo, request: Request):
         session = get_session(request)
         available(session)
         async with session.lock:
-            share_birth(session, body)
-        return {"birth": body.model_dump(mode="json"), "chart": session.chart}
+            async with (session.owner or session).birth_lock:
+                share_birth(session, body, expected_birth_version(request))
+        return state(session)
 
     @app.post("/api/name")
     async def name_grids(body: NameQuery, request: Request):

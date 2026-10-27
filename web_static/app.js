@@ -38,6 +38,11 @@ let locationsReady = Promise.resolve();
 let emptyReading = null;
 let birthMode = null;
 let page = {};
+let birthDirty = false;
+let formBirthVersion = 0;
+let localStateEpoch = 0;
+let restoringBirth = 0;
+const birthChannel = typeof BroadcastChannel === "function" ? new BroadcastChannel("zhiming-birth") : null;
 
 /* ---------- Small helpers ---------- */
 
@@ -119,6 +124,7 @@ async function api(path, options = {}) {
       headers: {
         "Content-Type": "application/json",
         "X-Zhiming-Client": "web",
+        ...(state ? { "X-Zhiming-Birth-Version": String(birthDirty ? formBirthVersion : state.birth_version ?? 0) } : {}),
         ...options.headers,
       },
     });
@@ -128,11 +134,13 @@ async function api(path, options = {}) {
   const data = await response.json();
   if (!response.ok) {
     const detail = Array.isArray(data.detail) ? data.detail[0]?.msg : data.detail;
-    throw new Error(
-      typeof detail === "string"
+    const error = new Error(
+      detail?.message || (typeof detail === "string"
         ? detail.replace(/^Value error, /, "")
-        : "请检查填写的内容是否正确。",
+        : "请检查填写的内容是否正确。"),
     );
+    error.code = detail?.code;
+    throw error;
   }
   return data;
 }
@@ -255,6 +263,7 @@ function showMessage(message) {
   );
   item.append(node("span", "msg-label", message.role === "user" ? "问" : "答"));
   const body = node("div", "msg-body");
+  if (message.stale) body.append(node("p", "reading-confidence", "旧生辰记录"));
   body.append(node("p", "msg-text", message.text));
   item.append(body);
   $("#messages").append(item);
@@ -303,6 +312,8 @@ function fitComposer() {
 }
 
 async function send({ message, extra = {} }, birth) {
+  ++localStateEpoch;
+  clearTimeout(refreshTimer);
   if (!state.messages.some((item) => (item.system || "auto") === SYSTEM))
     $("#messages").replaceChildren();
   showMessage({ role: "user", text: message });
@@ -327,6 +338,9 @@ async function send({ message, extra = {} }, birth) {
       body: JSON.stringify({ message, system: SYSTEM, birth, ...extra,
         ...(followupReadingId ? { reading_id: followupReadingId } : {}) }),
     });
+    if (["auto", "bazi", "astro", "daily"].includes(SYSTEM) && !followupReadingId
+      && next.messages.at(-1)?.status !== "crisis_support")
+      acceptBirthVersion(next.birth_version);
     applyState(next);
     // A page may take over what happens next (塔罗 turns the view to its face-down cards).
     handled = next.messages.at(-1)?.status === "submit_reading" && Boolean(page.onAnswered?.());
@@ -345,6 +359,7 @@ async function send({ message, extra = {} }, birth) {
     setBusy(false);
     toast(error.message);
     page.onSendFailed?.();
+    await handleBirthError(error);
   } finally {
     progress.close();
   }
@@ -404,6 +419,11 @@ function renderReading(reading) {
     tags.append(node("span", "", SYSTEM_NAMES[value] || value)),
   );
   content.replaceChildren(tags, node("p", "reading-summary", output.summary));
+  if (reading.birth_context?.birth) {
+    const birth = reading.birth_context.birth;
+    content.insertBefore(node("p", "reading-confidence",
+      `${reading.stale ? "旧生辰解读" : reading.historical ? "历史解读" : "解读依据"}：公历 ${birth.date || "日期未填"} ${birth.time || "时辰不详"} · ${birth.place || "地点未填"}`), tags);
+  }
   (output.sections || []).forEach((section, index) => {
     content.append(
       node("h4", "reading-subheading", `${cnNumber(index + 1)}　${section.title}`),
@@ -557,9 +577,19 @@ function renderHistory(history) {
 
 /* ---------- Session ---------- */
 
-function applyState(next, first = false) {
+function applyState(next, first = false, background = false) {
+  if (next.system && next.system !== SYSTEM) return;
+  if (!first && state && (next.birth_version ?? 0) < (state.birth_version ?? 0)) return;
+  if (!first && state && (next.session_revision ?? 0) < (state.session_revision ?? 0)) return;
+  ++localStateEpoch;
+  const oldVersion = state?.birth_version;
+  const preview = background && currentReading?.historical
+    && next.history.some((item) => item.reading_id === currentReading.reading_id)
+    && next.reading?.reading_id !== currentReading.reading_id ? currentReading : null;
+  const selectedFollowup = followupReadingId;
   state = next;
-  followupReadingId = next.followup_reading_id || null;
+  followupReadingId = next.followup_reading_id
+    || (preview?.reading_id === selectedFollowup ? selectedFollowup : null);
   if ($("#provider")) $("#provider").value = next.provider;
   const status = $("#connection");
   if (status) {
@@ -571,10 +601,18 @@ function applyState(next, first = false) {
     live.classList.toggle("demo", next.provider === "demo");
   });
   renderTranscript();
-  renderReading(next.reading && (next.reading.view || "auto") === SYSTEM ? next.reading : null);
+  renderReading(preview ? { ...preview,
+    stale: Boolean(preview.birth_context) && preview.birth_context.version !== next.birth_version,
+  } : next.reading && (next.reading.view || "auto") === SYSTEM ? next.reading : null);
   renderHistory(next.history);
-  if (first && $("#birth-form")) fillBirthForm(next.birth);
+  const birthChanged = oldVersion !== next.birth_version;
+  if ((first || (birthChanged && !birthDirty)) && $("#birth-form")) {
+    acceptBirthVersion(next.birth_version);
+    fillBirthForm(next.birth);
+  } else if (birthChanged && birthDirty) showBirthConflict();
   if (first) foldBirth(next.birth, !next.birth?.date && PAGE !== "daily");
+  else if (birthChanged && !birthDirty)
+    foldBirth(next.birth, Boolean($("[data-birth-fold]")?.open));
   page.onState?.(next, first);
   setBusy(next.busy);
   if (next.busy) {
@@ -583,12 +621,20 @@ function applyState(next, first = false) {
     refreshTimer = setTimeout(refresh, 2000);
   }
   scrollTranscript();
+  if (oldVersion !== undefined && birthChanged)
+    birthChannel?.postMessage({ birth_version: next.birth_version });
 }
 
 async function refresh() {
+  const epoch = localStateEpoch;
   try {
-    applyState(await api("/api/session"));
+    const next = await api("/api/session");
+    if (epoch === localStateEpoch) {
+      applyState(next, false, true);
+      return true;
+    }
   } catch (error) {
+    if (epoch !== localStateEpoch) return;
     setBusy(false);
     toast(error.message);
   }
@@ -596,6 +642,8 @@ async function refresh() {
 
 async function startNew(provider) {
   if (busy && state) return;
+  ++localStateEpoch;
+  clearTimeout(refreshTimer);
   page.onNewSession?.();
   setBusy(true);
   try {
@@ -629,8 +677,10 @@ function wireControls() {
     if ($("#confirm-dialog").returnValue !== "confirm" || busy) return;
     page.onNewSession?.({ forget: true });
     setBusy(true);
+    ++localStateEpoch;
     try {
       applyState(await api("/api/session", { method: "DELETE" }), true);
+      acceptBirthVersion(state.birth_version);
       followupReadingId = null;
       setBirthFeedback("", false);
       if ($("#message")) $("#message").value = "";
@@ -761,10 +811,27 @@ function buildBirthForm(host, mode) {
     form.append(settings);
   }
   const submit = button(options.submit, "btn btn-primary", "submit");
+  const sync = button("载入最新生辰", "btn btn-tag");
+  sync.id = "birth-sync";
+  sync.hidden = true;
+  sync.addEventListener("click", async () => {
+    if (!await refresh()) return;
+    acceptBirthVersion(state.birth_version);
+    fillBirthForm(state.birth);
+    foldBirth(state.birth, true);
+  });
+  const keep = button("保留本页修改并重新确认", "btn btn-tag");
+  keep.id = "birth-keep";
+  keep.hidden = true;
+  keep.addEventListener("click", () => {
+    formBirthVersion = state.birth_version ?? 0;
+    sync.hidden = keep.hidden = true;
+    setBirthFeedback("已保留本页修改，请核对后再次提交。", false);
+  });
   const feedback = node("p", "birth-feedback", "确认后保存在本次浏览器会话中。");
   feedback.id = "birth-feedback";
   feedback.setAttribute("role", "status");
-  form.append(submit, feedback);
+  form.append(submit, feedback, sync, keep);
   host.replaceChildren(form);
 
   unknownBox.addEventListener("change", () => {
@@ -772,6 +839,8 @@ function buildBirthForm(host, mode) {
     if (unknownBox.checked) time.value = "";
   });
   form.addEventListener("input", () => {
+    birthDirty = true;
+    ++restoringBirth;
     time.setCustomValidity("");
     setBirthFeedback("资料已修改，确认后生效。", false);
     if (mode === "bazi" || mode === "astro") invalidateChart();
@@ -792,6 +861,26 @@ function setBirthFeedback(text, saved) {
   feedback.classList.toggle("saved", saved);
 }
 
+function acceptBirthVersion(version) {
+  birthDirty = false;
+  formBirthVersion = version ?? 0;
+  if ($("#birth-sync")) $("#birth-sync").hidden = true;
+  if ($("#birth-keep")) $("#birth-keep").hidden = true;
+}
+
+function showBirthConflict() {
+  setBirthFeedback("其他页面已更新生辰。本页修改已保留，请载入最新资料或确认保留本页修改。", false);
+  if ($("#birth-sync")) $("#birth-sync").hidden = false;
+  if ($("#birth-keep")) $("#birth-keep").hidden = false;
+}
+
+async function handleBirthError(error) {
+  if (["birth_version_conflict", "birth_version_required"].includes(error.code)) {
+    await refresh();
+    if ($("#birth-form")) showBirthConflict();
+  }
+}
+
 function invalidateChart() {
   if (state) state.chart = null;
   page.onChart?.(null);
@@ -799,6 +888,8 @@ function invalidateChart() {
 
 async function submitBirth(mode) {
   if (busy || !state || !validateBirth()) return;
+  ++localStateEpoch;
+  clearTimeout(refreshTimer);
   setBusy(true);
   try {
     const birth = birthInfo();
@@ -807,9 +898,8 @@ async function submitBirth(mode) {
         method: "POST",
         body: JSON.stringify({ system: mode, birth }),
       });
-      state.chart = result.chart;
-      state.birth = birth;
-      page.onChart?.(result.chart);
+      if (result.code !== "safety_confirmation_required") acceptBirthVersion(result.birth_version);
+      applyState(result);
       setBirthFeedback(result.question || "已排盘，可以就此发问。", !result.question);
       toast(result.question || (mode === "bazi" ? "四柱已排出。" : "本命星图已绘出。"));
       if (!result.question) {
@@ -818,8 +908,8 @@ async function submitBirth(mode) {
       }
     } else {
       const result = await api("/api/birth", { method: "PUT", body: JSON.stringify(birth) });
-      state.birth = result.birth;
-      state.chart = result.chart;
+      acceptBirthVersion(result.birth_version);
+      applyState(result);
       setBirthFeedback("生辰已保存，八字、星盘与运势页都会用到。", true);
       toast("生辰已保存。");
       foldBirth(result.birth, false);
@@ -827,6 +917,7 @@ async function submitBirth(mode) {
     }
   } catch (error) {
     toast(error.message);
+    await handleBirthError(error);
   } finally {
     setBusy(false);
   }
@@ -916,7 +1007,8 @@ function fillBirthForm(birth) {
   if ($("#zishi-rule")) $("#zishi-rule").value = birth.zishi_rule || "next_day";
   $("#birth-clock").value = birth.clock_tz || "";
   if (birth.date) setBirthFeedback("已载入保存的生辰。", true);
-  restoreLocation(birth.location_id || "").catch((error) => toast(error.message));
+  if (selectedLocation?.location_id !== birth.location_id)
+    restoreLocation(birth.location_id || "").catch((error) => toast(error.message));
 }
 
 function updateLocationDisabled() {
@@ -1006,24 +1098,29 @@ async function initLocations() {
 }
 
 async function restoreLocation(identity) {
+  const restore = ++restoringBirth;
   const restoredChart = state?.chart;
   await locationsReady;
+  if (restore !== restoringBirth) return;
   if (!identity) {
     $("#birth-country").value = "CN";
     await locationChanged(0);
     return;
   }
   const location = await api(`/api/locations/${encodeURIComponent(identity)}`);
+  if (restore !== restoringBirth) return;
   for (const item of location.path) {
+    if (restore !== restoringBirth) return;
     const index = LOCATION_FIELDS.indexOf(item.level);
     if (index < 0) continue;
     $(`#birth-${item.level}`).value = item.id;
     await locationChanged(index);
   }
+  if (restore !== restoringBirth) return;
   selectedLocation = location;
   // Restoring a saved path must not discard the server's matching chart or clock choice.
   if (state?.birth.clock_tz) $("#birth-clock").value = state.birth.clock_tz;
-  if (state && restoredChart) {
+  if (state && restoredChart && restoredChart.birth_version === state.birth_version) {
     state.chart = restoredChart;
     page.onChart?.(restoredChart);
   }
@@ -1982,6 +2079,8 @@ function renderDiary(history) {
 /* ---------- 运势 ---------- */
 
 let almanacDay = null;
+let almanacBirthVersion = null;
+let almanacRequest = 0;
 const BODY_ZH = {
   Sun: "太阳",
   Moon: "月亮",
@@ -2000,14 +2099,16 @@ function birthForAlmanac() {
 }
 
 async function loadAlmanac(date, birth = birthForAlmanac()) {
+  const request = ++almanacRequest;
+  const version = state?.birth_version;
   try {
     const data = await api("/api/almanac", {
       method: "POST",
       body: JSON.stringify({ date: date || null, birth }),
     });
-    renderAlmanac(data);
+    if (request === almanacRequest && version === state?.birth_version) renderAlmanac(data);
   } catch (error) {
-    toast(error.message);
+    if (request === almanacRequest && version === state?.birth_version) toast(error.message);
   }
 }
 
@@ -2294,10 +2395,10 @@ const PAGES = {
     },
     onState(next, first) {
       // The form's location is still being restored on first load; use the saved profile.
-      if (first) loadAlmanac(null, next.birth);
-    },
-    onBirthSaved() {
-      return loadAlmanac(almanacDay);
+      if (first || next.birth_version !== almanacBirthVersion) {
+        almanacBirthVersion = next.birth_version;
+        loadAlmanac(first ? null : almanacDay, next.birth);
+      }
     },
     compose(text) {
       if (!text) return null;
@@ -2324,6 +2425,13 @@ function init() {
   if (host) buildBirthForm(host, host.dataset.birth);
   $("[data-birth-submit]")?.addEventListener("click", submitBirthFromBar);
   wireControls();
+  window.addEventListener("focus", () => { if (state && !busy) refresh(); });
+  document.addEventListener("visibilitychange", () => {
+    if (!document.hidden && state && !busy) refresh();
+  });
+  if (birthChannel) birthChannel.onmessage = (event) => {
+    if (state && !busy && event.data?.birth_version !== state.birth_version) refresh();
+  };
   initComposer();
   $$('a[href^="#"]').forEach((link) => {
     if (document.getElementById(link.hash.slice(1))?.matches("[data-birth-fold]"))

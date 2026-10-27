@@ -224,6 +224,9 @@ def test_explicit_history_followup_sends_the_selected_record_and_survives_reload
     page.click("#open-history")
     page.click("#history-list .history-item:has-text('旧记录的工作状态')")
     page.get_by_role("button", name="继续这份解读", exact=True).click()
+    with page.expect_response(lambda r: "/api/session" in r.url):
+        page.evaluate("window.dispatchEvent(new Event('focus'))")
+    expect(page.get_by_role("button", name="正在追问这份解读", exact=True)).to_be_visible()
     answered(page, lambda: reply(page, "第一张牌具体什么意思？"))
     assert chats[-1]["reading_id"] == original["reading_id"]
     current = page.request.get(f"{base}/api/session?system=tarot").json()
@@ -304,8 +307,12 @@ def test_busy_session_on_ask_keeps_polling_without_a_transcript(site, chromium):
     page.close()
 
 
-def open_saved_birth(chromium, base, slug, width=1280):
-    page = chromium.new_page(viewport={"width": width, "height": 844}, reduced_motion="reduce")
+def open_saved_birth(chromium, base, slug, width=1280, context=None):
+    page = (
+        context.new_page()
+        if context
+        else chromium.new_page(viewport={"width": width, "height": 844}, reduced_motion="reduce")
+    )
     page.goto(f"{base}/{slug}?provider=demo")
     expect(page.locator("#birth-country")).to_be_enabled()
     result = page.request.put(
@@ -327,6 +334,100 @@ def open_saved_birth(chromium, base, slug, width=1280):
     return page
 
 
+def test_other_tab_birth_update_preserves_draft_and_requires_confirmation(site, chromium):
+    base, _ = site
+    context = chromium.new_context(viewport={"width": 1280, "height": 844}, reduced_motion="reduce")
+    bazi = open_saved_birth(chromium, base, "bazi", context=context)
+    astro = bazi.context.new_page()
+    astro.goto(f"{base}/astro")
+    expect(astro.locator("#birth-district")).to_have_value("1803361")
+    expect(astro.locator("#birth-time")).to_have_value("10:11")
+    astro.locator("[data-birth-fold] > summary").click()
+    astro.fill("#birth-time", "11:22")
+    bazi.locator("[data-birth-fold] > summary").click()
+    bazi.fill("#birth-time", "12:30")
+    with bazi.expect_response(lambda r: r.url.endswith("/api/chart")) as response:
+        bazi.locator("#birth-form button[type=submit]").click()
+    assert response.value.status == 200
+    expect(astro.locator("#birth-keep")).to_be_visible()
+    expect(astro.locator("#birth-time")).to_have_value("11:22")
+    with astro.expect_response(lambda r: r.url.endswith("/api/chart")) as response:
+        astro.locator("#birth-form button[type=submit]").click()
+    assert response.value.status == 409
+    assert astro.request.get(f"{base}/api/session?system=astro").json()["birth"]["time"] == "12:30"
+    expect(astro.locator("#birth-keep")).to_be_enabled()
+    astro.click("#birth-keep")
+    with astro.expect_response(lambda r: r.url.endswith("/api/chart")) as response:
+        astro.locator("#birth-form button[type=submit]").click()
+    assert response.value.status == 200
+    expect(bazi.locator("#birth-time")).to_have_value("11:22")
+    assert bazi.request.get(f"{base}/api/session?system=bazi").json()["chart"] is None
+
+
+def test_clean_birth_form_syncs_on_focus_without_broadcast_channel(site, chromium):
+    base, _ = site
+    context = chromium.new_context(viewport={"width": 1280, "height": 844}, reduced_motion="reduce")
+    bazi = open_saved_birth(chromium, base, "bazi", context=context)
+    astro = bazi.context.new_page()
+    astro.add_init_script("window.BroadcastChannel = undefined")
+    astro.goto(f"{base}/astro")
+    expect(astro.locator("#birth-district")).to_have_value("1803361")
+    bazi.locator("[data-birth-fold] > summary").click()
+    bazi.fill("#birth-time", "12:30")
+    with bazi.expect_response(lambda r: r.url.endswith("/api/chart")) as response:
+        bazi.locator("#birth-form button[type=submit]").click()
+    assert response.value.status == 200
+    astro.evaluate("window.dispatchEvent(new Event('focus'))")
+    expect(astro.locator("#birth-time")).to_have_value("12:30")
+    expect(astro.locator("#birth-district")).to_have_value("1803361")
+    expect(astro.locator("[data-birth-summary]")).to_contain_text("12:30")
+    expect(astro.locator("#birth-keep")).to_be_hidden()
+
+
+def test_safety_blocked_chart_keeps_form_and_client_state_usable(site, chromium):
+    base, _ = site
+    page = open_saved_birth(chromium, base, "bazi")
+    errors = []
+    page.on("pageerror", lambda error: errors.append(str(error)))
+    crisis = page.request.post(
+        f"{base}/api/chat",
+        data={
+            "message": "我想自杀",
+            "system": "tarot",
+        },
+        headers={"X-Zhiming-Client": "web", "Origin": base},
+    )
+    assert crisis.json()["messages"][-1]["status"] == "crisis_support"
+    page.locator("[data-birth-fold] > summary").click()
+    page.fill("#birth-time", "12:30")
+    with page.expect_response(lambda r: r.url.endswith("/api/chart")) as response:
+        page.locator("#birth-form button[type=submit]").click()
+    assert response.value.json()["code"] == "safety_confirmation_required"
+    expect(page.locator("#birth-feedback")).to_contain_text("请先在对话中确认")
+    expect(page.locator("#birth-time")).to_have_value("12:30")
+    expect(page.locator("#send")).to_be_enabled()
+    assert errors == []
+
+
+def test_daily_calendar_recomputes_when_other_tab_changes_birth(site, chromium):
+    base, _ = site
+    context = chromium.new_context(viewport={"width": 1280, "height": 844}, reduced_motion="reduce")
+    bazi = open_saved_birth(chromium, base, "bazi", context=context)
+    daily = context.new_page()
+    daily.goto(f"{base}/daily")
+    expect(daily.locator("#birth-district")).to_have_value("1803361")
+    expect(daily.locator("#day-god-note")).to_contain_text("壬水")
+    bazi.locator("[data-birth-fold] > summary").click()
+    bazi.fill("#birth-date", "1994-03-18")
+    bazi.fill("#birth-time", "08:30")
+    with bazi.expect_response(lambda r: r.url.endswith("/api/chart")) as response:
+        bazi.locator("#birth-form button[type=submit]").click()
+    assert response.value.status == 200
+    day_master = response.value.json()["chart"]["result"]["day_master"]
+    assert day_master != "壬水"
+    expect(daily.locator("#day-god-note")).to_contain_text(day_master)
+
+
 @pytest.mark.parametrize("slug", ["astro", "bazi"])
 @pytest.mark.parametrize("width", [390, 1280])
 def test_drawing_scrolls_to_the_chart_result(site, chromium, slug, width):
@@ -335,7 +436,9 @@ def test_drawing_scrolls_to_the_chart_result(site, chromium, slug, width):
     if slug == "bazi":
         page.locator("[data-birth-fold] > summary").click()
     with page.expect_response(lambda r: r.url.endswith("/api/chart")) as response:
-        page.locator("#draw-chart" if slug == "astro" else "#birth-form button").click()
+        page.locator(
+            "#draw-chart" if slug == "astro" else "#birth-form button[type=submit]"
+        ).click()
     assert response.value.ok, response.value.text()
     assert not response.value.json().get("question")
     expect(page.locator("[data-birth-fold]")).not_to_have_attribute("open", "")
