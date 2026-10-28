@@ -10,6 +10,18 @@ from harness.registry import Registry
 from harness.session import Session
 
 
+def json_error_detail(exc: json.JSONDecodeError) -> str:
+    """Where the arguments broke, with the text around it, so the fix can be local."""
+    near = exc.doc[max(0, exc.pos - 30) : exc.pos + 10].replace("\n", "\\n")
+    detail = f"{exc.msg}，第 {exc.pos} 个字符附近：…{near}…"
+    if exc.msg in ("Expecting ',' delimiter", "Expecting ':' delimiter") and (
+        exc.doc[exc.pos - 1 : exc.pos] == '"'
+    ):
+        # A string closed early and text went on: an ASCII quote inside the value.
+        detail += '；字符串正文里的英文双引号须写成\\"，或改用中文引号“”'
+    return detail
+
+
 class Guard:
     def __init__(self, registry: Registry):
         self.registry = registry
@@ -31,7 +43,7 @@ class Guard:
                 detail = "须为 JSON 对象"
             except (json.JSONDecodeError, TypeError) as exc:
                 detail = (
-                    f"{exc.msg}，第 {exc.pos} 个字符附近"
+                    json_error_detail(exc)
                     if isinstance(exc, json.JSONDecodeError)
                     else "参数须为 JSON 字符串"
                 )

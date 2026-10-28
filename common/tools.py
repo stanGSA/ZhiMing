@@ -5,6 +5,7 @@ import re
 
 from agents.reviewer import packet_from_reading, revise_message
 from common.domain_rules import rules_for
+from common.evidence import calculation_evidence_texts
 from common.input_evidence import (
     clock_in,
     gender_evidence,
@@ -14,6 +15,7 @@ from common.input_evidence import (
 )
 from common.location import consultation_timezone_evidence
 from common.schemas import (
+    LOOKUP_KINDS,
     AskInput,
     EmptyInput,
     LookupInput,
@@ -448,10 +450,23 @@ def common_tools(store, kb: KnowledgeBase, mode: str = "single", reviewer=None) 
             if lookup_kb is not kb:
                 lookup_kb.close()
         if entry is None:
-            return ToolResult.failure("missing_entry", "缺条目：精确 key 或同义词未命中")
+            return ToolResult.failure(
+                "missing_entry", "缺条目：精确 key 或同义词未命中" + lookup_hint(args, session)
+            )
         session.state.setdefault("kb_refs", set()).add(entry["ref_id"])
         # The model sees the review level, not who reviewed it.
         return {"entry": {k: v for k, v in entry.items() if k != "model_review"}}
+
+    def lookup_hint(args, session) -> str:
+        kinds = LOOKUP_KINDS[args.system]
+        if args.kind not in kinds:
+            return f"；{args.system}的kind只能是{'、'.join(kinds)}"
+        if (args.system, args.kind) != ("tarot", "card"):
+            return "；key须照抄工具结果中的meaning_key或key"
+        cards = (session.state.get("tarot_result") or {}).get("cards", [])
+        keys = "、".join(c["meaning_key"] for c in cards if c.get("meaning_key"))
+        drawn = f"；本次牌面已随抽牌返回释义，无需再查：{keys}" if keys else ""
+        return "；牌面key为card_id:upright或card_id:reversed，如cups_four:upright" + drawn
 
     def ask_validator(args, session):
         if session.state.get("asked_this_turn"):
@@ -476,6 +491,35 @@ def common_tools(store, kb: KnowledgeBase, mode: str = "single", reviewer=None) 
         session.state["asked_this_turn"] = True
         return {"text": args.question}
 
+    def current_reading(session) -> dict:
+        """This turn's reading lives in the session until submit_reading saves it.
+
+        Show its facts and citable references without resetting anything, so a rejected
+        draft is repaired from the same draw and calculations.
+        """
+        state = session.state
+        texts = calculation_evidence_texts(state)
+        names = {full: alias for alias, full in state.get("ref_alias", {}).items()}
+        refs = sorted(
+            state.get("allowed_refs", ()),
+            key=lambda ref: (0, int(names[ref][1:]), "") if ref in names else (1, 0, ref),
+        )
+        return {
+            "reading": dict(
+                reading_id=state["active_reading_id"],
+                question=state.get("question"),
+                status="in_progress",
+                systems=sorted({s["system"] for s in state.get("signals", [])}),
+                tarot_json=state.get("tarot_result"),
+                chart_id=state.get("chart_id"),
+                bazi_id=state.get("bazi_id"),
+                citable=[{"ref_id": ref, "fact": texts.get(ref, "")} for ref in refs],
+                note="本轮记录尚未提交入库，牌面与计算均已保留在会话中；"
+                "evidence和sections只用citable中的ref_id，修正后直接submit_reading，"
+                "不要重新抽牌或计算。",
+            )
+        }
+
     def read(args, session):
         if session.pinned_reading_id and args.reading_id not in (None, session.pinned_reading_id):
             return ToolResult.failure(
@@ -488,6 +532,8 @@ def common_tools(store, kb: KnowledgeBase, mode: str = "single", reviewer=None) 
             recent = store.recent_readings(session.user_id, limit=1)
             reading_id = recent[0]["reading_id"] if recent else None
         result = store.get_reading(session.user_id, reading_id) if reading_id else None
+        if not result and reading_id and reading_id == session.state.get("active_reading_id"):
+            return current_reading(session)
         if not result:
             return ToolResult.failure("missing_reading", "没有属于当前用户的占卜记录")
         # Older saved draws may predate inline meanings; use their pinned edition.
@@ -674,7 +720,8 @@ def common_tools(store, kb: KnowledgeBase, mode: str = "single", reviewer=None) 
         ),
         Tool(
             "read_reading",
-            "恢复历史牌面与释义；追问用submit_reading保存，禁止重抽。",
+            "恢复已保存的历史牌面与释义，追问用submit_reading保存，禁止重抽；"
+            "本轮尚未提交的记录返回当前牌面与可引用ref_id（status=in_progress），不重置。",
             ReadInput,
             read,
             idempotent=False,
@@ -686,6 +733,8 @@ def common_tools(store, kb: KnowledgeBase, mode: str = "single", reviewer=None) 
                     in (
                         "reading_id",
                         "question",
+                        "status",
+                        "systems",
                         "tarot_json",
                         "kb_version",
                         "output_json",
@@ -693,6 +742,8 @@ def common_tools(store, kb: KnowledgeBase, mode: str = "single", reviewer=None) 
                         "chart_id",
                         "bazi_id",
                         "merge",
+                        "citable",
+                        "note",
                     )
                 }
             },

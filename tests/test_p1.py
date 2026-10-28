@@ -139,6 +139,8 @@ async def test_alias_identity_survives_new_reading_and_restore(runtime):
     )
     full = transform(original, runtime.session, restore=True)
     runtime.session.start_reading("一个新问题")
+    # A fact the new reading calculated; only citable references are numbered.
+    runtime.session.state["allowed_refs"].add("tarot:a-new-calculation")
     new = transform({"ref_id": "tarot:a-new-calculation"}, runtime.session)
     assert new != original
     restored = await invoke(runtime, "read_reading", {"reading_id": reading_id})

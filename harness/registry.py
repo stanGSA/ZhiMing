@@ -8,6 +8,7 @@ from typing import Any
 from pydantic import BaseModel
 
 from harness.models import ToolResult
+from harness.refs import constrain
 from harness.session import Session
 
 
@@ -58,7 +59,7 @@ class Registry:
 
     def schemas(self, session: Session) -> list[dict[str, Any]]:
         return [
-            t.schema()
+            constrain(t.schema(), session)
             for t in self.tools.values()
             if session.role in t.roles
             and (session.partition is None or t.partition in (None, session.partition))
