@@ -7,26 +7,42 @@ inference; the prompts ask for them to be argued from the computed chart.
 
 import re
 
+from common.evidence import calculation_evidence_texts
 from common.facts import section_texts
 from common.output_policy import warn
 
+PILLAR_KEYS = {"年": "year", "月": "month", "日": "day", "时": "time"}
+PILLAR_CLAIM = re.compile(
+    r"(?:(?P<flow>流[年月日时])(?:的?(?P<flow_name>[年月日时])?柱)?|"
+    r"(?P<scope>候选|原局|本命|出生|流期)?(?:的)?(?P<name>[年月日时])柱)"
+    r"\s*(?:是|为|：|:)?\s*(?P<value>[甲乙丙丁戊己庚辛壬癸][子丑寅卯辰巳午未申酉戌亥])"
+)
+
 
 def validate_output(reading, state):
-    text = " ".join(
-        [
-            reading.summary,
-            *section_texts(reading),
-            *[e.reading for e in reading.evidence],
-            *reading.advice,
-            reading.closing,
-            *[t.period + " " + t.note for t in reading.timeline],
-            *reading.resonances,
-            *[t.how_to_read for t in reading.tensions],
-            *[side for t in reading.tensions for side in t.sides],
-            *reading.followups,
-            reading.safety.note,
-        ]
-    )
+    parts = [
+        reading.summary,
+        *section_texts(reading),
+        *reading.advice,
+        reading.closing,
+        *[t.period + " " + t.note for t in reading.timeline],
+        *reading.resonances,
+        *[t.how_to_read for t in reading.tensions],
+        *[side for t in reading.tensions for side in t.sides],
+        *[t.theme for t in reading.tensions],
+        *reading.followups,
+        reading.confidence.reason,
+        reading.safety.note,
+    ]
+    text = " ".join([*parts, *[e.reading for e in reading.evidence]])
+    # Exact facts rendered from a matching calculation reference already have a known
+    # scope. In particular, period:...:年柱:丁未 is a flow year, not a natal year.
+    # A reference alone never exempts model-authored or altered evidence from checks.
+    canonical = calculation_evidence_texts(state)
+    claims = [
+        *parts,
+        *[e.reading for e in reading.evidence if canonical.get(e.ref_id) != e.reading],
+    ]
     daily = state.get("daily_result") or {}
     bazi = state.get("bazi_result") or daily.get("bazi") or {}
     question = state.get("question", "")
@@ -62,24 +78,23 @@ def validate_output(reading, state):
     for value in re.findall(r"[甲乙丙丁戊己庚辛壬癸][子丑寅卯辰巳午未申酉戌亥]", text):
         if value not in gz:
             return "本次工具结果没有该干支，不能编造"
-    for candidate_label, name, value in re.findall(
-        r"(候选)?([年月日时])柱\s*(?:是|为|：|:)?\s*([甲乙丙丁戊己庚辛壬癸][子丑寅卯辰巳午未申酉戌亥])",
-        text,
-    ):
-        key = {"年": "year", "月": "month", "日": "day", "时": "time"}[name]
-        if candidate_label and any(c.get(key) == value for c in bazi.get("alternatives", [])):
-            continue
-        if (
-            bazi.get("pillars", {}).get(
-                {"年": "year", "月": "month", "日": "day", "时": "time"}[name]
-            )
-            != value
-        ):
-            return "原局柱位与干支不符"
+    for passage in claims:
+        for match in PILLAR_CLAIM.finditer(passage):
+            flow, scope, name, value = match.group("flow", "scope", "name", "value")
+            key = PILLAR_KEYS[flow[-1] if flow else name]
+            if flow or scope == "流期":
+                if (flow and match["flow_name"] not in (None, flow[-1])) or not any(
+                    p["pillars"].get(key) == value for p in periods
+                ):
+                    return "流期柱位与干支不符，请使用本次对应流年、流月或流日的计算结果"
+            elif scope == "候选" and any(c.get(key) == value for c in bazi.get("alternatives", [])):
+                continue
+            elif bazi.get("pillars", {}).get(key) != value:
+                return "原局柱位与干支不符，请区分出生原局与流年、流月、流日"
     if (
         bazi
         and not bazi.get("time_known")
-        and re.search(r"时柱(?:是|为|：|:|\s*[甲乙丙丁戊己庚辛壬癸])", text)
+        and any(re.search(r"时柱(?:是|为|：|:|\s*[甲乙丙丁戊己庚辛壬癸])", p) for p in claims)
     ):
         return "出生时辰未知，禁止编造时柱"
     return None

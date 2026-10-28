@@ -184,6 +184,35 @@ async def test_unknown_time_and_hallucinations(runtime):
     assert (await invoke(runtime, "submit_reading", base)).ok
 
 
+async def test_flow_evidence_submits_and_restores_without_natal_mismatch(runtime):
+    birth = await prepare(runtime)
+    natal = await invoke(runtime, "compute_bazi", {**birth, "gender": "male"})
+    assert natal.ok
+    runtime.session.append_user("再看2027-02-05至2027-12-31的流年。")
+    period = await invoke(
+        runtime,
+        "compute_bazi_period",
+        dict(
+            bazi_id=natal.data["bazi_id"],
+            start="2027-02-05",
+            end="2027-12-31",
+            granularity="year",
+            tz="Asia/Shanghai",
+        ),
+    )
+    assert period.ok
+    assert period.data["periods"][0]["pillars"]["year"] != natal.data["pillars"]["year"]
+    output = draft(runtime)
+    output["evidence"] = [dict(ref_id=item["ref_id"]) for item in period.data["interpretations"]]
+    submitted = await invoke(runtime, "submit_reading", output)
+    assert submitted.ok, submitted.error
+    assert "年柱:" in submitted.data["reading"]["evidence"][0]["reading"]
+    runtime.session.append_user("解释刚才的流年引用。")
+    restored = await invoke(runtime, "read_reading", dict(reading_id=submitted.data["reading_id"]))
+    assert restored.ok
+    assert (await invoke(runtime, "submit_reading", submitted.data["reading"])).ok
+
+
 @pytest.mark.asyncio
 @pytest.mark.parametrize(
     "clock,tz,utc",

@@ -39,7 +39,8 @@ def fact_text(item):
     return text
 
 
-def fill_evidence(reading, state):
+def calculation_evidence_texts(state):
+    """Canonical rendered facts, indexed by their calculation-owned references."""
     texts = {}
 
     def collect(value):
@@ -59,7 +60,12 @@ def fill_evidence(reading, state):
 
     collect(state.get("calculations", {}))
     collect(state.get("tarot_result", {}))
+    return {ref: text[:500] for ref, text in texts.items()}
+
+
+def fill_evidence(reading, state):
+    texts = calculation_evidence_texts(state)
     for item in reading.evidence:
         if not item.reading and item.ref_id in texts:
-            item.reading = texts[item.ref_id][:500]
+            item.reading = texts[item.ref_id]
     return any(not item.reading for item in reading.evidence)
