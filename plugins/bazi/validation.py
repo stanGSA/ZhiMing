@@ -78,13 +78,18 @@ def validate_output(reading, state):
     for value in re.findall(r"[甲乙丙丁戊己庚辛壬癸][子丑寅卯辰巳午未申酉戌亥]", text):
         if value not in gz:
             return "本次工具结果没有该干支，不能编造"
+    # The daily fortune's day pillars are flow days as well.
+    flows = [
+        *periods,
+        *({"pillars": {"day": s["pillar"]}} for s in (daily.get("day") or {}).get("segments", [])),
+    ]
     for passage in claims:
         for match in PILLAR_CLAIM.finditer(passage):
             flow, scope, name, value = match.group("flow", "scope", "name", "value")
             key = PILLAR_KEYS[flow[-1] if flow else name]
             if flow or scope == "流期":
                 if (flow and match["flow_name"] not in (None, flow[-1])) or not any(
-                    p["pillars"].get(key) == value for p in periods
+                    p["pillars"].get(key) == value for p in flows
                 ):
                     return "流期柱位与干支不符，请使用本次对应流年、流月或流日的计算结果"
             elif scope == "候选" and any(c.get(key) == value for c in bazi.get("alternatives", [])):
