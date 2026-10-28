@@ -1,6 +1,6 @@
 import re
 
-from common.evidence import fill_evidence
+from common.evidence import calculation_evidence_texts, fill_evidence
 from common.facts import validate_calculation_facts
 from common.output_policy import (
     authored_texts,
@@ -10,6 +10,7 @@ from common.output_policy import (
     warn,
 )
 from common.safety import CRISIS as CRISIS  # Backwards-compatible public import.
+from harness.refs import short
 
 HIGH_RISK = re.compile(r"疾病|癌|诊断|停药|治疗|健康|投资|股票|基金|借贷|法律|诉讼|判刑|死亡|寿命")
 # Questions that ask whether or when to act; only these call for "适合/暂不适合" as an answer.
@@ -50,24 +51,70 @@ def report_matches_profile(report: dict, profile: dict) -> bool:
     return all(profile.get(field) == value for field, value in dependencies.items())
 
 
+def citation_error(session, cited, allowed, rendered=None) -> str | None:
+    """Every invalid reference of a draft at once, by field path, with what may be cited.
+
+    ``cited`` holds (path, reference, needs rendered text) for each reference in the draft.
+    The model knows references by their R-numbers, so the message names them that way.
+    """
+    state = session.state
+    seen = set(state.get("ref_alias", {}).values())
+    rendered = rendered or {}
+    problems = []
+    for path, ref, needs_text in cited:
+        if ref in allowed:
+            if needs_text and ref not in rendered:
+                problems.append((path, ref, "没有可渲染的事实文本，须自写reading或改用下列编号"))
+            continue
+        if ref in (state.get("kb_refs") or ()):
+            why = "是知识库释义条目，不是本次计算事实"
+        elif ref in seen:
+            why = "不属于本次记录的计算事实"
+        else:
+            why = "不是工具返回过的编号"
+        problems.append((path, ref, why))
+    if not problems:
+        return None
+    for ref in sorted(set(allowed) - seen):
+        short(ref, session)  # Number unseen citable facts in a stable order.
+    names = {full: alias for alias, full in state["ref_alias"].items()}
+    usable = sorted(((names[ref], ref) for ref in allowed), key=lambda item: int(item[0][1:]))
+    listed = "、".join(
+        f"{alias}（{rendered[ref][:40]}）" if ref in rendered else alias
+        for alias, ref in usable[:24]
+    )
+    more = f"等共{len(usable)}条" if len(usable) > 24 else ""
+    return (
+        "引用无效，请只修改这些编号后重新提交，正文可保持不变："
+        + "；".join(f"{path}={names.get(ref, ref)}{why}" for path, ref, why in problems)
+        + f"。本次可引用：{listed or '无'}{more}。"
+    )
+
+
 def validate_reading(reading, session) -> str | None:
     """Hard checks on facts and safety; wording is repaired first, style is only recorded."""
     state = session.state
     if not state.get("tarot_result") and not state.get("calculations"):
         return "必须先调用确定性计算工具"
-    if fill_evidence(reading, state):
-        return "evidence ref_id没有本次可渲染的计算事实，请使用工具返回的ref_id"
+    fill_evidence(reading, state)
+    cited = [
+        (f"evidence.{i}.ref_id", item.ref_id, not item.reading)
+        for i, item in enumerate(reading.evidence)
+    ]
+    cited += [
+        (f"sections.{i}.ref_ids.{j}", ref, False)
+        for i, section in enumerate(reading.sections)
+        for j, ref in enumerate(section.ref_ids)
+    ]
+    error = citation_error(session, cited, state["allowed_refs"], calculation_evidence_texts(state))
+    if error:
+        return error
     normalize_reading(reading, state)
     actual_systems = {s["system"] for s in state["signals"]}
     if set(reading.systems_used) != actual_systems or len(reading.systems_used) != len(
         actual_systems
     ):
         return "systems_used 必须恰好等于本次调用的体系，不能声称使用未调用的体系"
-    refs = state["allowed_refs"]
-    if any(item.ref_id not in refs for item in reading.evidence):
-        return "evidence 引用必须来自本次工具生成的信号"
-    if any(ref not in refs for section in reading.sections for ref in section.ref_ids):
-        return "sections 的 ref_ids 必须来自本次工具生成的信号"
     text = reading.model_dump_json()
     public_text = " ".join(authored_texts(reading))
     # Normalization already removed such sentences; whatever is left is a field made only of them.

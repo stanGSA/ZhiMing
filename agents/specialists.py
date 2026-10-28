@@ -4,9 +4,11 @@ import re
 from dataclasses import dataclass
 
 from agents.schemas import ReportInput
+from common.evidence import calculation_evidence_texts
 from common.output_policy import care_error, certainty_error, normalize_report
 from common.schemas import Evidence, Reading, Safety, Section
 from common.stages import install
+from common.validation import citation_error
 from harness.registry import Registry, Tool
 
 SHARED_RULES = """你在隔离的子会话中工作：只看得到编排者给的子问题（JSON）和本体系需要的画像字段，看不到其它专家的结果，也不能直接询问用户。
@@ -149,8 +151,10 @@ def validate_report(args: ReportInput, session) -> str | None:
     if not own:
         return "须先调用本体系的计算或抽牌工具，再提交报告"
     refs = {s["ref_id"] for s in own}
-    if any(point.ref_id not in refs for point in args.points):
-        return "要点ref_id必须来自本体系本次计算的interpretations或牌面ref_id"
+    cited = [(f"points.{i}.ref_id", point.ref_id, False) for i, point in enumerate(args.points)]
+    error = citation_error(session, cited, refs, calculation_evidence_texts(state))
+    if error:
+        return error
     # Disclaimers, internal words and confidence are repaired; only leftovers are rejected.
     normalize_report(args, own)
     text = " ".join([args.answer, args.analysis, *(p.text for p in args.points), *args.missing])
