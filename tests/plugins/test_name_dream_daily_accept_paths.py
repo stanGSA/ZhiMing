@@ -188,6 +188,42 @@ async def test_daily_card_orientation_and_followup(project):
         runtime.close()
 
 
+async def test_daily_orientation_comparison_finishes_without_retry(runtime, scripted_model):
+    from harness.loop import run_turn
+    from harness.models import ModelResponse, ToolCall
+
+    with_birth(runtime)
+    await ask(runtime, "今天运势怎么样？")
+    result = await invoke(runtime, "daily_fortune", dict(date=runtime.session.calendar_anchor))
+    card = result.data["card"]
+    right, other = ("逆位", "正位") if card["reversed"] else ("正位", "逆位")
+    value = submission(
+        "daily",
+        [dict(ref_id=card["ref_id"])],
+        "今天宜稳步推进。",
+        sections=[
+            dict(
+                title="今天的牌面提示",
+                body=(
+                    f"每日一牌抽到{card['name']}{right}。"
+                    f"{card['name']}{other}通常代表另一种侧重；{right}则表示不同的反思角度。"
+                ),
+                ref_ids=[card["ref_id"]],
+            )
+        ],
+    )
+    model = scripted_model(
+        [ModelResponse(tool_calls=[ToolCall(id="submit", name="submit_reading", arguments=value)])]
+    )
+    outcome = await run_turn(
+        runtime.session, "请继续完成解读。", model, runtime.registry, runtime.tracer, max_steps=1
+    )
+    assert outcome.status == "submit_reading"
+    assert runtime.session.state["complete"]
+    assert runtime.session.state["daily_result"]["card"] == card
+    assert len(runtime.store.recent_readings(runtime.session.user_id)) == 1
+
+
 # ---- 6-7. several names, unconfirmed forms ----------------------------------------------
 
 
