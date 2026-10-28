@@ -23,6 +23,8 @@ flowchart LR
 
 基础工具：`start_reading`、`get_profile`、`update_profile`、`read_reading`、`lookup_meaning`、`draw_tarot`、`ask_user`、`submit_reading`。用户身份由会话注入，模型不能通过参数指定其他用户。画像写入检查原话证据与字段值，支持中文日期、时刻、性别及排盘口径规范化。
 
+引用在模型边界换成会话内短编号（R1、R2……，`harness/refs.py`），且模型看到的每个编号都可以提交：会话有本记录的 `allowed_refs` 时，知识库释义条目、其他记录的事实等不可引用的 `ref_id` 从模型可见的结果里去掉，不参与编号；完整来源仍保存在会话状态与 trace 中。`submit_reading`、`submit_report` 的 schema 每轮列出模型已见过的可引用编号，只作生成引导，校验仍以代码为准。引用校验一次列出全部无效引用的字段路径、原因（知识库条目、其他记录、从未返回的编号、缺可渲染文本）和本次可引用的编号与事实；参数 JSON 解析失败时返回出错位置附近的原文，并指出正文里未转义的英文双引号。`read_reading` 读取本轮尚未提交入库的记录时，返回当前牌面与可引用编号（`status=in_progress`），不重置状态。`lookup_meaning` 的 `system`、`kind` 为固定取值（与知识库条目类型一致，由测试核对），未命中时提示该体系可用的 kind 或本次牌面的 key。
+
 ## 知识库与数据
 
 - `knowledge/sources/tarot/cards.yaml`：78 张牌 × 正逆位 = 156 条，加 7 条牌位说明，共 163 条自写草稿。
