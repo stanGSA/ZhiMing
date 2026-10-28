@@ -35,6 +35,7 @@ SINGLE_VALUE_KEYS = (
     "transit_result",
     "bazi_result",
     "bazi_period_result",
+    "bazi_comparison_results",
     "tarot_result",
     "chart_id",
     "bazi_id",
@@ -248,6 +249,7 @@ class ConsultService:
             "active_reading_id": parent["active_reading_id"],
             "parent_reading_id": parent.get("parent_reading_id"),
             "question": parent["question"],
+            "question_source": parent.get("question_source", parent["question"]),
             "question_message_index": parent.get("question_message_index", 0),
             "seed": parent.get("seed"),
             "requested_spread": drawn.get("spread")

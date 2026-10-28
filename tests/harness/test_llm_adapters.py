@@ -11,6 +11,45 @@ from harness.session import Session
 from harness.trace import Tracer
 
 
+@pytest.mark.parametrize(
+    "tool_name,repair",
+    [("submit_reading", True), ("submit_report", True), ("update_profile", False)],
+)
+async def test_quote_recovery_only_applies_to_reports(monkeypatch, tool_name, repair):
+    from types import SimpleNamespace as NS
+
+    monkeypatch.setenv("OPENAI_API_KEY", "test-placeholder")
+    adapter = OpenAIModel("synthetic")
+    raw = '{"body":"起运就是"人生阶段分段"的意思。"}'
+
+    async def respond(**kwargs):
+        return NS(
+            model="synthetic",
+            usage=None,
+            choices=[
+                NS(
+                    finish_reason="tool_calls",
+                    message=NS(
+                        content=None,
+                        tool_calls=[NS(id="quote", function=NS(name=tool_name, arguments=raw))],
+                    ),
+                )
+            ],
+        )
+
+    monkeypatch.setattr(adapter.client.chat.completions, "create", respond)
+    try:
+        result = await adapter.chat([], [])
+    finally:
+        await adapter.close()
+    call = result.tool_calls[0]
+    assert call.arguments_repaired is repair
+    assert call.argument_error is not repair
+    assert call.raw_arguments == raw
+    if repair:
+        assert call.arguments["body"] == '起运就是"人生阶段分段"的意思。'
+
+
 @pytest.mark.parametrize("system_role", ["system", "developer"])
 async def test_openai_sdk_protocol_with_mock_http(monkeypatch, system_role):
     from openai import AsyncOpenAI

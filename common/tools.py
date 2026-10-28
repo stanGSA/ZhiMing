@@ -235,6 +235,7 @@ def common_tools(store, kb: KnowledgeBase, mode: str = "single", reviewer=None) 
             # Cross-session revisit or correction: link explicitly, keep the old reading as is.
             session.state["parent_reading_id"] = previous["reading_id"]
         request = session.user_messages[-1]
+        session.state["question_source"] = request
         spread = (
             "decision"
             if re.search(r"二选一|决策牌阵|A/B", request)
@@ -446,12 +447,19 @@ def common_tools(store, kb: KnowledgeBase, mode: str = "single", reviewer=None) 
         lookup_kb = kb if not version or version == kb.version else KnowledgeBase(kb.path, version)
         try:
             entry = lookup_kb.lookup(args.system, args.kind, args.key)
+            candidates = (
+                lookup_kb.suggested_keys(args.system, args.kind, args.key) if entry is None else []
+            )
         finally:
             if lookup_kb is not kb:
                 lookup_kb.close()
         if entry is None:
             return ToolResult.failure(
-                "missing_entry", "缺条目：精确 key 或同义词未命中" + lookup_hint(args, session)
+                "missing_entry",
+                "缺条目：精确 key 或同义词未命中"
+                + lookup_hint(args, session)
+                + ("；本版本有效key候选：" + "、".join(candidates) if candidates else "")
+                + "。已有计算附带释义时直接使用；不要继续猜key。",
             )
         session.state.setdefault("kb_refs", set()).add(entry["ref_id"])
         # The model sees the review level, not who reviewed it.

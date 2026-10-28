@@ -335,12 +335,16 @@ def relations(ganzhi, natal):
     return result
 
 
+def period_max_days(granularity):
+    return 3660 if granularity == "year" else 366
+
+
 def bazi_period(chart, start, end, granularity="month", tz="Asia/Shanghai"):
     if granularity not in ("year", "month", "day"):
         raise NeedsInput("invalid_granularity", "请选择年/月/日粒度。")
     if not chart["day_master"]:
         raise NeedsInput("uncertain_day_master", "原局日主无法确定，需要先确认出生时刻。")
-    a, b = date_range(start, end, tz, 3660 if granularity == "year" else 366)
+    a, b = date_range(start, end, tz, period_max_days(granularity))
     cuts = {a, b}
     for year in range(a.year - 1, b.year + 2):
         for t in terms(year):

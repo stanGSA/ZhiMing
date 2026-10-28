@@ -11,6 +11,7 @@ class ToolCall(BaseModel):
     arguments: dict[str, Any] = Field(default_factory=dict)
     raw_arguments: str | None = None
     argument_error: bool = False
+    arguments_repaired: bool = False
 
 
 class ValidationMessage(str):

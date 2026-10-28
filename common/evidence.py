@@ -10,6 +10,8 @@ def fact_text(item):
         **dict(zip(SIGNS, SIGN_ZH, strict=True)),
         "day_master": "日主",
         "dayun": "起运及首步大运",
+        "dayun_stage": "大运序列（序号、干支、年份标记）",
+        "dayun_stem": "大运天干十神（序号、干支、十神）",
         "year": "年柱",
         "month": "月柱",
         "day": "日柱",

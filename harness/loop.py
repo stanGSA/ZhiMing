@@ -181,6 +181,8 @@ async def run_turn(
                 prepared = []
                 for call in group:
                     started = tracer.clock()
+                    if call.arguments_repaired:
+                        tracer.log(session, "arguments_repaired", step=step, tool=call.name)
                     args, pre_result, key = guard.check(call, session)
                     if terminal is not None:
                         pre_result = ToolResult.failure("turn_finished", "本轮已结束，此调用未执行")

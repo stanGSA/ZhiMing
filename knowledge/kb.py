@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 import sqlite3
+from difflib import get_close_matches
 from pathlib import Path
 
 from knowledge.review import normalize_entry
@@ -65,6 +66,17 @@ class KnowledgeBase:
         if row is None:
             raise ValueError("缺少规则")
         return json.loads(row[0])
+
+    def suggested_keys(self, system: str, kind: str, key: str, limit: int = 8) -> list[str]:
+        """Bounded, exact alternatives from this edition, never generated identifiers."""
+        keys = [
+            row[0]
+            for row in self.db.execute(
+                "SELECT key FROM entries WHERE system=? AND kind=? ORDER BY key", (system, kind)
+            )
+        ]
+        close = get_close_matches(key, keys, n=limit, cutoff=0.25)
+        return (close + [item for item in keys if item not in close])[:limit]
 
     def close(self) -> None:
         self.db.close()

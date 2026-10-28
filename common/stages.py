@@ -27,6 +27,15 @@ def available(tool, session):
     if tool.partition and systems and tool.partition not in systems:
         return False
     if name in {"submit_reading", "submit_report", "lookup_meaning"}:
+        if name == "lookup_meaning" and state.get("bazi_result"):
+            from plugins.bazi.intent import dayun_overview_state
+
+            if dayun_overview_state(state) and {s["system"] for s in state.get("signals", [])} == {
+                "bazi"
+            }:
+                # All cycle facts and their meanings are already present. Free-form
+                # lookup caused the production request to spend four rounds guessing keys.
+                return False
         return bool(state.get("signals"))
     if name == "merge_signals":
         return len({s["system"] for s in state.get("signals", [])}) >= 2

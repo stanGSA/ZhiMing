@@ -67,7 +67,17 @@ def validate_output(reading, state):
             and dayun["sequence"][0]["ganzhi"] not in text
         ):
             warn(state, "原问题要求首步大运，回答中没有写出")
+    comparisons = {
+        result["scope"]: result
+        for result in state.get("calculations", {}).values()
+        if result.get("scope") in ("dayun_first", "dayun_current")
+    }
+    comparisons.update(state.get("bazi_comparison_results", {}))
     periods = (state.get("bazi_period_result") or {}).get("periods", [])
+    periods = [
+        *periods,
+        *[p for result in comparisons.values() for p in result.get("periods", [])],
+    ]
     gz = set(g for g in bazi.get("pillars", {}).values() if g)
     for candidate in bazi.get("alternatives", []):
         gz.update(candidate.values())

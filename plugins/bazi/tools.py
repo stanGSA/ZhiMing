@@ -4,11 +4,12 @@ from typing import Literal
 from pydantic import Field
 
 from common.input_evidence import gender_evidence, normalized_gender, solar_time_choice
-from common.time_utils import NeedsInput
+from common.time_utils import NeedsInput, date_range
 from harness.models import StrictInput, ToolResult
 from harness.registry import Tool
 from plugins.base import meaning_view
-from plugins.bazi.calculator import bazi_period, compute_bazi
+from plugins.bazi.calculator import bazi_period, compute_bazi, period_max_days, ten_god
+from plugins.bazi.intent import dayun_overview_state
 from plugins.bazi.validation import validate_output
 from plugins.context import (
     BirthInput,
@@ -51,10 +52,16 @@ class BaziInput(BirthInput):
 
 class PeriodInput(StrictInput):
     bazi_id: str
-    start: str
-    end: str
-    granularity: Literal["year", "month", "day"] = "month"
+    start: str = Field(description="起始日期，须早于结束边界；公历日期含首尾。")
+    end: str = Field(description="结束日期。year粒度最多3660天；month/day最多366天。")
+    granularity: Literal["year", "month", "day"] = Field(
+        default="month", description="year最多3660天，month/day最多366天。"
+    )
     tz: str | None = None
+    scope: Literal["primary", "dayun_first", "dayun_current"] = Field(
+        default="primary",
+        description="通常用primary并与咨询区间一致；仅大运说明的首运/当前大运历史比较可分别用dayun_first/dayun_current，不改变咨询主区间。",
+    )
 
 
 class BaziPlugin(MeaningPlugin):
@@ -68,7 +75,7 @@ class BaziPlugin(MeaningPlugin):
         self.tools = [
             Tool(
                 "compute_bazi",
-                "排八字三/四柱、十神五行藏干纳音大运。缺时辰仅三柱、缺性别不排大运；农历须确认及闰月明确；程序不计算喜用神。needs_input须ask_user。",
+                "排八字三/四柱、十神五行藏干纳音大运。起运/首运/当前大运说明直接用dayun和已附释义，不必补算流年流月或猜查询key。缺时辰仅三柱、缺性别不排大运；农历须确认及闰月明确。needs_input须ask_user。",
                 BaziInput,
                 self.compute,
                 partition="bazi",
@@ -80,14 +87,14 @@ class BaziPlugin(MeaningPlugin):
             ),
             Tool(
                 "compute_bazi_period",
-                "已有本次bazi_id算流年/节气流月/流日与原局冲合；保留精确边界。时机题必须调用，不以原局替代。",
+                "已有本次bazi_id算流年/节气流月/流日与原局冲合。指定日期运势/行动时机须调用；仅说明起运及大运用compute_bazi已有结果即可。year最多3660天，month/day最多366天；不要为修复文字重算。",
                 PeriodInput,
                 self.period,
                 partition="bazi",
                 roles=frozenset({"orchestrator", "bazi"}),
                 dependency="bazi_id",
                 dependency_argument="bazi_id",
-                validator=range_provenance,
+                validator=self.validate_period,
                 cache_user_input=True,
                 model_result=self.project,
             ),
@@ -229,9 +236,79 @@ class BaziPlugin(MeaningPlugin):
         except NeedsInput as exc:
             return exc.result()
         session.state["bazi_id"] = result["bazi_id"]
-        result = self.attach(result, chart_atoms(result), session, "bazi_result")
+        # Enrich cached and new charts alike; the persistent birth calculation is timeless.
+        result = dict(result)
+        if result.get("dayun"):
+            sequence = []
+            for stage in result["dayun"]["sequence"]:
+                stage = dict(stage)
+                stage["next_start_year"] = stage["start_year"] + 10
+                stage["stem_ten_god"] = ten_god(result["day_master"][0], stage["ganzhi"][0])
+                sequence.append(stage)
+            result["dayun"] = {**result["dayun"], "sequence": sequence}
+            if session.calendar_anchor:
+                year = int(session.calendar_anchor[:4])
+                candidates = [
+                    i
+                    for i, s in enumerate(sequence)
+                    if s["start_year"] <= year < s["next_start_year"]
+                ]
+                # The library exposes year labels, not exact dates for each later handoff.
+                if candidates and candidates[0] and sequence[candidates[0]]["start_year"] == year:
+                    candidates.insert(0, candidates[0] - 1)
+                result["dayun"]["as_of"] = session.calendar_anchor
+                result["dayun"]["current_candidates"] = [sequence[i] for i in candidates]
+                if len(candidates) == 1:
+                    result["dayun"]["next_transition_year"] = sequence[candidates[0]][
+                        "next_start_year"
+                    ]
+            result["dayun"]["note"] = (
+                "start_age为传统岁数标记，不等于周岁；start_year/next_start_year为前后交运年份标记，不是精确起止日。"
+                "交运年可能有前后两运，未给后续精确交运日时不得断言年初已交运。"
+                "下一交运年以next_transition_year为准，不要提前一年说成已经交运或交运带。"
+                "起运与首运/当前大运的事实及释义已附在interpretations，无需逐个猜key查询。"
+            )
+        result = self.attach(
+            result,
+            chart_atoms(result, include_dayun_stages=dayun_overview_state(session.state)),
+            session,
+            "bazi_result",
+        )
         result["cache_reused"] = cached
         return result
+
+    @staticmethod
+    def validate_period(args, session):
+        tz = (
+            args.tz
+            or session.profile.get("consultation_tz")
+            or session.state.get("timeframe_tz")
+            or "Asia/Shanghai"
+        )
+        try:
+            actual = date_range(args.start, args.end, tz, period_max_days(args.granularity))
+        except NeedsInput as exc:
+            return exc.question + "请修正本次工具参数；不要拼接不同区间的端点。"
+        if args.scope == "primary":
+            return range_provenance(args, session)
+        state = session.state
+        if not dayun_overview_state(state) or state.get("timeframe_required"):
+            return "大运比较范围仅用于起运/首运/当前大运说明，指定日期的时机问题必须使用primary。"
+        dayun = (state.get("bazi_result") or {}).get("dayun") or {}
+        stages = (
+            dayun.get("sequence", [])[:1]
+            if args.scope == "dayun_first"
+            else dayun.get("current_candidates", [])
+        )
+        if not any(
+            date_range(f"{s['start_year']}-01-01", f"{s['start_year'] + 9}-12-31", tz, 3660)[0]
+            <= actual[0]
+            and actual[1]
+            <= date_range(f"{s['start_year']}-01-01", f"{s['start_year'] + 9}-12-31", tz, 3660)[1]
+            for s in stages
+        ):
+            return "比较区间必须位于已计算的对应大运年份内；首运用dayun_first，当前大运用dayun_current。"
+        return None
 
     def period(self, args, session):
         chart = self.store.get_calculation("bazi", session.user_id, args.bazi_id)
@@ -242,14 +319,29 @@ class BaziPlugin(MeaningPlugin):
                 chart, args.start, args.end, args.granularity, period_timezone(args, session, chart)
             )
         except NeedsInput as exc:
+            if exc.code in (
+                "invalid_range",
+                "invalid_granularity",
+                "invalid_datetime",
+                "offset_timezone_mismatch",
+            ):
+                return ToolResult.failure("invalid_arguments", exc.question)
             return exc.result()
+        if args.scope != "primary":
+            result["scope"] = args.scope
+            session.state.setdefault("bazi_comparison_results", {})[args.scope] = result
+            atoms = [
+                (f"comparison:{args.scope}:{fact}", kind, key, "trait", timeframe)
+                for fact, kind, key, _, timeframe in period_atoms(result)
+            ]
+            return self.attach(result, atoms, session, f"bazi_period_{args.scope}")
         session.state["timeframe"] = (args.start, args.end)
         session.state["timeframe_tz"] = result["tz"]
         return self.attach(result, period_atoms(result), session, "bazi_period_result")
 
 
 # Calculated facts that get a knowledge entry: (fact, kind, key, horizon, timeframe).
-def chart_atoms(result):
+def chart_atoms(result, *, include_dayun_stages=False):
     atoms = []
     atoms.append((f"day_master:{result['day_master']}", "convention", "day_master", "trait", None))
     atoms.append(
@@ -271,6 +363,30 @@ def chart_atoms(result):
                 None,
             )
         )
+        for index, stage in enumerate(result["dayun"]["sequence"]):
+            if not include_dayun_stages:
+                break
+            gz = stage["ganzhi"]
+            if index != 0 and stage not in result["dayun"].get("current_candidates", []):
+                continue
+            atoms.append(
+                (
+                    f"dayun_stage:{index + 1}:{gz}:{stage['start_year']}至{stage['start_year'] + 10}交运年份标记",
+                    "convention",
+                    "dayun",
+                    "trait",
+                    None,
+                )
+            )
+            atoms.append(
+                (
+                    f"dayun_stem:{index + 1}:{gz}:{ten_god(result['day_master'][0], gz[0])}",
+                    "ten_god",
+                    ten_god(result["day_master"][0], gz[0]),
+                    "trait",
+                    None,
+                )
+            )
     if result.get("alternatives"):
         atoms.append(("unknown_time_candidates", "convention", "unknown_time", "trait", None))
         for i, candidate in enumerate(result["alternatives"]):

@@ -7,6 +7,7 @@ from typing import Any, Literal, Protocol
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 from tenacity import retry, retry_if_exception, stop_after_attempt, wait_random_exponential
 
+from harness.json_arguments import parse_arguments
 from harness.models import ModelResponse, ToolCall
 
 
@@ -117,10 +118,21 @@ class OpenAIModel:
         for call in message.tool_calls or []:
             raw = call.function.arguments
             try:
-                arguments = json.loads(raw)
-                if not isinstance(arguments, dict):
-                    raise ValueError("object required")
-                calls.append(ToolCall(id=call.id, name=call.function.name, arguments=arguments))
+                if call.function.name in ("submit_reading", "submit_report"):
+                    arguments, repaired = parse_arguments(raw)
+                else:
+                    arguments, repaired = json.loads(raw), False
+                    if not isinstance(arguments, dict):
+                        raise ValueError("object required")
+                calls.append(
+                    ToolCall(
+                        id=call.id,
+                        name=call.function.name,
+                        arguments=arguments,
+                        arguments_repaired=repaired,
+                        raw_arguments=raw if repaired else None,
+                    )
+                )
             except (ValueError, TypeError):
                 calls.append(
                     ToolCall(

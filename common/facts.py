@@ -6,6 +6,8 @@ from common.input_evidence import question_range
 
 
 def validate_calculation_facts(reading, state):
+    from plugins.bazi.intent import dayun_overview_state
+
     if state.get("response_mode") == "followup":
         return None
     if (
@@ -23,6 +25,15 @@ def validate_calculation_facts(reading, state):
             state.get("temporal_systems", ("astro", "bazi"))
         ):
             if system not in temporal:
+                # A computed luck-cycle table is evidence for its own explanation, not
+                # evidence for arbitrary annual/monthly forecasts or another system.
+                if (
+                    system == "bazi"
+                    and dayun_overview_state(state)
+                    and (state.get("bazi_result") or {}).get("dayun")
+                    and not state.get("timeframe_required")
+                ):
+                    continue
                 return "时间范围问题需要相应行运或流期计算，不能只用原局"
     return None
 
