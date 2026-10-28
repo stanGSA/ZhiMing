@@ -19,10 +19,39 @@ class StartInput(StrictInput):
     )
 
 
+# Entry kinds of each knowledge partition; a test keeps this in step with the built KB.
+LOOKUP_KINDS = {
+    "tarot": ("card", "position"),
+    "astro": ("planet", "sign", "house", "aspect", "planet_sign", "planet_house", "transit"),
+    "bazi": (
+        "stem",
+        "branch",
+        "hidden",
+        "ten_god",
+        "god_pillar",
+        "element",
+        "element_relation",
+        "nayin",
+        "relation",
+        "convention",
+    ),
+    "name": ("grid", "shuli", "sancai", "element", "convention"),
+    "dream": ("symbol", "convention"),
+    "daily": ("day_element", "convention"),
+}
+
+
 class LookupInput(StrictInput):
-    system: str
-    kind: str
-    key: str
+    system: Literal["tarot", "astro", "bazi", "name", "dream", "daily"]
+    kind: Literal[tuple(sorted({k for kinds in LOOKUP_KINDS.values() for k in kinds}))] = Field(
+        description="条目类型，须属于该system："
+        + "；".join(f"{system}={'/'.join(kinds)}" for system, kinds in LOOKUP_KINDS.items())
+    )
+    key: str = Field(
+        min_length=1,
+        description="精确key，照抄工具结果中的meaning_key或key；"
+        "塔罗牌面为card_id:upright或card_id:reversed，如cups_four:upright；牌位如three_card:1",
+    )
 
 
 class ProfileInput(StrictInput):

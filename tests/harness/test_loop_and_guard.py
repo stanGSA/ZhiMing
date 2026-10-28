@@ -67,7 +67,7 @@ async def test_expert_kb_partition(runtime):
         runtime, call("lookup_meaning", system="tarot", kind="card", key="the_tower:upright")
     )
     denied = await execute(
-        runtime, call("lookup_meaning", system="bazi", kind="shishen", key="七杀")
+        runtime, call("lookup_meaning", system="bazi", kind="ten_god", key="七杀")
     )
     assert allowed.ok
     assert denied.code == "partition_denied"
