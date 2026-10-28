@@ -1,3 +1,4 @@
+import json
 import re
 
 from common.evidence import calculation_evidence_texts, fill_evidence
@@ -10,6 +11,7 @@ from common.output_policy import (
     warn,
 )
 from common.safety import CRISIS as CRISIS  # Backwards-compatible public import.
+from harness.models import ValidationMessage
 from harness.refs import short
 
 HIGH_RISK = re.compile(r"疾病|癌|诊断|停药|治疗|健康|投资|股票|基金|借贷|法律|诉讼|判刑|死亡|寿命")
@@ -64,15 +66,20 @@ def citation_error(session, cited, allowed, rendered=None) -> str | None:
     for path, ref, needs_text in cited:
         if ref in allowed:
             if needs_text and ref not in rendered:
-                problems.append((path, ref, "没有可渲染的事实文本，须自写reading或改用下列编号"))
+                problems.append(
+                    (path, ref, "没有可渲染的事实文本，须自写reading或改用下列编号", "missing_text")
+                )
             continue
         if ref in (state.get("kb_refs") or ()):
             why = "是知识库释义条目，不是本次计算事实"
+            reason = "knowledge_entry"
         elif ref in seen:
             why = "不属于本次记录的计算事实"
+            reason = "other_reading"
         else:
             why = "不是工具返回过的编号"
-        problems.append((path, ref, why))
+            reason = "unknown_reference"
+        problems.append((path, ref, why, reason))
     if not problems:
         return None
     for ref in sorted(set(allowed) - seen):
@@ -84,11 +91,14 @@ def citation_error(session, cited, allowed, rendered=None) -> str | None:
         for alias, ref in usable[:24]
     )
     more = f"等共{len(usable)}条" if len(usable) > 24 else ""
-    return (
+    message = (
         "引用无效，请只修改这些编号后重新提交，正文可保持不变："
-        + "；".join(f"{path}={names.get(ref, ref)}{why}" for path, ref, why in problems)
+        + "；".join(f"{path}={names.get(ref, ref)}{why}" for path, ref, why, _ in problems)
         + f"。本次可引用：{listed or '无'}{more}。"
     )
+    # Paths, duplicate occurrences and rendered hints can change without repairing the refs.
+    identity = sorted({(ref, reason) for _, ref, _, reason in problems})
+    return ValidationMessage(message, retry_key="invalid_citation:" + json.dumps(identity))
 
 
 def validate_reading(reading, session) -> str | None:

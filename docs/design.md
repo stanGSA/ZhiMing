@@ -25,6 +25,10 @@ flowchart LR
 
 引用在模型边界换成会话内短编号（R1、R2……，`harness/refs.py`），且模型看到的每个编号都可以提交：会话有本记录的 `allowed_refs` 时，知识库释义条目、其他记录的事实等不可引用的 `ref_id` 从模型可见的结果里去掉，不参与编号；完整来源仍保存在会话状态与 trace 中。`submit_reading`、`submit_report` 的 schema 每轮列出模型已见过的可引用编号，只作生成引导，校验仍以代码为准。引用校验一次列出全部无效引用的字段路径、原因（知识库条目、其他记录、从未返回的编号、缺可渲染文本）和本次可引用的编号与事实；参数 JSON 解析失败时返回出错位置附近的原文，并指出正文里未转义的英文双引号。`read_reading` 读取本轮尚未提交入库的记录时，返回当前牌面与可引用编号（`status=in_progress`），不重置状态。`lookup_meaning` 的 `system`、`kind` 为固定取值（与知识库条目类型一致，由测试核对），未命中时提示该体系可用的 kind 或本次牌面的 key。
 
+引用拒绝的详细文案与重试计数标识分开：`ValidationMessage` 保持字符串校验接口，附带按完整引用及原因去重排序的 `retry_key`，由 `ToolResult` 传给主循环，不进入模型结果或存储。只移动字段位置、调整顺序、重复引用或改变可用事实提示，不会重置同一引用错误的三次止损计数；其它错误仍沿用原计数方式。
+
+未入库记录的恢复结果用 `recovery_stage` 区分 `needs_calculation`、`needs_specialist_report` 与 `ready_to_submit`。尚未计算时继续计算或追问；专家已有保留事实但报告失败、取消或超时时，返回保留牌面和 `pending_specialists`，引导 `consult_specialist` 复用事实完成报告；有效事实已合并时才提示修正后直接提交。恢复不会把未完成的专家事实加入 `allowed_refs`，模型视图仍过滤这些事实的引用。
+
 ## 知识库与数据
 
 - `knowledge/sources/tarot/cards.yaml`：78 张牌 × 正逆位 = 156 条，加 7 条牌位说明，共 163 条自写草稿。

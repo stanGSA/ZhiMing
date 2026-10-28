@@ -504,19 +504,54 @@ def common_tools(store, kb: KnowledgeBase, mode: str = "single", reviewer=None) 
             state.get("allowed_refs", ()),
             key=lambda ref: (0, int(names[ref][1:]), "") if ref in names else (1, 0, ref),
         )
+        pending = {
+            system: facts
+            for system, facts in state.get("specialist_facts", {}).items()
+            if facts.get("signals")
+        }
+        tarot = state.get("tarot_result") or pending.get("tarot", {}).get("values", {}).get(
+            "tarot_result"
+        )
+        if pending:
+            stage = "needs_specialist_report"
+            note = (
+                "这些专家已保留计算事实，但报告尚未完成："
+                + "、".join(sorted(pending))
+                + "。请调用consult_specialist重试这些专家，复用原事实完成报告，不要重抽；"
+                "尚未合并的事实不能直接提交，已有citable中的ref_id仍可使用。"
+            )
+        elif not refs:
+            stage = "needs_calculation"
+            next_step = (
+                "继续consult_specialist咨询所选专家（每日运势使用daily_fortune）"
+                if mode == "multi"
+                else "继续调用所选体系的计算或抽牌工具"
+            )
+            note = (
+                "本轮尚未完成计算，没有可提交的引用；请"
+                + next_step
+                + "，资料不足时先ask_user追问。"
+            )
+        else:
+            stage = "ready_to_submit"
+            note = (
+                "本轮记录尚未提交入库，牌面与计算均已保留在会话中；"
+                "evidence和sections只用citable中的ref_id，修正后直接submit_reading，"
+                "不要重新抽牌或计算。"
+            )
         return {
             "reading": dict(
                 reading_id=state["active_reading_id"],
                 question=state.get("question"),
                 status="in_progress",
+                recovery_stage=stage,
+                pending_specialists=sorted(pending),
                 systems=sorted({s["system"] for s in state.get("signals", [])}),
-                tarot_json=state.get("tarot_result"),
+                tarot_json=tarot,
                 chart_id=state.get("chart_id"),
                 bazi_id=state.get("bazi_id"),
                 citable=[{"ref_id": ref, "fact": texts.get(ref, "")} for ref in refs],
-                note="本轮记录尚未提交入库，牌面与计算均已保留在会话中；"
-                "evidence和sections只用citable中的ref_id，修正后直接submit_reading，"
-                "不要重新抽牌或计算。",
+                note=note,
             )
         }
 
@@ -721,7 +756,8 @@ def common_tools(store, kb: KnowledgeBase, mode: str = "single", reviewer=None) 
         Tool(
             "read_reading",
             "恢复已保存的历史牌面与释义，追问用submit_reading保存，禁止重抽；"
-            "本轮尚未提交的记录返回当前牌面与可引用ref_id（status=in_progress），不重置。",
+            "本轮尚未提交时返回当前牌面、可引用ref_id与recovery_stage，不重置；"
+            "按note继续计算、复用保留事实完成专家报告，或修正后提交。",
             ReadInput,
             read,
             idempotent=False,
@@ -734,6 +770,8 @@ def common_tools(store, kb: KnowledgeBase, mode: str = "single", reviewer=None) 
                         "reading_id",
                         "question",
                         "status",
+                        "recovery_stage",
+                        "pending_specialists",
                         "systems",
                         "tarot_json",
                         "kb_version",

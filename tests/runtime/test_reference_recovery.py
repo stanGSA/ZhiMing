@@ -8,6 +8,8 @@ Each of those steps now either cannot happen or is answered with exactly what to
 import copy
 import json
 
+import pytest
+
 from agents.demo import DemoModel
 from harness.context import compact_context
 from harness.loop import run_turn
@@ -139,3 +141,69 @@ async def test_lookup_and_compaction_hide_entry_references(runtime):
     snapshot = next(m["content"] for m in runtime.session.messages if m["role"] == "user")
     assert "kb:tarot" not in snapshot
     assert cited(json.loads(snapshot.split("\n", 1)[1])) == ["R1"]
+
+
+@pytest.mark.parametrize("field", ["evidence", "sections", "points"])
+async def test_moving_the_same_bad_reference_still_stops_after_three_failures(runtime, field):
+    session = runtime.session
+    session.append_user(QUESTION)
+    assert (await invoke(runtime, "start_reading", dict(question=QUESTION))).ok
+    registry = runtime.registry
+    if field == "points":
+        from agents.specialists import build_specialists
+
+        # Use the real specialist tools and validator in an isolated child session.
+        plugin = runtime.registry.tools["draw_tarot"].handler.__self__
+        spec = build_specialists([plugin], registry.tools["lookup_meaning"])["tarot"]
+        session = session.spawn(
+            "tarot",
+            "tarot",
+            messages=[],
+            state=copy.deepcopy(session.state),
+            profile={},
+            parent_call_id=None,
+            budget=None,
+            continue_prompt="提交报告",
+        )
+        registry = spec.registry
+    steps = [step(0, "draw_tarot", spread="three_card", question=QUESTION)]
+    for index in range(3):
+        refs = ["R1", "R2", "R3"]
+        refs[index] = "R999"
+        if field == "points":
+            arguments = dict(
+                answer="先梳理现状。",
+                points=[{"ref_id": ref, "text": "先核实现实条件。"} for ref in refs],
+                confidence={"level": "low", "reason": "释义未人工审核"},
+            )
+        else:
+            arguments = draft(
+                refs if field == "evidence" else ["R1"], [refs] if field == "sections" else []
+            )
+        steps.append(
+            step(index + 1, "submit_report" if field == "points" else "submit_reading", **arguments)
+        )
+    model = Replay(steps)
+    outcome = await run_turn(session, QUESTION, model, registry, runtime.tracer, max_steps=4)
+    assert outcome.status == "retry_limit"
+    errors = [json.loads(m["content"])["error"] for m in session.messages if m["role"] == "tool"][
+        1:
+    ]
+    assert len(set(errors)) == 3  # Detailed field paths remain useful to the model.
+    assert session.state["tarot_result"]["cards"]
+    assert runtime.store.recent_readings(session.user_id) == []
+
+
+async def test_unsaved_read_before_calculation_allows_the_first_draw(runtime):
+    runtime.session.append_user(QUESTION)
+    assert (await invoke(runtime, "start_reading", dict(question=QUESTION, systems=["tarot"]))).ok
+    current = (await invoke(runtime, "read_reading", {})).data["reading"]
+    assert current["recovery_stage"] == "needs_calculation"
+    assert current["pending_specialists"] == []
+    assert current["citable"] == []
+    assert "不要重新抽牌或计算" not in current["note"]
+    assert (await invoke(runtime, "draw_tarot", dict(spread="single", question=QUESTION))).ok
+    ready = (await invoke(runtime, "read_reading", {})).data["reading"]
+    assert ready["recovery_stage"] == "ready_to_submit"
+    assert ready["tarot_json"]["cards"]
+    assert ready["citable"]

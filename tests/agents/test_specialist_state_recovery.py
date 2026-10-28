@@ -282,6 +282,11 @@ async def test_draw_survives_cancelled_request_and_completed_sibling(
         state = runtime.session.state
         reading_id = state["active_reading_id"]
         assert state["specialist_facts"]["tarot"]["values"]["tarot_result"]["spread"] == "single"
+        recovery = (await invoke(runtime, "read_reading")).data["reading"]
+        assert recovery["recovery_stage"] == "needs_specialist_report"
+        assert recovery["pending_specialists"] == ["tarot"]
+        assert recovery["tarot_json"]["cards"]
+        assert "consult_specialist" in recovery["note"]
         changed = await invoke(
             runtime, "consult_specialist", system="tarot", sub_question="继续", spread="three_card"
         )
@@ -355,5 +360,74 @@ async def test_three_report_attempts_keep_the_original_calculation_snapshot(proj
             if e["event"] == "tool_result" and e["call"]["name"] == "draw_tarot"
         ]
         assert len(draws) == 1 and draws[0]["result"]["ok"]
+    finally:
+        runtime.close()
+
+
+async def test_read_after_failed_report_retries_the_expert_without_redrawing(project):
+    from copy import deepcopy
+
+    from harness.refs import transform
+
+    fail_report = True
+
+    async def tarot(messages):
+        existing = brief(messages).get("existing_results")
+        done = tool_results(messages)
+        if not existing and not done:
+            return respond(call("draw_tarot", spread="single", question="工作状态"))
+        if fail_report:
+            raise RuntimeError("synthetic report failure")
+        draw = existing[0]["data"] if existing else done[0]["data"]
+        return respond(
+            call("submit_report", answer="先梳理现状。", points=tarot_points(draw), confidence=LOW)
+        )
+
+    runtime = make(project, RoleModel(tarot=tarot))
+    try:
+        session = runtime.session
+        session.append_user("用塔罗看看工作状态")
+        assert (await invoke(runtime, "start_reading", question="工作状态", systems=["tarot"])).ok
+        failed = await invoke(
+            runtime, "consult_specialist", system="tarot", sub_question="工作状态"
+        )
+        assert failed.data["report"]["status"] == "failed"
+        kept = deepcopy(session.state["specialist_facts"])
+        recovered = await invoke(runtime, "read_reading")
+        projected = runtime.registry.tools["read_reading"].model_result(recovered.data)
+        shown = transform(projected, session)["reading"]
+        assert shown["recovery_stage"] == "needs_specialist_report"
+        assert shown["pending_specialists"] == ["tarot"]
+        assert shown["tarot_json"]["cards"]
+        assert "ref_id" not in shown["tarot_json"]["cards"][0]
+        assert shown["citable"] == []
+        assert "consult_specialist" in shown["note"]
+        assert session.state["specialist_facts"] == kept
+        assert session.state["allowed_refs"] == set()
+
+        fail_report = False
+        retried = await invoke(
+            runtime, "consult_specialist", system="tarot", sub_question="工作状态"
+        )
+        assert retried.data["report"]["status"] == "ok"
+        ready = (await invoke(runtime, "read_reading")).data["reading"]
+        assert ready["recovery_stage"] == "ready_to_submit"
+        assert ready["pending_specialists"] == []
+        assert ready["citable"]
+        points = retried.data["report"]["points"]
+        evidence = [{"ref_id": p["ref_id"], "reading": p["text"]} for p in points]
+        assert (
+            await invoke(
+                runtime,
+                "submit_reading",
+                **reading(evidence, ["tarot"], question_type="tarot", summary="先梳理现状。"),
+            )
+        ).ok
+        draws = [
+            e
+            for e in events(runtime)
+            if e["event"] == "tool_result" and e["call"]["name"] == "draw_tarot"
+        ]
+        assert len(draws) == 1
     finally:
         runtime.close()

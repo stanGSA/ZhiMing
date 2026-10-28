@@ -246,7 +246,12 @@ async def run_turn(
                             if tool and tool.terminal
                             else json.dumps(call.arguments, sort_keys=True, ensure_ascii=False)
                         )
-                        signature = (call.name, result.code, result.error, arguments)
+                        signature = (
+                            call.name,
+                            result.code,
+                            result.retry_key or result.error,
+                            arguments,
+                        )
                         count = failed_attempts.get(signature, 0) + 1
                         failed_attempts[signature] = count
                         if count >= REPEATED_FAILURE_LIMIT:

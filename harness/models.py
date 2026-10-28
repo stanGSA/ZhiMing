@@ -13,16 +13,29 @@ class ToolCall(BaseModel):
     argument_error: bool = False
 
 
+class ValidationMessage(str):
+    """String-compatible validator feedback with a separate, stable retry identity."""
+
+    def __new__(cls, message: str, *, retry_key: str):
+        value = super().__new__(cls, message)
+        value.retry_key = retry_key
+        return value
+
+
 class ToolResult(BaseModel):
     ok: bool = True
     data: dict[str, Any] = Field(default_factory=dict)
     error: str | None = None
     code: str | None = None
     cached: bool = False
+    # Local control metadata; neither model-facing results nor stored payloads need it.
+    retry_key: str | None = Field(default=None, exclude=True)
 
     @classmethod
     def failure(cls, code: str, message: str) -> ToolResult:
-        return cls(ok=False, code=code, error=message)
+        return cls(
+            ok=False, code=code, error=str(message), retry_key=getattr(message, "retry_key", None)
+        )
 
 
 class ModelResponse(BaseModel):

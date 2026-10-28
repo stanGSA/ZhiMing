@@ -5,6 +5,7 @@ import json
 from common.schemas import LOOKUP_KINDS, Reading
 from common.validation import citation_error
 from harness.guard import json_error_detail
+from harness.models import ToolResult
 from harness.refs import constrain, transform
 from harness.session import Session
 
@@ -91,6 +92,34 @@ def test_evidence_without_rendered_text_is_named():
         session, [("evidence.0.ref_id", "tarot:r:pos1:x", True)], {"tarot:r:pos1:x"}
     )
     assert "evidence.0.ref_id=R1没有可渲染的事实文本" in error
+
+
+def test_citation_retry_identity_ignores_paths_order_duplicates_and_rendered_hints():
+    session = reading_session("tarot:r:pos1:x")
+    allowed = session.state["allowed_refs"]
+    first = citation_error(
+        session,
+        [("evidence.0.ref_id", "R999", False), ("evidence.1.ref_id", "R998", False)],
+        allowed,
+    )
+    moved = citation_error(
+        session,
+        [
+            ("sections.0.ref_ids.1", "R998", False),
+            ("sections.1.ref_ids.0", "R999", False),
+            ("evidence.2.ref_id", "R999", False),
+        ],
+        allowed,
+        {"tarot:r:pos1:x": "新增提示"},
+    )
+    changed = citation_error(session, [("evidence.0.ref_id", "R997", False)], allowed)
+    assert first != moved
+    assert first.retry_key == moved.retry_key
+    assert changed.retry_key != first.retry_key
+    result = ToolResult.failure("validation_failed", first)
+    assert result.retry_key == first.retry_key
+    assert result.error == first
+    assert "retry_key" not in result.model_dump()
 
 
 def test_json_error_points_at_the_break_and_the_unescaped_quote():
