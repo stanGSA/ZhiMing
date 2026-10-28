@@ -19,6 +19,7 @@ from harness.trace import Tracer
 # that spawns a child session can link the child's trace to the exact parent call.
 CURRENT_CALL_ID: ContextVar[str | None] = ContextVar("current_call_id", default=None)
 OUTPUT_ALLOWANCE = 2048
+REPEATED_FAILURE_LIMIT = 3
 TIMEOUT_TEXT = "本轮超过请求时限，尚未形成通过校验的解读。已有计算保留，可以继续。"
 
 
@@ -81,6 +82,7 @@ async def run_turn(
         )
 
     last_input, last_count = None, 0
+    failed_attempts: dict[tuple, int] = {}
     limit_reason = "step_limit"
     for step in range(max_steps):
         if budget.expired():
@@ -230,6 +232,38 @@ async def run_turn(
                         result=result.model_dump(),
                         latency_ms=round((tracer.clock() - started) * 1000, 3),
                     )
+                    if result.ok:
+                        failed_attempts = {
+                            signature: count
+                            for signature, count in failed_attempts.items()
+                            if signature[0] != call.name
+                        }
+                    elif terminal is None:
+                        # Submission drafts may change without repairing the error. Other
+                        # tools may legitimately fail for different inputs (e.g. KB keys).
+                        arguments = (
+                            None
+                            if tool and tool.terminal
+                            else json.dumps(call.arguments, sort_keys=True, ensure_ascii=False)
+                        )
+                        signature = (call.name, result.code, result.error, arguments)
+                        count = failed_attempts.get(signature, 0) + 1
+                        failed_attempts[signature] = count
+                        if count >= REPEATED_FAILURE_LIMIT:
+                            tracer.log(
+                                session,
+                                "repeated_failure_limit",
+                                step=step,
+                                tool=call.name,
+                                code=result.code,
+                                attempts=count,
+                            )
+                            terminal = failure(
+                                session,
+                                "retry_limit",
+                                "repeated_tool_failure",
+                                "同一处理错误重复出现3次，本轮已停止自动重试，尚未完成解读；可稍后继续。",
+                            )
                     if terminal is None:
                         if result.ok and tool and tool.terminal:
                             terminal = TurnOutcome(
