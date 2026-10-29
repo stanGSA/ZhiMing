@@ -152,14 +152,12 @@ class CostControl:
             # A value equal to the configured default is not an override.
             overrides = {k: v for k, v in overrides.items() if v != self.defaults.get(k)}
             self._put("cost_overrides", overrides or None)
-            self._put("settings_updated_at", time.time())
             self.audit(admin, "update_settings", clean)
         return self.settings()
 
     def reset(self, admin: str) -> dict:
         with self.db:
             self._put("cost_overrides", None)
-            self._put("settings_updated_at", time.time())
             self.audit(admin, "reset_settings", {})
         return self.settings()
 
@@ -298,18 +296,35 @@ class CostControl:
         return max(0, min(rooms)) if rooms else None
 
     def budget_refused_since(self, now: float) -> float | None:
-        """When today's budget started refusing calls, or None. Refusal can begin below 100%:
-        once the remainder cannot hold one call's minimum reservation. A settings change after
-        the refusal (e.g. a raised budget) clears it until the next refusal; so does midnight."""
-        since = max(self.day_start(now), self._get("settings_updated_at") or 0)
-        row = self.db.execute(
-            "SELECT MIN(at) FROM site_events WHERE kind='budget_exhausted' AND at>=?", (since,)
-        ).fetchone()
-        return row[0]
+        """When today's budget started refusing calls, or None once that is over.
 
-    def budget_exhausted(self, now: float) -> None:
-        if self.budget_refused_since(now) is None:
+        Refusal can begin below 100%: once the remainder cannot hold a call's minimum
+        reservation. It is over when the remainder can again hold the smallest reservation that
+        was refused (a raised budget or lower prices), or at midnight; changing unrelated
+        settings does not end it."""
+        block = self._get("budget_block")
+        if not block:
+            return None
+        room = self.budget_room(now)
+        if block["at"] >= self.day_start(now) and room is not None and room < block["needed"]:
+            return block["at"]
+        # Over: forget it, so a later refusal is reported from its own time.
+        started = self.db.in_transaction
+        self._put("budget_block", None)
+        if not started:
+            self.db.commit()
+        return None
+
+    def budget_exhausted(self, now: float, needed: int) -> None:
+        """Record a refusal for want of budget; ``needed`` is the smallest reservation it would
+        have taken. The first refusal of a blocked period also becomes an event."""
+        since = self.budget_refused_since(now)
+        if since is None:
+            self._put("budget_block", {"at": now, "needed": needed})
             self.event("budget_exhausted", "critical", self.spend(self.day_start(now), now), now)
+        else:
+            block = self._get("budget_block")
+            self._put("budget_block", {**block, "needed": min(block["needed"], needed)})
 
     def trip(self, user_id: str, reservation: int, now: float):
         """Auto-pause the site or suspend the account when the window's spend is anomalous.

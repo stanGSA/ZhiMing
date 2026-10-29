@@ -253,7 +253,14 @@ def check_backup(directory: str, now: float, state: dict | None = None) -> dict:
     if stat.st_size < 1024:
         problems.append("最近备份小于 1 KiB")
         level = "critical"
-    identity = [latest, stat.st_size, stat.st_mtime]
+    # The verdict depends on both files: a checksum written, repaired, damaged or removed later
+    # must be noticed even when the archive itself is unchanged.
+    try:
+        digest = os.stat(latest + ".sha256")
+        recorded = [digest.st_size, digest.st_mtime_ns]
+    except OSError:
+        recorded = None
+    identity = [latest, stat.st_size, stat.st_mtime_ns, recorded]
     cached = state.get("backup_verified")
     if cached and cached.get("identity") == identity:
         verdict = cached.get("verdict")
@@ -262,7 +269,11 @@ def check_backup(directory: str, now: float, state: dict | None = None) -> dict:
             verdict = verify_checksum(latest)
         except OSError:
             verdict = "unreadable"
-        state["backup_verified"] = {"identity": identity, "verdict": verdict}
+        if verdict in ("missing", "unreadable"):
+            # Possibly transient (a checksum still being written): decide again next round.
+            state.pop("backup_verified", None)
+        else:
+            state["backup_verified"] = {"identity": identity, "verdict": verdict}
     if verdict == "missing":
         problems.append("最近备份缺少 SHA256 校验文件")
         level = max(level, "warning", key=RANK.get)
@@ -631,8 +642,10 @@ JOURNAL = "日志"
 
 
 def observe(checks: list[dict], state: dict, now: float) -> None:
-    """Record what is seen now and when each problem started. "Unknown" (e.g. metrics briefly
-    unreadable) is not a recovery: an open problem stays open until it is seen ok."""
+    """Record what is seen now. A problem is an episode from the round it turns bad (``since``)
+    to the round it is seen ok again; ``raised`` is the last round its level went up within the
+    episode. "Unknown" (e.g. metrics briefly unreadable) is not a recovery: an open episode
+    stays open, at its last known level, until it is seen ok."""
     seen = state.setdefault("checks", {})
     for item in checks:
         previous = seen.get(item["name"])
@@ -640,12 +653,18 @@ def observe(checks: list[dict], state: dict, now: float) -> None:
         if item["level"] == "unknown" and was_bad:
             item["level"] = previous["level"]
         if RANK[item["level"]] > 0:
-            item["since"] = previous.get("since") if was_bad and previous.get("since") else now
+            if was_bad and previous.get("since"):
+                item["since"] = previous["since"]
+                raised = RANK[item["level"]] > RANK[previous["level"]]
+                item["raised"] = now if raised else previous.get("raised", previous["since"])
+            else:
+                item["since"] = item["raised"] = now
         else:
-            item["since"] = None
+            item["since"] = item["raised"] = None
         seen[item["name"]] = {
             "level": item["level"],
             "since": item["since"],
+            "raised": item["raised"],
             "summary": item["summary"],
         }
     for name in [n for n in seen if n not in {c["name"] for c in checks}]:
@@ -653,15 +672,21 @@ def observe(checks: list[dict], state: dict, now: float) -> None:
 
 
 def owed(checks: list[dict], told: dict, now: float) -> tuple[list[dict], list[dict]]:
-    """What one channel still has to hear: (problems, recoveries)."""
+    """What one channel still has to hear: (problems, recoveries).
+
+    A channel is owed a problem when it has not heard of this episode (even if it last heard
+    of an earlier one whose recovery never reached it), when the level went up after what it
+    heard (also critical → warning → critical), or when its reminder is due; and a recovery
+    when the check is ok but the channel last heard of a problem."""
     repeat = number("ZHIMING_MONITOR_REPEAT_HOURS", 6) * 3600
     problems, recoveries = [], []
     for item in checks:
         last = told.get(item["name"])
-        last_level = last["level"] if last else "ok"
         if RANK[item["level"]] > 0:
-            if RANK[item["level"]] > RANK[last_level]:
-                problems.append({**item, "reason": "new" if last is None else "worse"})
+            if last is None or last.get("episode") != item["since"]:
+                problems.append({**item, "reason": "new"})
+            elif item["raised"] > last.get("raised", item["since"]):
+                problems.append({**item, "reason": "worse"})
             elif now - last["at"] >= repeat:
                 problems.append({**item, "reason": "repeat"})
         elif item["level"] == "ok" and last is not None:
@@ -671,7 +696,12 @@ def owed(checks: list[dict], told: dict, now: float) -> tuple[list[dict], list[d
 
 def acknowledge(told: dict, problems: list[dict], recoveries: list[dict], now: float) -> None:
     for item in problems:
-        told[item["name"]] = {"level": item["level"], "at": now}
+        told[item["name"]] = {
+            "level": item["level"],
+            "at": now,
+            "episode": item["since"],
+            "raised": item["raised"],
+        }
     for item in recoveries:
         told.pop(item["name"], None)
 

@@ -199,7 +199,7 @@ class AccountStore:
             if room is not None:
                 output = min(output, room - input_bound)
                 if output < min(256, output_limit):
-                    self.costs.budget_exhausted(now)
+                    self.costs.budget_exhausted(now, input_bound + min(256, output_limit))
                     raise SiteBudgetExhausted()
             reservation = input_bound + output
             refusal = self.costs.trip(user_id, reservation, now)

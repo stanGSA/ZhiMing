@@ -1,5 +1,6 @@
 """Server monitor: alert decisions, checks and channel payloads, offline."""
 
+import hashlib
 import json
 import os
 import time
@@ -101,6 +102,42 @@ def test_a_failed_recovery_is_retried_next_round(channels):
     assert channels.delivered["机器人"] == ["【知命告警】1 项警告", "【知命恢复】disk"]
 
 
+def test_a_new_episode_after_an_undelivered_recovery_is_announced(channels):
+    state = {}
+    monitor.run([item("disk", "critical")], state, None, None, 1000.0)
+    channels.failing.add("机器人")
+    monitor.run([item("disk", "ok")], state, None, None, 1300.0)  # recovery not delivered
+    channels.failing.clear()
+    monitor.run([item("disk", "critical")], state, None, None, 1600.0)  # a new failure
+    monitor.run([item("disk", "critical")], state, None, None, 1900.0)
+    assert channels.attempts["机器人"] == [
+        "【知命告警】1 项严重",
+        "【知命恢复】disk",
+        "【知命告警】1 项严重",
+    ]
+    assert state["notified"]["机器人"]["disk"]["episode"] == 1600.0
+    # The mail channel heard every change in order.
+    assert channels.delivered["邮件"] == channels.attempts["机器人"][:1] + [
+        "【知命恢复】disk",
+        "【知命告警】1 项严重",
+    ]
+
+
+def test_falling_back_and_rising_again_is_announced_as_worse(channels):
+    state = {}
+    monitor.run([item("disk", "critical")], state, None, None, 1000.0)
+    monitor.run([item("disk", "warning")], state, None, None, 1300.0)  # milder: no message
+    monitor.run([item("disk", "critical")], state, None, None, 1600.0)
+    monitor.run([item("disk", "critical")], state, None, None, 1900.0)
+    assert channels.delivered["机器人"] == ["【知命告警】1 项严重", "【知命告警】1 项严重"]
+    assert state["checks"]["disk"] == {
+        "level": "critical",
+        "since": 1000.0,
+        "raised": 1600.0,
+        "summary": "说明",
+    }
+
+
 def test_one_channel_failing_does_not_silence_or_repeat_the_others(channels, tmp_path):
     state, status_path = {}, str(tmp_path / "status.json")
     channels.failing.add("邮件")
@@ -144,7 +181,12 @@ def test_state_and_status_files_survive_between_rounds(tmp_path, monkeypatch):
         [item("backup", "critical")], monitor.load_state(state_path), state_path, None, 1600.0
     )
     state = monitor.load_state(state_path)
-    assert state["notified"]["Webhook（generic）"]["backup"] == {"level": "critical", "at": 1600.0}
+    assert state["notified"]["Webhook（generic）"]["backup"] == {
+        "level": "critical",
+        "at": 1600.0,
+        "episode": 1000.0,
+        "raised": 1000.0,
+    }
     assert state["delivery"]["Webhook（generic）"] == {"last_ok": 1600.0}
 
 
@@ -245,6 +287,28 @@ def test_backup_checksums_are_recomputed_once_per_archive(tmp_path, monkeypatch)
     result = monitor.check_backup(str(tmp_path), now, state)
     assert result["level"] == "critical" and "30 小时" in result["summary"]
     assert old.exists()
+    # Only the checksum file changes: added, damaged, removed and repaired are all noticed.
+    for name in ("zhiming-a.tar.gz", "zhiming-b.tar.gz"):
+        for path in (tmp_path / name, tmp_path / (name + ".sha256")):
+            path.unlink(missing_ok=True)
+    state = {}
+    write_backup(tmp_path, "zhiming-c.tar.gz", checksum=False, age_h=2)
+    assert monitor.check_backup(str(tmp_path), now, state)["level"] == "warning"
+    good = write_backup(tmp_path, "zhiming-c.tar.gz", age_h=2)
+    checksum = tmp_path / "zhiming-c.tar.gz.sha256"
+    stamp = os.stat(good).st_mtime
+    assert monitor.check_backup(str(tmp_path), now, state)["level"] == "ok"
+    checksum.write_text("f" * 64 + "  zhiming-c.tar.gz\n", encoding="ascii")
+    os.utime(good, (stamp, stamp))
+    result = monitor.check_backup(str(tmp_path), now, state)
+    assert result["level"] == "critical" and "不一致" in result["summary"]
+    checksum.unlink()
+    assert monitor.check_backup(str(tmp_path), now, state)["level"] == "warning"
+    # Written back without touching the archive (as when it lands right after a check).
+    digest = hashlib.sha256(good.read_bytes()).hexdigest()
+    checksum.write_text(f"{digest}  zhiming-c.tar.gz\n", encoding="ascii")
+    assert os.stat(good).st_mtime == stamp
+    assert monitor.check_backup(str(tmp_path), now, state)["level"] == "ok"
     # Unreadable backup directory: the watch itself is broken, which is critical.
     monkeypatch.setattr(monitor.os, "access", lambda path, mode: False)
     assert monitor.check_backup(str(tmp_path), now)["level"] == "critical"

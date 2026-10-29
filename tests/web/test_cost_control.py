@@ -437,7 +437,16 @@ async def test_budget_refusal_below_100_percent_is_reported_until_raised_or_midn
         store.reserve_tokens(user, 1200, 8192)
     today = site_snapshot(store, gate, now[0])["today"]
     assert today["budget_percent"] == 89.0 and today["budget_refused_at"] == now[0]
-    # Raising the budget clears it; a later refusal reports again.
+    # Settings that do not give the refused call room leave the refusal standing.
+    now[0] += 60
+    store.costs.update({"max_concurrent_calls": 2, "currency": "USD"}, "管理员")
+    assert site_snapshot(store, gate, now[0])["today"]["budget_refused_at"] == now[0] - 60
+    store.costs.update({"daily_token_budget": 10_200}, "管理员")  # +200 is still too little
+    assert site_snapshot(store, gate, now[0])["today"]["budget_refused_at"] == now[0] - 60
+    with pytest.raises(SiteBudgetExhausted):
+        store.reserve_tokens(user, 1200, 8192)
+    assert [e["kind"] for e in store.costs.events()].count("budget_exhausted") == 1
+    # Raising it enough clears it; a later refusal reports again from its own time.
     now[0] += 60
     store.costs.update({"daily_token_budget": 20_000}, "管理员")
     assert site_snapshot(store, gate, now[0])["today"]["budget_refused_at"] is None
