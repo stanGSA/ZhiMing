@@ -1,7 +1,8 @@
 """Admin console API, health check and the monitor's metrics endpoint.
 
 Only accounts named in ``ZHIMING_ADMIN_USERS`` see the console; everyone else gets 404. The
-monitor reads ``/api/ops/metrics`` with a bearer token and never needs a browser session.
+monitor reads ``/api/ops/metrics`` from the same host with a bearer token; it never needs a
+browser session.
 State-changing requests pass the web app's Origin and client-header checks like any other.
 """
 
@@ -148,8 +149,11 @@ def install(app: FastAPI, ctx: AdminContext) -> None:
     @app.get("/api/ops/metrics", include_in_schema=False)
     async def metrics(request: Request):
         scheme, _, token = request.headers.get("authorization", "").partition(" ")
+        # Behind Nginx the client is the real remote address, so only on-host callers pass.
+        loopback = request.client is not None and request.client.host in ("127.0.0.1", "::1")
         if (
-            not ctx.monitor_token
+            not loopback
+            or not ctx.monitor_token
             or scheme.lower() != "bearer"
             or not hmac.compare_digest(token.encode(), ctx.monitor_token.encode())
         ):

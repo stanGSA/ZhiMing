@@ -276,6 +276,7 @@ async def test_admin_console_is_hidden_from_everyone_but_named_admins(project, t
         client(app) as admin,
         client(app, "203.0.113.10") as user,
         client(app, "203.0.113.11") as stranger,
+        client(app, "127.0.0.1") as local,
     ):
         # Anyone: health answers, nothing else.
         health = await stranger.get("/healthz")
@@ -283,9 +284,12 @@ async def test_admin_console_is_hidden_from_everyone_but_named_admins(project, t
         assert (await stranger.get("/api/ops/metrics")).status_code == 404
         wrong = await stranger.get("/api/ops/metrics", headers={"Authorization": "Bearer x"})
         assert wrong.status_code == 404
-        metrics = await stranger.get(
+        # The right token from a remote address is still refused; the monitor runs on-host.
+        remote = await stranger.get(
             "/api/ops/metrics", headers={"Authorization": f"Bearer {TOKEN}"}
         )
+        assert remote.status_code == 404
+        metrics = await local.get("/api/ops/metrics", headers={"Authorization": f"Bearer {TOKEN}"})
         assert metrics.status_code == 200 and "errors" in metrics.json()
         assert (await stranger.get("/admin")).status_code == 303
         assert (await stranger.get("/api/admin/overview")).status_code == 404
@@ -331,9 +335,7 @@ async def test_admin_console_is_hidden_from_everyone_but_named_admins(project, t
         assert (await admin.post("/api/admin/models/pause", json={"reason": "升级"})).json()[
             "paused"
         ]["reason"] == "升级"
-        metrics = await stranger.get(
-            "/api/ops/metrics", headers={"Authorization": f"Bearer {TOKEN}"}
-        )
+        metrics = await local.get("/api/ops/metrics", headers={"Authorization": f"Bearer {TOKEN}"})
         assert metrics.json()["paused"]["by"] == "管理员甲"
         assert (await admin.post("/api/admin/models/resume")).json() == {"paused": None}
 

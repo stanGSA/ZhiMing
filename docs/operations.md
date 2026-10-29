@@ -8,7 +8,7 @@
 | --- | --- | --- |
 | `/healthz` | 应用 | 公开健康检查，只返回 `{"status":"ok"}`（数据库可读）或 503，不含其他信息 |
 | 费用控制（`memory/costs.py`） | 应用，与账号额度同一事务 | 每日预算、并发上限、异常消耗自动暂停、账号暂停与追加额度、全站用量台账 |
-| `/api/ops/metrics` | 应用 | 只接受 `Authorization: Bearer <ZHIMING_MONITOR_TOKEN>`，供监控读取错误率、预算与暂停状态；令牌不对返回 404 |
+| `/api/ops/metrics` | 应用 | 只接受本机（127.0.0.1）且带 `Authorization: Bearer <ZHIMING_MONITOR_TOKEN>` 的请求，供监控读取错误率、预算与暂停状态；其余一律 404 |
 | `/admin` 管理页 | 应用 | 仅 `ZHIMING_ADMIN_USERS` 中的账号可见，其余账号返回 404 |
 | `ops/monitor.py` | 服务器 systemd 定时器，每 5 分钟 | 服务器侧检查、告警去重与发送、写 `/var/lib/zhiming-monitor/status.json` 供管理页显示 |
 | `.github/workflows/uptime.yml` | GitHub Actions，每 10 分钟 | 从服务器之外探测公网可用性与证书，服务器整机宕机也能告警 |
