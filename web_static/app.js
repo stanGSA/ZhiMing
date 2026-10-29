@@ -112,15 +112,28 @@ function toast(message) {
   }, 4800);
 }
 
+const STATUS_TEXT = {
+  413: "提交的内容过大，请精简后再试。",
+  429: "操作过于频繁，请稍后再试。",
+  500: "服务出现意外错误，请稍后重试。",
+  502: "服务暂时无法连接，请稍后重试。",
+  503: "服务暂时不可用，请稍后重试。",
+  504: "服务响应超时，请稍后重试。",
+};
+
 async function api(path, options = {}) {
   const scoped = new URL(path, location.origin);
   if (["/api/session", "/api/birth"].includes(scoped.pathname))
     scoped.searchParams.set("system", SYSTEM);
   path = scoped.pathname + scoped.search;
+  // A reading may take minutes; everything else should answer well within a minute.
+  const controller = new AbortController();
+  const timer = scoped.pathname === "/api/chat" ? null : setTimeout(() => controller.abort(), 60000);
   let response;
   try {
     response = await fetch(path, {
       ...options,
+      signal: controller.signal,
       headers: {
         "Content-Type": "application/json",
         "X-Zhiming-Client": "web",
@@ -129,20 +142,279 @@ async function api(path, options = {}) {
       },
     });
   } catch {
-    throw new Error("连接暂时中断，请检查本地网页服务。刷新页面可查看本轮状态。");
+    throw new Error(
+      controller.signal.aborted
+        ? "服务响应超时，请稍后重试。刷新页面可查看本轮状态。"
+        : navigator.onLine === false
+          ? "网络已断开，请连接网络后重试。"
+          : "连接暂时中断，请检查本地网页服务。刷新页面可查看本轮状态。",
+    );
+  } finally {
+    clearTimeout(timer);
   }
-  const data = await response.json();
+  let data = null;
+  try {
+    data = await response.json();
+  } catch {
+    // A proxy error page or an interrupted body is not JSON; the status still explains it.
+  }
   if (!response.ok) {
-    const detail = Array.isArray(data.detail) ? data.detail[0]?.msg : data.detail;
+    const detail = data?.detail;
     const error = new Error(
-      detail?.message || (typeof detail === "string"
-        ? detail.replace(/^Value error, /, "")
-        : "请检查填写的内容是否正确。"),
+      detail?.message ||
+        (typeof detail === "string" ? detail : "") ||
+        STATUS_TEXT[response.status] ||
+        "请求未能完成，请检查填写的内容后重试。",
     );
     error.code = detail?.code;
+    error.status = response.status;
+    if (detail?.request_id) error.message += `（错误编号 ${detail.request_id}）`;
+    if (error.code === "session_expired") sessionExpired();
     throw error;
   }
+  if (data === null) throw new Error("服务返回的内容无法读取，请刷新页面后重试。");
   return data;
+}
+
+/* ---------- Account, notices and storage ---------- */
+
+function remembered(key) {
+  try {
+    return localStorage.getItem(key);
+  } catch {
+    return null;
+  }
+}
+
+function remember(key, value) {
+  try {
+    if (value) localStorage.setItem(key, value);
+    else localStorage.removeItem(key);
+  } catch {
+    // Storage may be disabled; these keys are conveniences only.
+  }
+}
+
+function takeNotice() {
+  try {
+    const text = sessionStorage.getItem("zhiming.notice");
+    sessionStorage.removeItem("zhiming.notice");
+    return text;
+  } catch {
+    return null;
+  }
+}
+
+/* A persistent banner for states a toast would let slip by: an expired login, a restart. */
+function showNotice(text, actions = []) {
+  let box = $("#notice");
+  if (!box) {
+    box = node("div", "notice");
+    box.id = "notice";
+    box.setAttribute("role", "alert");
+    document.body.prepend(box);
+  }
+  const row = node("div", "notice-actions");
+  for (const [label, action] of actions) {
+    const item = button(label, "btn btn-tag");
+    item.addEventListener("click", action);
+    row.append(item);
+  }
+  const dismiss = button("知道了", "btn btn-text");
+  dismiss.addEventListener("click", () => box.remove());
+  row.append(dismiss);
+  box.replaceChildren(node("p", "", text), row);
+}
+
+function loginUrl() {
+  return `/login?tab=account&next=${encodeURIComponent(location.pathname)}`;
+}
+
+function sessionExpired() {
+  if (state?.account || remembered("zhiming.account")) {
+    remember("zhiming.account", null);
+    showNotice("登录已过期或已在其他设备退出。记录仍保存在账号中，重新登录即可继续。", [
+      ["重新登录", () => location.assign(loginUrl())],
+    ]);
+  } else {
+    showNotice("会话已过期，刷新页面即可重新开始。访客记录无法找回；登录账号可长期保存。", [
+      ["刷新页面", () => location.reload()],
+    ]);
+  }
+}
+
+function storageNote() {
+  return state?.account
+    ? `已保存到账号「${state.account.username}」，换设备登录也能看到。`
+    : "只保存在本次浏览器会话中，闲置 12 小时后清除；登录账号可长期保存。";
+}
+
+function renderAccount() {
+  const chip = $("#account-button");
+  if (!chip) return;
+  chip.textContent = state?.account ? state.account.username : "登录";
+  chip.classList.toggle("signed", Boolean(state?.account));
+  chip.title = state?.account ? "账号与云端记录" : "登录或注册，云端保存记录";
+  $$("[data-storage-note]").forEach((note) => {
+    note.textContent = storageNote();
+  });
+  const feedback = $("#birth-feedback");
+  if (feedback && Object.values(BIRTH_DEFAULTS).includes(feedback.textContent))
+    feedback.textContent = birthDefaultText();
+}
+
+const BIRTH_DEFAULTS = {
+  guest: "确认后保存在本次浏览器会话中。",
+  account: "确认后保存到账号，各页与各设备共用。",
+};
+
+function birthDefaultText() {
+  return state?.account ? BIRTH_DEFAULTS.account : BIRTH_DEFAULTS.guest;
+}
+
+function accountField(label, id, autocomplete) {
+  const input = node("input");
+  input.id = id;
+  input.type = "password";
+  input.autocomplete = autocomplete;
+  input.maxLength = 128;
+  input.required = true;
+  return labelled(label, input);
+}
+
+function openAccount() {
+  const dialog = $("#account-dialog");
+  const account = state?.account;
+  const close = button("关闭", "btn btn-ghost");
+  close.addEventListener("click", () => dialog.close());
+  const privacy = node("a", "account-link", "隐私说明");
+  privacy.href = "/privacy";
+  if (!account) {
+    const login = node("a", "btn btn-primary", "登录 / 注册");
+    login.href = loginUrl();
+    const actions = node("div", "btn-row");
+    actions.append(login, close);
+    dialog.replaceChildren(
+      node("h2", "", "访客身份"),
+      node(
+        "p",
+        "",
+        "记录只保存在这台电脑的本次浏览器会话中，闲置 12 小时后清除。登录或注册后，生辰档案与解读会保存到账号，换设备也能查看；注册时可以把本次访客记录一并保存。",
+      ),
+      actions,
+      privacy,
+    );
+    dialog.showModal();
+    return;
+  }
+  const since = new Date(account.created_at);
+  const intro = node(
+    "p",
+    "",
+    `${Number.isNaN(since.getTime()) ? "" : `注册于 ${since.toLocaleDateString("zh-CN", { timeZone: "Asia/Shanghai" })} · `}生辰档案与解读记录已保存到账号，可在任意设备登录查看。`,
+  );
+  const exportLink = node("a", "btn btn-ghost", "导出我的记录");
+  exportLink.href = "/api/export";
+  exportLink.download = "";
+  const logout = button("退出登录", "btn btn-ghost");
+  logout.addEventListener("click", async () => {
+    logout.disabled = true;
+    try {
+      await api("/api/account/logout", { method: "POST", body: "{}" });
+      remember("zhiming.account", null);
+      location.assign("/login");
+    } catch (error) {
+      logout.disabled = false;
+      toast(error.message);
+    }
+  });
+  const actions = node("div", "btn-row");
+  actions.append(exportLink, logout, close);
+
+  const password = node("details", "account-section");
+  password.append(node("summary", "", "修改密码"));
+  const passwordForm = node("form", "account-form");
+  const passwordSubmit = button("确认修改", "btn btn-primary", "submit");
+  passwordForm.append(
+    accountField("当前密码", "current-password", "current-password"),
+    accountField("新密码（至少 8 位，含两类字符）", "new-password", "new-password"),
+    accountField("再次输入新密码", "repeat-password", "new-password"),
+    passwordSubmit,
+  );
+  passwordForm.addEventListener("submit", async (event) => {
+    event.preventDefault();
+    if ($("#new-password").value !== $("#repeat-password").value) {
+      toast("两次输入的新密码不一致。");
+      return;
+    }
+    passwordSubmit.disabled = true;
+    try {
+      const result = await api("/api/account/password", {
+        method: "POST",
+        body: JSON.stringify({
+          current_password: $("#current-password").value,
+          new_password: $("#new-password").value,
+        }),
+      });
+      passwordForm.reset();
+      password.open = false;
+      toast(result.signed_out_elsewhere
+        ? `密码已修改，其他 ${result.signed_out_elsewhere} 处登录已退出。`
+        : "密码已修改。");
+    } catch (error) {
+      toast(error.message);
+    } finally {
+      passwordSubmit.disabled = false;
+    }
+  });
+  password.append(passwordForm);
+
+  const removal = node("details", "account-section danger");
+  removal.append(node("summary", "", "注销账号"));
+  const removalForm = node("form", "account-form");
+  const removalSubmit = button("永久注销", "btn btn-danger", "submit");
+  removalForm.append(
+    node("p", "", "将删除账号、生辰档案、全部解读与运行日志，并退出所有设备。此操作无法撤回，可先导出记录。"),
+    accountField("输入密码确认", "delete-password", "current-password"),
+    removalSubmit,
+  );
+  removalForm.addEventListener("submit", async (event) => {
+    event.preventDefault();
+    if (busy) {
+      toast("正在解读，请等待本轮完成后再注销。");
+      return;
+    }
+    removalSubmit.disabled = true;
+    try {
+      await api("/api/account/delete", {
+        method: "POST",
+        body: JSON.stringify({ password: $("#delete-password").value }),
+      });
+      remember("zhiming.account", null);
+      location.assign("/login");
+    } catch (error) {
+      removalSubmit.disabled = false;
+      toast(error.message);
+    }
+  });
+  removal.append(removalForm);
+  dialog.replaceChildren(node("h2", "", account.username), intro, actions, password, removal, privacy);
+  dialog.showModal();
+}
+
+/* Resolves true when the person confirms; one dialog serves every destructive action. */
+function askConfirm({ title, text, confirm = "确认", keep = "保留" }) {
+  const dialog = $("#confirm-dialog");
+  if (dialog.open) return Promise.resolve(false);
+  $("h2", dialog).textContent = title;
+  $("p", dialog).textContent = text;
+  $("button[value=confirm]", dialog).textContent = confirm;
+  $("button[value=cancel]", dialog).textContent = keep;
+  dialog.returnValue = "";
+  dialog.showModal();
+  return new Promise((resolve) => {
+    dialog.addEventListener("close", () => resolve(dialog.returnValue === "confirm"), { once: true });
+  });
 }
 
 function calculations(reading, prefix) {
@@ -175,9 +447,40 @@ function injectChrome() {
   const close = button("关闭", "btn btn-text");
   close.addEventListener("click", closeDrawer);
   head.append(title, close);
+  const tools = node("div", "drawer-tools");
+  const search = node("input", "underline-input");
+  search.id = "history-search";
+  search.type = "search";
+  search.maxLength = 100;
+  search.placeholder = "搜索问题或解读";
+  search.setAttribute("aria-label", "搜索足迹");
+  const filter = node("select", "drawer-filter");
+  filter.id = "history-filter";
+  filter.setAttribute("aria-label", "按功能筛选");
+  filter.append(new Option("全部", ""));
+  for (const [value, name] of Object.entries(SYSTEM_NAMES))
+    if (value !== "auto") filter.append(new Option(name, value));
+  tools.append(search, filter);
+  const count = node("p", "drawer-count");
+  count.id = "history-count";
+  count.setAttribute("role", "status");
   const list = node("div", "drawer-list");
   list.id = "history-list";
-  drawer.append(head, list);
+  const more = button("加载更多", "btn btn-tag");
+  more.id = "history-more";
+  more.hidden = true;
+  const foot = node("div", "drawer-foot");
+  const exportLink = node("a", "btn btn-text", "导出记录");
+  exportLink.id = "history-export";
+  exportLink.href = "/api/export";
+  exportLink.download = "";
+  const clear = button("清空解读记录", "btn btn-text");
+  clear.id = "history-clear";
+  clear.setAttribute("data-lock", "");
+  const note = node("p", "drawer-note");
+  note.setAttribute("data-storage-note", "");
+  foot.append(exportLink, clear, note);
+  drawer.append(head, tools, count, list, more, foot);
 
   const dialog = node("dialog", "zm-dialog");
   dialog.id = "confirm-dialog";
@@ -189,13 +492,18 @@ function injectChrome() {
   const confirm = button("确认清除", "btn btn-danger", "submit");
   confirm.value = "confirm";
   actions.append(keep, confirm);
-  form.append(
-    node("h2", "", "清除这段问道足迹？"),
-    node("p", "", "将删除当前浏览器会话的生辰资料、解读记录与对话。此操作无法撤回。"),
-    actions,
-  );
+  form.append(node("h2", "", ""), node("p", "", ""), actions);
   dialog.append(form);
-  document.body.append(toastBox, scrim, drawer, dialog);
+
+  const account = node("dialog", "zm-dialog account-dialog");
+  account.id = "account-dialog";
+  account.setAttribute("aria-label", "账号");
+  document.body.append(toastBox, scrim, drawer, dialog, account);
+  const chip = button("登录", "btn btn-text zm-account");
+  chip.id = "account-button";
+  chip.setAttribute("aria-haspopup", "dialog");
+  chip.addEventListener("click", openAccount);
+  $(".zm-tools")?.append(chip);
   if ($("#dialog")) document.body.append(askFab());
 }
 
@@ -221,6 +529,7 @@ function openDrawer() {
   $("#history-drawer").hidden = false;
   $("#scrim").hidden = false;
   $("#history-drawer").focus();
+  if (historyFiltered()) loadHistory(true);
 }
 
 function closeDrawer() {
@@ -532,6 +841,14 @@ async function copyReading() {
 
 /* ---------- History ---------- */
 
+// The drawer lists the session's first page until a search, a filter or 加载更多 asks for more.
+const historyView = { system: "", q: "", items: [], total: 0, version: 0 };
+let historySearchTimer;
+
+function historyFiltered() {
+  return Boolean(historyView.system || historyView.q);
+}
+
 function historyLabel(item) {
   const date = new Date(item.created_at);
   const day = Number.isNaN(date.getTime())
@@ -542,7 +859,8 @@ function historyLabel(item) {
         timeZone: "Asia/Shanghai",
       });
   const systems = (item.systems_used || []).map((value) => SYSTEM_NAMES[value] || value);
-  return [day, systems.join(" + ")].filter(Boolean).join(" · ");
+  const followups = item.response_count ? `追问 ${item.response_count} 次` : "";
+  return [day, systems.join(" + "), followups].filter(Boolean).join(" · ");
 }
 
 function historyButton(item, className = "history-item") {
@@ -553,6 +871,17 @@ function historyButton(item, className = "history-item") {
   );
   entry.addEventListener("click", () => openReading(item.reading_id));
   return entry;
+}
+
+function historyRow(item) {
+  const row = node("div", "history-row");
+  const remove = button("删除", "btn btn-text history-delete");
+  remove.setAttribute("aria-label", `删除解读：${item.question.split("\n")[0]}`);
+  remove.setAttribute("data-lock", "");
+  remove.disabled = busy;
+  remove.addEventListener("click", () => deleteReading(item));
+  row.append(historyButton(item), remove);
+  return row;
 }
 
 async function openReading(readingId) {
@@ -567,18 +896,137 @@ async function openReading(readingId) {
 }
 
 function renderHistory(history) {
-  const list = $("#history-list");
-  list.replaceChildren();
-  if (!history.length)
-    list.append(node("p", "history-empty", "每一次发问，都是认识自己的开始。解读完成后会记在这里。"));
-  history.forEach((item) => list.append(historyButton(item)));
   page.onHistory?.(history);
+  if (historyFiltered()) {
+    // A search result may have changed too; refresh it while the drawer is open.
+    if (!$("#history-drawer").hidden) loadHistory(true);
+    return;
+  }
+  // Keep what 加载更多 already fetched beyond the first page, while there is more to show.
+  const total = state?.history_total ?? history.length;
+  const extra = historyView.items
+    .slice(history.length)
+    .filter((item) => !history.some((latest) => latest.reading_id === item.reading_id))
+    .slice(0, Math.max(0, total - history.length));
+  historyView.items = [...history, ...extra];
+  historyView.total = total;
+  drawHistory();
+}
+
+function drawHistory() {
+  const list = $("#history-list");
+  const { items, total } = historyView;
+  list.replaceChildren();
+  if (!items.length)
+    list.append(
+      node(
+        "p",
+        "history-empty",
+        historyFiltered()
+          ? "没有找到符合条件的解读，换个关键词或功能试试。"
+          : "每一次发问，都是认识自己的开始。解读完成后会记在这里。",
+      ),
+    );
+  items.forEach((item) => list.append(historyRow(item)));
+  $("#history-count").textContent = total
+    ? historyFiltered()
+      ? `找到 ${total} 份解读`
+      : `共 ${total} 份解读`
+    : "";
+  $("#history-more").hidden = items.length >= total;
+  $("#history-clear").hidden = !state?.history_total;
+}
+
+async function loadHistory(reset) {
+  const version = ++historyView.version;
+  const params = new URLSearchParams({
+    offset: String(reset ? 0 : historyView.items.length),
+    limit: "20",
+  });
+  if (historyView.system) params.set("system", historyView.system);
+  if (historyView.q) params.set("q", historyView.q);
+  $("#history-more").disabled = true;
+  try {
+    const result = await api(`/api/history?${params}`);
+    if (version !== historyView.version) return;
+    const known = new Set(reset ? [] : historyView.items.map((item) => item.reading_id));
+    historyView.items = [
+      ...(reset ? [] : historyView.items),
+      ...result.items.filter((item) => !known.has(item.reading_id)),
+    ];
+    historyView.total = result.total;
+    drawHistory();
+  } catch (error) {
+    if (version === historyView.version) toast(error.message);
+  } finally {
+    $("#history-more").disabled = false;
+  }
+}
+
+function filterHistory() {
+  historyView.q = $("#history-search").value.trim();
+  historyView.system = $("#history-filter").value;
+  if (historyFiltered()) loadHistory(true);
+  else {
+    ++historyView.version;
+    historyView.items = [];
+    renderHistory(state?.history || []);
+  }
+}
+
+async function deleteReading(item) {
+  if (busy || !state) return;
+  const confirmed = await askConfirm({
+    title: "删除这份解读？",
+    text: `「${item.question.split("\n")[0]}」连同它的追问将被删除，无法撤回。各功能当前对话将重新开始，其他已保存的解读保留。`,
+    confirm: "删除",
+    keep: "保留",
+  });
+  if (!confirmed || busy) return;
+  try {
+    await api(`/api/readings/${encodeURIComponent(item.reading_id)}`, { method: "DELETE" });
+    if (followupReadingId === item.reading_id) followupReadingId = null;
+    if (currentReading?.reading_id === item.reading_id) renderReading(null);
+    historyView.items = historyView.items.filter((entry) => entry.reading_id !== item.reading_id);
+    historyView.total = Math.max(0, historyView.total - 1);
+    drawHistory();
+    toast("这份解读已删除。");
+    await refresh();
+  } catch (error) {
+    toast(error.message);
+  }
+}
+
+async function clearReadings() {
+  if (busy || !state) return;
+  const confirmed = await askConfirm({
+    title: "清空全部解读记录？",
+    text: "将删除全部解读与追问，各功能当前对话将重新开始；生辰档案" + (state.account ? "与账号" : "") + "保留。此操作无法撤回，可先导出记录。",
+    confirm: "全部删除",
+    keep: "保留",
+  });
+  if (!confirmed || busy) return;
+  try {
+    const result = await api("/api/readings", { method: "DELETE" });
+    followupReadingId = null;
+    renderReading(null);
+    historyView.items = [];
+    historyView.total = 0;
+    drawHistory();
+    toast(`已删除 ${result.deleted.length} 份解读。`);
+    await refresh();
+  } catch (error) {
+    toast(error.message);
+  }
 }
 
 /* ---------- Session ---------- */
 
 function applyState(next, first = false, background = false) {
   if (next.system && next.system !== SYSTEM) return;
+  // A restarted service numbers its revisions afresh: take its state as a first load.
+  const restarted = Boolean(state?.instance && next.instance && state.instance !== next.instance);
+  if (restarted) first = true;
   if (!first && state && (next.birth_version ?? 0) < (state.birth_version ?? 0)) return;
   if (!first && state && (next.session_revision ?? 0) < (state.session_revision ?? 0)) return;
   ++localStateEpoch;
@@ -588,6 +1036,9 @@ function applyState(next, first = false, background = false) {
     && next.reading?.reading_id !== currentReading.reading_id ? currentReading : null;
   const selectedFollowup = followupReadingId;
   state = next;
+  if (next.account) remember("zhiming.account", next.account.username);
+  renderAccount();
+  if (restarted) announceRestart();
   followupReadingId = next.followup_reading_id
     || (preview?.reading_id === selectedFollowup ? selectedFollowup : null);
   if ($("#provider")) $("#provider").value = next.provider;
@@ -623,6 +1074,15 @@ function applyState(next, first = false, background = false) {
   scrollTranscript();
   if (oldVersion !== undefined && birthChanged)
     birthChannel?.postMessage({ birth_version: next.birth_version });
+}
+
+function announceRestart() {
+  if (state.account) toast("服务已重新启动，已从账号恢复生辰与解读记录。");
+  else
+    showNotice(
+      "服务已重新启动，本页已换为新的访客会话，之前的访客记录无法恢复。登录账号可长期保存记录。",
+      [["登录 / 注册", () => location.assign(loginUrl())]],
+    );
 }
 
 async function refresh() {
@@ -671,28 +1131,45 @@ function wireControls() {
   $("#open-history")?.addEventListener("click", openDrawer);
   $("#new-chat")?.addEventListener("click", () => startNew(state.provider));
   $("#provider")?.addEventListener("change", (event) => startNew(event.target.value));
-  $("#forget")?.addEventListener("click", () => $("#confirm-dialog").showModal());
+  $("#forget")?.addEventListener("click", forgetRecords);
   $("#copy-reading")?.addEventListener("click", copyReading);
-  $("#confirm-dialog").addEventListener("close", async () => {
-    if ($("#confirm-dialog").returnValue !== "confirm" || busy) return;
-    page.onNewSession?.({ forget: true });
-    setBusy(true);
-    ++localStateEpoch;
-    try {
-      applyState(await api("/api/session", { method: "DELETE" }), true);
-      acceptBirthVersion(state.birth_version);
-      followupReadingId = null;
-      setBirthFeedback("", false);
-      if ($("#message")) $("#message").value = "";
-      toast("当前会话的生辰、解读和对话已清除。");
-    } catch (error) {
-      setBusy(false);
-      toast(error.message);
-    }
+  $("#history-search").addEventListener("input", () => {
+    clearTimeout(historySearchTimer);
+    historySearchTimer = setTimeout(filterHistory, 300);
   });
+  $("#history-filter").addEventListener("change", filterHistory);
+  $("#history-more").addEventListener("click", () => loadHistory(false));
+  $("#history-clear").addEventListener("click", clearReadings);
   document.addEventListener("keydown", (event) => {
     if (event.key === "Escape") closeDrawer();
   });
+}
+
+async function forgetRecords() {
+  if (busy || !state) return;
+  const confirmed = await askConfirm({
+    title: "清除这段问道足迹？",
+    text: state.account
+      ? "将删除此账号的生辰档案、全部解读记录、对话与运行日志；账号本身保留。此操作无法撤回。"
+      : "将删除当前浏览器会话的生辰资料、解读记录与对话。此操作无法撤回。",
+    confirm: "确认清除",
+    keep: "保留记录",
+  });
+  if (!confirmed || busy) return;
+  page.onNewSession?.({ forget: true });
+  setBusy(true);
+  ++localStateEpoch;
+  try {
+    applyState(await api("/api/session", { method: "DELETE" }), true);
+    acceptBirthVersion(state.birth_version);
+    followupReadingId = null;
+    setBirthFeedback("", false);
+    if ($("#message")) $("#message").value = "";
+    toast(state.account ? "账号中的生辰、解读和对话已清除。" : "当前会话的生辰、解读和对话已清除。");
+  } catch (error) {
+    setBusy(false);
+    toast(error.message);
+  }
 }
 
 /* ---------- Birth form ---------- */
@@ -828,7 +1305,7 @@ function buildBirthForm(host, mode) {
     sync.hidden = keep.hidden = true;
     setBirthFeedback("已保留本页修改，请核对后再次提交。", false);
   });
-  const feedback = node("p", "birth-feedback", "确认后保存在本次浏览器会话中。");
+  const feedback = node("p", "birth-feedback", birthDefaultText());
   feedback.id = "birth-feedback";
   feedback.setAttribute("role", "status");
   form.append(submit, feedback, sync, keep);
@@ -857,7 +1334,7 @@ function buildBirthForm(host, mode) {
 function setBirthFeedback(text, saved) {
   const feedback = $("#birth-feedback");
   if (!feedback) return;
-  feedback.textContent = text || "确认后保存在本次浏览器会话中。";
+  feedback.textContent = text || birthDefaultText();
   feedback.classList.toggle("saved", saved);
 }
 
@@ -2426,6 +2903,16 @@ function init() {
   $("[data-birth-submit]")?.addEventListener("click", submitBirthFromBar);
   wireControls();
   window.addEventListener("focus", () => { if (state && !busy) refresh(); });
+  // Last line of defence: an unexpected script error still tells the person what to do.
+  window.addEventListener("error", (event) => {
+    if (event.error) toast("页面出现意外错误，请刷新后重试。");
+  });
+  window.addEventListener("unhandledrejection", (event) => {
+    // Errors raised by api() already read as plain Chinese; anything else stays generic.
+    const reason = event.reason;
+    toast(reason?.status ? reason.message : "页面出现意外错误，请刷新后重试。");
+  });
+  window.addEventListener("offline", () => toast("网络已断开，恢复连接后再继续。"));
   document.addEventListener("visibilitychange", () => {
     if (!document.hidden && state && !busy) refresh();
   });
@@ -2449,6 +2936,9 @@ function init() {
   api(`/api/session?provider=${wanted === "demo" ? "demo" : "configured"}`)
     .then(async (next) => {
       applyState(next, true);
+      const notice = takeNotice();
+      if (notice) toast(notice);
+      else if (!next.account && remembered("zhiming.account")) sessionExpired();
       if ((wanted === "demo" || wanted === "configured") && next.provider !== wanted)
         startNew(wanted);
       if (params.get("reading_id") && $("#chat-form")) {

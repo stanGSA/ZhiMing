@@ -185,11 +185,12 @@ class Runtime:
                 "本轮达到请求时限，请稍后继续或缩小问题范围。",
             )
 
-    def forget(self) -> None:
-        self.store.forget(self.session.user_id)
+    def forget(self, compact: bool = True) -> None:
+        # Traces first: if they cannot be removed, the records are still there to retry.
         directory = self.tracer.user_dir(self.session.user_id).resolve()
         if directory.is_relative_to(self.tracer.root.resolve()) and directory.exists():
             shutil.rmtree(directory)
+        self.store.forget(self.session.user_id, compact=compact)
         self.session.profile = {"version": 0}
         self.session.messages = [{"role": "system", "content": self.system_prompt}]
         self.session.state.clear()
@@ -212,6 +213,16 @@ class Runtime:
             close = getattr(model, "close", None)
             if close is not None:
                 await close()
+
+
+MEMORY_NOTE = "画像与最近记录："
+
+
+def memory_note(profile: dict, recent_readings: list[dict]) -> str:
+    """The system note that gives the model the profile and the latest readings."""
+    return MEMORY_NOTE + json.dumps(
+        {"profile": profile, "recent_readings": recent_readings}, ensure_ascii=False
+    )
 
 
 def build_model(
@@ -302,15 +313,7 @@ def create_runtime(
     session.messages.append({"role": "system", "content": system_prompt})
     clock = clock or (lambda: datetime.now(UTC))
     session.refresh_calendar(clock())
-    session.messages.append(
-        {
-            "role": "system",
-            "content": "画像与最近记录："
-            + json.dumps(
-                {"profile": session.profile, "recent_readings": recent}, ensure_ascii=False
-            ),
-        }
-    )
+    session.messages.append({"role": "system", "content": memory_note(session.profile, recent)})
     registry = Registry()
     plugins = [
         TarotPlugin(kb),

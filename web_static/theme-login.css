@@ -432,3 +432,61 @@
     font-size: 32px;
   }
 }
+
+/* ---------- Account sign-in ---------- */
+.gate-modes {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 22px;
+}
+.gate-mode {
+  flex: 1;
+  min-height: 40px;
+  background: transparent;
+  border: 1px solid var(--line);
+  color: var(--muted);
+  font-size: 14px;
+  letter-spacing: 0.2em;
+  cursor: pointer;
+}
+.gate-mode[aria-pressed="true"] {
+  border-color: var(--accent);
+  color: var(--ink);
+  background: rgba(201, 164, 92, 0.08);
+}
+.gate-form .field > span {
+  color: var(--muted);
+}
+.gate-rules {
+  margin-top: -8px;
+  color: #8f8574;
+  font-size: 12px;
+  line-height: 1.8;
+}
+.check.gate-check {
+  align-items: flex-start;
+  line-height: 1.7;
+}
+.check.gate-check input {
+  flex: none;
+  margin-top: 4px;
+}
+.gate-check a,
+.gate-foot a {
+  color: var(--accent-2);
+}
+.gate-error {
+  border-left: 2px solid #d26a5c;
+  padding: 6px 0 6px 12px;
+  color: #f0b7a8;
+  font-size: 14px;
+  line-height: 1.7;
+}
+.gate-signed {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.gate-signed b {
+  color: var(--ink);
+}
