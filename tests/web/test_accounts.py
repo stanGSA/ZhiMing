@@ -1,6 +1,10 @@
 """Accounts: registration, sign-in, cloud-kept records, guest hand-over and account removal."""
 
 import json
+import shutil
+import sqlite3
+import time
+from pathlib import Path
 
 import httpx
 import pytest
@@ -8,7 +12,7 @@ import pytest
 pytest.importorskip("fastapi")
 
 from app import create_runtime
-from memory.accounts import AccountStore, hash_password, verify_password
+from memory.accounts import PRIVACY_VERSION, AccountStore, hash_password, verify_password
 from memory.store import Store
 from web import ACCOUNT_IDLE, MAX_IDLE, create_web_app
 
@@ -330,3 +334,159 @@ async def test_login_merges_guest_records_and_marks_other_births_stale(project):
         assert store.get_web_birth(guest) is None
     finally:
         store.close()
+
+
+async def guest_with_two_trace_files(client, runtimes):
+    """A guest whose ask and tarot conversations each wrote a trace file."""
+    reading_id = await guest_with_records(client)
+    await client.post("/api/chat", json={"message": "抽一张牌", "system": "tarot"})
+    guest = runtimes[0]
+    traces = guest.tracer.user_dir(guest.session.user_id)
+    assert len(list(traces.glob("*.jsonl"))) == 2
+    return reading_id, guest.session.user_id, traces
+
+
+def account_count(project):
+    accounts = AccountStore(project / "data/app.db")
+    try:
+        return accounts.db.execute("SELECT COUNT(*) FROM accounts").fetchone()[0]
+    finally:
+        accounts.close()
+
+
+async def test_a_failed_trace_move_changes_nothing(site, project, monkeypatch):
+    client, _, runtimes = site
+    reading_id, guest_id, traces = await guest_with_two_trace_files(client, runtimes)
+    before = sorted(path.name for path in traces.glob("*.jsonl"))
+    real_replace, moves = Path.replace, []
+
+    def second_move_fails(self, target):
+        if self.suffix == ".jsonl" and self.parent == traces:
+            moves.append(self)
+            if len(moves) == 2:
+                raise PermissionError("file in use")
+        return real_replace(self, target)
+
+    monkeypatch.setattr(Path, "replace", second_move_fails)
+    refused = await register(client, keep=True)
+    monkeypatch.setattr(Path, "replace", real_replace)
+    assert refused.status_code == 503
+    assert refused.json()["detail"]["code"] == "records_not_moved"
+    # The first file came back, the account was not kept and the guest carries on.
+    assert sorted(path.name for path in traces.glob("*.jsonl")) == before
+    assert account_count(project) == 0
+    state = (await client.get("/api/session")).json()
+    assert state["account"] is None and state["history_total"] == 2
+    store = database(project)
+    try:
+        assert store.get_reading(guest_id, reading_id) is not None
+        assert guest_id in [r[0] for r in store.db.execute("SELECT user_id FROM web_identities")]
+    finally:
+        store.close()
+    retried = await register(client, keep=True)
+    assert retried.status_code == 201 and retried.json()["moved_readings"] == 2
+    assert not traces.exists()
+
+
+async def test_a_failed_merge_removes_the_new_account(site, project, monkeypatch):
+    client, _, runtimes = site
+    reading_id, guest_id, traces = await guest_with_two_trace_files(client, runtimes)
+
+    def locked(*args, **kwargs):
+        raise sqlite3.OperationalError("database is locked")
+
+    monkeypatch.setattr(Store, "merge_user", locked)
+    failed = await register(client, keep=True)
+    monkeypatch.undo()
+    assert failed.status_code == 500
+    assert account_count(project) == 0
+    assert len(list(traces.glob("*.jsonl"))) == 2  # moved back
+    assert (await client.get("/api/session")).json()["history_total"] == 2
+    retried = await register(client, keep=True)
+    assert retried.status_code == 201 and retried.json()["moved_readings"] == 2
+
+
+async def test_unremovable_guest_traces_keep_the_guest_records(site, project, monkeypatch):
+    client, _, runtimes = site
+    reading_id = await guest_with_records(client)
+    guest_id = runtimes[0].session.user_id
+
+    def busy(*args, **kwargs):
+        raise PermissionError("trace file in use")
+
+    monkeypatch.setattr("app.shutil.rmtree", busy)
+    refused = await register(client)
+    monkeypatch.undo()
+    assert refused.status_code == 503
+    assert refused.json()["detail"]["code"] == "records_not_removed"
+    assert account_count(project) == 0
+    store = database(project)
+    try:
+        assert store.get_reading(guest_id, reading_id) is not None
+    finally:
+        store.close()
+    assert (await register(client)).status_code == 201
+
+
+async def test_a_leftover_guest_trace_directory_is_cleaned_later(site, project, monkeypatch):
+    client, _, runtimes = site
+    _, guest_id, traces = await guest_with_two_trace_files(client, runtimes)
+    real_rmtree = shutil.rmtree
+
+    def busy(path, *args, **kwargs):
+        if Path(path) == traces:
+            raise PermissionError("directory in use")
+        return real_rmtree(path, *args, **kwargs)
+
+    monkeypatch.setattr("web.shutil.rmtree", busy)
+    assert (await register(client, keep=True)).status_code == 201
+    assert traces.exists() and not list(traces.glob("*.jsonl"))
+    monkeypatch.undo()
+    store = database(project)
+    try:
+        # An already expired lease hands the directory to the regular guest cleanup.
+        assert guest_id in store.expired_web_identities(time.time())
+    finally:
+        store.close()
+    await client.get("/api/locations")
+    assert not traces.exists()
+
+
+async def test_deleting_records_never_compacts_in_the_event_loop(project, monkeypatch):
+    checkpoints, statements = [], []
+    monkeypatch.setattr("web.checkpoint", checkpoints.append)
+    runtimes = []
+
+    def factory(**kwargs):
+        runtime = create_runtime(**kwargs, seed=42)
+        runtime.store.db.set_trace_callback(statements.append)
+        runtimes.append(runtime)
+        return runtime
+
+    app = create_web_app(root=project, runtime_factory=factory)
+    async with app.router.lifespan_context(app), client_for(app) as client:
+        await guest_with_records(client)
+        await register(client)  # deletes the guest's records
+        await client.post("/api/chat", json={"message": "抽一张牌"})
+        await client.delete("/api/readings")
+        await client.delete("/api/session")
+        await client.post("/api/account/delete", json={"password": PASSWORD})
+    assert not [s for s in statements if "VACUUM" in s.upper()]
+    assert checkpoints  # run in a worker thread instead, and finished before shutdown
+
+
+async def test_export_states_its_scope_and_the_consent(site):
+    client, _, _ = site
+    await register(client)
+    await client.post("/api/chat", json={"message": "抽一张牌"})
+    data = (await client.get("/api/export")).json()
+    assert data["format_version"] == 2
+    assert "不是备份" in data["scope"]["purpose"]
+    assert any("运行日志" in item for item in data["scope"]["excluded"])
+    assert data["account"]["username"] == "云端用户"
+    assert data["account"]["privacy_version"] == PRIVACY_VERSION
+    assert data["account"]["privacy_accepted_at"]
+    assert "user_id" not in data["account"]
+    (reading,) = data["readings"]
+    for key in ("signals", "merge", "specialist_reports", "review_notes", "responses"):
+        assert key in reading

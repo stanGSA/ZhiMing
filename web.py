@@ -10,8 +10,9 @@ import logging
 import re
 import secrets
 import shutil
+import sqlite3
 import time
-from contextlib import asynccontextmanager
+from contextlib import AsyncExitStack, asynccontextmanager
 from dataclasses import dataclass, field
 from datetime import date as CalendarDate
 from datetime import datetime, timedelta
@@ -31,7 +32,7 @@ from pydantic import BaseModel, ConfigDict, Field, field_validator, model_valida
 from starlette.exceptions import HTTPException as StarletteHTTPException
 from starlette.middleware.trustedhost import TrustedHostMiddleware
 
-from app import ROOT, Runtime, create_runtime
+from app import MEMORY_NOTE, ROOT, Runtime, create_runtime, memory_note
 from common.regions import region_options, selected_region
 from common.schemas import ReadInput
 from common.time_utils import NeedsInput
@@ -404,6 +405,32 @@ class AttemptLimiter:
         self.attempts.pop(key, None)
 
 
+# Stated in every export, so nobody mistakes the file for a backup.
+EXPORT_SCOPE = {
+    "purpose": "个人数据副本，供查阅与留存；不是备份，本服务不提供导入。",
+    "included": [
+        "账号名、注册时间、同意的隐私说明版本与同意时间",
+        "生辰档案、画像及其修改记录（含当时的原话依据）",
+        "全部解读：问题、正文、牌面、计算结果、信号、跨体系合并表、专家报告、审校意见与历次追问",
+    ],
+    "excluded": [
+        "排盘与每日运势缓存：可由生辰档案重新计算",
+        "运行日志（trace）：诊断用的工具调用记录，可向部署者申请获取；清除记录或注销账号时删除",
+        "密码散列与登录凭证",
+    ],
+}
+
+
+def checkpoint(path: Path) -> None:
+    """Fold the write-ahead log, which still holds pages of deleted rows, into the database
+    and truncate it. Run in a worker thread with its own connection."""
+    db = sqlite3.connect(path, timeout=30)
+    try:
+        db.execute("PRAGMA wal_checkpoint(TRUNCATE)")
+    finally:
+        db.close()
+
+
 def almanac(day: CalendarDate, day_master: str | None, kb) -> dict:
     """Calendar facts for one day and its week; the day pillar is taken at local noon."""
 
@@ -528,6 +555,7 @@ def create_web_app(
     instance = secrets.token_hex(4)
     extended: dict[str, float] = {}
     account_db: list[AccountStore] = []
+    checkpoints: dict[str, object] = {"task": None, "again": False}
 
     def accounts() -> AccountStore:
         if not account_db:
@@ -564,7 +592,8 @@ def create_web_app(
                         directory = tracer.user_dir(user_id).resolve()
                         if directory.is_relative_to(tracer.root.resolve()) and directory.exists():
                             shutil.rmtree(directory)
-                        store.forget(user_id)
+                        store.forget(user_id, compact=False)
+                        checkpoint_later()
                     except Exception:
                         logger.exception("Could not remove an expired browser identity")
             finally:
@@ -602,7 +631,30 @@ def create_web_app(
         if accounts_live.get(root_session.user_id) is root_session:
             accounts_live.pop(root_session.user_id)
         for context in family(root_session):
-            await close(context)
+            try:
+                await close(context)
+            except Exception:
+                # The records are already settled; a client that will not close is only logged.
+                logger.exception("Could not close a released browser runtime")
+
+    def checkpoint_later():
+        """After deletions, checkpoint in a worker thread instead of blocking every request.
+        One run at a time; requests during a run queue exactly one more."""
+        running = checkpoints["task"]
+        if running is not None and not running.done():
+            checkpoints["again"] = True
+            return
+        checkpoints["task"] = asyncio.create_task(run_checkpoints())
+
+    async def run_checkpoints():
+        while True:
+            checkpoints["again"] = False
+            try:
+                await asyncio.to_thread(checkpoint, root / config["paths"]["app_db"])
+            except Exception:
+                logger.exception("Background database checkpoint failed")
+            if not checkpoints["again"]:
+                return
 
     async def reap():
         while True:
@@ -621,6 +673,8 @@ def create_web_app(
                 await close(context)
         sessions.clear()
         accounts_live.clear()
+        if checkpoints["task"] is not None:
+            await asyncio.gather(checkpoints["task"], return_exceptions=True)
         if account_db:
             account_db.pop().close()
 
@@ -1491,7 +1545,11 @@ def create_web_app(
         for context in family(session):
             available(context)
         async with session.lock:
-            session.runtime.forget()
+            try:
+                session.runtime.forget(compact=False)
+            except OSError as exc:
+                raise records_not_removed() from exc
+            checkpoint_later()
             for context in family(session):
                 context.session_revision += 1
                 if context is not session:
@@ -1541,24 +1599,40 @@ def create_web_app(
     @app.delete("/api/readings/{reading_id}")
     async def delete_reading(reading_id: str, request: Request):
         session = get_session(request, "auto")
-        for context in family(session):
-            available(context)
-        if not session.runtime.store.delete_reading(session.user_id, reading_id):
-            raise HTTPException(404, "找不到这份解读，可能已被删除。")
-        await detach_readings(session, {reading_id})
+        async with every_lock(session):
+            if not session.runtime.store.delete_reading(session.user_id, reading_id):
+                raise HTTPException(404, "找不到这份解读，可能已被删除。")
+            detach_readings(session, {reading_id})
+        checkpoint_later()
         return {"deleted": [reading_id]}
 
     @app.delete("/api/readings")
     async def delete_all_readings(request: Request):
         session = get_session(request, "auto")
-        for context in family(session):
-            available(context)
-        deleted = session.runtime.store.delete_readings(session.user_id)
-        await detach_readings(session, set(deleted))
+        async with every_lock(session):
+            deleted = session.runtime.store.delete_readings(session.user_id)
+            detach_readings(session, set(deleted))
+        checkpoint_later()
         return {"deleted": deleted}
 
-    async def detach_readings(root_session, reading_ids):
-        """After records are deleted, nothing on the page or in a conversation may use them."""
+    @asynccontextmanager
+    async def every_lock(session):
+        """One critical section over every feature of the session family: no conversation
+        runs, starts or reads its state while records are removed. A busy feature refuses
+        the deletion instead of being waited for."""
+        contexts = family(session)
+        for context in contexts:
+            available(context)
+        async with AsyncExitStack() as stack:
+            # Always the same order (root first); no other path holds more than one lock.
+            for context in contexts:
+                await stack.enter_async_context(context.lock)
+            yield
+
+    def detach_readings(root_session, reading_ids):
+        """Under every_lock: nothing on the page, in a conversation or in the model's memory
+        note may refer to deleted records. Clears state in memory; never rebuilds a runtime,
+        so it cannot fail half-way for want of a model configuration."""
         scrub_traces(root_session.user_id, reading_ids)
         for context in family(root_session):
             target = context.runtime.session
@@ -1569,8 +1643,37 @@ def create_web_app(
                 or target.pinned_reading_id in reading_ids
             ):
                 # The conversation was about a deleted record: follow-ups would fail.
-                async with context.lock:
-                    await restart(context, context.provider)
+                clear_conversation(context)
+            refresh_memory(context)
+
+    def clear_conversation(context):
+        """What a new conversation starts with, keeping the runtime and its model client."""
+        target = context.runtime.session
+        target.messages = [m for m in target.messages if m["role"] == "system"]
+        target.state.clear()
+        target.cache.clear()
+        target.user_messages.clear()
+        target.pending_picks = None
+        target.pinned_reading_id = None
+        target.birth_binding = None
+        target.birth_context = None
+        target.birth_version_valid = None
+        context.session_revision += 1
+        context.messages.clear()
+        context.last_birth = ""
+        context.reading = None
+        context.tarot_round = None
+        context.bound_birth = None
+        context.birth_stale = False
+
+    def refresh_memory(context):
+        target = context.runtime.session
+        recent = context.runtime.store.recent_readings(context.user_id)
+        for message in target.messages:
+            if message["role"] == "system" and str(message.get("content", "")).startswith(
+                MEMORY_NOTE
+            ):
+                message["content"] = memory_note(target.profile, recent)
 
     def scrub_traces(user_id, reading_ids):
         """Best effort: drop trace records tagged with deleted readings."""
@@ -1604,11 +1707,13 @@ def create_web_app(
     async def export_records(request: Request):
         session = get_session(request, "auto")
         owner = session.owner or session
+        account = accounts().get(owner.user_id) if owner.account else None
         payload = {
             "format": "zhiming-export",
-            "format_version": 1,
+            "format_version": 2,
             "exported_at": datetime.now(ZoneInfo("Asia/Shanghai")).isoformat(timespec="seconds"),
-            "account": owner.account,
+            "scope": EXPORT_SCOPE,
+            "account": {k: v for k, v in account.items() if k != "user_id"} if account else None,
             **session.runtime.store.export_user(session.user_id),
         }
         day = datetime.now(ZoneInfo("Asia/Shanghai")).date().isoformat()
@@ -1665,39 +1770,98 @@ def create_web_app(
         except ValueError:
             return False
 
-    async def hand_over(guest, user_id, keep):
-        """Move or delete the guest's records; the guest identity ends either way."""
+    def hand_over(guest, user_id, keep):
+        """Move or delete the guest's records, all or nothing: on failure it raises and the
+        guest is left exactly as it was. The caller releases the guest afterwards."""
         if guest is None:
             return {"readings": 0, "adopted_birth": False}
-        store = guest.runtime.store
-        if keep:
-            moved = store.merge_user(guest.user_id, user_id, same_birth)
-            move_traces(guest.user_id, user_id)
-            live = accounts_live.get(user_id)
-            if live is not None and moved["adopted_birth"]:
-                # Signed in elsewhere with no birth yet: show the adopted one there too.
-                restore_birth(live)
-        else:
-            moved = {"readings": 0, "adopted_birth": False}
-            guest.runtime.forget()
-        await release(guest)
+        if not keep:
+            try:
+                # Traces go first; the records are only deleted once they are gone.
+                guest.runtime.forget(compact=False)
+            except OSError as exc:
+                raise records_not_removed() from exc
+            checkpoint_later()
+            return {"readings": 0, "adopted_birth": False}
+        try:
+            traces = move_traces(guest.user_id, user_id)
+        except OSError as exc:
+            raise HTTPException(
+                503,
+                {
+                    "code": "records_not_moved",
+                    "message": "访客记录暂时无法转入账号，没有做任何改动，请稍后重试。",
+                },
+            ) from exc
+        try:
+            moved = guest.runtime.store.merge_user(guest.user_id, user_id, same_birth)
+        except Exception:
+            return_traces(traces)
+            raise
+        if not remove_trace_dir(guest.user_id):
+            # Something is left in the guest's trace directory: an expired lease makes the
+            # regular guest cleanup remove it, instead of leaving it behind for good.
+            guest.runtime.store.touch_web_identity(guest.user_id, time.time())
+        checkpoint_later()
+        live = accounts_live.get(user_id)
+        if live is not None and moved["adopted_birth"]:
+            # Signed in elsewhere with no birth yet: show the adopted one there too.
+            restore_birth(live)
         return moved
 
-    def move_traces(source, target):
+    def records_not_removed():
+        return HTTPException(
+            503,
+            {
+                "code": "records_not_removed",
+                "message": "记录暂时无法删除，没有做任何改动，请稍后重试。",
+            },
+        )
+
+    def trace_dirs(source, target):
         tracer = Tracer(root / config["paths"]["runs"])
+        base = tracer.root.resolve()
         old, new = tracer.user_dir(source).resolve(), tracer.user_dir(target).resolve()
-        if not old.is_dir() or not old.is_relative_to(tracer.root.resolve()):
-            return
+        if not old.is_relative_to(base) or not new.is_relative_to(base):
+            raise OSError("trace directory outside the trace root")
+        return old, new
+
+    def move_traces(source, target):
+        """Move every trace file or none: on failure the moved ones go back, then it raises."""
+        old, new = trace_dirs(source, target)
+        if not old.is_dir():
+            return []
+        moved = []
         try:
             new.mkdir(parents=True, exist_ok=True)
-            for path in old.glob("*.jsonl"):
+            for path in sorted(old.glob("*.jsonl")):
                 destination = new / path.name
                 if destination.exists():
                     destination = new / f"{path.stem}-{secrets.token_hex(3)}.jsonl"
                 path.replace(destination)
-            shutil.rmtree(old)
+                moved.append((path, destination))
         except OSError:
-            logger.exception("Could not move guest traces to the account")
+            return_traces(moved)
+            raise
+        return moved
+
+    def return_traces(moved):
+        for source, destination in reversed(moved):
+            try:
+                destination.replace(source)
+            except OSError:
+                # Left in the account's directory, which account deletion removes.
+                logger.exception("Could not return a guest trace file")
+
+    def remove_trace_dir(user_id):
+        old, _ = trace_dirs(user_id, user_id)
+        try:
+            if old.exists():
+                shutil.rmtree(old)
+        except OSError:
+            logger.exception("Could not remove the guest trace directory")
+            return False
+        return True
 
     async def end_login(key):
         accounts().revoke(key)
@@ -1762,7 +1926,14 @@ def create_web_app(
         account = accounts().create(username, password_hash)
         key = request.cookies.get(COOKIE, "")
         previous = sessions.get(key)
-        moved = await hand_over(guest, account["user_id"], body.keep_guest_records)
+        try:
+            moved = hand_over(guest, account["user_id"], body.keep_guest_records)
+        except BaseException:
+            # Nothing moved: remove the new, empty account so the name can be used again.
+            accounts().delete(account["user_id"])
+            raise
+        if guest is not None:
+            await release(guest)
         if key and (previous is None or previous.account is not None):
             # Replace any login this browser held, loaded or only stored.
             await end_login(key)
@@ -1787,7 +1958,9 @@ def create_web_app(
         guest = idle_guest(request)
         key = request.cookies.get(COOKIE, "")
         previous = sessions.get(key)
-        moved = await hand_over(guest, account["user_id"], body.keep_guest_records)
+        moved = hand_over(guest, account["user_id"], body.keep_guest_records)
+        if guest is not None:
+            await release(guest)
         if key and (previous is None or previous.account is not None):
             # Replace any login this browser held, loaded or only stored.
             await end_login(key)
@@ -1835,11 +2008,14 @@ def create_web_app(
         if not await asyncio.to_thread(verify_password, body.password, current):
             limiter.record(attempts)
             raise HTTPException(403, {"code": "wrong_password", "message": "密码不正确。"})
-        for context in family(owner):
-            available(context)
-        # Records and traces first: if this fails, the account and its login remain.
-        owner.runtime.forget()
-        accounts().delete(owner.user_id)
+        async with every_lock(owner):
+            # Traces, then records, then the account: a failure leaves the account usable.
+            try:
+                owner.runtime.forget(compact=False)
+            except OSError as exc:
+                raise records_not_removed() from exc
+            accounts().delete(owner.user_id)
+        checkpoint_later()
         await release(owner)
         response = JSONResponse({"ok": True})
         response.delete_cookie(COOKIE, secure=public_origin is not None, samesite="strict")

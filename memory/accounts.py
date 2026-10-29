@@ -131,6 +131,7 @@ class AccountStore:
             "username": row["username"],
             "created_at": row["created_at"],
             "privacy_version": row["privacy_version"],
+            "privacy_accepted_at": row["privacy_accepted_at"],
         }
 
     def create(self, username: str, password_hash: str) -> dict:
@@ -182,7 +183,6 @@ class AccountStore:
         with self.db:
             self.db.execute("DELETE FROM account_sessions WHERE user_id=?", (user_id,))
             self.db.execute("DELETE FROM accounts WHERE user_id=?", (user_id,))
-        self.db.execute("PRAGMA wal_checkpoint(TRUNCATE)")
 
     def open_session(self, user_id: str, now: float, expires_at: float) -> str:
         token = secrets.token_urlsafe(32)

@@ -206,3 +206,46 @@ async def test_privacy_notice_is_linked_everywhere(browser):
     assert "筹备中" not in entrance
     for slug in PAGES:
         assert 'href="/privacy"' in (await client.get(f"/{slug}")).text, slug
+
+
+async def test_deleting_a_shared_record_clears_every_conversation_in_one_step(project):
+    runtimes, broken = [], []
+
+    def factory(**kwargs):
+        if broken:
+            raise RuntimeError("model configuration missing")
+        runtime = create_runtime(**kwargs, seed=42)
+        runtimes.append(runtime)
+        return runtime
+
+    app = create_web_app(root=project, runtime_factory=factory)
+    async with (
+        app.router.lifespan_context(app),
+        httpx.AsyncClient(
+            transport=httpx.ASGITransport(app=app), base_url="http://testserver", headers=HEADERS
+        ) as client,
+    ):
+        await client.get("/api/session")
+        tarot = await client.post("/api/chat", json={"message": "下个月的重心", "system": "tarot"})
+        reading_id = tarot.json()["reading"]["reading_id"]
+        # The ask page follows up on the same record: two conversations now refer to it.
+        await client.post(
+            "/api/chat", json={"message": "第二张牌具体什么意思？", "reading_id": reading_id}
+        )
+        assert all(r.session.state.get("active_reading_id") == reading_id for r in runtimes)
+        built = len(runtimes)
+        broken.append(True)  # rebuilding a runtime now fails, as without a model config
+        deleted = await client.delete(f"/api/readings/{reading_id}")
+        assert deleted.status_code == 200
+        assert len(runtimes) == built  # cleared in memory, nothing rebuilt
+        for system in ("auto", "tarot"):
+            state = (await client.get(f"/api/session?system={system}")).json()
+            assert state["messages"] == [] and state["reading"] is None
+        for runtime in runtimes:
+            assert not runtime.session.state and runtime.session.pinned_reading_id is None
+            # The model's memory note no longer mentions the deleted record.
+            notes = [m["content"] for m in runtime.session.messages if m["role"] == "system"]
+            assert not any(reading_id in note or "下个月的重心" in note for note in notes)
+        broken.clear()
+        again = await client.post("/api/chat", json={"message": "抽一张牌", "system": "tarot"})
+        assert again.json()["messages"][-1]["status"] == "submit_reading"

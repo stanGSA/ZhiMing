@@ -407,7 +407,9 @@ class Store:
             )
         ]
 
-    def forget(self, user_id: str) -> None:
+    def forget(self, user_id: str, compact: bool = True) -> None:
+        """Delete every record of the user. compact=False skips VACUUM, which rewrites the
+        whole database; the web service checkpoints in a background thread instead."""
         with self.db:
             for table in (
                 "profiles",
@@ -420,9 +422,10 @@ class Store:
                 "web_births",
             ):
                 self.db.execute(f"DELETE FROM {table} WHERE user_id=?", (user_id,))
-        # Clear SQLite free pages; do not promise forensic erasure of filesystem backups.
-        self.db.execute("PRAGMA wal_checkpoint(TRUNCATE)")
-        self.db.execute("VACUUM")
+        if compact:
+            # Clear SQLite free pages; do not promise forensic erasure of filesystem backups.
+            self.db.execute("PRAGMA wal_checkpoint(TRUNCATE)")
+            self.db.execute("VACUUM")
 
     def get_web_birth(self, user_id: str) -> tuple[dict, int] | None:
         """The browser's birth form and its revision, so a later login restores both."""
@@ -508,11 +511,12 @@ class Store:
                 )
                 if cursor.rowcount:
                     deleted.append(reading_id)
-        self.db.execute("PRAGMA wal_checkpoint(TRUNCATE)")
         return deleted
 
     def export_user(self, user_id: str) -> dict:
-        """Everything the user entered or was told, in one portable document."""
+        """A copy of the user's records: what they entered, what they were told and how it was
+        worked out. Calculation caches (recomputable from the birth form) and traces are not
+        included; this is a copy for the person, not a backup that can be imported."""
         saved = self.get_web_birth(user_id)
         history = self.db.execute(
             "SELECT version,profile_json,evidence,updated_at FROM profile_history "
@@ -537,6 +541,10 @@ class Store:
                     "calculations": reading["calculations_json"],
                     "birth_context": reading["birth_context_json"],
                     "kb_version": reading["kb_version"],
+                    "signals": reading["signals_json"],
+                    "merge": reading["merge_json"],
+                    "specialist_reports": self.specialist_reports(user_id, row[0]),
+                    "review_notes": self.review_notes(user_id, row[0]),
                     "responses": self.reading_responses(user_id, row[0]),
                 }
             )
@@ -614,7 +622,6 @@ class Store:
                 )
             for table in ("daily", "web_births", "web_identities"):
                 self.db.execute(f"DELETE FROM {table} WHERE user_id=?", (source,))
-        self.db.execute("PRAGMA wal_checkpoint(TRUNCATE)")
         return {"readings": len(moved), "adopted_birth": adopt}
 
     def close(self):
