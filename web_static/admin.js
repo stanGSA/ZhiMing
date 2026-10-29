@@ -161,12 +161,23 @@ function renderTiles() {
     ),
   );
   const budget = today.token_budget ? ` / ${number(today.token_budget)}` : "（未设上限）";
+  const refused = today.budget_refused_at
+    ? `${when(today.budget_refused_at)} 起已拒绝新的模型调用；`
+    : "";
   tiles.append(
     tile(
       "今日用量",
       `${number(today.tokens)}${budget}`,
-      `调用 ${number(today.calls)} 次，进行中 ${today.pending}；${when(today.resets_at)} 重置`,
-      today.budget_percent === null ? null : today.budget_percent >= 100 ? "critical" : today.budget_percent >= 80 ? "warning" : "ok",
+      `${refused}调用 ${number(today.calls)} 次，进行中 ${today.pending}；${when(today.resets_at)} 重置`,
+      today.budget_refused_at
+        ? "critical"
+        : today.budget_percent === null
+          ? null
+          : today.budget_percent >= 100
+            ? "critical"
+            : today.budget_percent >= 80
+              ? "warning"
+              : "ok",
       today.budget_percent,
     ),
   );
@@ -277,7 +288,7 @@ function renderUsage() {
     const bar = node("div", hour.errors ? "adm-bar adm-bar-errors" : "adm-bar");
     bar.style.height = `${hour.tokens ? Math.max(2, (100 * hour.tokens) / peak) : 0}%`;
     column.tabIndex = 0;
-    const text = `${hourLabel(hour.start)} 时：${number(hour.tokens)} token，调用 ${hour.calls} 次${hour.errors ? `，失败 ${hour.errors} 次` : ""}`;
+    const text = `${hourLabel(hour.start)}：${number(hour.tokens)} token，调用 ${hour.calls} 次${hour.errors ? `，失败 ${hour.errors} 次` : ""}`;
     column.setAttribute("aria-label", text);
     const show = () => {
       tooltip.textContent = text;

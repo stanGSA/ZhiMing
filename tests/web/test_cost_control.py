@@ -16,7 +16,7 @@ from harness.metering import (
     SitePaused,
 )
 from harness.models import ModelResponse
-from memory.accounts import FREE_TOKENS, AccountStore
+from memory.accounts import FREE_TOKENS, AccountStore, hash_password
 from web import create_web_app
 
 HEADERS = {"Origin": "https://testserver", "X-Zhiming-Client": "web"}
@@ -261,13 +261,30 @@ async def test_paused_site_turns_chat_into_a_retryable_refusal(project):
         store.close()
 
 
+async def login(browser, name):
+    response = await browser.post(
+        "/api/account/login", json={"username": name, "password": "test-pass123"}
+    )
+    assert response.status_code == 200
+    return response
+
+
+def admin_account(project, name="管理员甲"):
+    store = store_for(project)
+    try:
+        return store.create(name, hash_password("test-pass123"))["user_id"]
+    finally:
+        store.close()
+
+
 async def test_admin_console_is_hidden_from_everyone_but_named_admins(project, tmp_path):
     status = tmp_path / "monitor-status.json"
     status.write_text('{"generated_at": 1, "checks": []}', encoding="utf-8")
+    admin_id = admin_account(project)
     app = create_web_app(
         root=project,
         public_origin="https://testserver",
-        admin_users="管理员甲, ",
+        admin_ids=f"{admin_id}, ",
         monitor_token=TOKEN,
         monitor_status=status,
     )
@@ -299,7 +316,7 @@ async def test_admin_console_is_hidden_from_everyone_but_named_admins(project, t
         assert (await user.get("/api/admin/overview")).status_code == 404
         assert (await user.post("/api/admin/models/pause", json={})).status_code == 404
 
-        await register(admin, "管理员甲")
+        await login(admin, "管理员甲")
         page = await admin.get("/admin")
         assert page.status_code == 200 and "admin.js" in page.text
         overview = (await admin.get("/api/admin/overview")).json()
@@ -365,3 +382,71 @@ async def test_admin_console_is_hidden_from_everyone_but_named_admins(project, t
 def test_admin_and_monitor_settings_are_checked_at_startup(project):
     with pytest.raises(ValueError, match="监控令牌"):
         create_web_app(root=project, monitor_token="short")
+    # Names are refused: a deleted administrator's name can be registered again by anyone.
+    with pytest.raises(ValueError, match="账号 ID"):
+        create_web_app(root=project, admin_ids="管理员甲")
+
+
+async def test_a_deleted_admins_name_registered_again_gains_no_rights(project):
+    admin_id = admin_account(project, "站长")
+    app = create_web_app(root=project, public_origin="https://testserver", admin_ids=[admin_id])
+    async with (
+        app.router.lifespan_context(app),
+        client(app) as original,
+        client(app, "198.51.100.20") as newcomer,
+    ):
+        await login(original, "站长")
+        assert (await original.get("/api/admin/overview")).status_code == 200
+        deleted = await original.post("/api/account/delete", json={"password": "test-pass123"})
+        assert deleted.status_code == 200
+        await register(newcomer, "站长")
+        assert (await newcomer.get("/admin")).status_code == 404
+        assert (await newcomer.get("/api/admin/overview")).status_code == 404
+        assert (await newcomer.post("/api/admin/models/pause", json={})).status_code == 404
+    # After a restart the stale id still matches nobody, and the lookup finds the new account.
+    restarted = create_web_app(
+        root=project, public_origin="https://testserver", admin_ids=[admin_id]
+    )
+    async with restarted.router.lifespan_context(restarted), client(restarted) as newcomer:
+        await login(newcomer, "站长")
+        assert (await newcomer.get("/api/admin/overview")).status_code == 404
+    from ops.admin import main as admin_cli
+    from ops.admin import resolve_admins
+
+    new_id = resolve_admins(project / "data/app.db", ["站长"])
+    assert new_id != [admin_id] and len(new_id) == 1
+    assert admin_cli(["resolve", "--db", str(project / "data/app.db"), "无此人"]) == 1
+
+
+async def test_budget_refusal_below_100_percent_is_reported_until_raised_or_midnight(
+    project, monkeypatch
+):
+    from ops.admin import site_snapshot
+
+    now = [1_800_000_000.0]
+    monkeypatch.setattr("memory.accounts.time.time", lambda: now[0])
+    monkeypatch.setattr("memory.costs.time.time", lambda: now[0])
+    store = store_for(project, daily_token_budget=10_000)
+    user = store.create("将尽", "hash")["user_id"]
+    call, _ = store.reserve_tokens(user, 1000, 8192)
+    store.settle_tokens(call, 8000, 900)
+    gate = ConcurrencyGate(lambda: 0)
+    assert site_snapshot(store, gate, now[0])["today"]["budget_refused_at"] is None
+    # 1,100 left cannot hold a 1,200-token input plus the minimum output: refused at 89%.
+    with pytest.raises(SiteBudgetExhausted):
+        store.reserve_tokens(user, 1200, 8192)
+    today = site_snapshot(store, gate, now[0])["today"]
+    assert today["budget_percent"] == 89.0 and today["budget_refused_at"] == now[0]
+    # Raising the budget clears it; a later refusal reports again.
+    now[0] += 60
+    store.costs.update({"daily_token_budget": 20_000}, "管理员")
+    assert site_snapshot(store, gate, now[0])["today"]["budget_refused_at"] is None
+    now[0] += 60
+    store.costs.update({"daily_token_budget": 9_000}, "管理员")
+    with pytest.raises(SiteBudgetExhausted):
+        store.reserve_tokens(user, 100, 512)
+    assert site_snapshot(store, gate, now[0])["today"]["budget_refused_at"] == now[0]
+    # The next day starts clean.
+    now[0] = store.costs.next_day(now[0]) + 1
+    assert site_snapshot(store, gate, now[0])["today"]["budget_refused_at"] is None
+    store.close()

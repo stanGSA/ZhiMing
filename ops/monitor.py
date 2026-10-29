@@ -3,10 +3,12 @@
 Checks the site (local and public health), the TLS certificate's expiry, disk space, the
 latest backup, systemd services and timers, clock sync, and, through the app's token-protected
 metrics endpoint, the model error rate, today's spend against the budget, auto-pauses and
-spend spikes. Problems are sent once when they start, again when they get worse, as a reminder
-every few hours while they last, and once when they recover.
+spend spikes, and whether those metrics can be collected at all. Problems are sent once when
+they start, again when they get worse, as a reminder every few hours while they last, and once
+when they recover; each channel is tracked separately and retried until it accepts the news.
 
-Usage (root, from /etc/zhiming/monitor.env through the systemd unit):
+Usage (root; settings come from /etc/zhiming/monitor.env, read by the systemd unit and by the
+script itself, so a manual run matches the timer's; ``--env`` names another file):
     python3 -I monitor.py               # one round: check, alert, write status.json
     python3 -I monitor.py --dry-run     # print the checks; no alerts, no state
     python3 -I monitor.py --test-alert  # send a test message through every channel
@@ -174,7 +176,7 @@ def check_disk(paths: list[str]) -> dict:
         worst = max(worst, level, key=RANK.get)
         parts.append(f"{path} 可用 {free_gb:.1f} GiB（{percent:.0f}%）")
     if not parts:
-        return check("disk", "磁盘空间", "unknown", "无法读取磁盘信息")
+        return check("disk", "磁盘空间", "critical", "无法读取任何磁盘信息，磁盘监控失效")
     return check("disk", "磁盘空间", worst, "；".join(parts))
 
 
@@ -190,7 +192,32 @@ def systemctl(*args: str) -> str | None:
     return result.stdout.strip()
 
 
-def check_backup(directory: str, now: float) -> dict:
+def verify_checksum(archive: str) -> str | None:
+    """Compare the archive with its ``.sha256`` file; returns a problem, or None if it matches."""
+    try:
+        with open(archive + ".sha256", encoding="ascii") as stream:
+            recorded = stream.read(4096).split()
+    except FileNotFoundError:
+        return "missing"
+    except (OSError, UnicodeDecodeError):
+        return "malformed"
+    if len(recorded) != 2 or recorded[1] != os.path.basename(archive):
+        return "malformed"
+    if len(recorded[0]) != 64 or any(c not in "0123456789abcdef" for c in recorded[0]):
+        return "malformed"
+    digest = hashlib.sha256()
+    with open(archive, "rb") as stream:
+        while block := stream.read(1024 * 1024):
+            digest.update(block)
+    return None if hmac.compare_digest(digest.hexdigest(), recorded[0]) else "mismatch"
+
+
+def check_backup(directory: str, now: float, state: dict | None = None) -> dict:
+    """The newest completed archive is recent, intact (its SHA256 recomputed) and non-trivial.
+
+    A hash is only recomputed when the archive changes; the result is cached in ``state``.
+    """
+    state = {} if state is None else state
     max_age = number("ZHIMING_MONITOR_BACKUP_MAX_AGE_H", 26)
     problems, level = [], "ok"
     result = systemctl("show", "zhiming-backup.service", "-p", "Result", "--value")
@@ -198,33 +225,59 @@ def check_backup(directory: str, now: float) -> dict:
         problems.append(f"zhiming-backup.service 最近一次结果为 {result}")
         level = "critical"
     if not os.access(directory, os.R_OK | os.X_OK):
-        return check(
-            "backup",
-            "备份",
-            "unknown" if level == "ok" else level,
-            "；".join(problems) or f"无法读取 {directory}（监控需以 root 运行）",
-        )
-    archives = [
-        p for p in glob.glob(os.path.join(directory, "zhiming-*.tar.gz")) if os.path.isfile(p)
-    ]
+        # Unreadable means the monitor itself is misconfigured: backups are no longer watched.
+        problems.append(f"无法读取 {directory}，备份监控失效（监控需以 root 运行）")
+        return check("backup", "备份", "critical", "；".join(problems))
+    archives = sorted(
+        (p for p in glob.glob(os.path.join(directory, "zhiming-*.tar.gz")) if os.path.isfile(p)),
+        key=os.path.getmtime,
+        reverse=True,
+    )
+    # The checksum is written right after the archive: a fresh archive without one is still
+    # being finished, so judge the previous completed archive instead.
+    if (
+        len(archives) > 1
+        and not os.path.exists(archives[0] + ".sha256")
+        and now - os.path.getmtime(archives[0]) < 900
+    ):
+        archives = archives[1:]
     if not archives:
-        return check(
-            "backup", "备份", "critical", "；".join([*problems, f"{directory} 中没有备份"])
-        )
-    latest = max(archives, key=os.path.getmtime)
-    age_h = (now - os.path.getmtime(latest)) / 3600
+        problems.append(f"{directory} 中没有备份")
+        return check("backup", "备份", "critical", "；".join(problems))
+    latest = archives[0]
+    stat = os.stat(latest)
+    age_h = (now - stat.st_mtime) / 3600
     if age_h > max_age:
         problems.append(f"最近备份已 {age_h:.0f} 小时（超过 {max_age:.0f} 小时）")
         level = "critical"
-    if not os.path.exists(latest + ".sha256"):
+    if stat.st_size < 1024:
+        problems.append("最近备份小于 1 KiB")
+        level = "critical"
+    identity = [latest, stat.st_size, stat.st_mtime]
+    cached = state.get("backup_verified")
+    if cached and cached.get("identity") == identity:
+        verdict = cached.get("verdict")
+    else:
+        try:
+            verdict = verify_checksum(latest)
+        except OSError:
+            verdict = "unreadable"
+        state["backup_verified"] = {"identity": identity, "verdict": verdict}
+    if verdict == "missing":
         problems.append("最近备份缺少 SHA256 校验文件")
         level = max(level, "warning", key=RANK.get)
-    if os.path.getsize(latest) < 1024:
-        problems.append("最近备份小于 1 KiB")
+    elif verdict is not None:
+        problems.append(
+            {
+                "malformed": "最近备份的 SHA256 校验文件格式错误",
+                "mismatch": "最近备份的 SHA256 与校验文件不一致，归档可能已损坏",
+                "unreadable": "最近备份无法读取",
+            }[verdict]
+        )
         level = "critical"
     summary = "；".join(problems) or (
         f"{os.path.basename(latest)}，{age_h:.1f} 小时前，"
-        f"{os.path.getsize(latest) / 1024**2:.1f} MiB，共 {len(archives)} 份"
+        f"{stat.st_size / 1024**2:.1f} MiB，SHA256 一致，共 {len(archives)} 份"
     )
     return check("backup", "备份", level, summary)
 
@@ -240,7 +293,9 @@ def check_services(state: dict) -> list[dict]:
         if t
     ]
     if systemctl("--version") is None:
-        return [check("services", "系统服务", "unknown", "无法调用 systemctl")]
+        return [
+            check("services", "系统服务", "critical", "无法调用 systemctl，服务与定时任务监控失效")
+        ]
     down = [s for s in services if systemctl("is-active", s) != "active"]
     checks = [
         check(
@@ -300,24 +355,54 @@ def check_clock() -> dict:
     return check("clock", "时间同步", "ok", "NTP 已同步")
 
 
-def check_app(base: str, token: str, now: float) -> list[dict]:
-    names = ("model_errors", "budget", "model_pause", "spend_spike", "suspensions")
-    labels = ("模型错误率", "今日预算", "模型暂停", "消耗突增", "账号自动暂停")
+APP_CHECKS = (
+    ("model_errors", "模型错误率"),
+    ("budget", "今日预算"),
+    ("model_pause", "模型暂停"),
+    ("spend_spike", "消耗突增"),
+    ("suspensions", "账号自动暂停"),
+)
+
+
+def check_app(base: str, token: str, now: float, state: dict | None = None) -> list[dict]:
+    """Model and spend checks from the app's metrics, plus one check that the collection itself
+    works: without it a wrong token or a broken endpoint would silence every check below."""
+    state = {} if state is None else state
     if not token:
-        return [
-            check(n, label, "unknown", "未配置 ZHIMING_MONITOR_TOKEN，无法读取应用指标")
-            for n, label in zip(names, labels, strict=True)
-        ]
-    try:
-        status, body, _ = fetch(base.rstrip("/") + "/api/ops/metrics", token=token)
-        data = json.loads(body) if status == 200 else None
-    except (OSError, ValueError):
-        data = None
-    if not isinstance(data, dict):
-        return [
-            check(n, label, "unknown", "无法读取应用指标（服务未运行或令牌不一致）")
-            for n, label in zip(names, labels, strict=True)
-        ]
+        problem = "未配置 ZHIMING_MONITOR_TOKEN"
+    else:
+        try:
+            status, body, _ = fetch(base.rstrip("/") + "/api/ops/metrics", token=token)
+            data = json.loads(body) if status == 200 else None
+            problem = None if isinstance(data, dict) else f"指标接口返回 {status}"
+            checks = app_checks(data, now) if problem is None else []
+        except (OSError, ValueError) as exc:
+            problem = f"无法访问指标接口：{type(exc).__name__}"
+        except (KeyError, TypeError, AttributeError):
+            problem = "指标数据格式无法识别（应用与监控版本可能不一致）"
+    if problem is None:
+        state.pop("metrics_failures", None)
+        return [check("app_metrics", "应用指标采集", "ok", "正常"), *checks]
+    failures = state.get("metrics_failures", 0) + 1
+    state["metrics_failures"] = failures
+    needed = int(number("ZHIMING_MONITOR_METRICS_FAILURES", 2))
+    # A missing token is a configuration error: no point waiting for a second round.
+    confirmed = not token or failures >= needed
+    collection = check(
+        "app_metrics",
+        "应用指标采集",
+        "critical" if confirmed else "unknown",
+        f"{problem}（连续 {failures} 次）；模型错误率、预算与异常消耗告警已失效"
+        if confirmed
+        else f"{problem}（第 {failures} 次，下一轮确认）",
+    )
+    return [
+        collection,
+        *(check(n, label, "unknown", "应用指标不可用") for n, label in APP_CHECKS),
+    ]
+
+
+def app_checks(data: dict, now: float) -> list[dict]:
     checks = []
     errors = data["errors"]
     rate, calls = errors["rate"], errors["calls"]
@@ -342,7 +427,21 @@ def check_app(base: str, token: str, now: float) -> list[dict]:
     percent = today["budget_percent"]
     warn = number("ZHIMING_MONITOR_BUDGET_WARN_PCT", 80)
     cost = f"，估算 {today['cost']:.2f} {today['currency']}" if today["priced"] else ""
-    if percent is None:
+    refused = today.get("budget_refused_at")
+    if refused:
+        # Refusals start before 100%: once the rest cannot hold one call's minimum reservation.
+        checks.append(
+            check(
+                "budget",
+                "今日预算",
+                "critical",
+                f"{beijing(refused)} 起已因全站每日预算拒绝模型调用，至次日零点恢复；"
+                f"今日 {today['tokens']:,} token{cost}"
+                + (f"（{percent:.0f}%）" if percent is not None else "")
+                + "；如需恢复服务请在管理页提高预算",
+            )
+        )
+    elif percent is None:
         checks.append(
             check("budget", "今日预算", "ok", f"今日 {today['tokens']:,} token{cost}（未设上限）")
         )
@@ -522,47 +621,59 @@ def deliver(title: str, text: str, level: str, checks: list[dict]) -> tuple[list
 
 
 # ---------- state and decisions ----------
+#
+# Two things are kept apart: what the checks see now (state["checks"]) and, per channel, what
+# that channel has been told (state["notified"][channel]). A message is owed whenever the two
+# differ in a way that matters; it is only acknowledged after that channel accepted it, so a
+# failed escalation, recovery or reminder is simply owed again next round, channel by channel.
+
+JOURNAL = "日志"
 
 
-def decide(checks: list[dict], state: dict, now: float) -> tuple[list[dict], list[dict]]:
-    """Returns (problems to announce, recoveries to announce) and updates ``state`` in place;
-    ``last_sent`` is only set by ``mark_sent`` once a message actually went out."""
-    repeat = number("ZHIMING_MONITOR_REPEAT_HOURS", 6) * 3600
-    known = state.setdefault("checks", {})
-    problems, recoveries = [], []
+def observe(checks: list[dict], state: dict, now: float) -> None:
+    """Record what is seen now and when each problem started. "Unknown" (e.g. metrics briefly
+    unreadable) is not a recovery: an open problem stays open until it is seen ok."""
+    seen = state.setdefault("checks", {})
     for item in checks:
-        name, level = item["name"], item["level"]
-        previous = known.get(name)
-        bad = RANK[level] > 0
+        previous = seen.get(item["name"])
         was_bad = previous is not None and RANK.get(previous["level"], 0) > 0
-        if bad:
-            if not was_bad:
-                item["since"] = now
-                problems.append({**item, "reason": "new"})
-            else:
-                item["since"] = previous.get("since", now)
-                if RANK[level] > RANK[previous["level"]]:
-                    problems.append({**item, "reason": "worse"})
-                elif previous.get("last_sent") is None or now - previous["last_sent"] >= repeat:
-                    problems.append({**item, "reason": "repeat"})
-            item["last_sent"] = previous.get("last_sent") if was_bad else None
+        if item["level"] == "unknown" and was_bad:
+            item["level"] = previous["level"]
+        if RANK[item["level"]] > 0:
+            item["since"] = previous.get("since") if was_bad and previous.get("since") else now
         else:
             item["since"] = None
-            if was_bad and level == "ok":
-                recoveries.append(item)
-            elif was_bad:
-                # Unknown is not a recovery: keep the problem open until it is seen ok.
-                item["level"], item["since"] = previous["level"], previous.get("since")
-                item["last_sent"] = previous.get("last_sent")
-        known[name] = {
+        seen[item["name"]] = {
             "level": item["level"],
-            "since": item.get("since"),
-            "last_sent": item.get("last_sent"),
+            "since": item["since"],
             "summary": item["summary"],
         }
-    for name in [n for n in known if n not in {c["name"] for c in checks}]:
-        known.pop(name)
+    for name in [n for n in seen if n not in {c["name"] for c in checks}]:
+        seen.pop(name)
+
+
+def owed(checks: list[dict], told: dict, now: float) -> tuple[list[dict], list[dict]]:
+    """What one channel still has to hear: (problems, recoveries)."""
+    repeat = number("ZHIMING_MONITOR_REPEAT_HOURS", 6) * 3600
+    problems, recoveries = [], []
+    for item in checks:
+        last = told.get(item["name"])
+        last_level = last["level"] if last else "ok"
+        if RANK[item["level"]] > 0:
+            if RANK[item["level"]] > RANK[last_level]:
+                problems.append({**item, "reason": "new" if last is None else "worse"})
+            elif now - last["at"] >= repeat:
+                problems.append({**item, "reason": "repeat"})
+        elif item["level"] == "ok" and last is not None:
+            recoveries.append(item)
     return problems, recoveries
+
+
+def acknowledge(told: dict, problems: list[dict], recoveries: list[dict], now: float) -> None:
+    for item in problems:
+        told[item["name"]] = {"level": item["level"], "at": now}
+    for item in recoveries:
+        told.pop(item["name"], None)
 
 
 def compose(problems: list[dict], recoveries: list[dict], host: str) -> tuple[str, str, str]:
@@ -588,11 +699,6 @@ def compose(problems: list[dict], recoveries: list[dict], host: str) -> tuple[st
     lines.append(f"主机 {host} · {beijing(time.time())}（北京时间）")
     level = "critical" if critical else "warning" if warning else "ok"
     return title, "\n".join(lines), level
-
-
-def mark_sent(problems: list[dict], state: dict, now: float) -> None:
-    for item in problems:
-        state["checks"][item["name"]]["last_sent"] = now
 
 
 def load_state(path: str) -> dict:
@@ -651,10 +757,12 @@ def server_checks(state: dict, now: float) -> list[dict]:
             ]
         )
     )
-    checks.append(check_backup(env("ZHIMING_MONITOR_BACKUP_DIR", "/var/backups/zhiming"), now))
+    checks.append(
+        check_backup(env("ZHIMING_MONITOR_BACKUP_DIR", "/var/backups/zhiming"), now, state)
+    )
     checks.extend(check_services(state))
     checks.append(check_clock())
-    checks.extend(check_app(local, env("ZHIMING_MONITOR_TOKEN"), now))
+    checks.extend(check_app(local, env("ZHIMING_MONITOR_TOKEN"), now, state))
     return checks
 
 
@@ -669,33 +777,55 @@ def external_checks(base: str, now: float) -> list[dict]:
 def run(
     checks: list[dict], state: dict, state_path: str | None, status_path: str | None, now: float
 ) -> int:
-    problems, recoveries = decide(checks, state, now)
+    observe(checks, state, now)
     host = env("ZHIMING_MONITOR_HOST") or socket.gethostname()
+    targets = channels()
+    if not targets:
+        # Without any channel the journal is the only record; it is told like a channel, so a
+        # problem is logged when it starts, worsens, is due a reminder and recovers.
+        targets = {JOURNAL: lambda title, text, level, items: None}
+    notified = state.setdefault("notified", {})
     delivery = state.setdefault("delivery", {})
-    if problems or recoveries:
+    names = {c["name"] for c in checks}
+    for channel, send in targets.items():
+        told = notified.setdefault(channel, {})
+        for name in [n for n in told if n not in names]:
+            told.pop(name)
+        problems, recoveries = owed(checks, told, now)
+        if not problems and not recoveries:
+            continue
         title, text, level = compose(problems, recoveries, host)
-        print(title + "\n" + text)
-        succeeded, failed = deliver(title, text, level, checks)
-        if succeeded or not channels():
-            # Without any channel the journal is the only record: do not repeat it every round.
-            mark_sent(problems, state, now)
-            delivery["last_ok"] = now
-        if failed:
-            delivery["last_error"] = "；".join(failed)
-            delivery["last_error_at"] = now
-        elif succeeded:
-            delivery.pop("last_error", None)
+        print(f"[{channel}] {title}\n{text}")
+        try:
+            send(title, text, level, checks)
+        except Exception as exc:
+            # Exception text can echo URLs with keys: report only the type. Not acknowledged,
+            # so the same news is owed to this channel next round.
+            print(f"alert channel {channel} failed: {type(exc).__name__}", file=sys.stderr)
+            delivery.setdefault(channel, {}).update(
+                last_error=type(exc).__name__, last_error_at=now
+            )
+            continue
+        acknowledge(told, problems, recoveries, now)
+        delivery[channel] = {"last_ok": now}
+    for channel in [c for c in notified if c not in targets]:
+        notified.pop(channel)
+        delivery.pop(channel, None)
     state["last_run"] = now
     if state_path:
         write_json(state_path, state, 0o600)
     if status_path:
+        failing = [f"{c}：{d['last_error']}" for c, d in delivery.items() if d.get("last_error")]
         write_json(
             status_path,
             {
                 "generated_at": now,
                 "host": host,
                 "channels": list(channels()),
-                "delivery": {k: v for k, v in delivery.items()},
+                "delivery": {
+                    "last_error": "；".join(failing) or None,
+                    "channels": delivery,
+                },
                 "checks": [
                     {k: c.get(k) for k in ("name", "label", "level", "summary", "since")}
                     for c in checks
@@ -703,8 +833,33 @@ def run(
             },
             0o644,
         )
-    worst = max((RANK[c["level"]] for c in checks), default=0)
-    return worst
+    return max((RANK[c["level"]] for c in checks), default=0)
+
+
+DEFAULT_ENV = "/etc/zhiming/monitor.env"
+
+
+def load_env(path: str, required: bool = False) -> None:
+    """Read KEY=VALUE lines (as systemd's EnvironmentFile does) without overriding variables
+    already set, so a manual run behaves like the timer's run."""
+    try:
+        with open(path, encoding="utf-8") as stream:
+            lines = stream.read().splitlines()
+    except FileNotFoundError:
+        if required:
+            raise SystemExit(f"找不到环境文件 {path}") from None
+        return
+    except PermissionError:
+        raise SystemExit(f"无法读取 {path}，请以 root 运行") from None
+    for line in lines:
+        line = line.strip()
+        if not line or line.startswith("#") or "=" not in line:
+            continue
+        key, value = (part.strip() for part in line.split("=", 1))
+        if len(value) >= 2 and value[0] == value[-1] and value[0] in "\"'":
+            value = value[1:-1]
+        if key.isidentifier():
+            os.environ.setdefault(key, value)
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -713,7 +868,12 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--test-alert", action="store_true", help="通过所有渠道发送一条测试消息")
     parser.add_argument("--external", metavar="URL", help="从服务器之外探测公网地址（无状态）")
     parser.add_argument("--state", help="状态文件；--external 时可选，用于去重")
+    parser.add_argument(
+        "--env",
+        help=f"告警渠道与阈值的环境文件（默认存在时读取 {DEFAULT_ENV}；已设置的变量优先）",
+    )
     args = parser.parse_args(argv)
+    load_env(args.env or DEFAULT_ENV, required=bool(args.env))
     now = time.time()
     if args.test_alert:
         if not channels():

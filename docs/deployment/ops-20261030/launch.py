@@ -1,5 +1,5 @@
 """Deployment launcher: bound graceful shutdown, single worker, optional exact HTTPS origin,
-the admin console's account names and the monitor token (all from /etc/zhiming/runtime.env)."""
+the admin console's account ids and the monitor token (all from /etc/zhiming/runtime.env)."""
 import os
 import sys
 from pathlib import Path
@@ -12,7 +12,7 @@ origin = os.environ.get('ZHIMING_PUBLIC_ORIGIN')
 uvicorn.run(
     create_web_app(
         public_origin=origin,
-        admin_users=os.environ.get('ZHIMING_ADMIN_USERS') or None,
+        admin_ids=os.environ.get('ZHIMING_ADMIN_IDS') or None,
         monitor_token=os.environ.get('ZHIMING_MONITOR_TOKEN') or None,
         monitor_status=Path('/var/lib/zhiming-monitor/status.json'),
         release_file=Path('/etc/zhiming/release.json'),

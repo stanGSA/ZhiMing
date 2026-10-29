@@ -1,18 +1,23 @@
 """Admin console API, health check and the monitor's metrics endpoint.
 
-Only accounts named in ``ZHIMING_ADMIN_USERS`` see the console; everyone else gets 404. The
-monitor reads ``/api/ops/metrics`` from the same host with a bearer token; it never needs a
-browser session.
+Only the account ids listed in ``ZHIMING_ADMIN_IDS`` see the console; everyone else gets 404.
+Rights follow the id, never the name: account names become free again when an account is
+deleted, ids are random and never reused. The monitor reads ``/api/ops/metrics`` from the
+same host with a bearer token; it never needs a browser session.
 State-changing requests pass the web app's Origin and client-header checks like any other.
 """
 
 from __future__ import annotations
 
+import argparse
 import hmac
 import json
 import os
 import platform
+import re
 import shutil
+import sqlite3
+import sys
 import time
 from collections.abc import Awaitable, Callable
 from dataclasses import dataclass
@@ -27,6 +32,7 @@ from memory.accounts import AccountStore, username_key
 from memory.costs import SettingsError
 
 STATIC = Path(__file__).resolve().parent.parent / "web_static"
+ACCOUNT_ID = re.compile(r"acct-[0-9a-f]{32}")
 # Error rate and spend windows reported to the monitor.
 ERROR_WINDOW = 30 * 60
 HOUR = 3600
@@ -56,6 +62,36 @@ class AdminContext:
     release_file: Path | None
     data_dir: Path
     stats: Callable[[], dict]
+
+
+def parse_admin_ids(value: str | list[str] | None) -> frozenset[str]:
+    items = value.split(",") if isinstance(value, str) else list(value or ())
+    ids = frozenset(item.strip() for item in items if item.strip())
+    invalid = [item for item in ids if not ACCOUNT_ID.fullmatch(item)]
+    if invalid:
+        # Names are refused outright: after a deletion a name can belong to someone else.
+        raise ValueError(
+            "管理员必须以账号 ID（acct-…）指定，不接受账号名；"
+            "用 python -m ops.admin resolve 账号名 查询"
+        )
+    return ids
+
+
+def resolve_admins(db_path: Path, names: list[str]) -> list[str]:
+    """Account ids for account names, read-only. Raises LookupError for a name not registered."""
+    db = sqlite3.connect(Path(db_path).resolve().as_uri() + "?mode=ro", uri=True)
+    try:
+        ids = []
+        for name in names:
+            row = db.execute(
+                "SELECT user_id FROM accounts WHERE username_key=?", (username_key(name),)
+            ).fetchone()
+            if row is None:
+                raise LookupError(name)
+            ids.append(row[0])
+        return ids
+    finally:
+        db.close()
 
 
 def not_found():
@@ -94,6 +130,7 @@ def site_snapshot(store: AccountStore, gate: ConcurrencyGate, now: float) -> dic
             "currency": settings["currency"],
             "priced": priced,
             "budget_percent": round(max(percents), 1) if percents else None,
+            "budget_refused_at": costs.budget_refused_since(now),
         },
         "errors": {
             "window_s": ERROR_WINDOW,
@@ -127,7 +164,8 @@ def install(app: FastAPI, ctx: AdminContext) -> None:
     def admin_of(request: Request) -> str:
         session = ctx.current(request)
         account = getattr(session, "account", None)
-        if not account or username_key(account["username"]) not in ctx.admins:
+        user_id = getattr(session, "user_id", None)
+        if not account or user_id not in ctx.admins or ctx.accounts().get(user_id) is None:
             raise not_found()
         return account["username"]
 
@@ -280,3 +318,25 @@ def install(app: FastAPI, ctx: AdminContext) -> None:
         ended = ctx.accounts().revoke_all(user_id, admin)
         await ctx.drop_logins(user_id, ended)
         return {"ended": len(ended)}
+
+
+def main(argv: list[str] | None = None) -> int:
+    parser = argparse.ArgumentParser(description="知命管理员账号 ID 查询")
+    commands = parser.add_subparsers(dest="command", required=True)
+    resolve = commands.add_parser("resolve", help="按账号名查询账号 ID，输出逗号分隔的 ID")
+    resolve.add_argument("names", nargs="+", help="已注册的管理员账号名")
+    resolve.add_argument("--db", type=Path, default=Path("data/app.db"), help="业务库路径")
+    args = parser.parse_args(argv)
+    try:
+        print(",".join(resolve_admins(args.db, args.names)))
+    except LookupError as exc:
+        print(f"账号不存在：{exc.args[0]}（请先在网站注册）", file=sys.stderr)
+        return 1
+    except sqlite3.Error as exc:
+        print(f"无法读取业务库：{type(exc).__name__}", file=sys.stderr)
+        return 2
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())

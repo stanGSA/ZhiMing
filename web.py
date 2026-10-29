@@ -56,7 +56,7 @@ from memory.accounts import (
     verify_password,
 )
 from memory.store import Store
-from ops.admin import AdminContext
+from ops.admin import AdminContext, parse_admin_ids
 from ops.admin import install as install_admin
 from plugins.astro.calculator import natal_chart
 from plugins.bazi.calculator import GAN, GAN_WX, WX, compute_bazi, ten_god
@@ -528,21 +528,21 @@ def create_web_app(
     *,
     public_origin: str | None = None,
     share_password: str | None = None,
-    admin_users: str | list[str] | None = None,
+    admin_ids: str | list[str] | None = None,
     monitor_token: str | None = None,
     monitor_status: Path | None = None,
     release_file: Path | None = None,
 ) -> FastAPI:
     """Keep local access as the default; public HTTPS may use an optional sharing password.
 
-    ``admin_users`` names the accounts that may open /admin (comma-separated or a list);
+    ``admin_ids`` lists the account ids (``acct-…``, comma-separated or a list) that may open
+    /admin. Ids, unlike names, are never reused: a deleted administrator's name registered
+    again by someone else gains nothing. ``python -m ops.admin resolve`` looks ids up by name;
     ``monitor_token`` (at least 32 characters) enables /api/ops/metrics for the server monitor.
     """
     if monitor_token is not None and len(monitor_token) < 32:
         raise ValueError("监控令牌至少 32 个字符")
-    if isinstance(admin_users, str):
-        admin_users = admin_users.split(",")
-    admins = frozenset(username_key(name) for name in admin_users or () if name.strip())
+    admins = parse_admin_ids(admin_ids)
     if share_password is not None:
         if public_origin is None:
             raise ValueError("配置访问口令时必须同时配置 HTTPS 地址")
@@ -699,6 +699,10 @@ def create_web_app(
     @asynccontextmanager
     async def lifespan(_app):
         await purge_expired(adopt=True)
+        missing = sorted(i for i in admins if accounts().get(i) is None)
+        if missing:
+            # A deleted administrator stays without rights: ids are never handed out again.
+            logger.warning("Administrator ids without an account: %s", ", ".join(missing))
         cleanup = asyncio.create_task(reap())
         yield
         cleanup.cancel()
@@ -2347,9 +2351,10 @@ if __name__ == "__main__":
     parser.add_argument("--public-origin", help="公开访问的 HTTPS 地址（不含路径）")
     parser.add_argument("--share-password-file", type=Path, help="可选的本地访问口令文件")
     parser.add_argument(
-        "--admin-users",
-        default=os.environ.get("ZHIMING_ADMIN_USERS"),
-        help="可打开 /admin 管理页的账号名，逗号分隔（默认读取 ZHIMING_ADMIN_USERS）",
+        "--admin-ids",
+        default=os.environ.get("ZHIMING_ADMIN_IDS"),
+        help="可打开 /admin 管理页的账号 ID（acct-…），逗号分隔（默认读取 ZHIMING_ADMIN_IDS）；"
+        "用 python -m ops.admin resolve 账号名 查询",
     )
     args = parser.parse_args()
     password = (
@@ -2361,7 +2366,7 @@ if __name__ == "__main__":
         create_web_app(
             public_origin=args.public_origin,
             share_password=password,
-            admin_users=args.admin_users,
+            admin_ids=args.admin_ids,
             monitor_token=os.environ.get("ZHIMING_MONITOR_TOKEN") or None,
         ),
         host="127.0.0.1",
