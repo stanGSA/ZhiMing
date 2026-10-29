@@ -574,6 +574,7 @@ def create_web_app(
             store = Store(root / config["paths"]["app_db"])
             try:
                 now = time.time()
+                discard_trace_copies(store)
                 if adopt:
                     # Pre-lease records exist only before the first start of this version.
                     store.adopt_web_identities(now + MAX_IDLE)
@@ -1635,14 +1636,10 @@ def create_web_app(
         so it cannot fail half-way for want of a model configuration."""
         scrub_traces(root_session.user_id, reading_ids)
         for context in family(root_session):
-            target = context.runtime.session
-            if context.reading and context.reading["reading_id"] in reading_ids:
-                context.reading = None
-            if (
-                target.state.get("active_reading_id") in reading_ids
-                or target.pinned_reading_id in reading_ids
-            ):
-                # The conversation was about a deleted record: follow-ups would fail.
+            if reading_ids:
+                # Earlier rounds survive in messages even when the active reading changes.
+                # Without per-message provenance, reset every loaded conversation rather
+                # than sending deleted questions or answers to the model again.
                 clear_conversation(context)
             refresh_memory(context)
 
@@ -1771,8 +1768,8 @@ def create_web_app(
             return False
 
     def hand_over(guest, user_id, keep):
-        """Move or delete the guest's records, all or nothing: on failure it raises and the
-        guest is left exactly as it was. The caller releases the guest afterwards."""
+        """Import guest records without moving the originals before commit. Failed imports
+        keep their originals and durably queue any unremovable copies for cleanup."""
         if guest is None:
             return {"readings": 0, "adopted_birth": False}
         if not keep:
@@ -1784,19 +1781,21 @@ def create_web_app(
             checkpoint_later()
             return {"readings": 0, "adopted_birth": False}
         try:
-            traces = move_traces(guest.user_id, user_id)
+            copies = copy_traces(guest.runtime.store, guest.user_id, user_id)
         except OSError as exc:
             raise HTTPException(
                 503,
                 {
                     "code": "records_not_moved",
-                    "message": "访客记录暂时无法转入账号，没有做任何改动，请稍后重试。",
+                    "message": "访客记录暂时无法转入账号，原记录已保留；临时副本将自动清理，请稍后重试。",
                 },
             ) from exc
         try:
-            moved = guest.runtime.store.merge_user(guest.user_id, user_id, same_birth)
+            moved = guest.runtime.store.merge_user(
+                guest.user_id, user_id, same_birth, trace_copies=copies
+            )
         except Exception:
-            return_traces(traces)
+            discard_trace_copies(guest.runtime.store, guest.user_id, user_id)
             raise
         if not remove_trace_dir(guest.user_id):
             # Something is left in the guest's trace directory: an expired lease makes the
@@ -1826,32 +1825,46 @@ def create_web_app(
             raise OSError("trace directory outside the trace root")
         return old, new
 
-    def move_traces(source, target):
-        """Move every trace file or none: on failure the moved ones go back, then it raises."""
+    def copy_traces(store, source, target):
+        """Keep originals until the database commits. Journal copies before touching files,
+        so even a failed rollback or a process crash has a durable cleanup path."""
         old, new = trace_dirs(source, target)
         if not old.is_dir():
             return []
-        moved = []
+        copies = []
+        for path in sorted(old.glob("*.jsonl")):
+            # Never reuse another attempt's destination, even when its cleanup is pending.
+            destination = new / f"{path.stem}-{secrets.token_hex(16)}.jsonl"
+            copies.append((path, destination))
+        store.stage_trace_copies(source, target, [destination.name for _, destination in copies])
         try:
             new.mkdir(parents=True, exist_ok=True)
-            for path in sorted(old.glob("*.jsonl")):
-                destination = new / path.name
-                if destination.exists():
-                    destination = new / f"{path.stem}-{secrets.token_hex(3)}.jsonl"
-                path.replace(destination)
-                moved.append((path, destination))
+            for path, destination in copies:
+                shutil.copyfile(path, destination)
         except OSError:
-            return_traces(moved)
+            discard_trace_copies(store, source, target)
             raise
-        return moved
+        return [destination.name for _, destination in copies]
 
-    def return_traces(moved):
-        for source, destination in reversed(moved):
+    def discard_trace_copies(store, source=None, target=None):
+        """Retry uncommitted imports at startup and during ordinary cleanup. Queue entries
+        survive failed unlink calls and deletion of either identity's business records."""
+        for copy in store.pending_trace_copies():
+            if source is not None and copy["source_user_id"] != source:
+                continue
+            if target is not None and copy["target_user_id"] != target:
+                continue
             try:
-                destination.replace(source)
+                _, directory = trace_dirs(copy["source_user_id"], copy["target_user_id"])
+                filename = copy["filename"]
+                destination = (directory / filename).resolve()
+                if Path(filename).name != filename or destination.parent != directory:
+                    raise OSError("invalid trace copy path")
+                destination.unlink(missing_ok=True)
             except OSError:
-                # Left in the account's directory, which account deletion removes.
-                logger.exception("Could not return a guest trace file")
+                logger.exception("Could not remove an uncommitted trace copy; cleanup will retry")
+            else:
+                store.clear_trace_copy(copy["target_user_id"], filename)
 
     def remove_trace_dir(user_id):
         old, _ = trace_dirs(user_id, user_id)

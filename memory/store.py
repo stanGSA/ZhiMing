@@ -51,6 +51,9 @@ class Store:
         CREATE TABLE IF NOT EXISTS web_identities(user_id TEXT PRIMARY KEY,expires_at REAL NOT NULL);
         CREATE TABLE IF NOT EXISTS web_births(user_id TEXT PRIMARY KEY,birth_json TEXT NOT NULL,
           version INTEGER NOT NULL,updated_at TEXT NOT NULL);
+        CREATE TABLE IF NOT EXISTS pending_trace_copies(source_user_id TEXT NOT NULL,
+          target_user_id TEXT NOT NULL,filename TEXT NOT NULL,
+          PRIMARY KEY(target_user_id,filename));
         PRAGMA user_version=2;
         """)
         columns = {row[1] for row in self.db.execute("PRAGMA table_info(readings)")}
@@ -563,7 +566,27 @@ class Store:
             "readings": readings,
         }
 
-    def merge_user(self, source: str, target: str, same_birth) -> dict:
+    def stage_trace_copies(self, source: str, target: str, filenames: list[str]) -> None:
+        """Journal destination files before copying; account removal must not erase this queue."""
+        with self.db:
+            self.db.executemany(
+                "INSERT INTO pending_trace_copies VALUES(?,?,?)",
+                [(source, target, filename) for filename in filenames],
+            )
+
+    def pending_trace_copies(self) -> list[dict]:
+        return [dict(row) for row in self.db.execute("SELECT * FROM pending_trace_copies")]
+
+    def clear_trace_copy(self, target: str, filename: str) -> None:
+        with self.db:
+            self.db.execute(
+                "DELETE FROM pending_trace_copies WHERE target_user_id=? AND filename=?",
+                (target, filename),
+            )
+
+    def merge_user(
+        self, source: str, target: str, same_birth, trace_copies: list[str] | None = None
+    ) -> dict:
         """Move a browser guest's records to an account, in one transaction.
 
         Readings, follow-ups and calculation caches move. The account's own profile and birth
@@ -622,6 +645,15 @@ class Store:
                 )
             for table in ("daily", "web_births", "web_identities"):
                 self.db.execute(f"DELETE FROM {table} WHERE user_id=?", (source,))
+            # A committed import owns its copies. A failed transaction leaves the cleanup
+            # intent intact, including across process restarts and account deletion.
+            # A retry may leave locked copies from a previous attempt at the same account.
+            # Only this import's files become owned; older failed copies must stay queued.
+            self.db.executemany(
+                "DELETE FROM pending_trace_copies WHERE source_user_id=? "
+                "AND target_user_id=? AND filename=?",
+                [(source, target, filename) for filename in trace_copies or []],
+            )
         return {"readings": len(moved), "adopted_birth": adopt}
 
     def close(self):

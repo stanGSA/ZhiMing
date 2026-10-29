@@ -249,3 +249,39 @@ async def test_deleting_a_shared_record_clears_every_conversation_in_one_step(pr
         broken.clear()
         again = await client.post("/api/chat", json={"message": "抽一张牌", "system": "tarot"})
         assert again.json()["messages"][-1]["status"] == "submit_reading"
+
+
+async def test_deleting_an_earlier_reading_stops_resending_its_input(browser):
+    client, _, runtimes = browser
+    await client.get("/api/session")
+    private_question = "PRIVATE_DELETED_INPUT_762：抽一张牌看工作"
+    first = (await client.post("/api/chat", json={"message": private_question})).json()
+    deleted_id = first["reading"]["reading_id"]
+    second = (await client.post("/api/chat", json={"message": "重新抽一张牌看另一个问题"})).json()
+    kept_id = second["reading"]["reading_id"]
+    assert kept_id != deleted_id
+    # A different feature also holds a system memory note about the old reading.
+    await client.get("/api/session?system=tarot")
+    assert (await client.delete(f"/api/readings/{deleted_id}")).status_code == 200
+    assert (await client.get(f"/api/readings/{deleted_id}")).status_code == 404
+    assert (await client.get(f"/api/readings/{kept_id}")).status_code == 200
+    for system in ("auto", "tarot"):
+        state = (await client.get(f"/api/session?system={system}")).json()
+        assert state["messages"] == []
+    for runtime in runtimes:
+        assert private_question not in json.dumps(runtime.session.messages, ensure_ascii=False)
+        assert private_question not in runtime.session.user_messages
+
+    # Capture the actual next model request, including the normal history compaction path.
+    seen = []
+    runtime = runtimes[0]
+    real_chat = runtime.model.chat
+
+    async def capture(messages, tools):
+        seen.append(json.dumps(messages, ensure_ascii=False))
+        return await real_chat(messages, tools)
+
+    runtime.model.chat = capture
+    again = await client.post("/api/chat", json={"message": "抽一张牌看新问题"})
+    assert again.json()["messages"][-1]["status"] == "submit_reading"
+    assert seen and not any(private_question in packet for packet in seen)

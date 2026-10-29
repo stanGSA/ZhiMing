@@ -354,25 +354,25 @@ def account_count(project):
         accounts.close()
 
 
-async def test_a_failed_trace_move_changes_nothing(site, project, monkeypatch):
+async def test_a_failed_trace_copy_keeps_the_originals(site, project, monkeypatch):
     client, _, runtimes = site
     reading_id, guest_id, traces = await guest_with_two_trace_files(client, runtimes)
     before = sorted(path.name for path in traces.glob("*.jsonl"))
-    real_replace, moves = Path.replace, []
+    real_copy, copies = shutil.copyfile, []
 
-    def second_move_fails(self, target):
-        if self.suffix == ".jsonl" and self.parent == traces:
-            moves.append(self)
-            if len(moves) == 2:
+    def second_copy_fails(source, target):
+        if Path(source).suffix == ".jsonl" and Path(source).parent == traces:
+            copies.append(source)
+            if len(copies) == 2:
                 raise PermissionError("file in use")
-        return real_replace(self, target)
+        return real_copy(source, target)
 
-    monkeypatch.setattr(Path, "replace", second_move_fails)
+    monkeypatch.setattr(shutil, "copyfile", second_copy_fails)
     refused = await register(client, keep=True)
-    monkeypatch.setattr(Path, "replace", real_replace)
+    monkeypatch.setattr(shutil, "copyfile", real_copy)
     assert refused.status_code == 503
     assert refused.json()["detail"]["code"] == "records_not_moved"
-    # The first file came back, the account was not kept and the guest carries on.
+    # No original was moved, the account was not kept and the guest carries on.
     assert sorted(path.name for path in traces.glob("*.jsonl")) == before
     assert account_count(project) == 0
     state = (await client.get("/api/session")).json()
@@ -400,7 +400,7 @@ async def test_a_failed_merge_removes_the_new_account(site, project, monkeypatch
     monkeypatch.undo()
     assert failed.status_code == 500
     assert account_count(project) == 0
-    assert len(list(traces.glob("*.jsonl"))) == 2  # moved back
+    assert len(list(traces.glob("*.jsonl"))) == 2  # originals never moved
     assert (await client.get("/api/session")).json()["history_total"] == 2
     retried = await register(client, keep=True)
     assert retried.status_code == 201 and retried.json()["moved_readings"] == 2
@@ -440,7 +440,7 @@ async def test_a_leftover_guest_trace_directory_is_cleaned_later(site, project, 
 
     monkeypatch.setattr("web.shutil.rmtree", busy)
     assert (await register(client, keep=True)).status_code == 201
-    assert traces.exists() and not list(traces.glob("*.jsonl"))
+    assert len(list(traces.glob("*.jsonl"))) == 2  # copied, then retried by guest cleanup
     monkeypatch.undo()
     store = database(project)
     try:
@@ -450,6 +450,135 @@ async def test_a_leftover_guest_trace_directory_is_cleaned_later(site, project, 
         store.close()
     await client.get("/api/locations")
     assert not traces.exists()
+
+
+@pytest.mark.parametrize("failure", ["copy", "database"])
+@pytest.mark.parametrize("restart", [False, True])
+async def test_failed_import_cleanup_survives_account_rollback(
+    site, project, monkeypatch, failure, restart
+):
+    client, _, runtimes = site
+    reading_id, guest_id, traces = await guest_with_two_trace_files(client, runtimes)
+    originals = {path.name: path.read_bytes() for path in traces.glob("*.jsonl")}
+    real_copy, real_unlink = shutil.copyfile, Path.unlink
+    destinations = []
+
+    def copy_file(source, target):
+        if Path(source).parent == traces:
+            destinations.append(Path(target))
+            if failure == "copy" and len(destinations) == 2:
+                # A failed copy may already have created a partial destination file.
+                Path(target).write_bytes(b"partial trace")
+                raise PermissionError("copy interrupted")
+        return real_copy(source, target)
+
+    def unlink_file(self, *args, **kwargs):
+        if self in destinations:
+            raise PermissionError("temporary copy in use")
+        return real_unlink(self, *args, **kwargs)
+
+    def merge_failed(*args, **kwargs):
+        raise sqlite3.OperationalError("database is locked")
+
+    monkeypatch.setattr(shutil, "copyfile", copy_file)
+    monkeypatch.setattr(Path, "unlink", unlink_file)
+    if failure == "database":
+        monkeypatch.setattr(Store, "merge_user", merge_failed)
+    response = await register(client, keep=True)
+    assert response.status_code == (503 if failure == "copy" else 500)
+    assert account_count(project) == 0
+    assert {path.name: path.read_bytes() for path in traces.glob("*.jsonl")} == originals
+    assert destinations and all(path.exists() for path in destinations)
+    store = database(project)
+    try:
+        assert len(store.pending_trace_copies()) == len(destinations)
+    finally:
+        store.close()
+    if restart:
+        # Explicitly forgetting the guest must not erase the orphan-copy cleanup queue.
+        assert (await client.delete("/api/session")).status_code == 200
+    monkeypatch.undo()
+
+    if restart:
+        restarted = create_web_app(root=project)
+        async with restarted.router.lifespan_context(restarted):
+            pass  # Startup cleanup needs neither a live guest nor the deleted account.
+    else:
+        await client.get("/api/locations")
+    assert not any(path.exists() for path in destinations)
+    store = database(project)
+    try:
+        assert not store.pending_trace_copies()
+        assert (store.get_reading(guest_id, reading_id) is None) == restart
+    finally:
+        store.close()
+
+
+async def test_committed_import_keeps_its_trace_copies(site, project):
+    client, _, runtimes = site
+    _, _, traces = await guest_with_two_trace_files(client, runtimes)
+    originals = sorted(path.read_bytes() for path in traces.glob("*.jsonl"))
+    assert (await register(client, keep=True)).status_code == 201
+    store = database(project)
+    try:
+        assert not store.pending_trace_copies()
+        account_id = store.db.execute("SELECT user_id FROM accounts").fetchone()[0]
+    finally:
+        store.close()
+    await client.get("/api/locations")
+    saved = runtimes[0].tracer.user_dir(account_id)
+    assert sorted(path.read_bytes() for path in saved.glob("*.jsonl")) == originals
+    assert not traces.exists()
+
+
+async def test_successful_retry_keeps_failed_copies_queued(site, project, monkeypatch):
+    client, app, runtimes = site
+    assert (await register(client)).status_code == 201
+    await client.post("/api/chat", json={"message": "账号原有的问题"})
+    account_trace = runtimes[0].tracer.user_dir(runtimes[0].session.user_id)
+    account_files = {path: path.read_bytes() for path in account_trace.glob("*.jsonl")}
+    async with client_for(app) as guest:
+        index = len(runtimes)
+        reading_id = await guest_with_records(guest)
+        traces = runtimes[index].tracer.user_dir(runtimes[index].session.user_id)
+        original_trace = next(traces.glob("*.jsonl")).read_bytes()
+        real_copy, real_unlink, real_merge = shutil.copyfile, Path.unlink, Store.merge_user
+        destinations, fail = [], [True]
+
+        def copy_file(source, target):
+            if Path(source).parent == traces:
+                destinations.append(Path(target))
+            return real_copy(source, target)
+
+        def unlink_file(self, *args, **kwargs):
+            if destinations and self == destinations[0]:
+                raise PermissionError("the first attempt's copy remains locked")
+            return real_unlink(self, *args, **kwargs)
+
+        def merge(*args, **kwargs):
+            if fail[0]:
+                raise sqlite3.OperationalError("database is locked")
+            return real_merge(*args, **kwargs)
+
+        monkeypatch.setattr(shutil, "copyfile", copy_file)
+        monkeypatch.setattr(Path, "unlink", unlink_file)
+        monkeypatch.setattr(Store, "merge_user", merge)
+        assert (await login(guest, keep=True)).status_code == 500
+        fail[0] = False
+        assert (await login(guest, keep=True)).status_code == 200
+        store = database(project)
+        try:
+            pending = store.pending_trace_copies()
+            assert [item["filename"] for item in pending] == [destinations[0].name]
+        finally:
+            store.close()
+        assert len(destinations) == 2 and destinations[1].read_bytes() == original_trace
+        monkeypatch.undo()
+        await guest.get("/api/locations")
+        assert not destinations[0].exists()
+        assert destinations[1].read_bytes() == original_trace
+        assert all(path.read_bytes() == content for path, content in account_files.items())
+        assert (await guest.get(f"/api/readings/{reading_id}")).status_code == 200
 
 
 async def test_deleting_records_never_compacts_in_the_event_loop(project, monkeypatch):

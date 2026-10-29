@@ -978,7 +978,7 @@ async function deleteReading(item) {
   if (busy || !state) return;
   const confirmed = await askConfirm({
     title: "删除这份解读？",
-    text: `「${item.question.split("\n")[0]}」连同它的追问将被删除，无法撤回。`,
+    text: `「${item.question.split("\n")[0]}」连同它的追问将被删除，无法撤回。各功能当前对话将重新开始，其他已保存的解读保留。`,
     confirm: "删除",
     keep: "保留",
   });
@@ -1001,7 +1001,7 @@ async function clearReadings() {
   if (busy || !state) return;
   const confirmed = await askConfirm({
     title: "清空全部解读记录？",
-    text: "将删除全部解读与追问；生辰档案" + (state.account ? "与账号" : "") + "保留。此操作无法撤回，可先导出记录。",
+    text: "将删除全部解读与追问，各功能当前对话将重新开始；生辰档案" + (state.account ? "与账号" : "") + "保留。此操作无法撤回，可先导出记录。",
     confirm: "全部删除",
     keep: "保留",
   });
