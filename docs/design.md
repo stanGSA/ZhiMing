@@ -39,6 +39,7 @@ flowchart LR
 - `data/kb_versions/<版本>.sqlite`：保留不可变条目与规则快照。版本摘要同时包含源文件、规则与审核账本（`knowledge/reviews/`）；旧 reading 的查询使用旧快照，旧快照与旧记录里没有审核级别的条目和信号按 `reviewed` 读作草稿。
 - **审核状态分三级：`draft`（草稿）、`model_reviewed`（经模型交叉审核，未经人工审核）、`human_reviewed`（人工审核）。** `reviewed` 只表示人工审核，任何代码与脚本都不写它；模型交叉审核记在 `knowledge/reviews/<体系>.yaml` 账本里，按条目内容哈希绑定，内容一改即回到草稿。解读的置信度按用到的最低级别设上限：草稿为 low，说明“释义未经审核”；经模型交叉审核最高 medium（阶段1待确认），说明“释义经模型交叉审核，未经人工审核”；人工审核不设上限。**当前 1171 条全部是草稿，人工审核率 0%，模型交叉审核率 0%，解读仍强制低置信度。** 知识库关口按《项目完善计划书》4.8 的模型交叉审核指标验收（`scripts/model_review_kb.py`），尚未运行真实审核。审核方不能与起草条目的模型同厂商：感情、财务方向由 Anthropic Claude 起草，`kb_review.drafter_vendors` 记为 `anthropic`，审核脚本据此拒绝 Anthropic 审核方。
 - `data/app.db`：画像与历史版本、readings、reading_responses、daily，以及后续专家、审校和排盘缓存的表结构。当前启用画像、三体系reading与追问回答、专家报告、审校意见（review_notes）和chart_id/bazi_id缓存；readings 另存保存时的跨体系合并表（merge_json）。自动迁移至schema版本4，旧行与知识版本保留。
+- 网页账号（`memory/accounts.py`）与业务库同在 `data/app.db`：`accounts` 存账号名、scrypt 密码散列与同意的隐私说明版本，`account_sessions` 只存登录凭证的 SHA-256 摘要与到期时间；`web_births` 保存网页出生表单及其版本，账号登录后据此恢复生辰与旧解读的过期判断。访客用户编号以 `web-` 开头并有闲置期限（`web_identities`），账号以 `acct-` 开头、没有闲置清理。访客并入账号由 `Store.merge_user` 在一个事务内完成，账号已有的画像与生辰优先，并按账号生辰重标并入解读的生辰版本。
 - `runs/<用户摘要>/<会话>.jsonl`：工具参数、结果、错误、时间和 token 使用量；模型异常只记录异常类别，避免 SDK 错误文本泄露凭据。
 - `evals/cases/` 和 `evals/generators/` 从用户提供的评估数据集复制，保留原稿状态，不改参考答案。
 

@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import re
 import sqlite3
 from datetime import UTC, datetime
 from pathlib import Path
@@ -18,6 +19,8 @@ class Store:
         self.db.execute("PRAGMA journal_mode=WAL")
         self.db.execute("PRAGMA foreign_keys=ON")
         self.db.execute("PRAGMA busy_timeout=5000")
+        # Deleted records are overwritten in the file rather than left in free pages.
+        self.db.execute("PRAGMA secure_delete=ON")
         self.db.executescript("""
         CREATE TABLE IF NOT EXISTS profiles(user_id TEXT PRIMARY KEY, profile_json TEXT NOT NULL,
           version INTEGER NOT NULL, updated_at TEXT NOT NULL);
@@ -46,6 +49,8 @@ class Store:
         CREATE TABLE IF NOT EXISTS bazi_charts(bazi_id TEXT PRIMARY KEY,user_id TEXT NOT NULL,
           input_hash TEXT NOT NULL,result_json TEXT NOT NULL);
         CREATE TABLE IF NOT EXISTS web_identities(user_id TEXT PRIMARY KEY,expires_at REAL NOT NULL);
+        CREATE TABLE IF NOT EXISTS web_births(user_id TEXT PRIMARY KEY,birth_json TEXT NOT NULL,
+          version INTEGER NOT NULL,updated_at TEXT NOT NULL);
         PRAGMA user_version=2;
         """)
         columns = {row[1] for row in self.db.execute("PRAGMA table_info(readings)")}
@@ -402,7 +407,9 @@ class Store:
             )
         ]
 
-    def forget(self, user_id: str) -> None:
+    def forget(self, user_id: str, compact: bool = True) -> None:
+        """Delete every record of the user. compact=False skips VACUUM, which rewrites the
+        whole database; the web service checkpoints in a background thread instead."""
         with self.db:
             for table in (
                 "profiles",
@@ -412,11 +419,210 @@ class Store:
                 "charts",
                 "bazi_charts",
                 "web_identities",
+                "web_births",
             ):
                 self.db.execute(f"DELETE FROM {table} WHERE user_id=?", (user_id,))
-        # Clear SQLite free pages; do not promise forensic erasure of filesystem backups.
-        self.db.execute("PRAGMA wal_checkpoint(TRUNCATE)")
-        self.db.execute("VACUUM")
+        if compact:
+            # Clear SQLite free pages; do not promise forensic erasure of filesystem backups.
+            self.db.execute("PRAGMA wal_checkpoint(TRUNCATE)")
+            self.db.execute("VACUUM")
+
+    def get_web_birth(self, user_id: str) -> tuple[dict, int] | None:
+        """The browser's birth form and its revision, so a later login restores both."""
+        row = self.db.execute(
+            "SELECT birth_json, version FROM web_births WHERE user_id=?", (user_id,)
+        ).fetchone()
+        return (json.loads(row["birth_json"]), row["version"]) if row else None
+
+    def save_web_birth(self, user_id: str, birth: dict, version: int) -> None:
+        with self.db:
+            self.db.execute(
+                "INSERT INTO web_births VALUES(?,?,?,?) ON CONFLICT(user_id) DO UPDATE SET "
+                "birth_json=excluded.birth_json,version=excluded.version,"
+                "updated_at=excluded.updated_at",
+                (
+                    user_id,
+                    json.dumps(birth, ensure_ascii=False),
+                    version,
+                    datetime.now(UTC).isoformat(),
+                ),
+            )
+
+    def reading_page(
+        self, user_id: str, system: str | None = None, query: str = "", offset=0, limit=20
+    ) -> tuple[list[dict], int]:
+        """One page of the browser's history, newest first, with the total that matches."""
+        where, params = ["user_id=?"], [user_id]
+        if system:
+            where.append("EXISTS (SELECT 1 FROM json_each(readings.systems_used) WHERE value=?)")
+            params.append(system)
+        if query.strip():
+            pattern = "%" + re.sub(r"([\\%_])", r"\\\1", query.strip()) + "%"
+            where.append(
+                "(question LIKE ? ESCAPE '\\' OR "
+                "json_extract(output_json, '$.summary') LIKE ? ESCAPE '\\')"
+            )
+            params += [pattern, pattern]
+        condition = " AND ".join(where)
+        total = self.db.execute(
+            f"SELECT COUNT(*) FROM readings WHERE {condition}", params
+        ).fetchone()[0]
+        rows = self.db.execute(
+            "SELECT reading_id,question,output_json,kb_version,systems_used,created_at,"
+            "(SELECT COUNT(*) FROM reading_responses r WHERE r.reading_id=readings.reading_id)"
+            f" AS response_count FROM readings WHERE {condition} "
+            "ORDER BY created_at DESC, reading_id DESC LIMIT ? OFFSET ?",
+            [*params, limit, offset],
+        ).fetchall()
+        return [
+            {
+                "reading_id": row["reading_id"],
+                "question": row["question"],
+                "summary": json.loads(row["output_json"])["summary"],
+                "kb_version": row["kb_version"],
+                "systems_used": json.loads(row["systems_used"]),
+                "created_at": row["created_at"],
+                "response_count": row["response_count"],
+            }
+            for row in rows
+        ], total
+
+    def delete_reading(self, user_id: str, reading_id: str) -> bool:
+        return bool(self._delete_readings(user_id, [reading_id]))
+
+    def delete_readings(self, user_id: str) -> list[str]:
+        """Delete every reading of the user; profile, birth form and caches stay."""
+        rows = self.db.execute("SELECT reading_id FROM readings WHERE user_id=?", (user_id,))
+        return self._delete_readings(user_id, [row[0] for row in rows])
+
+    def _delete_readings(self, user_id: str, reading_ids: list[str]) -> list[str]:
+        deleted = []
+        with self.db:
+            for reading_id in reading_ids:
+                # Follow-ups, specialist reports and review notes go with their reading.
+                for table in ("reading_responses", "specialist_reports", "review_notes"):
+                    self.db.execute(
+                        f"DELETE FROM {table} WHERE reading_id=? AND reading_id IN "
+                        "(SELECT reading_id FROM readings WHERE user_id=?)",
+                        (reading_id, user_id),
+                    )
+                cursor = self.db.execute(
+                    "DELETE FROM readings WHERE user_id=? AND reading_id=?", (user_id, reading_id)
+                )
+                if cursor.rowcount:
+                    deleted.append(reading_id)
+        return deleted
+
+    def export_user(self, user_id: str) -> dict:
+        """A copy of the user's records: what they entered, what they were told and how it was
+        worked out. Calculation caches (recomputable from the birth form) and traces are not
+        included; this is a copy for the person, not a backup that can be imported."""
+        saved = self.get_web_birth(user_id)
+        history = self.db.execute(
+            "SELECT version,profile_json,evidence,updated_at FROM profile_history "
+            "WHERE user_id=? ORDER BY version",
+            (user_id,),
+        ).fetchall()
+        readings = []
+        for row in self.db.execute(
+            "SELECT reading_id FROM readings WHERE user_id=? ORDER BY created_at, reading_id",
+            (user_id,),
+        ).fetchall():
+            reading = self.get_reading(user_id, row[0])
+            readings.append(
+                {
+                    "reading_id": reading["reading_id"],
+                    "created_at": reading["created_at"],
+                    "parent_reading_id": reading["parent_reading_id"],
+                    "question": reading["question"],
+                    "systems_used": reading["systems_used"],
+                    "output": reading["output_json"],
+                    "tarot": reading["tarot_json"],
+                    "calculations": reading["calculations_json"],
+                    "birth_context": reading["birth_context_json"],
+                    "kb_version": reading["kb_version"],
+                    "signals": reading["signals_json"],
+                    "merge": reading["merge_json"],
+                    "specialist_reports": self.specialist_reports(user_id, row[0]),
+                    "review_notes": self.review_notes(user_id, row[0]),
+                    "responses": self.reading_responses(user_id, row[0]),
+                }
+            )
+        return {
+            "birth": saved[0] if saved else None,
+            "profile": self.get_profile(user_id),
+            "profile_history": [
+                {
+                    "version": item["version"],
+                    "profile": json.loads(item["profile_json"]),
+                    "evidence": item["evidence"],
+                    "updated_at": item["updated_at"],
+                }
+                for item in history
+            ],
+            "readings": readings,
+        }
+
+    def merge_user(self, source: str, target: str, same_birth) -> dict:
+        """Move a browser guest's records to an account, in one transaction.
+
+        Readings, follow-ups and calculation caches move. The account's own profile and birth
+        form win; the guest's are adopted only when the account has none. Each moved reading's
+        birth revision is restamped against the account's resulting birth form, so a reading
+        made from another birth shows as made from an old birth. same_birth(a, b) compares two
+        birth forms. Daily results are a cache keyed by date and are recomputed instead."""
+        target_birth = self.get_web_birth(target)
+        source_birth = self.get_web_birth(source)
+        adopt = bool(source_birth and source_birth[0].get("date")) and not (
+            target_birth and target_birth[0].get("date")
+        )
+        version = target_birth[1] if target_birth else 0
+        current = target_birth[0] if target_birth else None
+        if adopt:
+            version = max(version, source_birth[1]) + 1
+            current = source_birth[0]
+        moved = self.db.execute(
+            "SELECT reading_id, birth_context_json FROM readings WHERE user_id=?", (source,)
+        ).fetchall()
+        with self.db:
+            for row in moved:
+                context = json.loads(row["birth_context_json"] or "{}")
+                if context.get("birth"):
+                    matches = bool(current and current.get("date")) and same_birth(
+                        context["birth"], current
+                    )
+                    context["version"] = version if matches else -1
+                    self.db.execute(
+                        "UPDATE readings SET birth_context_json=? WHERE reading_id=?",
+                        (json.dumps(context, ensure_ascii=False), row["reading_id"]),
+                    )
+            for table in ("readings", "reading_responses", "charts", "bazi_charts"):
+                self.db.execute(f"UPDATE {table} SET user_id=? WHERE user_id=?", (target, source))
+            has_profile = self.db.execute(
+                "SELECT 1 FROM profiles WHERE user_id=?", (target,)
+            ).fetchone()
+            for table in ("profiles", "profile_history"):
+                if has_profile:
+                    self.db.execute(f"DELETE FROM {table} WHERE user_id=?", (source,))
+                else:
+                    self.db.execute(
+                        f"UPDATE {table} SET user_id=? WHERE user_id=?", (target, source)
+                    )
+            if adopt:
+                self.db.execute(
+                    "INSERT INTO web_births VALUES(?,?,?,?) ON CONFLICT(user_id) DO UPDATE SET "
+                    "birth_json=excluded.birth_json,version=excluded.version,"
+                    "updated_at=excluded.updated_at",
+                    (
+                        target,
+                        json.dumps(current, ensure_ascii=False),
+                        version,
+                        datetime.now(UTC).isoformat(),
+                    ),
+                )
+            for table in ("daily", "web_births", "web_identities"):
+                self.db.execute(f"DELETE FROM {table} WHERE user_id=?", (source,))
+        return {"readings": len(moved), "adopted_birth": adopt}
 
     def close(self):
         self.db.close()

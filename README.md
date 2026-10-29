@@ -131,7 +131,7 @@ uv run pytest -q                        # 全部离线；浏览器回归需先�
 uv run python -m scripts.doctor         # 环境、数据与知识库自检
 ```
 
-网页功能、朋友临时体验、对话命令和隐私说明见 [使用指南](docs/usage.md)。
+网页功能、账号与云端记录、朋友临时体验、对话命令和隐私说明见 [使用指南](docs/usage.md)；网页内的完整隐私说明在 `/privacy`（[源文件](web_static/privacy.html)）。
 
 ## 目录结构
 
@@ -144,7 +144,7 @@ uv run python -m scripts.doctor         # 环境、数据与知识库自检
 | [`knowledge/`](knowledge/) | 释义源文件、规则、审核账本与知识库构建 |
 | [`signals/`](signals/) | 跨体系信号合并 |
 | [`common/`](common/) | 公共工具、地点解析、安全与回答校验 |
-| [`memory/`](memory/) | SQLite 业务库：画像、记录、缓存 |
+| [`memory/`](memory/) | SQLite 业务库：画像、记录、缓存；网页账号与登录凭证（`accounts.py`） |
 | `app.py` `cli.py` `web.py` [`web_static/`](web_static/) | 运行时装配、命令行与本机网页 |
 | [`evals/`](evals/) | 评估数据集与离线评估 |
 | [`scripts/`](scripts/) | 数据下载、自检、真实模型评估、知识库审核流水线；[`scripts/archive/`](scripts/archive/) 为一次性脚本 |
@@ -165,5 +165,5 @@ uv run python -m scripts.doctor         # 环境、数据与知识库自检
 - 2026-10-22 起项目按负责人要求暂停，最后一次验证见 [中转迁移与暂停记录](docs/verification/stage1/20261022-r3-relay/report.md)。
 - 知识库共 1171 条释义均为原创：451 条经双模型交叉审核，720 条为草稿，人工审核 0 条。解读置信度按所用释义的最低审核级别设上限（草稿为低，模型审核最高为中）。阶段1知识库验收未通过，见 [阶段1验收](docs/verification/stage1/20261022-acceptance/report.md)。
 - 真实模型端到端质量未达到验收关口，默认使用单 Agent。
-- 网页版是本机单进程服务，只监听 `127.0.0.1`；没有账号和跨设备同步，浏览器身份闲置 12 小时后自动清除。
+- 网页版是本机单进程服务，只监听 `127.0.0.1`。访客记录闲置 12 小时后自动清除；注册账号后，生辰档案与解读记录保存在服务电脑上，换设备或服务重启后登录即可恢复。账号只支持账号名加密码，忘记密码无法找回；进行中的对话窗口内容不跨重启保存。
 - 所有解读仅供参考与自我反思，不是决策依据。

@@ -1,0 +1,130 @@
+/* 说明页 · 素纸朱印：隐私说明与找不到页面共用。 */
+:root {
+  --accent-2: #9b2c22;
+}
+.zm-mark {
+  background: var(--accent-2);
+  color: #f7efdc;
+}
+
+.doc {
+  padding-top: 48px;
+  padding-bottom: 72px;
+}
+.doc-body {
+  max-width: 760px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+.doc-body h1 {
+  font-family: var(--display);
+  font-size: 36px;
+  font-weight: 600;
+  letter-spacing: 0.24em;
+}
+.doc-meta {
+  color: var(--muted);
+  font-size: 13px;
+  letter-spacing: 0.12em;
+}
+.doc-lead {
+  font-size: 17px;
+  line-height: 2;
+}
+.doc-toc {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 6px 18px;
+  padding: 16px 20px;
+  border: 1px solid var(--line);
+  background: var(--surface);
+  font-size: 14px;
+}
+.doc-body section {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding-top: 18px;
+  border-top: 1px solid var(--line);
+  scroll-margin-top: 16px;
+}
+.doc-body h2 {
+  font-family: var(--display);
+  font-size: 20px;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+}
+.doc-body p,
+.doc-body li {
+  line-height: 1.95;
+}
+.doc-body ul {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.doc-body li {
+  position: relative;
+  padding-left: 18px;
+}
+.doc-body li::before {
+  content: "";
+  position: absolute;
+  left: 2px;
+  top: 0.9em;
+  width: 6px;
+  height: 1px;
+  background: var(--accent-2);
+}
+.doc-body code {
+  font-family: var(--font-mono);
+  font-size: 0.9em;
+  padding: 0 4px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+}
+.doc-table {
+  overflow-x: auto;
+}
+.doc-table table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+  line-height: 1.8;
+}
+.doc-table th,
+.doc-table td {
+  padding: 10px 12px;
+  border: 1px solid var(--line);
+  text-align: left;
+  vertical-align: top;
+}
+.doc-table th {
+  background: var(--surface);
+  font-weight: 600;
+  letter-spacing: 0.1em;
+}
+.doc-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 12px;
+}
+.doc-missing {
+  display: flex;
+  align-items: center;
+}
+@media (max-width: 760px) {
+  .doc {
+    padding-top: 28px;
+  }
+  .doc-body h1 {
+    font-size: 28px;
+  }
+  .doc-table th,
+  .doc-table td {
+    padding: 8px;
+  }
+}
