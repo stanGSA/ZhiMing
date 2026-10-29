@@ -254,10 +254,11 @@ def check_backup(directory: str, now: float, state: dict | None = None) -> dict:
         problems.append("最近备份小于 1 KiB")
         level = "critical"
     # The verdict depends on both files: a checksum written, repaired, damaged or removed later
-    # must be noticed even when the archive itself is unchanged.
+    # must be noticed even when the archive itself is unchanged. The checksum file is tiny, so
+    # its content is part of the key (timestamps can be too coarse to tell two writes apart).
     try:
-        digest = os.stat(latest + ".sha256")
-        recorded = [digest.st_size, digest.st_mtime_ns]
+        with open(latest + ".sha256", "rb") as stream:
+            recorded = stream.read(4096).hex()
     except OSError:
         recorded = None
     identity = [latest, stat.st_size, stat.st_mtime_ns, recorded]

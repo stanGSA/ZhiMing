@@ -243,16 +243,19 @@ def test_channel_payloads_and_signatures(monkeypatch):
     assert set(monitor.channels()) == {"企业微信机器人"}
 
 
-def write_backup(directory, name, content=b"x" * 4096, checksum=None, age_h=1.0):
-    import hashlib
-
+def write_backup(
+    directory, name, content=b"x" * 4096, checksum=None, age_h=1.0, stamp=None, sums=None
+):
     archive = directory / name
     archive.write_bytes(content)
-    stamp = time.time() - age_h * 3600
+    stamp = time.time() - age_h * 3600 if stamp is None else stamp
     os.utime(archive, (stamp, stamp))
     if checksum is not False:
         digest = checksum or hashlib.sha256(content).hexdigest()
-        (directory / (name + ".sha256")).write_text(f"{digest}  {name}\n", encoding="ascii")
+        path = directory / (name + ".sha256")
+        path.write_text(f"{digest}  {name}\n", encoding="ascii")
+        if sums is not None:
+            os.utime(path, (sums, sums))
     return archive
 
 
@@ -275,11 +278,17 @@ def test_backup_checksums_are_recomputed_once_per_archive(tmp_path, monkeypatch)
     archive.write_bytes(b"y" * 4096)
     result = monitor.check_backup(str(tmp_path), now, state)
     assert result["level"] == "critical" and "不一致" in result["summary"] and len(hashed) == 2
-    write_backup(tmp_path, "zhiming-a.tar.gz", checksum="incorrect-checksum", age_h=2)
+    # Same archive bytes and timestamps, only the checksum file differs (and on a coarse clock,
+    # as on Windows, even its timestamp may not): the verdict must follow the checksum file.
+    stamp = now - 7200
+    write_backup(
+        tmp_path, "zhiming-a.tar.gz", checksum="incorrect-checksum", stamp=stamp, sums=stamp
+    )
     result = monitor.check_backup(str(tmp_path), now, state)
     assert result["level"] == "critical" and "格式错误" in result["summary"]
+    write_backup(tmp_path, "zhiming-a.tar.gz", stamp=stamp, sums=stamp)
+    assert monitor.check_backup(str(tmp_path), now, state)["level"] == "ok"
     # A fresh archive still waiting for its checksum: the previous completed one is judged.
-    write_backup(tmp_path, "zhiming-a.tar.gz", age_h=2)
     write_backup(tmp_path, "zhiming-b.tar.gz", checksum=False, age_h=0.01)
     assert monitor.check_backup(str(tmp_path), now, state)["level"] == "ok"
     old = write_backup(tmp_path, "zhiming-a.tar.gz", age_h=30)
@@ -298,7 +307,9 @@ def test_backup_checksums_are_recomputed_once_per_archive(tmp_path, monkeypatch)
     checksum = tmp_path / "zhiming-c.tar.gz.sha256"
     stamp = os.stat(good).st_mtime
     assert monitor.check_backup(str(tmp_path), now, state)["level"] == "ok"
+    sums = os.stat(checksum).st_mtime_ns
     checksum.write_text("f" * 64 + "  zhiming-c.tar.gz\n", encoding="ascii")
+    os.utime(checksum, ns=(sums, sums))  # same size and timestamp: only the content differs
     os.utime(good, (stamp, stamp))
     result = monitor.check_backup(str(tmp_path), now, state)
     assert result["level"] == "critical" and "不一致" in result["summary"]
