@@ -9,6 +9,8 @@
 
 评测结果见 [评测总表](reports/eval/summary.md)：`uv run python -m evals.report` 一条命令离线生成，不调用付费模型；真实模型的数字只读取已归档摘要，并注明模型、日期、评委与口径。
 
+**服务器状态（2026-10-30）**：已部署到 Debian 12 VPS `217.116.171.241`（SSH 61234），当前使用提交 `8be21c0` 加公开访问、账号权限及免费额度补丁，保留既有业务库和独立模型配置。页面、排盘、会话、实时进度、历史、真实模型、备份恢复和服务重启已验证。正式入口为 [https://zhiming.mom](https://zhiming.mom)，已启用 HTTPS，默认显示账号登录；访客仅可离线演示，登录个人账号后可使用大模型。每个账号累计免费 250,000 Token、不按月重置；同一 IP 下同一浏览器设备在滚动 7 天内只能注册一个账号（设备以 Cookie 识别）。额度与注册限制已上线，本次未调用真实模型；续期网络限制见 [部署说明](docs/deployment.md)。
+
 | 塔罗：从牌堆选牌、翻牌见意 | 八字：四柱、十神、藏干、五行 |
 | --- | --- |
 | ![塔罗页](docs/assets/tarot.jpg) | ![八字页](docs/assets/bazi.jpg) |
@@ -117,7 +119,7 @@ uv run python cli.py draw --question 'A 公司还是 B 公司？' --spread decis
 uv run python cli.py chat --provider demo
 ```
 
-**接入真实模型**：复制 `.env.example` 为 `.env` 并填写 `DEEPSEEK_API_KEY`，默认使用 `config.yaml` 中的 `deepseek-flash`。其他 OpenAI 兼容服务设置 `OPENAI_API_KEY` 与 `OPENAI_BASE_URL`；Anthropic 设置 `ANTHROPIC_API_KEY` 并使用 `--provider anthropic --model <模型名>`。
+**接入真实模型**：复制 `.env.example` 为 `.env` 并填写 `DEEPSEEK_API_KEY`，当前服务器分支默认使用 `config.yaml` 中的 `deepseek-v4.1-flash`。其他 OpenAI 兼容服务设置 `OPENAI_API_KEY` 与 `OPENAI_BASE_URL`；Anthropic 设置 `ANTHROPIC_API_KEY` 并使用 `--provider anthropic --model <模型名>`。
 
 ```bash
 uv run python cli.py chat                 # 单 Agent
@@ -155,6 +157,7 @@ uv run python -m scripts.doctor         # 环境、数据与知识库自检
 
 - [设计与约定](docs/design.md)：运行路径、知识库、多 Agent、合并与审校、各插件的计算口径
 - [使用指南](docs/usage.md)：网页、朋友体验、命令行、真实模型、MCP server、隐私与限制
+- [服务器部署说明](docs/deployment.md)：云服务器配置、SSH 连接、应用部署状态与上线待办
 - [项目计划书](docs/占卜Agent项目计划书.md)：最初的范围、架构与评估设计
 - [文档索引](docs/README.md)：各阶段验收报告与评审整改记录
 - [验收材料](docs/verification/README.md)、[评估数据集](evals/README.md)
@@ -162,8 +165,8 @@ uv run python -m scripts.doctor         # 环境、数据与知识库自检
 
 ## 当前状态与限制
 
-- 2026-10-22 起项目按负责人要求暂停，最后一次验证见 [中转迁移与暂停记录](docs/verification/stage1/20261022-r3-relay/report.md)。
+- 知识库阶段1中转迁移复核于 2026-10-22 按负责人要求暂停，历史证据见 [中转迁移与暂停记录](docs/verification/stage1/20261022-r3-relay/report.md)；后续网页修复与服务器准备单独记录。
 - 知识库共 1171 条释义均为原创：451 条经双模型交叉审核，720 条为草稿，人工审核 0 条。解读置信度按所用释义的最低审核级别设上限（草稿为低，模型审核最高为中）。阶段1知识库验收未通过，见 [阶段1验收](docs/verification/stage1/20261022-acceptance/report.md)。
 - 真实模型端到端质量未达到验收关口，默认使用单 Agent。
-- 网页版是本机单进程服务，只监听 `127.0.0.1`。访客记录闲置 12 小时后自动清除；注册账号后，生辰档案与解读记录保存在服务电脑上，换设备或服务重启后登录即可恢复。账号只支持账号名加密码，忘记密码无法找回；进行中的对话窗口内容不跨重启保存。
+- 网页版采用单进程服务，只监听 `127.0.0.1`；本机可通过临时隧道供朋友访问，VPS 已部署并可经固定域名 HTTPS 使用。访客记录闲置 12 小时后自动清除；当前代码支持注册账号，将生辰档案与解读记录保存在服务电脑上，换设备或服务重启后登录即可恢复。账号只支持账号名加密码，忘记密码无法找回；进行中的对话窗口内容不跨重启保存。服务器实际运行版本见上方部署状态。
 - 所有解读仅供参考与自我反思，不是决策依据。

@@ -8,6 +8,7 @@ from pydantic import BaseModel, ConfigDict, Field, model_validator
 from tenacity import retry, retry_if_exception, stop_after_attempt, wait_random_exponential
 
 from harness.json_arguments import parse_arguments
+from harness.metering import Attempt
 from harness.models import ModelResponse, ToolCall
 
 
@@ -26,6 +27,8 @@ def _transient(exc: BaseException) -> bool:
 
 
 class OpenAIModel:
+    supports_metering = True
+
     def __init__(
         self,
         model: str,
@@ -107,12 +110,22 @@ class OpenAIModel:
                 # reasoning is retained by ModelResponse.assistant_message, verbatim.
                 message.setdefault("reasoning_content", "")
             request_messages.append(message)
-        result = await self.client.chat.completions.create(
-            model=self.model,
-            messages=request_messages,
-            tools=tools or None,
-            **self.request_options,
-        )
+        with Attempt(
+            request_messages, tools, self.request_options.get("max_tokens", 8192)
+        ) as attempt:
+            options = dict(self.request_options)
+            if attempt.meter is not None:
+                options["max_tokens"] = attempt.output_limit
+            result = await self.client.chat.completions.create(
+                model=self.model,
+                messages=request_messages,
+                tools=tools or None,
+                **options,
+            )
+            attempt.settle(
+                result.usage.prompt_tokens if result.usage else None,
+                result.usage.completion_tokens if result.usage else None,
+            )
         message = result.choices[0].message
         calls = []
         for call in message.tool_calls or []:
@@ -218,6 +231,8 @@ def anthropic_messages(messages: list[dict[str, Any]]) -> tuple[str, list[dict[s
 
 
 class AnthropicModel:
+    supports_metering = True
+
     def __init__(
         self,
         model: str,
@@ -265,15 +280,24 @@ class AnthropicModel:
             }
             for t in tools
         ]
-        result = await self.client.messages.create(
-            model=self.model,
-            system=system,
-            messages=converted,
-            # A layered reading is submitted as one tool call; leave room for it.
-            max_tokens=self.max_tokens,
-            **({"tools": tool_specs} if tool_specs else {}),
-            **self.request_options,
-        )
+        with Attempt([{"system": system}, *converted], tool_specs, self.max_tokens) as attempt:
+            result = await self.client.messages.create(
+                model=self.model,
+                system=system,
+                messages=converted,
+                max_tokens=attempt.output_limit,
+                **({"tools": tool_specs} if tool_specs else {}),
+                **self.request_options,
+            )
+            usage = result.usage
+            attempt.settle(
+                usage.input_tokens
+                + (getattr(usage, "cache_read_input_tokens", None) or 0)
+                + (getattr(usage, "cache_creation_input_tokens", None) or 0)
+                if usage
+                else None,
+                usage.output_tokens if usage else None,
+            )
         text = "".join(block.text for block in result.content if block.type == "text")
         calls = [
             ToolCall(id=block.id, name=block.name, arguments=block.input)

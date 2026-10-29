@@ -603,3 +603,40 @@ def test_a_failing_service_is_explained_in_plain_words(site, chromium):
     page.fill("#history-search", "任意")
     expect(page.locator("#toast")).to_have_text("服务暂时无法连接，请稍后重试。")
     page.close()
+
+
+def test_home_defaults_to_account_and_guests_only_use_demo(site, chromium, tmp_path):
+    base, _ = site
+    page = chromium.new_page(viewport={"width": 390, "height": 844})
+    errors = []
+    page.on("pageerror", lambda error: errors.append(str(error)))
+    page.goto(base)
+    expect(page.locator("#tab-account")).to_have_attribute("aria-selected", "true")
+    expect(page.locator("#panel-account")).to_be_visible()
+    expect(page.locator("#panel-guest")).to_be_hidden()
+    expect(page.locator("#account-name")).to_be_visible()
+    assert page.locator("#account-name").bounding_box()["y"] < 844
+    page.screenshot(path=str(tmp_path / "guest-access-login-mobile.png"), full_page=True)
+    page.locator("#tab-guest").click()
+    expect(page.locator("#panel-guest")).to_be_visible()
+    expect(page.locator("#panel-guest a")).to_have_count(1)
+    expect(page.locator("#panel-guest a")).to_have_attribute("href", "/ask?provider=demo")
+    page.locator("#panel-guest a").click()
+    expect(page.locator("#provider")).to_have_value("demo")
+    expect(page.locator('#provider option[value="configured"]')).to_have_attribute("disabled", "")
+    expect(page.locator('#provider option[value="configured"]')).to_have_attribute("hidden", "")
+    assert page.request.get(f"{base}/api/session?provider=configured").json()["provider"] == "demo"
+    page.goto(f"{base}/tarot?provider=configured")
+    expect(page.locator("#tarot-begin")).to_be_enabled()
+    expect(page.locator("#provider")).to_have_value("demo")
+    expect(page.locator("#toast")).not_to_contain_text("请先登录账号使用真实模型")
+    page.goto(base)
+    expect(page.locator("#panel-account")).to_be_visible()
+    register_from_entrance(page, base, "模型浏览器")
+    expect(page.locator("#account-quota")).to_contain_text("250,000")
+    expect(page.locator("#provider")).to_have_value("configured")
+    expect(page.locator('#provider option[value="configured"]')).not_to_have_attribute(
+        "disabled", ""
+    )
+    assert not errors
+    page.close()

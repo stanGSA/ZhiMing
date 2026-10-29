@@ -1,15 +1,15 @@
 mode: single                # single | multi；第4周关口通过前默认仍为 single
 llm:
   provider: deepseek
-  model: deepseek-flash
+  model: deepseek-v4.1-flash
   timeout_s: 90
   system_role: system
   deepseek:
     thinking: disabled
 models:
-  orchestrator: deepseek-flash
-  specialist: deepseek-flash
-  reviewer: deepseek-flash
+  orchestrator: deepseek-v4.1-flash
+  specialist: deepseek-v4.1-flash
+  reviewer: deepseek-v4.1-flash
 model_options:
   orchestrator:
     max_tokens: 8192

@@ -1,0 +1,37 @@
+[Unit]
+Description=ZhiMing single-process web application
+After=network-online.target
+Wants=network-online.target
+StartLimitIntervalSec=300
+StartLimitBurst=5
+
+[Service]
+Type=simple
+User=zhiming
+Group=zhiming
+WorkingDirectory=/opt/zhiming/app
+Environment=PYTHONUNBUFFERED=1
+Environment=PYTHONDONTWRITEBYTECODE=1
+Environment=PYTHONUTF8=1
+Environment=HOME=/opt/zhiming
+EnvironmentFile=/etc/zhiming/runtime.env
+ExecStart=/opt/zhiming/app/.venv/bin/python /usr/local/lib/zhiming/launch.py
+Restart=on-failure
+RestartSec=5
+TimeoutStopSec=45
+MemoryHigh=640M
+MemoryMax=768M
+MemorySwapMax=512M
+TasksMax=64
+UMask=0077
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/opt/zhiming/data /opt/zhiming/runs /var/log/zhiming
+StandardOutput=append:/var/log/zhiming/app.log
+StandardError=append:/var/log/zhiming/app.log
+SyslogIdentifier=zhiming
+
+[Install]
+WantedBy=multi-user.target

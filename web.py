@@ -5,6 +5,9 @@ from __future__ import annotations
 import asyncio
 import base64
 import binascii
+import hashlib
+import hmac
+import ipaddress
 import json
 import logging
 import re
@@ -37,6 +40,7 @@ from common.regions import region_options, selected_region
 from common.schemas import ReadInput
 from common.time_utils import NeedsInput
 from harness.failures import failure
+from harness.metering import MeteredModel, QuotaExceeded
 from harness.progress import progress_label
 from harness.trace import Tracer
 from memory.accounts import (
@@ -62,6 +66,7 @@ from plugins.tarot.draw import valid_picks
 STATIC = Path(__file__).with_name("web_static")
 EVALUATION_PROGRESS = Path("reports/p1/codego-v4/web-progress.json")
 COOKIE = "zhiming_session"
+DEVICE_COOKIE = "zhiming_device"
 MAX_IDLE = 12 * 3600
 # An account's login lasts this long after its last use; its records stay until deleted.
 ACCOUNT_IDLE = 30 * 24 * 3600
@@ -521,9 +526,12 @@ def create_web_app(
     public_origin: str | None = None,
     share_password: str | None = None,
 ) -> FastAPI:
-    """Keep local access as the default; sharing requires an exact HTTPS origin and password."""
-    if (public_origin is None) != (share_password is None):
-        raise ValueError("分享模式必须同时配置 HTTPS 地址和访问口令")
+    """Keep local access as the default; public HTTPS may use an optional sharing password."""
+    if share_password is not None:
+        if public_origin is None:
+            raise ValueError("配置访问口令时必须同时配置 HTTPS 地址")
+        if len(share_password) < 16:
+            raise ValueError("访问口令至少 16 个字符")
     allowed_hosts = ["127.0.0.1", "localhost", "testserver"]
     if public_origin is not None:
         public_origin = public_origin.rstrip("/")
@@ -538,9 +546,8 @@ def create_web_app(
             or parsed.fragment
             or parsed.port not in (None, 443)
             or "*" in parsed.netloc
-            or len(share_password or "") < 16
         ):
-            raise ValueError("分享地址必须为 HTTPS 域名，访问口令至少 16 个字符")
+            raise ValueError("公开地址必须为 HTTPS 域名")
         allowed_hosts.append(parsed.hostname)
     share_credentials = f"friend:{share_password}".encode() if share_password else None
     # Cookie key -> root session. A guest key lives only in memory; an account key is also a
@@ -746,7 +753,28 @@ def create_web_app(
     async def local_requests(request: Request, call_next):
         # Quoted in unexpected-error replies and the server log, so a report can be traced.
         request.state.request_id = secrets.token_hex(6)
+        device = request.cookies.get(DEVICE_COOKIE, "")
+        identity, _, signature = device.partition(".")
+        secret = accounts().device_secret()
+        expected = hmac.new(secret, identity.encode(), hashlib.sha256).hexdigest()
+        fresh_device = not (
+            re.fullmatch(r"[a-f0-9]{64}", identity) and hmac.compare_digest(signature, expected)
+        )
+        if fresh_device:
+            identity = secrets.token_hex(32)
+            signature = hmac.new(secret, identity.encode(), hashlib.sha256).hexdigest()
+            device = identity + "." + signature
+        request.state.device = identity
         response = await respond(request, call_next)
+        if fresh_device:
+            response.set_cookie(
+                DEVICE_COOKIE,
+                device,
+                max_age=365 * 24 * 3600,
+                secure=public_origin is not None,
+                httponly=True,
+                samesite="strict",
+            )
         response.headers["X-Request-ID"] = request.state.request_id
         response.headers["X-Content-Type-Options"] = "nosniff"
         response.headers["Referrer-Policy"] = "same-origin"
@@ -852,8 +880,18 @@ def create_web_app(
 
     @app.exception_handler(AccountError)
     async def account_refused(request: Request, exc: AccountError):
-        status = 409 if exc.code == "username_taken" else 422
+        status = (
+            429
+            if exc.code == "registration_limited"
+            else 409
+            if exc.code == "username_taken"
+            else 422
+        )
         return problem(status, exc.code, exc.message)
+
+    @app.exception_handler(QuotaExceeded)
+    async def quota_refused(request: Request, exc: QuotaExceeded):
+        return problem(403, exc.code, exc.message)
 
     def keep_login(key):
         """Slide an account login's expiry; written at most every five minutes."""
@@ -863,9 +901,24 @@ def create_web_app(
             accounts().extend_session(key, time.time() + ACCOUNT_IDLE)
 
     def build(user_id, provider):
+        if provider != "demo" and accounts().get(user_id) is None:
+            raise HTTPException(
+                403,
+                {
+                    "code": "account_required",
+                    "message": "请先登录账号使用真实模型；访客可使用离线演示。",
+                },
+            )
         try:
             return runtime_factory(
-                root=root, user_id=user_id, provider="demo" if provider == "demo" else None
+                root=root,
+                user_id=user_id,
+                provider="demo" if provider == "demo" else None,
+                **(
+                    {"model_transform": lambda model: MeteredModel(model, accounts(), user_id)}
+                    if provider != "demo"
+                    else {}
+                ),
             )
         except Exception as exc:
             logger.exception("Could not start browser runtime")
@@ -918,7 +971,11 @@ def create_web_app(
         return session
 
     def public_account(account):
-        return {"username": account["username"], "created_at": account["created_at"]}
+        return {
+            "username": account["username"],
+            "created_at": account["created_at"],
+            "quota": accounts().quota(account["user_id"]),
+        }
 
     def restore_birth(root_session):
         saved = root_session.runtime.store.get_web_birth(root_session.user_id)
@@ -942,6 +999,7 @@ def create_web_app(
                 },
             )
         touch(session)
+        require_model_account(session, session.provider)
         selected = system or request.query_params.get("system", "auto")
         if selected not in ("auto", *SYSTEM_LABELS):
             raise HTTPException(422, "咨询功能无效")
@@ -1132,7 +1190,9 @@ def create_web_app(
         return {
             "system": session.system,
             "instance": instance,
-            "account": owner.account,
+            "account": {**owner.account, "quota": accounts().quota(owner.user_id)}
+            if owner.account
+            else None,
             "session_epoch": session.runtime.session.id,
             "session_revision": session.session_revision,
             "birth_version": (session.owner or session).birth_version,
@@ -1166,6 +1226,7 @@ def create_web_app(
                 raise HTTPException(503, {"code": "busy", "message": "当前会话过多，请稍后再试。"})
             key = secrets.token_urlsafe(32)
             user_id = "web-" + secrets.token_hex(16)
+            provider = "demo"
             session = BrowserSession(user_id, build(user_id, provider), provider)
             attach_progress(session)
             sessions[key] = session
@@ -1506,6 +1567,7 @@ def create_web_app(
 
     async def restart(session, provider):
         """Start this feature's conversation afresh; the caller holds its lock."""
+        require_model_account(session, provider)
         replacement = build(session.user_id, provider)
         replacement.session.safety_pending = session.runtime.session.safety_pending
         await close(session)
@@ -1521,6 +1583,16 @@ def create_web_app(
         session.name_analysis = None
         session.bound_birth = None
         session.birth_stale = False
+
+    def require_model_account(session, provider):
+        if provider != "demo" and (session.owner or session).account is None:
+            raise HTTPException(
+                403,
+                {
+                    "code": "account_required",
+                    "message": "请先登录账号使用真实模型；访客可使用离线演示。",
+                },
+            )
 
     @app.get("/api/readings/{reading_id}")
     async def reading(reading_id: str, request: Request):
@@ -1728,6 +1800,22 @@ def create_web_app(
     def client_of(request: Request) -> str:
         return request.client.host if request.client else "unknown"
 
+    def registration_pair(request: Request) -> str:
+        address = client_of(request)
+        try:
+            ip = ipaddress.ip_address(address)
+            address = (
+                str(ip.ipv4_mapped or ip) if isinstance(ip, ipaddress.IPv6Address) else str(ip)
+            )
+        except ValueError:
+            pass
+        # Only the trusted ASGI client address is used, never a client-supplied forwarded header.
+        return hmac.new(
+            accounts().device_secret(),
+            (address + "\0" + request.state.device).encode(),
+            hashlib.sha256,
+        ).hexdigest()
+
     def throttle(*limits):
         """limits: (key, attempts, window seconds); refuse while any is exhausted."""
         wait = max(limiter.retry_after(key, count, window) for key, count, window in limits)
@@ -1911,7 +1999,10 @@ def create_web_app(
             account = accounts().get(user_id) if user_id else None
             return {"account": public_account(account) if account else None, "guest": None}
         if current.account is not None:
-            return {"account": current.account, "guest": None}
+            return {
+                "account": {**current.account, "quota": accounts().quota(current.user_id)},
+                "guest": None,
+            }
         _, total = current.runtime.store.reading_page(current.user_id, limit=1)
         return {
             "account": None,
@@ -1933,17 +2024,30 @@ def create_web_app(
         limiter.record(client)
         if accounts().credentials(username):
             raise AccountError("username_taken", "该账号名已被使用，请换一个。")
+        pair = registration_pair(request)
+        wait = accounts().registration_wait(pair, time.time())
+        if wait:
+            raise HTTPException(
+                429,
+                {
+                    "code": "registration_limited",
+                    "message": "同一 IP 下的此设备，7 天内只能注册一个账号，请登录已有账号。",
+                },
+                headers={"Retry-After": str(wait)},
+            )
         password_hash = await asyncio.to_thread(hash_password, body.password)
         # From here on nothing awaits until the records have moved.
         guest = idle_guest(request)
-        account = accounts().create(username, password_hash)
+        account = accounts().create(
+            username, password_hash, pair_hash=pair, registered_at=time.time()
+        )
         key = request.cookies.get(COOKIE, "")
         previous = sessions.get(key)
         try:
             moved = hand_over(guest, account["user_id"], body.keep_guest_records)
         except BaseException:
             # Nothing moved: remove the new, empty account so the name can be used again.
-            accounts().delete(account["user_id"])
+            accounts().undo_registration(account["user_id"])
             raise
         if guest is not None:
             await release(guest)
@@ -2136,9 +2240,9 @@ def create_web_app(
 
     @app.get("/")
     async def index(request: Request):
-        # A live browser session or a kept login skips the entrance and returns to the hall.
+        # Only a signed-in account skips the entrance; guests see the login option first.
         key = request.cookies.get(COOKIE, "")
-        if key in sessions or (key and accounts().session_user(key, time.time())):
+        if key and accounts().session_user(key, time.time()):
             return RedirectResponse("/ask", status_code=303)
         # Never cache the entrance: the answer depends on whether the session is alive.
         return FileResponse(STATIC / "login.html", headers={"Cache-Control": "no-store"})
@@ -2171,8 +2275,8 @@ if __name__ == "__main__":
 
     parser = argparse.ArgumentParser(description="知命 · 本地网页版")
     parser.add_argument("--port", type=int, default=8765)
-    parser.add_argument("--public-origin", help="朋友体验的 HTTPS 地址（不含路径）")
-    parser.add_argument("--share-password-file", type=Path, help="本地访问口令文件")
+    parser.add_argument("--public-origin", help="公开访问的 HTTPS 地址（不含路径）")
+    parser.add_argument("--share-password-file", type=Path, help="可选的本地访问口令文件")
     args = parser.parse_args()
     password = (
         args.share_password_file.read_text(encoding="utf-8").strip()

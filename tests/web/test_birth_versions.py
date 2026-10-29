@@ -9,6 +9,7 @@ from harness.models import ModelResponse, ToolCall
 from tests.plugins.test_astro_bazi_integration import draft
 from tests.web.test_feature_sessions import BIRTH, call
 from tests.web.test_web_api import browser as browser
+from tests.web.test_web_api import signed_browser as signed_browser
 
 
 class ReadingModel:
@@ -50,8 +51,8 @@ async def complete_reading(client, runtimes, gate=None):
     )
 
 
-async def test_rechart_invalidates_current_reading_and_preserves_history(browser):
-    client, _, runtimes = browser
+async def test_rechart_invalidates_current_reading_and_preserves_history(signed_browser):
+    client, _, runtimes = signed_browser
     original = (await complete_reading(client, runtimes)).json()
     assert original["messages"][-1]["status"] == "submit_reading"
     reading = original["reading"]
@@ -79,8 +80,8 @@ async def test_rechart_invalidates_current_reading_and_preserves_history(browser
     assert saved["stale"] and saved["historical"]
 
 
-async def test_old_tab_missing_revision_and_aba_cannot_overwrite_birth(browser):
-    client, _, _ = browser
+async def test_old_tab_missing_revision_and_aba_cannot_overwrite_birth(signed_browser):
+    client, _, _ = signed_browser
     await client.get("/api/session")
     initial = (await client.post("/api/chart", json={"system": "bazi", "birth": BIRTH})).json()
     changed = await client.put(
@@ -110,8 +111,8 @@ async def test_old_tab_missing_revision_and_aba_cannot_overwrite_birth(browser):
     assert (await client.get("/api/session")).json()["birth_version"] == 3
 
 
-async def test_birth_task_rejects_mutation_but_allows_parallel_same_birth(browser):
-    client, _, runtimes = browser
+async def test_birth_task_rejects_mutation_but_allows_parallel_same_birth(signed_browser):
+    client, _, runtimes = signed_browser
     entered, release = asyncio.Event(), asyncio.Event()
     pending = asyncio.create_task(complete_reading(client, runtimes, (entered, release)))
     try:
@@ -146,8 +147,8 @@ async def test_birth_task_rejects_mutation_but_allows_parallel_same_birth(browse
 
 
 @pytest.mark.parametrize("outcome", ["error", "cancel"])
-async def test_failed_or_cancelled_task_releases_birth_registration(browser, outcome):
-    client, _, runtimes = browser
+async def test_failed_or_cancelled_task_releases_birth_registration(signed_browser, outcome):
+    client, _, runtimes = signed_browser
     await client.get("/api/session?system=bazi")
     runtime = runtimes[-1]
     entered, release = asyncio.Event(), asyncio.Event()
@@ -182,8 +183,8 @@ async def test_failed_or_cancelled_task_releases_birth_registration(browser, out
     assert response.status_code == 200
 
 
-async def test_historical_followup_uses_snapshot_and_does_not_change_shared_birth(browser):
-    client, _, runtimes = browser
+async def test_historical_followup_uses_snapshot_and_does_not_change_shared_birth(signed_browser):
+    client, _, runtimes = signed_browser
     original = (await complete_reading(client, runtimes)).json()["reading"]
     await client.put(
         "/api/birth", json={**BIRTH, "time": "12:30"}, headers={"X-Zhiming-Birth-Version": "1"}
@@ -212,8 +213,8 @@ async def test_historical_followup_uses_snapshot_and_does_not_change_shared_birt
     assert len(data["reading"]["responses"]) == 1
 
 
-async def test_normalized_same_birth_keeps_version_and_other_chart(browser):
-    client, _, _ = browser
+async def test_normalized_same_birth_keeps_version_and_other_chart(signed_browser):
+    client, _, _ = signed_browser
     await client.get("/api/session")
     first = (
         await client.post(
@@ -238,8 +239,8 @@ async def test_normalized_same_birth_keeps_version_and_other_chart(browser):
     assert (await client.get("/api/session?system=bazi")).json()["chart"] == first["chart"]
 
 
-async def test_submit_rechecks_version_after_async_policy_check(browser):
-    client, _, runtimes = browser
+async def test_submit_rechecks_version_after_async_policy_check(signed_browser):
+    client, _, runtimes = signed_browser
     await client.get("/api/session?system=bazi")
     runtime = runtimes[-1]
     runtime.model = ReadingModel(runtime)
@@ -270,8 +271,8 @@ async def test_submit_rechecks_version_after_async_policy_check(browser):
     assert response["history"] == [] and response["reading"] is None
 
 
-async def test_two_tabs_cannot_both_commit_against_the_same_revision(browser):
-    client, _, _ = browser
+async def test_two_tabs_cannot_both_commit_against_the_same_revision(signed_browser):
+    client, _, _ = signed_browser
     await client.get("/api/session")
     await client.post("/api/chart", json={"system": "bazi", "birth": BIRTH})
     responses = await asyncio.gather(
@@ -294,8 +295,8 @@ async def test_two_tabs_cannot_both_commit_against_the_same_revision(browser):
     assert latest["birth"] == winner["birth"]
 
 
-async def test_forget_keeps_revision_monotonic_and_rejects_old_tabs(browser):
-    client, _, _ = browser
+async def test_forget_keeps_revision_monotonic_and_rejects_old_tabs(signed_browser):
+    client, _, _ = signed_browser
     await client.get("/api/session")
     before = (await client.post("/api/chart", json={"system": "bazi", "birth": BIRTH})).json()
     deleted = (await client.delete("/api/session?system=bazi")).json()

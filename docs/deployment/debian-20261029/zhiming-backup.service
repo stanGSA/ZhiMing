@@ -1,0 +1,15 @@
+[Unit]
+Description=ZhiMing consistent SQLite and configuration backup
+After=local-fs.target
+ConditionPathExists=/opt/zhiming/app/.venv/bin/python
+
+[Service]
+Type=oneshot
+ExecStart=/opt/zhiming/app/.venv/bin/python -I /usr/local/lib/zhiming/backup.py
+UMask=0077
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectHome=true
+ProtectSystem=strict
+ReadWritePaths=/var/backups/zhiming /opt/zhiming/data
+TimeoutStartSec=300

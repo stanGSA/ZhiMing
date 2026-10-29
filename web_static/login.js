@@ -137,6 +137,8 @@ async function load() {
   }
   if (info.account) {
     $("#signed-name").textContent = info.account.username;
+    if (info.account.quota)
+      $("#signed-quota").textContent = `免费额度剩余 ${info.account.quota.remaining.toLocaleString("zh-CN")} / 250,000 token，累计使用，不按月重置。`;
     $("#signed-in").hidden = false;
     $("#account-panel").hidden = true;
     select($("#tab-account"));
@@ -170,6 +172,6 @@ $("#sign-out").addEventListener("click", async () => {
   }
 });
 
-if (params.get("tab") === "account") select($("#tab-account"));
+select($(params.get("tab") === "guest" ? "#tab-guest" : "#tab-account"));
 if (params.get("mode") === "register") setMode("register");
 load();

@@ -34,6 +34,17 @@ async def browser(project):
             yield client, app, runtimes
 
 
+@pytest.fixture
+async def signed_browser(browser):
+    client, _, _ = browser
+    created = await client.post(
+        "/api/account/register",
+        json={"username": "模型测试账号", "password": "test-pass123", "accept_privacy": True},
+    )
+    assert created.status_code == 201
+    return browser
+
+
 async def test_page_and_chat_followup(browser):
     client, _, _ = browser
     page = await client.get("/")
@@ -189,7 +200,8 @@ async def test_offline_bootstrap_without_configured_model(project):
         async with httpx.AsyncClient(
             transport=httpx.ASGITransport(app=app), base_url="http://testserver", headers=HEADERS
         ) as client:
-            assert (await client.get("/api/session")).status_code == 503
+            # Guests always bootstrap offline even without a configured model.
+            assert (await client.get("/api/session")).json()["provider"] == "demo"
             offline = await client.get("/api/session?provider=demo")
             assert offline.status_code == 200
             assert offline.json()["provider"] == "demo"
@@ -303,8 +315,10 @@ async def test_tarot_picks_decide_the_cards(browser):
     assert saved["question"] == result["reading"]["question"]
 
 
-async def test_clarifying_reply_continues_the_round_with_the_latest_picks(browser, scripted_model):
-    client, _, runtimes = browser
+async def test_clarifying_reply_continues_the_round_with_the_latest_picks(
+    signed_browser, scripted_model
+):
+    client, _, runtimes = signed_browser
     await client.get("/api/session?system=tarot")
 
     def response(name, **arguments):
@@ -371,9 +385,9 @@ async def test_xinjiang_clock_not_assumed(browser):
 
 @pytest.mark.parametrize("change_timezone", [False, True])
 async def test_daily_birth_form_keeps_consultation_timezone(
-    browser, scripted_model, change_timezone
+    signed_browser, scripted_model, change_timezone
 ):
-    client, _, runtimes = browser
+    client, _, runtimes = signed_browser
     await client.get("/api/session")
     runtime = runtimes[-1]
     with_birth(runtime, consultation_tz="America/Los_Angeles")
@@ -425,12 +439,12 @@ async def test_entrance_and_consultation_pages(browser):
         assert "style=" not in page.text  # The CSP forbids inline styles.
     await client.get("/api/session")
     returning = await client.get("/", follow_redirects=False)
-    assert returning.status_code == 303 and returning.headers["location"] == "/ask"
+    assert returning.status_code == 200 and "叩门问道" in returning.text
     assert "叩门问道" in (await client.get("/login")).text
 
 
-async def test_new_systems_hint_the_method_and_keep_birth_private(browser):
-    client, _, runtimes = browser
+async def test_new_systems_hint_the_method_and_keep_birth_private(signed_browser):
+    client, _, runtimes = signed_browser
     await client.get("/api/session")
     birth = {"date": "1995-03-21", "time": "14:30", "place": "中国浙江杭州"}
     for system, _label in (("dream", "解梦"), ("name", "姓名五格"), ("daily", "每日运势")):

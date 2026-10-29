@@ -255,6 +255,17 @@ function renderAccount() {
   chip.textContent = state?.account ? state.account.username : "登录";
   chip.classList.toggle("signed", Boolean(state?.account));
   chip.title = state?.account ? "账号与云端记录" : "登录或注册，云端保存记录";
+  let badge = $("#account-quota");
+  if (!badge) {
+    badge = node("span", "quota-badge");
+    badge.id = "account-quota";
+    badge.setAttribute("aria-live", "polite");
+    chip.after(badge);
+  }
+  const quota = state?.account?.quota;
+  badge.hidden = !quota;
+  badge.textContent = quota ? `免费剩余 ${quota.remaining.toLocaleString("zh-CN")} token` : "";
+  badge.title = "每账号累计 250,000 token，不按月重置；输入和输出均计入，离线演示不扣额度。";
   $$("[data-storage-note]").forEach((note) => {
     note.textContent = storageNote();
   });
@@ -299,7 +310,7 @@ function openAccount() {
       node(
         "p",
         "",
-        "记录只保存在这台电脑的本次浏览器会话中，闲置 12 小时后清除。登录或注册后，生辰档案与解读会保存到账号，换设备也能查看；注册时可以把本次访客记录一并保存。",
+        "访客仅可使用离线演示，登录或注册后可使用大模型解读。访客记录闲置 12 小时后清除；注册时可以一并保存到账号，换设备登录也能查看。",
       ),
       actions,
       privacy,
@@ -311,7 +322,8 @@ function openAccount() {
   const intro = node(
     "p",
     "",
-    `${Number.isNaN(since.getTime()) ? "" : `注册于 ${since.toLocaleDateString("zh-CN", { timeZone: "Asia/Shanghai" })} · `}生辰档案与解读记录已保存到账号，可在任意设备登录查看。`,
+    `${Number.isNaN(since.getTime()) ? "" : `注册于 ${since.toLocaleDateString("zh-CN", { timeZone: "Asia/Shanghai" })} · `}生辰档案与解读记录已保存到账号，可在任意设备登录查看。` +
+      (account.quota ? ` 免费额度剩余 ${account.quota.remaining.toLocaleString("zh-CN")} / 250,000 token（累计，不按月重置）。输入、输出及内部重试均计入；离线演示不扣额度。` : ""),
   );
   const exportLink = node("a", "btn btn-ghost", "导出我的记录");
   exportLink.href = "/api/export";
@@ -1041,7 +1053,12 @@ function applyState(next, first = false, background = false) {
   if (restarted) announceRestart();
   followupReadingId = next.followup_reading_id
     || (preview?.reading_id === selectedFollowup ? selectedFollowup : null);
-  if ($("#provider")) $("#provider").value = next.provider;
+  if ($("#provider")) {
+    $("#provider").value = next.provider;
+    const configured = $('#provider option[value="configured"]');
+    configured.hidden = !next.account;
+    configured.disabled = !next.account;
+  }
   const status = $("#connection");
   if (status) {
     status.classList.remove("offline");
@@ -2939,7 +2956,7 @@ function init() {
       const notice = takeNotice();
       if (notice) toast(notice);
       else if (!next.account && remembered("zhiming.account")) sessionExpired();
-      if ((wanted === "demo" || wanted === "configured") && next.provider !== wanted)
+      if ((wanted === "demo" || (wanted === "configured" && next.account)) && next.provider !== wanted)
         startNew(wanted);
       if (params.get("reading_id") && $("#chat-form")) {
         const reading = await api(`/api/readings/${encodeURIComponent(params.get("reading_id"))}`);

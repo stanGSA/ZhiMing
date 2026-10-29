@@ -168,41 +168,39 @@
 
         <span class="gate-kicker">ENTER · 入局</span>
         <h2 id="gate-title">叩门问道</h2>
-        <p class="gate-lead">生辰、命盘与每一次解读，都会为你妥善留存。</p>
+        <p class="gate-lead">登录账号，开启模型解读，保存生辰与每一次问道。</p>
 
         <div class="gate-tabs" role="tablist" aria-label="入内方式">
-          <button
-            class="gate-tab"
-            id="tab-guest"
-            type="button"
-            role="tab"
-            aria-selected="true"
-            aria-controls="panel-guest"
-          >
-            访客入内
-          </button>
           <button
             class="gate-tab"
             id="tab-account"
             type="button"
             role="tab"
-            aria-selected="false"
+            aria-selected="true"
             aria-controls="panel-account"
+          >
+            账号登录<small>模型解读</small>
+          </button>
+          <button
+            class="gate-tab"
+            id="tab-guest"
+            type="button"
+            role="tab"
+            aria-selected="false"
+            aria-controls="panel-guest"
             tabindex="-1"
           >
-            账号登录<small>云端保存</small>
+            访客入内<small>离线演示</small>
           </button>
         </div>
 
-        <div class="gate-tabpanel" id="panel-guest" role="tabpanel" aria-labelledby="tab-guest">
+        <div class="gate-tabpanel" id="panel-guest" role="tabpanel" aria-labelledby="tab-guest" hidden>
           <p class="gate-note">
-            无需注册。记录只保存在这台电脑的本次浏览器会话中，闲置 12 小时后自动清除。想换设备查看或长期保留，请登录账号。
+            无需注册，仅体验离线演示，不调用大模型。访客记录闲置 12 小时后自动清除；登录账号后可使用模型解读，并长期保存记录。
           </p>
-          <a class="btn btn-primary gate-enter" href="/ask">入　内</a>
-          <div class="gate-or" aria-hidden="true"><span></span>或<span></span></div>
-          <a class="btn btn-ghost gate-demo" href="/ask?provider=demo">离线演示</a>
+          <a class="btn btn-primary gate-enter" href="/ask?provider=demo">进入离线演示</a>
           <p class="gate-note small">
-            离线演示可排八字、绘星盘、抽塔罗、推五格与流日，不调用模型；深度解读需真实模型。
+            可体验八字、星盘、塔罗、五格与流日计算。需要大模型深度解读时，请切换到账号登录。
           </p>
         </div>
 
@@ -211,12 +209,12 @@
           id="panel-account"
           role="tabpanel"
           aria-labelledby="tab-account"
-          hidden
         >
           <div class="gate-signed" id="signed-in" hidden>
             <p class="gate-note">
               已登录为 <b id="signed-name"></b>。生辰档案与解读记录会保存在账号中，换一台设备登录即可查看。
             </p>
+            <p class="gate-note" id="signed-quota"></p>
             <a class="btn btn-primary gate-enter" href="/ask">进入问道</a>
             <button class="btn btn-ghost gate-demo" id="sign-out" type="button">退出登录</button>
             <p class="gate-error" id="signed-error" role="alert" hidden></p>
@@ -262,6 +260,9 @@
               /></label>
               <p class="gate-rules" data-register hidden>
                 账号名 2–32 个字符，可用汉字、字母、数字、下划线或连字符；密码至少 8 位，含字母、数字、符号中的两类。目前不能通过邮箱或短信找回密码，请妥善保管。
+              </p>
+              <p class="gate-rules" data-register hidden>
+                每账号免费额度共 250,000 token，输入和输出均计入，不按月重置；离线演示不扣额度。同一 IP 下的同一设备，7 天内仅可注册一个账号。
               </p>
               <label class="check gate-check" id="keep-guest-row" hidden
                 ><input id="keep-guest" type="checkbox" checked />

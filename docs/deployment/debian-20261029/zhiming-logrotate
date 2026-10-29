@@ -1,0 +1,12 @@
+/var/log/zhiming/*.log {
+    daily
+    maxsize 10M
+    rotate 7
+    maxage 14
+    compress
+    delaycompress
+    missingok
+    notifempty
+    copytruncate
+    su zhiming zhiming
+}

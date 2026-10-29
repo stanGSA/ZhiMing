@@ -1,5 +1,6 @@
 """Actionable, sanitized failure outcomes shared by every divination system."""
 
+from harness.metering import QuotaExceeded
 from harness.models import TurnOutcome
 
 
@@ -37,6 +38,8 @@ def failure(session, status, reason, text, *, retryable=True):
 
 
 def model_failure(session, exc):
+    if isinstance(exc, QuotaExceeded):
+        return failure(session, "quota_exhausted", exc.code, exc.message, retryable=False)
     status = getattr(exc, "status_code", None)
     code = getattr(exc, "code", None)
     if code in ("context_length_exceeded", "max_context_length_exceeded"):

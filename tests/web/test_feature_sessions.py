@@ -9,6 +9,7 @@ from harness.models import ModelResponse, ToolCall
 from tests.plugins.test_name_dream_daily import with_birth
 from tests.web.test_web_api import HEADERS
 from tests.web.test_web_api import browser as browser
+from tests.web.test_web_api import signed_browser as signed_browser
 
 BIRTH = {"date": "2001-11-25", "time": "10:11", "location_id": "1803361"}
 
@@ -26,9 +27,9 @@ def results(runtime, name):
 
 
 async def test_current_form_overrides_old_profile_and_rejects_stale_arguments(
-    browser, scripted_model
+    signed_browser, scripted_model
 ):
-    client, _, runtimes = browser
+    client, _, runtimes = signed_browser
     await client.get("/api/session?system=bazi")
     runtime = runtimes[-1]
     with_birth(runtime)
@@ -84,9 +85,9 @@ async def test_current_form_overrides_old_profile_and_rejects_stale_arguments(
 
 
 async def test_unknown_time_and_missing_location_never_reuse_previous_birth(
-    browser, scripted_model
+    signed_browser, scripted_model
 ):
-    client, _, runtimes = browser
+    client, _, runtimes = signed_browser
     await client.get("/api/session?system=bazi")
     runtime = runtimes[-1]
     with_birth(runtime)
@@ -129,9 +130,9 @@ async def test_unknown_time_and_missing_location_never_reuse_previous_birth(
 
 
 async def test_unfinished_tarot_does_not_block_bazi_or_reset_other_features(
-    browser, scripted_model
+    signed_browser, scripted_model
 ):
-    client, _, runtimes = browser
+    client, _, runtimes = signed_browser
     await client.get("/api/session?system=tarot")
     tarot = runtimes[-1]
     tarot.max_steps = 2
@@ -169,8 +170,8 @@ async def test_unfinished_tarot_does_not_block_bazi_or_reset_other_features(
     assert tarot.session.state["tarot_result"] == draw
 
 
-async def test_feature_locks_are_independent_but_forget_checks_all_features(browser):
-    client, _, runtimes = browser
+async def test_feature_locks_are_independent_but_forget_checks_all_features(signed_browser):
+    client, _, runtimes = signed_browser
     await client.get("/api/session?system=tarot")
     tarot = runtimes[-1]
     started, release = asyncio.Event(), asyncio.Event()
@@ -202,8 +203,8 @@ async def test_feature_locks_are_independent_but_forget_checks_all_features(brow
         assert data["chart"] is None and data["birth"]["date"] is None
 
 
-async def test_shared_birth_keeps_separate_chart_slots(browser):
-    client, _, _ = browser
+async def test_shared_birth_keeps_separate_chart_slots(signed_browser):
+    client, _, _ = signed_browser
     await client.get("/api/session")
     bazi = (await client.post("/api/chart", json={"system": "bazi", "birth": BIRTH})).json()[
         "chart"
@@ -222,8 +223,8 @@ async def test_shared_birth_keeps_separate_chart_slots(browser):
     assert (await client.get("/api/session?system=astro")).json()["chart"] is None
 
 
-async def test_history_followup_binds_a_after_b_and_keeps_response_history(browser):
-    client, app, _ = browser
+async def test_history_followup_binds_a_after_b_and_keeps_response_history(signed_browser):
+    client, app, _ = signed_browser
     await client.get("/api/session?system=tarot")
     a = (
         await client.post(
@@ -272,8 +273,8 @@ async def test_history_followup_binds_a_after_b_and_keeps_response_history(brows
         ).status_code == 404
 
 
-async def test_history_followup_guard_cannot_switch_or_recompute(browser, scripted_model):
-    client, _, runtimes = browser
+async def test_history_followup_guard_cannot_switch_or_recompute(signed_browser, scripted_model):
+    client, _, runtimes = signed_browser
     await client.get("/api/session?system=tarot")
     a = (
         await client.post(
@@ -303,8 +304,8 @@ async def test_history_followup_guard_cannot_switch_or_recompute(browser, script
     assert runtime.session.user_messages[index].startswith("追问这张牌")
 
 
-async def test_crisis_pause_survives_feature_switch_and_new_chat(browser):
-    client, _, _ = browser
+async def test_crisis_pause_survives_feature_switch_and_new_chat(signed_browser):
+    client, _, _ = signed_browser
     await client.get("/api/session?system=tarot")
     response = await client.post("/api/chat", json={"message": "我想自杀", "system": "tarot"})
     assert response.json()["messages"][-1]["status"] == "crisis_support"
@@ -313,8 +314,8 @@ async def test_crisis_pause_survives_feature_switch_and_new_chat(browser):
     assert chart["code"] == "safety_confirmation_required"
 
 
-async def test_correcting_birth_keeps_an_unfinished_auto_tarot_draw(browser, scripted_model):
-    client, _, runtimes = browser
+async def test_correcting_birth_keeps_an_unfinished_auto_tarot_draw(signed_browser, scripted_model):
+    client, _, runtimes = signed_browser
     await client.get("/api/session")
     runtime = runtimes[-1]
     runtime.model = scripted_model(
@@ -352,9 +353,9 @@ async def test_correcting_birth_keeps_an_unfinished_auto_tarot_draw(browser, scr
 
 
 async def test_bound_form_reaches_birth_specialist_without_expanding_other_profiles(
-    browser, scripted_model
+    signed_browser, scripted_model
 ):
-    client, _, runtimes = browser
+    client, _, runtimes = signed_browser
     await client.get("/api/session?system=bazi")
     runtime = runtimes[-1]
     runtime.model = scripted_model([call("ask_user", question="还有想了解的方面吗？")])

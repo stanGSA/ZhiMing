@@ -1,0 +1,13 @@
+[Unit]
+Description=Expire ZhiMing traces after seven days
+
+[Service]
+Type=oneshot
+User=zhiming
+Group=zhiming
+ExecStart=/usr/bin/find /opt/zhiming/runs -xdev -type f -mmin +10080 -delete
+NoNewPrivileges=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/opt/zhiming/runs
+PrivateTmp=true

@@ -33,6 +33,7 @@ from harness.context import compact_context
 from harness.failures import failure
 from harness.llm import AnthropicModel, OpenAIModel
 from harness.loop import run_turn
+from harness.metering import QuotaExceeded
 from harness.models import TurnOutcome
 from harness.registry import Registry
 from harness.session import Session
@@ -128,6 +129,8 @@ class Runtime:
                 if type(decision.get("crisis")) is not bool or result.tool_calls:
                     raise ValueError("invalid safety classification")
                 crisis = decision["crisis"]
+            except QuotaExceeded:
+                raise
             except Exception as exc:
                 self.tracer.log(
                     self.session, "safety_classifier_error", error_type=type(exc).__name__
@@ -264,6 +267,7 @@ def create_runtime(
     reviewer_model=None,
     strictness: str | None = None,
     clock: Callable[[], datetime] | None = None,
+    model_transform=None,
 ) -> Runtime:
     load_dotenv(root / ".env")
     config = yaml.safe_load((root / "config.yaml").read_text(encoding="utf-8"))
@@ -305,6 +309,19 @@ def create_runtime(
             reviewer_model = model
         else:
             reviewer_model = build_model(provider, reviewer_name, config, spread, "reviewer")
+    if model_transform is not None:
+        transformed = {}
+
+        def wrap(value):
+            if value is None:
+                return None
+            if id(value) not in transformed:
+                transformed[id(value)] = model_transform(value)
+            return transformed[id(value)]
+
+        model, specialist_model, reviewer_model = map(
+            wrap, (model, specialist_model, reviewer_model)
+        )
     kb = KnowledgeBase(root / config["kb"]["path"])
     store = Store(root / config["paths"]["app_db"])
     session = Session(user_id=user_id, default_seed=seed, profile=store.get_profile(user_id))

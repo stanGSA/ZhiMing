@@ -1,0 +1,11 @@
+[Unit]
+Description=Daily ZhiMing local backup (seven-day retention)
+
+[Timer]
+OnCalendar=*-*-* 04:10:00 Asia/Shanghai
+Persistent=true
+RandomizedDelaySec=5min
+Unit=zhiming-backup.service
+
+[Install]
+WantedBy=timers.target

@@ -34,7 +34,7 @@ async def browser(project):
 
 async def ask(client, question):
     """A finished tarot reading in its own conversation."""
-    await client.post("/api/new", json={"provider": "configured"})
+    await client.post("/api/new", json={"provider": "demo"})
     return (await client.post("/api/chat", json={"message": question})).json()["reading"]
 
 
