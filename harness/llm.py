@@ -110,8 +110,8 @@ class OpenAIModel:
                 # reasoning is retained by ModelResponse.assistant_message, verbatim.
                 message.setdefault("reasoning_content", "")
             request_messages.append(message)
-        with Attempt(
-            request_messages, tools, self.request_options.get("max_tokens", 8192)
+        async with Attempt(
+            request_messages, tools, self.request_options.get("max_tokens", 8192), model=self.model
         ) as attempt:
             options = dict(self.request_options)
             if attempt.meter is not None:
@@ -280,7 +280,9 @@ class AnthropicModel:
             }
             for t in tools
         ]
-        with Attempt([{"system": system}, *converted], tool_specs, self.max_tokens) as attempt:
+        async with Attempt(
+            [{"system": system}, *converted], tool_specs, self.max_tokens, model=self.model
+        ) as attempt:
             result = await self.client.messages.create(
                 model=self.model,
                 system=system,

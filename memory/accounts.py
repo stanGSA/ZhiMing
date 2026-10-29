@@ -19,6 +19,8 @@ import uuid
 from datetime import UTC, datetime
 from pathlib import Path
 
+from memory.costs import CostControl
+
 # Bump when the privacy notice (web_static/privacy.html) changes in substance.
 PRIVACY_VERSION = "2026-10-30"
 FREE_TOKENS = 250_000
@@ -108,7 +110,7 @@ def token_digest(token: str) -> str:
 
 
 class AccountStore:
-    def __init__(self, path: Path):
+    def __init__(self, path: Path, cost_defaults: dict | None = None):
         path.parent.mkdir(parents=True, exist_ok=True)
         self.db = sqlite3.connect(path)
         self.db.row_factory = sqlite3.Row
@@ -143,6 +145,7 @@ class AccountStore:
                 "INSERT OR IGNORE INTO account_settings VALUES('device_secret',?)",
                 (secrets.token_hex(32),),
             )
+        self.costs = CostControl(self.db, cost_defaults)
 
     def device_secret(self) -> bytes:
         return bytes.fromhex(
@@ -157,33 +160,51 @@ class AccountStore:
         ).fetchone()
         return max(0, int(row[0] + REGISTRATION_WINDOW - now + 0.999)) if row else 0
 
+    def token_limit(self, user_id: str) -> int:
+        """The free allowance plus any tokens an administrator granted."""
+        return FREE_TOKENS + self.costs.control(user_id)["bonus_tokens"]
+
     def quota(self, user_id: str) -> dict:
         row = self.db.execute(
             "SELECT used_tokens,held_tokens FROM account_quota WHERE user_id=?", (user_id,)
         ).fetchone()
         used, held = (row[0], row[1]) if row else (0, 0)
+        limit = self.token_limit(user_id)
         return {
-            "limit": FREE_TOKENS,
+            "limit": limit,
             "used": used,
             "reserved": held,
-            "remaining": max(0, FREE_TOKENS - used - held),
+            "remaining": max(0, limit - used - held),
         }
 
-    def reserve_tokens(self, user_id: str, input_bound: int, output_limit: int) -> tuple[str, int]:
-        from harness.metering import QuotaExceeded
+    def reserve_tokens(
+        self, user_id: str, input_bound: int, output_limit: int, *, model: str | None = None
+    ) -> tuple[str, int]:
+        from harness.metering import QuotaExceeded, SiteBudgetExhausted
 
         try:
             self.db.execute("BEGIN IMMEDIATE")
+            now = time.time()
+            self.costs.gatekeep(user_id, now)
             row = self.db.execute(
                 "SELECT used_tokens,held_tokens FROM account_quota WHERE user_id=?", (user_id,)
             ).fetchone()
             if row is None:
                 raise QuotaExceeded()
-            remaining = FREE_TOKENS - row[0] - row[1]
+            remaining = self.token_limit(user_id) - row[0] - row[1]
             output = min(output_limit, remaining - input_bound)
             if output < min(256, output_limit):
                 raise QuotaExceeded()
+            room = self.costs.budget_room(now)
+            if room is not None:
+                output = min(output, room - input_bound)
+                if output < min(256, output_limit):
+                    self.costs.budget_exhausted(now)
+                    raise SiteBudgetExhausted()
             reservation = input_bound + output
+            refusal = self.costs.trip(user_id, reservation, now)
+            if refusal is not None:
+                raise refusal
             call_id = uuid.uuid4().hex
             self.db.execute(
                 "UPDATE account_quota SET held_tokens=held_tokens+? WHERE user_id=?",
@@ -191,10 +212,15 @@ class AccountStore:
             )
             self.db.execute(
                 "INSERT INTO model_usage VALUES(?,?,?,?,?,?,?)",
-                (call_id, user_id, reservation, None, None, "reserved", time.time()),
+                (call_id, user_id, reservation, None, None, "reserved", now),
             )
+            self.costs.reserve(call_id, user_id, model, reservation, now)
             self.db.commit()
             return call_id, output
+        except QuotaExceeded:
+            # A refusal keeps what it recorded: an auto-pause, a suspension, an event.
+            self.db.commit()
+            raise
         except BaseException:
             self.db.rollback()
             raise
@@ -206,6 +232,7 @@ class AccountStore:
         output_tokens: int | None,
         *,
         rejected: bool = False,
+        error: str | None = None,
     ) -> None:
         try:
             self.db.execute("BEGIN IMMEDIATE")
@@ -233,6 +260,7 @@ class AccountStore:
                 "UPDATE model_usage SET input_tokens=?,output_tokens=?,status=? WHERE call_id=?",
                 (input_tokens, output_tokens, status, call_id),
             )
+            self.costs.settle(call_id, input_tokens, output_tokens, status, error, time.time())
             self.db.commit()
         except BaseException:
             self.db.rollback()
@@ -295,6 +323,79 @@ class AccountStore:
             raise
         return self.get(user_id)
 
+    # ---------- administration ----------
+
+    def list_accounts(self, query: str = "", offset: int = 0, limit: int = 50, since: float = 0):
+        """Accounts with their credit, control state and spend since ``since``; newest first."""
+        pattern = (
+            "%"
+            + username_key(query).replace("\\", "\\\\").replace("%", "\\%").replace("_", "\\_")
+            + "%"
+        )
+        where = "WHERE a.username_key LIKE ? ESCAPE '\\'"
+        total = self.db.execute(f"SELECT COUNT(*) FROM accounts a {where}", (pattern,)).fetchone()[
+            0
+        ]
+        rows = self.db.execute(
+            "SELECT a.user_id,a.username,a.created_at,q.used_tokens,q.held_tokens,"
+            "c.bonus_tokens,c.suspended_reason,c.suspended_at,c.suspended_by,"
+            "(SELECT COUNT(*) FROM account_sessions s WHERE s.user_id=a.user_id),"
+            "(SELECT COALESCE(SUM(CASE u.status WHEN 'settled' THEN u.input_tokens+u.output_tokens"
+            " WHEN 'rejected' THEN 0 ELSE u.reserved_tokens END),0) FROM site_usage u"
+            " WHERE u.user_id=a.user_id AND u.created_at>=?) "
+            "FROM accounts a LEFT JOIN account_quota q ON q.user_id=a.user_id "
+            f"LEFT JOIN account_controls c ON c.user_id=a.user_id {where} "
+            "ORDER BY a.created_at DESC LIMIT ? OFFSET ?",
+            (since, pattern, limit, offset),
+        ).fetchall()
+        items = []
+        for row in rows:
+            limit_tokens = FREE_TOKENS + (row[5] or 0)
+            used, held = row[3] or 0, row[4] or 0
+            items.append(
+                {
+                    "user_id": row[0],
+                    "username": row[1],
+                    "created_at": row[2],
+                    "quota": {
+                        "limit": limit_tokens,
+                        "used": used,
+                        "reserved": held,
+                        "remaining": max(0, limit_tokens - used - held),
+                        "bonus": row[5] or 0,
+                    },
+                    "suspended": (
+                        {"reason": row[6], "at": row[7], "by": row[8]}
+                        if row[7] is not None
+                        else None
+                    ),
+                    "logins": row[9],
+                    "tokens_today": int(row[10]),
+                }
+            )
+        return items, total
+
+    def set_suspended(self, user_id: str, reason: str | None, admin: str) -> None:
+        with self.db:
+            if reason is None:
+                self.costs.unsuspend(user_id, admin)
+            else:
+                self.costs.suspend(user_id, reason, admin)
+
+    def grant_tokens(self, user_id: str, tokens: int, admin: str) -> None:
+        with self.db:
+            self.costs.grant(user_id, tokens, admin)
+
+    def revoke_all(self, user_id: str, admin: str) -> list[str]:
+        """End every login of an account; returns the ended token hashes."""
+        rows = self.db.execute(
+            "SELECT token_hash FROM account_sessions WHERE user_id=?", (user_id,)
+        ).fetchall()
+        with self.db:
+            self.db.execute("DELETE FROM account_sessions WHERE user_id=?", (user_id,))
+            self.costs.audit(admin, "revoke_logins", {"user_id": user_id, "count": len(rows)})
+        return [row[0] for row in rows]
+
     def undo_registration(self, user_id: str) -> None:
         """A failed guest hand-over must not consume this device's registration opportunity."""
         with self.db:
@@ -328,6 +429,7 @@ class AccountStore:
         with self.db:
             self.db.execute("DELETE FROM account_sessions WHERE user_id=?", (user_id,))
             self.db.execute("DELETE FROM accounts WHERE user_id=?", (user_id,))
+            self.costs.forget_user(user_id)
 
     def open_session(self, user_id: str, now: float, expires_at: float) -> str:
         token = secrets.token_urlsafe(32)
@@ -377,6 +479,7 @@ class AccountStore:
                 "DELETE FROM registration_devices WHERE registered_at<=?",
                 (now - REGISTRATION_WINDOW,),
             )
+            self.costs.prune(now)
         rows = self.db.execute(
             "SELECT token_hash FROM account_sessions WHERE expires_at<=?", (now,)
         ).fetchall()

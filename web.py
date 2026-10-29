@@ -10,6 +10,7 @@ import hmac
 import ipaddress
 import json
 import logging
+import os
 import re
 import secrets
 import shutil
@@ -40,7 +41,7 @@ from common.regions import region_options, selected_region
 from common.schemas import ReadInput
 from common.time_utils import NeedsInput
 from harness.failures import failure
-from harness.metering import MeteredModel, QuotaExceeded
+from harness.metering import ConcurrencyGate, MeteredModel, QuotaExceeded, SiteLimited
 from harness.progress import progress_label
 from harness.trace import Tracer
 from memory.accounts import (
@@ -55,6 +56,8 @@ from memory.accounts import (
     verify_password,
 )
 from memory.store import Store
+from ops.admin import AdminContext
+from ops.admin import install as install_admin
 from plugins.astro.calculator import natal_chart
 from plugins.bazi.calculator import GAN, GAN_WX, WX, compute_bazi, ten_god
 from plugins.direct import birth_inputs
@@ -525,8 +528,21 @@ def create_web_app(
     *,
     public_origin: str | None = None,
     share_password: str | None = None,
+    admin_users: str | list[str] | None = None,
+    monitor_token: str | None = None,
+    monitor_status: Path | None = None,
+    release_file: Path | None = None,
 ) -> FastAPI:
-    """Keep local access as the default; public HTTPS may use an optional sharing password."""
+    """Keep local access as the default; public HTTPS may use an optional sharing password.
+
+    ``admin_users`` names the accounts that may open /admin (comma-separated or a list);
+    ``monitor_token`` (at least 32 characters) enables /api/ops/metrics for the server monitor.
+    """
+    if monitor_token is not None and len(monitor_token) < 32:
+        raise ValueError("监控令牌至少 32 个字符")
+    if isinstance(admin_users, str):
+        admin_users = admin_users.split(",")
+    admins = frozenset(username_key(name) for name in admin_users or () if name.strip())
     if share_password is not None:
         if public_origin is None:
             raise ValueError("配置访问口令时必须同时配置 HTTPS 地址")
@@ -563,11 +579,22 @@ def create_web_app(
     extended: dict[str, float] = {}
     account_db: list[AccountStore] = []
     checkpoints: dict[str, object] = {"task": None, "again": False}
+    started = time.time()
 
     def accounts() -> AccountStore:
         if not account_db:
-            account_db.append(AccountStore(root / config["paths"]["app_db"]))
+            account_db.append(
+                AccountStore(
+                    root / config["paths"]["app_db"], cost_defaults=config.get("cost_control")
+                )
+            )
         return account_db[0]
+
+    # Site-wide bound on simultaneous model requests; the admin page can change it live.
+    gate = ConcurrencyGate(
+        lambda: accounts().costs.settings()["max_concurrent_calls"],
+        lambda: accounts().costs.settings()["queue_wait_s"],
+    )
 
     def live_roots():
         roots = {id(s): s for s in [*sessions.values(), *accounts_live.values()]}
@@ -891,6 +918,8 @@ def create_web_app(
 
     @app.exception_handler(QuotaExceeded)
     async def quota_refused(request: Request, exc: QuotaExceeded):
+        if isinstance(exc, SiteLimited):
+            return problem(503, exc.code, exc.message, headers={"Retry-After": "60"})
         return problem(403, exc.code, exc.message)
 
     def keep_login(key):
@@ -915,7 +944,11 @@ def create_web_app(
                 user_id=user_id,
                 provider="demo" if provider == "demo" else None,
                 **(
-                    {"model_transform": lambda model: MeteredModel(model, accounts(), user_id)}
+                    {
+                        "model_transform": lambda model: MeteredModel(
+                            model, accounts(), user_id, gate
+                        )
+                    }
                     if provider != "demo"
                     else {}
                 ),
@@ -2264,6 +2297,42 @@ def create_web_app(
     for slug, filename in PAGES.items():
         app.add_api_route(f"/{slug}", page(filename), methods=["GET"], include_in_schema=False)
 
+    async def drop_logins(user_id, ended):
+        """After an administrator ends an account's logins, forget them in memory too."""
+        for key in [k for k, s in sessions.items() if s.account and token_digest(k) in ended]:
+            sessions.pop(key, None)
+            extended.pop(key, None)
+        current = accounts_live.get(user_id)
+        if current is not None and not keys_of(current):
+            if not any(c.lock.locked() for c in family(current)):
+                await release(current)
+
+    def current_account(request: Request):
+        key = request.cookies.get(COOKIE, "")
+        session = resolve(key) if key else None
+        return session if session is not None and session.account else None
+
+    install_admin(
+        app,
+        AdminContext(
+            accounts=accounts,
+            current=current_account,
+            drop_logins=drop_logins,
+            gate=gate,
+            admins=admins,
+            monitor_token=monitor_token,
+            monitor_status=monitor_status,
+            release_file=release_file,
+            data_dir=(root / config["paths"]["app_db"]).parent,
+            stats=lambda: {
+                "instance": instance,
+                "started_at": started,
+                "uptime_s": round(time.time() - started),
+                "live_sessions": len(live_roots()),
+            },
+        ),
+    )
+
     app.mount("/static", StaticFiles(directory=STATIC), name="static")
     return app
 
@@ -2277,6 +2346,11 @@ if __name__ == "__main__":
     parser.add_argument("--port", type=int, default=8765)
     parser.add_argument("--public-origin", help="公开访问的 HTTPS 地址（不含路径）")
     parser.add_argument("--share-password-file", type=Path, help="可选的本地访问口令文件")
+    parser.add_argument(
+        "--admin-users",
+        default=os.environ.get("ZHIMING_ADMIN_USERS"),
+        help="可打开 /admin 管理页的账号名，逗号分隔（默认读取 ZHIMING_ADMIN_USERS）",
+    )
     args = parser.parse_args()
     password = (
         args.share_password_file.read_text(encoding="utf-8").strip()
@@ -2284,7 +2358,12 @@ if __name__ == "__main__":
         else None
     )
     uvicorn.run(
-        create_web_app(public_origin=args.public_origin, share_password=password),
+        create_web_app(
+            public_origin=args.public_origin,
+            share_password=password,
+            admin_users=args.admin_users,
+            monitor_token=os.environ.get("ZHIMING_MONITOR_TOKEN") or None,
+        ),
         host="127.0.0.1",
         port=args.port,
         proxy_headers=True,

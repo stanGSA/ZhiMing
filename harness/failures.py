@@ -39,7 +39,7 @@ def failure(session, status, reason, text, *, retryable=True):
 
 def model_failure(session, exc):
     if isinstance(exc, QuotaExceeded):
-        return failure(session, "quota_exhausted", exc.code, exc.message, retryable=False)
+        return failure(session, "quota_exhausted", exc.code, exc.message, retryable=exc.retryable)
     status = getattr(exc, "status_code", None)
     code = getattr(exc, "code", None)
     if code in ("context_length_exceeded", "max_context_length_exceeded"):

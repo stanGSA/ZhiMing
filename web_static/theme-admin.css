@@ -1,0 +1,407 @@
+/* 管理台 · 素纸墨线：信息密度优先，状态色只表示状态，并总与图标、文字同时出现。 */
+:root {
+  --body: var(--font-sans);
+  --accent-2: #1f4c6b;
+  --good: #2f6b3a;
+  --warning: #8a5a00;
+  --critical: #9b2c22;
+  --info: #3d4f63;
+  --series: #1f4c6b;
+  --series-alt: #6b8fab;
+  --grid: rgba(28, 27, 25, 0.1);
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    color-scheme: dark;
+    --bg: #121416;
+    --surface: #181b1e;
+    --surface-2: #1f2327;
+    --ink: #e7e4dc;
+    --muted: #a7a399;
+    --line: rgba(231, 228, 220, 0.16);
+    --line-strong: rgba(231, 228, 220, 0.42);
+    --accent: #e7e4dc;
+    --accent-hover: #ffffff;
+    --accent-ink: #121416;
+    --accent-2: #8fb8d8;
+    --focus: #8fb8d8;
+    --danger: #f08a7e;
+    --good: #7cc48a;
+    --warning: #e2b25a;
+    --critical: #f08a7e;
+    --info: #a9bdd1;
+    --series: #8fb8d8;
+    --series-alt: #4f7390;
+    --grid: rgba(231, 228, 220, 0.1);
+  }
+}
+
+.zm-mark {
+  background: var(--ink);
+  color: var(--bg);
+}
+.adm {
+  padding-top: 32px;
+  padding-bottom: 72px;
+  display: flex;
+  flex-direction: column;
+  gap: 36px;
+}
+.adm h1 {
+  font-family: var(--font-serif);
+  font-size: 30px;
+  letter-spacing: 0.16em;
+  margin: 6px 0 4px;
+}
+.adm h2 {
+  font-family: var(--font-serif);
+  font-size: 21px;
+  letter-spacing: 0.1em;
+  margin: 0;
+}
+.adm h3 {
+  font-size: 15px;
+  margin: 18px 0 8px;
+  color: var(--muted);
+  letter-spacing: 0.08em;
+}
+.adm-meta,
+.adm-hint {
+  color: var(--muted);
+  font-size: 13px;
+  margin: 0;
+}
+.adm-visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+}
+.adm-error {
+  margin: 0;
+  padding: 10px 14px;
+  border: 1px solid var(--critical);
+  color: var(--critical);
+  background: var(--surface);
+}
+.adm-auto {
+  font-size: 13px;
+}
+
+/* ---------- Tiles ---------- */
+.adm-tiles {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 14px;
+}
+.adm-tile {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  padding: 16px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+}
+.adm-tile-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+}
+.adm-tile h3 {
+  margin: 0;
+  font-size: 13px;
+}
+.adm-tile-value {
+  margin: 0;
+  font-size: 24px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  overflow-wrap: anywhere;
+}
+.adm-tile-detail {
+  margin: 0;
+  font-size: 12.5px;
+  color: var(--muted);
+  line-height: 1.6;
+}
+.adm-meter {
+  height: 6px;
+  background: var(--surface-2);
+  border-radius: 3px;
+  overflow: hidden;
+}
+.adm-meter > span {
+  display: block;
+  height: 100%;
+  background: var(--series);
+  border-radius: 3px;
+}
+.adm-meter > .adm-meter-high {
+  background: var(--warning);
+}
+.adm-meter > .adm-meter-full {
+  background: var(--critical);
+}
+
+/* ---------- Status badges ---------- */
+.adm-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+  padding: 1px 8px 1px 4px;
+  border: 1px solid currentColor;
+  border-radius: 999px;
+}
+.adm-badge-icon {
+  display: inline-grid;
+  place-items: center;
+  width: 16px;
+  height: 16px;
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1;
+}
+.adm-ok {
+  color: var(--good);
+}
+.adm-warning {
+  color: var(--warning);
+}
+.adm-critical {
+  color: var(--critical);
+}
+.adm-unknown,
+.adm-info {
+  color: var(--info);
+}
+
+/* ---------- Sections and tables ---------- */
+.adm-section {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.adm-section-head {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  border-bottom: 1px solid var(--line-strong);
+  padding-bottom: 8px;
+}
+.adm-scroll {
+  overflow-x: auto;
+}
+.adm-scroll > .adm-table {
+  min-width: 720px;
+}
+.adm-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13.5px;
+}
+.adm-table th,
+.adm-table td {
+  text-align: left;
+  padding: 8px 10px;
+  border-bottom: 1px solid var(--line);
+  vertical-align: top;
+}
+.adm-table th {
+  color: var(--muted);
+  font-weight: 600;
+  font-size: 12.5px;
+  white-space: nowrap;
+}
+.adm-num {
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.adm-detail {
+  color: var(--muted);
+  overflow-wrap: anywhere;
+}
+.adm-empty {
+  color: var(--muted);
+}
+.adm-actions {
+  white-space: nowrap;
+}
+.adm-actions .btn-text {
+  min-height: 32px;
+  padding: 0 6px;
+}
+.adm-events {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 13.5px;
+}
+.adm-details summary {
+  cursor: pointer;
+  color: var(--accent-2);
+  font-size: 13px;
+}
+
+/* ---------- Usage chart: one series, bars anchored to the baseline ---------- */
+.adm-chart {
+  margin: 0;
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 8px;
+  height: 200px;
+}
+.adm-axis {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  font-size: 11px;
+  color: var(--muted);
+  text-align: right;
+  padding-bottom: 20px;
+  font-variant-numeric: tabular-nums;
+}
+.adm-plot {
+  display: flex;
+  align-items: stretch;
+  gap: 2px;
+  border-bottom: 1px solid var(--line-strong);
+  background-image: linear-gradient(var(--grid) 1px, transparent 1px);
+  background-size: 100% 25%;
+  position: relative;
+  margin-bottom: 20px;
+}
+.adm-col {
+  flex: 1 1 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  position: relative;
+  min-width: 0;
+  cursor: default;
+}
+.adm-col:hover .adm-bar,
+.adm-col:focus .adm-bar {
+  background: var(--accent-2);
+  filter: brightness(1.15);
+}
+.adm-col:focus {
+  outline: 2px solid var(--focus);
+  outline-offset: 1px;
+}
+.adm-bar {
+  background: var(--series);
+  border-radius: 4px 4px 0 0;
+  width: 100%;
+}
+.adm-bar-errors {
+  background: repeating-linear-gradient(
+    135deg,
+    var(--series) 0 4px,
+    var(--series-alt) 4px 7px
+  );
+}
+.adm-tick {
+  position: absolute;
+  bottom: -20px;
+  left: 0;
+  font-size: 11px;
+  color: var(--muted);
+  white-space: nowrap;
+}
+.adm-tooltip {
+  position: absolute;
+  z-index: 20;
+  max-width: 260px;
+  padding: 6px 10px;
+  background: var(--ink);
+  color: var(--bg);
+  font-size: 12.5px;
+  pointer-events: none;
+}
+
+/* ---------- Controls ---------- */
+.adm-pause {
+  padding: 14px 16px;
+  border: 1px solid var(--line-strong);
+  background: var(--surface);
+}
+.adm-pause p {
+  margin: 0 0 10px;
+}
+.adm-pause.adm-paused {
+  border-color: var(--critical);
+}
+.adm-pause.adm-paused p {
+  color: var(--critical);
+  font-weight: 600;
+}
+.adm-inline {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 12px;
+}
+.adm-inline .field {
+  flex: 1 1 240px;
+}
+.adm-danger {
+  background: var(--critical);
+  border-color: var(--critical);
+}
+.adm-form {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.adm-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 14px 18px;
+}
+.adm-grid .adm-hint {
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+/* ---------- System facts ---------- */
+.adm-facts {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 10px 18px;
+  margin: 0;
+}
+.adm-facts div {
+  border-bottom: 1px solid var(--line);
+  padding-bottom: 6px;
+}
+.adm-facts dt {
+  font-size: 12px;
+  color: var(--muted);
+}
+.adm-facts dd {
+  margin: 0;
+  overflow-wrap: anywhere;
+  font-variant-numeric: tabular-nums;
+}
+
+@media (max-width: 640px) {
+  .adm h1 {
+    font-size: 24px;
+  }
+  .adm-chart {
+    height: 160px;
+  }
+  .zm-nav {
+    gap: 18px;
+    font-size: 14px;
+  }
+}

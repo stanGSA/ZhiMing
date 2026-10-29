@@ -4,7 +4,7 @@
 const $ = (selector) => document.querySelector(selector);
 const tabs = Array.from(document.querySelectorAll(".gate-tab"));
 const params = new URLSearchParams(location.search);
-const NEXT = /^\/(ask|bazi|astro|tarot|name|dream|daily)$/.test(params.get("next") || "")
+const NEXT = /^\/(ask|bazi|astro|tarot|name|dream|daily|admin)$/.test(params.get("next") || "")
   ? params.get("next")
   : "/ask";
 let mode = "login";
@@ -138,7 +138,7 @@ async function load() {
   if (info.account) {
     $("#signed-name").textContent = info.account.username;
     if (info.account.quota)
-      $("#signed-quota").textContent = `免费额度剩余 ${info.account.quota.remaining.toLocaleString("zh-CN")} / 250,000 token，累计使用，不按月重置。`;
+      $("#signed-quota").textContent = `免费额度剩余 ${info.account.quota.remaining.toLocaleString("zh-CN")} / ${info.account.quota.limit.toLocaleString("zh-CN")} token，累计使用，不按月重置。`;
     $("#signed-in").hidden = false;
     $("#account-panel").hidden = true;
     select($("#tab-account"));
