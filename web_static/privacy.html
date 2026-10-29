@@ -1,0 +1,223 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#f4f1ea" />
+    <meta name="description" content="知命网页版收集哪些信息、保存在哪里、交给谁、保留多久，以及如何导出和删除。" />
+    <title>知命 · 隐私说明</title>
+    <link rel="icon" href="/static/favicon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="/static/base.css" />
+    <link rel="stylesheet" href="/static/theme-doc.css" />
+  </head>
+  <body data-page="privacy">
+    <header class="zm-header">
+      <div class="wrap zm-bar">
+        <a class="zm-brand" href="/ask" aria-label="知命 · 问道">
+          <span class="zm-mark" aria-hidden="true">知<br />命</span>
+          <span class="zm-wordmark">知命</span>
+        </a>
+        <nav class="zm-nav" aria-label="页面">
+          <a href="/ask">问道</a>
+          <a href="/login">登录 / 注册</a>
+          <a href="/privacy" aria-current="page">隐私说明</a>
+        </nav>
+      </div>
+    </header>
+
+    <main class="wrap doc">
+      <article class="doc-body" aria-labelledby="doc-title">
+        <span class="kicker">PRIVACY · 隐私</span>
+        <h1 id="doc-title">隐私说明</h1>
+        <p class="doc-meta">版本 2026-10-29 · 适用于知命网页版</p>
+
+        <p class="doc-lead">
+          知命由部署者在自己的电脑上运行：本机自用时，部署者就是你自己；通过「朋友体验」链接使用时，部署者是分享链接的人。本说明介绍网页版收集哪些信息、保存在哪里、交给谁、保留多久，以及你可以怎样查看、导出和删除。
+        </p>
+
+        <nav class="doc-toc" aria-label="目录">
+          <a href="#collect">一、处理的信息</a>
+          <a href="#sensitive">二、敏感个人信息</a>
+          <a href="#storage">三、存储位置</a>
+          <a href="#share">四、交给第三方的信息</a>
+          <a href="#retention">五、保留期限</a>
+          <a href="#rights">六、查看、导出与删除</a>
+          <a href="#security">七、安全措施</a>
+          <a href="#cookies">八、Cookie 与浏览器存储</a>
+          <a href="#minors">九、未成年人</a>
+          <a href="#limits">十、解读的性质</a>
+          <a href="#changes">十一、更新与联系</a>
+        </nav>
+
+        <section id="collect">
+          <h2>一、处理的信息</h2>
+          <div class="doc-table">
+            <table>
+              <thead>
+                <tr>
+                  <th scope="col">信息</th>
+                  <th scope="col">从哪里来</th>
+                  <th scope="col">用来做什么</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>账号名、密码散列、注册时间、同意的隐私说明版本</td>
+                  <td>注册时填写</td>
+                  <td>登录与识别账号。密码只保存加盐散列，不保存明文。</td>
+                </tr>
+                <tr>
+                  <td>生辰档案：公历出生日期与时间、出生地点（行政区、经纬度、时区）、性别、排盘口径</td>
+                  <td>你在出生资料表中填写</td>
+                  <td>排八字、绘星盘、推算运势</td>
+                </tr>
+                <tr>
+                  <td>咨询内容：问题、梦境描述、姓名、对话中说明的居住地或咨询时区</td>
+                  <td>你在对话中输入</td>
+                  <td>生成解读与回答追问</td>
+                </tr>
+                <tr>
+                  <td>解读记录：每份解读、历次追问、牌面与计算结果、专家报告与审校意见</td>
+                  <td>程序计算与模型生成</td>
+                  <td>「足迹」回看、继续追问、核对事实</td>
+                </tr>
+                <tr>
+                  <td>运行日志（trace）：每轮的工具调用、参数与结果、耗时与用量</td>
+                  <td>程序自动记录</td>
+                  <td>排查问题、核对解读引用的事实</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <p>
+            不收集手机号、邮箱、通讯录、精确定位或设备指纹；页面不含统计分析、广告或第三方追踪脚本，所有页面资源都从本服务加载。
+          </p>
+        </section>
+
+        <section id="sensitive">
+          <h2>二、敏感个人信息</h2>
+          <p>
+            出生日期时间与地点、性别、姓名，以及你在问题和梦境里可能提到的健康、情感、财务等内容，可能属于敏感个人信息。请只填写你愿意提供的内容：不填出生资料也可以使用塔罗与解梦，性别只用于八字大运，可以不填。
+          </p>
+        </section>
+
+        <section id="storage">
+          <h2>三、存储位置</h2>
+          <p>
+            所有记录都保存在运行本服务的电脑上：业务数据在 <code>data/app.db</code>（SQLite 数据库），运行日志在 <code>runs/</code> 目录。这里说的「云端保存」是指保存在这台服务电脑上，跟随账号而不跟随浏览器，可以换设备登录查看；不会上传到第三方网盘。部署者能够直接访问这些文件。
+          </p>
+        </section>
+
+        <section id="share">
+          <h2>四、交给第三方的信息</h2>
+          <ul>
+            <li>
+              使用「真实模型」时，为生成解读，本轮对话内容、解读需要的画像字段（例如出生资料）和工具计算结果会发送给部署者配置的模型服务（默认是 DeepSeek 官方接口，也可能是其他 OpenAI 兼容服务或 Anthropic）。模型服务按其自身的隐私政策处理和留存数据，本服务无法删除这些留存。
+            </li>
+            <li>「离线演示」不调用任何模型，数据不离开服务电脑。</li>
+            <li>账号名、密码、登录凭证不会发送给模型服务。</li>
+            <li>
+              「朋友体验」通过 Cloudflare 隧道传输，全程 HTTPS 加密，并需要分享人提供的访问口令。
+            </li>
+          </ul>
+          <p>除此之外，不向任何人出售、出租或提供你的信息。</p>
+        </section>
+
+        <section id="retention">
+          <h2>五、保留期限</h2>
+          <ul>
+            <li>
+              <b>访客</b>：最后一次访问后闲置 12 小时，自动删除该访客的生辰、画像、解读、计算缓存与运行日志。服务重启后旧的访客身份无法恢复，其数据同样在期限到达时删除。
+            </li>
+            <li>
+              <b>账号</b>：记录一直保留，直到你删除单条解读、清除全部记录或注销账号。登录状态在最后一次使用后保持 30 天，过期后重新登录即可，记录不受影响。
+            </li>
+            <li>
+              对话窗口里正在进行的对话只保存在服务运行期间的内存中；完成的解读与追问才写入记录。
+            </li>
+          </ul>
+        </section>
+
+        <section id="rights">
+          <h2>六、查看、导出与删除</h2>
+          <ul>
+            <li><b>查看</b>：页眉「足迹」可按功能筛选、按关键词搜索全部解读，并打开查看历次追问。</li>
+            <li>
+              <b>导出</b>：「足迹」→「导出记录」下载一个 JSON 文件，包含账号信息、生辰档案、画像及其修改记录、全部解读与追问。排盘缓存等可由生辰重新计算的数据不在其中。
+            </li>
+            <li>
+              <b>删除单条</b>：在「足迹」中删除一份解读，它的追问、专家报告、审校意见，以及运行日志中标注了这份解读编号的记录会一并删除。
+            </li>
+            <li>
+              <b>清除全部</b>：页脚「清除我的记录」删除生辰档案、画像、全部解读、计算缓存与运行日志；账号本身保留。
+            </li>
+            <li>
+              <b>注销账号</b>：在页眉的账号菜单中输入密码后注销，账号、全部记录与所有设备上的登录状态一并删除，且无法恢复。
+            </li>
+            <li><b>更正</b>：随时修改生辰档案；修改后，按旧生辰做的解读会标注「旧生辰解读」。</li>
+          </ul>
+          <p>
+            删除时数据库会覆盖被删除的数据页。以下内容不在本服务的删除范围内：模型服务的留存、部署者自行制作的系统备份，以及你已经导出或复制的文件。
+          </p>
+        </section>
+
+        <section id="security">
+          <h2>七、安全措施</h2>
+          <ul>
+            <li>密码用 scrypt 加盐散列保存；数据库只保存登录凭证的 SHA-256 摘要，复制数据库也无法直接冒用登录。</li>
+            <li>登录与注册限制失败尝试次数；修改密码后，其他设备上的登录全部失效。</li>
+            <li>Cookie 设为 HttpOnly 与 SameSite=Strict，朋友体验模式下另设 Secure；所有写操作都校验请求来源。</li>
+            <li>页面启用内容安全策略（CSP），只运行本服务提供的脚本。</li>
+            <li>服务默认只监听本机 127.0.0.1；对外分享必须使用 HTTPS 地址和访问口令。</li>
+          </ul>
+          <p>
+            没有任何系统能保证绝对安全。目前不能通过邮箱或短信找回密码，忘记密码时只能注册新账号，原账号的记录无法取回，请妥善保管密码。
+          </p>
+        </section>
+
+        <section id="cookies">
+          <h2>八、Cookie 与浏览器存储</h2>
+          <ul>
+            <li><code>zhiming_session</code>（Cookie）：维持访客或登录身份。访客 12 小时、账号 30 天未使用后失效。</li>
+            <li>
+              <code>zhiming.account</code>（浏览器本地存储）：记下这台浏览器上次登录的账号名，用于在登录过期时提醒你重新登录；退出登录时清除。
+            </li>
+            <li><code>zhiming.notice</code>（浏览器会话存储）：登录后显示一次的欢迎提示，关闭标签页即清除。</li>
+          </ul>
+        </section>
+
+        <section id="minors">
+          <h2>九、未成年人</h2>
+          <p>
+            本服务面向成年人。未满 14 周岁的儿童请勿在未经监护人同意的情况下注册账号或填写个人信息；14 至 18 周岁的用户请在监护人指导下使用。
+          </p>
+        </section>
+
+        <section id="limits">
+          <h2>十、解读的性质</h2>
+          <p>
+            解读仅供参考与自我反思，不构成医疗、法律、投资或心理治疗建议。识别到自伤风险时，服务会暂停占卜并提供求助热线；这一安全确认状态只在本次服务运行期间保留。
+          </p>
+        </section>
+
+        <section id="changes">
+          <h2>十一、更新与联系</h2>
+          <p>
+            本说明内容变化时会更新版本日期，注册账号时会记录你同意的版本。对个人信息处理有疑问、需要协助导出或删除时，请联系部署者：本机自用即你本人；使用朋友体验时，请联系把链接分享给你的人。
+          </p>
+        </section>
+
+        <p class="doc-actions">
+          <a class="btn btn-primary" href="/ask">回到问道</a>
+          <a class="btn btn-ghost" href="/login?tab=account">登录 / 注册</a>
+        </p>
+      </article>
+    </main>
+
+    <footer class="zm-footer">
+      <div class="wrap zm-bar">
+        <p>致虚极，守静笃。——《道德经》 · 解读仅供参考与自我反思</p>
+      </div>
+    </footer>
+  </body>
+</html>

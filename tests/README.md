@@ -15,7 +15,7 @@ uv run pytest -q tests/harness        # 只跑某个模块
 | `validation/` | 回答校验：表达层修正、分层正文的事实绑定、否定与日期 |
 | `plugins/` | 塔罗、占星与八字计算和集成、姓名五格、解梦、每日运势 |
 | `knowledge/` | 知识库构建、审核三态与账本、模型交叉审核、校准与活动验收 |
-| `web/` | 网页 API、朋友体验分享、浏览器回归（Playwright，仅 Linux CI 运行） |
+| `web/` | 网页 API、账号与云端记录、足迹管理与导出、统一错误回复与隐私说明、朋友体验分享、浏览器回归（Playwright，仅 Linux CI 运行） |
 | `mcp_server/` | MCP server：用 SDK 的内存客户端调用全部工具，比对参考盘、八字边界与固定 seed 抽牌，结构化报错，另有一次 stdio 启动；需要 `--extra mcp`，未安装时跳过 |
 | `tooling/` | `scripts/` 下的诊断、数据下载和对照工具，`evals.report` 评测总表 |
 

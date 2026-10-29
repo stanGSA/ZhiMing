@@ -516,3 +516,90 @@ def test_name_calculation_and_chosen_form_survive_navigation_and_reload(site, ch
     expect(page.locator("#name-board")).to_be_hidden()
     expect(page.locator("#name-given")).to_have_value("")
     page.close()
+
+
+def register_from_entrance(page, base, username):
+    page.goto(f"{base}/login?tab=account&next=/tarot")
+    page.click("[data-mode=register]")
+    page.fill("#account-name", username)
+    page.fill("#account-password", "abc12345")
+    page.fill("#account-confirm", "abc12345")
+    page.check("#accept-privacy")
+    with page.expect_navigation(url=f"{base}/tarot"):
+        page.click("#account-submit")
+    expect(page.locator("#account-button")).to_have_text(username)
+
+
+def test_registering_keeps_the_guest_reading_and_manages_history(site, chromium):
+    base, _ = site
+    page, _ = open_tarot(chromium, base)
+    answered(page, lambda: draw(page, "换工作的时机", 1, 2, 3))
+    page.click("#new-question")
+    answered(page, lambda: draw(page, "感情里的功课", 10, 20, 30))
+
+    page.goto(f"{base}/login?tab=account")
+    expect(page.locator("#keep-guest-row")).to_contain_text("2 条解读")
+    page.click("[data-mode=register]")
+    page.fill("#account-name", "云")
+    page.fill("#account-password", "abc12345")
+    page.fill("#account-confirm", "abc12345")
+    page.click("#account-submit")
+    expect(page.locator("#account-error")).to_have_text("请先阅读并同意《隐私说明》。")
+    page.check("#accept-privacy")
+    page.click("#account-submit")
+    expect(page.locator("#account-error")).to_contain_text("账号名需为 2–32 个字符")
+    register_from_entrance(page, base, "云端浏览器")
+    expect(page.locator("#toast")).to_contain_text("2 条访客记录已保存到账号")
+    expect(page.locator("#history-list .history-item")).to_have_count(2)
+
+    page.click("#open-history")
+    expect(page.locator("#history-count")).to_have_text("共 2 份解读")
+    page.fill("#history-search", "感情")
+    expect(page.locator("#history-list .history-item")).to_have_count(1)
+    expect(page.locator("#history-count")).to_have_text("找到 1 份解读")
+    page.fill("#history-search", "没有这个词")
+    expect(page.locator(".history-empty")).to_contain_text("没有找到符合条件的解读")
+    page.fill("#history-search", "")
+    page.select_option("#history-filter", "tarot")
+    expect(page.locator("#history-list .history-item")).to_have_count(2)
+    page.select_option("#history-filter", "")
+    page.locator(".history-row:has-text('换工作的时机') .history-delete").click()
+    expect(page.locator("#confirm-dialog h2")).to_have_text("删除这份解读？")
+    page.click("#confirm-dialog button[value=confirm]")
+    expect(page.locator("#history-list .history-item")).to_have_count(1)
+    expect(page.locator("#history-list")).not_to_contain_text("换工作的时机")
+    page.close()
+
+
+def test_an_expired_login_says_so_and_offers_to_sign_in_again(site, chromium):
+    base, _ = site
+    context = chromium.new_context(viewport={"width": 1280, "height": 900})
+    page = context.new_page()
+    page.goto(f"{base}/ask")
+    expect(page.locator("#account-button")).to_have_text("登录")
+    register_from_entrance(page, base, "过期用户")
+    page.goto(f"{base}/ask")
+    page.click("#account-button")
+    expect(page.locator("#account-dialog h2")).to_have_text("过期用户")
+    page.keyboard.press("Escape")
+    context.clear_cookies()
+    page.reload()
+    expect(page.locator("#notice")).to_contain_text("登录已过期")
+    expect(page.locator("#account-button")).to_have_text("登录")
+    page.get_by_role("button", name="重新登录").click()
+    page.wait_for_url(f"{base}/login?tab=account&next=%2Fask")
+    expect(page.locator("#panel-account")).to_be_visible()
+    context.close()
+
+
+def test_a_failing_service_is_explained_in_plain_words(site, chromium):
+    base, _ = site
+    page, _ = open_tarot(chromium, base)
+    page.route(
+        "**/api/history*",
+        lambda route: route.fulfill(status=502, body="<html>Bad gateway</html>"),
+    )
+    page.click("#open-history")
+    page.fill("#history-search", "任意")
+    expect(page.locator("#toast")).to_have_text("服务暂时无法连接，请稍后重试。")
+    page.close()

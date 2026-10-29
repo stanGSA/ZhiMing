@@ -1183,6 +1183,155 @@ main {
   color: #fff;
 }
 
+/* ---------- Account, notices, history management ---------- */
+.zm-account {
+  max-width: 12em;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.zm-account.signed::before {
+  content: "";
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  margin-right: 8px;
+  border-radius: 50%;
+  background: currentColor;
+  vertical-align: middle;
+}
+.notice {
+  position: sticky;
+  top: 0;
+  z-index: 35;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 8px 18px;
+  padding: 10px var(--gutter);
+  background: var(--ink);
+  color: var(--bg);
+  font-size: 14px;
+  line-height: 1.7;
+}
+.notice .btn {
+  color: inherit;
+  border-color: currentColor;
+}
+.notice-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.drawer-tools {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 12px;
+  padding: 12px 24px 0;
+}
+.drawer-tools .underline-input {
+  font-size: 15px;
+}
+.drawer-filter {
+  min-height: 40px;
+  background: transparent;
+  border: 1px solid var(--line-strong);
+  color: var(--ink);
+  padding: 0 8px;
+  font-size: 14px;
+}
+.drawer-filter option {
+  background: var(--surface);
+  color: var(--ink);
+}
+.drawer-count {
+  padding: 8px 24px 0;
+  color: var(--muted);
+  font-family: var(--font-sans);
+  font-size: 12px;
+  letter-spacing: 0.08em;
+}
+.drawer-list {
+  flex: 1 1 auto;
+}
+.history-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  border-bottom: 1px solid var(--line);
+}
+.history-row .history-item {
+  flex: 1;
+  min-width: 0;
+  border-bottom: 0;
+}
+.btn.history-delete {
+  flex: none;
+  margin-top: 10px;
+  padding: 0 4px;
+  min-height: 32px;
+  font-size: 13px;
+  color: var(--muted);
+}
+.btn.history-delete:not(:disabled):hover {
+  color: var(--danger);
+}
+#history-more {
+  align-self: center;
+  margin: 0 24px 12px;
+}
+.drawer-foot {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 16px;
+  padding: 12px 24px 18px;
+  border-top: 1px solid var(--line);
+}
+.drawer-note {
+  flex-basis: 100%;
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.7;
+}
+.zm-dialog.account-dialog {
+  width: min(500px, calc(100vw - 32px));
+  max-width: min(500px, calc(100vw - 32px));
+}
+.account-dialog > .btn-row {
+  margin-bottom: 18px;
+}
+.account-section {
+  border-top: 1px solid var(--line);
+  padding: 12px 0;
+}
+.account-section summary {
+  cursor: pointer;
+  letter-spacing: 0.12em;
+}
+.account-section.danger summary {
+  color: var(--danger);
+}
+.account-form {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding-top: 12px;
+}
+.account-form p {
+  margin: 0;
+  font-size: 14px;
+}
+.account-form .btn {
+  align-self: flex-start;
+}
+.account-link {
+  display: inline-block;
+  margin-top: 8px;
+  font-size: 13px;
+}
+
 /* ---------- Responsive ---------- */
 @media (max-width: 1100px) {
   .consult-grid,
