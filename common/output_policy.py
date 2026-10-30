@@ -57,12 +57,27 @@ NEGATED_FRAME = re.compile(
     r"|(?:别|不要)(?:以为|认为|觉得)"
 )
 # Between a framing verb and the claim, accept a subject/time modifier, not another
-# predicate ("不认为这很难你一定会成功" negates "很难", not "一定会成功").
+# predicate ("不认为这很难你一定会成功" negates "很难", not "一定会成功"). A subject may be
+# what the question is about ("不代表这只股票一定会涨", "不意味着你们的关系必然好转"); only
+# nouns are listed, so a predicate still cannot slip in between.
+TOPIC = (
+    r"结果|事件|这件事|关系|感情|婚姻|复合|投资|股票|股价|收益|积蓄|全部投入|全仓|考试|成绩|"
+    r"复习|跳槽|换工作|工作|事业|offer|面试|录用|升职|公司|选择|决定|计划|结局|事情|局面"
+)
 CLAIM_SUBJECT = (
-    r"(?:你们|我们|他们|她们|你|您|我|他|她|结果|事件|这件事)?"
+    r"(?:(?:你们|我们|他们|她们|你|您|我|他|她)(?:的|俩)?)?"
+    r"(?:这只|这个|这次|这段|这份|这笔|这些|这种|那只|那个|新的?)?"
+    rf"(?:{TOPIC})?"
     r"(?:就|也|都|会|能|将|真的|最终|近期|这个月|下个月|以后|未来|现实中)*"
 )
 NEGATED_SUBJECT = re.compile(rf"(?:并非|绝非|并不是|不是)(?:说|指)?{CLAIM_SUBJECT}$")
+# The certainty word as a noun under a negation: "这不是一种必然", "没有什么是注定的",
+# "不必把这理解为必然".
+NEGATED_NOUN = re.compile(
+    r"(?:不是|并不是|并非|绝非)(?:一种|一个)$"
+    r"|(?:没有|并没有)(?:什么|哪种|哪个|任何)(?:结果|事情|事|结局)?(?:是|会是)$"
+    r"|(?:不必|不要|别|不用)把(?:这|它|这些|这张牌|牌面)?(?:理解为|看作|看成|当作|当成|视为)$"
+)
 CLAUSE_START = re.compile(r".*[，,。；;：:！!？?\n]")
 
 HEALTH = re.compile(
@@ -179,6 +194,7 @@ def negates_claim(before: str) -> bool:
     return bool(
         DIRECT_NEGATION.search(before)
         or NEGATED_SUBJECT.search(before)
+        or NEGATED_NOUN.search(before)
         or any(
             re.fullmatch(CLAIM_SUBJECT, before[match.end() :])
             for match in NEGATED_FRAME.finditer(before)

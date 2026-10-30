@@ -7,6 +7,7 @@ from types import SimpleNamespace
 import pytest
 
 from common.output_policy import HEALTH_NOTE, care_advice, care_error, certainty_claim
+from common.validation import risk_note
 from plugins.astro.validation import validate_output
 from scripts.compare_layers import rejection_category, repository_metadata
 from tests.validation.test_layered_fact_binding import (
@@ -49,6 +50,50 @@ async def test_unrelated_negative_predicate_cannot_cancel_certainty(runtime, tex
 )
 def test_direct_negative_complements_remain_allowed(text):
     assert certainty_claim([text]) is None
+
+
+# The tarot tuning set (docs/verification/p1/tarot/analysis.md): every card meaning ends in
+# "不代表事件必然发生", and the writers say the same of what the question is about.
+@pytest.mark.parametrize(
+    "text",
+    [
+        "这不代表这只股票一定会涨。",
+        "牌面不代表股价必然上涨。",
+        "这张牌并不代表投资必然亏损。",
+        "不代表全部投入必然亏损。",
+        "这不代表你们的关系一定会好转。",
+        "不代表关系必然走向破裂。",
+        "不代表考试一定会失利。",
+        "不意味着跳槽必然成功。",
+        "并不是说这只股票一定会涨。",
+        "这不是一种必然。",
+        "并没有什么是必然的。",
+        "没有哪种结果是注定的。",
+        "不必把这理解为必然。",
+    ],
+)
+def test_a_negated_claim_about_the_question_s_subject_is_allowed(text):
+    assert certainty_claim([text]) is None
+
+
+@pytest.mark.parametrize(
+    "text",
+    [
+        "这只股票一定会涨。",
+        "你们的关系必然好转。",
+        "这不代表关系必然好转你们一定会分手。",
+        "不代表投资失败你一定会赚钱。",
+        "这不是一种选择，你注定要走这条路。",
+        "没有什么好担心的你一定会成功。",
+        "没有问题，你一定会成功。",
+    ],
+)
+async def test_a_subject_or_noun_form_does_not_hide_a_separate_claim(runtime, text):
+    assert certainty_claim([text])
+    draft = await tarot_draft(runtime)
+    draft["sections"][0]["body"] = text
+    error, _ = check(runtime, draft)
+    assert error and "确定性说法" in error
 
 
 @pytest.mark.parametrize("field", ["sections", "summary", "evidence"])
@@ -241,3 +286,29 @@ def test_saved_diagnostics_are_reclassified_without_rewriting_them():
     assert summary["disclosure_rejections"] == 1
     assert summary["expression_rejections"] == summary["other_rejections"] == 0
     assert [d["category"] for d in details] == ["other", "expression"]
+
+
+INVESTMENT = "只用塔罗三张牌帮我反思：是否应该把积蓄全部买入一只股票？"
+
+
+async def high_risk_draft(runtime, text):
+    draft = await tarot_draft(runtime)
+    runtime.session.state["question"] = INVESTMENT
+    draft["sections"][0]["body"] = text
+    draft["safety"] = {"flag": True, "note": risk_note(INVESTMENT)}
+    return draft
+
+
+@pytest.mark.parametrize("text", ["下个月不一定会顺利。", "这不代表这只股票一定会涨。"])
+async def test_a_negated_claim_passes_the_high_risk_check(runtime, text):
+    # The high-risk check searched the raw JSON for 一定会, so the hedge itself was refused as
+    # "不能给出健康、投资或生死的确定性结论", which the pipeline takes for a safety failure.
+    error, _ = check(runtime, await high_risk_draft(runtime, text))
+    assert error is None
+
+
+async def test_the_high_risk_check_still_refuses_a_claim_the_policy_judge_would_weigh(runtime):
+    draft = await high_risk_draft(runtime, "现在全部买入，这只股票一定会涨。")
+    runtime.session.policy_judge = object()  # the two-level mode: wording goes to a model
+    error, _ = check(runtime, draft)
+    assert error == "不能给出健康、投资或生死的确定性结论"

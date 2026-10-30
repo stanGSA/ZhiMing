@@ -6,6 +6,7 @@ from common.facts import validate_calculation_facts
 from common.output_policy import (
     authored_texts,
     care_error,
+    certainty_claim,
     certainty_error,
     normalize_reading,
     warn,
@@ -223,8 +224,10 @@ def validate_reading(reading, session) -> str | None:
     if HIGH_RISK.search(state["question"] + current_question):
         if not reading.safety.flag or not reading.safety.note:
             return "涉及健康、投资、法律或生死，必须标注安全说明"
-        if re.search(
-            r"(?<!不)(?<!不能)(?<!无法)保证收益|一定会|稳赚|必死|(?<!不)可以停药|必然确诊", text
+        # 一定会 counts only where no negation governs it, as everywhere else: "不一定会" and
+        # "这不代表这只股票一定会涨" are the hedges these answers are asked to write.
+        if certainty_claim(authored_texts(reading)) or re.search(
+            r"(?<!不)(?<!不能)(?<!无法)保证收益|稳赚|必死|(?<!不)可以停药|必然确诊", text
         ):
             return "不能给出健康、投资或生死的确定性结论"
     return None
