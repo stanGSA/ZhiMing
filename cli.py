@@ -26,7 +26,9 @@ def draw(
     provider: str | None = None,
     model: str | None = None,
     json_output: bool = False,
-    mode: Annotated[str | None, typer.Option(help="single 或 multi；默认读取 config.yaml")] = None,
+    mode: Annotated[
+        str | None, typer.Option(help="single、multi 或 pipeline；默认读取 config.yaml")
+    ] = None,
     root: Annotated[Path | None, typer.Option(hidden=True)] = None,
 ):
     """完成一次抽牌、查释义、校验和保存。"""
@@ -70,7 +72,9 @@ def chat(
     provider: str | None = None,
     model: str | None = None,
     seed: int | None = None,
-    mode: Annotated[str | None, typer.Option(help="single 或 multi；默认读取 config.yaml")] = None,
+    mode: Annotated[
+        str | None, typer.Option(help="single、multi 或 pipeline；默认读取 config.yaml")
+    ] = None,
 ):
     """多轮对话；支持 /profile、/evidence、/new、/redraw、/forget、/quit。"""
     try:

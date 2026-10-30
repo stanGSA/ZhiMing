@@ -66,6 +66,8 @@ class Runtime:
     system_prompt: str = SYSTEM_PROMPT
     reviewer_model: object | None = None
     clock: Callable[[], datetime] = lambda: datetime.now(UTC)
+    # Systems whose questions go through the code-driven pipeline (mode "pipeline").
+    pipeline_systems: tuple[str, ...] = ()
 
     def compact_history(self) -> None:
         if self.session.state.get("complete"):
@@ -159,6 +161,10 @@ class Runtime:
             else None
         )
         self.session.budget = Budget(self.token_budget, deadline=deadline)
+        if self.pipeline_systems:
+            outcome = await self.pipeline_turn(message)
+            if outcome is not None:
+                return outcome
         turn = run_turn(
             self.session,
             message,
@@ -183,6 +189,25 @@ class Runtime:
                 "timeout",
                 "request_timeout",
                 "本轮达到请求时限，请稍后继续或缩小问题范围。",
+            )
+
+    async def pipeline_turn(self, message: str) -> TurnOutcome | None:
+        """The pipeline's answer, or None for a message it leaves to the agent loop."""
+        from pipeline.runner import PipelineRunner
+
+        runner = PipelineRunner(self)
+        if not self.request_timeout_s:
+            return await runner.turn(message)
+        try:
+            return await asyncio.wait_for(runner.turn(message), self.request_timeout_s)
+        except TimeoutError:
+            # The draw is kept in pipeline_runs; the next "继续" writes from the same cards.
+            self.tracer.log(self.session, "request_timeout", timeout_s=self.request_timeout_s)
+            return failure(
+                self.session,
+                "timeout",
+                "request_timeout",
+                "本轮达到请求时限，请发送“继续”接着写，或缩小问题范围。",
             )
 
     def forget(self, compact: bool = True) -> None:
@@ -268,8 +293,8 @@ def create_runtime(
     load_dotenv(root / ".env")
     config = yaml.safe_load((root / "config.yaml").read_text(encoding="utf-8"))
     mode = mode or config.get("mode", "single")
-    if mode not in ("single", "multi"):
-        raise ValueError("mode 必须是 single 或 multi")
+    if mode not in ("single", "multi", "pipeline"):
+        raise ValueError("mode 必须是 single、multi 或 pipeline")
     review_config = dict(config.get("reviewer") or {})
     if strictness is not None:
         review_config["strictness"] = strictness
@@ -340,7 +365,9 @@ def create_runtime(
     )
     shared = common_tools(store, kb, mode, reviewer)
     tools = [*shared, location_tool(Gazetteer(), store), *daily.tools]
-    if mode == "single":
+    # The pipeline keeps the single-agent tools: they serve its planned calls and every
+    # question it leaves to the agent loop.
+    if mode in ("single", "pipeline"):
         tools.extend(tool for plugin in plugins for tool in plugin.tools)
     else:
         # Computation tools exist only in the specialists' own registries.
@@ -366,4 +393,8 @@ def create_runtime(
         system_prompt=system_prompt,
         reviewer_model=reviewer_model if reviewing else None,
         clock=clock,
+        # The offline demo model only replays tool calls; it cannot write a pipeline draft.
+        pipeline_systems=tuple((config.get("pipeline") or {}).get("systems") or ())
+        if mode == "pipeline" and not isinstance(model, DemoModel)
+        else (),
     )
