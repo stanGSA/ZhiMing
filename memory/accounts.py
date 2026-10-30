@@ -130,6 +130,8 @@ class AccountStore:
         CREATE TABLE IF NOT EXISTS account_quota(user_id TEXT PRIMARY KEY
           REFERENCES accounts(user_id) ON DELETE CASCADE,
           used_tokens INTEGER NOT NULL DEFAULT 0, held_tokens INTEGER NOT NULL DEFAULT 0);
+        CREATE TABLE IF NOT EXISTS account_quota_unlimited(user_id TEXT PRIMARY KEY
+          REFERENCES accounts(user_id) ON DELETE CASCADE);
         CREATE TABLE IF NOT EXISTS model_usage(call_id TEXT PRIMARY KEY,
           user_id TEXT NOT NULL REFERENCES accounts(user_id) ON DELETE CASCADE,
           reserved_tokens INTEGER NOT NULL, input_tokens INTEGER, output_tokens INTEGER,
@@ -160,8 +162,12 @@ class AccountStore:
         ).fetchone()
         return max(0, int(row[0] + REGISTRATION_WINDOW - now + 0.999)) if row else 0
 
-    def token_limit(self, user_id: str) -> int:
-        """The free allowance plus any tokens an administrator granted."""
+    def token_limit(self, user_id: str) -> int | None:
+        """The account allowance, or None for an explicitly exempt account."""
+        if self.db.execute(
+            "SELECT 1 FROM account_quota_unlimited WHERE user_id=?", (user_id,)
+        ).fetchone():
+            return None
         return FREE_TOKENS + self.costs.control(user_id)["bonus_tokens"]
 
     def quota(self, user_id: str) -> dict:
@@ -174,7 +180,7 @@ class AccountStore:
             "limit": limit,
             "used": used,
             "reserved": held,
-            "remaining": max(0, limit - used - held),
+            "remaining": None if limit is None else max(0, limit - used - held),
         }
 
     def reserve_tokens(
@@ -191,8 +197,12 @@ class AccountStore:
             ).fetchone()
             if row is None:
                 raise QuotaExceeded()
-            remaining = self.token_limit(user_id) - row[0] - row[1]
-            output = min(output_limit, remaining - input_bound)
+            limit = self.token_limit(user_id)
+            output = (
+                output_limit
+                if limit is None
+                else min(output_limit, limit - row[0] - row[1] - input_bound)
+            )
             if output < min(256, output_limit):
                 raise QuotaExceeded()
             room = self.costs.budget_room(now)
@@ -342,7 +352,8 @@ class AccountStore:
             "(SELECT COUNT(*) FROM account_sessions s WHERE s.user_id=a.user_id),"
             "(SELECT COALESCE(SUM(CASE u.status WHEN 'settled' THEN u.input_tokens+u.output_tokens"
             " WHEN 'rejected' THEN 0 ELSE u.reserved_tokens END),0) FROM site_usage u"
-            " WHERE u.user_id=a.user_id AND u.created_at>=?) "
+            " WHERE u.user_id=a.user_id AND u.created_at>=?),"
+            "EXISTS(SELECT 1 FROM account_quota_unlimited x WHERE x.user_id=a.user_id) "
             "FROM accounts a LEFT JOIN account_quota q ON q.user_id=a.user_id "
             f"LEFT JOIN account_controls c ON c.user_id=a.user_id {where} "
             "ORDER BY a.created_at DESC LIMIT ? OFFSET ?",
@@ -350,7 +361,7 @@ class AccountStore:
         ).fetchall()
         items = []
         for row in rows:
-            limit_tokens = FREE_TOKENS + (row[5] or 0)
+            limit_tokens = None if row[11] else FREE_TOKENS + (row[5] or 0)
             used, held = row[3] or 0, row[4] or 0
             items.append(
                 {
@@ -361,7 +372,9 @@ class AccountStore:
                         "limit": limit_tokens,
                         "used": used,
                         "reserved": held,
-                        "remaining": max(0, limit_tokens - used - held),
+                        "remaining": (
+                            None if limit_tokens is None else max(0, limit_tokens - used - held)
+                        ),
                         "bonus": row[5] or 0,
                     },
                     "suspended": (
@@ -374,6 +387,19 @@ class AccountStore:
                 }
             )
         return items, total
+
+    def set_unlimited_quota(self, user_id: str, enabled: bool, admin: str) -> None:
+        """Exempt an account from its own quota, retaining site budgets and usage metering."""
+        if self.get(user_id) is None:
+            raise AccountError("account_not_found", "找不到该账号。")
+        with self.db:
+            if enabled:
+                self.db.execute(
+                    "INSERT OR IGNORE INTO account_quota_unlimited VALUES(?)", (user_id,)
+                )
+            else:
+                self.db.execute("DELETE FROM account_quota_unlimited WHERE user_id=?", (user_id,))
+            self.costs.audit(admin, "set_unlimited_quota", {"user_id": user_id, "enabled": enabled})
 
     def set_suspended(self, user_id: str, reason: str | None, admin: str) -> None:
         with self.db:

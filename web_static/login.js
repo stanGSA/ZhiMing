@@ -138,7 +138,9 @@ async function load() {
   if (info.account) {
     $("#signed-name").textContent = info.account.username;
     if (info.account.quota)
-      $("#signed-quota").textContent = `免费额度剩余 ${info.account.quota.remaining.toLocaleString("zh-CN")} / ${info.account.quota.limit.toLocaleString("zh-CN")} token，累计使用，不按月重置。`;
+      $("#signed-quota").textContent = info.account.quota.limit === null
+        ? "账号额度不限；全站预算、并发和异常消耗保护仍生效。"
+        : `免费额度剩余 ${info.account.quota.remaining.toLocaleString("zh-CN")} / ${info.account.quota.limit.toLocaleString("zh-CN")} token，累计使用，不按月重置。`;
     $("#signed-in").hidden = false;
     $("#account-panel").hidden = true;
     select($("#tab-account"));
