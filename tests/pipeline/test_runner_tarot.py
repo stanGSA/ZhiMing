@@ -225,3 +225,13 @@ def test_pipeline_mode_takes_its_systems_from_config(project):
     finally:
         for runtime in (writer, demo, single):
             runtime.close()
+
+
+async def test_a_failed_follow_up_degrades_and_leaves_nothing_to_resume(make):
+    runtime, _, _ = make(good, "没有格式。", "还是没有格式。")
+    await runtime.turn(QUESTION)
+    outcome = await runtime.turn("第二张牌具体什么意思？不要重新抽牌。")
+    assert outcome.status == "submit_reading" and outcome.data["response_id"]
+    assert outcome.data["pipeline"]["degraded"] and outcome.data["pipeline"]["kind"] == "followup"
+    assert outcome.data["reading"]["summary"].startswith("你问到的牌面是")
+    assert runtime.store.unfinished_pipeline_run(runtime.session.user_id) is None

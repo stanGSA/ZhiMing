@@ -85,6 +85,8 @@ class PipelineRunner:
             else:
                 stored = self.store.unfinished_pipeline_run(self.session.user_id)
                 same = stored and stored.get("reading_id") == state.get("active_reading_id")
+                if stored and not same:
+                    self.store.finish_pipeline_run(stored["run_id"])  # another, abandoned draw
                 run = (
                     PipelineRun.load(stored)
                     if same
@@ -130,7 +132,7 @@ class PipelineRunner:
             if run.repairs >= MAX_REPAIRS:
                 break
             run.repairs += 1
-            run.save(self.store, self.session, "composed")
+            self.keep(run)
             self.stage("repair", run_id=run.run_id, problems=len(problems))
             messages = compose.repair_messages(messages, draft_text, problems, facts)
             draft_text, truncated = await self.ask(messages, "repair")
@@ -140,7 +142,7 @@ class PipelineRunner:
         results, terminal = await self.planned([("submit_reading", args)])
         if terminal is not None:
             return self.finish(run, terminal, degraded=True)
-        run.save(self.store, self.session, "composed")
+        self.keep(run)
         return failure(
             self.session,
             "validation_failed",
@@ -169,6 +171,11 @@ class PipelineRunner:
                 self.session, "birth_version_conflict", "birth_version_conflict", result["error"]
             )
         return [result.get("error") or "提交未通过"], None
+
+    def keep(self, run: PipelineRun) -> None:
+        """Store a run that drew cards; a follow-up has no draw of its own to resume."""
+        if run.kind != "followup":
+            run.save(self.store, self.session, "composed")
 
     def finish(self, run: PipelineRun, terminal: TurnOutcome, *, degraded: bool) -> TurnOutcome:
         self.store.finish_pipeline_run(run.run_id)
