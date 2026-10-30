@@ -8,6 +8,7 @@ from agents.orchestrator import MULTI_SYSTEM_PROMPT, SCENARIO_RULE, SYSTEM_PROMP
 from app import create_runtime
 from pipeline.compose import TAROT_SYSTEM
 from tests.pipeline.drafts import QUESTION, Composer, followup_answer, good
+from tests.validation.test_negation_and_dates import REFUSED_DRAFTS
 
 RISKY = "只用塔罗三张牌帮我反思：是否应该把积蓄全部买入一只股票？"
 SHEET_LINE = re.compile(r"^(R\d+)｜第(\d)张·(.+?)位｜(.+)$", re.M)
@@ -80,7 +81,11 @@ async def test_a_later_draw_still_names_its_second_card(make):
 
 @pytest.mark.parametrize(
     "sentence",
-    ["这不代表这只股票一定会涨，也不代表全部投入必然亏损。", "这不是一种必然，选择权在你。"],
+    [
+        *REFUSED_DRAFTS,
+        "这不代表这只股票一定会涨，也不代表全部投入必然亏损。",
+        "这不是一种必然，选择权在你。",
+    ],
 )
 async def test_a_negated_claim_about_the_question_is_not_repaired(make, sentence):
     runtime, composer = make(with_sentence(sentence))
@@ -88,6 +93,17 @@ async def test_a_negated_claim_about_the_question_is_not_repaired(make, sentence
     assert outcome.status == "submit_reading"
     assert (outcome.data["pipeline"]["model_calls"], outcome.data["pipeline"]["repairs"]) == (1, 0)
     assert sentence in outcome.text
+
+
+async def test_a_negated_claim_in_both_drafts_is_not_a_safety_failure(make):
+    # PR #37 review: with the sentence in the draft and in its repair, the high-risk question
+    # ended in the safety template instead of the reading.
+    sentence = "它不代表行情必然上涨。"
+    runtime, composer = make(with_sentence(sentence), with_sentence(sentence))
+    outcome = await runtime.turn(RISKY)
+    info = outcome.data["pipeline"]
+    assert (info["model_calls"], info["repairs"], info["degraded"]) == (1, 0, None)
+    assert outcome.data["reading"]["sections"] and sentence in outcome.text
 
 
 async def test_a_certainty_claim_about_the_stock_is_still_repaired(make):

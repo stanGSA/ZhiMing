@@ -53,24 +53,24 @@ DIRECT_NEGATION = re.compile(
 )
 NEGATED_FRAME = re.compile(
     r"(?:不|并不|并非|未|没有|不能|无法|没人能|没有人能|谁也不能)"
-    r"(?:代表|意味着?|等于|说明|表示|保证|确定|断定|预示|说|认为|觉得)"
+    r"(?:代表|意味着?|等于|说明|表示|保证|确定|断定|断言|预示|预言|说|认为|觉得)"
     r"|(?:别|不要)(?:以为|认为|觉得)"
 )
-# Between a framing verb and the claim, accept a subject/time modifier, not another
-# predicate ("不认为这很难你一定会成功" negates "很难", not "一定会成功"). A subject may be
-# what the question is about ("不代表这只股票一定会涨", "不意味着你们的关系必然好转"); only
-# nouns are listed, so a predicate still cannot slip in between.
-TOPIC = (
-    r"结果|事件|这件事|关系|感情|婚姻|复合|投资|股票|股价|收益|积蓄|全部投入|全仓|考试|成绩|"
-    r"复习|跳槽|换工作|工作|事业|offer|面试|录用|升职|公司|选择|决定|计划|结局|事情|局面"
+NEGATED_SUBJECT = re.compile(r"(?:并非|绝非|并不是|不是)(?:说|指)?")
+# What a negated framing verb (or "不是说") governs is the claim's own subject: a short phrase
+# such as "行情", "某件事", "具体事件", "留下就" or "你们的关系". A negation, a contrast, a claim
+# of its own, or a second subject after a predicate ends what it governs: "不认为这很难你一定会
+# 成功" negates "很难", not "一定会成功". A pronoun after 对/给/让… is an object ("对你"), not a
+# new subject.
+SUBJECT_LIMIT = 12
+SUBJECT_TEXT = re.compile(r"[\u4e00-\u9fffA-Za-z0-9“”‘’「」]*")
+MODIFIERS = re.compile(r"(?:就|也|都|会|能|将|真的|最终|近期|这个月|下个月|以后|未来|现实中)+$")
+SUBJECT_BREAK = re.compile(
+    r"[不没非无]|未(?!来)|但|而|或|却|可是|然而|就算|即使|" + CERTAINTY.pattern
 )
-CLAIM_SUBJECT = (
-    r"(?:(?:你们|我们|他们|她们|你|您|我|他|她)(?:的|俩)?)?"
-    r"(?:这只|这个|这次|这段|这份|这笔|这些|这种|那只|那个|新的?)?"
-    rf"(?:{TOPIC})?"
-    r"(?:就|也|都|会|能|将|真的|最终|近期|这个月|下个月|以后|未来|现实中)*"
-)
-NEGATED_SUBJECT = re.compile(rf"(?:并非|绝非|并不是|不是)(?:说|指)?{CLAIM_SUBJECT}$")
+PRONOUNS = r"你们|我们|他们|她们|咱们|你|您|我|他|她|它"
+LEADING_PRONOUN = re.compile(rf"^(?:{PRONOUNS})")
+LATER_SUBJECT = re.compile(rf"(?<![对给让和跟与被替为向])(?:{PRONOUNS})")
 # The certainty word as a noun under a negation: "这不是一种必然", "没有什么是注定的",
 # "不必把这理解为必然".
 NEGATED_NOUN = re.compile(
@@ -193,13 +193,23 @@ def negates_claim(before: str) -> bool:
     before = re.split(r"但是|然而|不过|反而|而是|但", before)[-1].strip()
     return bool(
         DIRECT_NEGATION.search(before)
-        or NEGATED_SUBJECT.search(before)
         or NEGATED_NOUN.search(before)
         or any(
-            re.fullmatch(CLAIM_SUBJECT, before[match.end() :])
-            for match in NEGATED_FRAME.finditer(before)
+            claim_subject(before[match.end() :])
+            for pattern in (NEGATED_FRAME, NEGATED_SUBJECT)
+            for match in pattern.finditer(before)
         )
     )
+
+
+def claim_subject(phrase: str) -> bool:
+    """Whether ``phrase`` is no more than the subject of the claim that follows it."""
+    phrase = MODIFIERS.sub("", phrase.strip())
+    if len(phrase) > SUBJECT_LIMIT or not SUBJECT_TEXT.fullmatch(phrase):
+        return False
+    if SUBJECT_BREAK.search(phrase):
+        return False
+    return not LATER_SUBJECT.search(LEADING_PRONOUN.sub("", phrase, count=1))
 
 
 def certainty_error(texts) -> str | None:

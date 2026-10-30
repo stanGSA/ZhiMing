@@ -52,11 +52,23 @@ def test_direct_negative_complements_remain_allowed(text):
     assert certainty_claim([text]) is None
 
 
-# The tarot tuning set (docs/verification/p1/tarot/analysis.md): every card meaning ends in
-# "不代表事件必然发生", and the writers say the same of what the question is about.
+# Drafts the tarot tuning set refused (PR #37 review: 10 refused drafts replayed from the raw
+# traces, all of these forms). The writers follow the card meanings' "不代表事件必然发生" and
+# say it of what the question is about.
+REFUSED_DRAFTS = [
+    "它不代表行情必然上涨。",
+    "它不预言你一定会亏钱。",
+    "这不是说留下就一定会变差。",
+    "这不代表某件事必然发生。",
+    "不代表具体事件必然发生。",
+]
+
+
 @pytest.mark.parametrize(
     "text",
     [
+        *REFUSED_DRAFTS,
+        "这不代表行情对你必然有利。",
         "这不代表这只股票一定会涨。",
         "牌面不代表股价必然上涨。",
         "这张牌并不代表投资必然亏损。",
@@ -86,6 +98,9 @@ def test_a_negated_claim_about_the_question_s_subject_is_allowed(text):
         "这不是一种选择，你注定要走这条路。",
         "没有什么好担心的你一定会成功。",
         "没有问题，你一定会成功。",
+        "这不是坏事你一定会成功。",
+        "不代表行情不好你一定会亏。",
+        "它不预言失败你必然成功。",
     ],
 )
 async def test_a_subject_or_noun_form_does_not_hide_a_separate_claim(runtime, text):
