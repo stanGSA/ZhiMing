@@ -50,7 +50,7 @@ async def test_a_new_reading_takes_one_writing_call(make):
         "kind": "new",
         "model_calls": 1,
         "repairs": 0,
-        "degraded": False,
+        "degraded": None,
         "problems": [],
     }
     assert planned_tools(events) == ["start_reading", "draw_tarot", "submit_reading"]
@@ -73,11 +73,11 @@ async def test_a_wrong_orientation_is_repaired_once(make):
     outcome = await runtime.turn(QUESTION)
     assert outcome.status == "submit_reading"
     info = outcome.data["pipeline"]
-    assert (info["model_calls"], info["repairs"], info["degraded"]) == (2, 1, False)
+    assert (info["model_calls"], info["repairs"], info["degraded"]) == (2, 1, None)
     assert "牌面方向错误" in info["problems"][0][0]
     # The repair request names the problem and what may be cited.
     repair = composer.seen[1][0][-1]["content"]
-    assert "牌面方向错误" in repair and "R1、R2、R3" in repair
+    assert "牌面方向错误" in repair and "R1=过去位【" in repair and "R3=未来位【" in repair
     assert progress_label(next(e for e in events if e.get("stage") == "repair"))
 
 
@@ -93,7 +93,7 @@ async def test_two_failed_drafts_degrade_to_a_reading_made_by_code(make):
     outcome = await runtime.turn(QUESTION)
     assert outcome.status == "submit_reading"
     info = outcome.data["pipeline"]
-    assert info["degraded"] and info["model_calls"] == 2
+    assert info["degraded"] == "keywords" and info["model_calls"] == 2
     reading = outcome.data["reading"]
     assert reading["summary"].startswith("这次抽到过去位【")
     assert len(reading["sections"]) == 3
@@ -232,6 +232,59 @@ async def test_a_failed_follow_up_degrades_and_leaves_nothing_to_resume(make):
     await runtime.turn(QUESTION)
     outcome = await runtime.turn("第二张牌具体什么意思？不要重新抽牌。")
     assert outcome.status == "submit_reading" and outcome.data["response_id"]
-    assert outcome.data["pipeline"]["degraded"] and outcome.data["pipeline"]["kind"] == "followup"
+    assert outcome.data["pipeline"]["degraded"] == "keywords"
+    assert outcome.data["pipeline"]["kind"] == "followup"
     assert outcome.data["reading"]["summary"].startswith("你问到的牌面是")
     assert runtime.store.unfinished_pipeline_run(runtime.session.user_id) is None
+
+
+RESTART = """
+import asyncio, json, sys
+from pathlib import Path
+sys.path.insert(0, {root!r})
+from app import create_runtime
+from tests.pipeline.drafts import QUESTION, Composer, good
+
+async def main(message, fail):
+    composer = Composer(RuntimeError("connection reset") if fail else good)
+    runtime = create_runtime(
+        root=Path({project!r}), user_id="restart", model=composer, mode="pipeline"
+    )
+    events = []
+    runtime.tracer.listeners.append(events.append)
+    outcome = await runtime.turn(message)
+    planned = [n for e in events if e["event"] == "tool_plan" for n in e["tool_names"]]
+    print(json.dumps({{"status": outcome.status, "planned": planned,
+                      "cards": runtime.session.state.get("tarot_result", {{}}).get("cards")}},
+                     ensure_ascii=False))
+    runtime.close()
+
+asyncio.run(main(sys.argv[1], sys.argv[2] == "fail"))
+"""
+
+
+def test_an_interrupted_draw_survives_a_real_process_restart(project):
+    import json
+    import subprocess
+    import sys
+
+    from app import ROOT
+
+    script = RESTART.format(root=str(ROOT), project=str(project))
+
+    def process(message, mode):
+        done = subprocess.run(
+            [sys.executable, "-c", script, message, mode],
+            capture_output=True,
+            text=True,
+            timeout=120,
+            check=True,
+        )
+        return json.loads(done.stdout.strip().splitlines()[-1])
+
+    first = process(QUESTION, "fail")
+    assert first["status"] != "submit_reading" and "draw_tarot" in first["planned"]
+    second = process("继续", "ok")
+    assert second["status"] == "submit_reading"
+    assert "draw_tarot" not in second["planned"]
+    assert second["cards"] == first["cards"]
