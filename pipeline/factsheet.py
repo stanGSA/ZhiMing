@@ -6,9 +6,14 @@ Each fact carries the text code renders for it. The model writes {{R2}}; the rea
 
 from __future__ import annotations
 
+import re
 from dataclasses import dataclass
 
 from harness.refs import short
+
+# The knowledge base closes almost every card meaning with this sentence. It is a disclaimer,
+# which the writer must not repeat, and it puts 必然 in front of a writer told not to use it.
+CAVEAT = re.compile(r"这是象征性反思线索[^。]*。?")
 
 
 @dataclass(frozen=True)
@@ -46,9 +51,11 @@ def tarot_facts(session) -> list[Fact]:
         meaning = card.get("meaning") or {}
         text = f"【{card['name']}】{orientation(card)}"
         keywords = "、".join(meaning.get("keywords") or [])
+        general = shorten(CAVEAT.sub("", meaning.get("text") or ""), 160)
+        # “第二张牌” in a follow-up names the card by its place in the draw.
         line = (
-            f"{alias}｜{card['label']}位｜{text}｜关键词：{keywords or '无'}"
-            f"｜一般含义：{shorten(meaning.get('text'), 160) or '无'}"
+            f"{alias}｜第{card['pos']}张·{card['label']}位｜{text}｜关键词：{keywords or '无'}"
+            f"｜一般含义：{general or '无'}"
         )
         facts.append(Fact(alias, ref, card["label"], text, line))
     return facts
