@@ -17,6 +17,23 @@ PILLAR_CLAIM = re.compile(
     r"(?P<scope>候选|原局|本命|出生|流期)?(?:的)?(?P<name>[年月日时])柱)"
     r"\s*(?:是|为|：|:)?\s*(?P<value>[甲乙丙丁戊己庚辛壬癸][子丑寅卯辰巳午未申酉戌亥])"
 )
+GANZHI = re.compile(r"[甲乙丙丁戊己庚辛壬癸][子丑寅卯辰巳午未申酉戌亥]")
+# Ordinary words ending in a stem character: 自己未来 is not 己未, nor 艰辛未必 辛未.
+# Kept narrow: “日柱为己未” and “由己未转入庚申” are real claims.
+STEM_WORD = re.compile(r"[自知]己|艰辛")
+# Named historical events are not claims about this chart (甲午战争, 辛亥革命, 戊戌变法).
+HISTORICAL_EVENT = re.compile(r"战争|海战|革命|变法|政变|兵变|条约|赔款|国难|之变")
+
+
+def ganzhi_mentions(text):
+    """干支 written in the answer, skipping stems inside ordinary words and historical events."""
+    for match in GANZHI.finditer(text):
+        start = match.start()
+        if start and STEM_WORD.fullmatch(text, start - 1, start + 1):
+            continue
+        if HISTORICAL_EVENT.match(text, match.end()):
+            continue
+        yield match.group()
 
 
 def validate_output(reading, state):
@@ -85,7 +102,7 @@ def validate_output(reading, state):
     for p in periods:
         gz.update(p["pillars"].values())
     gz.update(segment["pillar"] for segment in (daily.get("day") or {}).get("segments", []))
-    for value in re.findall(r"[甲乙丙丁戊己庚辛壬癸][子丑寅卯辰巳午未申酉戌亥]", text):
+    for value in ganzhi_mentions(text):
         if value not in gz:
             return "本次工具结果没有该干支，不能编造"
     # The daily fortune's day pillars are flow days as well.

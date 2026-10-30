@@ -14,6 +14,12 @@ from common.facts import public_texts
 
 PROPHECY = re.compile(r"预示|预兆|征兆|兆头|预言|将会发生|会发生|一定会|必定|必然会|注定")
 NEGATION = re.compile(r"不|非|没有|无|并未|别")
+# A denial after the prophecy word in the same clause: 现实中会发生什么并不由梦决定.
+# Kept specific, since 梦预示你会发生不好的事 still predicts an event.
+DENIED_AFTER = re.compile(
+    r"并不由|不由梦|不取决于|与梦(?:境)?无关|并非由梦|不是(?:由)?梦(?:境)?(?:能|可以|来)?决定|"
+    r"梦(?:境)?(?:并)?(?:不能|无法)(?:预测|决定)"
+)
 UNMATCHED = re.compile(
     r"未收录|没有收录|未命中|无法解读|不作解读|不解读|没有依据|暂无|词典外|不在词典"
 )
@@ -96,7 +102,10 @@ def validate_output(reading, state, matcher):
     misses = {m for r in found for m in r["misses"]}
     for text in texts:
         for match in PROPHECY.finditer(text):
-            if not NEGATION.search(text[max(0, match.start() - 6) : match.start()]):
+            after = CLAUSES.split(text[match.end() :], maxsplit=1)[0]
+            if not NEGATION.search(
+                text[max(0, match.start() - 6) : match.start()]
+            ) and not DENIED_AFTER.search(after):
                 return "解梦只提供心理层面的线索，不能把梦境说成现实事件的预兆"
         for clause in CLAUSES.split(text):
             error = ungrounded(clause, matcher, hits, misses)

@@ -8,6 +8,15 @@ CLAUSE = re.compile(r"[。！？；;\n]")
 DRAW_CONTEXT = re.compile(
     r"本次|此次|这次|本轮|今天|今日|每日一牌|这张|抽到|抽出|抽中|翻出|翻到|结果|提示牌|位置"
 )
+# Major arcana named like ordinary words. Quoting one is often emphasis (保持「节制」) or another
+# system's term (【太阳】四分本命月亮), so a quoted mention needs card context to name a card.
+WORD_NAMES = frozenset({"力量", "正义", "节制", "星星", "月亮", "太阳", "审判", "世界", "恋人"})
+CARD_USE = re.compile(
+    ORIENTATION_GAP + r"(?:正位|逆位|牌|象征|代表|意味|寓意|预示|暗示|提示|提醒|显示|指向|说明|"
+    r"的(?:牌义|含义|意思|能量|讯息))"
+)
+DRAWN = re.compile(r"抽到|抽出|抽中|翻出|翻到|这张|每日一牌|牌面|牌阵|提示牌")
+PHRASE = re.compile(r"[。！？；;，,\n]")
 DEFINITION = re.compile(
     ORIENTATION_GAP
     + r"(?:一般|通常|往往|常常)?(?:是|表示|象征|代表|意味着|的(?:牌义|含义|意思)(?:是|为))"
@@ -40,6 +49,20 @@ def orientation_error(text: str, name: str, expected: set[str]) -> str | None:
     return None
 
 
+def names_card(text: str, name: str) -> bool:
+    """Whether the text names this card rather than a word spelt like it."""
+    if re.search(rf"{re.escape(name)}(?:正位|逆位|牌)", text):
+        return True
+    for quoted in re.finditer(rf"(?:【|「|《){re.escape(name)}(?:】|」|》)", text):
+        if name not in WORD_NAMES or CARD_USE.match(text, quoted.end()):
+            return True
+        start = max((m.end() for m in PHRASE.finditer(text, 0, quoted.start())), default=0)
+        end = PHRASE.search(text, quoted.end())
+        if DRAWN.search(text, start, end.start() if end else len(text)):
+            return True
+    return False
+
+
 def drawn_cards(state) -> list[dict]:
     """Every card of this reading: the draw and the daily fortune's card of the day."""
     cards = list((state.get("tarot_result") or {}).get("cards", []))
@@ -53,12 +76,10 @@ def validate_output(reading, state):
     text = reading.model_dump_json()
     actual = set(state["facts"])
     for _, name in DECK:
-        explicit = re.search(
-            rf"(?:【|「|《){re.escape(name)}(?:】|」|》)|{re.escape(name)}(?:正位|逆位|牌)", text
-        )
         # Full minor-arcana names are unambiguous; common major names need card context.
         if (
-            explicit or (name.startswith(("权杖", "圣杯", "宝剑", "星币")) and name in text)
+            names_card(text, name)
+            or (name.startswith(("权杖", "圣杯", "宝剑", "星币")) and name in text)
         ) and name not in actual:
             return f"正文提到未抽出的牌：{name}"
     cards = drawn_cards(state)
