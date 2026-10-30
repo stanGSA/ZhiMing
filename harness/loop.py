@@ -64,17 +64,6 @@ async def run_turn(
     # child sessions cannot overcommit a shared budget. Without it (single mode) a call is
     # allowed while any budget is left, exactly as in weeks 1-3.
 
-    async def execute(call: ToolCall, args) -> ToolResult:
-        token = CURRENT_CALL_ID.set(call.id)
-        try:
-            return await registry.run(call.name, args, session)
-        except asyncio.CancelledError:
-            raise
-        except Exception as exc:
-            return ToolResult.failure("tool_error", f"工具执行失败（{type(exc).__name__}）")
-        finally:
-            CURRENT_CALL_ID.reset(token)
-
     def timed_out(step: int) -> TurnOutcome:
         tracer.log(session, "timeout", step=step)
         return failure(
@@ -164,133 +153,16 @@ async def run_turn(
             session.messages.append(response.assistant_message())
             return TurnOutcome(status="text", text=response.text)
         session.messages.append(response.assistant_message())
-        terminal = None
-        calls = response.tool_calls
-        answered = 0
-        try:
-            index = 0
-            while index < len(calls):
-                # Consecutive parallel-safe calls form one concurrent group; everything else runs
-                # alone so that earlier calls can change the state later guard checks rely on.
-                group = [calls[index]]
-                index += 1
-                if is_parallel(registry, group[0]):
-                    while index < len(calls) and is_parallel(registry, calls[index]):
-                        group.append(calls[index])
-                        index += 1
-                prepared = []
-                for call in group:
-                    started = tracer.clock()
-                    if call.arguments_repaired:
-                        tracer.log(session, "arguments_repaired", step=step, tool=call.name)
-                    args, pre_result, key = guard.check(call, session)
-                    if terminal is not None:
-                        pre_result = ToolResult.failure("turn_finished", "本轮已结束，此调用未执行")
-                    prepared.append((call, args, pre_result, key, started))
-                runnable = [i for i, item in enumerate(prepared) if item[2] is None]
-                if len(runnable) == 1:
-                    outputs = [await execute(prepared[runnable[0]][0], prepared[runnable[0]][1])]
-                else:
-                    # A task group, not gather: on cancellation it waits until every call has
-                    # finished cleaning up, so no child outlives the request that started it.
-                    async with asyncio.TaskGroup() as group:
-                        tasks = [
-                            group.create_task(execute(prepared[i][0], prepared[i][1]))
-                            for i in runnable
-                        ]
-                    outputs = [task.result() for task in tasks]
-                executed = dict(zip(runnable, outputs, strict=True))
-                for position, (call, _args, pre_result, key, started) in enumerate(prepared):
-                    tool = registry.tools.get(call.name)
-                    result = pre_result if pre_result is not None else executed[position]
-                    if pre_result is None and result.ok:
-                        if tool.commit:
-                            result = tool.commit(result, session)
-                        if tool.idempotent and result.data.get("status") != "needs_input":
-                            session.cache[key] = result
-                        if tool.exclusive_key:
-                            session.state[tool.exclusive_key] = True
-                    projected = result
-                    if result.ok and tool and tool.model_result:
-                        projected = result.model_copy(
-                            update={"data": tool.model_result(result.data)}
-                        )
-                    projected = projected.model_copy(
-                        update={"data": transform(projected.data, session)}
-                    )
-                    session.messages.append(
-                        {
-                            "role": "tool",
-                            "tool_call_id": call.id,
-                            "content": projected.model_dump_json(),
-                        }
-                    )
-                    answered += 1
-                    tracer.log(
-                        session,
-                        "tool_result",
-                        step=step,
-                        call=call.model_dump(),
-                        result=result.model_dump(),
-                        latency_ms=round((tracer.clock() - started) * 1000, 3),
-                    )
-                    if result.ok:
-                        failed_attempts = {
-                            signature: count
-                            for signature, count in failed_attempts.items()
-                            if signature[0] != call.name
-                        }
-                    elif terminal is None:
-                        # Submission drafts may change without repairing the error. Other
-                        # tools may legitimately fail for different inputs (e.g. KB keys).
-                        arguments = (
-                            None
-                            if tool and tool.terminal
-                            else json.dumps(call.arguments, sort_keys=True, ensure_ascii=False)
-                        )
-                        signature = (
-                            call.name,
-                            result.code,
-                            result.retry_key or result.error,
-                            arguments,
-                        )
-                        count = failed_attempts.get(signature, 0) + 1
-                        failed_attempts[signature] = count
-                        if count >= REPEATED_FAILURE_LIMIT:
-                            tracer.log(
-                                session,
-                                "repeated_failure_limit",
-                                step=step,
-                                tool=call.name,
-                                code=result.code,
-                                attempts=count,
-                            )
-                            terminal = failure(
-                                session,
-                                "retry_limit",
-                                "repeated_tool_failure",
-                                "同一处理错误重复出现3次，本轮已停止自动重试，尚未完成解读；可稍后继续。",
-                            )
-                    if terminal is None:
-                        if result.ok and tool and tool.terminal:
-                            terminal = TurnOutcome(
-                                status=call.name, text=result.data.get("text", ""), data=result.data
-                            )
-                        elif on_tool_result is not None:
-                            terminal = on_tool_result(call, result)
-        except asyncio.CancelledError:
-            # Keep the tool-call protocol complete for the next request, then propagate.
-            for call in calls[answered:]:
-                session.messages.append(
-                    {
-                        "role": "tool",
-                        "tool_call_id": call.id,
-                        "content": ToolResult.failure(
-                            "cancelled", "请求已取消或超过时限，此调用未完成"
-                        ).model_dump_json(),
-                    }
-                )
-            raise
+        terminal = await execute_calls(
+            session,
+            registry,
+            tracer,
+            response.tool_calls,
+            step=step,
+            guard=guard,
+            failed_attempts=failed_attempts,
+            on_tool_result=on_tool_result,
+        )
         if terminal:
             session.messages.append({"role": "assistant", "content": terminal.text})
             return terminal
@@ -303,6 +175,168 @@ async def run_turn(
         else "本轮达到请求token预算，尚未完成解读；可缩小问题范围后继续，下一轮预算会重置。"
     )
     return failure(session, "limit_reached", limit_reason, text)
+
+
+async def run_call(registry: Registry, session: Session, call: ToolCall, args) -> ToolResult:
+    token = CURRENT_CALL_ID.set(call.id)
+    try:
+        return await registry.run(call.name, args, session)
+    except asyncio.CancelledError:
+        raise
+    except Exception as exc:
+        return ToolResult.failure("tool_error", f"工具执行失败（{type(exc).__name__}）")
+    finally:
+        CURRENT_CALL_ID.reset(token)
+
+
+async def execute_calls(
+    session: Session,
+    registry: Registry,
+    tracer: Tracer,
+    calls: list[ToolCall],
+    *,
+    step: int = 0,
+    guard: Guard | None = None,
+    failed_attempts: dict[tuple, int] | None = None,
+    on_tool_result: Callable[[ToolCall, ToolResult], TurnOutcome | None] | None = None,
+) -> TurnOutcome | None:
+    """Run the tool calls of one response through the Guard and commit them in order.
+
+    Each call gets its tool message, so the message protocol stays complete; the caller has
+    already appended the assistant message that issued them. Returns the outcome that ends the
+    turn (a terminal tool, the repeated-failure limit or ``on_tool_result``), else None.
+    ``failed_attempts`` carries the repeated-failure counts across the calls of one turn.
+    """
+    guard = guard or Guard(registry)
+    failed_attempts = {} if failed_attempts is None else failed_attempts
+    terminal = None
+    answered = 0
+    try:
+        index = 0
+        while index < len(calls):
+            # Consecutive parallel-safe calls form one concurrent group; everything else runs
+            # alone so that earlier calls can change the state later guard checks rely on.
+            group = [calls[index]]
+            index += 1
+            if is_parallel(registry, group[0]):
+                while index < len(calls) and is_parallel(registry, calls[index]):
+                    group.append(calls[index])
+                    index += 1
+            prepared = []
+            for call in group:
+                started = tracer.clock()
+                if call.arguments_repaired:
+                    tracer.log(session, "arguments_repaired", step=step, tool=call.name)
+                args, pre_result, key = guard.check(call, session)
+                if terminal is not None:
+                    pre_result = ToolResult.failure("turn_finished", "本轮已结束，此调用未执行")
+                prepared.append((call, args, pre_result, key, started))
+            runnable = [i for i, item in enumerate(prepared) if item[2] is None]
+            if len(runnable) == 1:
+                outputs = [
+                    await run_call(
+                        registry, session, prepared[runnable[0]][0], prepared[runnable[0]][1]
+                    )
+                ]
+            else:
+                # A task group, not gather: on cancellation it waits until every call has
+                # finished cleaning up, so no child outlives the request that started it.
+                async with asyncio.TaskGroup() as group:
+                    tasks = [
+                        group.create_task(
+                            run_call(registry, session, prepared[i][0], prepared[i][1])
+                        )
+                        for i in runnable
+                    ]
+                outputs = [task.result() for task in tasks]
+            executed = dict(zip(runnable, outputs, strict=True))
+            for position, (call, _args, pre_result, key, started) in enumerate(prepared):
+                tool = registry.tools.get(call.name)
+                result = pre_result if pre_result is not None else executed[position]
+                if pre_result is None and result.ok:
+                    if tool.commit:
+                        result = tool.commit(result, session)
+                    if tool.idempotent and result.data.get("status") != "needs_input":
+                        session.cache[key] = result
+                    if tool.exclusive_key:
+                        session.state[tool.exclusive_key] = True
+                projected = result
+                if result.ok and tool and tool.model_result:
+                    projected = result.model_copy(update={"data": tool.model_result(result.data)})
+                projected = projected.model_copy(
+                    update={"data": transform(projected.data, session)}
+                )
+                session.messages.append(
+                    {
+                        "role": "tool",
+                        "tool_call_id": call.id,
+                        "content": projected.model_dump_json(),
+                    }
+                )
+                answered += 1
+                tracer.log(
+                    session,
+                    "tool_result",
+                    step=step,
+                    call=call.model_dump(),
+                    result=result.model_dump(),
+                    latency_ms=round((tracer.clock() - started) * 1000, 3),
+                )
+                if result.ok:
+                    for signature in [s for s in failed_attempts if s[0] == call.name]:
+                        del failed_attempts[signature]
+                elif terminal is None:
+                    # Submission drafts may change without repairing the error. Other
+                    # tools may legitimately fail for different inputs (e.g. KB keys).
+                    arguments = (
+                        None
+                        if tool and tool.terminal
+                        else json.dumps(call.arguments, sort_keys=True, ensure_ascii=False)
+                    )
+                    signature = (
+                        call.name,
+                        result.code,
+                        result.retry_key or result.error,
+                        arguments,
+                    )
+                    count = failed_attempts.get(signature, 0) + 1
+                    failed_attempts[signature] = count
+                    if count >= REPEATED_FAILURE_LIMIT:
+                        tracer.log(
+                            session,
+                            "repeated_failure_limit",
+                            step=step,
+                            tool=call.name,
+                            code=result.code,
+                            attempts=count,
+                        )
+                        terminal = failure(
+                            session,
+                            "retry_limit",
+                            "repeated_tool_failure",
+                            "同一处理错误重复出现3次，本轮已停止自动重试，尚未完成解读；可稍后继续。",
+                        )
+                if terminal is None:
+                    if result.ok and tool and tool.terminal:
+                        terminal = TurnOutcome(
+                            status=call.name, text=result.data.get("text", ""), data=result.data
+                        )
+                    elif on_tool_result is not None:
+                        terminal = on_tool_result(call, result)
+    except asyncio.CancelledError:
+        # Keep the tool-call protocol complete for the next request, then propagate.
+        for call in calls[answered:]:
+            session.messages.append(
+                {
+                    "role": "tool",
+                    "tool_call_id": call.id,
+                    "content": ToolResult.failure(
+                        "cancelled", "请求已取消或超过时限，此调用未完成"
+                    ).model_dump_json(),
+                }
+            )
+        raise
+    return terminal
 
 
 def is_parallel(registry: Registry, call: ToolCall) -> bool:
