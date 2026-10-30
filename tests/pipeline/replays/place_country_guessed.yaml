@@ -1,0 +1,28 @@
+id: place_country_guessed
+source: >-
+  归档错误“国家限制必须由用户明确提供，不能自行消歧”（P1 Final-single bazi_timing，2026-10-25，
+  该题有一次结局为达到步数上限）。当前 main 对“北京”这类唯一地名附加的国家限制已放行（不改变结果），
+  所以仿照 P1 的 ambiguous_place 题，换成候选分属多国的 Cambridge 重现：国家限制真正决定候选时仍须
+  用户说明（Springfield 的候选都在美国，附加 US 不改变结果，会被放行）。
+category: Z 国家限制自行消歧
+systems: []
+turns:
+  - 合成资料：公历1998-04-12 09:30，出生地Cambridge。只用占星分析工作方向。
+legacy:
+  steps:
+    - call: start_reading
+      args: {question: 只用占星分析工作方向, systems: [astro]}
+    # The user named only the city; the model picked a country to settle the ambiguity.
+    - call: resolve_location
+      args: {query: Cambridge, country: GB}
+      expect: {error: 国家限制必须由用户明确提供}
+    - call: resolve_location
+      args: {query: Cambridge}
+      expect: {needs_input: ambiguous_location}
+    - call: ask_user
+      args: {question: Cambridge有多个同名城市，请说明是哪个国家的Cambridge？}
+  outcome: ask_user
+pipeline:
+  # The requirements step asks from a template; no calculation and no reading this turn.
+  outcome: ask_user
+  max_model_calls: 1

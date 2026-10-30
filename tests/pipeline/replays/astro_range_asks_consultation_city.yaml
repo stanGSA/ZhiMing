@@ -1,0 +1,40 @@
+id: astro_range_asks_consultation_city
+source: >-
+  P1 Final-single / Final-multi astro_timing（2026-10-25）。评测期望直接作答，代码按 9a626a5
+  的设计要求先确认日期区间按哪个城市的时间；见 docs/verification/p0-接受路径与误拒清单.md 结果四。
+category: Z 规则与评测期望不一致（海外出生的咨询时区）
+systems: [astro]
+turns:
+  - 合成资料：公历1995-12-31 23:45，纽约（美国）出生。只用西方占星回答2026-11-01至2026-11-30是否适合启动求职，计算完整区间行运，给条件建议，不能把相位日期当录用日期。
+  - 按纽约时间。
+legacy:
+  steps:
+    - call: start_reading
+      args: {question: 2026-11-01至2026-11-30是否适合启动求职, systems: [astro]}
+    - call: resolve_location
+      args: {query: 纽约}
+    - call: compute_natal_chart
+      args: {birth_local: "1995-12-31 23:45", location_id: "{{result:resolve_location.location.location_id}}"}
+    - call: compute_transits
+      args: {chart_id: "{{result:compute_natal_chart.chart_id}}", start: "2026-11-01", end: "2026-11-30"}
+      expect: {needs_input: confirm_period_timezone}
+    - call: ask_user
+      args: {question: 请确认这段日期按哪个城市的时间来看？}
+    # Second turn: the user names the city.
+    - call: compute_transits
+      args: {chart_id: "{{result:compute_natal_chart.chart_id}}", start: "2026-11-01", end: "2026-11-30", tz: America/New_York}
+    - call: submit_reading
+      draft:
+        question_type: timing
+        verdict: conditional
+        summary: 十一月有条件适合启动求职，前提是先确定目标岗位。
+        sections:
+          - title: 这个月的节奏
+            body: 这个区间的行运相位提示外部节奏会推动你调整。
+            refs: ["{{ref:transit:2026-11#0}}"]
+  outcome: submit_reading
+pipeline:
+  # Decided in P3's requirements table: ask first (as now) or answer in the birthplace's time
+  # and say so. Until then the pipeline keeps the current behaviour.
+  outcome: submit_reading
+  max_model_calls: 4

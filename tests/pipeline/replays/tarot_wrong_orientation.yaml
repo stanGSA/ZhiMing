@@ -1,0 +1,36 @@
+id: tarot_wrong_orientation
+source: >-
+  塔罗牌面方向写错（P1 失败分类 E 事实与计算不符；校验信息“牌面方向错误：……本次应为……”）。
+  本回放用固定 seed 42 的抽牌，第二张为逆位。
+category: E 事实与计算不符
+systems: [tarot]
+turns:
+  - 只用塔罗，抽三张牌帮我看看近期事业状态。
+legacy:
+  steps:
+    - call: start_reading
+      args: {question: 近期事业状态, systems: [tarot]}
+    - call: draw_tarot
+      args: {spread: three_card, question: 近期事业状态}
+    # The second card was drawn reversed; the draft calls it upright.
+    - call: submit_reading
+      draft: &orientation
+        question_type: tarot
+        summary: 近期事业整体平稳，可以按计划推进，但要留意节奏。
+        sections:
+          - title: 现在的状态
+            body: 现在位是{{result:draw_tarot.cards.1.name}}正位，提示你先稳住再推进。
+            refs: ["{{ref:pos2#0}}"]
+      expect: {error: 牌面方向错误}
+    - call: submit_reading
+      draft:
+        <<: *orientation
+        sections:
+          - title: 现在的状态
+            body: 现在位是{{result:draw_tarot.cards.1.name}}逆位，提示你先稳住再推进。
+            refs: ["{{ref:pos2#0}}"]
+  outcome: submit_reading
+pipeline:
+  # Card names and orientations come from {{R}} placeholders; the model never writes them.
+  outcome: submit_reading
+  max_model_calls: 2

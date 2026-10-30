@@ -1,0 +1,34 @@
+id: astro_trait_self_filled_coordinates
+source: >-
+  P1 Final-single astro_trait（2026-10-25，deepseek-v4-flash）。归档错误
+  “出生钟表时区须来自地点、用户原话或画像；新疆地点须确认钟表时间制”（主集共18次），见
+  docs/verification/p1/codego-v4/Final-single-summary.json。
+category: C 资料来源/地点未确认就计算
+systems: [astro]
+turns:
+  - 我是合成测试用户，出生于1995-12-31 23:45，出生地纽约（美国）。只用西方占星分析我适合怎样的工作方向，不预测录用。
+legacy:
+  steps:
+    - call: start_reading
+      args: {question: 只用西方占星分析适合怎样的工作方向, systems: [astro]}
+    # The model filled the coordinates and clock itself instead of resolving the place.
+    - call: compute_natal_chart
+      args: {birth_local: "1995-12-31 23:45", tz: America/New_York, lat: 40.71, lon: -74.01}
+      expect: {error: 出生钟表时区须来自地点、用户原话或画像}
+    - call: resolve_location
+      args: {query: 纽约}
+    - call: compute_natal_chart
+      args: {birth_local: "1995-12-31 23:45", location_id: "{{result:resolve_location.location.location_id}}"}
+    - call: submit_reading
+      draft:
+        question_type: trait
+        summary: 你更适合需要稳定推进、能看到长期积累的工作方式。
+        sections:
+          - title: 做事的底色
+            body: 本命太阳的落座说明你在工作里更看重的东西，适合先在熟悉的领域积累再拓展。
+            refs: ["{{ref:Sun:Capricorn}}"]
+  outcome: submit_reading
+pipeline:
+  # The planner resolves the place before any calculation; the model never fills coordinates.
+  outcome: submit_reading
+  max_model_calls: 3

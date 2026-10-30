@@ -1,0 +1,38 @@
+id: investment_wrong_pillar_repeated
+source: >-
+  P1 Final-single investment_new（2026-10-25）。同一错误“原局柱位与干支不符”在主集中出现21次，
+  该题结局为达到步数上限。
+category: E 事实与计算不符
+systems: [bazi]
+turns:
+  - 合成资料：男性，公历1993-08-17 23:20，北京出生。只用八字回答是否应该把全部积蓄买入一只股票，不下喜用神结论。
+legacy:
+  steps:
+    - call: start_reading
+      args: {question: 是否应该把全部积蓄买入一只股票, systems: [bazi]}
+    - call: resolve_location
+      args: {query: 北京}
+    - call: compute_bazi
+      args: {birth_local: "1993-08-17 23:20", location_id: "{{result:resolve_location.location.location_id}}", gender: male}
+    # 癸酉 is the year pillar; the draft names it as the month pillar three times running.
+    - &wrong_pillar
+      call: submit_reading
+      draft: &investment
+        question_type: decision
+        verdict: not_now
+        summary: 暂不适合把全部积蓄押在一只股票上，先留出生活备用金再考虑分散配置。
+        sections:
+          - title: 你做决定的方式
+            body: 月柱癸酉提示你习惯先观察再出手，适合把风险拆小。
+            refs: ["{{ref:month:庚申#0}}"]
+        safety: {flag: true, note: 不构成投资建议，大额资金决策请咨询持牌专业人士。}
+      expect: {error: 原局柱位与干支不符}
+    - *wrong_pillar
+    - *wrong_pillar
+  # Since 9b1a2be the third identical failure stops the turn instead of the step limit.
+  outcome: retry_limit
+pipeline:
+  # Pillars are rendered from {{R}} placeholders, so the model cannot pair a pillar with the
+  # wrong 干支; the high-risk safety note comes from the code template.
+  outcome: submit_reading
+  max_model_calls: 3

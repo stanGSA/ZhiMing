@@ -1,0 +1,43 @@
+id: bazi_timing_without_flow_months
+source: >-
+  P1 Final-single bazi_timing / three_system_timing（2026-10-25）。归档错误
+  “时间范围问题需要相应行运或流期计算，不能只用原局”。
+category: Z 时间范围问题只用了原局
+systems: [bazi]
+turns:
+  - 合成资料：男性，公历1993-08-17 23:20，北京出生。只用八字回答2026-11-01至2026-11-30是否适合启动求职，计算该区间流月，说明节气切分与原局关系。按23点换日，不用真太阳时。
+legacy:
+  steps:
+    - call: start_reading
+      args: {question: 2026-11-01至2026-11-30是否适合启动求职, systems: [bazi]}
+    - call: resolve_location
+      args: {query: 北京}
+    - call: compute_bazi
+      args: {birth_local: "1993-08-17 23:20", location_id: "{{result:resolve_location.location.location_id}}", gender: male}
+    # The range question is answered from the natal chart alone.
+    - call: submit_reading
+      draft:
+        question_type: timing
+        verdict: conditional
+        summary: 十一月有条件适合启动求职，前提是先把目标岗位范围收窄。
+        sections:
+          - title: 你的底色
+            body: 日主辛金做事讲究细节，适合准备充分后再出手。
+            refs: ["{{ref:day_master}}"]
+      expect: {error: 时间范围问题需要相应行运或流期计算}
+    - call: compute_bazi_period
+      args: {bazi_id: "{{result:compute_bazi.bazi_id}}", start: "2026-11-01", end: "2026-11-30", granularity: month}
+    - call: submit_reading
+      draft:
+        question_type: timing
+        verdict: conditional
+        summary: 十一月有条件适合启动求职，前提是先把目标岗位范围收窄。
+        sections:
+          - title: 这个月的节奏
+            body: 这个区间的流月与原局的关系说明节奏偏快，适合主动出击但要留出缓冲。
+            refs: ["{{ref:period:&:month:#0}}"]
+  outcome: submit_reading
+pipeline:
+  # The intent carries the range, so the planner always computes the flow months.
+  outcome: submit_reading
+  max_model_calls: 3
