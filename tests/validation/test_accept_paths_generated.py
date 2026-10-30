@@ -298,6 +298,10 @@ async def test_negated_sign_before_the_actual_sign_is_accepted(charts):
             f"太阳不在第{wrong_house(sun)}宫，而在第{sun['house']}宫。",
             [ref(s, f":Sun:house{sun['house']}")],
         ),
+        # A denied denial asserts the value.
+        (f"太阳并非不在{actual}座。", [ref(s, f":Sun:{sun['sign']}")]),
+        # As before the fix, only the first asserted sign belongs to the planet.
+        (f"太阳{actual}座，和{elsewhere}座的人很合得来。", [ref(s, f":Sun:{sun['sign']}")]),
     ]
     assert rejections(s, "timing", sentences) == []
 
@@ -332,7 +336,12 @@ async def test_tarot_definition_followed_by_draw_clause_is_accepted(runtime, tar
         f"本次{card['name']}是{orientation(card)}。"
         f"{card['name']}{opposite(card)}一般表示阻滞，这次不是这种情况。"
     )
-    assert rejections(runtime.session, "tarot", [(body, [card["ref_id"]])]) == []
+    also = (
+        f"{card['name']}{orientation(card)}。"
+        f"{card['name']}{opposite(card)}一般表示阻滞，但这次并不是这样。"
+    )
+    refs = [card["ref_id"]]
+    assert rejections(runtime.session, "tarot", [(body, refs), (also, refs)]) == []
 
 
 async def test_daily_facts_stated_correctly_are_accepted(runtime, daily):
@@ -497,6 +506,11 @@ async def test_tarot_mutations_are_rejected(runtime, tarot):
         # Denying the drawn orientation does not make the asserted wrong one acceptable.
         f"这次抽到的是{card['name']}{opposite(card)}，不是{card['name']}{orientation(card)}。",
         f"{card['name']}{opposite(card)}一般表示阻滞，这次抽到的正是它。",
+        # Denying the drawn orientation is wrong on its own.
+        f"这次不是{card['name']}{orientation(card)}。",
+        # The negation governs another object, so the sentence still speaks about this draw.
+        f"{card['name']}{orientation(card)}。{card['name']}{opposite(card)}代表这次不是偶然的阻滞。",
+        f"{card['name']}{orientation(card)}。{card['name']}{opposite(card)}表示这次不同于上次的僵持。",
     ):
         assert_rejected(runtime.session, "tarot", (body, [card["ref_id"]]))
 
@@ -507,10 +521,17 @@ async def test_negation_does_not_hide_a_wrong_position(charts):
     actual = SIGN_ZH[SIGNS.index(sun["sign"])]
     elsewhere = next(zh for zh in SIGN_ZH if zh != actual)
     sign_ref, house_ref = ref(s, f":Sun:{sun['sign']}"), ref(s, f":Sun:house{sun['house']}")
-    assert_rejected(s, "timing", (f"太阳不在{actual}座，而在{elsewhere}座。", [sign_ref]))
-    assert_rejected(
-        s, "timing", (f"太阳不在第{sun['house']}宫，而在第{wrong_house(sun)}宫。", [house_ref])
-    )
+    other_house = wrong_house(sun)
+    for body, cited in (
+        (f"太阳不在{actual}座，而在{elsewhere}座。", sign_ref),
+        (f"太阳不在第{sun['house']}宫，而在第{other_house}宫。", house_ref),
+        # Denying the computed value is wrong even when every value is denied.
+        (f"太阳不在{elsewhere}座，也不在{actual}座。", sign_ref),
+        (f"太阳不在第{sun['house']}宫，也不在第{other_house}宫。", house_ref),
+        # A denied denial asserts the wrong sign.
+        (f"太阳并非不在{elsewhere}座。", sign_ref),
+    ):
+        assert_rejected(s, "timing", (body, [cited]))
 
 
 @pytest.mark.xfail(strict=True, reason="漏拦：牌位张冠李戴，留给流水线的闭集比对")

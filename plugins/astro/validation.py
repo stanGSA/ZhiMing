@@ -151,31 +151,32 @@ def validate_output(reading, state):
                 ]
                 # A transit body is not a claim about the natal body's position.
                 transit_context = bool(re.search(r"行运\s*$", sentence[: body.start()]))
-                # “不在处女座，而在狮子座” asserts only the sign it does not deny.
-                sign = next(
-                    (
-                        m
-                        for m in re.finditer("|".join(SIGN_ZH), tail[:24])
-                        if not negated_at(tail, m.start())
-                    ),
-                    None,
-                )
-                houses = [
-                    m[1]
-                    for m in re.finditer(r"(?:第)?([零一二三四五六七八九十\d]+)宫", tail[:30])
-                    if not negated_at(tail, m.start())
+                # Each sign and house keeps whether it is asserted or denied. “不在处女座，而在
+                # 狮子座” asserts 狮子; denying the computed value is as wrong as asserting another.
+                signs = [
+                    (m.group(), negated_at(tail, m.start()))
+                    for m in re.finditer("|".join(SIGN_ZH), tail[:24])
                 ]
-                if transit_context and (sign or houses):
+                houses = [
+                    (m[1], negated_at(tail, m.start()))
+                    for m in re.finditer(r"(?:第)?([零一二三四五六七八九十\d]+)宫", tail[:30])
+                ]
+                if transit_context and (signs or houses):
                     return "行运星落座宫位未作为本次事实提供，请仅陈述已计算相位"
                 name = body.group()
-                if sign:
+                if signs:
                     actual = positions.get(name, {}).get("sign_zh")
                     if name in AXES and natal.get("axes"):
                         actual = SIGN_ZH[int(natal["axes"][AXES[name]] // 30)]
-                    if actual != sign.group():
+                    # As before, only the first asserted sign is the body's own sign.
+                    asserted = next((sign for sign, denied in signs if not denied), None)
+                    if (asserted is not None and asserted != actual) or any(
+                        denied and sign == actual for sign, denied in signs
+                    ):
                         return "行星落座或四轴与本次计算不符"
-                for house in houses:
-                    if positions.get(name, {}).get("house") != chinese_number(house):
+                house_of = positions.get(name, {}).get("house")
+                for house, denied in houses:
+                    if (house_of == chinese_number(house)) == denied:
                         return "宫位不可用或与本次计算不符"
 
     # Bind each relation independently; a timeline may legitimately contain several events.
