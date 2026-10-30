@@ -37,7 +37,7 @@ def records(runtime) -> list[dict]:
     )
 
 
-async def evaluate(model_name: str | None, output: Path) -> dict:
+async def evaluate(model_name: str | None, output: Path, mode: str = "single") -> dict:
     load_dotenv(ROOT / ".env")
     config = yaml.safe_load((ROOT / "config.yaml").read_text(encoding="utf-8"))
     model_name = model_name or config["models"]["orchestrator"]
@@ -51,7 +51,16 @@ async def evaluate(model_name: str | None, output: Path) -> dict:
     build(ROOT / "knowledge/sources", workspace / "data/kb.sqlite", ROOT / "knowledge/rules")
     source_hashes = {
         path.relative_to(ROOT).as_posix(): hashlib.sha256(path.read_bytes()).hexdigest()
-        for folder in ("harness", "agents", "common", "plugins", "knowledge", "memory", "scripts")
+        for folder in (
+            "harness",
+            "agents",
+            "common",
+            "pipeline",
+            "plugins",
+            "knowledge",
+            "memory",
+            "scripts",
+        )
         for path in (ROOT / folder).rglob("*")
         if path.suffix in (".py", ".yaml")
     }
@@ -63,7 +72,10 @@ async def evaluate(model_name: str | None, output: Path) -> dict:
 
     def new_runtime(suffix, user_id=None):
         runtime = create_runtime(
-            root=workspace, user_id=user_id or f"live-{run_id}-{suffix}", model_name=model_name
+            root=workspace,
+            user_id=user_id or f"live-{run_id}-{suffix}",
+            model_name=model_name,
+            mode=mode,
         )
         runtimes.append(runtime)
         return runtime
@@ -387,6 +399,7 @@ async def evaluate(model_name: str | None, output: Path) -> dict:
         "generated_at": datetime.now(UTC).isoformat(),
         "provider": "openai-compatible",
         "requested_model": model_name,
+        "mode": mode,
         "expected_cases": EXPECTED_CASES,
         "cases": len(rows),
         "passed": sum(r["pass"] for r in rows),
@@ -438,8 +451,9 @@ def main():
     )
     parser.add_argument("--model", default=None)
     parser.add_argument("--output", type=Path, default=ROOT / "reports/review-fix")
+    parser.add_argument("--mode", choices=["single", "pipeline"], default="single")
     args = parser.parse_args()
-    report = asyncio.run(evaluate(args.model, args.output))
+    report = asyncio.run(evaluate(args.model, args.output, args.mode))
     print(
         json.dumps(
             {k: v for k, v in report.items() if k != "results"}, ensure_ascii=False, indent=2

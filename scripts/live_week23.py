@@ -317,6 +317,7 @@ async def evaluate(
             "harness",
             "agents",
             "common",
+            "pipeline",
             "plugins",
             "knowledge",
             "memory",
@@ -372,7 +373,7 @@ async def evaluate(
                     root=workspace,
                     user_id=user_id,
                     model_name=model_name,
-                    mode="multi" if is_multi else "single",
+                    mode="multi" if is_multi else mode,
                 )
                 runtimes[(repeat, case["id"])] = runtime
                 started = time.perf_counter()
@@ -641,7 +642,9 @@ def main():
         action="store_true",
         help="Include unprompted natural-language and profile reuse cases",
     )
-    parser.add_argument("--mode", choices=["single", "multi", "multi-lite"], default="single")
+    parser.add_argument(
+        "--mode", choices=["single", "multi", "multi-lite", "pipeline"], default="single"
+    )
     parser.add_argument("--judge", dest="judge_name")
     parser.add_argument("--repeats", type=int, default=1)
     parser.add_argument("--dataset", type=Path, help="可选：独立多体系实验题目YAML")
