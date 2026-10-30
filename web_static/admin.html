@@ -58,6 +58,18 @@
           </thead>
           <tbody id="check-rows"></tbody>
         </table>
+        <h3>模型连通性检测</h3>
+        <p class="adm-hint">向当前配置的模型发送小型真实请求，最多输出 32 token。消耗计入全站预算，遵守暂停和并发限制；失败及恢复由服务器监控发送钉钉告警。</p>
+        <form class="adm-inline" id="probe-form">
+          <label class="field"><span>检测周期（分钟，0 关闭）</span><input id="probe-interval" type="number" min="0" max="10080" step="1" required /></label>
+          <button class="btn btn-ghost" type="submit">保存检测周期</button>
+          <button class="btn btn-primary" id="probe-run" type="button">立即测试</button>
+        </form>
+        <p id="probe-result" role="status" aria-live="polite"></p>
+        <div class="adm-scroll"><table class="adm-table">
+          <thead><tr><th>检测时间</th><th>模型</th><th>结果</th><th>延迟</th><th>触发</th></tr></thead>
+          <tbody id="probe-history"></tbody>
+        </table></div>
         <h3>近 24 小时费用事件</h3>
         <ul class="adm-events" id="events"></ul>
       </section>
@@ -110,6 +122,19 @@
           <h2 id="accounts-title">账号</h2>
           <p class="adm-hint" id="accounts-meta"></p>
         </div>
+        <h3>新账号默认免费额度</h3>
+        <p class="adm-hint">仅影响保存后注册的新账号。现有账号的初始额度、已用额度和追加额度保持不变；0 表示新账号没有免费额度。</p>
+        <form class="adm-inline" id="registration-form">
+          <label class="field"><span>每个新账号的 token</span><input id="registration-tokens" type="number" min="0" max="1000000000" step="1" required /></label>
+          <button class="btn btn-primary" type="submit">保存注册默认额度</button>
+        </form>
+        <h3>给现有账号统一发放额度</h3>
+        <p class="adm-hint">向本次发放时已存在的所有有限额账号追加相同数量的 token，不清零已用量，不受下方搜索筛选影响。不限额账号自动跳过；不改变之后注册的账号额度。</p>
+        <form class="adm-inline" id="distribution-form">
+          <label class="field"><span>每个账号追加 token</span><input id="distribution-tokens" type="number" min="1" max="1000000000" step="1" required /></label>
+          <button class="btn btn-primary" type="submit">向现有账号统一发放</button>
+        </form>
+        <p id="allowance-result" role="status" aria-live="polite"></p>
         <form class="adm-inline" id="account-search">
           <label class="field"><span>搜索账号名</span><input id="account-query" maxlength="32" /></label>
           <button class="btn btn-ghost" type="submit">搜索</button>

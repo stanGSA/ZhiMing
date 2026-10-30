@@ -135,6 +135,7 @@ async function load() {
   } catch {
     return;
   }
+  if (Number.isInteger(info.registration_free_tokens)) $("#registration-allowance").textContent = info.registration_free_tokens.toLocaleString("zh-CN");
   if (info.account) {
     $("#signed-name").textContent = info.account.username;
     if (info.account.quota)

@@ -345,7 +345,7 @@ class CostControl:
                     now=now,
                 )
                 return SitePaused()
-        if settings["burst_account_tokens"] > 0:
+        if user_id is not None and settings["burst_account_tokens"] > 0:
             since = max(now - window, self.control(user_id)["resumed_at"] or 0)
             used = self.spend(since, now, user_id)["tokens"]
             if used + reservation > settings["burst_account_tokens"]:

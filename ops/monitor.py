@@ -368,6 +368,7 @@ def check_clock() -> dict:
 
 
 APP_CHECKS = (
+    ("model_probe", "模型主动检测"),
     ("model_errors", "模型错误率"),
     ("budget", "今日预算"),
     ("model_pause", "模型暂停"),
@@ -394,6 +395,7 @@ def check_app(base: str, token: str, now: float, state: dict | None = None) -> l
             problem = "指标数据格式无法识别（应用与监控版本可能不一致）"
     if problem is None:
         state.pop("metrics_failures", None)
+        state["probe_snapshot"] = data.get("model_probe")
         return [check("app_metrics", "应用指标采集", "ok", "正常"), *checks]
     failures = state.get("metrics_failures", 0) + 1
     state["metrics_failures"] = failures
@@ -416,6 +418,9 @@ def check_app(base: str, token: str, now: float, state: dict | None = None) -> l
 
 def app_checks(data: dict, now: float) -> list[dict]:
     checks = []
+    probe = data.get("model_probe")
+    if probe is not None:
+        checks.append(probe_check(probe, now))
     errors = data["errors"]
     rate, calls = errors["rate"], errors["calls"]
     minimum = number("ZHIMING_MONITOR_ERROR_MIN_CALLS", 5)
@@ -506,6 +511,32 @@ def app_checks(data: dict, now: float) -> list[dict]:
         )
     )
     return checks
+
+
+def probe_check(probe: dict, now: float) -> dict:
+    result = probe.get("latest")
+    interval = probe.get("interval_min", 0)
+    if result and result["status"] == "failure":
+        return check(
+            "model_probe",
+            "模型主动检测",
+            "critical",
+            f"{beijing(result['completed_at'])} 检测失败：{result.get('error')}；延迟 {result['latency_ms']} ms",
+        )
+    if interval and (not result or now - result["completed_at"] > interval * 60 + 120):
+        return check("model_probe", "模型主动检测", "critical", "定时模型检测未按时完成")
+    if result and result["status"] == "skipped":
+        return check(
+            "model_probe", "模型主动检测", "unknown", f"被全站保护阻止：{result.get('error')}"
+        )
+    if result:
+        return check(
+            "model_probe",
+            "模型主动检测",
+            "ok",
+            f"{beijing(result['completed_at'])} 返回正常；延迟 {result['latency_ms']} ms",
+        )
+    return check("model_probe", "模型主动检测", "unknown", "未执行检测；定时检测已关闭")
 
 
 # ---------- alert channels ----------
@@ -741,6 +772,26 @@ def load_state(path: str) -> dict:
         return {}
 
 
+def run_server(checks, state, state_path, status_path, now):
+    """Replay unannounced probe transitions so failure+recovery between polls is not lost."""
+    snapshot = state.get("probe_snapshot")
+    collected = next((c for c in checks if c["name"] == "app_metrics"), {})
+    if snapshot and collected.get("level") == "ok":
+        cursor = state.get("probe_cursor", 0)
+        for result in sorted(snapshot.get("history", []), key=lambda r: r["completed_at"]):
+            if result["completed_at"] <= cursor:
+                continue
+            historical = probe_check({"latest": result, "interval_min": 0}, now)
+            replay = [c for c in checks if c["name"] != "model_probe"] + [historical]
+            run(replay, state, state_path, status_path, now)
+            if any(v.get("last_error") for v in state.get("delivery", {}).values()):
+                # Do not acknowledge the transition or process its recovery until retried.
+                return
+            state["probe_cursor"] = result["completed_at"]
+            cursor = result["completed_at"]
+    run(checks, state, state_path, status_path, now)
+
+
 def write_json(path: str, data: dict, mode: int) -> None:
     directory = os.path.dirname(path) or "."
     os.makedirs(directory, mode=0o755, exist_ok=True)
@@ -931,7 +982,7 @@ def main(argv: list[str] | None = None) -> int:
     if args.dry_run:
         print(json.dumps(checks, ensure_ascii=False, indent=1))
         return 0
-    run(checks, state, state_path, os.path.join(state_dir, "status.json"), now)
+    run_server(checks, state, state_path, os.path.join(state_dir, "status.json"), now)
     heartbeat()
     return 0
 

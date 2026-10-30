@@ -58,6 +58,7 @@ from memory.accounts import (
 from memory.store import Store
 from ops.admin import AdminContext, parse_admin_ids
 from ops.admin import install as install_admin
+from ops.probe import ProbeService
 from plugins.astro.calculator import natal_chart
 from plugins.bazi.calculator import GAN, GAN_WX, WX, compute_bazi, ten_god
 from plugins.direct import birth_inputs
@@ -595,6 +596,7 @@ def create_web_app(
         lambda: accounts().costs.settings()["max_concurrent_calls"],
         lambda: accounts().costs.settings()["queue_wait_s"],
     )
+    probe = ProbeService(accounts, gate, config)
 
     def live_roots():
         roots = {id(s): s for s in [*sessions.values(), *accounts_live.values()]}
@@ -704,9 +706,11 @@ def create_web_app(
             # A deleted administrator stays without rights: ids are never handed out again.
             logger.warning("Administrator ids without an account: %s", ", ".join(missing))
         cleanup = asyncio.create_task(reap())
+        probe_task = asyncio.create_task(probe.schedule())
         yield
         cleanup.cancel()
-        await asyncio.gather(cleanup, return_exceptions=True)
+        probe_task.cancel()
+        await asyncio.gather(cleanup, probe_task, return_exceptions=True)
         for root_session in live_roots():
             for context in family(root_session):
                 await close(context)
@@ -2034,16 +2038,22 @@ def create_web_app(
         if current is None:
             user_id = accounts().session_user(key, time.time()) if key else None
             account = accounts().get(user_id) if user_id else None
-            return {"account": public_account(account) if account else None, "guest": None}
+            return {
+                "account": public_account(account) if account else None,
+                "guest": None,
+                "registration_free_tokens": accounts().registration_allowance(),
+            }
         if current.account is not None:
             return {
                 "account": {**current.account, "quota": accounts().quota(current.user_id)},
                 "guest": None,
+                "registration_free_tokens": accounts().registration_allowance(),
             }
         _, total = current.runtime.store.reading_page(current.user_id, limit=1)
         return {
             "account": None,
             "guest": {"readings": total, "birth": bool(current.birth.date)},
+            "registration_free_tokens": accounts().registration_allowance(),
         }
 
     @app.post("/api/account/register")
@@ -2323,6 +2333,7 @@ def create_web_app(
             current=current_account,
             drop_logins=drop_logins,
             gate=gate,
+            probe=probe,
             admins=admins,
             monitor_token=monitor_token,
             monitor_status=monitor_status,

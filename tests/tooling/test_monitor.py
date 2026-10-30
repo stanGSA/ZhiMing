@@ -76,6 +76,37 @@ def test_alerts_fire_on_start_escalation_reminder_and_recovery(channels, monkeyp
     assert channels.delivered["邮件"] == sent
 
 
+def test_probe_failure_and_recovery_between_monitor_polls_are_delivered(channels):
+    history = [
+        {"status": "failure", "completed_at": 1000, "error": "TimeoutError", "latency_ms": 20000},
+        {"status": "success", "completed_at": 1001, "latency_ms": 100},
+    ]
+    snapshot = {"history": history, "latest": history[-1], "interval_min": 15}
+    state = {"probe_snapshot": snapshot}
+    checks = [item("app_metrics", "ok"), monitor.probe_check(snapshot, 1002)]
+    channels.failing.add("机器人")
+    monitor.run_server(checks, state, None, None, 1002)
+    assert "probe_cursor" not in state
+    assert len(channels.delivered["邮件"]) == 1
+    channels.failing.clear()
+    monitor.run_server(checks, state, None, None, 1300)
+    assert len(channels.delivered["机器人"]) == 2
+    assert "恢复" in channels.delivered["机器人"][-1]
+    assert len(channels.delivered["邮件"]) == 2
+    assert state["probe_cursor"] == 1001
+    monitor.run_server(checks, state, None, None, 1301)
+    assert len(channels.delivered["机器人"]) == 2
+
+
+def test_probe_stale_missing_and_skipped_results():
+    assert monitor.probe_check({"latest": None, "interval_min": 5}, 1000)["level"] == "critical"
+    assert monitor.probe_check({"latest": None, "interval_min": 0}, 1000)["level"] == "unknown"
+    result = {"status": "success", "completed_at": 100, "latency_ms": 200}
+    assert monitor.probe_check({"latest": result, "interval_min": 5}, 1000)["level"] == "critical"
+    result["status"] = "skipped"
+    assert monitor.probe_check({"latest": result, "interval_min": 0}, 1000)["level"] == "unknown"
+
+
 def test_a_failed_escalation_is_retried_next_round(channels):
     state = {}
     monitor.run([item("disk", "warning")], state, None, None, 1000.0)
@@ -470,7 +501,8 @@ def test_health_check_against_the_real_app(project):
         base = f"http://127.0.0.1:{port}"
         assert monitor.check_health("site_local", "本机服务", base)["level"] == "ok"
         checks = monitor.check_app(base, "z" * 40, time.time())
-        assert {c["level"] for c in checks} == {"ok"}
+        assert {c["level"] for c in checks if c["name"] != "model_probe"} == {"ok"}
+        assert next(c for c in checks if c["name"] == "model_probe")["level"] == "unknown"
         state = {}
         monitor.check_app(base, "w" * 40, 0, state)
         wrong = {c["name"]: c for c in monitor.check_app(base, "w" * 40, 0, state)}

@@ -22,6 +22,7 @@ import time
 from collections.abc import Awaitable, Callable
 from dataclasses import dataclass
 from pathlib import Path
+from uuid import UUID
 
 from fastapi import FastAPI, HTTPException, Query, Request
 from fastapi.responses import FileResponse, JSONResponse, RedirectResponse
@@ -48,6 +49,22 @@ class Grant(BaseModel):
     tokens: int = Field(ge=-10_000_000, le=10_000_000)
 
 
+class RegistrationAllowance(BaseModel):
+    model_config = ConfigDict(extra="forbid", strict=True)
+    tokens: int = Field(ge=0, le=1_000_000_000)
+
+
+class Distribution(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+    tokens: int = Field(ge=1, le=1_000_000_000, strict=True)
+    request_id: UUID
+
+
+class ProbeInterval(BaseModel):
+    model_config = ConfigDict(extra="forbid", strict=True)
+    minutes: int = Field(ge=0, le=10080)
+
+
 @dataclass
 class AdminContext:
     accounts: Callable[[], AccountStore]
@@ -62,6 +79,7 @@ class AdminContext:
     release_file: Path | None
     data_dir: Path
     stats: Callable[[], dict]
+    probe: object = None
 
 
 def parse_admin_ids(value: str | list[str] | None) -> frozenset[str]:
@@ -200,6 +218,7 @@ def install(app: FastAPI, ctx: AdminContext) -> None:
             **site_snapshot(ctx.accounts(), ctx.gate, time.time()),
             "settings": ctx.accounts().costs.settings(),
             "process": ctx.stats(),
+            "model_probe": ctx.probe.snapshot() if ctx.probe else None,
         }
 
     @app.get("/admin", include_in_schema=False)
@@ -236,6 +255,8 @@ def install(app: FastAPI, ctx: AdminContext) -> None:
             },
             "audit": costs.audit_log(30),
             "monitor": monitor,
+            "registration_free_tokens": store.registration_allowance(),
+            "model_probe": ctx.probe.snapshot() if ctx.probe else None,
             "system": {
                 **ctx.stats(),
                 "accounts": store.db.execute("SELECT COUNT(*) FROM accounts").fetchone()[0],
@@ -289,6 +310,28 @@ def install(app: FastAPI, ctx: AdminContext) -> None:
             q, offset, limit, since=store.costs.day_start(time.time())
         )
         return {"items": items, "total": total, "offset": offset}
+
+    @app.put("/api/admin/registration-allowance")
+    async def registration_allowance(body: RegistrationAllowance, request: Request):
+        ctx.accounts().set_registration_allowance(body.tokens, admin_of(request))
+        return {"tokens": ctx.accounts().registration_allowance()}
+
+    @app.post("/api/admin/accounts/distribute")
+    async def distribute(body: Distribution, request: Request):
+        return ctx.accounts().distribute_tokens(
+            body.tokens, str(body.request_id), admin_of(request)
+        )
+
+    @app.put("/api/admin/model-probe")
+    async def probe_settings(body: ProbeInterval, request: Request):
+        admin = admin_of(request)
+        ctx.probe.configure(body.minutes, admin)
+        return ctx.probe.snapshot()
+
+    @app.post("/api/admin/model-probe/run")
+    async def probe_run(request: Request):
+        admin = admin_of(request)
+        return await ctx.probe.run(admin)
 
     @app.post("/api/admin/accounts/{user_id}/suspend")
     async def suspend(user_id: str, body: Reason, request: Request):

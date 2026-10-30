@@ -86,7 +86,11 @@ async def test_register_keeps_guest_records_and_birth(site, project):
     reading_id = await guest_with_records(client)
     guest_id = runtimes[0].session.user_id
     info = (await client.get("/api/account")).json()
-    assert info == {"account": None, "guest": {"readings": 1, "birth": True}}
+    assert info == {
+        "account": None,
+        "guest": {"readings": 1, "birth": True},
+        "registration_free_tokens": 250_000,
+    }
 
     created = await register(client, keep=True)
     assert created.status_code == 201
