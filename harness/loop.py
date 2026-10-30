@@ -4,12 +4,13 @@ import asyncio
 import json
 from collections.abc import Callable
 from contextvars import ContextVar
+from dataclasses import dataclass
 
 from harness.budget import Budget
 from harness.context import compact_context
 from harness.failures import failure, model_failure
 from harness.guard import Guard
-from harness.models import ToolCall, ToolResult, TurnOutcome
+from harness.models import ModelResponse, ToolCall, ToolResult, TurnOutcome
 from harness.refs import transform
 from harness.registry import Registry
 from harness.session import Session
@@ -83,60 +84,27 @@ async def run_turn(
         estimate = (
             estimate_call(session.messages, tools, last_input, last_count) if admission else 0
         )
-        if not budget.admit(estimate):
-            limit_reason = "token_budget"
-            tracer.log(
-                session, "budget_denied", step=step, estimate=estimate, remaining=budget.remaining()
-            )
-            break
-        try:
-            left = budget.time_left()
-            call = model.chat(session.messages, tools)
-            response = await (call if left is None else asyncio.wait_for(call, left))
-        except Exception as exc:
-            budget.release(estimate)
-            if isinstance(exc, TimeoutError) and budget.expired():
-                return timed_out(step)
-            # API exceptions can contain request headers or credentials: never log their text.
-            tracer.log(session, "model_error", error_type=type(exc).__name__, step=step)
-            return model_failure(session, exc)
-        except asyncio.CancelledError:
-            budget.release(estimate)
-            raise
-        if not response.planned:
-            session.model_calls += 1
-        used = response.input_tokens + response.output_tokens
-        budget.settle(estimate, used)
-        if admission and used > estimate:
-            tracer.log(session, "budget_overrun", step=step, estimate=estimate, actual=used)
-        if not response.planned:
-            last_input, last_count = response.input_tokens, len(session.messages)
-        session.total_tokens += used
-        tracer.log(
+        called = await call_model(
             session,
-            "tool_plan" if response.planned else "model_response",
+            model,
+            session.messages,
+            tools,
+            budget,
+            tracer,
             step=step,
-            input_tokens=response.input_tokens if response.usage_available else None,
-            output_tokens=response.output_tokens if response.usage_available else None,
-            usage_available=response.usage_available,
-            cached_input_tokens=response.cached_input_tokens,
-            reasoning_tokens=response.reasoning_tokens,
-            finish_reason=response.finish_reason,
-            requested_model=getattr(model, "model", None),
-            returned_model=response.model,
-            tool_names=[c.name for c in response.tool_calls],
+            estimate=estimate,
+            admission=admission,
         )
-        if not response.usage_available:
-            tracer.log(session, "usage_unavailable", step=step)
-            return TurnOutcome(
-                status="usage_unavailable",
-                text="模型服务未返回用量，本轮暂停以避免越过预算；请稍后重试。",
-            )
-        if budget.expired():
-            return timed_out(step)  # A response that arrives after the deadline is not acted on.
-        if budget.overdrawn():
+        if called.stop == "budget":
             limit_reason = "token_budget"
             break  # Do not execute side effects from an over-budget response.
+        if called.stop == "timeout":
+            return timed_out(step)
+        if called.outcome is not None:
+            return called.outcome
+        response = called.response
+        if not response.planned:
+            last_input, last_count = response.input_tokens, len(session.messages)
         if response.finish_reason == "length":
             tracer.log(session, "output_truncated", step=step)
             return failure(
@@ -175,6 +143,92 @@ async def run_turn(
         else "本轮达到请求token预算，尚未完成解读；可缩小问题范围后继续，下一轮预算会重置。"
     )
     return failure(session, "limit_reached", limit_reason, text)
+
+
+@dataclass
+class ModelCall:
+    """What call_model produced: a response to act on, or why the turn must stop."""
+
+    response: ModelResponse | None = None
+    # "budget": refused or overdrawn; "timeout": past the deadline; otherwise see ``outcome``.
+    stop: str | None = None
+    outcome: TurnOutcome | None = None
+
+
+async def call_model(
+    session: Session,
+    model,
+    messages: list[dict],
+    tools: list[dict],
+    budget: Budget,
+    tracer: Tracer,
+    *,
+    step: int,
+    estimate: int,
+    admission: bool,
+    purpose: str | None = None,
+) -> ModelCall:
+    """One model call inside a budget: admission, deadline, settlement, trace, usage check.
+
+    The agent loop and the pipeline both call the model through here, so a call is admitted,
+    charged and traced the same way and a response without usage is never acted on.
+    """
+    if not budget.admit(estimate):
+        tracer.log(
+            session, "budget_denied", step=step, estimate=estimate, remaining=budget.remaining()
+        )
+        return ModelCall(stop="budget")
+    try:
+        left = budget.time_left()
+        call = model.chat(messages, tools)
+        response = await (call if left is None else asyncio.wait_for(call, left))
+    except Exception as exc:
+        budget.release(estimate)
+        if isinstance(exc, TimeoutError) and budget.expired():
+            return ModelCall(stop="timeout")
+        # API exceptions can contain request headers or credentials: never log their text.
+        tracer.log(session, "model_error", error_type=type(exc).__name__, step=step)
+        return ModelCall(outcome=model_failure(session, exc))
+    except asyncio.CancelledError:
+        budget.release(estimate)
+        raise
+    if not response.planned:
+        session.model_calls += 1
+    used = response.input_tokens + response.output_tokens
+    budget.settle(estimate, used)
+    if admission and used > estimate:
+        tracer.log(session, "budget_overrun", step=step, estimate=estimate, actual=used)
+    session.total_tokens += used
+    tracer.log(
+        session,
+        "tool_plan" if response.planned else "model_response",
+        step=step,
+        input_tokens=response.input_tokens if response.usage_available else None,
+        output_tokens=response.output_tokens if response.usage_available else None,
+        usage_available=response.usage_available,
+        cached_input_tokens=response.cached_input_tokens,
+        reasoning_tokens=response.reasoning_tokens,
+        finish_reason=response.finish_reason,
+        requested_model=getattr(model, "model", None),
+        returned_model=response.model,
+        tool_names=[c.name for c in response.tool_calls],
+        **({"purpose": purpose} if purpose else {}),
+    )
+    if not response.usage_available:
+        tracer.log(session, "usage_unavailable", step=step)
+        return ModelCall(
+            response=response,
+            outcome=TurnOutcome(
+                status="usage_unavailable",
+                text="模型服务未返回用量，本轮暂停以避免越过预算；请稍后重试。",
+            ),
+        )
+    if budget.expired():
+        # A response that arrives after the deadline is not acted on.
+        return ModelCall(response=response, stop="timeout")
+    if budget.overdrawn():
+        return ModelCall(response=response, stop="budget")
+    return ModelCall(response=response)
 
 
 async def run_call(registry: Registry, session: Session, call: ToolCall, args) -> ToolResult:
