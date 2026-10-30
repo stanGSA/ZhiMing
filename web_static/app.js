@@ -267,7 +267,7 @@ function renderAccount() {
   badge.textContent = quota ? (quota.limit === null ? "账号额度不限" : `免费剩余 ${quota.remaining.toLocaleString("zh-CN")} token`) : "";
   badge.title = quota?.limit === null
     ? "此账号不受账号额度限制；全站预算、并发和异常消耗保护仍生效。"
-    : "每账号累计 250,000 token，不按月重置；输入和输出均计入，离线演示不扣额度。";
+    : "账号额度累计使用，不按月重置；输入和输出均计入，离线演示不扣额度。";
   $$("[data-storage-note]").forEach((note) => {
     note.textContent = storageNote();
   });

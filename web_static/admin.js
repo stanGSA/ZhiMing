@@ -32,6 +32,10 @@ const ACTIONS = {
   unsuspend_account: "恢复账号",
   grant_tokens: "调整账号额度",
   set_unlimited_quota: "设置账号不限额",
+  registration_allowance: "修改新账号默认额度",
+  distribute_tokens: "统一发放账号额度",
+  probe_interval: "修改模型检测周期",
+  probe_model: "立即测试模型",
   revoke_logins: "强制下线",
 };
 const EVENTS = {
@@ -615,7 +619,91 @@ async function load(force = false) {
   renderUsage();
   renderControls(force);
   renderSystem();
+  renderAccountSettings(force);
+  renderProbe(force);
 }
+
+function renderAccountSettings(force = false) {
+  const input = $("#registration-tokens");
+  if (force || !input.dataset.dirty) input.value = data.registration_free_tokens;
+}
+
+function renderProbe(force = false) {
+  const probe = data.model_probe;
+  if (!probe) return;
+  const input = $("#probe-interval");
+  if (force || !input.dataset.dirty) input.value = probe.interval_min;
+  const latest = probe.latest;
+  const labels = {success: "成功", failure: "失败", skipped: "被全站保护阻止"};
+  $("#probe-result").textContent = (probe.running ? "检测进行中… " : "") +
+    (latest ? `最近检测 ${when(latest.completed_at)}：${labels[latest.status]} · ${latest.latency_ms} ms${latest.error ? ` · ${latest.error}` : ""}` : "尚未执行检测") +
+    (probe.next_at ? `；下次约 ${when(probe.next_at)}` : "；定时检测已关闭");
+  const rows = $("#probe-history");
+  rows.replaceChildren();
+  for (const result of probe.history) {
+    const row = node("tr");
+    for (const value of [when(result.completed_at), result.model || result.provider, labels[result.status] + (result.error ? `（${result.error}）` : ""), `${result.latency_ms} ms`, result.by === "timer" ? "定时" : result.by]) row.append(node("td", "", value));
+    rows.append(row);
+  }
+}
+
+for (const id of ["#registration-tokens", "#probe-interval"]) $(id).addEventListener("input", () => { $(id).dataset.dirty = "true"; });
+
+$("#registration-form").addEventListener("submit", async (event) => {
+  event.preventDefault();
+  const input = $("#registration-tokens");
+  if (!event.target.reportValidity()) return;
+  try {
+    await call("/api/admin/registration-allowance", {method: "PUT", body: JSON.stringify({tokens: Number(input.value)})});
+    delete input.dataset.dirty;
+    $("#allowance-result").textContent = "新账号默认免费额度已保存。";
+    await load();
+  } catch (error) { showError(error.message); }
+});
+
+let distribution = null;
+try { distribution = JSON.parse(sessionStorage.getItem("zhiming.pendingDistribution") || "null"); } catch { /* Optional recovery across a page refresh. */ }
+$("#distribution-form").addEventListener("submit", async (event) => {
+  event.preventDefault();
+  if (!event.target.reportValidity()) return;
+  const tokens = Number($("#distribution-tokens").value);
+  if (!distribution) {
+    if (!confirm(`向所有现有有限额账号每人追加 ${number(tokens)} token？不限额账号跳过。`)) return;
+    distribution = {tokens, request_id: crypto.randomUUID()};
+    try { sessionStorage.setItem("zhiming.pendingDistribution", JSON.stringify(distribution)); } catch { /* Retry in this page still retains the request id. */ }
+  } else if (distribution.tokens !== tokens) {
+    showError("上次发放结果尚未确认，请先用相同额度重试，避免重复发放。"); return;
+  }
+  const button = event.target.querySelector("button"); button.disabled = true;
+  try {
+    const result = await call("/api/admin/accounts/distribute", {method: "POST", body: JSON.stringify(distribution)});
+    distribution = null;
+    try { sessionStorage.removeItem("zhiming.pendingDistribution"); } catch { /* Optional storage. */ }
+    $("#allowance-result").textContent = `已向 ${result.recipients} 个账号每人追加 ${number(result.tokens)} token${result.replayed ? "（已确认先前提交成功，未重复发放）" : ""}。`;
+    await Promise.all([load(), loadAccounts()]);
+  } catch (error) { showError(`${error.message}；可用相同额度重试，不会重复发放。`); }
+  finally { button.disabled = false; }
+});
+
+$("#probe-form").addEventListener("submit", async (event) => {
+  event.preventDefault();
+  if (!event.target.reportValidity()) return;
+  try {
+    await call("/api/admin/model-probe", {method: "PUT", body: JSON.stringify({minutes: Number($("#probe-interval").value)})});
+    delete $("#probe-interval").dataset.dirty;
+    await load();
+  } catch (error) { showError(error.message); }
+});
+
+$("#probe-run").addEventListener("click", async () => {
+  const button = $("#probe-run"); button.disabled = true;
+  $("#probe-result").textContent = "正在发送小型真实请求，请稍候…";
+  try {
+    await call("/api/admin/model-probe/run", {method: "POST", body: "{}"});
+    await load();
+  } catch (error) { showError(error.message); }
+  finally { button.disabled = false; }
+});
 
 function schedule() {
   clearInterval(timer);

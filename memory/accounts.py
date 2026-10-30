@@ -132,6 +132,11 @@ class AccountStore:
           used_tokens INTEGER NOT NULL DEFAULT 0, held_tokens INTEGER NOT NULL DEFAULT 0);
         CREATE TABLE IF NOT EXISTS account_quota_unlimited(user_id TEXT PRIMARY KEY
           REFERENCES accounts(user_id) ON DELETE CASCADE);
+        CREATE TABLE IF NOT EXISTS account_allowances(user_id TEXT PRIMARY KEY
+          REFERENCES accounts(user_id) ON DELETE CASCADE, tokens INTEGER NOT NULL);
+        CREATE TABLE IF NOT EXISTS quota_distributions(request_id TEXT PRIMARY KEY,
+          tokens INTEGER NOT NULL, recipients INTEGER NOT NULL, created_at REAL NOT NULL);
+        INSERT OR IGNORE INTO account_allowances SELECT user_id,250000 FROM accounts;
         CREATE TABLE IF NOT EXISTS model_usage(call_id TEXT PRIMARY KEY,
           user_id TEXT NOT NULL REFERENCES accounts(user_id) ON DELETE CASCADE,
           reserved_tokens INTEGER NOT NULL, input_tokens INTEGER, output_tokens INTEGER,
@@ -168,7 +173,62 @@ class AccountStore:
             "SELECT 1 FROM account_quota_unlimited WHERE user_id=?", (user_id,)
         ).fetchone():
             return None
-        return FREE_TOKENS + self.costs.control(user_id)["bonus_tokens"]
+        row = self.db.execute(
+            "SELECT tokens FROM account_allowances WHERE user_id=?", (user_id,)
+        ).fetchone()
+        return (row[0] if row else FREE_TOKENS) + self.costs.control(user_id)["bonus_tokens"]
+
+    def registration_allowance(self) -> int:
+        value = self.costs._get("registration_free_tokens")
+        return FREE_TOKENS if value is None else value
+
+    def set_registration_allowance(self, tokens: int, admin: str) -> None:
+        if type(tokens) is not int or not 0 <= tokens <= 1_000_000_000:
+            raise ValueError("额度须为 0–1,000,000,000 的整数")
+        with self.db:
+            self.costs._put("registration_free_tokens", tokens)
+            self.costs.audit(admin, "registration_allowance", {"tokens": tokens})
+
+    def distribute_tokens(self, tokens: int, request_id: str, admin: str) -> dict:
+        if type(tokens) is not int or not 1 <= tokens <= 1_000_000_000:
+            raise ValueError("额度须为 1–1,000,000,000 的整数")
+        request_id = str(uuid.UUID(request_id))
+        try:
+            self.db.execute("BEGIN IMMEDIATE")
+            previous = self.db.execute(
+                "SELECT tokens,recipients FROM quota_distributions WHERE request_id=?",
+                (request_id,),
+            ).fetchone()
+            if previous:
+                if previous[0] != tokens:
+                    raise AccountError(
+                        "distribution_conflict", "该次发放已完成，请刷新后重新发放。"
+                    )
+                self.db.commit()
+                return {"tokens": tokens, "recipients": previous[1], "replayed": True}
+            users = self.db.execute(
+                "SELECT user_id FROM accounts WHERE user_id NOT IN (SELECT user_id FROM account_quota_unlimited)"
+            ).fetchall()
+            for row in users:
+                self.costs._ensure(row[0])
+                self.db.execute(
+                    "UPDATE account_controls SET bonus_tokens=bonus_tokens+? WHERE user_id=?",
+                    (tokens, row[0]),
+                )
+            self.db.execute(
+                "INSERT INTO quota_distributions VALUES(?,?,?,?)",
+                (request_id, tokens, len(users), time.time()),
+            )
+            self.costs.audit(
+                admin,
+                "distribute_tokens",
+                {"tokens": tokens, "recipients": len(users), "request_id": request_id},
+            )
+            self.db.commit()
+            return {"tokens": tokens, "recipients": len(users), "replayed": False}
+        except BaseException:
+            self.db.rollback()
+            raise
 
     def quota(self, user_id: str) -> dict:
         row = self.db.execute(
@@ -320,6 +380,10 @@ class AccountStore:
                     ),
                 )
                 self.db.execute("INSERT INTO account_quota(user_id) VALUES(?)", (user_id,))
+                self.db.execute(
+                    "INSERT INTO account_allowances VALUES(?,?)",
+                    (user_id, self.registration_allowance()),
+                )
                 if pair_hash:
                     self.db.execute(
                         "INSERT OR REPLACE INTO registration_devices VALUES(?,?,?)",
@@ -353,7 +417,8 @@ class AccountStore:
             "(SELECT COALESCE(SUM(CASE u.status WHEN 'settled' THEN u.input_tokens+u.output_tokens"
             " WHEN 'rejected' THEN 0 ELSE u.reserved_tokens END),0) FROM site_usage u"
             " WHERE u.user_id=a.user_id AND u.created_at>=?),"
-            "EXISTS(SELECT 1 FROM account_quota_unlimited x WHERE x.user_id=a.user_id) "
+            "EXISTS(SELECT 1 FROM account_quota_unlimited x WHERE x.user_id=a.user_id),"
+            "(SELECT tokens FROM account_allowances b WHERE b.user_id=a.user_id) "
             "FROM accounts a LEFT JOIN account_quota q ON q.user_id=a.user_id "
             f"LEFT JOIN account_controls c ON c.user_id=a.user_id {where} "
             "ORDER BY a.created_at DESC LIMIT ? OFFSET ?",
@@ -361,7 +426,11 @@ class AccountStore:
         ).fetchall()
         items = []
         for row in rows:
-            limit_tokens = None if row[11] else FREE_TOKENS + (row[5] or 0)
+            limit_tokens = (
+                None
+                if row[11]
+                else (row[12] if row[12] is not None else FREE_TOKENS) + (row[5] or 0)
+            )
             used, held = row[3] or 0, row[4] or 0
             items.append(
                 {
