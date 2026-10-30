@@ -1,6 +1,6 @@
 import re
 
-from common.facts import negated_at, public_texts
+from common.facts import public_texts, value_claim
 from plugins.tarot.catalogue import DECK
 
 ORIENTATION_GAP = r"[\s【】「」《》“”\"'（）()]*"
@@ -26,14 +26,16 @@ def orientation_error(text: str, name: str, expected: set[str]) -> str | None:
     # “本次正义是逆位” names the drawn orientation as clearly as “正义逆位”.
     stated = rf"{re.escape(name)}{ORIENTATION_GAP}(?:是|为){ORIENTATION_GAP}(正位|逆位)"
     has_expected = any(
-        m[1] in expected and not negated_at(text, m.start())
+        m[1] in expected and value_claim(text, m.start(), m.end()) == "asserted"
         for m in [*mentions, *re.finditer(stated, text)]
     )
     for mention in mentions:
-        denied = negated_at(text, mention.start())
+        claim = value_claim(text, mention.start(), mention.end())
+        if claim is None:
+            continue
         # “是正义逆位，不是正义正位” denies the other orientation, which is right; denying the
         # drawn orientation is as wrong as asserting the other one.
-        if (mention[1] in expected) != denied:
+        if (mention[1] in expected) != (claim == "denied"):
             continue
         start = max((m.end() for m in CLAUSE.finditer(text, 0, mention.start())), default=0)
         end = CLAUSE.search(text, mention.end())

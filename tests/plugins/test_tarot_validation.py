@@ -81,3 +81,27 @@ def test_evidence_is_bound_to_its_own_card_orientation():
     state = card_state()
     state["tarot_result"] = dict(cards=[dict(name="宝剑二", reversed=False, ref_id="card:upright")])
     assert "方向错误" in validate_output(reading_with("宝剑二正位。", "evidence"), state)
+
+
+@pytest.mark.parametrize("field", ["body", "evidence", "summary", "timeline", "closing"])
+@pytest.mark.parametrize("reversed", [True, False])
+def test_negated_inferences_preserve_the_draw_across_public_fields(field, reversed):
+    right, other = ("逆位", "正位") if reversed else ("正位", "逆位")
+    inference = f"并不是宝剑二（{right}）就意味着无法推进。"
+
+    def reading(text):
+        value = reading_with(text, field)
+        if field != "evidence":
+            value.evidence[0].reading = f"宝剑二{right}。"
+        return value
+
+    assert (
+        validate_output(reading(f"本次宝剑二{right}。" + inference), card_state(reversed)) is None
+    )
+    # The inference neither overrides a wrong draw nor anchors a definition of the other side.
+    for text in (
+        f"本次宝剑二{other}。" + inference,
+        f"本次不是宝剑二{right}。" + inference,
+        inference + f"宝剑二{other}一般表示僵持。",
+    ):
+        assert "方向错误" in validate_output(reading(text), card_state(reversed))

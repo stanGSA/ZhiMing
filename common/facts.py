@@ -1,6 +1,7 @@
 """Shared output contracts; domain checks are registered by plugins."""
 
 import re
+from typing import Literal
 
 from common.input_evidence import question_range
 
@@ -12,13 +13,24 @@ NEGATED_VALUE = re.compile(
 )
 # “并非不在白羊座” denies the denial, so the value is asserted.
 DENIED_NEGATION = re.compile(r"(?:不是|并不是|并非|绝非|非)\s*$")
+INFERENCE_TAIL = re.compile(
+    r"[\s】」》”\"'）)]*(?:就(?:意味着|代表|说明|等于|会|一定|必然)|(?:的)?人(?:都|就))"
+)
 
 
-def negated_at(text: str, start: int) -> bool:
-    """Whether the value that starts at ``start`` in ``text`` is denied rather than asserted."""
+def value_claim(text: str, start: int, end: int) -> Literal["asserted", "denied"] | None:
+    """Classify a complete value mention; None means a negated inference, not a fact claim.
+
+    “并非狮子座就一定外向” denies an inference, not the sign. Inspect only the syntax immediately
+    after this value, so a later inference cannot hide an independent denial of the actual value.
+    """
     window = text[max(0, start - 12) : start]
     negation = NEGATED_VALUE.search(window)
-    return bool(negation) and not DENIED_NEGATION.search(window[: negation.start()])
+    if not negation or DENIED_NEGATION.search(window[: negation.start()]):
+        return "asserted"
+    if re.match(r"并不是|不是|并非|而非", negation.group()) and INFERENCE_TAIL.match(text, end):
+        return None
+    return "denied"
 
 
 def validate_calculation_facts(reading, state):

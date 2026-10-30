@@ -413,6 +413,49 @@ async def test_tarot_definition_followed_by_draw_clause_is_accepted(runtime, tar
     assert rejections(runtime.session, "tarot", [(body, refs), (also, refs)]) == []
 
 
+async def test_negating_a_sign_inference_does_not_deny_the_suns_sign(runtime):
+    birth = await prepare(runtime)
+    chart = await invoke(runtime, "compute_natal_chart", birth)
+    assert chart.ok
+    sun = next(p for p in chart.data["planets"] if p["body"] == "Sun")
+    actual = sun["sign_zh"]
+    other = next(zh for zh in SIGN_ZH if zh != actual)
+    cited = [ref(runtime.session, f":Sun:{sun['sign']}")]
+    sentences = [
+        (f"太阳{actual}座，并不是{actual}座的人都外向。", cited),
+        (f"太阳{actual}座，但并非{actual}座就一定外向。", cited),
+        (f"太阳{actual}座，并不是{other}座的人都内向。", cited),
+        (f"太阳{actual}座，不是【{actual}座】就意味着需要外向。", cited),
+    ]
+    assert rejections(runtime.session, "trait", sentences) == []
+    # A later generic statement must not hide an actual position conflict in either clause.
+    for body in (
+        f"太阳{other}座，并不是{actual}座的人都外向。",
+        f"太阳不是{actual}座，并不是{actual}座的人都外向。",
+        f"太阳{actual}座，并不是{actual}座就一定外向，也不在{actual}座。",
+    ):
+        assert_rejected(runtime.session, "trait", (body, cited))
+
+
+async def test_negating_a_card_inference_does_not_deny_the_draw(runtime, tarot):
+    card = tarot[1]
+    right, other = orientation(card), opposite(card)
+    name, cited = card["name"], [card["ref_id"]]
+    sentences = [
+        (f"本次抽到{name}{right}。并不是{name}{right}就意味着无法推进。", cited),
+        (f"本次抽到{name}{right}。并非{name}{right}就一定失败。", cited),
+        (f"本次抽到{name}{right}。不是{name}（{right}）就代表必须放弃。", cited),
+    ]
+    assert rejections(runtime.session, "tarot", sentences) == []
+    for body in (
+        f"本次抽到{name}{other}。并不是{name}{right}就意味着无法推进。",
+        f"本次不是{name}{right}。并不是{name}{right}就意味着无法推进。",
+        f"并不是{name}{right}就意味着无法推进。{name}{other}一般表示阻滞。",
+        f"本次抽到{name}{right}。并非{name}{right}就一定失败，这次不是{name}{right}。",
+    ):
+        assert_rejected(runtime.session, "tarot", (body, cited))
+
+
 async def test_daily_facts_stated_correctly_are_accepted(runtime, daily):
     s, day, card = runtime.session, daily["day"], daily["card"]
     first, last = day["segments"][0], day["segments"][-1]
