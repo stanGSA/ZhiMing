@@ -31,6 +31,7 @@ const ACTIONS = {
   suspend_account: "暂停账号",
   unsuspend_account: "恢复账号",
   grant_tokens: "调整账号额度",
+  set_unlimited_quota: "设置账号不限额",
   revoke_logins: "强制下线",
 };
 const EVENTS = {
@@ -480,7 +481,7 @@ async function loadAccounts() {
       node(
         "td",
         "adm-num",
-        `${number(quota.used)} / ${number(quota.limit)}${quota.bonus ? `（含追加 ${number(quota.bonus)}）` : ""}`,
+        `${number(quota.used)} / ${quota.limit === null ? "不限额" : number(quota.limit)}${quota.bonus ? `（含追加 ${number(quota.bonus)}）` : ""}`,
       ),
       node("td", "adm-num", String(account.logins)),
       state,

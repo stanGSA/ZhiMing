@@ -264,8 +264,10 @@ function renderAccount() {
   }
   const quota = state?.account?.quota;
   badge.hidden = !quota;
-  badge.textContent = quota ? `免费剩余 ${quota.remaining.toLocaleString("zh-CN")} token` : "";
-  badge.title = "每账号累计 250,000 token，不按月重置；输入和输出均计入，离线演示不扣额度。";
+  badge.textContent = quota ? (quota.limit === null ? "账号额度不限" : `免费剩余 ${quota.remaining.toLocaleString("zh-CN")} token`) : "";
+  badge.title = quota?.limit === null
+    ? "此账号不受账号额度限制；全站预算、并发和异常消耗保护仍生效。"
+    : "每账号累计 250,000 token，不按月重置；输入和输出均计入，离线演示不扣额度。";
   $$("[data-storage-note]").forEach((note) => {
     note.textContent = storageNote();
   });
@@ -323,7 +325,9 @@ function openAccount() {
     "p",
     "",
     `${Number.isNaN(since.getTime()) ? "" : `注册于 ${since.toLocaleDateString("zh-CN", { timeZone: "Asia/Shanghai" })} · `}生辰档案与解读记录已保存到账号，可在任意设备登录查看。` +
-      (account.quota ? ` 免费额度剩余 ${account.quota.remaining.toLocaleString("zh-CN")} / ${account.quota.limit.toLocaleString("zh-CN")} token（累计，不按月重置）。输入、输出及内部重试均计入；离线演示不扣额度。` : ""),
+      (account.quota ? (account.quota.limit === null
+        ? " 账号额度不限，累计用量正常记录；全站预算、并发和异常消耗保护仍生效。"
+        : ` 免费额度剩余 ${account.quota.remaining.toLocaleString("zh-CN")} / ${account.quota.limit.toLocaleString("zh-CN")} token（累计，不按月重置）。输入、输出及内部重试均计入；离线演示不扣额度。`) : ""),
   );
   const exportLink = node("a", "btn btn-ghost", "导出我的记录");
   exportLink.href = "/api/export";
