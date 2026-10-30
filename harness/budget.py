@@ -21,6 +21,21 @@ class Budget:
     reserve: int = 0
     used: int = 0
     held: int = 0
+    max_model_calls: int | None = None
+    model_calls: int = 0
+
+    def start_model_call(self) -> bool:
+        """Reserve one dispatch at every level, including optional semantic checks."""
+        budget = self
+        while budget is not None:
+            if budget.max_model_calls is not None and budget.model_calls >= budget.max_model_calls:
+                return False
+            budget = budget.parent
+        budget = self
+        while budget is not None:
+            budget.model_calls += 1
+            budget = budget.parent
+        return True
 
     def charge(self, amount: int) -> None:
         self.used += amount
