@@ -22,6 +22,20 @@ from knowledge.build import build
 EXPECTED_CASES = 17
 
 
+def pipeline_record(outcome) -> dict | None:
+    """How the pipeline wrote an answer (calls, repairs, degraded); None for the agent loop.
+
+    The drafts' problems stay in the trace; the report keeps how many each draft had.
+    """
+    record = outcome.data.get("pipeline")
+    if not record:
+        return None
+    return {
+        **{k: record[k] for k in ("kind", "model_calls", "repairs", "degraded")},
+        "problems": [len(problems) for problems in record.get("problems", [])],
+    }
+
+
 def records(runtime) -> list[dict]:
     """Events of this session and of the specialist sessions it spawned, in time order."""
     directory = runtime.tracer.user_dir(runtime.session.user_id)
@@ -136,6 +150,7 @@ async def evaluate(model_name: str | None, output: Path, mode: str = "single") -
             "seed": runtime.session.state.get("seed"),
             "response_id": outcome.data.get("response_id"),
             "structured_output": outcome.data.get("reading"),
+            "pipeline": pipeline_record(outcome),
             "checks": checks,
             # Tool rejections remain visible as diagnostics, but recovered retries
             # do not fail the acceptance case.

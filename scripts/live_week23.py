@@ -19,7 +19,7 @@ from harness.llm import RoleModelSpec, role_model
 from knowledge.build import build
 from plugins.astro.tools import AstroPlugin
 from plugins.daily.tools import DailyPlugin
-from scripts.live_test import records
+from scripts.live_test import pipeline_record, records
 from scripts.trace_tree import build_tree, reviewer_metrics, specialist_metrics
 
 RUBRIC_VERSION = "v2-2026-10-24"
@@ -559,6 +559,9 @@ async def evaluate(
                     multi_agent=specialist_metrics(events) if is_multi else None,
                     # Week 5 lenient reviewer agent (not the rubric judge above).
                     reviewer_agent=reviewer_metrics(events) if is_multi else None,
+                    # How the pipeline wrote the answer (calls, repairs, a degraded reading);
+                    # None for the agent loop. The drafts' problems stay in the trace.
+                    pipeline=pipeline_record(outcome),
                     answer=outcome.text,
                     structured=outcome.data.get("reading"),
                     calculated_facts=facts,
