@@ -3,11 +3,12 @@
 intent → compute → fact sheet → compose → render and verify → at most one repair → degrade.
 Calculations and the submission go through execute_calls as planned calls, so the Guard,
 validate_reading, the store and the trace treat them like a model's calls. Each user message
-uses at most two model calls here: the draft and one repair.
+uses at most two model calls, shared by writing, repair and optional semantic checks.
 """
 
 from __future__ import annotations
 
+import asyncio
 import json
 import re
 import uuid
@@ -28,6 +29,7 @@ TIMING = re.compile(r"什么时候|何时|时机|下个?月|下周|这周|本周
 # The browser appends the chosen spread to the message; the reading keeps the question itself.
 SPREAD_NOTE = re.compile(r"\n*我选择的牌阵为：[^\n]*")
 MAX_REPAIRS = 1
+MAX_MODEL_CALLS = 2  # Writing, repair and optional semantic checks share this per-turn limit.
 TRUNCATED = "上一稿超过输出上限被截断：请精简为摘要加2-3层，每层不超过250字"
 # Problems that fail a safety rule rather than a fact (common/validation.py, output_policy.py):
 # after the repair, these end in a safety reply without any reading of the cards.
@@ -51,6 +53,11 @@ class PipelineRunner:
         found = intent.detect(self.runtime, message)
         if found is None:
             return None
+        # The submit tool's optional semantic judge reads turn_budget, including after a
+        # previous turn fell back to the agent loop. Never leave it pointing at that old turn.
+        budget = self.session.budget or Budget(self.runtime.token_budget)
+        budget.max_model_calls = MAX_MODEL_CALLS
+        self.session.budget = self.session.turn_budget = budget
         self.session.append_user(message)
         self.stage("intent", kind=found.kind)
         try:
@@ -117,6 +124,24 @@ class PipelineRunner:
         return await self.write(run, prior=prior, extra=extra)
 
     async def write(self, run: PipelineRun, *, prior=None, extra="") -> TurnOutcome:
+        # Count every returned model response, including discarded drafts and the submit
+        # tool's semantic checks. The same record must be current *before* the store saves it.
+        def counted(event):
+            if event["event"] == "model_response" and event["session_id"] == self.session.id:
+                run.model_calls += 1
+                if record := self.session.state.get("pipeline_run"):
+                    record["model_calls"] = run.model_calls
+
+        self.tracer.listeners.append(counted)
+        try:
+            return await self.write_draft(run, prior=prior, extra=extra)
+        except asyncio.CancelledError:
+            self.keep(run)
+            raise
+        finally:
+            self.tracer.listeners.remove(counted)
+
+    async def write_draft(self, run: PipelineRun, *, prior=None, extra="") -> TurnOutcome:
         facts = tarot_facts(self.session)
         state = self.session.state
         spread = state["tarot_result"]["spread"]
@@ -160,7 +185,7 @@ class PipelineRunner:
                 run.repairs += 1
                 problems = None
         except OutOfBudget:
-            run.problems.append(["本轮token预算已用尽"])
+            run.problems.append(["本轮模型调用或token预算已用尽"])
         except Stopped as stop:
             self.keep(run)
             return stop.outcome
@@ -367,14 +392,13 @@ class PipelineRunner:
             )
         if called.outcome is not None:
             raise Stopped(called.outcome)
-        run.model_calls += 1
         response = called.response
         # A cut-off draft is a format problem: the repair asks for a shorter one.
         return response.text, response.finish_reason == "length"
 
 
 class OutOfBudget(Exception):
-    """The request's token budget refuses another writing call; code writes the reading."""
+    """The token or dispatch budget refuses another writing call; code writes the reading."""
 
 
 class Stopped(Exception):

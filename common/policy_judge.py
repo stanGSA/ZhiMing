@@ -46,6 +46,12 @@ class PolicyJudge:
                     return ToolResult.failure(
                         "policy_unavailable", "语义核对预算不足，请缩短解读后重试"
                     )
+                if budget and not budget.start_model_call():
+                    budget.release(estimate)
+                    self.tracer.log(session, "model_call_limit", purpose="policy_judge")
+                    return ToolResult.failure(
+                        "policy_unavailable", "本轮模型调用次数已用尽，请使用无需语义核对的基础解读"
+                    )
                 settled = False
                 try:
                     reply = await asyncio.wait_for(

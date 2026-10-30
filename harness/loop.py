@@ -178,6 +178,10 @@ async def call_model(
             session, "budget_denied", step=step, estimate=estimate, remaining=budget.remaining()
         )
         return ModelCall(stop="budget")
+    if not budget.start_model_call():
+        budget.release(estimate)
+        tracer.log(session, "model_call_limit", step=step)
+        return ModelCall(stop="budget")
     try:
         left = budget.time_left()
         call = model.chat(messages, tools)
