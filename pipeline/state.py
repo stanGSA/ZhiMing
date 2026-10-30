@@ -29,6 +29,18 @@ class PipelineRun:
     problems: list[list[str]] = field(default_factory=list)
     model_calls: int = 0
     repairs: int = 0
+    degraded: str | None = None  # "keywords" or "safety" when code wrote the reading
+
+    def record(self) -> dict:
+        """What is kept with the saved reading and reported: how it was written, not drafts."""
+        return {
+            "run_id": self.run_id,
+            "kind": self.kind,
+            "model_calls": self.model_calls,
+            "repairs": self.repairs,
+            "degraded": self.degraded,
+            "problems": self.problems,
+        }
 
     def save(self, store, session, stage: str) -> None:
         self.stage = stage

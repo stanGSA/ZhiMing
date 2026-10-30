@@ -70,10 +70,18 @@ class Store:
                 # later weight or rule change never rewrites what an old reading said.
                 ("merge_json", "TEXT NOT NULL DEFAULT '{}'"),
                 ("birth_context_json", "TEXT NOT NULL DEFAULT '{}'"),
+                # Version 6: how the pipeline wrote it (repairs, degraded); {} for the agent loop.
+                ("pipeline_json", "TEXT NOT NULL DEFAULT '{}'"),
             ):
                 if name not in columns:
                     self.db.execute(f"ALTER TABLE readings ADD COLUMN {name} {definition}")
-            # Version 6: unfinished pipeline runs (docs/根因整改实施计划.md P1.1).
+            responses = {row[1] for row in self.db.execute("PRAGMA table_info(reading_responses)")}
+            if "pipeline_json" not in responses:
+                self.db.execute(
+                    "ALTER TABLE reading_responses ADD COLUMN pipeline_json TEXT NOT NULL DEFAULT '{}'"
+                )
+            # Version 6: unfinished pipeline runs and how each answer was written
+            # (docs/根因整改实施计划.md P1).
             self.db.execute("PRAGMA user_version=6")
 
     def cached_calculation(self, system, user_id, inputs, calculate):
@@ -193,7 +201,7 @@ class Store:
         with self.db:
             self.check_birth_version(session)
             self.db.execute(
-                "INSERT INTO readings(reading_id,user_id,session_id,parent_reading_id,question,question_type,systems_used,tarot_json,signals_json,output_json,kb_version,profile_version,mode,created_at,chart_id,bazi_id,calculations_json,merge_json,birth_context_json) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
+                "INSERT INTO readings(reading_id,user_id,session_id,parent_reading_id,question,question_type,systems_used,tarot_json,signals_json,output_json,kb_version,profile_version,mode,created_at,chart_id,bazi_id,calculations_json,merge_json,birth_context_json,pipeline_json) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
                 (
                     state["active_reading_id"],
                     session.user_id,
@@ -219,6 +227,7 @@ class Store:
                         else {},
                         ensure_ascii=False,
                     ),
+                    json.dumps(state.get("pipeline_run") or {}, ensure_ascii=False),
                 ),
             )
             # Reviews happen before the reading exists; they are written in the same
@@ -312,6 +321,7 @@ class Store:
             "calculations_json",
             "merge_json",
             "birth_context_json",
+            "pipeline_json",
         ):
             if field in result:
                 result[field] = json.loads(result[field]) if result[field] else None
@@ -372,7 +382,8 @@ class Store:
             raise ValueError("记录不属于当前用户")
         with self.db:
             self.db.execute(
-                "INSERT INTO reading_responses VALUES(?,?,?,?,?,?,?)",
+                "INSERT INTO reading_responses(response_id,reading_id,user_id,session_id,question,"
+                "output_json,created_at,pipeline_json) VALUES(?,?,?,?,?,?,?,?)",
                 (
                     response_id,
                     session.state["active_reading_id"],
@@ -381,6 +392,7 @@ class Store:
                     session.user_messages[-1],
                     json.dumps(output, ensure_ascii=False),
                     datetime.now(UTC).isoformat(),
+                    json.dumps(session.state.get("pipeline_run") or {}, ensure_ascii=False),
                 ),
             )
         return response_id
@@ -404,11 +416,12 @@ class Store:
             return None
         result = dict(row)
         result["output_json"] = json.loads(result["output_json"])
+        result["pipeline_json"] = json.loads(result.get("pipeline_json") or "{}")
         return result
 
     def reading_responses(self, user_id: str, reading_id: str) -> list[dict]:
         rows = self.db.execute(
-            "SELECT response_id,question,output_json,created_at FROM reading_responses "
+            "SELECT response_id,question,output_json,created_at,pipeline_json FROM reading_responses "
             "WHERE user_id=? AND reading_id=? ORDER BY created_at,response_id",
             (user_id, reading_id),
         ).fetchall()
@@ -418,6 +431,7 @@ class Store:
                 question=r["question"],
                 output=json.loads(r["output_json"]),
                 created_at=r["created_at"],
+                pipeline=json.loads(r["pipeline_json"] or "{}"),
             )
             for r in rows
         ]
@@ -596,6 +610,8 @@ class Store:
                     "kb_version": reading["kb_version"],
                     "signals": reading["signals_json"],
                     "merge": reading["merge_json"],
+                    # How the pipeline wrote it (repairs, a degraded reading); {} otherwise.
+                    "pipeline": reading["pipeline_json"],
                     "specialist_reports": self.specialist_reports(user_id, row[0]),
                     "review_notes": self.review_notes(user_id, row[0]),
                     "responses": self.reading_responses(user_id, row[0]),
