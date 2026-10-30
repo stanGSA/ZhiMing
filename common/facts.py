@@ -4,6 +4,22 @@ import re
 
 from common.input_evidence import question_range
 
+# A value named right after a governing negation (“不是正义正位”“不在处女座”) is the value the
+# sentence denies, not one it asserts. Only the words directly before the value count. A denied
+# value is still a checkable claim: denying the computed value is as wrong as asserting another.
+NEGATED_VALUE = re.compile(
+    r"(?:不是|并不是|并非|而非|不再是|不在|并不在|不落在|没有落在|没落在)\s*[【「《“\"]?$"
+)
+# “并非不在白羊座” denies the denial, so the value is asserted.
+DENIED_NEGATION = re.compile(r"(?:不是|并不是|并非|绝非|非)\s*$")
+
+
+def negated_at(text: str, start: int) -> bool:
+    """Whether the value that starts at ``start`` in ``text`` is denied rather than asserted."""
+    window = text[max(0, start - 12) : start]
+    negation = NEGATED_VALUE.search(window)
+    return bool(negation) and not DENIED_NEGATION.search(window[: negation.start()])
+
 
 def validate_calculation_facts(reading, state):
     from plugins.bazi.intent import dayun_overview_state

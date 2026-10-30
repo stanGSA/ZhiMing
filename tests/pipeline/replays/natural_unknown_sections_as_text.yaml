@@ -1,0 +1,37 @@
+id: natural_unknown_sections_as_text
+source: >-
+  P1 Final-single natural_unknown（2026-10-25）。归档错误
+  “参数不符合 schema：sections：Input should be a valid list”。
+category: B 参数不符合schema
+systems: [astro, bazi]
+turns:
+  - 1998年4月12日北京出生，出生时辰不知道，也查不到。用占星和八字看看工作方式。
+legacy:
+  steps:
+    - call: start_reading
+      args: {question: 用占星和八字看看工作方式, systems: [astro, bazi]}
+    - call: resolve_location
+      args: {query: 北京}
+    - call: compute_natal_chart
+      args: {birth_local: "1998-04-12", location_id: "{{result:resolve_location.location.location_id}}", time_known: false}
+    - call: compute_bazi
+      args: {birth_local: "1998-04-12", location_id: "{{result:resolve_location.location.location_id}}", time_known: false}
+    # The layered sections arrive as one JSON-looking string.
+    - call: submit_reading
+      draft: &unknown
+        question_type: trait
+        summary: 你适合节奏稳定、需要耐心打磨的工作方式。
+        sections:
+          - title: 做事的方式
+            body: 太阳的落座和日主都提示你偏好按部就班地积累。
+            refs: ["{{ref:Sun:Aries}}", "{{ref:day_master}}"]
+      override:
+        sections: '[{"title": "做事的方式", "body": "按部就班地积累。"}]'
+      expect: {code: invalid_arguments}
+    - call: submit_reading
+      draft: *unknown
+  outcome: submit_reading
+pipeline:
+  # The draft is plain text with markers; no long JSON is written by the model.
+  outcome: submit_reading
+  max_model_calls_per_turn: 3

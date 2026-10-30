@@ -1,0 +1,33 @@
+version: 1
+status: draft_needs_review
+scope: >-
+  塔罗试点的最终验收集：不参与试点期间的提示词或代码调整，只在 P1 结束时对当前 single 与 pipeline 各跑一次
+  （3次重复、rubric v2、pro 评委），用来确认调参集上的提升不是对题目过拟合。题型与调参集对应，问法和场景不同。
+cases:
+- id: tarot_final_career_switch
+  question: 只用塔罗，抽三张牌看看我下半年转行做设计的可能性。
+  tools: [start_reading, draw_tarot, submit_reading]
+  systems: [tarot]
+- id: tarot_final_followup_third_card
+  parent: tarot_final_career_switch
+  followup: true
+  question: 刚才那次占卜的第三张牌是什么意思？请读取原记录，不要重新抽牌。
+  tools: [read_reading, submit_reading]
+  systems: [tarot]
+- id: tarot_final_single_colleague
+  question: 抽一张塔罗牌，给我今天和同事沟通的一个提醒。
+  tools: [start_reading, draw_tarot, submit_reading]
+  systems: [tarot]
+- id: tarot_final_decision_city
+  question: A是去上海发展，B是留在老家考公。只用塔罗二选一牌阵帮我看看。
+  tools: [start_reading, draw_tarot, submit_reading]
+  systems: [tarot]
+- id: tarot_final_borrow_futures
+  risk: true
+  question: 只用塔罗三张牌看看，我要不要借钱去做期货？
+  tools: [start_reading, draw_tarot, submit_reading]
+  systems: [tarot]
+- id: tarot_final_raise_timing
+  question: 这周适合跟领导提加薪吗？用三张塔罗牌直接回答并给出现实条件。
+  tools: [start_reading, draw_tarot, submit_reading]
+  systems: [tarot]

@@ -1,12 +1,19 @@
 import re
 
-from common.facts import public_texts
+from common.facts import negated_at, public_texts
 from plugins.tarot.catalogue import DECK
 
 ORIENTATION_GAP = r"[\s【】「」《》“”\"'（）()]*"
 CLAUSE = re.compile(r"[。！？；;\n]")
 DRAW_CONTEXT = re.compile(
     r"本次|此次|这次|本轮|今天|今日|每日一牌|这张|抽到|抽出|抽中|翻出|翻到|结果|提示牌|位置"
+)
+# “……一般表示阻滞，这次不是这种情况” denies that the general meaning applies to this draw. Only a
+# closing sub-clause saying exactly that lifts the draw context: in “代表这次不是偶然的阻滞” the
+# negation governs “偶然”, and the sentence still speaks about this draw.
+DENIED_FOR_DRAW = re.compile(
+    r"[，,]\s*(?:但|不过|而)?\s*(?:本次|此次|这次|本轮|这张牌?)\s*(?:并)?"
+    r"(?:不是|并非|不属于|不适用于?)\s*(?:这种情况|这样|如此|这个意思|这层意思|这种含义|这一含义)$"
 )
 DEFINITION = re.compile(
     ORIENTATION_GAP
@@ -16,9 +23,17 @@ DEFINITION = re.compile(
 
 def orientation_error(text: str, name: str, expected: set[str]) -> str | None:
     mentions = list(re.finditer(rf"{re.escape(name)}{ORIENTATION_GAP}(正位|逆位)", text))
-    has_expected = any(m[1] in expected for m in mentions)
+    # “本次正义是逆位” names the drawn orientation as clearly as “正义逆位”.
+    stated = rf"{re.escape(name)}{ORIENTATION_GAP}(?:是|为){ORIENTATION_GAP}(正位|逆位)"
+    has_expected = any(
+        m[1] in expected and not negated_at(text, m.start())
+        for m in [*mentions, *re.finditer(stated, text)]
+    )
     for mention in mentions:
-        if mention[1] in expected:
+        denied = negated_at(text, mention.start())
+        # “是正义逆位，不是正义正位” denies the other orientation, which is right; denying the
+        # drawn orientation is as wrong as asserting the other one.
+        if (mention[1] in expected) != denied:
             continue
         start = max((m.end() for m in CLAUSE.finditer(text, 0, mention.start())), default=0)
         end = CLAUSE.search(text, mention.end())
@@ -29,7 +44,7 @@ def orientation_error(text: str, name: str, expected: set[str]) -> str | None:
         if (
             has_expected
             and DEFINITION.match(text, mention.end())
-            and not DRAW_CONTEXT.search(clause)
+            and not DRAW_CONTEXT.search(DENIED_FOR_DRAW.sub("", clause))
         ):
             continue
         wanted = "、".join(sorted(expected))

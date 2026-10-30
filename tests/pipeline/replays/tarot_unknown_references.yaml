@@ -1,0 +1,39 @@
+id: tarot_unknown_references
+source: >-
+  线上塔罗失败链（0ca5133 回放的同一条）：草稿引用了抽牌没有返回过的编号，随后在同一错误上反复提交直到
+  重试上限。P1 主集同类归档错误“evidence ref_id没有本次可渲染的计算事实，请使用工具返回的ref_id”。
+category: D ref_id不属于本次计算
+systems: [tarot]
+turns:
+  - 工作停滞了，接下来三个月怎么推进？只用塔罗三张牌看看。
+legacy:
+  steps:
+    - call: start_reading
+      args: {question: 工作停滞了，接下来三个月怎么推进, systems: [tarot]}
+    - call: draw_tarot
+      args: {spread: three_card, question: 工作停滞了，接下来三个月怎么推进}
+    # R4 and R5 were never returned by the draw.
+    - call: submit_reading
+      draft:
+        question_type: tarot
+        summary: 接下来三个月可以稳步推进，先把手头积压的事情理顺。
+        sections:
+          - title: 先看清处境
+            body: 过去、现在、未来三张牌说明当下需要先整理再出发。
+            refs: ["{{ref:pos1#0}}", R4]
+        evidence: ["{{ref:pos1#0}}", "{{ref:pos2#0}}", "{{ref:pos3#0}}", R5]
+      expect: {error: 不是工具返回过的编号}
+    - call: submit_reading
+      draft:
+        question_type: tarot
+        summary: 接下来三个月可以稳步推进，先把手头积压的事情理顺。
+        sections:
+          - title: 先看清处境
+            body: 过去、现在、未来三张牌说明当下需要先整理再出发。
+            refs: ["{{ref:pos1#0}}", "{{ref:pos2#0}}", "{{ref:pos3#0}}"]
+  outcome: submit_reading
+pipeline:
+  # The draft cites {{R}} placeholders from the fact sheet only; an unknown number is a
+  # set-membership check, repaired once at most.
+  outcome: submit_reading
+  max_model_calls_per_turn: 2
