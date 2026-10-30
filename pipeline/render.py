@@ -8,26 +8,10 @@ from __future__ import annotations
 
 import re
 
-from common.validation import HIGH_RISK
+from common.validation import risk_note
 from pipeline.compose import Draft
 
 PLACEHOLDER = re.compile(r"[{｛]{1,2}\s*(R\d+)\s*[}｝]{1,2}")
-# Safety notes are written by code, by the kind of risk the question carries.
-SAFETY_NOTES = (
-    (
-        re.compile(r"投资|股票|基金|借贷|借钱|期货|理财|积蓄"),
-        "这不构成投资建议；涉及大额资金请结合自身财务状况，必要时咨询持牌专业人士。",
-    ),
-    (
-        re.compile(r"疾病|癌|诊断|停药|治疗|健康"),
-        "这不能代替诊断；如有身体不适，请及时就医，以医生的诊断为准。",
-    ),
-    (re.compile(r"法律|诉讼|判刑"), "这不构成法律意见；具体问题请咨询专业律师。"),
-    (
-        re.compile(r"死亡|寿命"),
-        "生死与寿命不作预测；如有健康方面的担忧，请及时就医或联系信任的人。",
-    ),
-)
 
 
 def expand(text: str, facts: dict) -> tuple[str, list[str], list[str]]:
@@ -46,10 +30,9 @@ def expand(text: str, facts: dict) -> tuple[str, list[str], list[str]]:
 
 
 def safety_for(question: str) -> dict:
-    if not HIGH_RISK.search(question):
-        return {"flag": False, "note": ""}
-    note = next((note for pattern, note in SAFETY_NOTES if pattern.search(question)), None)
-    return {"flag": True, "note": note or SAFETY_NOTES[0][1]}
+    """The safety field code writes; ``question`` is the reading's question and this turn's."""
+    note = risk_note(question)
+    return {"flag": True, "note": note} if note else {"flag": False, "note": ""}
 
 
 def reading_args(
