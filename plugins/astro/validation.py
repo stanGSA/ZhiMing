@@ -2,7 +2,7 @@
 
 import re
 
-from common.facts import section_texts
+from common.facts import negated_at, section_texts
 from common.input_evidence import chinese_number
 from plugins.astro.calculator import BODY_ZH, SIGN_ZH
 
@@ -151,8 +151,20 @@ def validate_output(reading, state):
                 ]
                 # A transit body is not a claim about the natal body's position.
                 transit_context = bool(re.search(r"行运\s*$", sentence[: body.start()]))
-                sign = re.search("|".join(SIGN_ZH), tail[:24])
-                houses = re.findall(r"(?:第)?([零一二三四五六七八九十\d]+)宫", tail[:30])
+                # “不在处女座，而在狮子座” asserts only the sign it does not deny.
+                sign = next(
+                    (
+                        m
+                        for m in re.finditer("|".join(SIGN_ZH), tail[:24])
+                        if not negated_at(tail, m.start())
+                    ),
+                    None,
+                )
+                houses = [
+                    m[1]
+                    for m in re.finditer(r"(?:第)?([零一二三四五六七八九十\d]+)宫", tail[:30])
+                    if not negated_at(tail, m.start())
+                ]
                 if transit_context and (sign or houses):
                     return "行运星落座宫位未作为本次事实提供，请仅陈述已计算相位"
                 name = body.group()

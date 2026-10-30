@@ -4,6 +4,17 @@ import re
 
 from common.input_evidence import question_range
 
+# A value named right after a governing negation (“不是正义正位”“不在处女座”) is the value the
+# sentence denies, not one it asserts. Only the words directly before the value count.
+NEGATED_VALUE = re.compile(
+    r"(?:不是|并不是|并非|而非|不再是|不在|并不在|不落在|没有落在|没落在)\s*[【「《“\"]?$"
+)
+
+
+def negated_at(text: str, start: int) -> bool:
+    """Whether the value that starts at ``start`` in ``text`` follows a governing negation."""
+    return bool(NEGATED_VALUE.search(text[max(0, start - 8) : start]))
+
 
 def validate_calculation_facts(reading, state):
     from plugins.bazi.intent import dayun_overview_state

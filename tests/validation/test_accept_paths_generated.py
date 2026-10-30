@@ -286,7 +286,6 @@ async def test_negated_wrong_values_are_accepted(charts):
     assert rejections(s, "timing", sentences) == []
 
 
-@pytest.mark.xfail(strict=True, reason="误拒：落座、宫位前的否定词被忽略（P0.3 修复）")
 async def test_negated_sign_before_the_actual_sign_is_accepted(charts):
     s = charts.session
     sun = next(p for p in charts.chart["planets"] if p["body"] == "Sun")
@@ -321,18 +320,12 @@ async def test_tarot_cards_stated_correctly_are_accepted(runtime, tarot):
     assert rejections(runtime.session, "tarot", sentences) == []
 
 
-@pytest.mark.xfail(
-    strict=True, reason="误拒：否定另一方向的正确陈述被当成本次牌面断言（P0.3 修复）"
-)
 async def test_tarot_negated_other_orientation_is_accepted(runtime, tarot):
     card = tarot[1]
     body = f"这次抽到的是{card['name']}{orientation(card)}，不是{card['name']}{opposite(card)}。"
     assert rejections(runtime.session, "tarot", [(body, [card["ref_id"]])]) == []
 
 
-@pytest.mark.xfail(
-    strict=True, reason="误拒：一般牌义后的逗号分句提到“这次”就被当成本次断言（P0.3 修复）"
-)
 async def test_tarot_definition_followed_by_draw_clause_is_accepted(runtime, tarot):
     card = tarot[1]
     body = (
@@ -501,8 +494,23 @@ async def test_tarot_mutations_are_rejected(runtime, tarot):
     for body in (
         f"现在位是{card['name']}{opposite(card)}。",
         f"现在位是【{undrawn}】正位。",
+        # Denying the drawn orientation does not make the asserted wrong one acceptable.
+        f"这次抽到的是{card['name']}{opposite(card)}，不是{card['name']}{orientation(card)}。",
+        f"{card['name']}{opposite(card)}一般表示阻滞，这次抽到的正是它。",
     ):
         assert_rejected(runtime.session, "tarot", (body, [card["ref_id"]]))
+
+
+async def test_negation_does_not_hide_a_wrong_position(charts):
+    s = charts.session
+    sun = next(p for p in charts.chart["planets"] if p["body"] == "Sun")
+    actual = SIGN_ZH[SIGNS.index(sun["sign"])]
+    elsewhere = next(zh for zh in SIGN_ZH if zh != actual)
+    sign_ref, house_ref = ref(s, f":Sun:{sun['sign']}"), ref(s, f":Sun:house{sun['house']}")
+    assert_rejected(s, "timing", (f"太阳不在{actual}座，而在{elsewhere}座。", [sign_ref]))
+    assert_rejected(
+        s, "timing", (f"太阳不在第{sun['house']}宫，而在第{wrong_house(sun)}宫。", [house_ref])
+    )
 
 
 @pytest.mark.xfail(strict=True, reason="漏拦：牌位张冠李戴，留给流水线的闭集比对")
