@@ -17,9 +17,12 @@ OTHER_SYSTEMS = re.compile(
     r"八字|四柱|命盘|占星|星盘|星座|行运|本命|姓名|名字|五格|解梦|梦见|梦到|做梦|"
     r"每日运势|今日运势|今天运势|流日|流年|大运"
 )
-FOLLOWUP = re.compile(
-    r"第[一二三1-3]张|这张牌|那张牌|刚才|上一条|上次|那次|之前|原记录|"
-    r"不要?重新抽|不重抽|不用重抽|什么意思|再解释|详细说说|具体说说"
+# A follow-up names the reading or its cards. “什么意思” or “刚才” alone does not: “用八字解释
+# 日主是什么意思” and “用塔罗看看我刚才面试的结果” are new questions.
+REFERS_TO_READING = re.compile(
+    r"第[一二三四1-4]张|[这那]张牌|[这那]几张|[这那]些牌|牌面|牌阵里|"
+    r"(?:上一条|上一次|上次|刚才|之前|那次|原来|原先)(?:那次|那条|的)?"
+    r"(?:占卜|解读|抽牌|抽的牌|的牌|记录)|原记录|不要?重新抽|不用重抽|不重新?抽"
 )
 # “不要重新抽牌” asks for the opposite of a redraw.
 REDRAW = re.compile(r"(?<!不要)(?<!不用)(?<![不别])(?:重新抽|重抽|再抽|重新占)")
@@ -65,9 +68,11 @@ def detect(runtime, message: str) -> Intent | None:
     if session.pinned_reading_id:
         saved = runtime.store.get_reading(session.user_id, session.pinned_reading_id)
         return Intent("tarot", "followup", saved["reading_id"]) if tarot_only(saved) else None
-    explicit = selected == ["tarot"] or bool(
-        TAROT.search(message) and not OTHER_SYSTEMS.search(message)
-    )
+    # Another system named outside the tarot page is that system's question (or several
+    # systems'), whatever else the message says.
+    if selected is None and OTHER_SYSTEMS.search(message):
+        return None
+    explicit = selected == ["tarot"] or bool(TAROT.search(message))
     redraw = bool(REDRAW.search(message))
     # A draw of this session not answered yet is answered from the same cards; only an
     # explicit redraw replaces it, exactly as start_reading requires.
@@ -83,11 +88,11 @@ def detect(runtime, message: str) -> Intent | None:
         and (CONTINUE.search(message) or message.strip() == run["state"]["question"].strip())
     ):
         return Intent("tarot", "resume", run=run)
-    if FOLLOWUP.search(message) and not redraw:
+    if REFERS_TO_READING.search(message) and not redraw:
         target = followup_target(runtime)
         if target:
             return Intent("tarot", "followup", target)
     # “请重新抽一次” after a tarot reading asks for a new draw of the same kind.
-    if redraw and not OTHER_SYSTEMS.search(message) and followup_target(runtime):
+    if redraw and followup_target(runtime):
         return Intent("tarot", "new")
     return Intent("tarot", "new") if explicit else None
