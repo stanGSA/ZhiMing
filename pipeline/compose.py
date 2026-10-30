@@ -102,14 +102,14 @@ def tarot_messages(question: str, spread_note: str, facts, *, extra: str = "", p
 
 def repair_messages(messages: list[dict], draft: str, problems: list[str], facts) -> list[dict]:
     listed = "\n".join(f"{i}. {problem}" for i, problem in enumerate(problems, 1))
-    aliases = "、".join(fact.alias for fact in facts)
+    seats = "；".join(f"{fact.alias}={fact.label}位{fact.text}" for fact in facts)
     return [
         *messages,
         {"role": "assistant", "content": draft},
         {
             "role": "user",
             "content": f"上一稿有这些问题，请修改后重新输出完整的标记文本，格式不变：\n{listed}\n"
-            f"可引用的编号只有：{aliases}。",
+            f"可引用的编号只有：{seats}。写某个牌位时，只能用该牌位对应的编号。",
         },
     ]
 
