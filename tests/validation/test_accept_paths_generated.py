@@ -176,32 +176,42 @@ async def dream(runtime):
 # ---- generated accept paths ---------------------------------------------------------------
 
 
-def bazi_sentences(c: Charts):
-    s, natal = c.session, c.natal
+def bazi_natal_sentences(s, natal):
+    """Natal bazi facts; a pillar or the luck cycles left out by the calculation are skipped."""
     pillars, gods = natal["pillars"], natal["ten_gods_stems"]
+    known = [key for key in PILLAR_ZH if pillars.get(key)]
     out = [(f"你的日主是{natal['day_master']}，做事讲究分寸。", [ref(s, ":day_master:")])]
-    for key, label in PILLAR_ZH.items():
+    for key in known:
         out.append(
-            (f"{label}{pillars[key]}提示了这一层的底色。", [ref(s, f":{key}:{pillars[key]}:gan")])
+            (
+                f"{PILLAR_ZH[key]}{pillars[key]}提示了这一层的底色。",
+                [ref(s, f":{key}:{pillars[key]}:gan")],
+            )
         )
     out.append(
         (
-            f"四柱分别是{pillars['year']}、{pillars['month']}、{pillars['day']}、{pillars['time']}。",
-            [ref(s, f":{key}:{pillars[key]}:gan") for key in PILLAR_ZH],
+            "四柱里的" + "、".join(pillars[key] for key in known) + "各有侧重。",
+            [ref(s, f":{key}:{pillars[key]}:gan") for key in known],
         )
     )
     for key, god in gods.items():
-        if key in PILLAR_ZH and key != "day" and god:
+        if key in known and key != "day" and god:
             out.append(
                 (
                     f"{PILLAR_ZH[key]}天干{pillars[key][0]}是{god}，往往意味着相应的助力。",
                     [ref(s, f":{key}:{pillars[key]}:{god}")],
                 )
             )
-    dayun = ref(s, ":dayun:")
-    first_date, first = dayun.split(":")[-2:]
-    out.append((f"{first_date}起运，首步大运{first}。", [dayun]))
-    for period in c.period["periods"]:
+    if natal.get("dayun"):
+        dayun = ref(s, ":dayun:")
+        first_date, first = dayun.split(":")[-2:]
+        out.append((f"{first_date}起运，首步大运{first}。", [dayun]))
+    return out
+
+
+def bazi_period_sentences(s, period_result):
+    out = []
+    for period in period_result["periods"]:
         start = period["start_utc"]
         for key, gz in period["pillars"].items():
             god = period["ten_gods"][key]
@@ -218,24 +228,34 @@ def bazi_sentences(c: Charts):
     return out
 
 
-def astro_sentences(c: Charts):
-    s = c.session
+def bazi_sentences(c: Charts):
+    return bazi_natal_sentences(c.session, c.natal) + bazi_period_sentences(c.session, c.period)
+
+
+def astro_natal_sentences(s, chart):
+    """Natal chart facts; houses only when the birth time is known."""
     signs = dict(zip(SIGNS, SIGN_ZH, strict=True))
     out = []
-    for planet in c.chart["planets"]:
+    for planet in chart["planets"]:
         body, zh = planet["body"], BODY_ZH[planet["body"]]
         sign = ref(s, f":{body}:{planet['sign']}")
-        house = ref(s, f":{body}:house{planet['house']}")
         out.append((f"本命{zh}落在{signs[planet['sign']]}座，表达方式更有这一面的风格。", [sign]))
         out.append((f"{zh}{signs[planet['sign']]}让你更看重这一面。", [sign]))
-        out.append((f"本命{zh}落在第{planet['house']}宫，相关领域更受关注。", [house]))
-        out.append((f"{zh}在{chinese(planet['house'])}宫，提示你在这方面投入较多。", [house]))
-    for index, aspect in enumerate(c.chart["aspects"]):
+        if chart["time_known"]:
+            house = ref(s, f":{body}:house{planet['house']}")
+            out.append((f"本命{zh}落在第{planet['house']}宫，相关领域更受关注。", [house]))
+            out.append((f"{zh}在{chinese(planet['house'])}宫，提示你在这方面投入较多。", [house]))
+    for index, aspect in enumerate(chart["aspects"]):
         a, b, kind = BODY_ZH[aspect["a"]], BODY_ZH[aspect["b"]], ASPECT_ZH[aspect["type"]]
         cited = [ref(s, f":natal_aspect{index}:{aspect['a']}:{aspect['b']}:")]
         out.append((f"本命{a}与{b}形成{kind}，内在会有拉扯。", cited))
         out.append((f"{a}{kind[:-1]}{b}，需要学会平衡。", cited))
-    for event in c.transits["events"][:20]:
+    return out
+
+
+def transit_sentences(s, transits):
+    out = []
+    for event in transits["events"][:20]:
         t, n = BODY_ZH[event["transit_body"]], BODY_ZH[event["natal_body"]]
         kind = ASPECT_ZH[event["aspect"]]
         cited = [ref(s, f"transit:{event['exact_utc']}:{event['transit_body']}:")]
@@ -245,6 +265,10 @@ def astro_sentences(c: Charts):
             (f"行运{t}{kind}本命{n}（精确在{event['exact_date']}），提醒你调整节奏。", cited)
         )
     return out
+
+
+def astro_sentences(c: Charts):
+    return astro_natal_sentences(c.session, c.chart) + transit_sentences(c.session, c.transits)
 
 
 async def test_bazi_facts_stated_correctly_are_accepted(charts):
@@ -257,6 +281,51 @@ async def test_astro_facts_stated_correctly_are_accepted(charts):
     sentences = astro_sentences(charts)
     assert len(sentences) > 60
     assert rejections(charts.session, "timing", sentences) == []
+
+
+@pytest.mark.parametrize("time_known", [True, False])
+async def test_natal_facts_answer_a_trait_question(runtime, time_known):
+    """A trait question with no date range; an unknown birth time drops houses and the hour."""
+    birth = await prepare(runtime, time_known=time_known)
+    natal = await invoke(
+        runtime, "compute_bazi", {**birth, **({"gender": "male"} if time_known else {})}
+    )
+    chart = await invoke(runtime, "compute_natal_chart", birth)
+    assert natal.ok and chart.ok
+    s = runtime.session
+    sentences = bazi_natal_sentences(s, natal.data) + astro_natal_sentences(s, chart.data)
+    assert len(sentences) > 30
+    sun_sign = next(p["sign"] for p in chart.data["planets"] if p["body"] == "Sun")
+    sun = ref(s, f":Sun:{sun_sign}")
+    if not time_known:
+        sentences.append(("出生时间未知，无法判断上升星座和宫位。", [sun]))
+    assert rejections(s, "trait", sentences) == []
+    if not time_known:
+        assert_rejected(s, "trait", ("太阳落在第4宫。", [sun]))
+
+
+@pytest.mark.parametrize("spread", ["single", "decision"])
+async def test_other_spreads_stated_correctly_are_accepted(runtime, spread):
+    question = (
+        "A是留在当前公司，B是接受新offer，用二选一牌阵看看。"
+        if spread == "decision"
+        else "抽一张牌，给我今天的提示。"
+    )
+    await ask(runtime, question)
+    drawn = await invoke(runtime, "draw_tarot", dict(spread=spread, question=question))
+    assert drawn.ok
+    cards = drawn.data["cards"]
+    sentences = [
+        (f"{card['label']}位是{card['name']}{orientation(card)}。", [card["ref_id"]])
+        for card in cards
+    ]
+    sentences.append(
+        (
+            "；".join(f"{c['label']}：【{c['name']}】{orientation(c)}" for c in cards) + "。",
+            [c["ref_id"] for c in cards],
+        )
+    )
+    assert rejections(runtime.session, "tarot", sentences) == []
 
 
 async def test_mixed_natal_and_transit_paragraph_is_accepted(charts):
