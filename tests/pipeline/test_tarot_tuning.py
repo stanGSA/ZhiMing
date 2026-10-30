@@ -85,6 +85,7 @@ async def test_a_later_draw_still_names_its_second_card(make):
         *REFUSED_DRAFTS,
         "这不代表这只股票一定会涨，也不代表全部投入必然亏损。",
         "这不是一种必然，选择权在你。",
+        "并非这只股票一定会涨。",
     ],
 )
 async def test_a_negated_claim_about_the_question_is_not_repaired(make, sentence):
@@ -108,8 +109,13 @@ async def test_a_negated_claim_in_both_drafts_is_not_a_safety_failure(make):
 
 @pytest.mark.parametrize(
     "sentence",
-    # The last two follow an unrelated negation (re-check of 1fe9499, which let them through).
-    ["这只股票一定会涨。", "这不是坏事这只股票一定会涨。", "这不代表坏事股价一定会涨。"],
+    # The others follow an unrelated negation (re-check of 1fe9499 and review of 1a4b377).
+    [
+        "这只股票一定会涨。",
+        "这不是坏事这只股票一定会涨。",
+        "这不代表坏事股价一定会涨。",
+        "这不代表过去的亏损股价一定会涨。",
+    ],
 )
 async def test_a_certainty_claim_about_the_stock_is_still_repaired(make, sentence):
     runtime, composer = make(with_sentence(sentence), good)

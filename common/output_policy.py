@@ -56,16 +56,18 @@ NEGATED_FRAME = re.compile(
     r"(?:代表|意味着?|等于|说明|表示|保证|确定|断定|断言|预示|预言|预告|告诉|说|认为|觉得)"
     r"|(?:别|不要)(?:以为|认为|觉得)"
 )
-# "不是说/并非指" report a clause and govern its subject, as a framing verb does. A bare
-# "不是/并非" names what something is ("这不是坏事"), so a clause after it is a new one
-# unless its subject is a pronoun ("并非你这个月一定会失败").
-NEGATED_SUBJECT = re.compile(r"(?:并非|绝非|并不是|不是)(?:说|指)")
-NOT_THE_CASE = re.compile(r"(?:并非|绝非|并不是|不是)")
-# What a negated framing verb governs is the claim's own subject: one noun phrase such as
-# "行情", "某件事", "具体事件", "留下就", "你们的关系" or "你今天". A negation, a contrast, a
-# claim of its own, or a second subject (a pronoun, a demonstrative, a noun after a predicate)
-# ends what it governs: "不认为这很难你一定会成功" negates "很难", "这不是坏事这只股票一定会涨"
-# negates "坏事", neither the claim.
+# "不是说/并非指" report a clause, and "并非/绝非" negate one ("并非股价一定会涨"): both govern
+# its subject, as a framing verb does. A bare "不是" names what something is ("这不是坏事"), so
+# a clause after it is a new one unless it starts with a pronoun or a demonstrative ("不是你一定
+# 会失败", "不是这只股票一定会涨").
+NEGATED_SUBJECT = re.compile(r"(?:并非|绝非|并不是|不是)(?:说|指)|并非|绝非")
+COPULA = re.compile(r"(?:并不是|不是)")
+# What a negation governs is the claim's own subject. Regular expressions cannot parse it, so
+# the phrase is held to the shape of one short noun phrase, such as "行情", "某件事", "具体事件",
+# "留下就", "你们的关系" or "你今天": anything that might be a second clause is refused. A
+# negation, a contrast, a claim of its own, or a second subject (a pronoun, a demonstrative, a
+# noun after a predicate) ends what it governs: "不认为这很难你一定会成功" negates "很难",
+# "这不是坏事这只股票一定会涨" negates "坏事", neither the claim.
 SUBJECT_TEXT = re.compile(r"[\u4e00-\u9fffA-Za-z0-9“”‘’「」]*")
 MODIFIERS = re.compile(r"(?:就|也|都|会|能|将|真的|最终|近期|这个月|下个月|以后|未来|现实中)+$")
 SUBJECT_BREAK = re.compile(
@@ -74,8 +76,9 @@ SUBJECT_BREAK = re.compile(
 PRONOUNS = r"你们|我们|他们|她们|咱们|你|您|我|他|她|它"
 DEMONSTRATIVE = r"(?:这|那|该|某)(?:只|个|次|段|份|笔|些|种|件|张|位|家|条)?"
 # A noun phrase: an optional pronoun, demonstrative and "…的", then its head. A head of four
-# characters with nothing in front could be two words, a predicate and a new subject ("亏损
-# 行情"), so it needs a modifier of its own ("具体事件", "全部投入"); otherwise three at most.
+# characters could be two words, a predicate and a new subject ("亏损行情", "过去的亏损股价"),
+# whatever is in front of it, so it needs a modifier of its own ("具体事件", "全部投入");
+# otherwise three at most.
 LEAD = re.compile(
     rf"(?:(?:{PRONOUNS})(?:的|俩)?)?(?:{DEMONSTRATIVE}的?)?(?:[\u4e00-\u9fffA-Za-z0-9]{{1,4}}的)?"
 )
@@ -85,7 +88,7 @@ HEAD_MODIFIER = re.compile(r"具体|全部|所有|整体|实际|现实|近期|�
 TRAILING_OBJECT = re.compile(rf"(?:对|给|让|和|跟|与|向|替|为)(?:{PRONOUNS})$")
 LEADING = re.compile(rf"^(?:(?:{PRONOUNS})(?:的|俩)?)?(?:{DEMONSTRATIVE}的?)?")
 LATER_SUBJECT = re.compile(rf"(?:{PRONOUNS})|(?:这|那)(?=[\u4e00-\u9fff])")
-PRONOUN_SUBJECT = re.compile(rf"(?:(?:{PRONOUNS})(?:的|俩)?)?")
+SUBJECT_START = re.compile(rf"(?:{PRONOUNS}|{DEMONSTRATIVE})")
 # The certainty word as a noun under a negation: "这不是一种必然", "没有什么是注定的",
 # "不必把这理解为必然".
 NEGATED_NOUN = re.compile(
@@ -215,8 +218,9 @@ def negates_claim(before: str) -> bool:
             for match in pattern.finditer(before)
         )
         or any(
-            PRONOUN_SUBJECT.fullmatch(MODIFIERS.sub("", before[match.end() :].strip()))
-            for match in NOT_THE_CASE.finditer(before)
+            claim_subject(rest) and (not rest or SUBJECT_START.match(rest))
+            for match in COPULA.finditer(before)
+            for rest in [MODIFIERS.sub("", before[match.end() :].strip())]
         )
     )
 
@@ -228,7 +232,7 @@ def claim_subject(phrase: str) -> bool:
         return False
     lead = LEAD.match(phrase).group()
     head = phrase[len(lead) :]
-    if not HEAD.fullmatch(head) or (len(head) == 4 and not lead and not HEAD_MODIFIER.match(head)):
+    if not HEAD.fullmatch(head) or (len(head) == 4 and not HEAD_MODIFIER.match(head)):
         return False
     return not LATER_SUBJECT.search(LEADING.sub("", phrase, count=1))
 

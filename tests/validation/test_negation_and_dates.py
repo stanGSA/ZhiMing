@@ -71,8 +71,12 @@ REFUSED_DRAFTS = [
     [
         *REFUSED_DRAFTS,
         "这不代表行情对你必然有利。",
-        "这不代表下个月的面试结果一定会好。",
         "不代表你们这段关系必然结束。",
+        # Third review of 1a4b377: a negated clause whose subject is an ordinary noun phrase.
+        "并非这只股票一定会涨。",
+        "并非股价一定会涨。",
+        "并不是这件事一定会成功。",
+        "这不代表过去的亏损一定会重演。",
         "这不代表这只股票一定会涨。",
         "牌面不代表股价必然上涨。",
         "这张牌并不代表投资必然亏损。",
@@ -117,6 +121,12 @@ def test_a_negated_claim_about_the_question_s_subject_is_allowed(text):
         "它不会告诉你答案你一定会成功。",
         "它不会告诉你今天会怎样，但你一定会成功。",
         "不会告诉你结果这只股票一定会涨。",
+        # Third review of 1a4b377: a "…的" in front does not make a four-character head one noun.
+        "这不代表过去的亏损股价一定会涨。",
+        "这不代表近期的亏损行情必然上涨。",
+        "并非坏事这只股票一定会涨。",
+        "并非亏损股价一定会涨。",
+        "这不是坏事那件事一定会成功。",
     ],
 )
 async def test_a_subject_or_noun_form_does_not_hide_a_separate_claim(runtime, text):
@@ -125,6 +135,15 @@ async def test_a_subject_or_noun_form_does_not_hide_a_separate_claim(runtime, te
     draft["sections"][0]["body"] = text
     error, _ = check(runtime, draft)
     assert error and "确定性说法" in error
+
+
+# The price of refusing what might be a second clause: a four-character head with no modifier
+# of its own may be a predicate and a new subject ("过去的亏损股价"), so these negations, which
+# are not, are refused too and cost a repair. Recorded here so a better rule can claim them.
+@pytest.mark.xfail(strict=True, reason="四字中心词没有自带修饰语时，正则分不出它是不是两个词")
+@pytest.mark.parametrize("text", ["这不代表下个月的面试结果一定会好。", "并非亏损股票一定会涨。"])
+def test_a_four_character_head_without_a_modifier_is_still_refused(text):
+    assert certainty_claim([text]) is None
 
 
 @pytest.mark.parametrize("field", ["sections", "summary", "evidence"])
