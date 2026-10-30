@@ -33,6 +33,17 @@ NORMALISATIONS = {
 # this they fell through to containment and were interpreted as the wrong symbol. They stay
 # unmatched, and so are never interpreted, until the knowledge base gives them an alias.
 DISTINCT_HEADS = ("熊猫", "雪花", "电动车", "鬼压床", "冰山")
+# Everyday words of the reading's own prose that end in a one-character alias: 自信代表成长
+# says nothing about a letter (信), nor 对手 about a hand. Only spans() skips them; match(),
+# which reads the user's own dream phrases, is unchanged.
+ORDINARY_WORDS = (
+    *("自信", "相信", "坚信", "确信", "诚信", "迷信", "互信"),
+    *("对手", "放手", "联手", "着手", "新手", "高手", "帮手", "助手", "人手", "上手", "插手"),
+    *("作风", "上风", "下风", "跟风", "口风"),
+    *("发火", "怒火", "上火", "恼火", "窝火"),
+    *("薪水", "缩水", "部门", "热门", "冷门", "入门", "窍门", "价钱", "本钱"),
+    *("证书", "秘书", "文书", "玩笑", "可笑", "靠山", "连锁", "警钟", "方针", "绿灯", "红灯"),
+)
 # A fragment that drops the object of the alias it belongs to (丢了 is not 钥匙丢了).
 BARE_FRAGMENTS = frozenset({"丢了"})
 
@@ -124,8 +135,9 @@ class DreamMatcher:
         """Longest non-overlapping alias occurrences: (start, end, alias, key)."""
         taken = [False] * len(text)
         found = []
-        # A distinct head is one object: 熊猫 yields neither 熊 nor 猫.
-        for head in DISTINCT_HEADS:
+        # A distinct head is one object: 熊猫 yields neither 熊 nor 猫. An ordinary word
+        # such as 自信 is no object at all.
+        for head in (*DISTINCT_HEADS, *ORDINARY_WORDS):
             start = -1 if head in self.aliases else text.find(head)
             while start != -1:
                 for i in range(start, start + len(head)):
