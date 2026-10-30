@@ -1,0 +1,11 @@
+[Unit]
+Description=Run the ZhiMing monitor every five minutes
+
+[Timer]
+OnBootSec=2min
+OnUnitActiveSec=5min
+AccuracySec=30s
+Unit=zhiming-monitor.service
+
+[Install]
+WantedBy=timers.target

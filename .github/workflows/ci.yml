@@ -26,8 +26,8 @@ jobs:
       - run: uv run python -m scripts.fetch_data
       - run: uv run python -m knowledge.build
       - run: uv run python -m scripts.doctor
-      - run: uv run ruff check harness agents common plugins knowledge memory signals scripts tests app.py cli.py web.py evals mcp_server
-      - run: uv run ruff format --check harness agents common plugins knowledge memory signals scripts tests app.py cli.py web.py evals mcp_server
+      - run: uv run ruff check harness agents common plugins knowledge memory signals scripts tests app.py cli.py web.py evals mcp_server ops
+      - run: uv run ruff format --check harness agents common plugins knowledge memory signals scripts tests app.py cli.py web.py evals mcp_server ops
       # Browser regressions (tests/web/test_web_browser.py) run on Linux; elsewhere they skip.
       - if: runner.os == 'Linux'
         run: uv run playwright install --with-deps chromium

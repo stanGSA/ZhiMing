@@ -1,0 +1,47 @@
+# Off-server uptime probe: the site's /healthz, the entrance page and the TLS certificate,
+# checked from GitHub's network so a dead VPS still raises an alert. Scheduled workflows run
+# only from the default branch. Alert channels come from repository secrets (same names as
+# /etc/zhiming/monitor.env); a failed run also triggers GitHub's own failure notification.
+name: uptime
+on:
+  schedule:
+    - cron: "7,17,27,37,47,57 * * * *"
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: uptime
+  cancel-in-progress: false
+jobs:
+  probe:
+    if: github.repository == 'stanGSA/ZhiMing'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    env:
+      PYTHONUTF8: "1"
+      ZHIMING_UPTIME_URL: ${{ vars.ZHIMING_UPTIME_URL || 'https://zhiming.mom' }}
+      ZHIMING_ALERT_WEBHOOK_URL: ${{ secrets.ZHIMING_ALERT_WEBHOOK_URL }}
+      ZHIMING_ALERT_WEBHOOK_KIND: ${{ vars.ZHIMING_ALERT_WEBHOOK_KIND || 'generic' }}
+      ZHIMING_ALERT_WEBHOOK_SECRET: ${{ secrets.ZHIMING_ALERT_WEBHOOK_SECRET }}
+      ZHIMING_ALERT_SERVERCHAN_KEY: ${{ secrets.ZHIMING_ALERT_SERVERCHAN_KEY }}
+      ZHIMING_MONITOR_HOST: github-actions
+      ZHIMING_MONITOR_REPEAT_HOURS: "2"
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          sparse-checkout: ops
+      # The previous run's state, so an outage alerts when it starts, every 2 hours, and on recovery.
+      - uses: actions/cache/restore@v4
+        with:
+          path: .uptime
+          key: uptime-state-${{ github.run_id }}
+          restore-keys: uptime-state-
+      - name: Probe
+        run: |
+          mkdir -p .uptime
+          python3 -I ops/monitor.py --external "$ZHIMING_UPTIME_URL" --state .uptime/state.json
+      - if: always()
+        uses: actions/cache/save@v4
+        with:
+          path: .uptime
+          key: uptime-state-${{ github.run_id }}

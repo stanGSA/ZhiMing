@@ -323,7 +323,7 @@ function openAccount() {
     "p",
     "",
     `${Number.isNaN(since.getTime()) ? "" : `注册于 ${since.toLocaleDateString("zh-CN", { timeZone: "Asia/Shanghai" })} · `}生辰档案与解读记录已保存到账号，可在任意设备登录查看。` +
-      (account.quota ? ` 免费额度剩余 ${account.quota.remaining.toLocaleString("zh-CN")} / 250,000 token（累计，不按月重置）。输入、输出及内部重试均计入；离线演示不扣额度。` : ""),
+      (account.quota ? ` 免费额度剩余 ${account.quota.remaining.toLocaleString("zh-CN")} / ${account.quota.limit.toLocaleString("zh-CN")} token（累计，不按月重置）。输入、输出及内部重试均计入；离线演示不扣额度。` : ""),
   );
   const exportLink = node("a", "btn btn-ghost", "导出我的记录");
   exportLink.href = "/api/export";

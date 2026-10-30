@@ -146,7 +146,8 @@ uv run python -m scripts.doctor         # 环境、数据与知识库自检
 | [`knowledge/`](knowledge/) | 释义源文件、规则、审核账本与知识库构建 |
 | [`signals/`](signals/) | 跨体系信号合并 |
 | [`common/`](common/) | 公共工具、地点解析、安全与回答校验 |
-| [`memory/`](memory/) | SQLite 业务库：画像、记录、缓存；网页账号与登录凭证（`accounts.py`） |
+| [`memory/`](memory/) | SQLite 业务库：画像、记录、缓存；网页账号与登录凭证（`accounts.py`）；全站费用控制与用量台账（`costs.py`） |
+| [`ops/`](ops/) | 管理页接口与健康检查（`admin.py`）、服务器监控与告警（`monitor.py`，仅标准库） |
 | `app.py` `cli.py` `web.py` [`web_static/`](web_static/) | 运行时装配、命令行与本机网页 |
 | [`evals/`](evals/) | 评估数据集与离线评估 |
 | [`scripts/`](scripts/) | 数据下载、自检、真实模型评估、知识库审核流水线；[`scripts/archive/`](scripts/archive/) 为一次性脚本 |
@@ -158,6 +159,7 @@ uv run python -m scripts.doctor         # 环境、数据与知识库自检
 - [设计与约定](docs/design.md)：运行路径、知识库、多 Agent、合并与审校、各插件的计算口径
 - [使用指南](docs/usage.md)：网页、朋友体验、命令行、真实模型、MCP server、隐私与限制
 - [服务器部署说明](docs/deployment.md)：云服务器配置、SSH 连接、应用部署状态与上线待办
+- [运维说明](docs/operations.md)：监控告警、全站每日预算与并发上限、异常消耗自动暂停、`/admin` 管理页
 - [项目计划书](docs/占卜Agent项目计划书.md)：最初的范围、架构与评估设计
 - [文档索引](docs/README.md)：各阶段验收报告与评审整改记录
 - [验收材料](docs/verification/README.md)、[评估数据集](evals/README.md)

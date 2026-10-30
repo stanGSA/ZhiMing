@@ -1,0 +1,153 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex, nofollow" />
+    <title>知命 · 管理台</title>
+    <link rel="icon" href="/static/favicon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="/static/base.css" />
+    <link rel="stylesheet" href="/static/theme-admin.css" />
+    <script src="/static/admin.js" defer></script>
+  </head>
+  <body data-page="admin">
+    <header class="zm-header">
+      <div class="wrap zm-bar">
+        <a class="zm-brand" href="/ask" aria-label="知命 · 问道">
+          <span class="zm-mark" aria-hidden="true">知<br />命</span>
+          <span class="zm-wordmark">知命</span>
+        </a>
+        <nav class="zm-nav" aria-label="管理台分区">
+          <a href="#status">状态</a>
+          <a href="#checks">监控告警</a>
+          <a href="#usage">用量</a>
+          <a href="#controls">费用控制</a>
+          <a href="#accounts">账号</a>
+          <a href="#system">系统</a>
+        </nav>
+        <div class="zm-tools">
+          <label class="check adm-auto"><input id="auto-refresh" type="checkbox" checked /><span>每 30 秒刷新</span></label>
+          <button class="btn btn-ghost" id="refresh" type="button">刷新</button>
+        </div>
+      </div>
+    </header>
+
+    <main class="wrap adm">
+      <div class="adm-head">
+        <div>
+          <span class="kicker">ADMIN · 管理台</span>
+          <h1>运行与费用</h1>
+          <p class="adm-meta" id="meta">正在加载…</p>
+        </div>
+      </div>
+      <p class="adm-error" id="error" role="alert" hidden></p>
+
+      <section id="status" aria-labelledby="status-title">
+        <h2 id="status-title" class="adm-visually-hidden">状态</h2>
+        <div class="adm-tiles" id="tiles"></div>
+      </section>
+
+      <section id="checks" class="adm-section" aria-labelledby="checks-title">
+        <div class="adm-section-head">
+          <h2 id="checks-title">监控告警</h2>
+          <p class="adm-hint" id="monitor-meta"></p>
+        </div>
+        <table class="adm-table">
+          <thead>
+            <tr><th scope="col">检查项</th><th scope="col">状态</th><th scope="col">说明</th><th scope="col">开始于</th></tr>
+          </thead>
+          <tbody id="check-rows"></tbody>
+        </table>
+        <h3>近 24 小时费用事件</h3>
+        <ul class="adm-events" id="events"></ul>
+      </section>
+
+      <section id="usage" class="adm-section" aria-labelledby="usage-title">
+        <div class="adm-section-head">
+          <h2 id="usage-title">近 24 小时用量（token / 小时）</h2>
+          <p class="adm-hint" id="usage-meta"></p>
+        </div>
+        <figure class="adm-chart" id="chart" aria-describedby="usage-meta"></figure>
+        <details class="adm-details">
+          <summary>表格视图</summary>
+          <table class="adm-table">
+            <thead><tr><th scope="col">小时（北京时间）</th><th scope="col">token</th><th scope="col">调用</th><th scope="col">错误</th></tr></thead>
+            <tbody id="hour-rows"></tbody>
+          </table>
+        </details>
+        <h3>今日用量最多的账号</h3>
+        <table class="adm-table">
+          <thead><tr><th scope="col">账号</th><th scope="col">今日 token</th><th scope="col">调用次数</th></tr></thead>
+          <tbody id="top-rows"></tbody>
+        </table>
+      </section>
+
+      <section id="controls" class="adm-section" aria-labelledby="controls-title">
+        <div class="adm-section-head">
+          <h2 id="controls-title">费用控制</h2>
+          <p class="adm-hint">只作用于登录账号的真实模型调用；离线演示、排盘与历史不受影响。修改即时生效并记入操作记录。</p>
+        </div>
+        <div class="adm-pause" id="pause-box">
+          <p id="pause-state"></p>
+          <div class="adm-inline">
+            <label class="field"><span>暂停原因（可选）</span><input id="pause-reason" maxlength="200" /></label>
+            <button class="btn btn-primary adm-danger" id="pause" type="button">暂停全站模型调用</button>
+            <button class="btn btn-primary" id="resume" type="button" hidden>恢复模型调用</button>
+          </div>
+        </div>
+        <form class="adm-form" id="settings-form" novalidate>
+          <div class="adm-grid" id="settings-fields"></div>
+          <p class="adm-error" id="settings-error" role="alert" hidden></p>
+          <div class="btn-row">
+            <button class="btn btn-primary" type="submit">保存设置</button>
+            <button class="btn btn-ghost" id="settings-reset" type="button">恢复为配置文件默认值</button>
+          </div>
+        </form>
+      </section>
+
+      <section id="accounts" class="adm-section" aria-labelledby="accounts-title">
+        <div class="adm-section-head">
+          <h2 id="accounts-title">账号</h2>
+          <p class="adm-hint" id="accounts-meta"></p>
+        </div>
+        <form class="adm-inline" id="account-search">
+          <label class="field"><span>搜索账号名</span><input id="account-query" maxlength="32" /></label>
+          <button class="btn btn-ghost" type="submit">搜索</button>
+        </form>
+        <div class="adm-scroll">
+          <table class="adm-table">
+            <thead>
+              <tr>
+                <th scope="col">账号</th>
+                <th scope="col">注册时间</th>
+                <th scope="col">今日 token</th>
+                <th scope="col">累计已用 / 上限</th>
+                <th scope="col">登录数</th>
+                <th scope="col">模型调用</th>
+                <th scope="col">操作</th>
+              </tr>
+            </thead>
+            <tbody id="account-rows"></tbody>
+          </table>
+        </div>
+        <div class="btn-row">
+          <button class="btn btn-ghost" id="accounts-prev" type="button">上一页</button>
+          <button class="btn btn-ghost" id="accounts-next" type="button">下一页</button>
+        </div>
+      </section>
+
+      <section id="system" class="adm-section" aria-labelledby="system-title">
+        <h2 id="system-title">系统</h2>
+        <dl class="adm-facts" id="system-facts"></dl>
+        <h3>操作记录</h3>
+        <div class="adm-scroll">
+          <table class="adm-table">
+            <thead><tr><th scope="col">时间</th><th scope="col">管理员</th><th scope="col">操作</th><th scope="col">内容</th></tr></thead>
+            <tbody id="audit-rows"></tbody>
+          </table>
+        </div>
+      </section>
+    </main>
+    <div class="adm-tooltip" id="tooltip" role="status" hidden></div>
+  </body>
+</html>

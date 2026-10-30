@@ -30,6 +30,19 @@ limits:
   reviewer_max_steps: 3
   reviewer_token_budget: 12000
   reviewer_timeout_s: 60
+cost_control:                 # 全站费用控制：只作用于登录账号的真实模型调用；管理页 /admin 可覆盖并持久保存
+  timezone: Asia/Shanghai     # 每日预算按此时区零点重置
+  daily_token_budget: 3000000 # 全站每日 token 上限（输入+输出，含重试与辅助调用）；0 表示不限
+  daily_cost_budget: 0        # 全站每日估算费用上限；须同时填写下面两项单价才生效；0 表示不限
+  currency: CNY
+  input_price_per_mtok: 0     # 每百万输入 token 单价，按服务商账单填写；0 表示未填写，只按 token 控制
+  output_price_per_mtok: 0    # 每百万输出 token 单价；未结算的预留按两者中较高单价估算
+  max_concurrent_calls: 6     # 全站同时进行的模型请求上限；0 表示不限
+  queue_wait_s: 30            # 超出并发后最多排队秒数，之后提示稍后重试
+  burst_window_min: 10        # 异常消耗检测窗口（分钟）
+  burst_site_tokens: 600000   # 窗口内全站消耗超过即自动暂停全站模型调用；0 关闭
+  burst_account_tokens: 0     # 窗口内单账号消耗超过即自动暂停该账号；免费额度已限制单账号，默认关闭
+  auto_resume_min: 0          # 自动暂停后多少分钟自动恢复；0 表示须管理员在 /admin 手动恢复
 reviewer:
   enabled: true               # 只在 multi 模式生效；single 模式是对照基线，不审校
   strictness: lenient         # lenient | strict | off（对照实验用）
