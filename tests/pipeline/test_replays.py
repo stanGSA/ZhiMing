@@ -1,7 +1,8 @@
 """Recorded failure chains replayed through the runtime (P0.4 of docs/根因整改实施计划.md).
 
-The legacy agent must still answer each recorded call the way the live run recorded; the pipeline
-phases add their own expectations from each file's ``pipeline`` section.
+The legacy agent must still answer each recorded call the way the live run recorded. The
+``pipeline`` sections are data until P1 routes a system through the pipeline; from then on its
+tests run the same files through it.
 """
 
 import pytest
@@ -17,7 +18,8 @@ def test_replays_cover_the_main_failure_categories():
     # The tarot pilot (P1) needs its own chains.
     assert sum(case["systems"] == ["tarot"] for case in CASES) >= 2
     for case in CASES:
-        assert case["pipeline"]["max_model_calls"] <= 4, case["id"]
+        # The plan's limit: intent, compose and at most one repair per user message.
+        assert case["pipeline"]["max_model_calls_per_turn"] <= 3, case["id"]
         assert case["pipeline"]["outcome"] in ("submit_reading", "ask_user"), case["id"]
 
 

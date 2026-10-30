@@ -35,6 +35,7 @@ legacy:
   outcome: submit_reading
 pipeline:
   # Decided in P3's requirements table: ask first (as now) or answer in the birthplace's time
-  # and say so. Until then the pipeline keeps the current behaviour.
+  # and say so. Until then the pipeline keeps the current behaviour: the first turn asks from a
+  # template, the second computes and composes.
   outcome: submit_reading
-  max_model_calls: 4
+  max_model_calls_per_turn: 3

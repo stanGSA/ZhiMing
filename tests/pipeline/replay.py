@@ -16,6 +16,16 @@ Strings in call arguments may hold placeholders, resolved when the model "writes
 
 A ``submit_reading`` step may give a short ``draft`` instead of ``args``; the fields a model
 always writes the same way are filled in by ``reading_args``.
+
+The ``pipeline`` section states what the pipeline must do with the same turns: the final
+status and ``max_model_calls_per_turn``, counted per user message like the plan's limit of three
+(intent, compose, at most one repair). Until a phase routes a system through the pipeline it is
+data only; that phase must run these files through it and assert the calls, repairs, fallbacks,
+final facts and resumption it actually produced.
+
+Some chains replace the recorded input (a different place, a fixed seed) so that they still
+fail on current code. They are deterministic regression samples, not a measure of how often a
+real model succeeds.
 """
 
 from __future__ import annotations
