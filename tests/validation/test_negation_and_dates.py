@@ -61,6 +61,8 @@ REFUSED_DRAFTS = [
     "这不是说留下就一定会变差。",
     "这不代表某件事必然发生。",
     "不代表具体事件必然发生。",
+    # The one left after 1fe9499 (re-check: 1 of the 10 still refused).
+    "它不会告诉你今天一定会发生什么，只提供一个观看自己的角度。",
 ]
 
 
@@ -69,6 +71,8 @@ REFUSED_DRAFTS = [
     [
         *REFUSED_DRAFTS,
         "这不代表行情对你必然有利。",
+        "这不代表下个月的面试结果一定会好。",
+        "不代表你们这段关系必然结束。",
         "这不代表这只股票一定会涨。",
         "牌面不代表股价必然上涨。",
         "这张牌并不代表投资必然亏损。",
@@ -101,6 +105,18 @@ def test_a_negated_claim_about_the_question_s_subject_is_allowed(text):
         "这不是坏事你一定会成功。",
         "不代表行情不好你一定会亏。",
         "它不预言失败你必然成功。",
+        # Re-check of 1fe9499: a noun, not a pronoun, starts the second clause.
+        "这不是坏事这只股票一定会涨。",
+        "这不是坏事股价一定会涨。",
+        "并非坏事股价一定会涨。",
+        "这不是问题结果一定会好。",
+        "这不代表失败这只股票一定会涨。",
+        "这不代表坏事股价一定会涨。",
+        "这不代表亏损行情一定会涨。",
+        "它不预言坏事那只股票一定会涨。",
+        "它不会告诉你答案你一定会成功。",
+        "它不会告诉你今天会怎样，但你一定会成功。",
+        "不会告诉你结果这只股票一定会涨。",
     ],
 )
 async def test_a_subject_or_noun_form_does_not_hide_a_separate_claim(runtime, text):

@@ -106,8 +106,13 @@ async def test_a_negated_claim_in_both_drafts_is_not_a_safety_failure(make):
     assert outcome.data["reading"]["sections"] and sentence in outcome.text
 
 
-async def test_a_certainty_claim_about_the_stock_is_still_repaired(make):
-    runtime, composer = make(with_sentence("这只股票一定会涨。"), good)
+@pytest.mark.parametrize(
+    "sentence",
+    # The last two follow an unrelated negation (re-check of 1fe9499, which let them through).
+    ["这只股票一定会涨。", "这不是坏事这只股票一定会涨。", "这不代表坏事股价一定会涨。"],
+)
+async def test_a_certainty_claim_about_the_stock_is_still_repaired(make, sentence):
+    runtime, composer = make(with_sentence(sentence), good)
     outcome = await runtime.turn(RISKY)
     assert outcome.status == "submit_reading"
     info = outcome.data["pipeline"]
