@@ -108,6 +108,13 @@ def outcome_failure(row: dict) -> str | None:
     return f"结局为 {row['status']}，未通过：{'、'.join(failed)}"
 
 
+def clean_pass(row: dict) -> bool:
+    pipeline = row.get("pipeline") or {}
+    return (
+        not row.get("tool_errors") and not pipeline.get("repairs") and not pipeline.get("degraded")
+    )
+
+
 def percentile(values: list[float], share: float) -> float | None:
     ordered = sorted(values)
     return ordered[math.ceil(share * len(ordered)) - 1] if ordered else None
@@ -153,6 +160,11 @@ def summarize(report: dict) -> dict:
             row.get("status") == "submit_reading" and quality_score(row) is True for row in rows
         ),
         task_and_quality=sum(task_success(row) and quality_score(row) is True for row in rows),
+        # The pipeline's own record (scripts/live_week23.py); absent rows count as neither.
+        repaired=sum(bool((row.get("pipeline") or {}).get("repairs")) for row in rows),
+        degraded=sum(bool((row.get("pipeline") or {}).get("degraded")) for row in rows),
+        # 根因整改计划 §5: done in one clean pass, without a tool error, a repair or code writing it.
+        clean_success=sum(task_success(row) and clean_pass(row) for row in rows),
         strict_v1=sum(row.get("passed") is True for row in rows),
         tool_errors=sum(errors.values()),
         model_calls=sum(row.get("model_calls", 0) for row in rows),
@@ -221,7 +233,13 @@ def render(summaries: list[tuple[str, dict]], traces: Counter | None, pricing=No
         ("已提交回答", lambda s: f"{s['submitted']}/{s['cases']}"),
         ("评委已评分", lambda s: f"{s['quality_scored']}/{s['cases']}"),
         ("评委未评分", lambda s: f"{s['quality_unscored']}/{s['cases']}"),
-        ("一次做对（无工具错误）", lambda s: f"{s['first_try_clean']}/{s['cases']}"),
+        ("无工具错误（P1 口径，不要求任务完成）", lambda s: f"{s['first_try_clean']}/{s['cases']}"),
+        (
+            "任务完成且一次做对（无工具错误、无修复、无降级）",
+            lambda s: f"{s['clean_success']}/{s['cases']}",
+        ),
+        ("流水线修复过", lambda s: f"{s['repaired']}/{s['cases']}"),
+        ("流水线降级", lambda s: f"{s['degraded']}/{s['cases']}"),
         ("质量通过", lambda s: f"{s['quality']}/{s['cases']}"),
         (
             "已提交回答的质量通过率",

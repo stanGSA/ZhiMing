@@ -553,7 +553,8 @@ def test_v2_migration_preserves_rows(tmp_path):
     db.close()
     store = Store(path)
     try:
-        assert store.db.execute("PRAGMA user_version").fetchone()[0] == 5
+        assert store.db.execute("PRAGMA user_version").fetchone()[0] == 6
+        assert store.unfinished_pipeline_run("owner") is None
         assert store.get_reading("owner", "legacy")["birth_context_json"] == {}
         row = store.db.execute("SELECT * FROM readings WHERE reading_id='legacy'").fetchone()
         assert tuple(row)[:14] == original

@@ -19,9 +19,10 @@ always writes the same way are filled in by ``reading_args``.
 
 The ``pipeline`` section states what the pipeline must do with the same turns: the final
 status and ``max_model_calls_per_turn``, counted per user message like the plan's limit of three
-(intent, compose, at most one repair). Until a phase routes a system through the pipeline it is
-data only; that phase must run these files through it and assert the calls, repairs, fallbacks,
-final facts and resumption it actually produced.
+(intent, compose, at most one repair). Once a phase routes a system through the pipeline, its
+chains also name the writer ``drafts`` (tests/pipeline/drafts.py) that repeat the recorded
+failure, with the expected ``repairs`` and ``degraded``; tests/pipeline/test_replays.py runs them
+through the pipeline. Until then the section is data only.
 
 Some chains replace the recorded input (a different place, a fixed seed) so that they still
 fail on current code. They are deterministic regression samples, not a measure of how often a

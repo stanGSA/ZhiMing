@@ -13,8 +13,20 @@ COMPUTE = {
 }
 
 
+# The pipeline's own stages (pipeline/runner.py); calculations are labelled from tool_plan.
+STAGES = {
+    "intent": "正在理解你的问题",
+    "resume": "正在接着上次的牌面继续",
+    "compose": "正在撰写解读",
+    "repair": "事实核对未通过，正在改写",
+    "degrade": "正在整理牌面的基础解读",
+}
+
+
 def progress_label(record):
     event = record.get("event")
+    if event == "pipeline_stage":
+        return STAGES.get(record.get("stage"))
     if event in ("model_response", "tool_plan"):
         names = record.get("tool_names", [])
         for name, label in COMPUTE.items():

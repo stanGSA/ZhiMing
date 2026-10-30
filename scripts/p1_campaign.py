@@ -36,12 +36,66 @@ def valid_report(path, expected):
     return len(report.get("results", [])) == expected
 
 
-def run(root, snapshot, baseline, output, timeout_hours=12):
+# (name, module, arguments, expected rows) per campaign. "p1" is the archived P1 batch, which
+# waits for its B0 baselines and ends with the policy-model run; the tarot campaigns of
+# 根因整改计划 P1 compare single and pipeline on the same questions, in the same batch.
+P1_JOBS = [
+    ("Final-single", "scripts.live_week23", ["--natural", "--mode", "single"], 60),
+    ("Final-multi", "scripts.live_week23", ["--natural", "--mode", "multi"], 60),
+    (
+        "Compare-single",
+        "scripts.live_week23",
+        ["--dataset", "evals/cases/p1_multi.yaml", "--mode", "single"],
+        36,
+    ),
+    (
+        "Compare-multi",
+        "scripts.live_week23",
+        ["--dataset", "evals/cases/p1_multi.yaml", "--mode", "multi"],
+        36,
+    ),
+    (
+        "Compare-multi-lite",
+        "scripts.live_week23",
+        ["--dataset", "evals/cases/p1_multi.yaml", "--mode", "multi-lite"],
+        36,
+    ),
+    ("Final-heldout", "scripts.live_test", [], 17),
+]
+TAROT = "evals/cases/tarot_pilot.yaml"
+TAROT_FINAL = "evals/cases/tarot_final.yaml"
+CAMPAIGN_JOBS = {
+    "p1": P1_JOBS,
+    "tarot": [
+        ("Tarot-single", "scripts.live_week23", ["--dataset", TAROT, "--mode", "single"], 24),
+        ("Tarot-pipeline", "scripts.live_week23", ["--dataset", TAROT, "--mode", "pipeline"], 24),
+        ("Tarot-heldout-pipeline", "scripts.live_test", ["--mode", "pipeline"], 17),
+    ],
+    "tarot-final": [
+        (
+            "TarotFinal-single",
+            "scripts.live_week23",
+            ["--dataset", TAROT_FINAL, "--mode", "single"],
+            18,
+        ),
+        (
+            "TarotFinal-pipeline",
+            "scripts.live_week23",
+            ["--dataset", TAROT_FINAL, "--mode", "pipeline"],
+            18,
+        ),
+    ],
+}
+
+
+def run(root, snapshot, baseline, output, timeout_hours=12, campaign="p1"):
     root = root.resolve()
     root.mkdir(parents=True, exist_ok=True)
-    if (snapshot / "scripts/live_test.py").read_bytes() != (
-        baseline / "scripts/live_test.py"
-    ).read_bytes():
+    if (
+        campaign == "p1"
+        and (snapshot / "scripts/live_test.py").read_bytes()
+        != (baseline / "scripts/live_test.py").read_bytes()
+    ):
         raise ValueError("B0/final heldout assertions differ; synchronize scripts before running")
     lock = root / "campaign.lock"
     # An exclusive file prevents accidental concurrent latency experiments.
@@ -51,42 +105,33 @@ def run(root, snapshot, baseline, output, timeout_hours=12):
     state = json.loads(state_path.read_text(encoding="utf-8")) if state_path.exists() else {}
     state.update(status="waiting_for_baseline", pid=os.getpid(), updated=stamp())
     save(state_path, state)
-    jobs = [
-        ("Final-single", ["--natural", "--mode", "single"], 60),
-        ("Final-multi", ["--natural", "--mode", "multi"], 60),
-        ("Compare-single", ["--dataset", "evals/cases/p1_multi.yaml", "--mode", "single"], 36),
-        ("Compare-multi", ["--dataset", "evals/cases/p1_multi.yaml", "--mode", "multi"], 36),
-        (
-            "Compare-multi-lite",
-            ["--dataset", "evals/cases/p1_multi.yaml", "--mode", "multi-lite"],
-            36,
-        ),
-        ("Final-heldout", None, 17),
-    ]
+    jobs = CAMPAIGN_JOBS[campaign]
     deadline = time.monotonic() + timeout_hours * 3600
     try:
-        while not all(completed(root / name) for name in ("B0-single", "B0-multi", "B0-heldout")):
+        baselines = (("B0-single", 60), ("B0-multi", 60), ("B0-heldout", 17))
+        if campaign != "p1":
+            baselines = ()  # The tarot campaigns run their own baseline in the same batch.
+        while not all(completed(root / name) for name, _ in baselines):
             if time.monotonic() > deadline:
                 raise TimeoutError("baseline wait expired")
             # No model requests are sent while an earlier experiment is active.
             time.sleep(5)
-        for name, count in (("B0-single", 60), ("B0-multi", 60), ("B0-heldout", 17)):
+        for name, count in baselines:
             if not valid_report(completed(root / name)[-1], count):
                 raise ValueError(f"{name}: baseline is incomplete")
         state["status"] = "running"
-        publish(root, output, output / "pricing.yaml")
+        publish(root, output, output / "pricing.yaml", campaign)
         state.setdefault("jobs", {})
         env = os.environ.copy()
         env["PYTHONPATH"] = str(snapshot)
-        for name, args, count in jobs:
+        for name, module, args, count in jobs:
             existing = completed(root / name)
             if existing and valid_report(existing[-1], count):
                 state["jobs"][name] = {"status": "complete", "report": str(existing[-1])}
                 continue
-            module = "scripts.live_test" if args is None else "scripts.live_week23"
-            command = [sys.executable, "-X", "utf8", "-m", module]
-            if args is not None:
-                command += [*args, "--judge", "pro", "--repeats", "3"]
+            command = [sys.executable, "-X", "utf8", "-m", module, *args]
+            if module == "scripts.live_week23":
+                command += ["--judge", "pro", "--repeats", "3"]
             command += ["--output", str(root / name)]
             state.update(active_job=name, updated=stamp())
             state["jobs"][name] = {"status": "running", "started": stamp()}
@@ -110,7 +155,11 @@ def run(root, snapshot, baseline, output, timeout_hours=12):
                 finished=stamp(),
             )
             save(state_path, state)
-            publish(root, output, output / "pricing.yaml")
+            publish(root, output, output / "pricing.yaml", campaign)
+        if campaign != "p1":
+            state.update(status="complete", active_job=None, finished=stamp())
+            save(state_path, state)
+            return
         policy = root / "policy-model.md"
         if not policy.exists():
             state.update(active_job="policy-model", updated=stamp())
@@ -157,6 +206,7 @@ def main():
     parser.add_argument("--baseline", type=Path, required=True)
     parser.add_argument("--publish", type=Path, required=True)
     parser.add_argument("--timeout-hours", type=float, default=12)
+    parser.add_argument("--campaign", choices=sorted(CAMPAIGN_JOBS), default="p1")
     args = parser.parse_args()
     run(
         args.root,
@@ -164,6 +214,7 @@ def main():
         args.baseline.resolve(),
         args.publish.resolve(),
         timeout_hours=args.timeout_hours,
+        campaign=args.campaign,
     )
 
 

@@ -17,6 +17,7 @@ import pytest
 
 from common.schemas import Reading
 from common.validation import validate_reading
+from pipeline.verify import verify_reading
 from plugins.astro.calculator import BODY_ZH, SIGN_ZH, SIGNS
 from tests.plugins.test_astro_bazi_integration import invoke, prepare
 from tests.plugins.test_name_dream_daily import LOW, ask, with_birth
@@ -646,21 +647,100 @@ async def test_negation_does_not_hide_a_wrong_position(charts):
         assert_rejected(s, "timing", (body, [cited]))
 
 
-@pytest.mark.xfail(strict=True, reason="漏拦：牌位张冠李戴，留给流水线的闭集比对")
-async def test_tarot_positions_swapped_missed_today(runtime, tarot):
+# ---- the pipeline's path: closed vocabulary, then the validators (P1) ----------------------
+
+
+def assert_pipeline_rejects(session, question_type, sentence):
+    body, refs = sentence
+    assert verify_reading(layered(session, question_type, body, refs), session), body
+
+
+def pipeline_rejections(session, question_type, sentences):
+    refused = []
+    for body, refs in sentences:
+        error = verify_reading(layered(session, question_type, body, refs), session)
+        if error:
+            refused.append((body, str(error)))
+    return refused
+
+
+def tarot_sentences(cards):
+    refs = [card["ref_id"] for card in cards]
+    out = [
+        ("，".join(f"{c['label']}位是{c['name']}{orientation(c)}" for c in cards) + "。", refs),
+        ("；".join(f"{c['label']}位：【{c['name']}】{orientation(c)}" for c in cards) + "。", refs),
+    ]
+    for card in cards:
+        out.append(
+            (f"{card['label']}位抽到了【{card['name']}】{orientation(card)}。", [card["ref_id"]])
+        )
+    # Words that are also card names are ordinary prose without a position or a marker.
+    out.append(("现在是你力量最强的时候，世界很大，先把眼前的事做好。", [refs[0]]))
+    return out
+
+
+async def test_tarot_positions_swapped_are_caught_on_the_pipeline_path(runtime, tarot):
     first, _, third = tarot
     body = (
         f"{first['label']}位是{third['name']}{orientation(third)}，"
         f"{third['label']}位是{first['name']}{orientation(first)}。"
     )
-    assert_rejected(runtime.session, "tarot", (body, [c["ref_id"] for c in tarot]))
+    assert_pipeline_rejects(runtime.session, "tarot", (body, [c["ref_id"] for c in tarot]))
 
 
-@pytest.mark.xfail(strict=True, reason="漏拦：未抽出的大阿卡纳不带牌名标记，留给流水线的闭集比对")
-async def test_tarot_undrawn_major_without_marker_missed_today(runtime, tarot):
+async def test_undrawn_major_without_marker_is_caught_on_the_pipeline_path(runtime, tarot):
     undrawn = "恋人" if all(c["name"] != "恋人" for c in tarot) else "隐士"
-    body = f"现在位抽到了{undrawn}，象征选择。"
-    assert_rejected(runtime.session, "tarot", (body, [tarot[1]["ref_id"]]))
+    for body in (f"现在位抽到了{undrawn}，象征选择。", f"这次抽到{undrawn}，提醒你做选择。"):
+        assert_pipeline_rejects(runtime.session, "tarot", (body, [tarot[1]["ref_id"]]))
+
+
+async def test_pipeline_path_accepts_a_draw_stated_correctly(runtime, tarot):
+    assert pipeline_rejections(runtime.session, "tarot", tarot_sentences(tarot)) == []
+
+
+async def test_pipeline_path_accepts_a_follow_up_on_the_saved_draw(runtime, tarot):
+    s = runtime.session
+    saved = await invoke(
+        runtime,
+        "submit_reading",
+        layered(s, "tarot", "依据见牌面。", [tarot[0]["ref_id"]]).model_dump(),
+    )
+    assert saved.ok, saved.error
+    s.append_user("第二张牌具体什么意思？不要重新抽牌。")
+    restored = await invoke(runtime, "read_reading", dict(reading_id=saved.data["reading_id"]))
+    assert restored.ok and s.state["response_mode"] == "followup"
+    cards = s.state["tarot_result"]["cards"]
+    assert pipeline_rejections(s, "tarot", tarot_sentences(cards)) == []
+    undrawn = "恋人" if all(c["name"] != "恋人" for c in cards) else "隐士"
+    assert_pipeline_rejects(s, "tarot", (f"第二张是【{undrawn}】正位。", [cards[1]["ref_id"]]))
+
+
+async def test_pipeline_path_accepts_a_redraw_and_refuses_the_old_cards(runtime, tarot):
+    s = runtime.session
+    saved = await invoke(
+        runtime,
+        "submit_reading",
+        layered(s, "tarot", "依据见牌面。", [tarot[0]["ref_id"]]).model_dump(),
+    )
+    assert saved.ok, saved.error
+    await ask(runtime, "请重新抽一次，仍用三张牌看近期事业。")
+    redrawn = await invoke(runtime, "draw_tarot", dict(spread="three_card", question="近期事业"))
+    cards = redrawn.data["cards"]
+    assert pipeline_rejections(s, "tarot", tarot_sentences(cards)) == []
+    gone = next((c for c in tarot if c["name"] not in {d["name"] for d in cards}), None)
+    if gone:
+        assert_pipeline_rejects(
+            s, "tarot", (f"现在位是【{gone['name']}】{orientation(gone)}。", [cards[1]["ref_id"]])
+        )
+
+
+async def test_pipeline_path_accepts_cards_from_chosen_positions(runtime):
+    runtime.session.choose_picks((5, 10, 20))
+    await ask(runtime, "抽三张牌看看近期事业。")
+    drawn = await invoke(runtime, "draw_tarot", dict(spread="three_card", question="近期事业"))
+    assert runtime.session.state["picks"] == [5, 10, 20]
+    sentences = tarot_sentences(drawn.data["cards"])
+    assert pipeline_rejections(runtime.session, "tarot", sentences) == []
 
 
 async def test_daily_mutations_are_rejected(runtime, daily):

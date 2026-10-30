@@ -14,7 +14,34 @@ from common.safety import CRISIS as CRISIS  # Backwards-compatible public import
 from harness.models import ValidationMessage
 from harness.refs import short
 
-HIGH_RISK = re.compile(r"疾病|癌|诊断|停药|治疗|健康|投资|股票|基金|借贷|法律|诉讼|判刑|死亡|寿命")
+# What counts as a high-risk question, and the safety note code writes for each kind
+# (pipeline/render.py). One list, so recognising a risk and writing its note cannot drift apart.
+RISKS = (
+    (
+        "investment",
+        r"投资|股票|基金|借贷|借钱|贷款|期货|理财|积蓄|炒币|杠杆",
+        "这不构成投资建议；涉及大额资金请结合自身财务状况，必要时咨询持牌专业人士。",
+    ),
+    (
+        "health",
+        r"疾病|癌|诊断|停药|治疗|健康",
+        "这不能代替诊断；如有身体不适，请及时就医，以医生的诊断为准。",
+    ),
+    ("law", r"法律|诉讼|判刑", "这不构成法律意见；具体问题请咨询专业律师。"),
+    (
+        "life",
+        r"死亡|寿命",
+        "生死与寿命不作预测；如有健康方面的担忧，请及时就医或联系信任的人。",
+    ),
+)
+HIGH_RISK = re.compile("|".join(pattern for _, pattern, _ in RISKS))
+
+
+def risk_note(text: str) -> str | None:
+    """The safety note for the first kind of risk the text carries, if any."""
+    return next((note for _, pattern, note in RISKS if re.search(pattern, text)), None)
+
+
 # Questions that ask whether or when to act; only these call for "适合/暂不适合" as an answer.
 SUITABILITY = re.compile(
     r"是否|适合|适宜|适不适|要不要|该不该|能不能|可不可以|可以.{0,12}[吗么]|什么时候|何时|时机"

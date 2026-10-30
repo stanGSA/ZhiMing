@@ -32,5 +32,10 @@ legacy:
   outcome: submit_reading
 pipeline:
   # Card names and orientations come from {{R}} placeholders; the model never writes them.
+  # The same failure written by the pipeline's writer: the first draft repeats it, the repair
+  # fixes it (drafts named in tests/pipeline/drafts.py).
+  drafts: [wrong_orientation, good]
   outcome: submit_reading
+  repairs: 1
+  degraded: null  # or keywords / safety when code wrote the reading
   max_model_calls_per_turn: 2

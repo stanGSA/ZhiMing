@@ -54,6 +54,10 @@ class Store:
         CREATE TABLE IF NOT EXISTS pending_trace_copies(source_user_id TEXT NOT NULL,
           target_user_id TEXT NOT NULL,filename TEXT NOT NULL,
           PRIMARY KEY(target_user_id,filename));
+        CREATE TABLE IF NOT EXISTS pipeline_runs(run_id TEXT PRIMARY KEY,user_id TEXT NOT NULL,
+          session_id TEXT NOT NULL,reading_id TEXT,stage TEXT NOT NULL,state_json TEXT NOT NULL,
+          created_at TEXT NOT NULL,updated_at TEXT NOT NULL);
+        CREATE INDEX IF NOT EXISTS pipeline_runs_user ON pipeline_runs(user_id,updated_at);
         PRAGMA user_version=2;
         """)
         columns = {row[1] for row in self.db.execute("PRAGMA table_info(readings)")}
@@ -66,10 +70,19 @@ class Store:
                 # later weight or rule change never rewrites what an old reading said.
                 ("merge_json", "TEXT NOT NULL DEFAULT '{}'"),
                 ("birth_context_json", "TEXT NOT NULL DEFAULT '{}'"),
+                # Version 6: how the pipeline wrote it (repairs, degraded); {} for the agent loop.
+                ("pipeline_json", "TEXT NOT NULL DEFAULT '{}'"),
             ):
                 if name not in columns:
                     self.db.execute(f"ALTER TABLE readings ADD COLUMN {name} {definition}")
-            self.db.execute("PRAGMA user_version=5")
+            responses = {row[1] for row in self.db.execute("PRAGMA table_info(reading_responses)")}
+            if "pipeline_json" not in responses:
+                self.db.execute(
+                    "ALTER TABLE reading_responses ADD COLUMN pipeline_json TEXT NOT NULL DEFAULT '{}'"
+                )
+            # Version 6: unfinished pipeline runs and how each answer was written
+            # (docs/根因整改实施计划.md P1).
+            self.db.execute("PRAGMA user_version=6")
 
     def cached_calculation(self, system, user_id, inputs, calculate):
         import hashlib
@@ -188,7 +201,7 @@ class Store:
         with self.db:
             self.check_birth_version(session)
             self.db.execute(
-                "INSERT INTO readings(reading_id,user_id,session_id,parent_reading_id,question,question_type,systems_used,tarot_json,signals_json,output_json,kb_version,profile_version,mode,created_at,chart_id,bazi_id,calculations_json,merge_json,birth_context_json) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
+                "INSERT INTO readings(reading_id,user_id,session_id,parent_reading_id,question,question_type,systems_used,tarot_json,signals_json,output_json,kb_version,profile_version,mode,created_at,chart_id,bazi_id,calculations_json,merge_json,birth_context_json,pipeline_json) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
                 (
                     state["active_reading_id"],
                     session.user_id,
@@ -214,6 +227,7 @@ class Store:
                         else {},
                         ensure_ascii=False,
                     ),
+                    json.dumps(state.get("pipeline_run") or {}, ensure_ascii=False),
                 ),
             )
             # Reviews happen before the reading exists; they are written in the same
@@ -244,6 +258,46 @@ class Store:
                     ),
                 )
 
+    def save_pipeline_run(
+        self, run_id: str, user_id: str, session_id: str, reading_id, stage: str, state: dict
+    ) -> None:
+        """Keep an unfinished pipeline run, so a later turn resumes it instead of drawing again.
+
+        Only unfinished runs are kept: finish_pipeline_run removes the row once the reading is
+        saved or abandoned, so this table never holds a second copy of a finished reading.
+        """
+        now = datetime.now(UTC).isoformat()
+        with self.db:
+            self.db.execute(
+                "INSERT INTO pipeline_runs VALUES(?,?,?,?,?,?,?,?) ON CONFLICT(run_id) DO UPDATE "
+                "SET session_id=excluded.session_id,reading_id=excluded.reading_id,"
+                "stage=excluded.stage,state_json=excluded.state_json,updated_at=excluded.updated_at",
+                (
+                    run_id,
+                    user_id,
+                    session_id,
+                    reading_id,
+                    stage,
+                    json.dumps(state, ensure_ascii=False),
+                    now,
+                    now,
+                ),
+            )
+
+    def unfinished_pipeline_run(self, user_id: str) -> dict | None:
+        row = self.db.execute(
+            "SELECT run_id,session_id,reading_id,stage,state_json,created_at,updated_at "
+            "FROM pipeline_runs WHERE user_id=? ORDER BY updated_at DESC LIMIT 1",
+            (user_id,),
+        ).fetchone()
+        if row is None:
+            return None
+        return {**dict(row), "state": json.loads(row["state_json"])}
+
+    def finish_pipeline_run(self, run_id: str) -> None:
+        with self.db:
+            self.db.execute("DELETE FROM pipeline_runs WHERE run_id=?", (run_id,))
+
     def specialist_reports(self, user_id: str, reading_id: str) -> dict:
         rows = self.db.execute(
             "SELECT s.system, s.report_json FROM specialist_reports s "
@@ -267,6 +321,7 @@ class Store:
             "calculations_json",
             "merge_json",
             "birth_context_json",
+            "pipeline_json",
         ):
             if field in result:
                 result[field] = json.loads(result[field]) if result[field] else None
@@ -327,7 +382,8 @@ class Store:
             raise ValueError("记录不属于当前用户")
         with self.db:
             self.db.execute(
-                "INSERT INTO reading_responses VALUES(?,?,?,?,?,?,?)",
+                "INSERT INTO reading_responses(response_id,reading_id,user_id,session_id,question,"
+                "output_json,created_at,pipeline_json) VALUES(?,?,?,?,?,?,?,?)",
                 (
                     response_id,
                     session.state["active_reading_id"],
@@ -336,6 +392,7 @@ class Store:
                     session.user_messages[-1],
                     json.dumps(output, ensure_ascii=False),
                     datetime.now(UTC).isoformat(),
+                    json.dumps(session.state.get("pipeline_run") or {}, ensure_ascii=False),
                 ),
             )
         return response_id
@@ -359,11 +416,12 @@ class Store:
             return None
         result = dict(row)
         result["output_json"] = json.loads(result["output_json"])
+        result["pipeline_json"] = json.loads(result.get("pipeline_json") or "{}")
         return result
 
     def reading_responses(self, user_id: str, reading_id: str) -> list[dict]:
         rows = self.db.execute(
-            "SELECT response_id,question,output_json,created_at FROM reading_responses "
+            "SELECT response_id,question,output_json,created_at,pipeline_json FROM reading_responses "
             "WHERE user_id=? AND reading_id=? ORDER BY created_at,response_id",
             (user_id, reading_id),
         ).fetchall()
@@ -373,6 +431,7 @@ class Store:
                 question=r["question"],
                 output=json.loads(r["output_json"]),
                 created_at=r["created_at"],
+                pipeline=json.loads(r["pipeline_json"] or "{}"),
             )
             for r in rows
         ]
@@ -423,6 +482,7 @@ class Store:
                 "bazi_charts",
                 "web_identities",
                 "web_births",
+                "pipeline_runs",
             ):
                 self.db.execute(f"DELETE FROM {table} WHERE user_id=?", (user_id,))
         if compact:
@@ -496,7 +556,11 @@ class Store:
     def delete_readings(self, user_id: str) -> list[str]:
         """Delete every reading of the user; profile, birth form and caches stay."""
         rows = self.db.execute("SELECT reading_id FROM readings WHERE user_id=?", (user_id,))
-        return self._delete_readings(user_id, [row[0] for row in rows])
+        deleted = self._delete_readings(user_id, [row[0] for row in rows])
+        # An unfinished draw is a reading in progress: clearing the records clears it too.
+        with self.db:
+            self.db.execute("DELETE FROM pipeline_runs WHERE user_id=?", (user_id,))
+        return deleted
 
     def _delete_readings(self, user_id: str, reading_ids: list[str]) -> list[str]:
         deleted = []
@@ -546,6 +610,8 @@ class Store:
                     "kb_version": reading["kb_version"],
                     "signals": reading["signals_json"],
                     "merge": reading["merge_json"],
+                    # How the pipeline wrote it (repairs, a degraded reading); {} otherwise.
+                    "pipeline": reading["pipeline_json"],
                     "specialist_reports": self.specialist_reports(user_id, row[0]),
                     "review_notes": self.review_notes(user_id, row[0]),
                     "responses": self.reading_responses(user_id, row[0]),
@@ -564,6 +630,19 @@ class Store:
                 for item in history
             ],
             "readings": readings,
+            # A draw whose reading was not finished: the question and the cards drawn so far.
+            "unfinished_readings": [
+                {
+                    "created_at": row["created_at"],
+                    "question": json.loads(row["state_json"]).get("question"),
+                    "tarot": json.loads(row["state_json"]).get("snapshot", {}).get("tarot_result"),
+                }
+                for row in self.db.execute(
+                    "SELECT created_at,state_json FROM pipeline_runs WHERE user_id=? "
+                    "ORDER BY created_at",
+                    (user_id,),
+                ).fetchall()
+            ],
         }
 
     def stage_trace_copies(self, source: str, target: str, filenames: list[str]) -> None:
@@ -619,7 +698,13 @@ class Store:
                         "UPDATE readings SET birth_context_json=? WHERE reading_id=?",
                         (json.dumps(context, ensure_ascii=False), row["reading_id"]),
                     )
-            for table in ("readings", "reading_responses", "charts", "bazi_charts"):
+            for table in (
+                "readings",
+                "reading_responses",
+                "charts",
+                "bazi_charts",
+                "pipeline_runs",
+            ):
                 self.db.execute(f"UPDATE {table} SET user_id=? WHERE user_id=?", (target, source))
             has_profile = self.db.execute(
                 "SELECT 1 FROM profiles WHERE user_id=?", (target,)

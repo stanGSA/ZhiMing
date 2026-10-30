@@ -1,4 +1,6 @@
-mode: single                # single | multi；第4周关口通过前默认仍为 single
+mode: single                # single | multi | pipeline；流水线验收通过前默认仍为 single
+pipeline:                   # 根因整改计划：mode=pipeline 时由代码驱动流程的体系，其余体系仍走 agent 循环
+  systems: [tarot]
 llm:
   provider: deepseek
   model: deepseek-flash

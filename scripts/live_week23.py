@@ -19,7 +19,7 @@ from harness.llm import RoleModelSpec, role_model
 from knowledge.build import build
 from plugins.astro.tools import AstroPlugin
 from plugins.daily.tools import DailyPlugin
-from scripts.live_test import records
+from scripts.live_test import pipeline_record, records
 from scripts.trace_tree import build_tree, reviewer_metrics, specialist_metrics
 
 RUBRIC_VERSION = "v2-2026-10-24"
@@ -317,6 +317,7 @@ async def evaluate(
             "harness",
             "agents",
             "common",
+            "pipeline",
             "plugins",
             "knowledge",
             "memory",
@@ -372,7 +373,7 @@ async def evaluate(
                     root=workspace,
                     user_id=user_id,
                     model_name=model_name,
-                    mode="multi" if is_multi else "single",
+                    mode="multi" if is_multi else mode,
                 )
                 runtimes[(repeat, case["id"])] = runtime
                 started = time.perf_counter()
@@ -558,6 +559,9 @@ async def evaluate(
                     multi_agent=specialist_metrics(events) if is_multi else None,
                     # Week 5 lenient reviewer agent (not the rubric judge above).
                     reviewer_agent=reviewer_metrics(events) if is_multi else None,
+                    # How the pipeline wrote the answer (calls, repairs, a degraded reading);
+                    # None for the agent loop. The drafts' problems stay in the trace.
+                    pipeline=pipeline_record(outcome),
                     answer=outcome.text,
                     structured=outcome.data.get("reading"),
                     calculated_facts=facts,
@@ -641,7 +645,9 @@ def main():
         action="store_true",
         help="Include unprompted natural-language and profile reuse cases",
     )
-    parser.add_argument("--mode", choices=["single", "multi", "multi-lite"], default="single")
+    parser.add_argument(
+        "--mode", choices=["single", "multi", "multi-lite", "pipeline"], default="single"
+    )
     parser.add_argument("--judge", dest="judge_name")
     parser.add_argument("--repeats", type=int, default=1)
     parser.add_argument("--dataset", type=Path, help="可选：独立多体系实验题目YAML")

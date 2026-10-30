@@ -30,6 +30,34 @@ EXPECTED_CASES = {
     "Compare-multi-lite": 36,
     "B0-heldout": 17,
     "Final-heldout": 17,
+    # The tarot pilot of 根因整改计划 P1 (scripts.p1_campaign --campaign tarot / tarot-final).
+    "Tarot-single": 24,
+    "Tarot-pipeline": 24,
+    "Tarot-heldout-pipeline": 17,
+    "TarotFinal-single": 18,
+    "TarotFinal-pipeline": 18,
+}
+HELDOUT = ("B0-heldout", "Final-heldout")
+PAIRS = (
+    ("B0-single", "Final-single"),
+    ("B0-multi", "Final-multi"),
+    ("Compare-single", "Compare-multi"),
+    ("Compare-single", "Compare-multi-lite"),
+    ("Compare-multi", "Compare-multi-lite"),
+)
+# What each campaign publishes: its runs, heldout runs and paired comparisons.
+CAMPAIGNS = {
+    "p1": dict(runs=RUNS, heldout=HELDOUT, pairs=PAIRS),
+    "tarot": dict(
+        runs=["Tarot-single", "Tarot-pipeline"],
+        heldout=("Tarot-heldout-pipeline",),
+        pairs=(("Tarot-single", "Tarot-pipeline"),),
+    ),
+    "tarot-final": dict(
+        runs=["TarotFinal-single", "TarotFinal-pipeline"],
+        heldout=(),
+        pairs=(("TarotFinal-single", "TarotFinal-pipeline"),),
+    ),
 }
 PRIVATE = {
     "question",
@@ -91,12 +119,13 @@ def paired(left, right):
     return {"pairs": len(a), "right_wins": wins, "left_wins": losses, "ties": ties}
 
 
-def publish(root, output, pricing_path):
+def publish(root, output, pricing_path, campaign="p1"):
+    runs, heldout, pairs = (CAMPAIGNS[campaign][k] for k in ("runs", "heldout", "pairs"))
     root, output = root.resolve(), output.resolve()
     output.mkdir(parents=True, exist_ok=True)
     pricing = yaml.safe_load(pricing_path.read_text(encoding="utf-8"))
     reports, summaries, manifest = {}, {}, {}
-    for name in [*RUNS, "B0-heldout", "Final-heldout"]:
+    for name in [*runs, *heldout]:
         paths = sorted((root / name).glob("*/live.json"))
         if not paths:
             continue
@@ -111,13 +140,13 @@ def publish(root, output, pricing_path):
         safe["raw_sha256"] = digest
         result_rows = (
             [normalize_heldout_row(row) for row in report["results"]]
-            if name in ("B0-heldout", "Final-heldout")
+            if name in heldout
             else report["results"]
         )
         safe["results"] = [
             {k: v for k, v in row.items() if k not in PRIVATE} for row in result_rows
         ]
-        if name in ("B0-heldout", "Final-heldout"):
+        if name in heldout:
             safe["passed"] = sum(row["pass"] for row in result_rows)
         for row in safe["results"]:
             review = row.get("quality_review")
@@ -129,13 +158,13 @@ def publish(root, output, pricing_path):
         source = path.parent / "source-hashes.json"
         if source.exists():
             (output / f"{name}-source-hashes.json").write_bytes(source.read_bytes())
-        if name in RUNS:
+        if name in runs:
             summaries[name] = summarize(report)
             (output / f"failures-{name}.md").write_text(
                 render([(name, summaries[name])], scan_traces(path.parent), pricing),
                 encoding="utf-8",
             )
-    for name in ("B0-heldout", "Final-heldout"):
+    for name in heldout:
         if name not in reports:
             continue
         rows = [normalize_heldout_row(row) for row in reports[name]["results"]]
@@ -148,14 +177,15 @@ def publish(root, output, pricing_path):
         "",
         "仅列已完整结束的批次；待完成不补零。原始答案/trace保留本机，入库摘要附原始文件SHA256。",
         "",
-        "|版本|任务完成|已提交回答|评委已评分|无工具错误|已提交回答质量通过率|质量通过|严格综合|错误/题|调用/题|P50/P95秒|缓存|USD/题|",
-        "|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|",
+        "|版本|任务完成|已提交回答|评委已评分|无工具错误|已提交回答质量通过率|质量通过|严格综合|"
+        "任务完成且一次做对|修复/降级|错误/题|调用/题|P50/P95秒|缓存|USD/题|",
+        "|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|",
     ]
     table_rows = []
-    for name in RUNS:
+    for name in runs:
         s = summaries.get(name)
         if not s:
-            line = f"|{name}|待完成|—|—|—|—|—|—|—|—|—|—|—|"
+            line = f"|{name}|待完成|—|—|—|—|—|—|—|—|—|—|—|—|—|"
         else:
             n = s["cases"]
             counts = [
@@ -180,6 +210,9 @@ def publish(root, output, pricing_path):
                     [
                         name,
                         *counts,
+                        # 无工具错误、无修复、无降级; repairs and degrading exist only in pipeline mode.
+                        f"{s['clean_success']}/{n}",
+                        f"{s['repaired']}/{s['degraded']}",
                         f"{s['tool_errors'] / n:.2f}",
                         f"{s['model_calls'] / n:.2f}",
                         f"{s['median_s']:.1f}/{s['p95_s']:.1f}",
@@ -200,13 +233,7 @@ def publish(root, output, pricing_path):
         "胜负指标：同repeat/id的任务完成且质量通过；同题3次非独立样本，小样本仅作描述。",
     ]
     comparisons = {}
-    for left, right in (
-        ("B0-single", "Final-single"),
-        ("B0-multi", "Final-multi"),
-        ("Compare-single", "Compare-multi"),
-        ("Compare-single", "Compare-multi-lite"),
-        ("Compare-multi", "Compare-multi-lite"),
-    ):
+    for left, right in pairs:
         if left in reports and right in reports:
             result = paired(reports[left], reports[right])
             comparisons[f"{left} vs {right}"] = result
@@ -250,7 +277,7 @@ def publish(root, output, pricing_path):
             coverage += f"（另有{malformed}条合并记录格式异常，未纳入）"
         lines.append(f"|{name}|{compliance if compliance is not None else '不适用'}|{coverage}|")
     lines += ["", "## 留出集", ""]
-    for name in ("B0-heldout", "Final-heldout"):
+    for name in heldout:
         if name in reports:
             r = reports[name]
             lines.append(
@@ -294,8 +321,11 @@ def main():
     parser.add_argument("--root", required=True, type=Path)
     parser.add_argument("--output", required=True, type=Path)
     parser.add_argument("--pricing", required=True, type=Path)
+    parser.add_argument("--campaign", choices=sorted(CAMPAIGNS), default="p1")
     args = parser.parse_args()
-    print(json.dumps(publish(args.root, args.output, args.pricing), ensure_ascii=False))
+    print(
+        json.dumps(publish(args.root, args.output, args.pricing, args.campaign), ensure_ascii=False)
+    )
 
 
 if __name__ == "__main__":

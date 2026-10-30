@@ -35,5 +35,10 @@ legacy:
 pipeline:
   # The draft cites {{R}} placeholders from the fact sheet only; an unknown number is a
   # set-membership check, repaired once at most.
+  # The same failure written by the pipeline's writer: the first draft repeats it, the repair
+  # fixes it (drafts named in tests/pipeline/drafts.py).
+  drafts: [unknown_refs, good]
   outcome: submit_reading
+  repairs: 1
+  degraded: null  # or keywords / safety when code wrote the reading
   max_model_calls_per_turn: 2
