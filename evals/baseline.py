@@ -16,7 +16,7 @@ from pathlib import Path
 import yaml
 
 from app import ROOT
-from scripts.failure_taxonomy import percentile, summarize
+from scripts.failure_taxonomy import percentile, summarize, task_success
 from scripts.live_week23 import CASES, NATURAL_CASES
 
 ARCHIVE = ROOT / "docs/verification/p1/codego-v4"
@@ -80,7 +80,10 @@ def run_entry(report: dict, rows: list[dict]) -> dict:
         questions=len({row["id"] for row in rows}),
         task_success=s["task_success"],
         submitted=s["submitted"],
-        first_try_clean=s["first_try_clean"],
+        # The P1 taxonomy's first_try_clean only means no tool error, failed tasks included.
+        no_tool_errors=s["first_try_clean"],
+        # What the pipeline is measured against: the task done without a single tool error.
+        clean_success=sum(task_success(row) and not row.get("tool_errors") for row in rows),
         submitted_quality=s["submitted_quality"],
         quality=s["quality"],
         tool_errors_per_case=round(s["tool_errors"] / n, 2),
@@ -149,14 +152,17 @@ def render(baseline: dict) -> str:
         "# P1 按体系切分的基线",
         "",
         "由 `python -m evals.baseline` 从 `docs/verification/p1/codego-v4/` 已入库的摘要离线生成，"
-        "评分沿用 `scripts/failure_taxonomy.py`，不调用模型。根因整改每切换一个体系，"
-        "就与这里同组的题目比较。同题3次重复不是独立样本，小样本只作描述。",
+        "评分沿用 `scripts/failure_taxonomy.py`，不调用模型。同题3次重复不是独立样本，小样本只作描述。",
+        "",
+        "这些是历史基线：归档批次早于当前 main（见根因整改实施计划附录 A），"
+        "流水线的对照基线须在当前 main 上重跑。“无工具错误”沿用 P1 的 first_try_clean，"
+        "不要求任务完成；“任务完成且无工具错误”才是流水线对照用的口径。",
         "",
         "## 主集与多体系集",
         "",
-        "|批次|分组|题×次|任务完成|已提交回答|一次做对|已提交回答质量通过|质量通过|"
-        "错误/题|调用/题|输入token/题|P50/P95秒|步数或预算失败|",
-        "|---|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|",
+        "|批次|分组|题×次|任务完成|已提交回答|无工具错误|任务完成且无工具错误|"
+        "已提交回答质量通过|质量通过|错误/题|调用/题|输入token/题|P50/P95秒|步数或预算失败|",
+        "|---|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|",
     ]
     for name, groups in baseline["runs"].items():
         for key, e in groups.items():
@@ -164,7 +170,8 @@ def render(baseline: dict) -> str:
             quality = f"{e['submitted_quality']}/{e['submitted']}" if e["submitted"] else "—"
             lines.append(
                 f"|{name}|{GROUP_LABELS[key]}|{e['questions']}×{n // e['questions']}"
-                f"|{e['task_success']}/{n}|{e['submitted']}/{n}|{e['first_try_clean']}/{n}"
+                f"|{e['task_success']}/{n}|{e['submitted']}/{n}|{e['no_tool_errors']}/{n}"
+                f"|{e['clean_success']}/{n}"
                 f"|{quality}|{e['quality']}/{n}|{e['tool_errors_per_case']:.2f}"
                 f"|{e['model_calls_per_case']:.2f}|{e['input_tokens_per_case']}"
                 f"|{e['median_s']:.1f}/{e['p95_s']:.1f}|{e['limit_failures']}|"
@@ -173,10 +180,10 @@ def render(baseline: dict) -> str:
         "",
         "## 留出集中的塔罗题",
         "",
-        "主集没有只用塔罗的题；塔罗试点（P1）对照的是留出集 `scripts/live_test.py` 中的8道塔罗题"
-        "（单次运行，断言口径见该脚本）。",
+        "主集没有只用塔罗的题。留出集 `scripts/live_test.py` 中的8道塔罗题只有脚本断言，"
+        "没有评委质量评分，不能作为回答质量基线；塔罗试点的质量对照见 `evals/cases/tarot_pilot.yaml`。",
         "",
-        "|批次|题数|断言通过|已提交回答|调用/题|输入token/题|P50/P95秒|未通过|",
+        "|批次|题数|脚本断言通过|已提交回答|调用/题|输入token/题|P50/P95秒|未通过|",
         "|---|---:|---:|---:|---:|---:|---:|---|",
     ]
     for name, groups in baseline["heldout"].items():

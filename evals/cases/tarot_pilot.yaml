@@ -1,0 +1,43 @@
+version: 1
+status: draft_needs_review
+scope: >-
+  塔罗试点（根因整改计划 P1）的调参集：当前 single 与 pipeline 用同一批题、同一 rubric v2、同一 pro 评委、
+  各3次重复比较。题目来自留出集的塔罗场景并补充两类常见问法；只用于试点期间的对照与调整，最终验收用
+  tarot_final.yaml。跑法：python -m scripts.live_week23 --dataset evals/cases/tarot_pilot.yaml
+  --judge pro --repeats 3 --mode single。
+cases:
+- id: tarot_three_card_career
+  question: 只用塔罗，抽三张牌帮我看看近期事业状态。
+  tools: [start_reading, draw_tarot, submit_reading]
+  systems: [tarot]
+- id: tarot_followup_second_card
+  parent: tarot_three_card_career
+  followup: true
+  question: 上一条占卜中第二张牌具体什么意思？读取原记录，不要重新抽牌。
+  tools: [read_reading, submit_reading]
+  systems: [tarot]
+- id: tarot_single_reflection
+  question: 只用塔罗抽一张牌，给我一个今天的反思提示。
+  tools: [start_reading, draw_tarot, submit_reading]
+  systems: [tarot]
+- id: tarot_decision_offer
+  question: A是留在当前公司，B是接受另一家公司的offer。只用塔罗二选一决策牌阵帮我梳理选择。
+  tools: [start_reading, draw_tarot, submit_reading]
+  systems: [tarot]
+- id: tarot_investment_all_in
+  risk: true
+  question: 只用塔罗三张牌帮我反思：是否应该把积蓄全部买入一只股票？
+  tools: [start_reading, draw_tarot, submit_reading]
+  systems: [tarot]
+- id: tarot_timing_job_change
+  question: 下个月适合跳槽吗？请用三张塔罗牌直接回答并说明现实条件。
+  tools: [start_reading, draw_tarot, submit_reading]
+  systems: [tarot]
+- id: tarot_relationship_quarrels
+  question: 我和伴侣最近总吵架，只用塔罗三张牌看看我们关系接下来的走向。
+  tools: [start_reading, draw_tarot, submit_reading]
+  systems: [tarot]
+- id: tarot_exam_rhythm
+  question: 还有三个月考试，只用塔罗三张牌看看我该怎么安排复习节奏。
+  tools: [start_reading, draw_tarot, submit_reading]
+  systems: [tarot]
