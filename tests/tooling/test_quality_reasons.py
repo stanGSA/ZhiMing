@@ -88,6 +88,10 @@ def test_fabrication_failures_are_sorted_by_the_judges_reason():
         "no_fabricated_facts：描述了事实表没有的牌面画面和人物形象": "叙述类",
         "no_fabricated_facts：把逆位的含义写成了用户的经历": "待复核",
         "no_fabricated_facts：内容不准确": "待复核",
+        "no_fabricated_facts：牌名与事实不一致": "事实类",
+        # Second review of PR #38: a list called right as a whole, then the user's state.
+        "no_fabricated_facts：牌名和正逆位均正确，但把你最近一直失眠写成已知事实。": "叙述类",
+        "no_fabricated_facts：牌名、正逆位与事实一致，但你最近一直失眠没有资料支持。": "叙述类",
     }
     for reason, kind in cases.items():
         assert fabrication_kind(fabricated(reason)) == kind, reason
@@ -135,7 +139,7 @@ def test_unscored_answers_are_counted_apart_and_never_read_as_zero():
     timed_out = [unscored({"scored": False, "error_type": "TimeoutError"}) for _ in range(24)]
     assert counts(dict(results=timed_out))["unscored"] == 24
     assert counts_row("B", dict(results=timed_out)) == (
-        "| B | 24 | 0 | 24 | 0 | 0 | 0 | 0 | 待定（未评分） | 不完整：未评分 24 |"
+        "| B | 24 | 0 | 24 | 0 | 0 | 0 | 0 | 0/0/0 | 待定（未评分） | 不完整：未评分 24 |"
     )
     no_review = [dict(id="h", repeat=0, status="submit_reading") for _ in range(8)]
     assert counts_row("B", dict(results=no_review)).endswith(
@@ -146,16 +150,16 @@ def test_unscored_answers_are_counted_apart_and_never_read_as_zero():
         results=[fabricated("no_fabricated_facts：写成了用户的经历"), partial, unscored(PASSED)]
     )
     numbers = counts(report)
-    assert (numbers["scored"], numbers["unscored"], numbers["narrative"]) == (2, 1, 1)
-    # One narrative out of three submitted, and the unscored one could be another.
-    assert counts_row("B", report).endswith("| 33.3%–66.7% | 不完整：未评分 1 |")
+    assert (numbers["scored"], numbers["unscored"], numbers["undecided"]) == (2, 1, 1)
+    # Nothing decided yet out of three submitted; the open two could both be narrative.
+    assert counts_row("B", report).endswith("| 0.0%–66.7% | 不完整：待人工判定 1、未评分 1 |")
 
 
 def test_the_counts_are_over_submitted_answers():
     report = dict(
         results=[
-            fabricated("no_fabricated_facts：写成了用户的经历"),
-            fabricated("no_fabricated_facts：牌名与本次不符"),
+            fabricated("no_fabricated_facts：写成了用户的经历", id="a"),
+            fabricated("no_fabricated_facts：牌名与本次不符", id="b"),
             fabricated("no_fabricated_facts：写成了用户的经历", status="retry_limit"),
             dict(id="ok", status="submit_reading", quality_review=PASSED),
         ]
@@ -165,38 +169,51 @@ def test_the_counts_are_over_submitted_answers():
         "scored": 3,
         "unscored": 0,
         "failures": 2,
-        "fact": 1,
-        "narrative": 1,
-        "pending": 0,
+        "fact": 0,
+        "narrative": 0,
+        "undecided": 2,
+        "suggested": {"事实类": 1, "叙述类": 1, "待复核": 0},
     }
-    assert counts_row("Tarot-pipeline/run", report) == (
-        "| Tarot-pipeline/run | 3 | 3 | 0 | 2 | 1 | 1 | 0 | 33.3% | 完整 |"
+    reviewed = {"a#1": ["叙述类"], "b#1": ["事实类"]}
+    assert counts_row("R", report, reviewed) == (
+        "| R | 3 | 3 | 0 | 2 | 1 | 1 | 0 | 0/0/0 | 33.3% | 完整 |"
     )
 
 
-def test_open_reviews_make_the_share_a_range_until_the_owner_decides(tmp_path):
+def test_counts_are_complete_only_when_the_owner_decided_every_failure(tmp_path):
+    # Second review of PR #38: a suggestion counted as a decision and printed "完整".
     report = dict(
         results=[
-            fabricated("no_fabricated_facts：写成了用户的经历", repeat=0),
+            fabricated("no_fabricated_facts：牌名和正逆位都写错了", id="x"),
             fabricated("no_fabricated_facts：内容不准确", id="a", repeat=1),
             fabricated("no_fabricated_facts：把逆位的含义写成了用户的经历", id="b", repeat=2),
             dict(id="ok", status="submit_reading", quality_review=PASSED),
         ]
     )
-    assert counts_row("B", report).endswith("| 1 | 2 | 25.0%–75.0% | 不完整：待复核 2 |")
-    # The owner's decisions close the review; an answer may be both kinds, still one failure.
+    assert counts_row("B", report) == (
+        "| B | 4 | 4 | 0 | 3 | 0 | 0 | 3 | 1/0/2 | 0.0%–75.0% | 不完整：待人工判定 3 |"
+    )
     decisions = tmp_path / "reviewed.yaml"
     decisions.write_text("B:\n  a#2: [叙述类]\n  b#3: [事实类, 叙述类]\n", encoding="utf-8")
+    partly = load_reviewed(decisions)["B"]
+    assert counts_row("B", report, partly).endswith("| 50.0%–75.0% | 不完整：待人工判定 1 |")
+    # An answer may be both kinds and is still one failure.
+    decisions.write_text(
+        "B:\n  x#1: [事实类]\n  a#2: [叙述类]\n  b#3: [事实类, 叙述类]\n", encoding="utf-8"
+    )
     reviewed = load_reviewed(decisions)["B"]
     numbers = counts(report, reviewed)
-    assert (numbers["failures"], numbers["fact"], numbers["narrative"], numbers["pending"]) == (
-        3,
-        1,
-        3,
-        0,
+    assert (numbers["failures"], numbers["fact"], numbers["narrative"]) == (3, 2, 2)
+    assert counts_row("B", report, reviewed) == (
+        "| B | 4 | 4 | 0 | 3 | 2 | 2 | 0 | 0/0/0 | 50.0% | 完整 |"
     )
-    assert counts_row("B", report, reviewed) == "| B | 4 | 4 | 0 | 3 | 1 | 3 | 0 | 75.0% | 完整 |"
-    decisions.write_text("B:\n  a#2: [记错了]\n", encoding="utf-8")
+
+
+@pytest.mark.parametrize("decision", ["[]", "[记错了]", "叙述类", "[叙述类, 两类都不是]"])
+def test_a_decision_names_at_least_one_kind(tmp_path, decision):
+    # Second review of PR #38: an empty list closed a failure without counting it anywhere.
+    decisions = tmp_path / "reviewed.yaml"
+    decisions.write_text(f"B:\n  a#1: {decision}\n", encoding="utf-8")
     with pytest.raises(ValueError):
         load_reviewed(decisions)
 
@@ -207,18 +224,19 @@ def test_the_counts_alone_carry_no_question_reason_or_answer(tmp_path, monkeypat
     row = {**fabricated("no_fabricated_facts：写成了用户的经历"), "answer": "回答原文"}
     path.write_text(json.dumps(dict(results=[row]), ensure_ascii=False), encoding="utf-8")
     decisions = tmp_path / "reviewed.json"
-    decisions.write_text(json.dumps({"Tarot-pipeline": {"t#1": ["事实类"]}}), encoding="utf-8")
+    decisions.write_text(json.dumps({"Tarot-pipeline": {"t#1": ["叙述类"]}}), encoding="utf-8")
     monkeypatch.setattr(sys, "argv", ["quality_reasons", str(path), "--counts-only"])
     main()
     out = capsys.readouterr().out
     assert out.splitlines() == [
         *TABLE_HEAD,
-        "| Tarot-pipeline/run | 1 | 1 | 0 | 1 | 0 | 1 | 0 | 100.0% | 完整 |",
+        "| Tarot-pipeline/run | 1 | 1 | 0 | 1 | 0 | 0 | 1 | 0/1/0 | 0.0%–100.0% | "
+        "不完整：待人工判定 1 |",
     ]
     assert "经历" not in out and "回答原文" not in out
     argv = ["quality_reasons", str(path), "--counts-only", "--reviewed", str(decisions)]
     monkeypatch.setattr(sys, "argv", argv)
     main()
     assert capsys.readouterr().out.splitlines()[-1] == (
-        "| Tarot-pipeline/run | 1 | 1 | 0 | 1 | 1 | 0 | 0 | 0.0% | 完整 |"
+        "| Tarot-pipeline/run | 1 | 1 | 0 | 1 | 0 | 1 | 0 | 0/0/0 | 100.0% | 完整 |"
     )

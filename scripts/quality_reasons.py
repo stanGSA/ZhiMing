@@ -5,15 +5,17 @@ calls a model. The published summaries leave out the judge's reasons and the ans
 (scripts/p1_report.PRIVATE), so this is where they can be read. Nothing is published: the
 output goes to the terminal or to a file the owner names.
 
-Each no_fabricated_facts failure is also sorted by the judge's reason into the two metrics of
-根因整改实施计划 §5: a verifiable fact the code computes (事实类) or narrative only the writing
-prompt can prevent (叙述类). Only reasons labelled no_fabricated_facts are read, and a keyword the
-reason rules out ("没有新增牌名") is no evidence. A failure without such a reason, or whose reason
-names both kinds or neither, is 待复核: the owner decides it, and --reviewed takes those
-decisions (an answer may be both kinds; it is still one failure). The counts say how many
-submitted answers were scored; with missing scores or open reviews they are marked incomplete
-and the narrative share is a range, never a confirmed zero. With --counts-only the output is
-the counts alone, with no question, reason or answer, so it can be published with the run.
+Each no_fabricated_facts failure counts toward the two metrics of 根因整改实施计划 §5: a
+verifiable fact the code computes (事实类) or narrative only the writing prompt can prevent
+(叙述类). The owner decides each failure; --reviewed takes those decisions, and an answer may be
+both kinds while it stays one failure. Keywords in the judge's reason only suggest a kind (初筛):
+only reasons labelled no_fabricated_facts are read, a keyword the reason rules out ("没有新增牌
+名", "牌名和正逆位均正确") is no evidence, and a reason naming both kinds or neither suggests
+待复核. A suggestion never counts as a decision. The counts say how many submitted answers
+were scored and how many failures still wait for a decision; until none is unscored or
+undecided they are incomplete and the narrative share is a range, never a confirmed zero.
+With --counts-only the output is the counts alone, with no question, reason or answer, so it
+can be published with the run.
 
     python -m scripts.quality_reasons reports/p1-tarot/Tarot-pipeline --answers
     python -m scripts.quality_reasons reports/p1-tarot-r2/Tarot-pipeline --counts-only \
@@ -21,6 +23,7 @@ the counts alone, with no question, reason or answer, so it can be published wit
 
 A --reviewed file maps a batch to its decided answers, each by id and the run number shown in
 the report ("第2次" is #2): {"Tarot-single": {"tarot_exam_rhythm#2": ["叙述类"]}}, YAML or JSON.
+Each decision names at least one kind: the judge's failure stands, the owner only says which.
 """
 
 import argparse
@@ -43,14 +46,17 @@ VERIFIABLE = re.compile(
 # foretold events, and card lore the fact sheet does not give.
 NARRATIVE = re.compile(
     r"经历|场景|已经发生|预言|必然发生|具体事件|画面|图案|人物形象|元素|数字学|星象对应|故事|"
-    r"用户(?:已经|正在|长期|一直)|断言用户|用户的现状"
+    r"(?:用户|你)(?:最近|已经|正在|长期|一直)|断言用户|用户的现状"
 )
-# A keyword the reason rules out is no evidence: "没有新增牌名", "未编造宫位", "牌名无误".
+# A keyword the reason rules out is no evidence: "没有新增牌名", "未编造宫位", "牌名无误", or a
+# list it calls right as a whole, "牌名和正逆位均正确". "与事实不一致" still is evidence.
 RULED_OUT_BEFORE = re.compile(
     r"(?:没有|并没有|没|未|无|不是|并非)(?:新增|编造|捏造|写错|出现|提到|涉及|改动)?$"
 )
-RULED_OUT_AFTER = re.compile(r"(?:均|都|也)?(?:无误|正确|一致|准确|没有问题|无问题)")
+CORRECT = re.compile(r"(?<![不没])(?:无误|正确|一致|准确)|没有问题|无问题")
 CLAUSE = re.compile(r"[，,。；;：:！!？?\s]")
+# The rest of a keyword's clause, up to its punctuation or a contrast.
+CLAUSE_REST = re.compile(r"[，,。；;：:！!？?\s]|但是|但|而是|却")
 
 
 def reports(paths: list[Path]) -> list[Path]:
@@ -78,7 +84,8 @@ def evidence(pattern: re.Pattern, text: str) -> bool:
     """Whether ``text`` names ``pattern`` as an error, not only to rule it out."""
     for match in pattern.finditer(text):
         before = CLAUSE.split(text[: match.start()])[-1]
-        if RULED_OUT_BEFORE.search(before) or RULED_OUT_AFTER.match(text, match.end()):
+        rest = CLAUSE_REST.split(text[match.end() :])[0]
+        if RULED_OUT_BEFORE.search(before) or CORRECT.search(rest):
             continue
         return True
     return False
@@ -93,7 +100,8 @@ def scored(row: dict) -> bool:
 
 
 def fabrication_kind(row: dict) -> str | None:
-    """事实类, 叙述类 or 待复核 for a no_fabricated_facts failure; None for any other row."""
+    """The kind the reason suggests for a no_fabricated_facts failure (事实类, 叙述类 or 待复核);
+    None for any other row. Only a decision of the owner counts."""
     review = row.get("quality_review") or {}
     if not scored(row) or review.get(FABRICATION) is not False:
         return None
@@ -120,28 +128,24 @@ def load_reviewed(path: Path | None) -> dict:
     data = yaml.safe_load(path.read_text(encoding="utf-8")) or {}
     for batch, answers in data.items():
         for key, kinds in (answers or {}).items():
-            if not isinstance(kinds, list) or not set(kinds) <= {FACT, NARRATION}:
-                raise ValueError(f"{batch} {key}：判定须为由“{FACT}”“{NARRATION}”组成的列表")
+            # An empty list would close a failure without counting it anywhere.
+            if not isinstance(kinds, list) or not kinds or not set(kinds) <= {FACT, NARRATION}:
+                raise ValueError(f"{batch} {key}：判定须为非空列表，只能含“{FACT}”“{NARRATION}”")
     return data
 
 
 def counts(report: dict, reviewed: dict | None = None) -> dict:
-    """The no_fabricated_facts failures of the submitted answers, by kind.
+    """The no_fabricated_facts failures of the submitted answers, by the owner's decisions.
 
-    An answer decided as both kinds counts once in each kind and once among the failures.
+    An answer decided as both kinds counts once in each kind and once among the failures. An
+    undecided failure counts in no kind; its suggestion is reported apart.
     """
     reviewed = reviewed or {}
     submitted = [r for r in report.get("results", []) if r.get("status") == "submit_reading"]
     graded = [r for r in submitted if scored(r)]
     failures = [r for r in graded if r["quality_review"][FABRICATION] is False]
-    decided, pending = [], 0
-    for row in failures:
-        if answer_key(row) in reviewed:
-            decided.append(set(reviewed[answer_key(row)]))
-        elif (kind := fabrication_kind(row)) == PENDING:
-            pending += 1
-        else:
-            decided.append({kind})
+    decided = [set(reviewed[answer_key(r)]) for r in failures if answer_key(r) in reviewed]
+    suggested = [fabrication_kind(r) for r in failures if answer_key(r) not in reviewed]
     return {
         "submitted": len(submitted),
         "scored": len(graded),
@@ -149,19 +153,21 @@ def counts(report: dict, reviewed: dict | None = None) -> dict:
         "failures": len(failures),
         "fact": sum(FACT in kinds for kinds in decided),
         "narrative": sum(NARRATION in kinds for kinds in decided),
-        "pending": pending,
+        "undecided": len(suggested),
+        "suggested": {kind: suggested.count(kind) for kind in (FACT, NARRATION, PENDING)},
     }
 
 
 TABLE_HEAD = [
-    "| 批次 | 已提交 | 已评分 | 未评分 | 编造失败 | 事实类 | 叙述类 | 待复核 | 叙述类占已提交 | 结果 |",
-    "| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | --- |",
+    "| 批次 | 已提交 | 已评分 | 未评分 | 编造失败 | 事实类 | 叙述类 | 待人工判定 | "
+    "初筛（事实/叙述/待复核） | 叙述类占已提交 | 结果 |",
+    "| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | --- | ---: | --- |",
 ]
 
 
 def counts_row(name: str, report: dict, reviewed: dict | None = None) -> str:
     n = counts(report, reviewed)
-    open_ = n["pending"] + n["unscored"]
+    open_ = n["undecided"] + n["unscored"]
     if not n["submitted"]:
         share = "—"
     elif not n["scored"]:
@@ -172,13 +178,14 @@ def counts_row(name: str, report: dict, reviewed: dict | None = None) -> str:
         share = f"{low:.1%}–{high:.1%}"
     else:
         share = f"{n['narrative'] / n['submitted']:.1%}"
-    missing = [f"待复核 {n['pending']}"] * bool(n["pending"]) + [f"未评分 {n['unscored']}"] * bool(
-        n["unscored"]
-    )
+    missing = [f"待人工判定 {n['undecided']}"] * bool(n["undecided"]) + [
+        f"未评分 {n['unscored']}"
+    ] * bool(n["unscored"])
     state = f"不完整：{'、'.join(missing)}" if missing else "完整"
+    hint = "/".join(str(n["suggested"][kind]) for kind in (FACT, NARRATION, PENDING))
     return (
         f"| {name} | {n['submitted']} | {n['scored']} | {n['unscored']} | {n['failures']} | "
-        f"{n['fact']} | {n['narrative']} | {n['pending']} | {share} | {state} |"
+        f"{n['fact']} | {n['narrative']} | {n['undecided']} | {hint} | {share} | {state} |"
     )
 
 
@@ -204,10 +211,10 @@ def render(path: Path, report: dict, *, answers: bool, reviewed: dict | None = N
         lines += [f"### {row['id']} · 第{row.get('repeat', 0) + 1}次", ""]
         lines.append(f"- 未通过：{'、'.join(dims)}")
         if answer_key(row) in (reviewed or {}):
-            decided = "、".join(reviewed[answer_key(row)]) or "两类都不是"
+            decided = "、".join(reviewed[answer_key(row)])
             lines.append(f"- 编造分类：{decided}（人工判定，{answer_key(row)}）")
         elif kind := fabrication_kind(row):
-            lines.append(f"- 编造分类：{kind}（{answer_key(row)}）")
+            lines.append(f"- 编造分类：待人工判定，初筛 {kind}（{answer_key(row)}）")
         if row.get("pipeline"):
             info = row["pipeline"]
             lines.append(
@@ -234,7 +241,7 @@ def main():
         "--counts-only", action="store_true", help="只输出编造分类的计数表，不含问题、理由和回答"
     )
     parser.add_argument(
-        "--reviewed", type=Path, help="负责人对待复核答案的判定（YAML 或 JSON），计入计数表"
+        "--reviewed", type=Path, help="负责人对每条编造失败的判定（YAML 或 JSON），计入计数表"
     )
     parser.add_argument("--output", type=Path, help="写入文件；默认打印")
     args = parser.parse_args()

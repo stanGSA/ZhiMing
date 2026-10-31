@@ -210,7 +210,7 @@ single 的 `WRITING_RULES` 里有对应的规则：“落地场景用‘如果�
 - 可核验事实编造：目标 0；
 - 叙述编造：硬性要求不高于同批次 single，争取 ≤ 10%（占已提交回答）。
 
-rubric 不变。分类按评委理由进行，`scripts.quality_reasons --counts-only` 输出可以入库的计数表。待复核的由负责人人工判定，判定结果通过 `--reviewed` 计入；未评分或待复核未清时，计数表标为“不完整”，叙述编造占比给出区间。
+rubric 不变。每条 `no_fabricated_facts` 失败都由负责人人工判定类别，通过 `--reviewed` 计入。评委理由的关键词只给出初筛建议，不计入两类指标。还有未评分或待人工判定的失败时，计数表标为“不完整”，叙述编造占比给出区间。`scripts.quality_reasons --counts-only` 输出的计数表可以入库。
 
 ### 5.3 留出集断言 `direct_timing_answer` 的语序（负责人已定：P3 前修）
 
@@ -271,7 +271,7 @@ rubric 不变。分类按评委理由进行，`scripts.quality_reasons --counts-
 - 追问题、`no_fabricated_facts` 次数、“一次做对”和修复次数；
 - `retry_limit`（single）与降级次数，按方式分开看：`pipeline.degraded` 为 `safety` 的，就是 5.4 那种整篇被替换的情况。不能只看提交率，因为降级后 `status` 仍是 `submit_reading`；
 - 修复率，以及修复的原因是不是 4.2 列出的已知误拒（用 `scripts.quality_reasons` 和 trace 核对）；
-- `no_fabricated_facts` 失败按计划 §5 的两类分开统计：本机运行 `scripts.quality_reasons … --counts-only`，待复核的人工判定后用 `--reviewed` 计入，直到计数表标为“完整”。可核验事实编造应为 0，叙述编造与同批次 single 比较；
+- `no_fabricated_facts` 失败按计划 §5 的两类分开统计：本机运行 `scripts.quality_reasons …` 查看每条失败的理由和初筛建议，逐条人工判定后写进 `--reviewed` 文件，再用 `--counts-only --reviewed …` 输出计数表，直到标为“完整”。可核验事实编造应为 0，叙述编造与同批次 single 比较；
 - 摘要里的 `requested_model`、`returned_models`、`judge_model` 是否都是 `deepseek-v4.1-flash`；
 - 本机再跑一次 `scripts.quality_reasons` 看剩余失败的理由。
 
