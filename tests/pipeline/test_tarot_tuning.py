@@ -116,8 +116,8 @@ async def test_a_negated_claim_in_both_drafts_is_not_a_safety_failure(make):
 async def test_a_known_false_refusal_in_both_drafts_ends_in_the_safety_reply(make, sentence):
     # The cost of that conservatism on a high-risk question (fourth review of PR #37): when the
     # repair repeats the sentence, the hard safety rule replaces the whole reading. The status
-    # is still submit_reading, so the submission rate alone does not show it. Pinned so that
-    # changing the rule, or deciding to accept it, is a visible step.
+    # is still submit_reading, so the submission rate alone does not show it. The owner accepts
+    # this for now (analysis 5.4, option A) and the rerun counts it; changing it is a visible step.
     runtime, composer = make(with_sentence(sentence), with_sentence(sentence))
     outcome = await runtime.turn(RISKY)
     assert outcome.status == "submit_reading"
