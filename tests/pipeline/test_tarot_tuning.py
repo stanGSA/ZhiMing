@@ -109,6 +109,25 @@ async def test_a_negated_claim_in_both_drafts_is_not_a_safety_failure(make):
 
 @pytest.mark.parametrize(
     "sentence",
+    # The negations the certainty check knowingly refuses (the strict xfails in
+    # tests/validation/test_negation_and_dates.py).
+    ["并非亏损股票一定会涨。", "这不代表下个月的面试结果一定会好。"],
+)
+async def test_a_known_false_refusal_in_both_drafts_ends_in_the_safety_reply(make, sentence):
+    # The cost of that conservatism on a high-risk question (fourth review of PR #37): when the
+    # repair repeats the sentence, the hard safety rule replaces the whole reading. The status
+    # is still submit_reading, so the submission rate alone does not show it. Pinned so that
+    # changing the rule, or deciding to accept it, is a visible step.
+    runtime, composer = make(with_sentence(sentence), with_sentence(sentence))
+    outcome = await runtime.turn(RISKY)
+    assert outcome.status == "submit_reading"
+    info = outcome.data["pipeline"]
+    assert (info["model_calls"], info["repairs"], info["degraded"]) == (2, 1, "safety")
+    assert outcome.data["reading"]["sections"] == [] and sentence not in outcome.text
+
+
+@pytest.mark.parametrize(
+    "sentence",
     # The others follow an unrelated negation (re-check of 1fe9499 and review of 1a4b377).
     [
         "这只股票一定会涨。",
