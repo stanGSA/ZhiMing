@@ -1,0 +1,210 @@
+{
+  "source_commit": "079b770e50701c31f5da9adc8064ae77cb479f78",
+  "config_sha256": "d20f8ebd922f11bad6cda4b850ac66d17fcb50d0a656dd7800e89671cf243a24",
+  "jobs": {
+    "Tarot-single": {
+      "run_id": "20261031T033806-514eda40",
+      "expected": 24,
+      "records": 24,
+      "submitted": 22,
+      "scored": 24,
+      "scoring_expected": true,
+      "exit_code": 1,
+      "raw_sha256": "d995bb409842522690bfba936f4023c249998f4fbddaa68cb4b6e4645c84766d",
+      "source_fingerprint": "1fddadf357b65d29926bf26661a042a97d072b22062c37472579518540afba87",
+      "source_file_count": 161,
+      "source_matches_current": true,
+      "trace_count": 24,
+      "trace_model_counts_match": true,
+      "trace_events": {
+        "model_response": 82,
+        "tool_result": 87,
+        "repeated_failure_limit": 1
+      },
+      "status_counts": {
+        "submit_reading": 22,
+        "text": 1,
+        "retry_limit": 1
+      },
+      "runtime_returned_models": [
+        "deepseek-v4.1-flash"
+      ],
+      "judge_returned_models": [
+        "deepseek-v4.1-flash"
+      ],
+      "degraded_by_kind": {
+        "none": 24
+      },
+      "pipeline_kinds": {
+        "agent": 24
+      },
+      "repairs": 0,
+      "runtime_calls": 82,
+      "runtime_max_calls": 5,
+      "runtime_request_attempts": 82,
+      "judge_calls": 24,
+      "judge_request_attempts": 24,
+      "runtime_input_tokens": 304336,
+      "runtime_output_tokens": 43186,
+      "judge_input_tokens": 73295,
+      "judge_output_tokens": 58254,
+      "judge_latency_s": 494.415,
+      "runtime_latency_s": 561.652,
+      "usage_missing_calls": 0,
+      "usage_availability_unrecorded_calls": 0,
+      "token_fields_null_calls": 0
+    },
+    "Tarot-pipeline": {
+      "run_id": "20261031T035553-ea205f99",
+      "expected": 24,
+      "records": 24,
+      "submitted": 24,
+      "scored": 24,
+      "scoring_expected": true,
+      "exit_code": 1,
+      "raw_sha256": "cd009ab4f3ec873e0bca22ffe4c619b351c500df64072429bf9df7dc4a46be41",
+      "source_fingerprint": "1fddadf357b65d29926bf26661a042a97d072b22062c37472579518540afba87",
+      "source_file_count": 161,
+      "source_matches_current": true,
+      "trace_count": 24,
+      "trace_model_counts_match": true,
+      "trace_events": {
+        "pipeline_stage": 72,
+        "tool_plan": 48,
+        "tool_result": 69,
+        "model_response": 24
+      },
+      "status_counts": {
+        "submit_reading": 24
+      },
+      "runtime_returned_models": [
+        "deepseek-v4.1-flash"
+      ],
+      "judge_returned_models": [
+        "deepseek-v4.1-flash"
+      ],
+      "degraded_by_kind": {
+        "none": 24
+      },
+      "pipeline_kinds": {
+        "new": 21,
+        "followup": 3
+      },
+      "repairs": 0,
+      "runtime_calls": 24,
+      "runtime_max_calls": 1,
+      "runtime_request_attempts": 24,
+      "judge_calls": 24,
+      "judge_request_attempts": 24,
+      "runtime_input_tokens": 17628,
+      "runtime_output_tokens": 11190,
+      "judge_input_tokens": 59883,
+      "judge_output_tokens": 41186,
+      "judge_latency_s": 368.768,
+      "runtime_latency_s": 229.725,
+      "usage_missing_calls": 0,
+      "usage_availability_unrecorded_calls": 0,
+      "token_fields_null_calls": 0
+    },
+    "Tarot-heldout-pipeline": {
+      "run_id": "63681750b422",
+      "expected": 17,
+      "records": 17,
+      "submitted": 8,
+      "scored": 0,
+      "scoring_expected": false,
+      "exit_code": 1,
+      "raw_sha256": "179d1630b4924849113f1c8b9613f981256499c01f60ef76da674b9c55f9740c",
+      "source_fingerprint": "70b06e4b56239bb53d5540f498d3b5c28cc128368c46380bfd7fa3c174406136",
+      "source_file_count": 145,
+      "source_matches_current": true,
+      "trace_count": 14,
+      "trace_model_counts_match": true,
+      "trace_events": {
+        "pipeline_stage": 24,
+        "tool_plan": 16,
+        "tool_result": 23,
+        "model_response": 11,
+        "crisis_support": 8
+      },
+      "status_counts": {
+        "submit_reading": 8,
+        "text": 1,
+        "crisis_support": 8
+      },
+      "runtime_returned_models": [
+        "deepseek-v4.1-flash"
+      ],
+      "judge_returned_models": [],
+      "degraded_by_kind": {
+        "none": 17
+      },
+      "pipeline_kinds": {
+        "new": 6,
+        "followup": 2,
+        "agent": 9
+      },
+      "repairs": 0,
+      "runtime_calls": 11,
+      "runtime_max_calls": 2,
+      "runtime_request_attempts": null,
+      "judge_calls": 0,
+      "judge_request_attempts": 0,
+      "runtime_input_tokens": 10523,
+      "runtime_output_tokens": 3471,
+      "judge_input_tokens": 0,
+      "judge_output_tokens": 0,
+      "judge_latency_s": 0,
+      "runtime_latency_s": 77.045,
+      "usage_missing_calls": 0,
+      "usage_availability_unrecorded_calls": 1,
+      "token_fields_null_calls": 0
+    }
+  },
+  "databases": [
+    {
+      "path": "Tarot-single/20261031T033806-514eda40/workspace/data/kb.sqlite",
+      "integrity_check": "ok"
+    },
+    {
+      "path": "Tarot-single/20261031T033806-514eda40/workspace/data/kb_versions/v1-984b14f53d4d43c7.sqlite",
+      "integrity_check": "ok"
+    },
+    {
+      "path": "Tarot-single/20261031T033806-514eda40/workspace/data/app.db",
+      "integrity_check": "ok"
+    },
+    {
+      "path": "Tarot-pipeline/20261031T035553-ea205f99/workspace/data/kb.sqlite",
+      "integrity_check": "ok"
+    },
+    {
+      "path": "Tarot-pipeline/20261031T035553-ea205f99/workspace/data/kb_versions/v1-984b14f53d4d43c7.sqlite",
+      "integrity_check": "ok"
+    },
+    {
+      "path": "Tarot-pipeline/20261031T035553-ea205f99/workspace/data/app.db",
+      "integrity_check": "ok"
+    },
+    {
+      "path": "Tarot-heldout-pipeline/63681750b422/workspace/data/kb.sqlite",
+      "integrity_check": "ok"
+    },
+    {
+      "path": "Tarot-heldout-pipeline/63681750b422/workspace/data/kb_versions/v1-984b14f53d4d43c7.sqlite",
+      "integrity_check": "ok"
+    },
+    {
+      "path": "Tarot-heldout-pipeline/63681750b422/workspace/data/app.db",
+      "integrity_check": "ok"
+    }
+  ],
+  "shared_source_files": 145,
+  "shared_source_hashes_equal": true,
+  "single_pipeline_sources_identical": true,
+  "config_preserved": true,
+  "raw_manifest_verified": true,
+  "incomplete_records": 0,
+  "tracked_sources_match_commit_except_config": true,
+  "note": "Heldout uses script assertions only; scored=0 is expected. Different source manifests cover different file sets."
+}
