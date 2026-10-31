@@ -1,0 +1,146 @@
+{
+  "source_commit": "151eb2ae1ac1947e1212ceda86e1058a5c7dee61",
+  "config_sha256": "d20f8ebd922f11bad6cda4b850ac66d17fcb50d0a656dd7800e89671cf243a24",
+  "jobs": {
+    "TarotFinal-single": {
+      "run_id": "20261031T095820-20bfbdb0",
+      "expected": 18,
+      "records": 18,
+      "submitted": 18,
+      "scored": 18,
+      "scoring_expected": true,
+      "exit_code": 1,
+      "raw_sha256": "a04fc9b0a0af6e9561a3442ebfe386cb8198f2d8f862aac67cbee1aafda5d5b0",
+      "source_fingerprint": "1fddadf357b65d29926bf26661a042a97d072b22062c37472579518540afba87",
+      "source_file_count": 161,
+      "source_matches_current": true,
+      "trace_count": 18,
+      "trace_model_counts_match": true,
+      "trace_events": {
+        "model_response": 59,
+        "tool_result": 60,
+        "arguments_repaired": 1
+      },
+      "status_counts": {
+        "submit_reading": 18
+      },
+      "runtime_returned_models": [
+        "deepseek-v4.1-flash"
+      ],
+      "judge_returned_models": [
+        "deepseek-v4.1-flash"
+      ],
+      "degraded_by_kind": {
+        "none": 18
+      },
+      "pipeline_kinds": {
+        "agent": 18
+      },
+      "repairs": 0,
+      "runtime_calls": 59,
+      "runtime_max_calls": 5,
+      "runtime_request_attempts": 59,
+      "judge_calls": 18,
+      "judge_request_attempts": 18,
+      "runtime_input_tokens": 213173,
+      "runtime_output_tokens": 30134,
+      "judge_input_tokens": 59575,
+      "judge_output_tokens": 57723,
+      "judge_latency_s": 411.718,
+      "runtime_latency_s": 529.783,
+      "usage_missing_calls": 0,
+      "usage_availability_unrecorded_calls": 0,
+      "token_fields_null_calls": 0
+    },
+    "TarotFinal-pipeline": {
+      "run_id": "20261031T101408-ea06fa56",
+      "expected": 18,
+      "records": 18,
+      "submitted": 18,
+      "scored": 18,
+      "scoring_expected": true,
+      "exit_code": 1,
+      "raw_sha256": "dfbe84a6e0a69bebfa15232eb2f7ded5e15a3564b3b2a76bac9fad11e9bec9cd",
+      "source_fingerprint": "1fddadf357b65d29926bf26661a042a97d072b22062c37472579518540afba87",
+      "source_file_count": 161,
+      "source_matches_current": true,
+      "trace_count": 18,
+      "trace_model_counts_match": true,
+      "trace_events": {
+        "pipeline_stage": 54,
+        "tool_plan": 36,
+        "tool_result": 51,
+        "model_response": 18
+      },
+      "status_counts": {
+        "submit_reading": 18
+      },
+      "runtime_returned_models": [
+        "deepseek-v4.1-flash"
+      ],
+      "judge_returned_models": [
+        "deepseek-v4.1-flash"
+      ],
+      "degraded_by_kind": {
+        "none": 18
+      },
+      "pipeline_kinds": {
+        "new": 15,
+        "followup": 3
+      },
+      "repairs": 0,
+      "runtime_calls": 18,
+      "runtime_max_calls": 1,
+      "runtime_request_attempts": 18,
+      "judge_calls": 18,
+      "judge_request_attempts": 18,
+      "runtime_input_tokens": 13188,
+      "runtime_output_tokens": 8875,
+      "judge_input_tokens": 45731,
+      "judge_output_tokens": 36152,
+      "judge_latency_s": 300.103,
+      "runtime_latency_s": 127.827,
+      "usage_missing_calls": 0,
+      "usage_availability_unrecorded_calls": 0,
+      "token_fields_null_calls": 0
+    }
+  },
+  "databases": [
+    {
+      "path": "TarotFinal-single/20261031T095820-20bfbdb0/workspace/data/kb.sqlite",
+      "integrity_check": "ok"
+    },
+    {
+      "path": "TarotFinal-single/20261031T095820-20bfbdb0/workspace/data/kb_versions/v1-984b14f53d4d43c7.sqlite",
+      "integrity_check": "ok"
+    },
+    {
+      "path": "TarotFinal-single/20261031T095820-20bfbdb0/workspace/data/app.db",
+      "integrity_check": "ok"
+    },
+    {
+      "path": "TarotFinal-pipeline/20261031T101408-ea06fa56/workspace/data/kb.sqlite",
+      "integrity_check": "ok"
+    },
+    {
+      "path": "TarotFinal-pipeline/20261031T101408-ea06fa56/workspace/data/kb_versions/v1-984b14f53d4d43c7.sqlite",
+      "integrity_check": "ok"
+    },
+    {
+      "path": "TarotFinal-pipeline/20261031T101408-ea06fa56/workspace/data/app.db",
+      "integrity_check": "ok"
+    }
+  ],
+  "shared_source_files": 161,
+  "shared_source_hashes_equal": true,
+  "single_pipeline_sources_identical": true,
+  "config_preserved": true,
+  "raw_manifest_verified": true,
+  "incomplete_records": 0,
+  "tracked_sources_match_commit_except_config": true,
+  "note": "Both final groups require rubric scores; source manifests equal frozen r2 fingerprint.",
+  "judge_usage_complete": true,
+  "judge_parse_attempts_all_one": true,
+  "freeze_matches_r2": true,
+  "fabrication_review_complete": true
+}

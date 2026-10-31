@@ -1,0 +1,105 @@
+{
+  "source_commit": "151eb2ae1ac1947e1212ceda86e1058a5c7dee61",
+  "campaign": "tarot-final",
+  "runtime_model": "deepseek-v4.1-flash",
+  "judge_model": "deepseek-v4.1-flash",
+  "judge_config_key": "pro",
+  "judge_thinking": "enabled",
+  "judge_reasoning_effort": "high",
+  "config_sha256": "d20f8ebd922f11bad6cda4b850ac66d17fcb50d0a656dd7800e89671cf243a24",
+  "source_fingerprint": "1fddadf357b65d29926bf26661a042a97d072b22062c37472579518540afba87",
+  "expected_jobs": {
+    "TarotFinal-single": 18,
+    "TarotFinal-pipeline": 18
+  },
+  "pricing": "Unverified relay rates; cost unknown. Pricing byte-identical to r2.",
+  "review_actor": "Execution agent under explicit user authorization; not personal review by the user.",
+  "status": "complete",
+  "started": "2026-10-31T09:58:03.369430+00:00",
+  "ci": {
+    "checked_at": "2026-10-31T09:58:03.369430+00:00",
+    "pr_head": "34dc414b534ba098c7fb64950d8fd0ba7ace8145",
+    "pr_checks": [
+      {
+        "name": "deterministic (windows-latest)",
+        "status": "completed",
+        "conclusion": "success",
+        "html_url": "https://github.com/stanGSA/ZhiMing/actions/runs/41188922774/job/124501489694"
+      },
+      {
+        "name": "deterministic (ubuntu-24.04)",
+        "status": "completed",
+        "conclusion": "success",
+        "html_url": "https://github.com/stanGSA/ZhiMing/actions/runs/41188922774/job/124501489640"
+      },
+      {
+        "name": "deterministic (ubuntu-24.04)",
+        "status": "completed",
+        "conclusion": "success",
+        "html_url": "https://github.com/stanGSA/ZhiMing/actions/runs/41188918998/job/124501478443"
+      },
+      {
+        "name": "deterministic (windows-latest)",
+        "status": "completed",
+        "conclusion": "success",
+        "html_url": "https://github.com/stanGSA/ZhiMing/actions/runs/41188918998/job/124501478234"
+      }
+    ],
+    "pr_head_tree_equals_merge_tree": true,
+    "tree": "7ed8833f408bc68c4f8519313a45749bc027e1f5",
+    "merge_checks_at_start": "in_progress",
+    "merge_checks": [
+      {
+        "name": "deterministic (ubuntu-24.04)",
+        "status": "completed",
+        "conclusion": "success",
+        "html_url": "https://github.com/stanGSA/ZhiMing/actions/runs/41189402620/job/124502873967",
+        "completed_at": "2026-10-31T10:00:52Z"
+      },
+      {
+        "name": "deterministic (windows-latest)",
+        "status": "completed",
+        "conclusion": "success",
+        "html_url": "https://github.com/stanGSA/ZhiMing/actions/runs/41189402620/job/124502873747",
+        "completed_at": "2026-10-31T10:04:47Z"
+      }
+    ]
+  },
+  "finished": "2026-10-31T10:21:21.203046+00:00",
+  "finished_local": "2026-10-31T18:21:21.203046+08:00",
+  "record_count": 36,
+  "quality_scored": 36,
+  "quality_unscored": 0,
+  "campaign_exit_code": 0,
+  "child_exit_codes": {
+    "TarotFinal-single": 1,
+    "TarotFinal-pipeline": 1
+  },
+  "no_fabricated_facts_review": {
+    "all_failures": 8,
+    "classified": 8,
+    "pending": 0,
+    "submitted_failures": 8,
+    "single_fact": 0,
+    "single_narrative": 5,
+    "pipeline_fact": 0,
+    "pipeline_narrative": 3,
+    "scores_unchanged": true
+  },
+  "raw_manifest_sha256": "a0f76197affdf61ad3698034533a2ad4c90516314ecf792e2bf3e41ce99b4d46",
+  "heldout": "Not part of tarot-final campaign; no heldout evaluated in this run.",
+  "acceptance": {
+    "P1": {
+      "submitted_18_of_18": true,
+      "step_budget_failures_zero": true,
+      "runtime_calls_per_round_le_3": true,
+      "submitted_quality_ge_same_batch_single": true,
+      "passed": true
+    },
+    "section5": {
+      "pipeline_fact_zero": true,
+      "pipeline_narrative_share_le_single": true,
+      "pipeline_narrative_share_le_10_percent_aspiration": false
+    }
+  }
+}
