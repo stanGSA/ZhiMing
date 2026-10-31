@@ -146,6 +146,38 @@ def test_a_four_character_head_without_a_modifier_is_still_refused(text):
     assert certainty_claim([text]) is None
 
 
+# Two more shapes the tarot r2 run met in single drafts (docs/verification/p1/tarot-r2/
+# assessment.md 4): "不是" before a framing verb is not read as the negated frame "不预言", and
+# a quotation mark in front of the pronoun hides the subject after "不是". Both cost retries and
+# one retry_limit there. Recorded, not fixed: P1 is frozen on the rule the r2 run measured.
+@pytest.mark.xfail(strict=True, reason="“不是”加框架动词，未按否定框架处理")
+@pytest.mark.parametrize(
+    "text",
+    ["这张牌不是预言你必定亏钱，而是提醒你控制仓位。", "牌面并不是在预言你一定会亏钱。"],
+)
+def test_a_copula_before_a_framing_verb_is_still_refused(text):
+    assert certainty_claim([text]) is None
+
+
+@pytest.mark.xfail(strict=True, reason="引号挡住了“不是”之后的代词主语")
+@pytest.mark.parametrize(
+    "text", ["提示的重点不是“你一定会亏”，而是仓位。", "重点不是‘你一定会亏’。"]
+)
+def test_a_quoted_claim_after_a_copula_is_still_refused(text):
+    assert certainty_claim([text]) is None
+
+
+@pytest.mark.parametrize(
+    "text",
+    [
+        "重点不是你一定会亏。",  # the same claim unquoted is already accepted
+        "这不预言你必定亏钱。",  # and so is the framing verb without the copula
+    ],
+)
+def test_the_unquoted_or_bare_forms_are_accepted(text):
+    assert certainty_claim([text]) is None
+
+
 @pytest.mark.parametrize("field", ["sections", "summary", "evidence"])
 def test_negated_sign_inference_is_separate_from_a_position_claim(field):
     def check_position(text):
