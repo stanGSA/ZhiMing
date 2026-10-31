@@ -10,7 +10,7 @@ import re
 from harness.models import ModelResponse
 
 QUESTION = "只用塔罗，抽三张牌帮我看看近期事业状态。"
-FACT_LINE = re.compile(r"^(R\d+)｜(.+?)位｜【(.+?)】(正位|逆位)｜", re.M)
+FACT_LINE = re.compile(r"^(R\d+)｜第\d+张·(.+?)位｜【(.+?)】(正位|逆位)｜", re.M)
 
 
 class Composer:

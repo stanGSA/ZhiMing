@@ -7,6 +7,7 @@ from types import SimpleNamespace
 import pytest
 
 from common.output_policy import HEALTH_NOTE, care_advice, care_error, certainty_claim
+from common.validation import risk_note
 from plugins.astro.validation import validate_output
 from scripts.compare_layers import rejection_category, repository_metadata
 from tests.validation.test_layered_fact_binding import (
@@ -48,6 +49,100 @@ async def test_unrelated_negative_predicate_cannot_cancel_certainty(runtime, tex
     ],
 )
 def test_direct_negative_complements_remain_allowed(text):
+    assert certainty_claim([text]) is None
+
+
+# Drafts the tarot tuning set refused (PR #37 review: 10 refused drafts replayed from the raw
+# traces, all of these forms). The writers follow the card meanings' "不代表事件必然发生" and
+# say it of what the question is about.
+REFUSED_DRAFTS = [
+    "它不代表行情必然上涨。",
+    "它不预言你一定会亏钱。",
+    "这不是说留下就一定会变差。",
+    "这不代表某件事必然发生。",
+    "不代表具体事件必然发生。",
+    # The one left after 1fe9499 (re-check: 1 of the 10 still refused).
+    "它不会告诉你今天一定会发生什么，只提供一个观看自己的角度。",
+]
+
+
+@pytest.mark.parametrize(
+    "text",
+    [
+        *REFUSED_DRAFTS,
+        "这不代表行情对你必然有利。",
+        "不代表你们这段关系必然结束。",
+        # Third review of 1a4b377: a negated clause whose subject is an ordinary noun phrase.
+        "并非这只股票一定会涨。",
+        "并非股价一定会涨。",
+        "并不是这件事一定会成功。",
+        "这不代表过去的亏损一定会重演。",
+        "这不代表这只股票一定会涨。",
+        "牌面不代表股价必然上涨。",
+        "这张牌并不代表投资必然亏损。",
+        "不代表全部投入必然亏损。",
+        "这不代表你们的关系一定会好转。",
+        "不代表关系必然走向破裂。",
+        "不代表考试一定会失利。",
+        "不意味着跳槽必然成功。",
+        "并不是说这只股票一定会涨。",
+        "这不是一种必然。",
+        "并没有什么是必然的。",
+        "没有哪种结果是注定的。",
+        "不必把这理解为必然。",
+    ],
+)
+def test_a_negated_claim_about_the_question_s_subject_is_allowed(text):
+    assert certainty_claim([text]) is None
+
+
+@pytest.mark.parametrize(
+    "text",
+    [
+        "这只股票一定会涨。",
+        "你们的关系必然好转。",
+        "这不代表关系必然好转你们一定会分手。",
+        "不代表投资失败你一定会赚钱。",
+        "这不是一种选择，你注定要走这条路。",
+        "没有什么好担心的你一定会成功。",
+        "没有问题，你一定会成功。",
+        "这不是坏事你一定会成功。",
+        "不代表行情不好你一定会亏。",
+        "它不预言失败你必然成功。",
+        # Re-check of 1fe9499: a noun, not a pronoun, starts the second clause.
+        "这不是坏事这只股票一定会涨。",
+        "这不是坏事股价一定会涨。",
+        "并非坏事股价一定会涨。",
+        "这不是问题结果一定会好。",
+        "这不代表失败这只股票一定会涨。",
+        "这不代表坏事股价一定会涨。",
+        "这不代表亏损行情一定会涨。",
+        "它不预言坏事那只股票一定会涨。",
+        "它不会告诉你答案你一定会成功。",
+        "它不会告诉你今天会怎样，但你一定会成功。",
+        "不会告诉你结果这只股票一定会涨。",
+        # Third review of 1a4b377: a "…的" in front does not make a four-character head one noun.
+        "这不代表过去的亏损股价一定会涨。",
+        "这不代表近期的亏损行情必然上涨。",
+        "并非坏事这只股票一定会涨。",
+        "并非亏损股价一定会涨。",
+        "这不是坏事那件事一定会成功。",
+    ],
+)
+async def test_a_subject_or_noun_form_does_not_hide_a_separate_claim(runtime, text):
+    assert certainty_claim([text])
+    draft = await tarot_draft(runtime)
+    draft["sections"][0]["body"] = text
+    error, _ = check(runtime, draft)
+    assert error and "确定性说法" in error
+
+
+# The price of refusing what might be a second clause: a four-character head with no modifier
+# of its own may be a predicate and a new subject ("过去的亏损股价"), so these negations, which
+# are not, are refused too and cost a repair. Recorded here so a better rule can claim them.
+@pytest.mark.xfail(strict=True, reason="四字中心词没有自带修饰语时，正则分不出它是不是两个词")
+@pytest.mark.parametrize("text", ["这不代表下个月的面试结果一定会好。", "并非亏损股票一定会涨。"])
+def test_a_four_character_head_without_a_modifier_is_still_refused(text):
     assert certainty_claim([text]) is None
 
 
@@ -241,3 +336,29 @@ def test_saved_diagnostics_are_reclassified_without_rewriting_them():
     assert summary["disclosure_rejections"] == 1
     assert summary["expression_rejections"] == summary["other_rejections"] == 0
     assert [d["category"] for d in details] == ["other", "expression"]
+
+
+INVESTMENT = "只用塔罗三张牌帮我反思：是否应该把积蓄全部买入一只股票？"
+
+
+async def high_risk_draft(runtime, text):
+    draft = await tarot_draft(runtime)
+    runtime.session.state["question"] = INVESTMENT
+    draft["sections"][0]["body"] = text
+    draft["safety"] = {"flag": True, "note": risk_note(INVESTMENT)}
+    return draft
+
+
+@pytest.mark.parametrize("text", ["下个月不一定会顺利。", "这不代表这只股票一定会涨。"])
+async def test_a_negated_claim_passes_the_high_risk_check(runtime, text):
+    # The high-risk check searched the raw JSON for 一定会, so the hedge itself was refused as
+    # "不能给出健康、投资或生死的确定性结论", which the pipeline takes for a safety failure.
+    error, _ = check(runtime, await high_risk_draft(runtime, text))
+    assert error is None
+
+
+async def test_the_high_risk_check_still_refuses_a_claim_the_policy_judge_would_weigh(runtime):
+    draft = await high_risk_draft(runtime, "现在全部买入，这只股票一定会涨。")
+    runtime.session.policy_judge = object()  # the two-level mode: wording goes to a model
+    error, _ = check(runtime, draft)
+    assert error == "不能给出健康、投资或生死的确定性结论"
