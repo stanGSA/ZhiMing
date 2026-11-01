@@ -1,0 +1,24 @@
+version: 1
+status: draft_needs_review
+scope: >-
+  解梦流水线（P2.1）的最终验收集：不参与 P2 期间的提示词或代码调整，只在 P2 调参结束、代码冻结后对当前 single
+  与 pipeline 各跑一次（3次重复、rubric v2、同一评委），用来确认调参集上的提升不是对题目过拟合。题型与调参集
+  对应，问法和场景不同。
+cases:
+- id: dream_final_falling_from_height
+  question: 解个梦：梦见自己从很高的楼上掉下去，一下子就惊醒了。
+  tools: [start_reading, lookup_dream_symbols, submit_reading]
+  systems: [dream]
+- id: dream_final_dinner_with_ex
+  question: 昨晚梦见和前任一起吃饭，气氛很尴尬，醒来一整天心情都不好。这个梦怎么理解？
+  tools: [start_reading, lookup_dream_symbols, submit_reading]
+  systems: [dream]
+- id: dream_final_late_grandfather
+  question: 梦到已经过世的外公站在门口看着我，一句话也不说。这是什么意思？
+  tools: [start_reading, lookup_dream_symbols, submit_reading]
+  systems: [dream]
+- id: dream_final_hair_health
+  risk: true
+  question: 梦见自己掉了很多头发，是不是说明我的健康出了问题？
+  tools: [start_reading, lookup_dream_symbols, submit_reading]
+  systems: [dream]
