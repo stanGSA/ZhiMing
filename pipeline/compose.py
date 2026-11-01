@@ -46,6 +46,49 @@ TAROT_SYSTEM = (
 【收尾】……"""
 )
 
+# Dreams (plan P2.1). The meanings in the fact sheet are the dictionary's; anything else said
+# about a symbol is invented, and a dream speaks of feelings only, never of events to come.
+DREAM_SYSTEM = (
+    """你是知命的解梦撰写者。程序已经从用户的梦境描述里抽出意象并查好了词典，事实表列出了本次命中的每个意象的编号、用户原话、关键词和一般含义。你只负责把它们写成给用户看的白话解读。
+
+【事实规则】
+- 提到命中的意象时只写它的编号占位符，例如{{R2}}，程序会替换成“「掉牙」”。只解读事实表里的意象。
+- 事实表后“未收录”一行列出的词不要提及，也不要解读，程序会另外说明。
+- 解读句（象征、代表、反映、说明、和……有关）的主语只能是事实表里的意象（写编号）或“这个梦”；梦里事实表没有列出的其他内容不要拿来解读。
+- 意象的含义只从事实表的关键词和一般含义出发，结合用户描述的梦境细节和感受来讲；不补充事实表没有的象征说法。
+- 梦境只反映心理和情绪：不写预兆、预示、征兆，不说现实中会发生什么，不写日期和时间安排。趋势用“倾向、容易、往往”，不写“一定、必然、注定”。
+- """
+    + SCENARIO_RULE
+    + """
+- 梦到去世的亲人、葬礼、医院、生病时语气温和，不暗示健康或生死。
+
+【写法】
+- 摘要不超过200字。第一句40字内直接说这个梦主要反映的心理状态或情绪；第二句说一个值得留意的地方。
+- 分层通常1-3层，每层150-250字。标题用白话说这一层对用户意味着什么；正文先说这个意象一般反映的心理，再结合用户描述的梦境细节，最后说可以怎么照顾自己的情绪。
+- 建议2-3条，每条写成“短标签：具体做法”。收尾一句。
+- 不写免责声明，不提程序、知识库、词典、审核或工具；不写HTML；引号用中文“”。
+
+【输出格式】只输出下面的标记文本，不要输出其他内容：
+【表态】描述
+【摘要】……
+【分层】这一层的标题
+这一层的正文……
+【引用】R1
+【分层】……
+【引用】……
+【建议】
+- 标签：做法
+【收尾】……"""
+)
+
+DREAM_EXTRACT = """你是知命的解梦意象抽取器。从用户的梦境描述里抽出梦中出现的意象：人物、动物、物品、地点、自然景象和关键动作。
+- phrase：逐字摘自用户描述的连续片段，不改字、不拼接。
+- symbol：这个片段的规范说法，例如“牙齿一颗一颗掉下来”→“掉牙”，“被一条大狗追”→“狗”和“被追”两项；没有通行说法就照抄原文。
+- 只抽梦里出现的内容；醒来后的感受、现实处境和提问本身都不抽。不解释含义，不加入用户没说的内容。
+- 最多12项。
+只输出JSON：{"symbols":[{"phrase":"……","symbol":"……"}]}；描述里没有梦境内容时输出{"symbols":[]}。"""
+
+
 VERDICTS = {
     "偏顺": "favorable",
     "平稳": "steady",
@@ -107,6 +150,40 @@ def tarot_messages(question: str, spread_note: str, facts, *, extra: str = "", p
         {"role": "system", "content": TAROT_SYSTEM},
         {"role": "user", "content": "\n".join(lines)},
     ]
+
+
+def dream_extract_messages(question: str, candidates: list[dict]) -> list[dict]:
+    found = "、".join(dict.fromkeys(item["symbol"] for item in candidates)) or "无"
+    return [
+        {"role": "system", "content": DREAM_EXTRACT},
+        {
+            "role": "user",
+            "content": f"用户的描述：{question}\n"
+            f"程序在原话中找到的词典意象（可能包含不属于梦境的词，请按原文取舍）：{found}",
+        },
+    ]
+
+
+def dream_messages(question: str, facts, misses: list[str], *, extra: str = "") -> list[dict]:
+    lines = [f"用户的梦境描述：{question}"]
+    if extra:
+        lines.append(f"用户补充：{extra}")
+    lines += ["事实表：", fact_sheet(facts)]
+    if misses:
+        lines.append(f"未收录（不要提及，程序会另外说明）：{'、'.join(misses)}")
+    return [
+        {"role": "system", "content": DREAM_SYSTEM},
+        {"role": "user", "content": "\n".join(lines)},
+    ]
+
+
+def json_object(text: str) -> str:
+    """The JSON object in a reply that may wrap it in a code fence or a sentence."""
+    text = re.sub(r"^\s*```[a-zA-Z]*\s*|\s*```\s*$", "", text or "", flags=re.M)
+    start, end = text.find("{"), text.rfind("}")
+    if start == -1 or end < start:
+        raise ValueError("no JSON object")
+    return text[start : end + 1]
 
 
 def repair_messages(messages: list[dict], draft: str, problems: list[str], facts) -> list[dict]:

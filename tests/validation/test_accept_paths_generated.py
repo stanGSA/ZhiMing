@@ -17,6 +17,8 @@ import pytest
 
 from common.schemas import Reading
 from common.validation import validate_reading
+from harness.refs import transform
+from pipeline.dream import UNMATCHED_TITLE, Dream
 from pipeline.verify import verify_reading
 from plugins.astro.calculator import BODY_ZH, SIGN_ZH, SIGNS
 from tests.plugins.test_astro_bazi_integration import invoke, prepare
@@ -171,6 +173,23 @@ async def dream(runtime):
         ),
     )
     assert result.ok and not result.data["misses"]
+    return result.data
+
+
+@pytest.fixture
+async def dream_with_miss(runtime):
+    await ask(runtime, "梦到牙齿一颗一颗掉下来，还在地铁闸机前怎么也刷不过去")
+    result = await invoke(
+        runtime,
+        "lookup_dream_symbols",
+        dict(
+            symbols=[
+                dict(phrase="牙齿一颗一颗掉下来", symbol="掉牙"),
+                dict(phrase="地铁闸机", symbol="地铁闸机"),
+            ]
+        ),
+    )
+    assert result.ok and result.data["misses"] == ["地铁闸机"]
     return result.data
 
 
@@ -662,6 +681,50 @@ def pipeline_rejections(session, question_type, sentences):
         if error:
             refused.append((body, str(error)))
     return refused
+
+
+def dream_pipeline_rejections(runtime, sentences):
+    """The dream pipeline's path: its checks, the section code adds, then the validators."""
+    system, session = Dream(runtime), runtime.session
+    refused = []
+    for body, refs in sentences:
+        args = layered(session, "dream", body, refs).model_dump(mode="json")
+        problems = system.problems([body], session)
+        system.complete(args, session)
+        # Submission restores R-numbers to full references before the validators run.
+        args = transform(args, session, restore=True)
+        error = "；".join(problems) or validate_reading(Reading.model_validate(args), session)
+        if error:
+            refused.append((body, str(error)))
+    return refused
+
+
+async def test_dream_pipeline_path_accepts_hits_beside_an_unmatched_symbol(
+    runtime, dream_with_miss
+):
+    teeth = ref(runtime.session, ":掉牙")
+    sentences = [
+        ("梦见掉牙常和担心失去掌控有关。", [teeth]),
+        ("「掉牙」这个画面往往和焦虑有关，如果你正在面对压力，可以先放慢节奏。", [teeth]),
+        ("“牙齿一颗一颗掉下来”这个画面常和焦虑有关，不预示现实中会发生什么。", [teeth]),
+    ]
+    assert dream_pipeline_rejections(runtime, sentences) == []
+    # The section code adds names the unmatched symbol only to say it is not interpreted.
+    args = layered(runtime.session, "dream", sentences[0][0], [teeth]).model_dump(mode="json")
+    Dream(runtime).complete(args, runtime.session)
+    assert args["sections"][-1]["title"] == UNMATCHED_TITLE
+    assert "「地铁闸机」未收录" in args["sections"][-1]["body"]
+
+
+async def test_dream_pipeline_path_refuses_reading_the_unmatched_symbol(runtime, dream_with_miss):
+    teeth = ref(runtime.session, ":掉牙")
+    for body in (
+        "地铁闸机象征阻碍。",
+        "梦见地铁闸机，说明你遇到了阻碍。",
+        "掉牙预示家里会有人生病。",
+        "梦见掉牙，说明你一定会遇到麻烦。",
+    ):
+        assert dream_pipeline_rejections(runtime, [(body, [teeth])]), body
 
 
 def tarot_sentences(cards):

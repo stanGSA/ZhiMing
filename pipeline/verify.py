@@ -15,7 +15,9 @@ from __future__ import annotations
 
 import re
 
-from common.validation import validate_reading
+from common.output_policy import care_error, certainty_claim
+from common.policy_judge import HARD
+from common.validation import HIGH_RISK, HIGH_RISK_CLAIM, validate_reading
 from plugins.tarot.catalogue import DECK, SPREADS
 from plugins.tarot.validation import drawn_cards
 
@@ -95,3 +97,22 @@ def verify_reading(reading, session) -> str | None:
     if problems:
         return "；".join(problems)
     return validate_reading(reading, session)
+
+
+def safety_rules(texts: list[str], risk_text: str) -> list[str]:
+    """The hard safety rules a draft breaks (plan appendix B), apart from any error message.
+
+    A draft is refused for its first problem, and which problem comes first depends on the
+    order of the checks and on whether the semantic judge runs. Whether it broke a safety rule
+    must not: these are classified on every draft, so two failed drafts on a high-risk
+    question end in the safety reply even when another rule caught them first.
+    """
+    rules = []
+    if HIGH_RISK.search(risk_text) and certainty_claim(texts):
+        rules.append("certainty")
+    if care_error(texts):
+        rules.append("discourage_care")
+    joined = " ".join(texts)
+    if HARD.search(joined) or (HIGH_RISK.search(risk_text) and HIGH_RISK_CLAIM.search(joined)):
+        rules.append("hard_claim")
+    return rules

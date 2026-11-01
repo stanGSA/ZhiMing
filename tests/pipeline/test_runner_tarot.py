@@ -218,7 +218,7 @@ def test_pipeline_mode_takes_its_systems_from_config(project):
     demo = create_runtime(root=project, mode="pipeline")
     single = create_runtime(root=project, model=Composer())
     try:
-        assert writer.pipeline_systems == ("tarot",)
+        assert writer.pipeline_systems == ("tarot", "dream")
         # The offline demo replays tool calls and cannot write a draft: the agent loop answers.
         assert demo.pipeline_systems == () and single.pipeline_systems == ()
         assert set(writer.registry.tools) == set(single.registry.tools)

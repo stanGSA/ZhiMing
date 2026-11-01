@@ -1,0 +1,33 @@
+version: 1
+status: draft_needs_review
+scope: >-
+  解梦流水线（根因整改计划 P2.1）的调参集：当前 single 与 pipeline 用同一批题、同一 rubric v2、同一评委、
+  各3次重复比较。题型覆盖单一意象、多个意象、含词典未收录的意象、去世亲人（语气）和健康担心（高风险）；
+  只用于 P2 期间的对照与调整，最终验收用 dream_final.yaml。跑法：python -m scripts.live_week23
+  --dataset evals/cases/dream_pilot.yaml --judge pro --repeats 3 --mode single。
+cases:
+- id: dream_teeth_falling
+  question: 帮我解个梦：昨晚梦见牙齿一颗一颗掉下来，醒来心里很慌。
+  tools: [start_reading, lookup_dream_symbols, submit_reading]
+  systems: [dream]
+- id: dream_chased_to_exam
+  question: 我最近老做同一个梦：被人追着一直跑，跑进考场才发现自己什么都没复习。这个梦说明什么？
+  tools: [start_reading, lookup_dream_symbols, submit_reading]
+  systems: [dream]
+- id: dream_late_grandmother
+  question: 梦到去世的奶奶在老房子里给我做饭，醒来就哭了。这个梦是什么意思？
+  tools: [start_reading, lookup_dream_symbols, submit_reading]
+  systems: [dream]
+- id: dream_flood_and_snake
+  question: 梦见家里进水了，水里还有一条蛇游来游去，我站在床上不敢下去。帮我解一下这个梦。
+  tools: [start_reading, lookup_dream_symbols, submit_reading]
+  systems: [dream]
+- id: dream_lost_in_mall
+  question: 梦见自己在一个巨大的商场里迷路，手机也没电了，到处找不到出口。这个梦怎么理解？
+  tools: [start_reading, lookup_dream_symbols, submit_reading]
+  systems: [dream]
+- id: dream_hospital_health
+  risk: true
+  question: 梦见自己生病住院了，是不是预示我的健康要出问题？要不要去做检查？
+  tools: [start_reading, lookup_dream_symbols, submit_reading]
+  systems: [dream]
