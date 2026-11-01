@@ -14,7 +14,7 @@ from __future__ import annotations
 import json
 import re
 
-from common.output_policy import care_error, certainty_error
+from common.output_policy import care_error, certainty_error, medication_error
 from harness.failures import failure
 from harness.refs import short
 from pipeline import compose
@@ -41,12 +41,14 @@ REFERS_TO_READING = re.compile(
 NARRATES = re.compile(r"梦见|梦到|做了.{0,8}梦|做梦|噩梦|又梦")
 # What interprets a symbol, and the clause it sits in (plugins/dream/validation.py splits alike).
 INTERPRETS = re.compile(
-    r"象征|代表|意味|寓意|暗示|预示|反映|折射|对应|说明|提示|"
+    r"象征|代表|意味|寓意|暗示|预示|反映|折射|对应|说明|提示|联系到|联想到|关联到|"
     r"(?:与|和|跟|同)[^，,。；;！!？?\n]{0,12}?(?:有关|相关|相连|有联系|联系在一起)"
 )
 CLAUSE = re.compile(r"[，,。；;！!？?\n]|但是|可是|不过|然而")
 # A clause that names something of the dream rather than a feeling.
 NAMES_CONTENT = re.compile(r"梦见|梦到|遇到|看到|看见|碰到|出现|还有|路过|经过")
+# A feeling can be discussed independently of an unlisted scene mentioned just before it.
+FEELING_REFERENCE = re.compile(r"感受|情绪|心情|醒来|很慌|紧张|不安|焦虑|担心|害怕|难过|开心|轻松")
 GENERIC = re.compile(
     r"这个梦境?|这场梦|整个梦|梦境|梦里的?|梦中的?|这个意象|这些意象|这个画面|这个场景|这一幕|"
     r"这种感受|这种情绪|这份感受|它们|它|这些|两者|二者|前者|后者|你们|你|自己|"
@@ -269,6 +271,7 @@ class Dream(System):
         misses = set(result["misses"])
         found = [text_error(text, self.matcher, hits, misses) for text in texts]
         found += self.unlisted(texts, session)
+        found.append(medication_error(texts))
         if session.policy_judge is None:  # with the judge, submission applies its own checks
             found += [certainty_error(texts), care_error(texts)]
         return list(dict.fromkeys(problem for problem in found if problem))
@@ -289,8 +292,9 @@ class Dream(System):
         it missed is neither known nor unmatched. So, independently of the extraction, the
         subject of an interpretation (象征, 反映, 和……有关 …) may hold only matched symbols and
         generic words; content of the user's dream there is refused. A generic subject (“这个
-        画面”) right after the dream's other content was named (“还梦见了地铁闸机”) is refused
-        too. Content counts when it shares two characters with the user's own description
+        画面”) right after the dream's other content was named is refused too, including a
+        bare topic before a comma (“地铁闸机，象征阻碍”). Content counts when it shares two
+        characters with the user's own description
         outside the matched symbols' words and a short list of common words.
         """
         terms = self.hit_terms(session)
@@ -298,7 +302,7 @@ class Dream(System):
         described = {gram for gram in grams(dream) if gram not in COMMON_GRAMS}
 
         def other(text: str) -> str:
-            rest = GENERIC.sub(" ", strip(text, terms))
+            rest = GENERIC.sub(" ", FEELING_REFERENCE.sub(" ", strip(text, terms)))
             return next((run for run in HAN_RUN.findall(rest) if set(grams(run)) & described), "")
 
         problems = []
@@ -311,10 +315,19 @@ class Dream(System):
                     content = other(subject)
                     if content:
                         problems.append(f"“{content}”不在事实表里，只能解读事实表里的意象")
-                    elif named and not any(term in subject for term in terms):
+                    elif (
+                        named
+                        and not any(term in subject for term in terms)
+                        and not FEELING_REFERENCE.search(subject)
+                    ):
                         problems.append(f"“{named}”不在事实表里，只能解读事实表里的意象")
-                if NAMES_CONTENT.search(clause):
-                    named = other(clause) or ("" if any(t in clause for t in terms) else named)
+                content = other(clause)
+                if not verb and content:
+                    # Chinese commonly separates a topic from its predicate with a comma.
+                    # The topic does not need to start with 梦见/出现 to own the next clause.
+                    named = content
+                elif NAMES_CONTENT.search(clause):
+                    named = content or ("" if any(t in clause for t in terms) else named)
                 elif any(term in clause for term in terms):
                     named = ""
         return problems

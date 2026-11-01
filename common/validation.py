@@ -8,6 +8,7 @@ from common.output_policy import (
     care_error,
     certainty_claim,
     certainty_error,
+    medication_error,
     normalize_reading,
     warn,
 )
@@ -37,9 +38,7 @@ RISKS = (
 )
 HIGH_RISK = re.compile("|".join(pattern for _, pattern, _ in RISKS))
 # Claims a high-risk answer may never make, negated or not as written here.
-HIGH_RISK_CLAIM = re.compile(
-    r"(?<!不)(?<!不能)(?<!无法)保证收益|稳赚|必死|(?<!不)可以停药|必然确诊"
-)
+HIGH_RISK_CLAIM = re.compile(r"(?<!不)(?<!不能)(?<!无法)保证收益|稳赚|必死|必然确诊")
 
 
 def risk_note(text: str) -> str | None:
@@ -210,6 +209,9 @@ def validate_reading(reading, session) -> str | None:
         if error:
             return error
     error = validate_calculation_facts(reading, state)
+    if error:
+        return error
+    error = medication_error(authored_texts(reading))
     if error:
         return error
     if session.policy_judge is not None:

@@ -1,5 +1,5 @@
 from harness.models import TurnOutcome
-from scripts.failure_taxonomy import summarize
+from scripts.failure_taxonomy import render, summarize
 from scripts.live_test import pipeline_record
 
 
@@ -51,3 +51,31 @@ def test_the_report_keeps_the_record_without_the_drafts_problem_texts():
         "problems": [2],
     }
     assert pipeline_record(TurnOutcome(status="text", text="")) is None
+
+
+def test_no_symbol_is_separate_without_changing_the_historical_total():
+    rows = [
+        row(pipeline={"repairs": 0, "degraded": "no_symbol"}),
+        row(pipeline={"repairs": 1, "degraded": "keywords"}),
+        row(pipeline={"repairs": 1, "degraded": "safety"}),
+        row(pipeline={"repairs": 0, "degraded": None}),
+        row(),
+    ]
+    summary = summarize({"results": rows})
+    assert (summary["cases"], summary["degraded"], summary["no_symbol"]) == (5, 3, 1)
+    assert summary["degraded_without_no_symbol"] == 2
+    assert summary["degraded_rate"] == 3 / 5
+    assert summary["no_symbol_rate"] == 1 / 5
+    assert summary["degraded_without_no_symbol_rate"] == 2 / 5
+    assert summary["submitted"] == 5 and summary["clean_success"] == 2
+    table = render([("pipeline", summary)], None)
+    assert "| 流水线降级 | 3/5 |" in table
+    assert "1/5（20.0%）" in table and "2/5（40.0%）" in table
+
+
+def test_no_symbol_metrics_are_defined_for_empty_and_legacy_reports():
+    empty = summarize({"results": []})
+    assert empty["no_symbol"] == empty["degraded_without_no_symbol"] == 0
+    assert empty["no_symbol_rate"] is empty["degraded_without_no_symbol_rate"] is None
+    legacy = summarize({"results": [row()]})
+    assert legacy["no_symbol_rate"] == legacy["degraded_without_no_symbol_rate"] == 0

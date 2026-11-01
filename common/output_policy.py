@@ -123,6 +123,28 @@ CARE_NEGATED_BELIEF = re.compile(
 CARE_DIRECT_NEGATION = re.compile(r"(?:并非|绝非|并不是|不是)$")
 CARE_CONDITION = re.compile(r"(?:如果|若|万一|一旦)(?:你们|我们|你|您|我)?(?:暂时|一时)?$")
 HEALTH_NOTE = "如有身体不适，请及时就医，以医生的诊断为准。"
+# Medication instructions are hard failures in every mode, including with a semantic judge.
+STOP_MEDICATION = re.compile(
+    r"停药|停用(?:药物|药品)|停止(?:服药|用药|治疗)|不(?:用|必|需要)(?:再)?(?:吃药|服药|用药)"
+)
+MEDICATION_DIRECTIVE = re.compile(
+    r"(?:必须|务必|应该|应当|建议|可以|需要|最好|不妨|请|尽快|立即|马上|直接|自行|擅自)"
+    r"(?:你|您|先|就|再|马上|立即|直接|自行|擅自|突然|逐渐|逐步)*[“‘「\"]?$"
+)
+MEDICATION_NEGATION = re.compile(
+    r"(?:不(?:能|可(?:以)?|应(?:该|当)?|建议|必|需要)|不要|别|勿|切勿|禁止|避免|无需|无须|不得)"
+    r"(?:再|自行|擅自|随意|随便|轻易|马上|立即|直接|突然|贸然|建议|说|认为|以为|觉得|断言|"
+    r"表示|告诉|让|要求|你|您|就|必须|可以|务必)*[“‘「\"]?$"
+)
+MEDICATION_AUTHORITY = re.compile(
+    r"(?:遵循?|按照?|根据)(?:医嘱|医生(?:的)?(?:指导|建议))|"
+    r"(?:由|请|让)(?:医生|医师).{0,12}(?:决定|评估|判断)|"
+    r"(?:医生|医师)(?:指导|确认|同意|评估)(?:后|下)"
+)
+MEDICATION_REFUTED = re.compile(
+    r"^[”’」\"](?:的)?(?:这(?:种|类))?(?:说法|建议|结论)?(?:是)?"
+    r"(?:不(?:正确|可靠|成立|可信)|错误|没有依据|无依据|不可采纳)"
+)
 # Lowest review level of the meanings used → confidence cap and the fact the reason must state.
 # Model cross-review is never written as human review (项目完善计划书 4.2; cap: stage 1 decision 2).
 REVIEW_CAP = {"draft": "low", "model_reviewed": "medium", "human_reviewed": None}
@@ -313,6 +335,27 @@ def care_advice(texts) -> tuple[bool, str | None]:
             elif ADVISE.search(before):
                 advised = True
     return advised, discouraged
+
+
+def medication_error(texts) -> str | None:
+    """Reject affirmative medication instructions, keeping negations and clinician referrals."""
+    for text in texts:
+        for match in STOP_MEDICATION.finditer(text or ""):
+            before = clause_before(text, match.start(), 60)
+            after = text[match.end() :]
+            if (
+                MEDICATION_NEGATION.search(before)
+                or MEDICATION_REFUTED.match(after)
+                or MEDICATION_AUTHORITY.search(before)
+            ):
+                continue
+            if (
+                MEDICATION_DIRECTIVE.search(before)
+                or match.group().startswith("不")
+                or re.match(r"(?:吧|即可|就好|就行)", after)
+            ):
+                return "不能给出停药建议；是否调整用药须由医生评估，请改写后重新提交"
+    return None
 
 
 def care_error(texts) -> str | None:

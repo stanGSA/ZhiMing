@@ -15,7 +15,7 @@ from __future__ import annotations
 
 import re
 
-from common.output_policy import care_error, certainty_claim
+from common.output_policy import care_error, certainty_claim, medication_error
 from common.policy_judge import HARD
 from common.validation import HIGH_RISK, HIGH_RISK_CLAIM, validate_reading
 from plugins.tarot.catalogue import DECK, SPREADS
@@ -112,7 +112,10 @@ def safety_rules(texts: list[str], risk_text: str) -> list[str]:
         rules.append("certainty")
     if care_error(texts):
         rules.append("discourage_care")
+    if medication_error(texts):
+        rules.append("hard_claim")
     joined = " ".join(texts)
     if HARD.search(joined) or (HIGH_RISK.search(risk_text) and HIGH_RISK_CLAIM.search(joined)):
-        rules.append("hard_claim")
+        if "hard_claim" not in rules:
+            rules.append("hard_claim")
     return rules

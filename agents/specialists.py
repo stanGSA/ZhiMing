@@ -5,7 +5,7 @@ from dataclasses import dataclass
 
 from agents.schemas import ReportInput
 from common.evidence import calculation_evidence_texts
-from common.output_policy import care_error, certainty_error, normalize_report
+from common.output_policy import care_error, certainty_error, medication_error, normalize_report
 from common.schemas import Evidence, Reading, Safety, Section
 from common.stages import install
 from common.validation import citation_error
@@ -171,7 +171,7 @@ def validate_report(args: ReportInput, session) -> str | None:
         if not any(s["horizon"] == "timing" for s in own):
             return "子问题指定了时间范围，须计算本体系行运或流期，不能只用原局"
     texts = [args.answer, args.analysis, *(p.text for p in args.points)]
-    return certainty_error(texts) or care_error(texts)
+    return medication_error(texts) or certainty_error(texts) or care_error(texts)
 
 
 def submit_report(args: ReportInput, session) -> dict:

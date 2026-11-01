@@ -295,6 +295,14 @@ async def test_a_symbol_the_extraction_missed_cannot_be_interpreted(make):
         "你还梦见了地铁闸机。这个画面象征阻碍。",
         "地铁闸机这个画面往往和压力有关。",
         "闸机常和被卡住的感觉有关。",
+        "地铁闸机，象征阻碍。",
+        "梦里的地铁闸机，往往代表你对受阻的焦虑。",
+        "地铁闸机这个场景，反映你对规则的抗拒。",
+        "地铁闸机常常联系到阻碍。",
+        "地铁闸机让人联想到阻碍。",
+        "令人焦虑的地铁闸机，象征阻碍。",
+        "地铁闸机让我焦虑，象征阻碍。",
+        "地铁闸机这种感受往往反映最近的压力。",
     ],
 )
 async def test_interpreting_dream_content_outside_the_fact_sheet_is_refused(make, text):
@@ -313,6 +321,8 @@ async def test_interpreting_dream_content_outside_the_fact_sheet_is_refused(make
         "醒来很慌，这种感受往往反映最近的压力。",
         "你在梦里很慌，这往往反映压力。",
         "你梦见掉牙，还遇到了别的场景，这些都提示你先照顾好自己。",
+        "地铁闸机还没有收录，醒来很慌这种感受往往反映最近的压力。",
+        "你还梦见了地铁闸机，但「掉牙」往往和焦虑有关。",
     ],
 )
 async def test_interpreting_the_fact_sheet_and_the_feelings_is_accepted(make, text):
@@ -330,6 +340,26 @@ async def test_only_invalid_extracted_items_fall_back_to_code(make):
     stage = next(e for e in events if e.get("stage") == "extract")
     assert (stage["source"], stage["symbols"]) == ("code", 1)
     assert "「掉牙」" in outcome.text
+
+
+@pytest.mark.parametrize(
+    "text",
+    [
+        "地铁闸机，象征阻碍。",
+        "梦里的地铁闸机，往往代表你对受阻的焦虑。",
+        "地铁闸机常常联系到阻碍。",
+    ],
+)
+async def test_an_omitted_symbol_cannot_be_saved_by_splitting_its_subject(make, text):
+    runtime, _, events = make(
+        extraction([{"phrase": "掉牙", "symbol": "掉牙"}]), with_layer(text), written
+    )
+    outcome = await runtime.turn(MISSED)
+    assert outcome.status == "submit_reading"
+    assert outcome.data["pipeline"]["repairs"] == 1
+    assert planned(events).count("submit_reading") == 1
+    saved = runtime.store.get_reading(runtime.session.user_id, outcome.data["reading_id"])
+    assert not any(text in section["body"] for section in saved["output_json"]["sections"])
 
 
 async def test_an_empty_extraction_still_asks(make):
@@ -414,5 +444,20 @@ async def test_with_the_policy_judge_a_safety_failure_still_ends_in_the_safety_r
     assert info["degraded"] == "safety"
     # The reported problem is the dream rule; the safety class was recorded on its own.
     assert "预兆" in info["problems"][0][0]
-    assert [e["rules"] for e in events if e.get("stage") == "safety"] == [["certainty"]] * 2
+    assert [e["rules"] for e in events if e.get("stage") == "safety"] == [
+        ["certainty", "hard_claim"]
+    ] * 2
     assert outcome.data["reading"]["sections"] == []
+
+
+@pytest.mark.parametrize("judge", [False, True])
+async def test_a_medication_directive_alone_ends_in_safety_degradation(make, judge):
+    bad = lambda messages: written(messages, body="提醒你必须停药。")  # noqa: E731
+    runtime, _, events = make(extraction([{"phrase": "掉牙", "symbol": "掉牙"}]), bad, bad)
+    if judge:
+        runtime.session.policy_judge = AcceptingJudge()
+    outcome = await runtime.turn("昨晚梦见掉牙。")
+    assert outcome.status == "submit_reading"
+    assert outcome.data["pipeline"]["degraded"] == "safety"
+    assert outcome.data["reading"]["sections"] == []
+    assert [e["rules"] for e in events if e.get("stage") == "safety"] == [["hard_claim"]] * 2

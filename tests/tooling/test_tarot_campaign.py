@@ -86,3 +86,5 @@ def test_tarot_batches_publish_single_against_pipeline(tmp_path):
     assert "- Tarot-heldout-pipeline：17/17" in table
     failures = (output / "failures-Tarot-pipeline.md").read_text(encoding="utf-8")
     assert "| 流水线修复过 | 1/24 |" in failures
+    assert "## 流水线降级分类" in table
+    assert "|Tarot-pipeline|0/24（0.0%）|0/24（0.0%）|0/24（0.0%）|" in table

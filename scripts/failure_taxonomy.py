@@ -144,6 +144,8 @@ def summarize(report: dict) -> dict:
         row.get("cached_input_tokens") is not None and row.get("cached_usage_complete", True)
         for row in rows
     )
+    degraded = sum(bool((row.get("pipeline") or {}).get("degraded")) for row in rows)
+    no_symbol = sum((row.get("pipeline") or {}).get("degraded") == "no_symbol" for row in rows)
     return dict(
         run_id=report.get("run_id"),
         mode=report.get("mode"),
@@ -162,7 +164,13 @@ def summarize(report: dict) -> dict:
         task_and_quality=sum(task_success(row) and quality_score(row) is True for row in rows),
         # The pipeline's own record (scripts/live_week23.py); absent rows count as neither.
         repaired=sum(bool((row.get("pipeline") or {}).get("repairs")) for row in rows),
-        degraded=sum(bool((row.get("pipeline") or {}).get("degraded")) for row in rows),
+        # Preserve the historical total; no_symbol is an abstention, not a failed draft.
+        degraded=degraded,
+        degraded_rate=degraded / len(rows) if rows else None,
+        no_symbol=no_symbol,
+        no_symbol_rate=no_symbol / len(rows) if rows else None,
+        degraded_without_no_symbol=degraded - no_symbol,
+        degraded_without_no_symbol_rate=(degraded - no_symbol) / len(rows) if rows else None,
         # 根因整改计划 §5: done in one clean pass, without a tool error, a repair or code writing it.
         clean_success=sum(task_success(row) and clean_pass(row) for row in rows),
         strict_v1=sum(row.get("passed") is True for row in rows),
@@ -240,6 +248,17 @@ def render(summaries: list[tuple[str, dict]], traces: Counter | None, pricing=No
         ),
         ("流水线修复过", lambda s: f"{s['repaired']}/{s['cases']}"),
         ("流水线降级", lambda s: f"{s['degraded']}/{s['cases']}"),
+        (
+            "意象无命中（no_symbol）",
+            lambda s: f"{s['no_symbol']}/{s['cases']}（{rate(s['no_symbol_rate'])}）",
+        ),
+        (
+            "流水线降级（排除 no_symbol，分母仍为全部请求）",
+            lambda s: (
+                f"{s['degraded_without_no_symbol']}/{s['cases']}"
+                f"（{rate(s['degraded_without_no_symbol_rate'])}）"
+            ),
+        ),
         ("质量通过", lambda s: f"{s['quality']}/{s['cases']}"),
         (
             "已提交回答的质量通过率",

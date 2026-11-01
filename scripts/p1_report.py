@@ -226,6 +226,26 @@ def publish(root, output, pricing_path, campaign="p1"):
         table_rows.append(line)
     lines += [
         "",
+        "## 流水线降级分类",
+        "",
+        "保留上表降级总数（包含 no_symbol），供历史比较。意象无命中表示没有可解读资料，"
+        "单独列出；排除无命中的降级包含 keywords、safety 等，分母仍为全部请求。"
+        "已提交回答只表示保存成功，无命中不会计入任务完成且一次做对。",
+        "",
+        "|版本|降级总数 / 请求|意象无命中 / 请求|排除无命中的降级 / 请求|",
+        "|---|---:|---:|---:|",
+    ]
+    for name in runs:
+        if s := summaries.get(name):
+            n = s["cases"]
+            lines.append(
+                f"|{name}|{s['degraded']}/{n}（{s['degraded_rate']:.1%}）|"
+                f"{s['no_symbol']}/{n}（{s['no_symbol_rate']:.1%}）|"
+                f"{s['degraded_without_no_symbol']}/{n}"
+                f"（{s['degraded_without_no_symbol_rate']:.1%}）|"
+            )
+    lines += [
+        "",
         "费用仅被测运行（包含专家/运行审校），不含rubric评委；按pricing.yaml指定日期费率估算，非账单。缺失usage或cache时未知。延迟含澄清、不含rubric评分和准备工作。评委Pro与运行Flash同厂商，人工校准未完成前不宣称评委可靠性已验证。",
         "",
         "## 配对结果",
