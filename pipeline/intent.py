@@ -1,8 +1,9 @@
 """What a message asks for, decided by code (plan §3.4).
 
-P1 routes tarot only. The tarot page fixes the system; elsewhere a message must ask for tarot
-and nothing else. Anything else returns None and keeps the agent loop. A model is not needed to
-decide this for tarot; it is added in P3 for questions that span systems.
+Each system decides whether a message is its own: its page fixes the system; elsewhere a
+message must ask for that system and nothing else. Anything else returns None and keeps the
+agent loop. A model is not needed to decide this for one system; it is added in P3 for
+questions that span systems. Tarot's rules live here; the others' in their own modules.
 """
 
 from __future__ import annotations
@@ -57,9 +58,7 @@ def followup_target(runtime) -> str | None:
     return None
 
 
-def detect(runtime, message: str) -> Intent | None:
-    if "tarot" not in runtime.pipeline_systems:
-        return None
+def detect_tarot(runtime, message: str) -> Intent | None:
     session = runtime.session
     state = session.state
     selected = state.get("selected_systems")

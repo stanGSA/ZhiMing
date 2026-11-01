@@ -3,7 +3,9 @@
 intent → compute → fact sheet → compose → render and verify → at most one repair → degrade.
 Calculations and the submission go through execute_calls as planned calls, so the Guard,
 validate_reading, the store and the trace treat them like a model's calls. Each user message
-uses at most two model calls here: the draft and one repair.
+uses at most three model calls: an intent call where code alone cannot read the question
+(pipeline/dream.py), the draft and one repair. What differs between systems is in their
+pipeline.system.System; the steps here are shared.
 """
 
 from __future__ import annotations
@@ -17,16 +19,14 @@ from harness.budget import Budget
 from harness.failures import failure, model_failure
 from harness.loop import call_model, estimate_call, execute_calls
 from harness.models import ModelResponse, ToolCall, TurnOutcome
-from pipeline import compose, intent, verify
-from pipeline.factsheet import Fact, tarot_facts
-from pipeline.render import reading_args, safety_for
+from pipeline import compose, intent
+from pipeline.dream import Dream
+from pipeline.render import reading_args
 from pipeline.state import RESUMABLE, PipelineRun, restore, snapshot
-from plugins.tarot.catalogue import SPREADS
+from pipeline.tarot import SAFETY_FALLBACK, Tarot
 
-SPREAD_NAMES = {"single": "单张牌", "three_card": "三张牌", "decision": "二选一牌阵"}
-TIMING = re.compile(r"什么时候|何时|时机|下个?月|下周|这周|本周|这个月|本月|今年|明年|下半年")
-# The browser appends the chosen spread to the message; the reading keeps the question itself.
-SPREAD_NOTE = re.compile(r"\n*我选择的牌阵为：[^\n]*")
+# In the order their detection runs: a message is the first system's that claims it.
+SYSTEM_TYPES = (Tarot, Dream)
 MAX_REPAIRS = 1
 TRUNCATED = "上一稿超过输出上限被截断：请精简为摘要加2-3层，每层不超过250字"
 # Problems that fail a safety rule rather than a fact (common/validation.py, output_policy.py):
@@ -35,7 +35,7 @@ HARD_SAFETY = re.compile(
     r"不能给出健康、投资或生死的确定性结论|不能给出确定性结果或停药建议|不能劝阻就医"
 )
 CERTAINTY = re.compile(r"这类确定性说法")
-SAFETY_FALLBACK = "这类问题牵涉重大的现实决定，请结合专业意见再做判断。"
+__all__ = ["SAFETY_FALLBACK", "SYSTEM_TYPES", "PipelineRunner"]
 
 
 class PipelineRunner:
@@ -45,10 +45,11 @@ class PipelineRunner:
         self.store = runtime.store
         self.tracer = runtime.tracer
         self.step = 0
+        self.systems = {kind.name: kind(runtime) for kind in SYSTEM_TYPES}
 
     async def turn(self, message: str) -> TurnOutcome | None:
         """None when the pipeline does not handle this message; the agent loop does."""
-        found = intent.detect(self.runtime, message)
+        found = self.detect(message)
         if found is None:
             return None
         self.session.append_user(message)
@@ -62,27 +63,29 @@ class PipelineRunner:
         self.session.messages.append({"role": "assistant", "content": outcome.text})
         return outcome
 
+    def detect(self, message: str) -> intent.Intent | None:
+        for name, system in self.systems.items():
+            if name in self.runtime.pipeline_systems:
+                found = system.detect(self.runtime, message)
+                if found is not None:
+                    return found
+        return None
+
     # ---- stages --------------------------------------------------------------------------
 
     async def run(self, found: intent.Intent, message: str) -> TurnOutcome:
         state = self.session.state
         prior = None
         extra = ""
+        system = self.systems[found.system]
         if found.kind == "new":
             stale = self.store.unfinished_pipeline_run(self.session.user_id)
             if stale:
-                self.store.finish_pipeline_run(stale["run_id"])  # an abandoned draw
-            question = SPREAD_NOTE.sub("", message).strip() or message
-            run = PipelineRun("tarot", "new", question)
-            results, _ = await self.planned(
-                [
-                    ("start_reading", {"question": question, "systems": ["tarot"]}),
-                    ("draw_tarot", {"question": question}),
-                ]
-            )
-            if not all(result["ok"] for result in results):
-                error = next(r for r in results if not r["ok"])
-                return failure(self.session, "tool_error", error.get("code"), error["error"])
+                self.store.finish_pipeline_run(stale["run_id"])  # an abandoned calculation
+            run = PipelineRun(system.name, "new", system.question(message))
+            stopped = await system.compute(self, run)
+            if stopped is not None:
+                return stopped
             run.snapshot = snapshot(self.session.state)
             run.save(self.store, self.session, "computed")
         elif found.kind == "resume":
@@ -98,7 +101,7 @@ class PipelineRunner:
                 run = (
                     PipelineRun.load(stored)
                     if same
-                    else PipelineRun("tarot", "new", state.get("question") or message)
+                    else PipelineRun(system.name, "new", state.get("question") or message)
                 )
                 run.snapshot = snapshot(self.session.state)
                 # A run stopped after a failed draft keeps its stage, so it resumes at the repair.
@@ -108,7 +111,7 @@ class PipelineRunner:
             if message.strip() != run.question.strip() and not intent.CONTINUE.search(message):
                 extra = message.strip()
         else:
-            run = PipelineRun("tarot", "followup", SPREAD_NOTE.sub("", message).strip() or message)
+            run = PipelineRun(system.name, "followup", system.question(message))
             results, _ = await self.planned([("read_reading", {"reading_id": found.reading_id})])
             if not results[0]["ok"]:
                 return failure(self.session, "tool_error", results[0].get("code"), "没有找到原记录")
@@ -117,18 +120,23 @@ class PipelineRunner:
         return await self.write(run, prior=prior, extra=extra)
 
     async def write(self, run: PipelineRun, *, prior=None, extra="") -> TurnOutcome:
-        facts = tarot_facts(self.session)
+        system = self.systems[run.system]
+        facts = system.facts(self.session)
         state = self.session.state
-        spread = state["tarot_result"]["spread"]
-        spread_note = f"{SPREAD_NAMES[spread]}（{'、'.join(SPREADS[spread])}）"
         followup = run.kind == "followup"
-        question_type = self.question_type(run.question, spread, followup)
+        question_type = system.question_type(run, self.session, followup)
         # The reading's question counts as much as this turn's: a follow-up to a question about
         # savings and stocks carries the same risk, exactly as validate_reading judges it.
         risk_text = f"{state.get('question') or ''} {run.question}"
-        messages = compose.tarot_messages(
-            run.question, spread_note, facts, extra=extra, prior=prior
+        template = (
+            None if followup else system.template(self.session, facts, question_type, risk_text)
         )
+        if template is not None:
+            # Nothing to interpret: code writes the whole reading, no writing call is made.
+            run.degraded, args = template
+            self.stage("template", run_id=run.run_id, kind=run.degraded)
+            return await self.submit_by_code(run, args)
+        messages = system.messages(run, facts, self.session, prior=prior, extra=extra)
         try:
             if run.stage == "composed" and run.drafts and run.repairs < MAX_REPAIRS:
                 # The run stopped after a failed draft: continue at its repair.
@@ -170,8 +178,18 @@ class PipelineRunner:
         )
         run.degraded = "safety" if hard else "keywords"
         self.stage("degrade", run_id=run.run_id, kind=run.degraded)
-        args = self.degraded(facts, question_type, risk_text, followup, safety_only=hard)
-        _, terminal = await self.submit(run, args)
+        args = system.degraded(
+            self.session, facts, question_type, risk_text, followup, safety_only=hard
+        )
+        return await self.submit_by_code(run, args)
+
+    async def submit_by_code(self, run: PipelineRun, args: dict) -> TurnOutcome:
+        """Submit a reading code wrote; if even that is refused, keep the run for 继续."""
+        try:
+            _, terminal = await self.submit(run, args)
+        except Stopped as stop:
+            self.keep(run)
+            return stop.outcome
         if terminal is not None:
             return self.finish(run, terminal)
         self.keep(run)
@@ -179,20 +197,22 @@ class PipelineRunner:
             self.session,
             "validation_failed",
             "pipeline_degrade_failed",
-            "这次解读没有通过事实核对，牌面已保留；可以发送“继续”重试。",
+            f"这次解读没有通过事实核对，{self.systems[run.system].kept}已保留；可以发送“继续”重试。",
         )
 
     async def check_and_submit(self, run, draft_text, facts, question_type, risk_text, followup):
         """(problems, terminal outcome); the outcome is set when the reading was saved."""
+        system = self.systems[run.system]
         draft, problems = compose.parse(draft_text, sections_required=not followup)
         if problems:
             return problems, None
         args, problems, texts = reading_args(
             draft, facts, question_type=question_type, question=risk_text
         )
-        problems += verify.tarot_problems(texts, verify.drawn_cards(self.session.state))
+        problems += system.problems(texts, self.session)
         if problems:
             return problems, None
+        system.complete(args, self.session)
         result, terminal = await self.submit(run, args)
         if terminal is not None:
             return [], terminal
@@ -232,69 +252,6 @@ class PipelineRunner:
         return terminal
 
     # ---- helpers -------------------------------------------------------------------------
-
-    @staticmethod
-    def question_type(question: str, spread: str, followup: bool) -> str:
-        if followup:
-            return "tarot"
-        if spread == "decision":
-            return "decision"
-        return "timing" if TIMING.search(question) else "tarot"
-
-    def degraded(
-        self, facts: list[Fact], question_type: str, risk_text: str, followup: bool, *, safety_only
-    ):
-        """A reading made by code alone.
-
-        Normally each card, its position and its keywords. When the drafts failed on a safety
-        rule of a high-risk question, no interpretation at all: the cards and the safety note.
-        """
-        cards = {card["label"]: card for card in self.session.state["tarot_result"]["cards"]}
-        listed = "、".join(f"{fact.label}位{fact.text}" for fact in facts)
-        safety = safety_for(risk_text)
-        evidence = [{"ref_id": fact.alias} for fact in facts]
-        if safety_only:
-            return {
-                "question_type": question_type,
-                "systems_used": ["tarot"],
-                "summary": f"这次抽到{listed}。这个问题牵涉重大的现实决定，这次不根据牌面给出判断。"[
-                    :200
-                ],
-                "sections": [],
-                "evidence": evidence,
-                "advice": ["先听专业意见：把实际情况交给相关专业人士评估，再决定下一步。"],
-                "closing": "",
-                "confidence": {"level": "low", "reason": "这次没有给出牌面解读。"},
-                "safety": safety if safety["flag"] else {"flag": True, "note": SAFETY_FALLBACK},
-            }
-        sections = []
-        for fact in facts:
-            keywords = "、".join((cards[fact.label].get("meaning") or {}).get("keywords") or [])
-            body = f"{fact.label}位是{fact.text}。"
-            if keywords:
-                body += f"这张牌常和{keywords}有关，可以对照你现在的处境想一想。"
-            sections.append(
-                {"title": f"{fact.label}位：{fact.text}", "body": body, "ref_ids": [fact.alias]}
-            )
-        summary = (
-            f"你问到的牌面是：{listed}。下面先给出每张牌的一般含义，请结合自己的处境对照。"
-            if followup
-            else f"这次抽到{listed}。下面先给出每张牌的一般含义，请结合自己的处境对照。"
-        )
-        return {
-            "question_type": question_type,
-            "systems_used": ["tarot"],
-            "summary": summary[:200],
-            "sections": sections,
-            "evidence": evidence,
-            "advice": [
-                "先对照：把每张牌的关键词和你最近的处境逐条对一对。",
-                "再行动：选一件最能落地的小事先做，过一段时间再回头看。",
-            ],
-            "closing": "",
-            "confidence": {"level": "low", "reason": "这次只给出了牌面的一般含义。"},
-            "safety": safety,
-        }
 
     def stage(self, name: str, **fields) -> None:
         self.tracer.log(self.session, "pipeline_stage", stage=name, **fields)

@@ -95,11 +95,19 @@ def validate_output(reading, state, matcher):
     hits = {h["key"] for r in found for h in r["hits"]}
     misses = {m for r in found for m in r["misses"]}
     for text in texts:
-        for match in PROPHECY.finditer(text):
-            if not NEGATION.search(text[max(0, match.start() - 6) : match.start()]):
-                return "解梦只提供心理层面的线索，不能把梦境说成现实事件的预兆"
-        for clause in CLAUSES.split(text):
-            error = ungrounded(clause, matcher, hits, misses)
-            if error:
-                return error
+        error = text_error(text, matcher, hits, misses)
+        if error:
+            return error
+    return None
+
+
+def text_error(text, matcher, hits, misses):
+    """The first problem of one user-visible text: a prophecy, or an ungrounded symbol."""
+    for match in PROPHECY.finditer(text):
+        if not NEGATION.search(text[max(0, match.start() - 6) : match.start()]):
+            return "解梦只提供心理层面的线索，不能把梦境说成现实事件的预兆"
+    for clause in CLAUSES.split(text):
+        error = ungrounded(clause, matcher, hits, misses)
+        if error:
+            return error
     return None

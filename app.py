@@ -5,7 +5,7 @@ import json
 import shutil
 import time
 from collections.abc import Callable
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from datetime import UTC, datetime
 from pathlib import Path
 
@@ -68,6 +68,8 @@ class Runtime:
     clock: Callable[[], datetime] = lambda: datetime.now(UTC)
     # Systems whose questions go through the code-driven pipeline (mode "pipeline").
     pipeline_systems: tuple[str, ...] = ()
+    # The calculation plugins by system, for the pipeline's own use of them (P2).
+    plugins: dict = field(default_factory=dict)
 
     def compact_history(self) -> None:
         if self.session.state.get("complete"):
@@ -397,4 +399,5 @@ def create_runtime(
         pipeline_systems=tuple((config.get("pipeline") or {}).get("systems") or ())
         if mode == "pipeline" and not isinstance(model, DemoModel)
         else (),
+        plugins={plugin.name: plugin for plugin in (*plugins, daily)},
     )
