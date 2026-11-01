@@ -36,6 +36,10 @@ RISKS = (
     ),
 )
 HIGH_RISK = re.compile("|".join(pattern for _, pattern, _ in RISKS))
+# Claims a high-risk answer may never make, negated or not as written here.
+HIGH_RISK_CLAIM = re.compile(
+    r"(?<!不)(?<!不能)(?<!无法)保证收益|稳赚|必死|(?<!不)可以停药|必然确诊"
+)
 
 
 def risk_note(text: str) -> str | None:
@@ -226,8 +230,6 @@ def validate_reading(reading, session) -> str | None:
             return "涉及健康、投资、法律或生死，必须标注安全说明"
         # 一定会 counts only where no negation governs it, as everywhere else: "不一定会" and
         # "这不代表这只股票一定会涨" are the hedges these answers are asked to write.
-        if certainty_claim(authored_texts(reading)) or re.search(
-            r"(?<!不)(?<!不能)(?<!无法)保证收益|稳赚|必死|(?<!不)可以停药|必然确诊", text
-        ):
+        if certainty_claim(authored_texts(reading)) or HIGH_RISK_CLAIM.search(text):
             return "不能给出健康、投资或生死的确定性结论"
     return None

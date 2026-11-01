@@ -192,3 +192,21 @@ async def test_a_run_stopped_after_a_failed_draft_resumes_at_its_repair(make):
     assert [e["purpose"] for e in events if e["event"] == "model_response"] == ["repair"]
     assert "格式：缺少【摘要】" in composer.seen[0][0][-1]["content"]
     assert outcome.data["pipeline"]["repairs"] == 1
+
+
+async def test_a_safety_claim_behind_a_card_error_still_ends_in_the_safety_reply(make):
+    """PR #40 review 4, on the shared runner: a draft refused for a wrong card first is still
+    classified by the hard safety rules it breaks, so two such drafts on a high-risk question
+    end in the safety reply instead of a reading of the cards."""
+    from tests.pipeline.drafts import wrong_orientation
+
+    def risky(messages):
+        return wrong_orientation(messages).replace("【收尾】", "【收尾】这只股票稳赚。")
+
+    runtime = make(risky, risky)[0]
+    outcome = await runtime.turn("只用塔罗三张牌帮我反思：是否应该把积蓄全部买入一只股票？")
+    assert outcome.status == "submit_reading"
+    info = outcome.data["pipeline"]
+    assert "牌面方向错误" in info["problems"][0][0]
+    assert info["degraded"] == "safety"
+    assert outcome.data["reading"]["sections"] == []

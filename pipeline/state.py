@@ -29,7 +29,8 @@ class PipelineRun:
     problems: list[list[str]] = field(default_factory=list)
     model_calls: int = 0
     repairs: int = 0
-    degraded: str | None = None  # "keywords" or "safety" when code wrote the reading
+    degraded: str | None = None  # how code wrote the reading: "keywords", "safety", …
+    safety: list[list[str]] = field(default_factory=list)  # hard safety rules of each draft
 
     def record(self) -> dict:
         """What is kept with the saved reading and reported: how it was written, not drafts."""

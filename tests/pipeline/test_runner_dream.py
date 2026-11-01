@@ -259,3 +259,160 @@ async def test_a_refused_code_reading_returns_the_refusal_and_keeps_the_run(make
     outcome = await runtime.turn("我梦见自己站在地铁闸机前面，怎么也刷不过去。")
     assert (outcome.status, outcome.text) == ("retry_limit", "提交被拒")
     assert runtime.store.unfinished_pipeline_run(runtime.session.user_id)["stage"] == "computed"
+
+
+# ---- PR #40 review --------------------------------------------------------------------------
+
+MISSED = "昨晚梦见掉牙，还遇到地铁闸机。"
+SEVEN = "昨晚梦见考试、迷路、游泳、爬山、开车、跳舞、哭，帮我解梦。"
+SEVEN_SYMBOLS = [
+    {"phrase": w, "symbol": w} for w in ("考试", "迷路", "游泳", "爬山", "开车", "跳舞", "哭")
+]
+
+
+def with_layer(text):
+    return lambda m: written(m).replace("【建议】", f"【分层】另一层\n{text}\n【建议】")
+
+
+async def test_a_symbol_the_extraction_missed_cannot_be_interpreted(make):
+    """Review 1: the checks must not depend on the extraction naming every symbol."""
+    only_teeth = extraction([{"phrase": "掉牙", "symbol": "掉牙"}])
+    runtime, composer, events = make(only_teeth, with_layer("地铁闸机象征阻碍。"), written)
+    outcome = await runtime.turn(MISSED)
+    assert outcome.status == "submit_reading"
+    info = outcome.data["pipeline"]
+    assert (info["repairs"], info["degraded"]) == (1, None)
+    assert info["problems"][0] == ["“地铁闸机”不在事实表里，只能解读事实表里的意象"]
+    assert "地铁闸机象征" not in outcome.text
+    assert planned(events).count("submit_reading") == 1
+
+
+@pytest.mark.parametrize(
+    "text",
+    [
+        "地铁闸机象征阻碍。",
+        "梦见地铁闸机，说明你遇到了阻碍。",
+        "你还梦见了地铁闸机。这个画面象征阻碍。",
+        "地铁闸机这个画面往往和压力有关。",
+        "闸机常和被卡住的感觉有关。",
+    ],
+)
+async def test_interpreting_dream_content_outside_the_fact_sheet_is_refused(make, text):
+    runtime, *_ = make(extraction([{"phrase": "掉牙", "symbol": "掉牙"}]), written)
+    runtime.session.state["selected_systems"] = ["dream"]
+    await runtime.turn(MISSED)
+    assert Dream(runtime).unlisted([text], runtime.session), text
+
+
+@pytest.mark.parametrize(
+    "text",
+    [
+        "「掉牙」往往和焦虑有关，如果你正在面对压力，可以先放慢节奏。",
+        "梦见掉牙常和担心失去掌控有关。",
+        "这个梦主要反映你最近的紧张和不安。",
+        "醒来很慌，这种感受往往反映最近的压力。",
+        "你在梦里很慌，这往往反映压力。",
+        "你梦见掉牙，还遇到了别的场景，这些都提示你先照顾好自己。",
+    ],
+)
+async def test_interpreting_the_fact_sheet_and_the_feelings_is_accepted(make, text):
+    runtime, *_ = make(extraction([{"phrase": "掉牙", "symbol": "掉牙"}]), written)
+    await runtime.turn(MISSED.replace("。", "，醒来很慌。"))
+    assert Dream(runtime).unlisted([text], runtime.session) == [], text
+
+
+async def test_only_invalid_extracted_items_fall_back_to_code(make):
+    """Review 1: a list of invalid items is not the model saying there is no dream."""
+    invalid = extraction([{"phrase": "牙齿掉光了", "symbol": "掉牙"}])
+    runtime, _, events = make(invalid, written)
+    outcome = await runtime.turn("昨晚梦见掉牙。")
+    assert outcome.status == "submit_reading"
+    stage = next(e for e in events if e.get("stage") == "extract")
+    assert (stage["source"], stage["symbols"]) == ("code", 1)
+    assert "「掉牙」" in outcome.text
+
+
+async def test_an_empty_extraction_still_asks(make):
+    runtime, *_ = make(extraction([]))
+    outcome = await runtime.turn("昨晚梦见掉牙。")
+    assert outcome.status == "ask_user"
+
+
+def broken(messages):
+    return "这不是标记文本"
+
+
+@pytest.mark.parametrize("misses", [False, True])
+async def test_many_symbols_degrade_to_at_most_six_layers(make, misses):
+    """Review 2: twelve symbols may be matched, a reading holds six layers."""
+    symbols = SEVEN_SYMBOLS + ([{"phrase": "地铁闸机", "symbol": "地铁闸机"}] if misses else [])
+    question = SEVEN.replace("，帮我", "、地铁闸机，帮我") if misses else SEVEN
+    runtime, *_ = make(extraction(symbols), broken, broken)
+    outcome = await runtime.turn(question)
+    assert outcome.status == "submit_reading"
+    assert outcome.data["pipeline"]["degraded"] == "keywords"
+    sections = outcome.data["reading"]["sections"]
+    assert len(sections) <= 6
+    # No matched symbol is dropped to fit.
+    cited = {ref for section in sections for ref in section["ref_ids"]}
+    symbols_cited = [r for r in cited if ":convention:" not in r and not r.endswith(":unmatched")]
+    assert len(symbols_cited) == 7
+    assert (sections[-1]["title"] == UNMATCHED_TITLE) is misses
+
+
+async def test_many_symbols_degrade_within_the_limit_without_any_model_call(make):
+    """Review 2: with no budget code extracts the symbols and writes the reading alone."""
+    runtime, _, events = make()
+    runtime.token_budget = 1
+    outcome = await runtime.turn(SEVEN)
+    assert outcome.status == "submit_reading"
+    assert purposes(events) == []
+    assert outcome.data["pipeline"]["degraded"] == "keywords"
+    assert len(outcome.data["reading"]["sections"]) <= 6
+
+
+@pytest.mark.parametrize("page", [["dream"], None])
+@pytest.mark.parametrize(
+    "message",
+    [
+        "刚才那个梦里的掉牙为什么和压力有关？",
+        "这个梦里的掉牙具体是什么意思？",
+        "那段解读里说的失去掌控是指什么？",
+    ],
+)
+async def test_a_follow_up_on_a_saved_dream_stays_with_the_agent_loop(make, page, message):
+    """Review 3: a follow-up must not start a new reading."""
+    runtime, *_ = make(extraction(), written)
+    runtime.session.state["selected_systems"] = ["dream"]
+    first = await runtime.turn(QUESTION)
+    assert first.status == "submit_reading"
+    runtime.session.state["selected_systems"] = page
+    assert Dream(runtime).detect(runtime, message) is None
+
+
+async def test_a_new_dream_after_a_saved_one_is_a_new_reading(make):
+    runtime, *_ = make(extraction(), written)
+    await runtime.turn(QUESTION)
+    assert (
+        Dream(runtime).detect(runtime, "今天又梦见被一条大狗追了，这次是什么意思？").kind == "new"
+    )
+
+
+class AcceptingJudge:
+    async def check(self, texts, session):
+        return None
+
+
+async def test_with_the_policy_judge_a_safety_failure_still_ends_in_the_safety_reply(make):
+    """Review 4: the prophecy rule catching the draft first must not hide its safety class."""
+    sure = lambda m: written(m, body="说明你一定会生病，必须停药。")  # noqa: E731
+    runtime, _, events = make(extraction([{"phrase": "掉牙", "symbol": "掉牙"}]), sure, sure)
+    runtime.session.policy_judge = AcceptingJudge()
+    outcome = await runtime.turn("昨晚梦见掉牙，醒来担心健康。")
+    assert outcome.status == "submit_reading"
+    info = outcome.data["pipeline"]
+    assert info["degraded"] == "safety"
+    # The reported problem is the dream rule; the safety class was recorded on its own.
+    assert "预兆" in info["problems"][0][0]
+    assert [e["rules"] for e in events if e.get("stage") == "safety"] == [["certainty"]] * 2
+    assert outcome.data["reading"]["sections"] == []

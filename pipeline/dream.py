@@ -32,13 +32,52 @@ OTHER = re.compile(
     r"塔罗|牌阵|抽[一二两三]?张|[一二两三单]张牌|八字|四柱|命盘|占星|星盘|星座|行运|本命|"
     r"姓名|名字|五格|运势|流日|流年|大运"
 )
-# A follow-up about a saved dream reading stays with the agent loop in P2.
+# A follow-up about a saved dream reading stays with the agent loop in P2: a message that
+# points back at it, or, once there is one, a message that tells no new dream.
 REFERS_TO_READING = re.compile(
-    r"(?:上一条|上一次|上次|刚才|之前|那次|原来)(?:那次|那条|的)?(?:解梦|解读|记录)|原记录"
+    r"(?:上一条|上一次|上次|刚才|之前|前面|那次|原来)(?:那个|这个|那次|那条|的)?"
+    r"(?:梦|解梦|解读|记录|分析)|原记录|[这那]段解读|(?:你|刚才)(?:说|提到)的"
 )
+NARRATES = re.compile(r"梦见|梦到|做了.{0,8}梦|做梦|噩梦|又梦")
+# What interprets a symbol, and the clause it sits in (plugins/dream/validation.py splits alike).
+INTERPRETS = re.compile(
+    r"象征|代表|意味|寓意|暗示|预示|反映|折射|对应|说明|提示|"
+    r"(?:与|和|跟|同)[^，,。；;！!？?\n]{0,12}?(?:有关|相关|相连|有联系|联系在一起)"
+)
+CLAUSE = re.compile(r"[，,。；;！!？?\n]|但是|可是|不过|然而")
+# A clause that names something of the dream rather than a feeling.
+NAMES_CONTENT = re.compile(r"梦见|梦到|遇到|看到|看见|碰到|出现|还有|路过|经过")
+GENERIC = re.compile(
+    r"这个梦境?|这场梦|整个梦|梦境|梦里的?|梦中的?|这个意象|这些意象|这个画面|这个场景|这一幕|"
+    r"这种感受|这种情绪|这份感受|它们|它|这些|两者|二者|前者|后者|你们|你|自己|"
+    r"梦见了?|梦到了?|一般来说|传统上|通常|往往|常常|一般|多半|可能|也许|或许|似乎|"
+    r"[这那在的了也都还常多会更又与和跟同而则就被]"
+)
+HAN_RUN = re.compile(r"[\u4e00-\u9fff]{2,}")
+# Two-character words of a description that are not part of what was dreamed.
+COMMON_GRAMS = frozenset(
+    "梦见 梦到 做梦 梦里 梦中 昨晚 昨天 前天 今天 最近 晚上 醒来 心里 感觉 感受 心情 情绪 "
+    "自己 一个 一直 怎么 什么 意思 帮我 解梦 解个 这个 那个 说明 后来 还有 然后 时候 一下 "
+    "有点 很多 非常 特别 好像 突然 理解 是不 不是 解释 请问 可能 是否 这样 那样 我们 你们 "
+    "害怕 紧张 焦虑 难过 慌张 不安 压力 担心 开心 轻松 "
+    "遇到 看到 看见 碰到 出现 路过 经过".split()
+)
+
+
+def strip(text: str, terms: list[str]) -> str:
+    for term in terms:
+        text = text.replace(term, " ")
+    return text
+
+
+def grams(text: str) -> list[str]:
+    return [text[i : i + 2] for i in range(len(text) - 1) if " " not in text[i : i + 2]]
+
+
 MAX_SYMBOLS = 12
 NO_DREAM = "请描述一下梦里的内容：出现了哪些人、物或场景，发生了什么，醒来时是什么感受。"
 UNMATCHED_TITLE = "词典没有收录的意象"
+MAX_SECTIONS = 6  # common.schemas.Reading
 SAFETY_FALLBACK = "这类问题牵涉健康或其他重大的现实决定，请结合专业意见再做判断。"
 
 
@@ -70,7 +109,25 @@ class Dream(System):
             return None
         if REFERS_TO_READING.search(message):
             return None
+        if not NARRATES.search(message) and self.saved_dream(runtime):
+            # “这个梦里的掉牙为什么和压力有关” after a reading asks about that reading.
+            return None
         return Intent("dream", "new")
+
+    @staticmethod
+    def saved_dream(runtime) -> bool:
+        """Whether this conversation's reading, else the user's latest, is a dream reading."""
+        session, store = runtime.session, runtime.store
+        state = session.state
+        candidates = []
+        if state.get("complete") and state.get("active_reading_id"):
+            candidates.append(state["active_reading_id"])
+        candidates += [row["reading_id"] for row in store.recent_readings(session.user_id, limit=1)]
+        for reading_id in candidates:
+            saved = store.get_reading(session.user_id, reading_id)
+            if saved:
+                return saved.get("systems_used") == ["dream"]
+        return False
 
     def candidates(self, text: str) -> list[dict]:
         """The dictionary's symbols found in the text by code: aliases and documented phrases."""
@@ -121,7 +178,11 @@ class Dream(System):
             except (ValueError, AttributeError):
                 items = None
             if isinstance(items, list):
-                return self.accepted(items, run.question), "model"
+                kept = self.accepted(items, run.question)
+                # An empty list says there is no dream; a list of only invalid items says
+                # nothing, so code's own symbols stand.
+                if kept or not items:
+                    return kept, "model"
         return self.accepted(candidates, run.question), "code"
 
     # ---- ③ compute -----------------------------------------------------------------------
@@ -207,9 +268,56 @@ class Dream(System):
         hits = {hit["key"] for hit in result["hits"]}
         misses = set(result["misses"])
         found = [text_error(text, self.matcher, hits, misses) for text in texts]
+        found += self.unlisted(texts, session)
         if session.policy_judge is None:  # with the judge, submission applies its own checks
             found += [certainty_error(texts), care_error(texts)]
         return list(dict.fromkeys(problem for problem in found if problem))
+
+    def hit_terms(self, session) -> list[str]:
+        """Every way the reading may name a matched symbol: rendered, key, alias, phrase."""
+        result = self.result(session.state)
+        keys = {hit["key"] for hit in result["hits"]}
+        terms = {f"「{key}」" for key in keys} | keys
+        terms |= {alias for alias, key in self.matcher.aliases.items() if key in keys}
+        terms |= {hit["phrase"] for hit in result["hits"] if hit.get("phrase")}
+        return sorted(terms, key=len, reverse=True)
+
+    def unlisted(self, texts, session) -> list[str]:
+        """Interpretations of something from the dream that is not in the fact sheet.
+
+        Unmatched symbols are caught as such, but only those the extraction named: a symbol
+        it missed is neither known nor unmatched. So, independently of the extraction, the
+        subject of an interpretation (象征, 反映, 和……有关 …) may hold only matched symbols and
+        generic words; content of the user's dream there is refused. A generic subject (“这个
+        画面”) right after the dream's other content was named (“还梦见了地铁闸机”) is refused
+        too. Content counts when it shares two characters with the user's own description
+        outside the matched symbols' words and a short list of common words.
+        """
+        terms = self.hit_terms(session)
+        dream = strip(session.state.get("question") or "", terms)
+        described = {gram for gram in grams(dream) if gram not in COMMON_GRAMS}
+
+        def other(text: str) -> str:
+            rest = GENERIC.sub(" ", strip(text, terms))
+            return next((run for run in HAN_RUN.findall(rest) if set(grams(run)) & described), "")
+
+        problems = []
+        for text in texts:
+            named = ""
+            for clause in CLAUSE.split(text):
+                verb = INTERPRETS.search(clause)
+                if verb:
+                    subject = clause[: verb.start()]
+                    content = other(subject)
+                    if content:
+                        problems.append(f"“{content}”不在事实表里，只能解读事实表里的意象")
+                    elif named and not any(term in subject for term in terms):
+                        problems.append(f"“{named}”不在事实表里，只能解读事实表里的意象")
+                if NAMES_CONTENT.search(clause):
+                    named = other(clause) or ("" if any(t in clause for t in terms) else named)
+                elif any(term in clause for term in terms):
+                    named = ""
+        return problems
 
     def unmatched_section(self, session) -> dict | None:
         misses = self.misses(session)
@@ -226,7 +334,7 @@ class Dream(System):
         section = self.unmatched_section(session)
         if section is None:
             return
-        if len(args["sections"]) < 6:
+        if len(args["sections"]) < MAX_SECTIONS:
             args["sections"].append(section)
         else:
             last = args["sections"][-1]
@@ -284,13 +392,29 @@ class Dream(System):
             for item in self.result(session.state)["interpretations"]
             if item["kind"] == "symbol"
         }
+        # At most six layers with the unmatched symbols' own: several symbols share a layer
+        # when there are more of them, none is left out.
+        slots = MAX_SECTIONS - (1 if self.misses(session) else 0)
+        size = max(1, -(-len(facts) // slots))
         sections = []
-        for fact in facts:
-            keywords = "、".join(meanings.get(fact.label, {}).get("keywords") or [])
-            body = f"梦见{fact.text}。"
-            if keywords:
-                body += f"这个意象常和{keywords}有关，可以对照最近的心情和压力想一想。"
-            sections.append({"title": fact.text, "body": body, "ref_ids": [fact.alias]})
+        for start in range(0, len(facts), size):
+            group = facts[start : start + size]
+            sentences = []
+            for fact in group:
+                keywords = "、".join(meanings.get(fact.label, {}).get("keywords") or [])
+                sentence = f"梦见{fact.text}。"
+                if keywords:
+                    sentence += f"这个意象常和{keywords}有关。"
+                sentences.append(sentence)
+            sentences.append("可以对照最近的心情和压力想一想。")
+            title = "".join(fact.text for fact in group)
+            sections.append(
+                {
+                    "title": title if len(title) <= 60 else f"{group[0].text}等{len(group)}个意象",
+                    "body": "".join(sentences)[:1200],
+                    "ref_ids": [fact.alias for fact in group],
+                }
+            )
         args = {
             "question_type": question_type,
             "systems_used": ["dream"],

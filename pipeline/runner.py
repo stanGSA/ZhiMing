@@ -21,9 +21,10 @@ from harness.loop import call_model, estimate_call, execute_calls
 from harness.models import ModelResponse, ToolCall, TurnOutcome
 from pipeline import compose, intent
 from pipeline.dream import Dream
-from pipeline.render import reading_args
+from pipeline.render import expand, reading_args
 from pipeline.state import RESUMABLE, PipelineRun, restore, snapshot
 from pipeline.tarot import SAFETY_FALLBACK, Tarot
+from pipeline.verify import safety_rules
 
 # In the order their detection runs: a message is the first system's that claims it.
 SYSTEM_TYPES = (Tarot, Dream)
@@ -149,6 +150,7 @@ class PipelineRunner:
             while True:
                 if problems is None:
                     run.drafts.append(draft_text)
+                    run.safety.append(self.classify(draft_text, facts, risk_text, run))
                     if truncated:
                         problems, terminal = [TRUNCATED], None
                     else:
@@ -172,9 +174,15 @@ class PipelineRunner:
         except Stopped as stop:
             self.keep(run)
             return stop.outcome
-        hard = any(HARD_SAFETY.search(p) for p in run.problems[-1]) or bool(
-            HIGH_RISK.search(risk_text)
-            and any(CERTAINTY.search(p) for problems in run.problems for p in problems)
+        last = set(run.safety[-1]) if run.safety else set()
+        hard = (
+            any(HARD_SAFETY.search(p) for p in run.problems[-1])
+            or bool(
+                HIGH_RISK.search(risk_text)
+                and any(CERTAINTY.search(p) for problems in run.problems for p in problems)
+            )
+            or bool(last & {"discourage_care", "hard_claim"})
+            or any("certainty" in rules for rules in run.safety)
         )
         run.degraded = "safety" if hard else "keywords"
         self.stage("degrade", run_id=run.run_id, kind=run.degraded)
@@ -182,6 +190,14 @@ class PipelineRunner:
             self.session, facts, question_type, risk_text, followup, safety_only=hard
         )
         return await self.submit_by_code(run, args)
+
+    def classify(self, draft_text: str, facts, risk_text: str, run: PipelineRun) -> list[str]:
+        """The hard safety rules this draft breaks, whatever its first reported problem is."""
+        rendered, _, _ = expand(draft_text, {fact.alias: fact for fact in facts})
+        rules = safety_rules([rendered], risk_text)
+        if rules:
+            self.stage("safety", run_id=run.run_id, draft=len(run.drafts), rules=rules)
+        return rules
 
     async def submit_by_code(self, run: PipelineRun, args: dict) -> TurnOutcome:
         """Submit a reading code wrote; if even that is refused, keep the run for 继续."""
