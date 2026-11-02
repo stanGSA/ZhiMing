@@ -22,6 +22,7 @@ from pipeline.intent import CONTINUE, Intent
 from pipeline.render import safety_for
 from pipeline.state import RESUMABLE
 from pipeline.system import System
+from plugins.name.input_evidence import ORIGINAL_FORM, single_surname
 from plugins.name.tools import HAN, NameInput, NamePlugin
 from plugins.name.validation import FATALISM, check_claims, name_results
 from plugins.name.wuge import COMPOUND_SURNAMES
@@ -31,18 +32,20 @@ NAME = re.compile(r"名字|姓名|五格|三才|笔画|数理")
 OUT_OF_SCOPE = re.compile(r"起名|取名|改名|合婚|配对")
 OTHER = re.compile(
     r"塔罗|牌阵|抽[一二两三]?张|[一二两三单]张牌|八字|四柱|命盘|占星|星盘|星座|行运|本命|"
-    r"梦|运势|流日|流年|大运"
+    r"解梦|梦见|梦到|梦境|做梦|噩梦|运势|流日|流年|大运"
 )
 # A written form the user states (原字, 繁体, 写作…) is a confirmation analyze_name needs as
 # ``forms``; the agent loop handles it until P3 moves confirmations into code.
-FORMS = re.compile(r"原字|本字|简体|繁体|异体|写作|写成|证件上")
+FORMS = re.compile(
+    rf"{ORIGINAL_FORM.pattern}|繁体|异体|写作|写成|证件上|(?:用|按|计|算).{{0,8}}[\d一二三四五六七八九十]+画"
+)
 REFERS_TO_READING = re.compile(
     r"(?:上一条|上一次|上次|刚才|之前|前面|那次|原来)(?:那个|这个|那次|那条|的)?"
     r"(?:名字|姓名|解读|记录|分析)|原记录|[这那]段解读|(?:你|刚才)(?:说|提到)的"
 )
 OWN_NAME = re.compile(r"我的名字|我名字|我的姓名|本人(?:的)?名字")
 QUOTED = re.compile(rf"[“\"「『《]({HAN}{{2,4}})[”\"」』》]")
-END = r"(?=这个名字|这个姓名|这名字|的名字|的姓名|这两个|两个名字|哪个|和|与|跟|、|还是|[，,。？?！!\s]|$)"
+END = r"(?=这个名字|这个姓名|这名字|的名字|的姓名|这两个|[一二三四五六七八九十\d]+个名字|哪个|和|与|跟|、|还是|[，,。？?！!\s]|$)"
 LEAD = (
     r"看看|看一下|看下|分析一下|分析|算算|算一下|测测|测一下|评估一下|评估|比较一下|比较|"
     r"对比一下|对比|评一下|请问|叫做|名叫|叫|名字是|姓名是|名字为|姓名为|名字[：:]|姓名[：:]"
@@ -74,11 +77,12 @@ NO_NAME = "请告诉我要分析的完整姓名（姓和名），例如“张伟
 TOO_MANY = "一次最多比较两个名字，请告诉我想先看哪两个。"
 CONFIRM = "确认写法"
 SAFETY_FALLBACK = "这类问题牵涉重大的现实决定，请结合专业意见再做判断。"
+COMPARE = re.compile(r"比较|对比|两个名字|这两个")
 
 
 def split(full: str, text: str) -> tuple[str, str]:
     """(surname, given): a known compound surname unless the user says it is a single one."""
-    if len(full) >= 3 and full[:2] in COMPOUND_SURNAMES and not re.search(r"不是复姓|单姓", text):
+    if len(full) >= 3 and full[:2] in COMPOUND_SURNAMES and not single_surname(full, [text]):
         return full[:2], full[2:]
     return full[0], full[1:]
 
@@ -131,13 +135,9 @@ class Name(System):
     def code_names(text: str, profile: dict) -> list[str]:
         """Full names code reads from the message, in order; the profile's for “我的名字”.
 
-        Quoted names first; else the longest name right before 这个名字/的名字; else names
-        after a lead-in (叫, 名字是, 看看…) or at the start. Unquoted ones must look like a
-        name: a common or compound surname first, no pronoun, particle or request verb.
+        Merge quoted names, anchors and lead-ins in source order. Longest overlapping
+        candidates win (李一和 is not 李一); quotes around a term or nickname are not names.
         """
-        quoted = [m[1] for m in QUOTED.finditer(text)]
-        if quoted:
-            return list(dict.fromkeys(quoted))
 
         def plausible(name: str) -> bool:
             return bool(
@@ -146,31 +146,46 @@ class Name(System):
                 and (name[0] in SURNAMES or name[:2] in COMPOUND_SURNAMES)
             )
 
-        found = []
+        candidates = []
+        excluded = []
+        for match in QUOTED.finditer(text):
+            before = text[: match.start()]
+            if re.search(r"(?:称呼我|叫我|昵称(?:是|叫)?|小名(?:是|叫)?)[：:\s]*$", before):
+                excluded.append(match.span(1))
+            elif plausible(match[1]):
+                candidates.append((*match.span(1), match[1]))
+        # Keep offsets while letting both quoted and unquoted names use the same grammar.
+        scanned = re.sub(r'[“”"「」『』《》]', " ", text)
         for anchor in ANCHOR.finditer(text):
             for size in (4, 3, 2):
                 start = anchor.start() - size
                 if start >= 0 and plausible(text[start : anchor.start()]):
                     if BEFORE_NAME.search(text[:start]):
-                        found.append(text[start : anchor.start()])
+                        candidates.append((start, anchor.start(), text[start : anchor.start()]))
                         break
-        if not found:
-            first = INTRODUCED.search(text)
-            if first:
-                found = [first[1], *(m[1] for m in SECOND.finditer(text, first.end()))]
-        found = [name for name in found if plausible(name)]
+        for pattern in (INTRODUCED, SECOND):
+            for match in pattern.finditer(scanned):
+                if plausible(match[1]):
+                    candidates.append((*match.span(1), match[1]))
+        kept = []
+        for start, end, name in sorted(candidates, key=lambda c: (-(c[1] - c[0]), c[0])):
+            if any(start < stop and end > begin for begin, stop in excluded):
+                continue
+            if not any(start < stop and end > begin for begin, stop, _ in kept):
+                kept.append((start, end, name))
+        found = [name for _, _, name in sorted(kept)]
         if not found and OWN_NAME.search(text) and profile.get("name"):
             found.append(profile["name"])
         return list(dict.fromkeys(found))
 
     def accepted(self, names, session) -> list[dict]:
         """Names analyze_name's own validator accepts, as its arguments."""
-        text = " ".join(session.user_messages)
         kept = []
         for full in names:
             if not isinstance(full, str) or not re.fullmatch(f"{HAN}{{2,5}}", full):
                 continue
-            surname, given = split(full, text)
+            current = next((text for text in reversed(session.user_messages) if full in text), "")
+            surname, given = split(full, current)
             try:
                 args = NameInput(surname=surname, given=given)
             except ValueError:
@@ -221,7 +236,7 @@ class Name(System):
         runner.stage("extract", run_id=run.run_id, source=source, names=len(names))
         if len(names) > MAX_NAMES:
             return await self.ask(runner, TOO_MANY)
-        if not names:
+        if not names or (len(names) < 2 and COMPARE.search(run.question)):
             return await self.ask(runner, NO_NAME)
         results, _ = await runner.planned(
             [

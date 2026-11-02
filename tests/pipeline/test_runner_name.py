@@ -250,3 +250,156 @@ def test_code_reads_names_conservatively(message, names):
 )
 def test_an_unquoted_name_starts_with_a_surname(message, names):
     assert Name.code_names(message, {}) == names
+
+
+@pytest.mark.parametrize(
+    "question",
+    [
+        "比较“张伟”和李娜这两个名字",
+        "比较张伟和“李娜”这两个名字",
+        "张伟和李娜这个名字哪个好？",
+        "张伟这个名字和李娜哪个好？",
+    ],
+)
+async def test_comparison_keeps_both_names_across_extraction_patterns(make, question):
+    runtime, composer, events = make(lambda m: written(m, verdict="倾向A"))
+    outcome = await runtime.turn(question)
+    assert outcome.status == "submit_reading"
+    assert [r["full_name"] for r in Name.results(runtime.session.state)] == ["张伟", "李娜"]
+    assert "名字A：张伟；名字B：李娜" in composer.seen[0][0][1]["content"]
+    assert planned(events).count("analyze_name") == 2
+
+
+@pytest.mark.parametrize(
+    "question",
+    [
+        "比较张伟和李娜和王小明三个名字",
+        "张伟这个名字、李娜这个名字和王小明哪个好？",
+    ],
+)
+async def test_unquoted_comparison_over_limit_does_not_discard_a_person(make, question):
+    runtime, _, events = make()
+    outcome = await runtime.turn(question)
+    assert outcome.status == "ask_user" and TOO_MANY in outcome.text
+    assert "analyze_name" not in planned(events)
+
+
+async def test_model_extraction_does_not_silently_cap_the_number_of_names(make):
+    runtime, composer, events = make(extraction("陈思远", "李雷", "赵杰"))
+    outcome = await runtime.turn("陈思远的五格、李雷的五格和赵杰的五格分别如何？")
+    assert outcome.status == "ask_user" and TOO_MANY in outcome.text
+    assert "不要截掉第三个" in composer.seen[0][0][0]["content"]
+    assert "analyze_name" not in planned(events)
+
+
+async def test_partial_comparison_asks_for_the_missing_name(make):
+    runtime, _, events = make()
+    outcome = await runtime.turn("比较张伟和另一个名字")
+    assert outcome.status == "ask_user" and NO_NAME in outcome.text
+    assert "analyze_name" not in planned(events)
+
+
+@pytest.mark.parametrize(
+    "question",
+    [
+        "“张伟”这个名字的“地格”怎么样？",
+        "张伟这个名字怎么样？请称呼我“小明”",
+        "张伟这个名字怎么样？请叫我“王哥”",
+    ],
+)
+async def test_quoted_terms_and_nicknames_are_not_analysed_as_names(make, question):
+    runtime, _, events = make(written)
+    outcome = await runtime.turn(question)
+    assert outcome.status == "submit_reading"
+    assert [r["full_name"] for r in Name.results(runtime.session.state)] == ["张伟"]
+    assert planned(events).count("analyze_name") == 1
+
+
+async def test_another_persons_single_surname_does_not_change_a_later_reading(make):
+    runtime, *_ = make(written, written)
+    assert (await runtime.turn("我姓张，是单姓，看看张伟这个名字")).status == "submit_reading"
+    outcome = await runtime.turn("再看看欧阳子涵这个名字")
+    assert outcome.status == "submit_reading"
+    (result,) = Name.results(runtime.session.state)
+    assert (result["surname"], result["given"]) == ("欧阳", "子涵")
+    assert result["grids"]["天格"] == 32 and result["grids"]["地格"] == 15
+
+
+async def test_surname_instructions_are_local_to_each_name_in_a_comparison(make):
+    runtime, *_ = make(written)
+    outcome = await runtime.turn("比较“欧阳明”（姓欧，单姓）和“欧阳子涵”（复姓欧阳）这两个名字")
+    assert outcome.status == "submit_reading"
+    first, second = Name.results(runtime.session.state)
+    assert (first["surname"], first["given"]) == ("欧", "阳明")
+    assert (second["surname"], second["given"]) == ("欧阳", "子涵")
+
+
+async def test_an_explicit_compound_surname_is_not_a_single_surname_negation(make):
+    runtime, *_ = make(written)
+    outcome = await runtime.turn("欧阳子涵这个名字不是单姓，是复姓欧阳，五格怎么样")
+    assert outcome.status == "submit_reading"
+    (result,) = Name.results(runtime.session.state)
+    assert (result["surname"], result["given"]) == ("欧阳", "子涵")
+
+
+async def test_explicit_single_surname_introduction_is_kept_across_commas(make):
+    runtime, *_ = make(written)
+    outcome = await runtime.turn("我姓欧，是单姓，我叫欧阳明，这个名字的五格怎么样")
+    assert outcome.status == "submit_reading"
+    (result,) = Name.results(runtime.session.state)
+    assert (result["surname"], result["given"]) == ("欧", "阳明")
+
+
+@pytest.mark.parametrize(
+    "question", ["比较“张伟明”和“张伟”这两个名字", "比较“张伟”和“张伟明”这两个名字"]
+)
+@pytest.mark.parametrize("degrade", [False, True])
+async def test_names_that_share_a_prefix_can_submit_and_degrade(make, question, degrade):
+    runtime, *_ = make(fatal, fatal) if degrade else make(written)
+    outcome = await runtime.turn(question)
+    assert outcome.status == "submit_reading"
+    assert outcome.data["pipeline"]["degraded"] == ("keywords" if degrade else None)
+    assert "张伟明的三才配置「木木水」" in outcome.text
+    assert "张伟的三才配置「木木木」" in outcome.text
+
+
+@pytest.mark.parametrize(
+    "question",
+    [
+        "赵杰这个名字就写杰，按8画计算五格",
+        "赵杰这个名字不用繁体，算一下五格",
+        "赵杰这个名字用杰8画，比较李娜这个名字",
+    ],
+)
+async def test_explicit_written_forms_stay_with_the_agent_loop(make, question):
+    runtime, *_ = make()
+    assert Name(runtime).detect(runtime, question) is None
+
+
+@pytest.mark.parametrize(
+    "claim", ["人格二十三提示行动力。", "数理99代表坚毅。", "张伟的康熙总笔画99画。", "伟十二画。"]
+)
+async def test_wrong_chinese_grid_shuli_and_stroke_claims_are_repaired(make, claim):
+    runtime, _, events = make(lambda m: written(m, extra=claim), written)
+    outcome = await runtime.turn("张伟这个名字的五格怎么样？")
+    assert outcome.status == "submit_reading"
+    assert outcome.data["pipeline"]["repairs"] == 1
+    assert outcome.data["pipeline"]["degraded"] is None
+    assert claim not in outcome.text
+    assert planned(events).count("submit_reading") == 1
+
+
+async def test_correct_chinese_numbers_are_accepted(make):
+    runtime, *_ = make(
+        lambda m: written(m, extra="张伟的人格二十二，数理二十二，伟十一画，总笔画二十二画。")
+    )
+    outcome = await runtime.turn("张伟这个名字的五格怎么样？")
+    assert outcome.status == "submit_reading"
+    assert outcome.data["pipeline"]["repairs"] == 0
+
+
+async def test_a_dream_character_inside_a_name_does_not_change_the_system(make):
+    runtime, *_ = make(written)
+    outcome = await runtime.turn("李梦瑶这个名字的五格怎么样？")
+    assert outcome.status == "submit_reading"
+    assert outcome.data["reading"]["systems_used"] == ["name"]

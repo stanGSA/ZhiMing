@@ -7,6 +7,7 @@ from harness.models import StrictInput, ToolResult
 from harness.registry import Tool
 from plugins.base import Signal, meaning_view
 from plugins.context import MeaningPlugin
+from plugins.name.input_evidence import ORIGINAL_FORM, single_surname
 from plugins.name.strokes import UnihanMissing
 from plugins.name.validation import ambiguity_prompt, validate_output
 from plugins.name.wuge import COMPOUND_SURNAMES, ELEMENTS, GRIDS, analyze, shuli
@@ -68,7 +69,7 @@ class NamePlugin(MeaningPlugin):
             len(args.surname) == 1
             and len(args.given) >= 2
             and args.surname + args.given[0] in COMPOUND_SURNAMES
-            and not re.search(r"不是复姓|单姓", text)
+            and not single_surname(full, session.user_messages)
         ):
             return (
                 f"疑似复姓“{args.surname + args.given[0]}”，请按复姓拆分；用户说明是单姓时再按单姓"
@@ -77,7 +78,7 @@ class NamePlugin(MeaningPlugin):
             if char not in full:
                 return "forms只能确认本名字中的字"
             if form == char:
-                if not re.search(r"原字|本字|简体|不(?:用|转|写)繁体|就写", text):
+                if not ORIGINAL_FORM.search(text):
                     return f"保留“{char}”本字计算须有用户原话确认"
             elif form not in text:
                 return f"写法“{form}”须由用户原话确认"

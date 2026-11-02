@@ -11,16 +11,36 @@ import re
 
 from common.facts import public_texts, rendered_texts
 
-GRID = re.compile(
-    r"(天格|人格|地格|外格|总格)(?:数理|数)?\s*(?:为|是|=|：|:|得|共)?\s*(\d{1,3})(?!\d)"
-)
+NUMBER = r"(?:\d+|[零〇一二两三四五六七八九十百]+)"
+GRID = re.compile(rf"(天格|人格|地格|外格|总格)(?:数理|数)?\s*(?:为|是|=|：|:|得|共)?\s*({NUMBER})")
 STROKE = re.compile(
-    r"[「“\"《【]?([㐀-鿿])[」”\"》】]?(?:字)?\s*(?:按|为|是|计|算|作|有|共)?\s*(?:康熙)?(?:笔画)?\s*(\d{1,2})\s*画"
+    rf"[「“\"《【]?([㐀-鿿])[」”\"》】]?(?:字)?\s*(?:按|为|是|计|算|作|有|共)?\s*(?:康熙)?(?:笔画)?\s*({NUMBER})\s*画"
 )
+SHULI = re.compile(rf"数理(?:数)?\s*(?:为|是|=|：|:)?\s*({NUMBER})")
+TOTAL_STROKES = re.compile(rf"(?:总笔画|笔画总数)\s*(?:为|是|共|计|：|:)?\s*({NUMBER})\s*画")
 SANCAI = re.compile(r"三才(?:配置|组合|五行)?\s*(?:为|是|：|:)?\s*[「“【]?([木火土金水]{3})")
 FATALISM = re.compile(
     r"(?:注定|一定会|必然|必定)(?:会)?(?:失败|不幸|短命|破财|离婚|成功|富贵|发财)"
 )
+
+
+def number(value: str) -> int:
+    """Read the Arabic or Chinese integers used in grid and stroke claims."""
+    if value.isdigit():
+        return int(value)
+    digits = dict(
+        zip("零〇一二两三四五六七八九", (0, 0, 1, 2, 2, 3, 4, 5, 6, 7, 8, 9), strict=True)
+    )
+    if not any(unit in value for unit in "十百"):
+        return int("".join(str(digits[c]) for c in value))
+    total, current = 0, 0
+    for char in value:
+        if char in digits:
+            current = digits[char]
+        else:
+            total += (current or 1) * {"十": 10, "百": 100}[char]
+            current = 0
+    return total + current
 
 
 def name_results(state) -> dict:
@@ -51,10 +71,9 @@ def stroke_options(result) -> dict[str, set[int]]:
 
 def check_claims(text, bound, results):
     """Check one field; claims bind to the last full name written before them."""
-    names = sorted(
-        ((m.start(), r) for r in results.values() for m in re.finditer(r["full_name"], text)),
-        key=lambda item: item[0],
-    )
+    by_name = {result["full_name"]: result for result in results.values()}
+    pattern = "|".join(re.escape(name) for name in sorted(by_name, key=len, reverse=True))
+    names = [(m.start(), by_name[m[0]]) for m in re.finditer(pattern, text)] if pattern else []
 
     def owner(position):
         before = [r for start, r in names if start <= position]
@@ -62,11 +81,23 @@ def check_claims(text, bound, results):
 
     for match in GRID.finditer(text):
         result = owner(match.start())
-        grid, number = match.group(1), int(match.group(2))
+        grid, value = match.group(1), number(match.group(2))
         if result is None:
-            return f"有多个姓名时，{grid}{number}须写明是哪个名字"
-        if number not in (result["grids"][grid], result["shuli"][grid]):
-            return f"{result['full_name']}的{grid}{number}与本次计算不符"
+            return f"有多个姓名时，{grid}{value}须写明是哪个名字"
+        if value not in (result["grids"][grid], result["shuli"][grid]):
+            return f"{result['full_name']}的{grid}{value}与本次计算不符"
+    for match in SHULI.finditer(text):
+        result = owner(match.start())
+        if result is None:
+            return "有多个姓名时，数理须写明是哪个名字"
+        if number(match[1]) not in result["shuli"].values():
+            return f"{result['full_name']}的数理{number(match[1])}与本次计算不符"
+    for match in TOTAL_STROKES.finditer(text):
+        result = owner(match.start())
+        if result is None:
+            return "有多个姓名时，总笔画须写明是哪个名字"
+        if number(match[1]) != result["grids"]["总格"]:
+            return f"{result['full_name']}的总笔画与本次计算不符"
     for match in SANCAI.finditer(text):
         result = owner(match.start())
         if result is None:
@@ -74,7 +105,7 @@ def check_claims(text, bound, results):
         if match.group(1) != result["sancai"]["key"]:
             return f"{result['full_name']}的三才配置与本次计算不符"
     for match in STROKE.finditer(text):
-        char, number = match.group(1), int(match.group(2))
+        char, value = match.group(1), number(match.group(2))
         result = owner(match.start())
         candidates = [result] if result is not None else list(results.values())
         known = [stroke_options(r)[char] for r in candidates if char in stroke_options(r)]
@@ -84,7 +115,7 @@ def check_claims(text, bound, results):
             and any(char in stroke_options(r) for r in results.values())
         ):
             return f"“{char}”不属于{result['full_name']}，笔画不能串用"
-        if known and not any(number in allowed for allowed in known):
+        if known and not any(value in allowed for allowed in known):
             return f"“{char}”的笔画与本次计算不符"
     return None
 
@@ -110,7 +141,7 @@ def ambiguity_explained(texts, ambiguity) -> bool:
         for sentence in re.split(r"[。；;！!？?\n]", text):
             if not any(f in sentence for f in forms):
                 continue
-            pairs = {(char, int(count)) for char, count in STROKE.findall(sentence)}
+            pairs = {(char, number(count)) for char, count in STROKE.findall(sentence)}
             # '写原字为8画' explicitly refers to this character, not an unrelated number.
             original = re.findall(
                 r"(?:原字|本字|简体)(?:为|是|按|计|算|作)?\s*(\d{1,2})\s*画", sentence
