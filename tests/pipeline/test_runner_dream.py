@@ -461,3 +461,13 @@ async def test_a_medication_directive_alone_ends_in_safety_degradation(make, jud
     assert outcome.data["pipeline"]["degraded"] == "safety"
     assert outcome.data["reading"]["sections"] == []
     assert [e["rules"] for e in events if e.get("stage") == "safety"] == [["hard_claim"]] * 2
+
+
+@pytest.mark.parametrize(
+    "message",
+    ["我最近老做同一个梦：被人追着一直跑。这个梦说明什么？", "昨晚做了个怪梦，梦里在下雨"],
+)
+async def test_a_dream_told_without_梦见_is_still_a_dream(make, message):
+    """Found by the P2 dataset routing test: 做同一个梦 left the dream to the agent loop."""
+    runtime, *_ = make()
+    assert Dream(runtime).detect(runtime, message).kind == "new"

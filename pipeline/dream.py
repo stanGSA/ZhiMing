@@ -25,7 +25,9 @@ from pipeline.system import System
 from plugins.dream.match import NORMALISATIONS
 from plugins.dream.validation import text_error
 
-DREAM = re.compile(r"梦见|梦到|梦里|梦中|做梦|做了.{0,8}梦|噩梦|梦境|解梦|的梦")
+DREAM = re.compile(
+    r"梦见|梦到|梦里|梦中|做梦|做.{0,8}?个梦|做了.{0,8}梦|噩梦|梦境|解梦|的梦|[这那]个梦"
+)
 # Another system named outside the dream page makes the question that system's, or several's.
 OTHER = re.compile(
     r"塔罗|牌阵|抽[一二两三]?张|[一二两三单]张牌|八字|四柱|命盘|占星|星盘|星座|行运|本命|"
@@ -37,7 +39,7 @@ REFERS_TO_READING = re.compile(
     r"(?:上一条|上一次|上次|刚才|之前|前面|那次|原来)(?:那个|这个|那次|那条|的)?"
     r"(?:梦|解梦|解读|记录|分析)|原记录|[这那]段解读|(?:你|刚才)(?:说|提到)的"
 )
-NARRATES = re.compile(r"梦见|梦到|做了.{0,8}梦|做梦|噩梦|又梦")
+NARRATES = re.compile(r"梦见|梦到|做了.{0,8}梦|做.{0,8}?个梦|做梦|噩梦|又梦")
 # What interprets a symbol, and the clause it sits in (plugins/dream/validation.py splits alike).
 INTERPRETS = re.compile(
     r"象征|代表|意味|寓意|暗示|预示|反映|折射|对应|说明|提示|联系到|联想到|关联到|"

@@ -64,6 +64,23 @@ P1_JOBS = [
 ]
 TAROT = "evals/cases/tarot_pilot.yaml"
 TAROT_FINAL = "evals/cases/tarot_final.yaml"
+# P2 (dream, name, daily): each system's single against pipeline on its own set, 3 repeats.
+P2_SYSTEMS = (("Dream", "dream"), ("Name", "name"), ("Daily", "daily"))
+
+
+def p2_jobs(final: bool):
+    jobs = []
+    for label, system in P2_SYSTEMS:
+        dataset = f"evals/cases/{system}_{'final' if final else 'pilot'}.yaml"
+        count = (4 if final else 6) * 3
+        for mode in ("single", "pipeline"):
+            name = f"{label}{'Final' if final else ''}-{mode}"
+            jobs.append(
+                (name, "scripts.live_week23", ["--dataset", dataset, "--mode", mode], count)
+            )
+    return jobs
+
+
 CAMPAIGN_JOBS = {
     "p1": P1_JOBS,
     "tarot": [
@@ -85,6 +102,8 @@ CAMPAIGN_JOBS = {
             18,
         ),
     ],
+    "p2": p2_jobs(final=False),
+    "p2-final": p2_jobs(final=True),
 }
 
 

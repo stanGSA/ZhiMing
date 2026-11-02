@@ -36,8 +36,16 @@ EXPECTED_CASES = {
     "Tarot-heldout-pipeline": 17,
     "TarotFinal-single": 18,
     "TarotFinal-pipeline": 18,
+    # P2: dream, name and daily (scripts.p1_campaign --campaign p2 / p2-final).
+    **{
+        f"{label}{stage}-{mode}": count
+        for label in ("Dream", "Name", "Daily")
+        for stage, count in (("", 18), ("Final", 12))
+        for mode in ("single", "pipeline")
+    },
 }
 HELDOUT = ("B0-heldout", "Final-heldout")
+P2_LABELS = ("Dream", "Name", "Daily")
 PAIRS = (
     ("B0-single", "Final-single"),
     ("B0-multi", "Final-multi"),
@@ -58,6 +66,18 @@ CAMPAIGNS = {
         heldout=(),
         pairs=(("TarotFinal-single", "TarotFinal-pipeline"),),
     ),
+    **{
+        campaign: dict(
+            runs=[
+                f"{label}{stage}-{mode}" for label in P2_LABELS for mode in ("single", "pipeline")
+            ],
+            heldout=(),
+            pairs=tuple(
+                (f"{label}{stage}-single", f"{label}{stage}-pipeline") for label in P2_LABELS
+            ),
+        )
+        for campaign, stage in (("p2", ""), ("p2-final", "Final"))
+    },
 }
 PRIVATE = {
     "question",

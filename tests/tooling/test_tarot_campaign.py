@@ -88,3 +88,13 @@ def test_tarot_batches_publish_single_against_pipeline(tmp_path):
     assert "| 流水线修复过 | 1/24 |" in failures
     assert "## 流水线降级分类" in table
     assert "|Tarot-pipeline|0/24（0.0%）|0/24（0.0%）|0/24（0.0%）|" in table
+
+
+def test_the_p2_campaigns_pair_each_system_on_its_own_set():
+    assert [name for name, *_ in CAMPAIGN_JOBS["p2"]] == [
+        f"{label}-{mode}" for label in ("Dream", "Name", "Daily") for mode in ("single", "pipeline")
+    ]
+    for campaign, stage, count in (("p2", "pilot", 18), ("p2-final", "final", 12)):
+        for _name, _module, args, expected in CAMPAIGN_JOBS[campaign]:
+            assert expected == count and f"_{stage}.yaml" in args[args.index("--dataset") + 1]
+        assert len(CAMPAIGNS[campaign]["pairs"]) == 3 and not CAMPAIGNS[campaign]["heldout"]

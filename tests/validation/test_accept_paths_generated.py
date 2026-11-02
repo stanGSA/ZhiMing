@@ -18,6 +18,7 @@ import pytest
 from common.schemas import Reading
 from common.validation import validate_reading
 from harness.refs import transform
+from pipeline.daily import Daily
 from pipeline.dream import UNMATCHED_TITLE, Dream
 from pipeline.name import CONFIRM, Name
 from pipeline.verify import verify_reading
@@ -881,12 +882,60 @@ async def test_daily_mutations_are_rejected(runtime, daily):
     )
 
 
-@pytest.mark.xfail(strict=True, reason="漏拦：流日十神写错，留给流水线的闭集比对")
-async def test_daily_ten_god_missed_today(runtime, daily):
+def daily_pipeline_rejections(runtime, sentences):
+    """The daily pipeline's path: the day's closed vocabulary, then the validators."""
+    system, session = Daily(runtime), runtime.session
+    refused = []
+    for body, refs in sentences:
+        problems = system.problems([body], session)
+        error = "；".join(problems) or validate_reading(
+            layered(session, "daily", body, refs), session
+        )
+        if error:
+            refused.append((body, str(error)))
+    return refused
+
+
+async def test_daily_ten_god_is_caught_on_the_pipeline_path(runtime, daily):
+    """P0.2's missed mutation, now refused by the daily pipeline's closed vocabulary (P2.4)."""
     s, day = runtime.session, daily["day"]
     day_ref = ref(s, f"{day['segments'][0]['start_utc']}:{day['pillar']}:{day['ten_god']}")
-    wrong = next(g for g in TEN_GODS if g != day["ten_god"])
-    assert_rejected(s, "daily", (f"今天流日{day['pillar']}，十神为{wrong}。", [day_ref]))
+    gods = {segment["ten_god"] for segment in day["segments"]}
+    wrong = next(g for g in TEN_GODS if g not in gods)
+    body = f"今天流日{day['pillar']}，十神为{wrong}。"
+    assert validate_reading(layered(s, "daily", body, [day_ref]), s) is None  # still missed there
+    assert daily_pipeline_rejections(runtime, [(body, [day_ref])])
+
+
+async def test_daily_pipeline_path_accepts_the_days_facts(runtime, daily):
+    s, day, card = runtime.session, daily["day"], daily["card"]
+    first, last = day["segments"][0], day["segments"][-1]
+    day_ref = ref(s, f"{first['start_utc']}:{day['pillar']}:{day['ten_god']}")
+    sentences = [
+        (f"今天流日{day['pillar']}，十神为{day['ten_god']}。", [day_ref]),
+        (f"今天的提示牌是【{card['name']}】{orientation(card)}。", [card["ref_id"]]),
+        (f"今天五行属{day['element']}，幸运色只是传统配色。", [ref(s, ":day_element:")]),
+    ]
+    if last is not first:
+        late = ref(s, f"{last['start_utc']}:{last['pillar']}:{last['ten_god']}")
+        sentences.append((f"晚上11点后进入{last['pillar']}，{last['ten_god']}当令。", [late]))
+    for relation in day["relations"]:
+        kind, natal_key = relation["type"], relation["natal_pillar"]
+        cited = [ref(s, f"{first['start_utc']}:{day['pillar']}:{kind}:{natal_key}")]
+        natal = PILLAR_ZH[natal_key] + relation["natal_ganzhi"]
+        sentences.append((f"流日{day['pillar']}与{natal}{kind}。", cited))
+    assert daily_pipeline_rejections(runtime, sentences) == []
+
+
+async def test_daily_pipeline_path_refuses_what_is_not_the_days(runtime, daily):
+    s, day, card = runtime.session, daily["day"], daily["card"]
+    day_ref = ref(s, f"{day['segments'][0]['start_utc']}:{day['pillar']}:{day['ten_god']}")
+    for body in (
+        f"今天流日{unused_jiazi(s)}。",
+        f"今天的提示牌是【{card['name']}】{opposite(card)}。",
+        "当下提示是【恋人】正位。" if card["name"] != "恋人" else "当下提示是【隐士】正位。",
+    ):
+        assert daily_pipeline_rejections(runtime, [(body, [day_ref])]), body
 
 
 async def test_name_mutations_are_rejected(runtime, name):
