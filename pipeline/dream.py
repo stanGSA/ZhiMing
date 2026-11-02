@@ -50,12 +50,22 @@ CLAUSE = re.compile(r"[，,。；;！!？?\n]|但是|可是|不过|然而")
 NAMES_CONTENT = re.compile(r"梦见|梦到|遇到|看到|看见|碰到|出现|还有|路过|经过")
 # A feeling can be discussed independently of an unlisted scene mentioned just before it.
 FEELING_REFERENCE = re.compile(r"感受|情绪|心情|醒来|很慌|紧张|不安|焦虑|担心|害怕|难过|开心|轻松")
+# The dream as a whole: interpreting it is allowed whatever was described just before.
+WHOLE_DREAM = re.compile(r"这个梦|这场梦|整个梦|同一个梦|同样的梦|这样的梦|这类梦|这种梦")
 GENERIC = re.compile(
-    r"这个梦境?|这场梦|整个梦|梦境|梦里的?|梦中的?|这个意象|这些意象|这个画面|这个场景|这一幕|"
+    r"这个梦境?|这场梦|整个梦|同一个梦|同样的梦|这样的梦|这类梦|这种梦|梦境|梦里的?|梦中的?|这个意象|这些意象|这个画面|这个场景|这一幕|"
     r"这种感受|这种情绪|这份感受|它们|它|这些|两者|二者|前者|后者|你们|你|自己|"
     r"梦见了?|梦到了?|一般来说|传统上|通常|往往|常常|一般|多半|可能|也许|或许|似乎|"
-    r"[这那在的了也都还常多会更又与和跟同而则就被]"
+    r"[这那在的了也都还常多会更又与和跟同而则就被里给把让为着]"
 )
+# A clause of the message that asks rather than tells the dream: “是不是预示我的健康要出问题”
+# describes nothing that was dreamed, so its words are not dream content.
+ASKS = re.compile(
+    r"是不是|要不要|会不会|能不能|是否|什么意思|怎么理解|怎么解|怎么回事|说明什么|代表什么|"
+    r"意味着什么|帮我|请问|解[个一下]*梦|吗|呢"
+)
+TELLS = re.compile(r"梦见|梦到|梦里|梦中")
+MESSAGE_CLAUSE = re.compile(r"[，,。；;！!？?\n：:]")
 HAN_RUN = re.compile(r"[\u4e00-\u9fff]{2,}")
 # Two-character words of a description that are not part of what was dreamed.
 COMMON_GRAMS = frozenset(
@@ -73,10 +83,20 @@ def strip(text: str, terms: list[str]) -> str:
     return text
 
 
+def told(question: str) -> str:
+    """The message without the clauses that only ask about the dream."""
+    return "，".join(
+        clause
+        for clause in MESSAGE_CLAUSE.split(question)
+        if TELLS.search(clause) or not ASKS.search(clause)
+    )
+
+
 def grams(text: str) -> list[str]:
     return [text[i : i + 2] for i in range(len(text) - 1) if " " not in text[i : i + 2]]
 
 
+SENTENCE = re.compile(r"[^。！？!?]{4,120}[。！？!?]")
 MAX_SYMBOLS = 12
 NO_DREAM = "请描述一下梦里的内容：出现了哪些人、物或场景，发生了什么，醒来时是什么感受。"
 UNMATCHED_TITLE = "词典没有收录的意象"
@@ -268,12 +288,27 @@ class Dream(System):
         recognised as a safety failure after the dream rule has caught it as a prophecy.
         """
         result = self.result(session.state)
-        hits = {hit["key"] for hit in result["hits"]}
+        hits = {hit["key"] for hit in result["hits"]} | self.phrase_heads(session)
         misses = set(result["misses"])
         found = [text_error(text, self.matcher, hits, misses) for text in texts]
         found += self.unlisted(texts, session)
         found += self.wording_problems(texts, session)
         return list(dict.fromkeys(problem for problem in found if problem))
+
+    def phrase_heads(self, session) -> set[str]:
+        """Symbols the user's own phrase for a hit ends in: 奶奶 of “去世的奶奶” (去世的亲人).
+
+        A Chinese phrase ends in its head noun, so “奶奶” there is the matched symbol in the
+        user's words, not another symbol; writing it is not interpreting an unmatched one.
+        Only the end counts: “去世” in the same phrase stays another symbol.
+        """
+        heads = set()
+        for hit in self.result(session.state)["hits"]:
+            phrase = hit.get("phrase") or ""
+            for alias, key in self.matcher.aliases.items():
+                if alias != phrase and phrase.endswith(alias):
+                    heads.add(key)
+        return heads
 
     def hit_terms(self, session) -> list[str]:
         """Every way the reading may name a matched symbol: rendered, key, alias, phrase."""
@@ -297,8 +332,10 @@ class Dream(System):
         outside the matched symbols' words and a short list of common words.
         """
         terms = self.hit_terms(session)
-        dream = strip(session.state.get("question") or "", terms)
-        described = {gram for gram in grams(dream) if gram not in COMMON_GRAMS}
+        dream = strip(told(session.state.get("question") or ""), terms)
+        # What the fact sheet itself says about a hit (手机: “没电或损坏”) is in the fact sheet.
+        sheet = {gram for fact in self.facts(session) for gram in grams(fact.line)}
+        described = {gram for gram in grams(dream) if gram not in COMMON_GRAMS | sheet}
 
         def other(text: str) -> str:
             rest = GENERIC.sub(" ", FEELING_REFERENCE.sub(" ", strip(text, terms)))
@@ -318,6 +355,7 @@ class Dream(System):
                         named
                         and not any(term in subject for term in terms)
                         and not FEELING_REFERENCE.search(subject)
+                        and not WHOLE_DREAM.search(subject)
                     ):
                         problems.append(f"“{named}”不在事实表里，只能解读事实表里的意象")
                 content = other(clause)
@@ -381,6 +419,22 @@ class Dream(System):
             "safety": safety_for(risk_text),
         }
 
+    def degraded_sentence(self, fact, meanings, session) -> str:
+        """One symbol of a degraded reading: the dictionary's own first sentence about it.
+
+        That sentence says what the symbol tends to reflect, which a list of keywords
+        (“房子、场所”) does not. It is used only when it passes the reading's own checks;
+        otherwise the keywords stand, as before.
+        """
+        meaning = meanings.get(fact.label, {})
+        keywords = "、".join(meaning.get("keywords") or [])
+        fallback = f"梦见{fact.text}。" + (f"这个意象常和{keywords}有关。" if keywords else "")
+        first = SENTENCE.match(CAVEAT.sub("", meaning.get("text") or "").strip())
+        if not first:
+            return fallback
+        sentence = f"{fact.text}：{first[0]}"
+        return fallback if self.problems([sentence], session) else sentence
+
     def degraded(self, session, facts, question_type, risk_text, followup, *, safety_only):
         listed = "".join(fact.text for fact in facts)
         safety = safety_for(risk_text)
@@ -411,13 +465,7 @@ class Dream(System):
         sections = []
         for start in range(0, len(facts), size):
             group = facts[start : start + size]
-            sentences = []
-            for fact in group:
-                keywords = "、".join(meanings.get(fact.label, {}).get("keywords") or [])
-                sentence = f"梦见{fact.text}。"
-                if keywords:
-                    sentence += f"这个意象常和{keywords}有关。"
-                sentences.append(sentence)
+            sentences = [self.degraded_sentence(fact, meanings, session) for fact in group]
             sentences.append("可以对照最近的心情和压力想一想。")
             title = "".join(fact.text for fact in group)
             sections.append(

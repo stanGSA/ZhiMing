@@ -471,3 +471,122 @@ async def test_a_dream_told_without_梦见_is_still_a_dream(make, message):
     """Found by the P2 dataset routing test: 做同一个梦 left the dream to the agent loop."""
     runtime, *_ = make()
     assert Dream(runtime).detect(runtime, message).kind == "new"
+
+
+# ---- P2 pilot tuning: what the pilot's drafts were refused for, and what must stay refused --
+
+GRANDMOTHER = "梦到去世的奶奶在老房子里给我做饭，醒来就哭了。这个梦是什么意思？"
+GRANDMOTHER_SYMBOLS = [
+    {"phrase": "去世的奶奶", "symbol": "已故亲人"},
+    {"phrase": "老房子", "symbol": "房子"},
+    {"phrase": "做饭", "symbol": "做饭"},
+    {"phrase": "哭", "symbol": "哭"},
+]
+CHASED = "我最近老做同一个梦：被人追着一直跑，跑进考场才发现自己什么都没复习。这个梦说明什么？"
+HOSPITAL = "梦见自己生病住院了，是不是预示我的健康要出问题？要不要去做检查？"
+MALL = "梦见自己在一个巨大的商场里迷路，手机也没电了，到处找不到出口。这个梦怎么理解？"
+PILOT_SYMBOLS = {
+    GRANDMOTHER: GRANDMOTHER_SYMBOLS,
+    CHASED: [{"phrase": "被人追", "symbol": "被追"}, {"phrase": "考场", "symbol": "考场"}],
+    HOSPITAL: [{"phrase": "生病", "symbol": "生病"}, {"phrase": "住院", "symbol": "住院"}],
+    MALL: [
+        {"phrase": "商场", "symbol": "商场"},
+        {"phrase": "迷路", "symbol": "迷路"},
+        {"phrase": "手机", "symbol": "手机"},
+        {"phrase": "找不到出口", "symbol": "找不到出口"},
+    ],
+}
+
+
+async def problems_of(make, question, text):
+    runtime, *_ = make(extraction(PILOT_SYMBOLS[question]), written)
+    runtime.session.state["selected_systems"] = ["dream"]
+    await runtime.turn(question)
+    return Dream(runtime).problems([text], runtime.session)
+
+
+@pytest.mark.parametrize(
+    "question, text",
+    [
+        # The user's own word for a matched symbol is that symbol (去世的奶奶 → 去世的亲人).
+        (GRANDMOTHER, "梦里奶奶为你做饭，象征着被照顾、被滋养的感觉。"),
+        # Words between two matched symbols of one phrase are not other dream content.
+        (GRANDMOTHER, "奶奶在老房子里给你做饭，这个画面往往反映你对被照顾的怀念。"),
+        # The dream as a whole may be interpreted, even right after a detail is retold.
+        (CHASED, "同一个梦反复出现，往往提示这份压力还在。"),
+        (CHASED, "你梦里被人追着一直跑，这个梦说明你最近压力不小。"),
+        # The question the user asks is not something dreamed.
+        (HOSPITAL, "这个梦不是健康的预兆，更多反映你最近很累。"),
+        # What the fact sheet itself says about a hit (手机: 没电或损坏) is in the fact sheet.
+        (MALL, "「手机」没电，往往和沟通受阻的感受有关。"),
+    ],
+)
+async def test_what_the_pilot_refused_on_the_dream_and_the_fact_sheet_is_accepted(
+    make, question, text
+):
+    assert await problems_of(make, question, text) == [], text
+
+
+@pytest.mark.parametrize(
+    "question, text",
+    [
+        # Only the head noun of the user's phrase counts: 去世 stays another symbol (死亡).
+        (GRANDMOTHER, "梦见死亡，往往象征一段关系的结束。"),
+        # A retold detail is still not interpreted through a generic subject.
+        (CHASED, "你梦里一直跑，这个画面说明你想逃开什么。"),
+        # “这个梦” does not cover content named inside its own subject.
+        (CHASED, "这个梦里的考场象征被评价的压力。"),
+        # Unmatched symbols stay unmatched, and so does what the fact sheet does not say.
+        (HOSPITAL, "梦见住院往往反映你希望被照顾。"),
+        (MALL, "到处找不到出口，往往反映你对方向的困惑。"),
+        (MALL, "巨大的商场往往代表选择太多。"),
+    ],
+)
+async def test_what_the_fact_sheet_does_not_hold_is_still_refused(make, question, text):
+    assert await problems_of(make, question, text), text
+
+
+async def test_a_dream_told_within_a_question_is_still_dream_content(make):
+    """Only clauses that ask and tell no dream are left out of the dream's content."""
+    question = "梦见掉牙，还梦见地铁闸机是什么意思？"
+    runtime, *_ = make(extraction([{"phrase": "掉牙", "symbol": "掉牙"}]), written)
+    runtime.session.state["selected_systems"] = ["dream"]
+    await runtime.turn(question)
+    assert Dream(runtime).unlisted(["地铁闸机象征阻碍。"], runtime.session)
+
+
+async def test_a_degraded_reading_gives_the_dictionarys_sentence_for_each_symbol(make):
+    runtime, *_ = make(extraction(), prophecy, prophecy)
+    outcome = await runtime.turn(QUESTION)
+    assert outcome.data["pipeline"]["degraded"] == "keywords"
+    bodies = [s["body"] for s in outcome.data["reading"]["sections"]]
+    # 掉牙's first sentence in the dictionary, not only its keywords (“掉牙、身体”).
+    assert "「掉牙」：梦见掉牙，常与担心失去掌控" in bodies[0]
+    assert "这个意象常和" not in bodies[0]
+
+
+async def test_each_drafts_problems_are_traced_as_text(make):
+    runtime, _, events = make(extraction(), names_the_unmatched, written)
+    outcome = await runtime.turn(QUESTION)
+    traced = [e for e in events if e.get("stage") == "problems"]
+    assert [e["draft"] for e in traced] == [1]
+    assert traced[0]["problems"] == outcome.data["pipeline"]["problems"][0]
+
+
+async def test_a_dream_repair_lists_the_symbols_without_the_tarot_seat_wording(make):
+    runtime, composer, _ = make(extraction(), names_the_unmatched, written)
+    await runtime.turn(QUESTION)
+    request = composer.seen[2][0][-1]["content"]
+    assert "可引用的编号只有：R1=「掉牙」；R2=「被追」。" in request
+    assert "牌位" not in request
+
+
+def test_tarot_repairs_keep_the_seat_wording():
+    from pipeline import compose
+    from pipeline.factsheet import Fact
+
+    facts = [Fact("R1", "ref", "现在位", "【星星】正位", "R1｜…")]
+    tarot = compose.repair_messages([], "稿", ["问题"], facts)[-1]["content"]
+    assert "R1=现在位位【星星】正位。写某个牌位时，只能用该牌位对应的编号。" in tarot
+    other = compose.repair_messages([], "稿", ["问题"], facts, positions=False)[-1]["content"]
+    assert other.endswith("可引用的编号只有：R1=【星星】正位。")

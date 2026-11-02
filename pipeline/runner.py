@@ -162,11 +162,17 @@ class PipelineRunner:
                     if terminal is not None:
                         return self.finish(run, terminal)
                     run.problems.append(problems)
+                    # The texts, not only how many: what a repair or degradation answered.
+                    self.stage(
+                        "problems", run_id=run.run_id, draft=len(run.drafts), problems=problems
+                    )
                 if run.repairs >= MAX_REPAIRS:
                     break
                 self.keep(run)
                 self.stage("repair", run_id=run.run_id, problems=len(problems))
-                messages = compose.repair_messages(messages, draft_text, problems, facts)
+                messages = compose.repair_messages(
+                    messages, draft_text, problems, facts, positions=system.name == "tarot"
+                )
                 draft_text, truncated = await self.ask(messages, "repair", run)
                 # Counted once the repair is written: an interrupted one is still to do.
                 run.repairs += 1
