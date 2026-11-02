@@ -21,13 +21,14 @@ from harness.loop import call_model, estimate_call, execute_calls
 from harness.models import ModelResponse, ToolCall, TurnOutcome
 from pipeline import compose, intent
 from pipeline.dream import Dream
+from pipeline.name import Name
 from pipeline.render import expand, reading_args
 from pipeline.state import RESUMABLE, PipelineRun, restore, snapshot
 from pipeline.tarot import SAFETY_FALLBACK, Tarot
 from pipeline.verify import safety_rules
 
 # In the order their detection runs: a message is the first system's that claims it.
-SYSTEM_TYPES = (Tarot, Dream)
+SYSTEM_TYPES = (Tarot, Dream, Name)
 MAX_REPAIRS = 1
 TRUNCATED = "上一稿超过输出上限被截断：请精简为摘要加2-3层，每层不超过250字"
 # Problems that fail a safety rule rather than a fact (common/validation.py, output_policy.py):

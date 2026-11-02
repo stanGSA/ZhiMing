@@ -1,0 +1,32 @@
+version: 1
+status: draft_needs_review
+scope: >-
+  姓名流水线（根因整改计划 P2.2）的调参集：当前 single 与 pipeline 用同一批题、同一 rubric v2、同一评委、
+  各3次重复比较。题型覆盖有多种写法的字、复姓、两个名字比较、三字名、代码认不出需要模型抽取的问法和
+  针对某一格的提问；只用于 P2 期间的对照与调整，最终验收用 name_final.yaml。跑法：python -m
+  scripts.live_week23 --dataset evals/cases/name_pilot.yaml --judge pro --repeats 3 --mode single。
+cases:
+- id: name_ambiguous_form
+  question: 帮我看看赵杰这个名字的五格怎么样。
+  tools: [start_reading, analyze_name, submit_reading]
+  systems: [name]
+- id: name_compound_surname
+  question: 名字：欧阳子涵。按五格分析一下这个名字。
+  tools: [start_reading, analyze_name, submit_reading]
+  systems: [name]
+- id: name_compare_two
+  question: 张伟和李娜，这两个名字从五格看哪个更好？
+  tools: [start_reading, analyze_name, submit_reading]
+  systems: [name]
+- id: name_three_character
+  question: 我叫王小明，想知道这个名字的三才配置说明什么。
+  tools: [start_reading, analyze_name, submit_reading]
+  systems: [name]
+- id: name_without_lead_in
+  question: 陈思远的五格数理怎么样？
+  tools: [start_reading, analyze_name, submit_reading]
+  systems: [name]
+- id: name_career_grid
+  question: 林晓这个名字对事业有什么帮助？五格里哪一格最要紧？
+  tools: [start_reading, analyze_name, submit_reading]
+  systems: [name]

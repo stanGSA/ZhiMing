@@ -6,7 +6,7 @@ import yaml
 from app import ROOT
 from common.validation import HIGH_RISK
 
-SYSTEMS = ("dream",)
+SYSTEMS = ("dream", "name")
 
 
 def cases(name):
