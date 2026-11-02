@@ -37,6 +37,20 @@ def results(state):
     ]
 
 
+def phrase_aliases(matcher, hits):
+    """Exact suffix aliases in a matched source phrase, bound to that hit's key.
+
+    奶奶 in 去世的奶奶 may name the matched 去世的亲人. This does not authorise
+    the other aliases of 祖父母 (爷爷, 外公, …), or add another dictionary fact.
+    """
+    return {
+        alias: hit["key"]
+        for hit in hits
+        for alias in matcher.aliases
+        if alias != (phrase := hit.get("phrase") or "") and phrase.endswith(alias)
+    }
+
+
 def excluded_mention(clause, start, end, boundary):
     """Scope an abstention to its object, stopping before the next mentioned symbol."""
     tail = clause[end:boundary]
@@ -51,7 +65,7 @@ def excluded_mention(clause, start, end, boundary):
     )
 
 
-def ungrounded(clause, matcher, hits, misses):
+def ungrounded(clause, matcher, hits, misses, *, aliases=None):
     """Return a bad mention, preserving its ownership when clauses contain many objects."""
     mentions = [(a, b, alias, key) for a, b, alias, key in matcher.spans(clause)]
     for quote in QUOTED.finditer(clause):
@@ -73,6 +87,7 @@ def ungrounded(clause, matcher, hits, misses):
             continue
         if key is None:
             return f"意象“{alias}”未在词典中命中，只能说明未收录，不能解读"
+        key = (aliases or {}).get(alias, key)
         if key not in hits:
             quoted = (
                 start > 0
@@ -94,20 +109,27 @@ def validate_output(reading, state, matcher):
         return "解梦只提供心理层面的线索，不安排事件时间表；请删去timeline"
     hits = {h["key"] for r in found for h in r["hits"]}
     misses = {m for r in found for m in r["misses"]}
+    # Only the active dream pipeline submission uses source-phrase aliases. A later
+    # agent turn has no pipeline_run marker and retains the ordinary plugin rules.
+    aliases = (
+        phrase_aliases(matcher, [h for r in found for h in r["hits"]])
+        if state.get("pipeline_run") and reading.systems_used == ["dream"]
+        else {}
+    )
     for text in texts:
-        error = text_error(text, matcher, hits, misses)
+        error = text_error(text, matcher, hits, misses, aliases=aliases)
         if error:
             return error
     return None
 
 
-def text_error(text, matcher, hits, misses):
+def text_error(text, matcher, hits, misses, *, aliases=None):
     """The first problem of one user-visible text: a prophecy, or an ungrounded symbol."""
     for match in PROPHECY.finditer(text):
         if not NEGATION.search(text[max(0, match.start() - 6) : match.start()]):
             return "解梦只提供心理层面的线索，不能把梦境说成现实事件的预兆"
     for clause in CLAUSES.split(text):
-        error = ungrounded(clause, matcher, hits, misses)
+        error = ungrounded(clause, matcher, hits, misses, aliases=aliases)
         if error:
             return error
     return None

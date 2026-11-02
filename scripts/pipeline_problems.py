@@ -2,12 +2,13 @@
 
 The published summaries keep only how many problems each draft had (scripts/live_test.py
 pipeline_record). The texts are traced as the ``problems`` stage (pipeline/runner.py), and this
-reads them back on the machine that ran the batch; it never calls a model. Runs traced before
-that stage existed show no texts.
+reads them back on the machine that ran the batch; it never calls a model. Older traces show
+no texts, but saved readings may still hold them in the workspace database's pipeline_json.
 
 Without --tally the output names each answer's problems and quotes fragments of the drafts, so
 it stays local like scripts.quality_reasons. With --tally it is one table of the problem kinds
-per batch, with every quoted fragment replaced by “…”, which can be published with the run.
+per batch, using fixed labels only. Unknown problems use a generic label, so names and other
+unquoted source text cannot enter the published categories.
 
     python -m scripts.pipeline_problems reports/p2-r2/Dream-pipeline
     python -m scripts.pipeline_problems reports/p2-r2/Dream-pipeline --tally
@@ -21,8 +22,34 @@ from pathlib import Path
 
 from scripts.quality_reasons import reports, run_name
 
-QUOTED = re.compile(r"“[^”]*”|「[^」]*」|‘[^’]*’")
-DIGITS = re.compile(r"\d+")
+# Never return a transformed original error as a public category: validators include
+# unquoted names, dates and other source text. Only these fixed labels leave the machine.
+KINDS = (
+    (r"不在事实表里，只能解读事实表里的意象", "事实表外的梦境意象"),
+    (r"未在词典中命中，只能说明未收录", "未收录的梦境意象"),
+    (r"不是本次命中的意象", "未命中的梦境意象"),
+    (r"解梦只提供心理层面的线索", "解梦预兆或时间表"),
+    (r"的(?:天格|人格|地格|外格|总格)\d+与本次计算不符", "姓名五格数值错误"),
+    (r"的数理\d+与本次计算不符", "姓名数理错误"),
+    (r"的总笔画与本次计算不符", "姓名总笔画错误"),
+    (r"的三才配置与本次计算不符", "姓名三才配置错误"),
+    (r"笔画与本次计算不符|笔画不能串用", "姓名单字笔画错误"),
+    (r"有多个姓名时.*须写明是哪个名字", "姓名归属不明确"),
+    (r"当天流日的十神是", "流日十神错误"),
+    (r"不是当天的流日，也不是本命的干支", "流日干支错误"),
+    (r"本命日主是", "本命日主错误"),
+    (r"当天流日五行是", "流日五行错误"),
+    (r"当天日期是", "当天日期错误"),
+    (r"牌面方向错误|正逆位", "塔罗牌面方向错误"),
+    (r"位是【.*正文写成了", "塔罗牌位错误"),
+    (r"没有抽到|正文提到未抽出的牌", "未抽出的塔罗牌"),
+    (r"编号|【引用】|ref_id", "引用编号错误"),
+    (r"格式：|摘要.*字|层.*(?:标题|正文)|输出上限被截断", "稿件格式或长度错误"),
+    (r"不能劝阻就医", "劝阻就医"),
+    (r"停药|确定性结果", "确定性结果或用药指令"),
+    (r"确定性说法|健康、投资或生死的确定性结论", "确定性断言"),
+    (r"本轮token预算已用尽", "预算用尽"),
+)
 
 
 def drafts(row: dict) -> list[list[str]] | None:
@@ -39,8 +66,8 @@ def drafts(row: dict) -> list[list[str]] | None:
 
 
 def kind(problem: str) -> str:
-    """A problem without the drafts' own words: what kind of check it was."""
-    return DIGITS.sub("N", QUOTED.sub("“…”", problem))
+    """A fixed category, never any of the draft's or the user's own words."""
+    return next((label for pattern, label in KINDS if re.search(pattern, problem)), "其他校验问题")
 
 
 def render(path: Path, report: dict) -> str:
@@ -83,7 +110,7 @@ def tally(path: Path, report: dict) -> str:
 def main():
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     parser.add_argument("paths", nargs="+", type=Path, help="live.json 或其所在批次目录")
-    parser.add_argument("--tally", action="store_true", help="只输出问题类别计数，引文替换为“…”")
+    parser.add_argument("--tally", action="store_true", help="只输出固定问题类别计数，不含原文")
     parser.add_argument("--output", type=Path, help="写入文件；默认打印")
     args = parser.parse_args()
     loaded = [(path, json.loads(path.read_text(encoding="utf-8"))) for path in reports(args.paths)]

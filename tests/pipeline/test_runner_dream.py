@@ -571,6 +571,8 @@ async def test_each_drafts_problems_are_traced_as_text(make):
     traced = [e for e in events if e.get("stage") == "problems"]
     assert [e["draft"] for e in traced] == [1]
     assert traced[0]["problems"] == outcome.data["pipeline"]["problems"][0]
+    saved = runtime.store.get_reading(runtime.session.user_id, outcome.data["reading_id"])
+    assert saved["pipeline_json"]["problems"] == outcome.data["pipeline"]["problems"]
 
 
 async def test_a_dream_repair_lists_the_symbols_without_the_tarot_seat_wording(make):
@@ -590,3 +592,76 @@ def test_tarot_repairs_keep_the_seat_wording():
     assert "R1=现在位位【星星】正位。写某个牌位时，只能用该牌位对应的编号。" in tarot
     other = compose.repair_messages([], "稿", ["问题"], facts, positions=False)[-1]["content"]
     assert other.endswith("可引用的编号只有：R1=【星星】正位。")
+
+
+async def test_the_users_phrase_alias_passes_the_final_submission_validator(make):
+    text = "梦里奶奶为你做饭，象征着被照顾、被滋养的感觉。"
+    runtime, _, events = make(extraction(GRANDMOTHER_SYMBOLS), with_layer(text), written)
+    outcome = await runtime.turn(GRANDMOTHER)
+    assert outcome.status == "submit_reading"
+    assert outcome.data["pipeline"]["repairs"] == 0
+    assert outcome.data["pipeline"]["degraded"] is None
+    assert text in outcome.text
+    assert planned(events).count("submit_reading") == 1
+
+
+@pytest.mark.parametrize("alias", ["爷爷", "祖父母"])
+async def test_a_phrase_alias_does_not_authorise_its_other_dictionary_synonyms(make, alias):
+    runtime, *_ = make(
+        extraction(GRANDMOTHER_SYMBOLS), with_layer(f"「{alias}」象征被照顾。"), written
+    )
+    outcome = await runtime.turn(GRANDMOTHER)
+    assert outcome.status == "submit_reading"
+    assert outcome.data["pipeline"]["repairs"] == 1
+    assert "不是本次命中的意象" in outcome.data["pipeline"]["problems"][0][0]
+
+
+async def test_phrase_aliases_are_not_inherited_by_the_single_agent_validator(make):
+    from common.schemas import Reading
+    from plugins.dream.validation import validate_output
+
+    runtime, *_ = make(extraction(GRANDMOTHER_SYMBOLS), written)
+    outcome = await runtime.turn(GRANDMOTHER)
+    reading = Reading.model_validate(outcome.data["reading"])
+    reading.summary = "梦里奶奶象征被照顾。"
+    assert "pipeline_run" not in runtime.session.state
+    assert "不是本次命中的意象" in validate_output(
+        reading, runtime.session.state, Dream(runtime).matcher
+    )
+
+
+@pytest.mark.parametrize(
+    "dialogue",
+    [
+        "有人问我能不能打开地铁闸机。",
+        "有人对我说：“帮我打开地铁闸机，好吗？”",
+        "“能不能打开地铁闸机？”",
+        "有人问我：能不能打开地铁闸机？",
+        "能不能打开地铁闸机我已经记不清了。",
+    ],
+)
+async def test_questions_inside_the_dream_do_not_hide_omitted_symbols(make, dialogue):
+    text = "地铁闸机象征阻碍。"
+    runtime, _, events = make(
+        extraction([{"phrase": "掉牙", "symbol": "掉牙"}]), with_layer(text), written
+    )
+    outcome = await runtime.turn(f"梦见掉牙，{dialogue}")
+    assert outcome.status == "submit_reading"
+    assert outcome.data["pipeline"]["repairs"] == 1
+    assert "地铁闸机" in outcome.data["pipeline"]["problems"][0][0]
+    assert text not in outcome.text
+    assert planned(events).count("submit_reading") == 1
+
+
+@pytest.mark.parametrize("noun", ["门把手", "着装"])
+async def test_function_characters_inside_nouns_do_not_hide_omitted_symbols(make, noun):
+    text = f"{noun}，往往反映你想逃避。"
+    runtime, _, events = make(
+        extraction([{"phrase": "掉牙", "symbol": "掉牙"}]), with_layer(text), written
+    )
+    outcome = await runtime.turn(f"梦见掉牙，接着我看到{noun}。")
+    assert outcome.status == "submit_reading"
+    assert outcome.data["pipeline"]["repairs"] == 1
+    assert noun in outcome.data["pipeline"]["problems"][0][0]
+    assert text not in outcome.text
+    assert planned(events).count("submit_reading") == 1

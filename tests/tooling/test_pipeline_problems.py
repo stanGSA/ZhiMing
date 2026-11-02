@@ -53,8 +53,8 @@ def test_problems_are_read_per_draft_and_tallied_without_the_drafts_words(tmp_pa
     assert "b#2（降级：keywords）" in text and "第2稿：“考场”" in text
     assert "clean" not in text and "agent" not in text
     table = tally(path, report)
-    assert "| 首稿 | “…”不在事实表里，只能解读事实表里的意象 | 2 |" in table
-    assert "| 修复稿 | “…”不在事实表里，只能解读事实表里的意象 | 1 |" in table
+    assert "| 首稿 | 事实表外的梦境意象 | 2 |" in table
+    assert "| 修复稿 | 事实表外的梦境意象 | 1 |" in table
     assert "地铁闸机" not in table and "考场" not in table
 
 
@@ -69,8 +69,31 @@ def test_a_trace_without_problem_texts_is_reported_not_counted(tmp_path):
     assert "1 条回答的 trace 中没有问题文字" in tally(path, report)
 
 
-def test_kind_drops_quoted_words_and_numbers():
-    assert (
-        kind("当天流日的十神是正财，正文写成了「偏财」第3处")
-        == "当天流日的十神是正财，正文写成了“…”第N处"
-    )
+def test_kind_reports_only_a_fixed_category_for_daily_facts():
+    assert kind("当天流日的十神是正财，正文写成了「偏财」第3处") == "流日十神错误"
+
+
+def test_tally_groups_name_errors_without_publishing_names(tmp_path):
+    from plugins.name.validation import check_claims
+
+    problems = []
+    for name in ("王晓敏", "陈丽"):
+        bound = {"full_name": name, "grids": {"人格": 25}, "shuli": {"人格": 25}}
+        problems.append(check_claims("人格999", bound, {"name1": bound}))
+    rows = [
+        {
+            "id": "names",
+            "trace": trace(tmp_path, "names", problems),
+            "pipeline": {"problems": [2]},
+        }
+    ]
+    path = batch(tmp_path, rows)
+    table = tally(path, {"results": rows})
+    assert "| 首稿 | 姓名五格数值错误 | 2 |" in table
+    assert all(name not in table for name in ("王晓敏", "陈丽", "999"))
+    # The detailed local report still contains the evidence.
+    assert all(name in render(path, {"results": rows}) for name in ("王晓敏", "陈丽"))
+
+
+def test_unknown_problem_text_is_never_published():
+    assert kind('未识别的错误：王晓敏，电话13812345678，"私人内容"') == "其他校验问题"

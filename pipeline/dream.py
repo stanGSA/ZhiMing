@@ -23,7 +23,7 @@ from pipeline.render import safety_for
 from pipeline.state import RESUMABLE
 from pipeline.system import System
 from plugins.dream.match import NORMALISATIONS
-from plugins.dream.validation import text_error
+from plugins.dream.validation import phrase_aliases, text_error
 
 DREAM = re.compile(
     r"梦见|梦到|梦里|梦中|做梦|做.{0,8}?个梦|做了.{0,8}梦|噩梦|梦境|解梦|的梦|[这那]个梦"
@@ -56,16 +56,23 @@ GENERIC = re.compile(
     r"这个梦境?|这场梦|整个梦|同一个梦|同样的梦|这样的梦|这类梦|这种梦|梦境|梦里的?|梦中的?|这个意象|这些意象|这个画面|这个场景|这一幕|"
     r"这种感受|这种情绪|这份感受|它们|它|这些|两者|二者|前者|后者|你们|你|自己|"
     r"梦见了?|梦到了?|一般来说|传统上|通常|往往|常常|一般|多半|可能|也许|或许|似乎|"
-    r"[这那在的了也都还常多会更又与和跟同而则就被里给把让为着]"
+    r"[这那在的了也都还常多会更又与和跟同而则就被]"
 )
-# A clause of the message that asks rather than tells the dream: “是不是预示我的健康要出问题”
-# describes nothing that was dreamed, so its words are not dream content.
+# These connectors may stand between removed symbols/pronouns. Do not remove them
+# from inside nouns such as 门把手 or 着装, which still need the unlisted-content check.
+CONNECTORS = re.compile(r"(?<![\u4e00-\u9fff])[里给把让为着]+(?![\u4e00-\u9fff])")
+# Only an explicit question prefix qualifies; a question embedded in a narrative
+# (有人问我能不能…) is part of the dream. Quoted dialogue is preserved as well.
 ASKS = re.compile(
-    r"是不是|要不要|会不会|能不能|是否|什么意思|怎么理解|怎么解|怎么回事|说明什么|代表什么|"
-    r"意味着什么|帮我|请问|解[个一下]*梦|吗|呢"
+    r"^\s*(?:(?:这个梦境?|这场梦|整个梦|同一个梦|同样的梦|这样的梦|这类梦|这种梦)\s*)?"
+    r"(?:是不是|要不要|会不会|能不能|是否|什么意思|怎么理解|怎么解|怎么回事|说明什么|代表什么|"
+    r"意味着什么|帮我解[个一下]*梦|请问|解[个一下]*梦)"
 )
+REQUEST = re.compile(r"^\s*(?:请问|帮我解[个一下]*梦|解[个一下]*梦)")
 TELLS = re.compile(r"梦见|梦到|梦里|梦中")
 MESSAGE_CLAUSE = re.compile(r"[，,。；;！!？?\n：:]")
+QUOTED_SPEECH = re.compile(r'“[^”]*”|「[^」]*」|‘[^’]*’|"[^"]*"')
+SPEECH = re.compile(r"(?:问|说|喊|叫|请求|告诉)[^，,。；;！!？?\n：:]{0,12}$")
 HAN_RUN = re.compile(r"[\u4e00-\u9fff]{2,}")
 # Two-character words of a description that are not part of what was dreamed.
 COMMON_GRAMS = frozenset(
@@ -84,12 +91,20 @@ def strip(text: str, terms: list[str]) -> str:
 
 
 def told(question: str) -> str:
-    """The message without the clauses that only ask about the dream."""
-    return "，".join(
-        clause
-        for clause in MESSAGE_CLAUSE.split(question)
-        if TELLS.search(clause) or not ASKS.search(clause)
-    )
+    """Remove explicit user questions, preserving narrative and quoted dialogue."""
+    # Keep offsets while hiding quoted punctuation from the clause splitter.
+    masked = QUOTED_SPEECH.sub(lambda match: " " * len(match[0]), question)
+    kept, start, dialogue = [], 0, False
+    for boundary in MESSAGE_CLAUSE.finditer(masked + "，"):
+        clause = masked[start : boundary.start()]
+        explicit = (
+            boundary[0] in "？?" or REQUEST.search(clause) or WHOLE_DREAM.match(clause.lstrip())
+        )
+        if dialogue or TELLS.search(clause) or not (explicit and ASKS.search(clause)):
+            kept.append(question[start : boundary.start()])
+        dialogue = boundary[0] in "：:" and bool(SPEECH.search(clause))
+        start = boundary.end()
+    return "，".join(kept)
 
 
 def grams(text: str) -> list[str]:
@@ -288,27 +303,13 @@ class Dream(System):
         recognised as a safety failure after the dream rule has caught it as a prophecy.
         """
         result = self.result(session.state)
-        hits = {hit["key"] for hit in result["hits"]} | self.phrase_heads(session)
+        hits = {hit["key"] for hit in result["hits"]}
         misses = set(result["misses"])
-        found = [text_error(text, self.matcher, hits, misses) for text in texts]
+        aliases = phrase_aliases(self.matcher, result["hits"])
+        found = [text_error(text, self.matcher, hits, misses, aliases=aliases) for text in texts]
         found += self.unlisted(texts, session)
         found += self.wording_problems(texts, session)
         return list(dict.fromkeys(problem for problem in found if problem))
-
-    def phrase_heads(self, session) -> set[str]:
-        """Symbols the user's own phrase for a hit ends in: 奶奶 of “去世的奶奶” (去世的亲人).
-
-        A Chinese phrase ends in its head noun, so “奶奶” there is the matched symbol in the
-        user's words, not another symbol; writing it is not interpreting an unmatched one.
-        Only the end counts: “去世” in the same phrase stays another symbol.
-        """
-        heads = set()
-        for hit in self.result(session.state)["hits"]:
-            phrase = hit.get("phrase") or ""
-            for alias, key in self.matcher.aliases.items():
-                if alias != phrase and phrase.endswith(alias):
-                    heads.add(key)
-        return heads
 
     def hit_terms(self, session) -> list[str]:
         """Every way the reading may name a matched symbol: rendered, key, alias, phrase."""
@@ -317,6 +318,7 @@ class Dream(System):
         terms = {f"「{key}」" for key in keys} | keys
         terms |= {alias for alias, key in self.matcher.aliases.items() if key in keys}
         terms |= {hit["phrase"] for hit in result["hits"] if hit.get("phrase")}
+        terms |= phrase_aliases(self.matcher, result["hits"]).keys()
         return sorted(terms, key=len, reverse=True)
 
     def unlisted(self, texts, session) -> list[str]:
@@ -339,6 +341,7 @@ class Dream(System):
 
         def other(text: str) -> str:
             rest = GENERIC.sub(" ", FEELING_REFERENCE.sub(" ", strip(text, terms)))
+            rest = CONNECTORS.sub(" ", rest)
             return next((run for run in HAN_RUN.findall(rest) if set(grams(run)) & described), "")
 
         problems = []
