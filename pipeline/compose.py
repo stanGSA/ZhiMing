@@ -53,8 +53,9 @@ DREAM_SYSTEM = (
 
 【事实规则】
 - 提到命中的意象时只写它的编号占位符，例如{{R2}}，程序会替换成“「掉牙」”。只解读事实表里的意象。
-- 事实表后“未收录”一行列出的词不要提及，也不要解读，程序会另外说明。
+- 事实表后“未收录”一行列出的词不要提及，复述梦境时也不要写到，更不要解读，程序会另外说明。
 - 解读句（象征、代表、反映、说明、和……有关）的主语只能是事实表里的意象（写编号）或“这个梦”；梦里事实表没有列出的其他内容不要拿来解读。
+- 可以复述用户梦里的细节，但复述之后另起一句，用编号或“这个梦”作主语来解读；不要用“这个画面、这种场景、这说明”去承接事实表没有的细节。
 - 意象的含义只从事实表的关键词和一般含义出发，结合用户描述的梦境细节和感受来讲；不补充事实表没有的象征说法。
 - 梦境只反映心理和情绪：不写预兆、预示、征兆，不说现实中会发生什么，不写日期和时间安排。趋势用“倾向、容易、往往”，不写“一定、必然、注定”。
 - """
@@ -84,6 +85,7 @@ DREAM_SYSTEM = (
 DREAM_EXTRACT = """你是知命的解梦意象抽取器。从用户的梦境描述里抽出梦中出现的意象：人物、动物、物品、地点、自然景象和关键动作。
 - phrase：逐字摘自用户描述的连续片段，不改字、不拼接。
 - symbol：这个片段的规范说法，例如“牙齿一颗一颗掉下来”→“掉牙”，“被一条大狗追”→“狗”和“被追”两项；没有通行说法就照抄原文。
+- 关键动作（如被追、掉牙、迷路、飞）照常抽；程度、持续、否定或结果（如“一直跑”“不敢下去”“没电了”“什么都没复习”）不单独成项，修饰某个人或物时归入它（“手机也没电了”→“手机”）。
 - 只抽梦里出现的内容；醒来后的感受、现实处境和提问本身都不抽。不解释含义，不加入用户没说的内容。
 - 最多12项。
 只输出JSON：{"symbols":[{"phrase":"……","symbol":"……"}]}；描述里没有梦境内容时输出{"symbols":[]}。"""
@@ -287,16 +289,25 @@ def json_object(text: str) -> str:
     return text[start : end + 1]
 
 
-def repair_messages(messages: list[dict], draft: str, problems: list[str], facts) -> list[dict]:
+def repair_messages(
+    messages: list[dict], draft: str, problems: list[str], facts, *, positions: bool = True
+) -> list[dict]:
+    """The repair request. ``positions``: the facts are tarot positions (牌位); for the other
+    systems the labels are symbols, grids or the day's items, so the seat wording is left out."""
     listed = "\n".join(f"{i}. {problem}" for i, problem in enumerate(problems, 1))
-    seats = "；".join(f"{fact.alias}={fact.label}位{fact.text}" for fact in facts)
+    if positions:
+        seats = "；".join(f"{fact.alias}={fact.label}位{fact.text}" for fact in facts)
+        rule = f"可引用的编号只有：{seats}。写某个牌位时，只能用该牌位对应的编号。"
+    else:
+        seats = "；".join(f"{fact.alias}={fact.text}" for fact in facts)
+        rule = f"可引用的编号只有：{seats}。"
     return [
         *messages,
         {"role": "assistant", "content": draft},
         {
             "role": "user",
             "content": f"上一稿有这些问题，请修改后重新输出完整的标记文本，格式不变：\n{listed}\n"
-            f"可引用的编号只有：{seats}。写某个牌位时，只能用该牌位对应的编号。",
+            + rule,
         },
     ]
 
