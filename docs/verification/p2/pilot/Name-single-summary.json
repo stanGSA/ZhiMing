@@ -1,0 +1,1155 @@
+{
+  "run_id": "20261102T090554-2d3d6a47",
+  "rubric_version": "v2-2026-10-24",
+  "judge_name": "pro",
+  "judge_model": "deepseek-v4.1-flash",
+  "repeats": 3,
+  "mode": "single",
+  "requested_model": "deepseek-v4.1-flash",
+  "source_fingerprint": "5ba7c976af06f96ccf1d7067f16641c754c4eb9048a1305df7f00aea1d8afe5b",
+  "cases": 18,
+  "passed": 2,
+  "failed": 16,
+  "multi_agent": null,
+  "reviewer_agent": null,
+  "model_calls": 82,
+  "model_request_attempts": 82,
+  "review_calls": 18,
+  "review_request_attempts": 19,
+  "input_tokens": 522023,
+  "output_tokens": 61335,
+  "scope": "Synthetic data; judge identity and rubric recorded. Automated review is not human calibration or independent verification of service identity.",
+  "raw_sha256": "7bcdb224a7690a09e49758a1f7b56d8abb4cb5bf4d1959e69c1bb5466c7c6d83",
+  "results": [
+    {
+      "id": "name_ambiguous_form",
+      "repeat": 0,
+      "status": "submit_reading",
+      "checks": {
+        "expected_status": true,
+        "expected_tools": true,
+        "zero_tool_errors": false,
+        "no_model_error": true,
+        "saved": true,
+        "systems": true,
+        "valid_refs": true
+      },
+      "engineering_pass": false,
+      "quality_review": {
+        "direct_answer": true,
+        "time_consistent": true,
+        "supported_conclusion": true,
+        "no_fabricated_facts": true
+      },
+      "quality_pass": true,
+      "passed": false,
+      "tools": [
+        "analyze_name",
+        "get_profile",
+        "lookup_meaning",
+        "start_reading",
+        "submit_reading"
+      ],
+      "tool_errors": [
+        {
+          "tool": "submit_reading",
+          "code": "validation_failed",
+          "error": "赵杰的“杰”有多种写法（傑12画/杰8画），须在用户可见的摘要、分析或建议中说明各字形笔画并请用户确认。可使用：赵杰的“杰”默认按傑12画，备选写法为杰8画，请按证件写法确认。"
+        }
+      ],
+      "latency_s": 40.317,
+      "review_latency_s": 9.809,
+      "model_calls": 7,
+      "model_request_attempts": 7,
+      "input_tokens": 36653,
+      "output_tokens": 3191,
+      "usage_missing_calls": 0,
+      "cached_input_tokens": 30336,
+      "cached_usage_complete": true,
+      "returned_models": [
+        "deepseek-v4.1-flash-sg"
+      ],
+      "review_usage": {
+        "input_tokens": 12722,
+        "output_tokens": 524,
+        "usage_available": true,
+        "requested_model": "deepseek-v4.1-flash",
+        "returned_model": "deepseek-v4.1-flash-sg",
+        "parse_attempts": 2
+      },
+      "review_request_attempts": 2,
+      "multi_agent": null,
+      "reviewer_agent": null,
+      "pipeline": null
+    },
+    {
+      "id": "name_compound_surname",
+      "repeat": 0,
+      "status": "retry_limit",
+      "checks": {
+        "expected_status": false,
+        "expected_tools": false,
+        "zero_tool_errors": false,
+        "no_model_error": true,
+        "saved": false,
+        "systems": false,
+        "valid_refs": true
+      },
+      "engineering_pass": false,
+      "quality_review": {
+        "direct_answer": false,
+        "time_consistent": true,
+        "supported_conclusion": false,
+        "no_fabricated_facts": true
+      },
+      "quality_pass": false,
+      "passed": false,
+      "tools": [
+        "analyze_name",
+        "start_reading"
+      ],
+      "tool_errors": [
+        {
+          "tool": "submit_reading",
+          "code": "validation_failed",
+          "error": "欧阳子涵的外格32与本次计算不符"
+        },
+        {
+          "tool": "submit_reading",
+          "code": "validation_failed",
+          "error": "欧阳子涵的外格32与本次计算不符"
+        },
+        {
+          "tool": "submit_reading",
+          "code": "validation_failed",
+          "error": "欧阳子涵的外格32与本次计算不符"
+        }
+      ],
+      "latency_s": 34.731,
+      "review_latency_s": 4.133,
+      "model_calls": 5,
+      "model_request_attempts": 5,
+      "input_tokens": 27807,
+      "output_tokens": 4426,
+      "usage_missing_calls": 0,
+      "cached_input_tokens": 24576,
+      "cached_usage_complete": true,
+      "returned_models": [
+        "deepseek-v4.1-flash-sg"
+      ],
+      "review_usage": {
+        "input_tokens": 1228,
+        "output_tokens": 212,
+        "usage_available": true,
+        "requested_model": "deepseek-v4.1-flash",
+        "returned_model": "deepseek-v4.1-flash-sg",
+        "parse_attempts": 1
+      },
+      "review_request_attempts": 1,
+      "multi_agent": null,
+      "reviewer_agent": null,
+      "pipeline": null
+    },
+    {
+      "id": "name_compare_two",
+      "repeat": 0,
+      "status": "retry_limit",
+      "checks": {
+        "expected_status": false,
+        "expected_tools": false,
+        "zero_tool_errors": false,
+        "no_model_error": true,
+        "saved": false,
+        "systems": false,
+        "valid_refs": true
+      },
+      "engineering_pass": false,
+      "quality_review": {
+        "direct_answer": false,
+        "time_consistent": true,
+        "supported_conclusion": false,
+        "no_fabricated_facts": true
+      },
+      "quality_pass": false,
+      "passed": false,
+      "tools": [
+        "analyze_name",
+        "get_profile",
+        "start_reading"
+      ],
+      "tool_errors": [
+        {
+          "tool": "submit_reading",
+          "code": "validation_failed",
+          "error": "“張”不属于李娜，笔画不能串用"
+        },
+        {
+          "tool": "submit_reading",
+          "code": "validation_failed",
+          "error": "“張”不属于李娜，笔画不能串用"
+        },
+        {
+          "tool": "submit_reading",
+          "code": "validation_failed",
+          "error": "有多个姓名时，地格3须写明是哪个名字"
+        },
+        {
+          "tool": "submit_reading",
+          "code": "validation_failed",
+          "error": "有多个姓名时，地格3须写明是哪个名字"
+        },
+        {
+          "tool": "submit_reading",
+          "code": "validation_failed",
+          "error": "有多个姓名时，地格3须写明是哪个名字"
+        }
+      ],
+      "latency_s": 53.919,
+      "review_latency_s": 3.906,
+      "model_calls": 7,
+      "model_request_attempts": 7,
+      "input_tokens": 58429,
+      "output_tokens": 7758,
+      "usage_missing_calls": 0,
+      "cached_input_tokens": 51584,
+      "cached_usage_complete": true,
+      "returned_models": [
+        "deepseek-v4.1-flash-sg"
+      ],
+      "review_usage": {
+        "input_tokens": 1645,
+        "output_tokens": 172,
+        "usage_available": true,
+        "requested_model": "deepseek-v4.1-flash",
+        "returned_model": "deepseek-v4.1-flash-sg",
+        "parse_attempts": 1
+      },
+      "review_request_attempts": 1,
+      "multi_agent": null,
+      "reviewer_agent": null,
+      "pipeline": null
+    },
+    {
+      "id": "name_three_character",
+      "repeat": 0,
+      "status": "ask_user",
+      "checks": {
+        "expected_status": false,
+        "expected_tools": false,
+        "zero_tool_errors": true,
+        "no_model_error": true,
+        "saved": false,
+        "systems": false,
+        "valid_refs": true
+      },
+      "engineering_pass": false,
+      "quality_review": {
+        "direct_answer": true,
+        "time_consistent": true,
+        "supported_conclusion": true,
+        "no_fabricated_facts": true
+      },
+      "quality_pass": true,
+      "passed": false,
+      "tools": [
+        "ask_user",
+        "get_profile"
+      ],
+      "tool_errors": [],
+      "latency_s": 8.905,
+      "review_latency_s": 5.407,
+      "model_calls": 2,
+      "model_request_attempts": 2,
+      "input_tokens": 4419,
+      "output_tokens": 185,
+      "usage_missing_calls": 0,
+      "cached_input_tokens": 3968,
+      "cached_usage_complete": true,
+      "returned_models": [
+        "deepseek-v4.1-flash-sg"
+      ],
+      "review_usage": {
+        "input_tokens": 540,
+        "output_tokens": 160,
+        "usage_available": true,
+        "requested_model": "deepseek-v4.1-flash",
+        "returned_model": "deepseek-v4.1-flash-sg",
+        "parse_attempts": 1
+      },
+      "review_request_attempts": 1,
+      "multi_agent": null,
+      "reviewer_agent": null,
+      "pipeline": null
+    },
+    {
+      "id": "name_without_lead_in",
+      "repeat": 0,
+      "status": "ask_user",
+      "checks": {
+        "expected_status": false,
+        "expected_tools": false,
+        "zero_tool_errors": true,
+        "no_model_error": true,
+        "saved": false,
+        "systems": false,
+        "valid_refs": true
+      },
+      "engineering_pass": false,
+      "quality_review": {
+        "direct_answer": false,
+        "time_consistent": true,
+        "supported_conclusion": false,
+        "no_fabricated_facts": true
+      },
+      "quality_pass": false,
+      "passed": false,
+      "tools": [
+        "ask_user"
+      ],
+      "tool_errors": [],
+      "latency_s": 3.654,
+      "review_latency_s": 3.151,
+      "model_calls": 1,
+      "model_request_attempts": 1,
+      "input_tokens": 2172,
+      "output_tokens": 127,
+      "usage_missing_calls": 0,
+      "cached_input_tokens": 1920,
+      "cached_usage_complete": true,
+      "returned_models": [
+        "deepseek-v4.1-flash-sg"
+      ],
+      "review_usage": {
+        "input_tokens": 492,
+        "output_tokens": 159,
+        "usage_available": true,
+        "requested_model": "deepseek-v4.1-flash",
+        "returned_model": "deepseek-v4.1-flash-sg",
+        "parse_attempts": 1
+      },
+      "review_request_attempts": 1,
+      "multi_agent": null,
+      "reviewer_agent": null,
+      "pipeline": null
+    },
+    {
+      "id": "name_career_grid",
+      "repeat": 0,
+      "status": "submit_reading",
+      "checks": {
+        "expected_status": true,
+        "expected_tools": true,
+        "zero_tool_errors": true,
+        "no_model_error": true,
+        "saved": true,
+        "systems": true,
+        "valid_refs": true
+      },
+      "engineering_pass": true,
+      "quality_review": {
+        "direct_answer": true,
+        "time_consistent": true,
+        "supported_conclusion": true,
+        "no_fabricated_facts": true,
+        "reasoning_strength": "姓名五格按给定笔画规则确定性计算，引用释义与输出判断一致，属可接受的传统释义推理。"
+      },
+      "quality_pass": true,
+      "passed": true,
+      "tools": [
+        "analyze_name",
+        "get_profile",
+        "start_reading",
+        "submit_reading"
+      ],
+      "tool_errors": [],
+      "latency_s": 19.232,
+      "review_latency_s": 5.064,
+      "model_calls": 4,
+      "model_request_attempts": 4,
+      "input_tokens": 13295,
+      "output_tokens": 1441,
+      "usage_missing_calls": 0,
+      "cached_input_tokens": 8576,
+      "cached_usage_complete": true,
+      "returned_models": [
+        "deepseek-v4.1-flash-sg"
+      ],
+      "review_usage": {
+        "input_tokens": 5646,
+        "output_tokens": 275,
+        "usage_available": true,
+        "requested_model": "deepseek-v4.1-flash",
+        "returned_model": "deepseek-v4.1-flash-sg",
+        "parse_attempts": 1
+      },
+      "review_request_attempts": 1,
+      "multi_agent": null,
+      "reviewer_agent": null,
+      "pipeline": null
+    },
+    {
+      "id": "name_ambiguous_form",
+      "repeat": 1,
+      "status": "ask_user",
+      "checks": {
+        "expected_status": false,
+        "expected_tools": false,
+        "zero_tool_errors": true,
+        "no_model_error": true,
+        "saved": false,
+        "systems": false,
+        "valid_refs": true
+      },
+      "engineering_pass": false,
+      "quality_review": {
+        "direct_answer": true,
+        "time_consistent": true,
+        "supported_conclusion": true,
+        "no_fabricated_facts": true
+      },
+      "quality_pass": true,
+      "passed": false,
+      "tools": [
+        "ask_user",
+        "get_profile"
+      ],
+      "tool_errors": [],
+      "latency_s": 7.692,
+      "review_latency_s": 3.182,
+      "model_calls": 2,
+      "model_request_attempts": 2,
+      "input_tokens": 4403,
+      "output_tokens": 110,
+      "usage_missing_calls": 0,
+      "cached_input_tokens": 3968,
+      "cached_usage_complete": true,
+      "returned_models": [
+        "deepseek-v4.1-flash-sg"
+      ],
+      "review_usage": {
+        "input_tokens": 472,
+        "output_tokens": 127,
+        "usage_available": true,
+        "requested_model": "deepseek-v4.1-flash",
+        "returned_model": "deepseek-v4.1-flash-sg",
+        "parse_attempts": 1
+      },
+      "review_request_attempts": 1,
+      "multi_agent": null,
+      "reviewer_agent": null,
+      "pipeline": null
+    },
+    {
+      "id": "name_compound_surname",
+      "repeat": 1,
+      "status": "retry_limit",
+      "checks": {
+        "expected_status": false,
+        "expected_tools": false,
+        "zero_tool_errors": false,
+        "no_model_error": true,
+        "saved": false,
+        "systems": false,
+        "valid_refs": true
+      },
+      "engineering_pass": false,
+      "quality_review": {
+        "direct_answer": false,
+        "time_consistent": true,
+        "supported_conclusion": false,
+        "no_fabricated_facts": true
+      },
+      "quality_pass": false,
+      "passed": false,
+      "tools": [
+        "analyze_name",
+        "get_profile",
+        "start_reading"
+      ],
+      "tool_errors": [
+        {
+          "tool": "submit_reading",
+          "code": "validation_failed",
+          "error": "欧阳子涵的地格2与本次计算不符"
+        },
+        {
+          "tool": "submit_reading",
+          "code": "validation_failed",
+          "error": "欧阳子涵的地格2与本次计算不符"
+        },
+        {
+          "tool": "submit_reading",
+          "code": "validation_failed",
+          "error": "欧阳子涵的地格2与本次计算不符"
+        }
+      ],
+      "latency_s": 41.37,
+      "review_latency_s": 5.439,
+      "model_calls": 6,
+      "model_request_attempts": 6,
+      "input_tokens": 31087,
+      "output_tokens": 5326,
+      "usage_missing_calls": 0,
+      "cached_input_tokens": 27648,
+      "cached_usage_complete": true,
+      "returned_models": [
+        "deepseek-v4.1-flash-sg"
+      ],
+      "review_usage": {
+        "input_tokens": 1228,
+        "output_tokens": 192,
+        "usage_available": true,
+        "requested_model": "deepseek-v4.1-flash",
+        "returned_model": "deepseek-v4.1-flash-sg",
+        "parse_attempts": 1
+      },
+      "review_request_attempts": 1,
+      "multi_agent": null,
+      "reviewer_agent": null,
+      "pipeline": null
+    },
+    {
+      "id": "name_compare_two",
+      "repeat": 1,
+      "status": "retry_limit",
+      "checks": {
+        "expected_status": false,
+        "expected_tools": false,
+        "zero_tool_errors": false,
+        "no_model_error": true,
+        "saved": false,
+        "systems": false,
+        "valid_refs": true
+      },
+      "engineering_pass": false,
+      "quality_review": {
+        "direct_answer": false,
+        "time_consistent": true,
+        "supported_conclusion": false,
+        "no_fabricated_facts": true
+      },
+      "quality_pass": false,
+      "passed": false,
+      "tools": [
+        "analyze_name",
+        "start_reading"
+      ],
+      "tool_errors": [
+        {
+          "tool": "submit_reading",
+          "code": "validation_failed",
+          "error": "“張”不属于李娜，笔画不能串用"
+        },
+        {
+          "tool": "submit_reading",
+          "code": "validation_failed",
+          "error": "“张”不属于李娜，笔画不能串用"
+        },
+        {
+          "tool": "submit_reading",
+          "code": "validation_failed",
+          "error": "有多个姓名时，地格3须写明是哪个名字"
+        },
+        {
+          "tool": "submit_reading",
+          "code": "validation_failed",
+          "error": "有多个姓名时，地格3须写明是哪个名字"
+        },
+        {
+          "tool": "submit_reading",
+          "code": "validation_failed",
+          "error": "李娜的总格3与本次计算不符"
+        },
+        {
+          "tool": "submit_reading",
+          "code": "validation_failed",
+          "error": "李娜的总格3与本次计算不符"
+        },
+        {
+          "tool": "submit_reading",
+          "code": "validation_failed",
+          "error": "李娜的总格3与本次计算不符"
+        }
+      ],
+      "latency_s": 66.826,
+      "review_latency_s": 4.284,
+      "model_calls": 9,
+      "model_request_attempts": 9,
+      "input_tokens": 89079,
+      "output_tokens": 10353,
+      "usage_missing_calls": 0,
+      "cached_input_tokens": 84091,
+      "cached_usage_complete": true,
+      "returned_models": [
+        "deepseek-v4.1-flash-sg"
+      ],
+      "review_usage": {
+        "input_tokens": 1645,
+        "output_tokens": 218,
+        "usage_available": true,
+        "requested_model": "deepseek-v4.1-flash",
+        "returned_model": "deepseek-v4.1-flash-sg",
+        "parse_attempts": 1
+      },
+      "review_request_attempts": 1,
+      "multi_agent": null,
+      "reviewer_agent": null,
+      "pipeline": null
+    },
+    {
+      "id": "name_three_character",
+      "repeat": 1,
+      "status": "submit_reading",
+      "checks": {
+        "expected_status": true,
+        "expected_tools": true,
+        "zero_tool_errors": true,
+        "no_model_error": true,
+        "saved": true,
+        "systems": true,
+        "valid_refs": true
+      },
+      "engineering_pass": true,
+      "quality_review": {
+        "direct_answer": true,
+        "time_consistent": true,
+        "supported_conclusion": true,
+        "no_fabricated_facts": true
+      },
+      "quality_pass": true,
+      "passed": true,
+      "tools": [
+        "analyze_name",
+        "start_reading",
+        "submit_reading"
+      ],
+      "tool_errors": [],
+      "latency_s": 19.721,
+      "review_latency_s": 6.004,
+      "model_calls": 3,
+      "model_request_attempts": 3,
+      "input_tokens": 10835,
+      "output_tokens": 1448,
+      "usage_missing_calls": 0,
+      "cached_input_tokens": 8192,
+      "cached_usage_complete": true,
+      "returned_models": [
+        "deepseek-v4.1-flash-sg"
+      ],
+      "review_usage": {
+        "input_tokens": 5890,
+        "output_tokens": 404,
+        "usage_available": true,
+        "requested_model": "deepseek-v4.1-flash",
+        "returned_model": "deepseek-v4.1-flash-sg",
+        "parse_attempts": 1
+      },
+      "review_request_attempts": 1,
+      "multi_agent": null,
+      "reviewer_agent": null,
+      "pipeline": null
+    },
+    {
+      "id": "name_without_lead_in",
+      "repeat": 1,
+      "status": "submit_reading",
+      "checks": {
+        "expected_status": true,
+        "expected_tools": true,
+        "zero_tool_errors": false,
+        "no_model_error": true,
+        "saved": true,
+        "systems": true,
+        "valid_refs": true
+      },
+      "engineering_pass": false,
+      "quality_review": {
+        "direct_answer": true,
+        "time_consistent": true,
+        "supported_conclusion": true,
+        "no_fabricated_facts": true
+      },
+      "quality_pass": true,
+      "passed": false,
+      "tools": [
+        "analyze_name",
+        "get_profile",
+        "start_reading",
+        "submit_reading"
+      ],
+      "tool_errors": [
+        {
+          "tool": "submit_reading",
+          "code": "validation_failed",
+          "error": "“远”的笔画与本次计算不符"
+        }
+      ],
+      "latency_s": 25.052,
+      "review_latency_s": 5.636,
+      "model_calls": 4,
+      "model_request_attempts": 4,
+      "input_tokens": 18267,
+      "output_tokens": 2726,
+      "usage_missing_calls": 0,
+      "cached_input_tokens": 15360,
+      "cached_usage_complete": true,
+      "returned_models": [
+        "deepseek-v4.1-flash-sg"
+      ],
+      "review_usage": {
+        "input_tokens": 5903,
+        "output_tokens": 307,
+        "usage_available": true,
+        "requested_model": "deepseek-v4.1-flash",
+        "returned_model": "deepseek-v4.1-flash-sg",
+        "parse_attempts": 1
+      },
+      "review_request_attempts": 1,
+      "multi_agent": null,
+      "reviewer_agent": null,
+      "pipeline": null
+    },
+    {
+      "id": "name_career_grid",
+      "repeat": 1,
+      "status": "retry_limit",
+      "checks": {
+        "expected_status": false,
+        "expected_tools": false,
+        "zero_tool_errors": false,
+        "no_model_error": true,
+        "saved": false,
+        "systems": false,
+        "valid_refs": true
+      },
+      "engineering_pass": false,
+      "quality_review": {
+        "direct_answer": false,
+        "time_consistent": true,
+        "supported_conclusion": false,
+        "no_fabricated_facts": true
+      },
+      "quality_pass": false,
+      "passed": false,
+      "tools": [
+        "analyze_name",
+        "get_profile",
+        "read_reading",
+        "start_reading"
+      ],
+      "tool_errors": [
+        {
+          "tool": "submit_reading",
+          "code": "validation_failed",
+          "error": "林晓的总格8与本次计算不符"
+        },
+        {
+          "tool": "submit_reading",
+          "code": "validation_failed",
+          "error": "林晓的地格3与本次计算不符"
+        },
+        {
+          "tool": "submit_reading",
+          "code": "validation_failed",
+          "error": "林晓的地格3与本次计算不符"
+        },
+        {
+          "tool": "submit_reading",
+          "code": "validation_failed",
+          "error": "林晓的地格3与本次计算不符"
+        }
+      ],
+      "latency_s": 56.627,
+      "review_latency_s": 4.238,
+      "model_calls": 7,
+      "model_request_attempts": 7,
+      "input_tokens": 50432,
+      "output_tokens": 6695,
+      "usage_missing_calls": 0,
+      "cached_input_tokens": 45308,
+      "cached_usage_complete": true,
+      "returned_models": [
+        "deepseek-v4.1-flash-sg"
+      ],
+      "review_usage": {
+        "input_tokens": 1044,
+        "output_tokens": 173,
+        "usage_available": true,
+        "requested_model": "deepseek-v4.1-flash",
+        "returned_model": "deepseek-v4.1-flash-sg",
+        "parse_attempts": 1
+      },
+      "review_request_attempts": 1,
+      "multi_agent": null,
+      "reviewer_agent": null,
+      "pipeline": null
+    },
+    {
+      "id": "name_ambiguous_form",
+      "repeat": 2,
+      "status": "submit_reading",
+      "checks": {
+        "expected_status": true,
+        "expected_tools": true,
+        "zero_tool_errors": false,
+        "no_model_error": true,
+        "saved": true,
+        "systems": true,
+        "valid_refs": true
+      },
+      "engineering_pass": false,
+      "quality_review": {
+        "direct_answer": true,
+        "time_consistent": true,
+        "supported_conclusion": true,
+        "no_fabricated_facts": true
+      },
+      "quality_pass": true,
+      "passed": false,
+      "tools": [
+        "analyze_name",
+        "get_profile",
+        "lookup_meaning",
+        "start_reading",
+        "submit_reading"
+      ],
+      "tool_errors": [
+        {
+          "tool": "lookup_meaning",
+          "code": "missing_entry",
+          "error": "缺条目：精确 key 或同义词未命中；key须照抄工具结果中的meaning_key或key；本版本有效key候选：bazi_compare、ambiguous_form、compound_surname、stroke_rule。已有计算附带释义时直接使用；不要继续猜key。"
+        },
+        {
+          "tool": "submit_reading",
+          "code": "validation_failed",
+          "error": "赵杰的“杰”有多种写法（傑12画/杰8画），须在用户可见的摘要、分析或建议中说明各字形笔画并请用户确认。可使用：赵杰的“杰”默认按傑12画，备选写法为杰8画，请按证件写法确认。"
+        }
+      ],
+      "latency_s": 33.279,
+      "review_latency_s": 4.58,
+      "model_calls": 6,
+      "model_request_attempts": 6,
+      "input_tokens": 32377,
+      "output_tokens": 2910,
+      "usage_missing_calls": 0,
+      "cached_input_tokens": 27520,
+      "cached_usage_complete": true,
+      "returned_models": [
+        "deepseek-v4.1-flash-sg"
+      ],
+      "review_usage": {
+        "input_tokens": 6260,
+        "output_tokens": 271,
+        "usage_available": true,
+        "requested_model": "deepseek-v4.1-flash",
+        "returned_model": "deepseek-v4.1-flash-sg",
+        "parse_attempts": 1
+      },
+      "review_request_attempts": 1,
+      "multi_agent": null,
+      "reviewer_agent": null,
+      "pipeline": null
+    },
+    {
+      "id": "name_compound_surname",
+      "repeat": 2,
+      "status": "retry_limit",
+      "checks": {
+        "expected_status": false,
+        "expected_tools": false,
+        "zero_tool_errors": false,
+        "no_model_error": true,
+        "saved": false,
+        "systems": false,
+        "valid_refs": true
+      },
+      "engineering_pass": false,
+      "quality_review": {
+        "direct_answer": false,
+        "time_consistent": true,
+        "supported_conclusion": false,
+        "no_fabricated_facts": true
+      },
+      "quality_pass": false,
+      "passed": false,
+      "tools": [
+        "analyze_name",
+        "start_reading"
+      ],
+      "tool_errors": [
+        {
+          "tool": "submit_reading",
+          "code": "validation_failed",
+          "error": "欧阳子涵的总格4与本次计算不符"
+        },
+        {
+          "tool": "submit_reading",
+          "code": "validation_failed",
+          "error": "欧阳子涵的总格4与本次计算不符"
+        },
+        {
+          "tool": "submit_reading",
+          "code": "validation_failed",
+          "error": "欧阳子涵的总格4与本次计算不符"
+        }
+      ],
+      "latency_s": 36.277,
+      "review_latency_s": 4.144,
+      "model_calls": 5,
+      "model_request_attempts": 5,
+      "input_tokens": 27674,
+      "output_tokens": 4321,
+      "usage_missing_calls": 0,
+      "cached_input_tokens": 24576,
+      "cached_usage_complete": true,
+      "returned_models": [
+        "deepseek-v4.1-flash-sg"
+      ],
+      "review_usage": {
+        "input_tokens": 1228,
+        "output_tokens": 185,
+        "usage_available": true,
+        "requested_model": "deepseek-v4.1-flash",
+        "returned_model": "deepseek-v4.1-flash-sg",
+        "parse_attempts": 1
+      },
+      "review_request_attempts": 1,
+      "multi_agent": null,
+      "reviewer_agent": null,
+      "pipeline": null
+    },
+    {
+      "id": "name_compare_two",
+      "repeat": 2,
+      "status": "text",
+      "checks": {
+        "expected_status": false,
+        "expected_tools": false,
+        "zero_tool_errors": true,
+        "no_model_error": true,
+        "saved": false,
+        "systems": false,
+        "valid_refs": true
+      },
+      "engineering_pass": false,
+      "quality_review": {
+        "direct_answer": true,
+        "time_consistent": true,
+        "supported_conclusion": true,
+        "no_fabricated_facts": true
+      },
+      "quality_pass": true,
+      "passed": false,
+      "tools": [],
+      "tool_errors": [],
+      "latency_s": 3.77,
+      "review_latency_s": 3.535,
+      "model_calls": 1,
+      "model_request_attempts": 1,
+      "input_tokens": 2177,
+      "output_tokens": 45,
+      "usage_missing_calls": 0,
+      "cached_input_tokens": 2043,
+      "cached_usage_complete": true,
+      "returned_models": [
+        "deepseek-v4.1-flash-sg"
+      ],
+      "review_usage": {
+        "input_tokens": 468,
+        "output_tokens": 160,
+        "usage_available": true,
+        "requested_model": "deepseek-v4.1-flash",
+        "returned_model": "deepseek-v4.1-flash-sg",
+        "parse_attempts": 1
+      },
+      "review_request_attempts": 1,
+      "multi_agent": null,
+      "reviewer_agent": null,
+      "pipeline": null
+    },
+    {
+      "id": "name_three_character",
+      "repeat": 2,
+      "status": "retry_limit",
+      "checks": {
+        "expected_status": false,
+        "expected_tools": false,
+        "zero_tool_errors": false,
+        "no_model_error": true,
+        "saved": false,
+        "systems": false,
+        "valid_refs": true
+      },
+      "engineering_pass": false,
+      "quality_review": {
+        "direct_answer": false,
+        "time_consistent": true,
+        "supported_conclusion": false,
+        "no_fabricated_facts": true
+      },
+      "quality_pass": false,
+      "passed": false,
+      "tools": [
+        "analyze_name",
+        "get_profile",
+        "lookup_meaning",
+        "start_reading"
+      ],
+      "tool_errors": [
+        {
+          "tool": "submit_reading",
+          "code": "validation_failed",
+          "error": "王小明的地格3与本次计算不符"
+        },
+        {
+          "tool": "submit_reading",
+          "code": "validation_failed",
+          "error": "王小明的地格3与本次计算不符"
+        },
+        {
+          "tool": "submit_reading",
+          "code": "validation_failed",
+          "error": "王小明的地格3与本次计算不符"
+        }
+      ],
+      "latency_s": 39.18,
+      "review_latency_s": 4.092,
+      "model_calls": 7,
+      "model_request_attempts": 7,
+      "input_tokens": 37302,
+      "output_tokens": 4244,
+      "usage_missing_calls": 0,
+      "cached_input_tokens": 33408,
+      "cached_usage_complete": true,
+      "returned_models": [
+        "deepseek-v4.1-flash-sg"
+      ],
+      "review_usage": {
+        "input_tokens": 1135,
+        "output_tokens": 206,
+        "usage_available": true,
+        "requested_model": "deepseek-v4.1-flash",
+        "returned_model": "deepseek-v4.1-flash-sg",
+        "parse_attempts": 1
+      },
+      "review_request_attempts": 1,
+      "multi_agent": null,
+      "reviewer_agent": null,
+      "pipeline": null
+    },
+    {
+      "id": "name_without_lead_in",
+      "repeat": 2,
+      "status": "ask_user",
+      "checks": {
+        "expected_status": false,
+        "expected_tools": false,
+        "zero_tool_errors": true,
+        "no_model_error": true,
+        "saved": false,
+        "systems": false,
+        "valid_refs": true
+      },
+      "engineering_pass": false,
+      "quality_review": {
+        "direct_answer": true,
+        "time_consistent": true,
+        "supported_conclusion": true,
+        "no_fabricated_facts": true
+      },
+      "quality_pass": true,
+      "passed": false,
+      "tools": [
+        "ask_user",
+        "get_profile"
+      ],
+      "tool_errors": [],
+      "latency_s": 7.294,
+      "review_latency_s": 3.296,
+      "model_calls": 2,
+      "model_request_attempts": 2,
+      "input_tokens": 4410,
+      "output_tokens": 286,
+      "usage_missing_calls": 0,
+      "cached_input_tokens": 3968,
+      "cached_usage_complete": true,
+      "returned_models": [
+        "deepseek-v4.1-flash-sg"
+      ],
+      "review_usage": {
+        "input_tokens": 484,
+        "output_tokens": 144,
+        "usage_available": true,
+        "requested_model": "deepseek-v4.1-flash",
+        "returned_model": "deepseek-v4.1-flash-sg",
+        "parse_attempts": 1
+      },
+      "review_request_attempts": 1,
+      "multi_agent": null,
+      "reviewer_agent": null,
+      "pipeline": null
+    },
+    {
+      "id": "name_career_grid",
+      "repeat": 2,
+      "status": "submit_reading",
+      "checks": {
+        "expected_status": true,
+        "expected_tools": true,
+        "zero_tool_errors": false,
+        "no_model_error": true,
+        "saved": true,
+        "systems": true,
+        "valid_refs": true
+      },
+      "engineering_pass": false,
+      "quality_review": {
+        "direct_answer": true,
+        "time_consistent": true,
+        "supported_conclusion": true,
+        "no_fabricated_facts": true,
+        "note": "仅依据给定结构化事实与引用释义评审。"
+      },
+      "quality_pass": true,
+      "passed": false,
+      "tools": [
+        "analyze_name",
+        "get_profile",
+        "lookup_meaning",
+        "start_reading",
+        "submit_reading"
+      ],
+      "tool_errors": [
+        {
+          "tool": "lookup_meaning",
+          "code": "missing_entry",
+          "error": "缺条目：精确 key 或同义词未命中；key须照抄工具结果中的meaning_key或key；本版本有效key候选：ambiguous_form、bazi_compare、compound_surname、stroke_rule。已有计算附带释义时直接使用；不要继续猜key。"
+        }
+      ],
+      "latency_s": 21.176,
+      "review_latency_s": 4.854,
+      "model_calls": 4,
+      "model_request_attempts": 4,
+      "input_tokens": 17477,
+      "output_tokens": 1575,
+      "usage_missing_calls": 0,
+      "cached_input_tokens": 14460,
+      "cached_usage_complete": true,
+      "returned_models": [
+        "deepseek-v4.1-flash-sg"
+      ],
+      "review_usage": {
+        "input_tokens": 5698,
+        "output_tokens": 279,
+        "usage_available": true,
+        "requested_model": "deepseek-v4.1-flash",
+        "returned_model": "deepseek-v4.1-flash-sg",
+        "parse_attempts": 1
+      },
+      "review_request_attempts": 1,
+      "multi_agent": null,
+      "reviewer_agent": null,
+      "pipeline": null
+    }
+  ]
+}
