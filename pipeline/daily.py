@@ -19,6 +19,7 @@ from datetime import date as Date
 from datetime import datetime
 from zoneinfo import ZoneInfo
 
+from common.location import consultation_timezone_evidence
 from common.time_utils import NeedsInput
 from harness.failures import failure
 from harness.refs import short
@@ -46,6 +47,13 @@ OTHER = re.compile(
 TIMEZONE = re.compile(
     r"时区|UTC|GMT|当地时间|北京时间|按.{0,8}时间|在国外|现居|现在住在|我在[^，。]{0,6}(?:国|市|州)"
 )
+BIRTH_CORRECTION = re.compile(
+    r"(?:出生(?:日期|时间|时刻|地点|资料|信息)|出生信息|出生表单).{0,16}"
+    r"(?:更正|改成|改为|记错|不准确|不对|不知道|不清楚|未知|不确定)|"
+    r"(?:更正|改成|改为|记错|不准确|不对|不知道|不清楚|未知|不确定).{0,16}"
+    r"(?:出生(?:日期|时间|时刻|地点|资料|信息)|出生信息|出生表单)"
+)
+MULTI_DAY = re.compile(r"分别|各自|每天|每日|逐日|每天都|到|至|—|～|~")
 REFERS_TO_READING = re.compile(
     r"(?:上一条|上一次|上次|刚才|之前|前面|那次|原来)(?:那个|这个|那次|那条|的)?"
     r"(?:运势|解读|记录|分析)|原记录|[这那]段解读|(?:你|刚才)(?:说|提到)的"
@@ -102,6 +110,23 @@ class Daily(System):
             return None
         if RANGE.search(question) or REFERS_TO_READING.search(question):
             return None
+        unknown_time = re.search(
+            r"(?:不知道|不清楚|未知|不确定).{0,8}出生时间|出生时间.{0,8}(?:不知道|不清楚|未知|不确定)",
+            question,
+        )
+        if BIRTH_CORRECTION.search(question) and not (
+            session.profile.get("time_known") is False and unknown_time
+        ):
+            return None
+        mentions = date_mentions(
+            question,
+            Date.fromisoformat(session.calendar_anchor) if session.calendar_anchor else None,
+            str(session.profile.get("birth_local_dt") or "")[:10] or None,
+        )
+        if MULTI_DAY.search(question) and (
+            len(mentions) > 1 or re.search(r"每天|每日|逐日", question)
+        ):
+            return None
         if not DAILY.search(question) and self.saved_daily(runtime):
             return None
         return Intent("daily", "new") if self.ready(runtime, question) else None
@@ -138,6 +163,11 @@ class Daily(System):
         """Whether the calculation can run on the profile as it is, without asking anything."""
         session = runtime.session
         if TIMEZONE.search(question) or self.target(session, question) is None:
+            return False
+        if any(
+            consultation_timezone_evidence(text, session, session.profile.get("tz"))
+            for text in (question,)
+        ):
             return False
         if not session.profile.get("birth_local_dt"):
             return False
@@ -264,6 +294,7 @@ class Daily(System):
         pillars |= {p for p in result["bazi"]["pillars"].values() if p}
         found = []
         for text in texts:
+            found += self.fact_claim_problems(text, result)
             for match in TEN_GOD.finditer(text):
                 if match[0] not in gods:
                     found.append(f"当天流日的十神是{'、'.join(gods)}，正文写成了{match[0]}")
@@ -273,6 +304,29 @@ class Daily(System):
         found += verify.tarot_problems(texts, [result["card"]])
         found += self.wording_problems(texts, session)
         return list(dict.fromkeys(found))
+
+    @staticmethod
+    def fact_claim_problems(text: str, result: dict) -> list[str]:
+        """Check explicit daily-only facts that are not represented by stem/card mentions."""
+        found = []
+        master = result["bazi"]["day_master"]
+        for match in re.finditer(r"日主(?:是|为|：|:)?\s*([甲乙丙丁戊己庚辛壬癸])", text):
+            if match[1] != master[0]:
+                found.append(f"本命日主是{master[0]}，正文写成了{match[1]}")
+
+        element = result["day"]["element"]
+        for match in re.finditer(r"(?:流日天干)?五行(?:属|为|：|:)?\s*([金木水火土])", text):
+            if match[1] != element:
+                found.append(f"当天流日五行是{element}，正文写成了{match[1]}")
+
+        for match in re.finditer(r"(?<!\d)(\d{4})年(\d{1,2})月(\d{1,2})[日号]?", text):
+            context = text[max(0, match.start() - 12) : match.end() + 8]
+            if not re.search(r"今天|今日|当日|当天|日期|运势|解读|流日", context):
+                continue
+            value = f"{int(match[1]):04d}-{int(match[2]):02d}-{int(match[3]):02d}"
+            if value != result["date"]:
+                found.append(f"当天日期是{result['date']}，正文写成了{value}")
+        return found
 
     # ---- readings written by code --------------------------------------------------------
 

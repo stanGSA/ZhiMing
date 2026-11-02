@@ -190,6 +190,55 @@ async def test_the_daily_page_routes_here_and_follow_ups_stay_with_the_agent_loo
     assert daily.detect(runtime, "明天运势呢？").kind == "new"
 
 
+@pytest.mark.parametrize(
+    "message",
+    [
+        "我的出生日期更正为1990年3月15日14:20，今天运势怎么样？",
+        "我之前填的出生时间不准确，实际上我不知道出生时间。今天运势怎么样？",
+    ],
+)
+async def test_birth_corrections_stay_with_the_agent_loop(make, message):
+    runtime, *_ = make()
+    assert Daily(runtime).detect(runtime, message) is None
+
+
+@pytest.mark.parametrize(
+    "message",
+    [
+        "今天和明天的运势分别怎么样？",
+        "10月30日到11月2日的运势怎么样？",
+        "今天运势怎么样？之后每天都要留意什么？",
+    ],
+)
+async def test_multi_day_requests_stay_with_the_agent_loop(make, message):
+    runtime, *_ = make()
+    assert Daily(runtime).detect(runtime, message) is None
+
+
+async def test_an_iana_consultation_timezone_stays_with_the_agent_loop(make):
+    runtime, *_ = make()
+    assert Daily(runtime).detect(runtime, "咨询使用America/New_York，今天运势怎么样？") is None
+
+
+@pytest.mark.parametrize(
+    ("claim", "problem"),
+    [
+        ("今天流日天干五行属水，传统幸运色是黑色。", "当天流日五行是火，正文写成了水"),
+        ("你的本命日主是甲木。", "本命日主是丁，正文写成了甲"),
+        ("这是2026年11月2日的运势解读。", "当天日期是2026-10-30，正文写成了2026-11-02"),
+    ],
+)
+async def test_daily_fact_claims_are_repaired_before_submission(make, claim, problem):
+    runtime, _, events = make(lambda messages: written(messages, extra=claim), written)
+    outcome = await runtime.turn(TODAY)
+    assert outcome.status == "submit_reading"
+    info = outcome.data["pipeline"]
+    assert (info["repairs"], info["degraded"]) == (1, None)
+    assert info["problems"][0] == [problem]
+    assert claim not in outcome.text
+    assert planned(events).count("submit_reading") == 1
+
+
 def with_late(messages) -> str:
     late = alias_of(messages, "流日（换日后）")
     return written(messages).replace(
