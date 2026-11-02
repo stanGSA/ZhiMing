@@ -8,6 +8,7 @@ closed-vocabulary checks and the readings code writes alone.
 
 from __future__ import annotations
 
+from common.output_policy import care_error, certainty_error, medication_error
 from pipeline.factsheet import Fact
 
 
@@ -41,6 +42,18 @@ class System:
     def problems(self, texts: list[str], session) -> list[str]:
         """Closed-vocabulary problems found before submission, all at once."""
         return []
+
+    @staticmethod
+    def wording_problems(texts: list[str], session) -> list[str]:
+        """The shared wording rules submission applies, listed early to give every problem.
+
+        Medication advice is refused in every mode. With the semantic judge, certainty and
+        discouraged care are left to the judge at submission (common/validation.py).
+        """
+        found = [medication_error(texts)]
+        if session.policy_judge is None:
+            found += [certainty_error(texts), care_error(texts)]
+        return [problem for problem in found if problem]
 
     def complete(self, args: dict, session) -> None:
         """Add what code writes into every reading of this system (after rendering)."""

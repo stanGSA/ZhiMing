@@ -19,6 +19,7 @@ from common.schemas import Reading
 from common.validation import validate_reading
 from harness.refs import transform
 from pipeline.dream import UNMATCHED_TITLE, Dream
+from pipeline.name import CONFIRM, Name
 from pipeline.verify import verify_reading
 from plugins.astro.calculator import BODY_ZH, SIGN_ZH, SIGNS
 from tests.plugins.test_astro_bazi_integration import invoke, prepare
@@ -191,6 +192,18 @@ async def dream_with_miss(runtime):
     )
     assert result.ok and result.data["misses"] == ["地铁闸机"]
     return result.data
+
+
+@pytest.fixture
+async def two_names(runtime):
+    await ask(runtime, "比较“赵杰”和“李娜”这两个名字")
+    results = []
+    for surname, given in (("赵", "杰"), ("李", "娜")):
+        result = await invoke(runtime, "analyze_name", dict(surname=surname, given=given))
+        assert result.ok
+        results.append(result.data)
+    assert results[0]["ambiguities"] and not results[1]["ambiguities"]
+    return results
 
 
 # ---- generated accept paths ---------------------------------------------------------------
@@ -725,6 +738,59 @@ async def test_dream_pipeline_path_refuses_reading_the_unmatched_symbol(runtime,
         "梦见掉牙，说明你一定会遇到麻烦。",
     ):
         assert dream_pipeline_rejections(runtime, [(body, [teeth])]), body
+
+
+def name_pipeline_rejections(runtime, sentences, *, completed=True):
+    """The name pipeline's path: its checks, the advice code adds, then the validators."""
+    system, session = Name(runtime), runtime.session
+    refused = []
+    for body, refs in sentences:
+        args = layered(session, "name", body, refs).model_dump(mode="json")
+        problems = system.problems([body], session)
+        if completed:
+            system.complete(args, session)
+        args = transform(args, session, restore=True)
+        error = "；".join(problems) or validate_reading(Reading.model_validate(args), session)
+        if error:
+            refused.append((body, str(error)))
+    return refused
+
+
+async def test_name_pipeline_path_accepts_two_names_compared(runtime, two_names):
+    zhao, li = two_names
+    person = ref(runtime.session, f"{zhao['name_id']}:人格")
+    sentences = [
+        (f"赵杰的人格{zhao['grids']['人格']}，李娜的人格{li['grids']['人格']}。", [person]),
+        (
+            f"赵杰的三才配置「{zhao['sancai']['key']}」，李娜的三才配置为{li['sancai']['key']}。",
+            [person],
+        ),
+        ("两个名字在五格约定里各有侧重，只作自我反思的参考。", [person]),
+    ]
+    assert name_pipeline_rejections(runtime, sentences) == []
+
+
+async def test_name_pipeline_path_explains_the_written_form_in_the_advice(runtime, two_names):
+    zhao, _ = two_names
+    person = ref(runtime.session, f"{zhao['name_id']}:人格")
+    body = (f"赵杰的人格{zhao['grids']['人格']}。", [person])
+    # The writer never explains 杰's forms: the advice code adds does, as the validator asks.
+    assert name_pipeline_rejections(runtime, [body]) == []
+    assert "多种写法" in name_pipeline_rejections(runtime, [body], completed=False)[0][1]
+    args = layered(runtime.session, "name", *body).model_dump(mode="json")
+    Name(runtime).complete(args, runtime.session)
+    assert args["advice"][0].startswith(f"{CONFIRM}：赵杰的“杰”默认按傑12画")
+
+
+async def test_name_pipeline_path_refuses_numbers_of_the_other_name(runtime, two_names):
+    zhao, li = two_names
+    person = ref(runtime.session, f"{zhao['name_id']}:人格")
+    for body in (
+        f"赵杰的人格{li['grids']['人格']}。",
+        f"人格{zhao['grids']['人格']}。",
+        "赵杰这个名字注定成功。",
+    ):
+        assert name_pipeline_rejections(runtime, [(body, [person])]), body
 
 
 def tarot_sentences(cards):

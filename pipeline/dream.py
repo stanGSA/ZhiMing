@@ -14,7 +14,6 @@ from __future__ import annotations
 import json
 import re
 
-from common.output_policy import care_error, certainty_error, medication_error
 from harness.failures import failure
 from harness.refs import short
 from pipeline import compose
@@ -271,9 +270,7 @@ class Dream(System):
         misses = set(result["misses"])
         found = [text_error(text, self.matcher, hits, misses) for text in texts]
         found += self.unlisted(texts, session)
-        found.append(medication_error(texts))
-        if session.policy_judge is None:  # with the judge, submission applies its own checks
-            found += [certainty_error(texts), care_error(texts)]
+        found += self.wording_problems(texts, session)
         return list(dict.fromkeys(problem for problem in found if problem))
 
     def hit_terms(self, session) -> list[str]:

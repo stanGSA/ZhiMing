@@ -1,0 +1,23 @@
+version: 1
+status: draft_needs_review
+scope: >-
+  姓名流水线（P2.2）的最终验收集：不参与 P2 期间的提示词或代码调整，只在 P2 调参结束、代码冻结后对当前
+  single 与 pipeline 各跑一次（3次重复、rubric v2、同一评委），用来确认调参集上的提升不是对题目过拟合。
+  题型与调参集对应，问法和名字不同。
+cases:
+- id: name_final_single
+  question: 孙丽这个名字的五格好不好？
+  tools: [start_reading, analyze_name, submit_reading]
+  systems: [name]
+- id: name_final_compound
+  question: 诸葛明月这个名字按五格分析如何？
+  tools: [start_reading, analyze_name, submit_reading]
+  systems: [name]
+- id: name_final_compare
+  question: 刘洋和刘阳这两个名字，五格上有什么区别？
+  tools: [start_reading, analyze_name, submit_reading]
+  systems: [name]
+- id: name_final_without_lead_in
+  question: 黄子轩的五格数理说明什么？
+  tools: [start_reading, analyze_name, submit_reading]
+  systems: [name]

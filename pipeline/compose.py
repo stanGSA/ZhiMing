@@ -89,6 +89,44 @@ DREAM_EXTRACT = """你是知命的解梦意象抽取器。从用户的梦境描�
 只输出JSON：{"symbols":[{"phrase":"……","symbol":"……"}]}；描述里没有梦境内容时输出{"symbols":[]}。"""
 
 
+# Names (plan P2.2). The numbers are code's; what they mean is a folk convention, never fate.
+NAME_SYSTEM = (
+    """你是知命的姓名五格解读撰写者。程序已经按康熙笔画算好了五格（天格、人格、地格、外格、总格）、81数理和三才配置，事实表列出了每一项的编号、数值、关键词和一般含义。你只负责把它们写成给用户看的白话解读。
+
+【事实规则】
+- 提到五格、数理或三才时只写编号占位符，例如{{R2}}，程序会替换成“人格23”这样的文字。不要自己写格数、数理数字或三才配置；笔画只能照抄“康熙笔画”一行。
+- 含义只从事实表的关键词和一般含义出发。五格数理和三才吉凶是民间约定，各家说法不一：写成有条件的倾向，不作命运断言，不写“注定、一定会成功、必然失败”这类话。
+- """
+    + SCENARIO_RULE
+    + """
+- 有两个名字时，每处都写清说的是哪个名字；比较时说明各自的特点。不替用户改名、起名或合婚。
+- 有多种写法的字不用另作说明，程序会在建议里请用户确认写法。
+
+【写法】
+- 摘要不超过200字。第一句40字内直接回答所问：看一个名字就概括它在五格约定里的整体倾向；比较两个名字就给出暂定倾向A或B；第二句说一个主要前提，例如数理只是取名习俗。
+- 分层通常2-3层，每层150-250字。标题用白话说这一层对用户意味着什么；正文先说这一项在约定里对应的生活面向，再说依据哪几项，最后说怎么把这份提示用在自我反思上。
+- 建议2-3条，每条写成“短标签：具体做法”。收尾一句。
+- 不写免责声明，不提程序、知识库、审核或工具；不写HTML；引号用中文“”。
+
+【输出格式】只输出下面的标记文本，不要输出其他内容：
+【表态】从 描述/倾向A/倾向B 中选一个
+【摘要】……
+【分层】这一层的标题
+这一层的正文……
+【引用】R1 R2
+【分层】……
+【引用】……
+【建议】
+- 标签：做法
+【收尾】……"""
+)
+
+NAME_EXTRACT = """你是知命的姓名抽取器。从用户的话里找出要分析的完整中文姓名（姓加名）。
+- 只抽用户原话里逐字出现的姓名，不改字、不补字、不猜测；人称、称谓、昵称都不是姓名。
+- 最多两个，按出现顺序。
+只输出JSON：{"names":["张伟"]}；没有完整姓名时输出{"names":[]}。"""
+
+
 VERDICTS = {
     "偏顺": "favorable",
     "平稳": "steady",
@@ -173,6 +211,26 @@ def dream_messages(question: str, facts, misses: list[str], *, extra: str = "") 
         lines.append(f"未收录（不要提及，程序会另外说明）：{'、'.join(misses)}")
     return [
         {"role": "system", "content": DREAM_SYSTEM},
+        {"role": "user", "content": "\n".join(lines)},
+    ]
+
+
+def name_extract_messages(question: str) -> list[dict]:
+    return [
+        {"role": "system", "content": NAME_EXTRACT},
+        {"role": "user", "content": f"用户的话：{question}"},
+    ]
+
+
+def name_messages(question: str, names, facts, strokes, *, extra: str = "") -> list[dict]:
+    lines = [f"用户的问题：{question}"]
+    if extra:
+        lines.append(f"用户补充：{extra}")
+    if len(names) == 2:
+        lines.append(f"名字A：{names[0]}；名字B：{names[1]}")
+    lines += [*strokes, "事实表：", fact_sheet(facts)]
+    return [
+        {"role": "system", "content": NAME_SYSTEM},
         {"role": "user", "content": "\n".join(lines)},
     ]
 
