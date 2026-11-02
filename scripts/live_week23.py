@@ -296,6 +296,20 @@ def grounded_payload(runtime, outcome):
     return facts
 
 
+def start_runtime(workspace, user_id, model_name, mode, profile=None):
+    """The runtime that answers a case; a case's ``profile`` is saved before it is created.
+
+    A profile stands for birth data the user saved earlier (P2 daily). Both modes then start
+    from it exactly as a returning user does: in the memory note, the calendar and the store.
+    """
+    runtime = create_runtime(root=workspace, user_id=user_id, model_name=model_name, mode=mode)
+    if not profile:
+        return runtime
+    runtime.store.update_profile_fields(user_id, profile, "评测预置资料")
+    runtime.close()
+    return create_runtime(root=workspace, user_id=user_id, model_name=model_name, mode=mode)
+
+
 async def evaluate(
     output,
     selected=None,
@@ -369,11 +383,12 @@ async def evaluate(
         for repeat in range(repeats):
             for case in cases:
                 user_id = f"week23-{output.name}-r{repeat}-{case.get('parent', case['id'])}"
-                runtime = create_runtime(
-                    root=workspace,
-                    user_id=user_id,
-                    model_name=model_name,
-                    mode="multi" if is_multi else mode,
+                runtime = start_runtime(
+                    workspace,
+                    user_id,
+                    model_name,
+                    "multi" if is_multi else mode,
+                    case.get("profile"),
                 )
                 runtimes[(repeat, case["id"])] = runtime
                 started = time.perf_counter()

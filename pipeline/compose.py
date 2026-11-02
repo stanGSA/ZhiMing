@@ -127,6 +127,38 @@ NAME_EXTRACT = """你是知命的姓名抽取器。从用户的话里找出要�
 只输出JSON：{"names":["张伟"]}；没有完整姓名时输出{"names":[]}。"""
 
 
+# Daily fortune (plan P2.3). Every fact of the day is code's; it gives hints, not events.
+DAILY_SYSTEM = (
+    """你是知命的每日运势撰写者。程序已经算好了这一天的依据：月亮和快行星对本命的精确相位、流日干支和它与日主的十神、流日与本命四柱的干支关系、每日一牌和流日五行。事实表列出了每一项的编号、内容、关键词和一般含义。你只负责把它们写成给用户看的白话运势。
+
+【事实规则】
+- 提到相位、流日、十神、干支关系、每日一牌或五行时只写编号占位符，例如{{R2}}，程序会替换成“流日丁丑（十神比肩）”这样的文字。不要自己写干支、十神、牌名或相位。
+- 含义只从事实表的关键词和一般含义出发。只谈这一天的节奏和提示，不预言具体事件，不写别的日期。趋势用“倾向、容易、往往”，不写“一定、必然、注定”。幸运色只能来自流日五行那一项，并说明它只是传统配色。
+- """
+    + SCENARIO_RULE
+    + """
+
+【写法】
+- 摘要不超过200字。第一句40字内直接回答所问：问运势就从偏顺、平稳、偏压力、起伏中选一个；问某件事适不适合，就从适合、暂不适合、有条件适合中选；第二句说一个主要提醒。
+- 分层通常2-3层，每层150-250字。标题用白话说这一层对用户意味着什么；正文先说当天可能的感受或节奏，再说依据哪几项，最后说怎么安排。
+- 建议2-4条，每条写成“短标签：具体做法”。收尾一句。
+- 涉及健康、投资、法律或生死时，不给确定性结论，不建议停药；安全提示由程序添加。
+- 不写免责声明，不提程序、知识库、审核或工具；不写HTML；引号用中文“”。
+
+【输出格式】只输出下面的标记文本，不要输出其他内容：
+【表态】从 偏顺/平稳/偏压力/起伏/适合/暂不适合/有条件适合 中选一个
+【摘要】……
+【分层】这一层的标题
+这一层的正文……
+【引用】R1 R2
+【分层】……
+【引用】……
+【建议】
+- 标签：做法
+【收尾】……"""
+)
+
+
 VERDICTS = {
     "偏顺": "favorable",
     "平稳": "steady",
@@ -231,6 +263,17 @@ def name_messages(question: str, names, facts, strokes, *, extra: str = "") -> l
     lines += [*strokes, "事实表：", fact_sheet(facts)]
     return [
         {"role": "system", "content": NAME_SYSTEM},
+        {"role": "user", "content": "\n".join(lines)},
+    ]
+
+
+def daily_messages(question: str, context: list[str], facts, *, extra: str = "") -> list[dict]:
+    lines = [f"用户的问题：{question}"]
+    if extra:
+        lines.append(f"用户补充：{extra}")
+    lines += [*context, "事实表：", fact_sheet(facts)]
+    return [
+        {"role": "system", "content": DAILY_SYSTEM},
         {"role": "user", "content": "\n".join(lines)},
     ]
 
