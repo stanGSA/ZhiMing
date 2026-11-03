@@ -2,6 +2,7 @@
 
 import re
 from datetime import UTC, datetime
+from zoneinfo import ZoneInfo
 
 import pytest
 
@@ -263,3 +264,68 @@ async def test_the_day_pillar_change_at_eleven_pm_is_its_own_fact(make):
     assert outcome.status == "submit_reading"
     late = [label for _, label, _ in facts_in(composer.seen[0][0]) if label == "流日（换日后）"]
     assert late and "23:00后的流日戊寅（十神伤官）" in outcome.text
+
+
+async def test_daily_facts_keep_relations_in_their_local_time_segment(make):
+    runtime, composer, _ = make(written)
+    assert (await runtime.turn(TODAY)).status == "submit_reading"
+    messages = composer.seen[0][0]
+    sheet = messages[1]["content"]
+    assert "仅00:00–23:00，Asia/Shanghai" in sheet
+    assert "仅23:00–24:00，Asia/Shanghai" in sheet
+    assert "23点换日不等于入夜" in sheet
+    result = runtime.session.state["daily_result"]
+    texts = Daily.texts(result)
+    for item in result["interpretations"]:
+        if item["kind"] != "relation" or not item["fact"].startswith("day:"):
+            continue
+        segment_fact, pillar, kind, where = item["fact"].rsplit(":", 3)
+        segment = next(
+            s for s in result["day"]["segments"] if segment_fact == f"day:{s['start_utc']}"
+        )
+        local = datetime.fromisoformat(segment["start_utc"]).astimezone(ZoneInfo(result["tz"]))
+        rendered = texts[item["fact"]][1]
+        assert f"仅{local:%H:%M}–" in rendered
+        natal = result["bazi"]["pillars"].get(where)
+        if natal:
+            index = 0 if kind.startswith("天干") else 1
+            assert f"{pillar[index]}与{natal[index]}" in rendered
+
+
+def test_daily_segments_use_consultation_timezone_instead_of_utc_dates():
+    result = {
+        "date": "2026-11-02",
+        "tz": "Asia/Shanghai",
+        "day": {
+            "pillar": "庚辰",
+            "element": "金",
+            "segments": [
+                {
+                    "start_utc": "2026-11-01T16:00:00+00:00",
+                    "end_utc": "2026-11-02T15:00:00+00:00",
+                    "pillar": "庚辰",
+                    "ten_god": "正财",
+                },
+                {
+                    "start_utc": "2026-11-02T15:00:00+00:00",
+                    "end_utc": "2026-11-02T16:00:00+00:00",
+                    "pillar": "辛巳",
+                    "ten_god": "偏财",
+                },
+            ],
+        },
+        "bazi": {"pillars": {"time": "甲辰"}},
+        "interpretations": [
+            {"kind": "relation", "fact": "day:2026-11-01T16:00:00+00:00:庚辰:自刑:time"}
+        ],
+        "card": {
+            "card_id": "the_lovers",
+            "meaning_key": "the_lovers:upright",
+            "name": "恋人",
+            "reversed": False,
+        },
+    }
+    texts = Daily.texts(result)
+    assert "地支辰与辰" in texts[result["interpretations"][0]["fact"]][1]
+    assert "仅00:00–23:00，Asia/Shanghai" in texts[result["interpretations"][0]["fact"]][1]
+    assert "仅23:00–24:00，Asia/Shanghai" in texts["day:2026-11-02T15:00:00+00:00:辛巳:偏财"][1]

@@ -233,22 +233,38 @@ class Daily(System):
         main = result["day"]["pillar"]
         for segment in segments:
             local = datetime.fromisoformat(segment["start_utc"]).astimezone(tz)
+            end = datetime.fromisoformat(segment["end_utc"]).astimezone(tz)
+            until = "24:00" if end.date() > local.date() else f"{end:%H:%M}"
+            interval = f"{local:%H:%M}–{until}，{result['tz']}"
             late = segment["pillar"] != main
             prefix = f"{local:%H:%M}后的流日" if late else "流日"
             fact = f"day:{segment['start_utc']}:{segment['pillar']}:{segment['ten_god']}"
             out[fact] = (
                 "流日（换日后）" if late else "流日",
-                f"{prefix}{segment['pillar']}（十神{segment['ten_god']}）",
+                f"{prefix}{segment['pillar']}（十神{segment['ten_god']}）（仅{interval}）",
             )
         natal = result["bazi"]["pillars"]
         for item in result["interpretations"]:
             fact = item["fact"]
             if item["kind"] == "relation" and fact.startswith("day:"):
                 # The segment's start is an ISO instant with colons of its own.
-                _, pillar, kind, where = fact.rsplit(":", 3)
+                segment_fact, pillar, kind, where = fact.rsplit(":", 3)
                 where = where if where in PILLAR_ZH else None
                 against = f"本命{PILLAR_ZH[where]}{natal.get(where) or ''}" if where else "本命"
-                out[fact] = ("流日与本命", f"流日{pillar}与{against}{kind}")
+                # Relations belong to a segment too; the late segment is not the whole evening.
+                segment = next(s for s in segments if segment_fact == f"day:{s['start_utc']}")
+                start = datetime.fromisoformat(segment["start_utc"]).astimezone(tz)
+                end = datetime.fromisoformat(segment["end_utc"]).astimezone(tz)
+                until = "24:00" if end.date() > start.date() else f"{end:%H:%M}"
+                pair = ""
+                if where and natal.get(where):
+                    index = 0 if kind.startswith("天干") else 1
+                    part = "天干" if index == 0 else "地支"
+                    pair = f"，{part}{pillar[index]}与{natal[where][index]}"
+                out[fact] = (
+                    "流日与本命",
+                    f"流日{pillar}与{against}{kind}（仅{start:%H:%M}–{until}，{result['tz']}{pair}）",
+                )
             elif item["kind"] == "aspect":
                 *_, body, natal_body, aspect = fact.split(":")
                 text = f"月亮与本命{BODY_ZH[natal_body]}{ASPECT_ZH[aspect]}"
@@ -273,6 +289,9 @@ class Daily(System):
         context = [
             f"日期：{result['date']}（{result['tz']}）",
             f"本命日主：{result['bazi']['day_master']}",
+            "时间口径：事实表的流日及其干支关系仅适用于标明的当地时段；"
+            "23点换日不等于入夜，23:00–24:00仅为当天最后一小时。"
+            "相位精确时刻是计算时刻，不是现实事件或心情转折的时刻。",
         ]
         return compose.daily_messages(run.question, context, facts, extra=extra)
 
