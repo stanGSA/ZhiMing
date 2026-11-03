@@ -122,6 +122,22 @@ CARE_NEGATED_BELIEF = re.compile(
 )
 CARE_DIRECT_NEGATION = re.compile(r"(?:并非|绝非|并不是|不是)$")
 CARE_CONDITION = re.compile(r"(?:如果|若|万一|一旦)(?:你们|我们|你|您|我)?(?:暂时|一时)?$")
+# A repeated character is ambiguous across word boundaries (副作用不用, 只要不要).
+# Exempt a question only at the clause's start, after its subject, or in a question frame.
+CARE_QUESTION_SUBJECT = re.compile(r"(?:你们|我们|您|你|我|自己)?(?:现在|到底|究竟)?")
+CARE_QUESTION_FRAME = re.compile(
+    r"(?:关于|至于|问(?:一下)?|想知道|想了解|确认|考虑|判断|决定)"
+    r"(?:你们|我们|您|你|我|自己)?(?:现在|到底|究竟)?$"
+)
+A_NOT_A_FORMS = {
+    "不要": ("要",),
+    "不需要": ("需要", "需"),
+    "不用": ("用",),
+    "不能": ("能",),
+    "不应该": ("应该", "应"),
+    "不应当": ("应当", "应"),
+    "不应": ("应",),
+}
 HEALTH_NOTE = "如有身体不适，请及时就医，以医生的诊断为准。"
 # Medication instructions are hard failures in every mode, including with a semantic judge.
 STOP_MEDICATION = re.compile(
@@ -311,11 +327,18 @@ def mark_unreviewed(confidence, signals) -> None:
 
 
 def a_not_a(before: str, negative: re.Match) -> bool:
-    """Whether the negation is the 不 of an A-not-A question: 要不要, 需不需要, 用不用."""
+    """An A-not-A phrase with an explicit question context, not a cross-word repetition."""
     word = negative.group()
-    if not word.startswith("不") or len(word) < 2:
-        return False
-    return before[: negative.start()].endswith(word[1])
+    prefix = before[: negative.start()]
+    for denied, positives in A_NOT_A_FORMS.items():
+        if not word.startswith(denied):
+            continue
+        for positive in positives:
+            if prefix.endswith(positive):
+                context = prefix[: -len(positive)].strip().rstrip("“‘「\"'").rstrip()
+                if CARE_QUESTION_SUBJECT.fullmatch(context) or CARE_QUESTION_FRAME.search(context):
+                    return True
+    return False
 
 
 def care_advice(texts) -> tuple[bool, str | None]:

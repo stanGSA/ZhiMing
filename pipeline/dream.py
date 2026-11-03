@@ -111,8 +111,16 @@ def grams(text: str) -> list[str]:
     return [text[i : i + 2] for i in range(len(text) - 1) if " " not in text[i : i + 2]]
 
 
-# Negation, degree or duration: what the extraction should fold into a symbol, not list.
-STATE = re.compile(r"不|没|未|一直|总是|到处")
+# Only complete, recognised reaction/action phrases are states. An unknown noun may
+# contain a negation (未婚夫, 不倒翁), or be modified by a state (一直跑的机器人).
+# Ambiguous constructions stay unmatched rather than silently losing an entity.
+STATE = re.compile(
+    r"(?:不敢|不能|没能|未能)(?:下去|下来|上去|上来|出去|出来|进去|进来|回去|回来|回头|动|走|跑|逃)"
+    r"|(?:一直|总是|到处)(?:在)?(?:跑|走|游|逃|找|躲|转|哭|笑|叫|喊|等)"
+    r"|(?:找|看|听)不(?:到|见)(?:出口|路|方向|东西|人)?"
+    r"|(?:走|跑|爬|逃)不(?:动|了)"
+    r"|(?:什么都)?(?:没|没有|未)(?:复习|准备)(?:好|过)?"
+)
 SENTENCE = re.compile(r"[^。！？!?]{4,120}[。！？!?]")
 MAX_SYMBOLS = 12
 NO_DREAM = "请描述一下梦里的内容：出现了哪些人、物或场景，发生了什么，醒来时是什么感受。"
@@ -196,7 +204,7 @@ class Dream(System):
                 if len(phrase) > 12:
                     continue
                 symbol = phrase
-            if STATE.search(symbol) and self.matcher.match(symbol)["key"] is None:
+            if STATE.fullmatch(symbol) and self.matcher.match(symbol)["key"] is None:
                 # 不敢下去, 没复习, 一直跑: a reaction or state, not a symbol to report as
                 # unmatched (DREAM_EXTRACT says so; code holds to it). Interpreting it is
                 # still refused as content outside the fact sheet.

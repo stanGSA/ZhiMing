@@ -6,7 +6,7 @@ reads them back on the machine that ran the batch; it never calls a model. Older
 no texts, but saved readings may still hold them in the workspace database's pipeline_json.
 
 Without --tally the output names each answer's problems and quotes fragments of the drafts,
-with the sentence of the draft each quoted word stands in when the trace records the draft, so
+with all candidate sentences holding each quoted word when the trace records the draft, so
 it stays local like scripts.quality_reasons. With --tally it is one table of the problem kinds
 per batch, using fixed labels only. Unknown problems use a generic label, so names and other
 unquoted source text cannot enter the published categories.
@@ -80,13 +80,15 @@ SENTENCES = re.compile(r"[^。！？!?；;\n]+[。！？!?；;]?")
 
 
 def sources(problem: str, text: str) -> list[str]:
-    """The draft's sentences holding the words a problem quotes (local output only)."""
-    found = []
-    for word in QUOTE.findall(problem):
-        sentence = next((s.strip() for s in SENTENCES.findall(text) if word in s), "")
-        if sentence and sentence not in found:
-            found.append(sentence)
-    return found
+    """All candidate sentences in draft order; a word match does not locate the violation."""
+    words = QUOTE.findall(problem)
+    return list(
+        dict.fromkeys(
+            sentence.strip()
+            for sentence in SENTENCES.findall(text)
+            if any(word in sentence for word in words)
+        )
+    )
 
 
 def kind(problem: str) -> str:
@@ -112,7 +114,7 @@ def render(path: Path, report: dict) -> str:
             text = texts[number - 1] if number <= len(texts) else ""
             for problem in problems:
                 lines.append(f"  - 第{number}稿：{problem}")
-                lines += [f"    - 原句：{sentence}" for sentence in sources(problem, text)]
+                lines += [f"    - 候选原句：{sentence}" for sentence in sources(problem, text)]
     return "\n".join(lines)
 
 

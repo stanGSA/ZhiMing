@@ -113,10 +113,36 @@ def test_render_shows_the_sentence_a_refused_word_stands_in(tmp_path):
     rows = [{"id": "flood", "repeat": 2, "trace": str(path), "pipeline": {"problems": [1]}}]
     live = batch(tmp_path, rows)
     text = render(live, json.loads(live.read_text(encoding="utf-8")))
-    assert "    - 原句：梦里像着火一样着急，往往反映压力。" in text
+    assert "    - 候选原句：梦里像着火一样着急，往往反映压力。" in text
     # Published counts never carry the sentence.
     assert "着火" not in tally(live, json.loads(live.read_text(encoding="utf-8")))
 
 
 def test_sources_without_a_recorded_draft_are_empty():
     assert sources("“火”不是本次命中的意象，不能解读", "") == []
+
+
+def test_sources_include_later_mentions_after_an_allowed_abstention(tmp_path):
+    problem = "“火”不是本次命中的意象，不能解读"
+    draft = "火未收录，这次不作解读。火象征你近期的压力。"
+    assert sources(problem, draft) == ["火未收录，这次不作解读。", "火象征你近期的压力。"]
+    path = tmp_path / "mentions.jsonl"
+    path.write_text(
+        json.dumps({"stage": "problems", "problems": [problem], "text": draft}, ensure_ascii=False),
+        encoding="utf-8",
+    )
+    rows = [{"id": "mentions", "trace": str(path), "pipeline": {"problems": [1]}}]
+    live = batch(tmp_path, rows)
+    report = {"results": rows}
+    text = render(live, report)
+    assert "候选原句：火象征你近期的压力。" in text
+    assert "象征你近期" not in tally(live, report)
+
+
+def test_sources_keep_draft_order_and_deduplicate_shared_sentences():
+    problem = "“蛇”和“火”不在事实表里，只能解读事实表里的意象"
+    assert sources(problem, "火未收录。蛇和火象征压力。蛇未收录。火未收录。") == [
+        "火未收录。",
+        "蛇和火象征压力。",
+        "蛇未收录。",
+    ]

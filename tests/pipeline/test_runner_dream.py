@@ -712,3 +712,47 @@ async def test_a_refused_draft_is_traced_with_its_text(make):
     await runtime.turn(QUESTION)
     traced = next(e for e in events if e.get("stage") == "problems")
     assert "地铁闸机象征阻碍" in traced["text"]
+
+
+@pytest.mark.parametrize("noun", ["未婚夫", "未婚妻", "不倒翁"])
+async def test_unmatched_nouns_with_negative_characters_still_finish_a_reading(make, noun):
+    runtime, *_ = make(extraction([{"phrase": noun, "symbol": noun}]))
+    outcome = await runtime.turn(f"我梦见了{noun}，这是什么意思？")
+    assert outcome.status == "submit_reading"
+    assert outcome.data["pipeline"]["degraded"] == "no_symbol"
+    assert f"「{noun}」未收录" in outcome.text
+
+
+async def test_a_mixed_dream_reports_the_unmatched_noun_without_interpreting_it(make):
+    runtime, *_ = make(
+        extraction([{"phrase": "蛇", "symbol": "蛇"}, {"phrase": "未婚夫", "symbol": "未婚夫"}]),
+        written,
+    )
+    outcome = await runtime.turn("我梦见蛇和未婚夫，这是什么意思？")
+    assert outcome.status == "submit_reading"
+    assert outcome.data["pipeline"]["repairs"] == 0
+    assert "「未婚夫」未收录" in outcome.text
+    assert Dream(runtime).problems(["未婚夫象征你最近的压力。"], runtime.session)
+
+
+def test_only_complete_reaction_phrases_are_filtered(make):
+    runtime, *_ = make()
+    states = ["不敢下去", "找不到出口", "没复习", "一直跑"]
+    nouns = ["不明飞行物", "不敢下去的孩子", "没有眼睛的娃娃", "一直跑的机器人"]
+    items = [{"phrase": word, "symbol": word} for word in [*states, *nouns]]
+    kept = Dream(runtime).accepted(items, "、".join([*states, *nouns]))
+    assert {item["symbol"] for item in kept} == set(nouns)
+
+
+@pytest.mark.parametrize("text", ["只要不要去医院就行。", "出现这些副作用不用去医院。"])
+async def test_non_question_discouragement_in_a_dream_draft_is_not_submitted(make, text):
+    def bad(messages):
+        return written(messages).replace("【收尾】慢慢来。", f"【收尾】{text}")
+
+    runtime, _, events = make(extraction(PILOT_SYMBOLS[HOSPITAL]), bad, bad)
+    runtime.session.state["selected_systems"] = ["dream"]
+    outcome = await runtime.turn(HOSPITAL)
+    info = outcome.data["pipeline"]
+    assert (outcome.status, info["repairs"], info["degraded"]) == ("submit_reading", 1, "safety")
+    assert text not in outcome.text
+    assert planned(events).count("submit_reading") == 1

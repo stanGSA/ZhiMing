@@ -402,6 +402,14 @@ async def test_the_high_risk_check_still_refuses_a_claim_the_policy_judge_would_
         "关于要不要去做检查：如果身体有不适，请及时就医。",
         "你问要不要去做检查，这个梦本身不能说明身体状况。",
         "需不需要去做检查，要看身体的实际感受。",
+        "用不用去医院？",
+        "你到底要不要去医院？",
+        "你想知道需不需要去做检查，可以咨询医生。",
+        "关于你要不要去做检查，可以咨询医生。",
+        "你需要不需要去医院？",
+        "你问我用不用去医院。",
+        "你问“要不要去做检查”，梦本身不能说明身体状况。",
+        "我想问一下用不用去医院？",
     ],
 )
 def test_an_a_not_a_question_about_care_is_not_discouraging_it(text):
@@ -420,3 +428,21 @@ def test_an_a_not_a_question_about_care_is_not_discouraging_it(text):
 )
 def test_discouraging_care_next_to_a_question_is_still_refused(text):
     assert care_error([text])
+
+
+@pytest.mark.parametrize(
+    "text",
+    [
+        "只要不要去医院就行。",
+        "你只要不要去做检查就行。",
+        "出现这些副作用不用去医院。",
+        "出现这些副作用不用就医。",
+        "用不用去医院？出现这些副作用不用去医院。",
+    ],
+)
+def test_a_repeated_character_across_words_is_not_a_care_question(text):
+    assert care_error([text])
+
+
+def test_a_care_question_alone_does_not_count_as_affirmative_advice():
+    assert care_advice(["用不用去医院？"]) == (False, None)
