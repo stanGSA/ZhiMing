@@ -1,0 +1,1100 @@
+{
+  "run_id": "20261103T131120-b7071cec",
+  "rubric_version": "v2-2026-10-24",
+  "judge_name": "pro",
+  "judge_model": "deepseek-v4.1-flash",
+  "repeats": 3,
+  "mode": "pipeline",
+  "requested_model": "deepseek-v4.1-flash",
+  "source_fingerprint": "bbbe083a9725166a8c4a6d72aee3859b54db6cfec5edae01ca67b24fb28747b2",
+  "cases": 18,
+  "passed": 16,
+  "failed": 2,
+  "multi_agent": null,
+  "reviewer_agent": null,
+  "model_calls": 25,
+  "model_request_attempts": 25,
+  "review_calls": 18,
+  "review_request_attempts": 18,
+  "input_tokens": 135200,
+  "output_tokens": 18067,
+  "scope": "Synthetic data; judge identity and rubric recorded. Automated review is not human calibration or independent verification of service identity.",
+  "raw_sha256": "deb9cc67abcfa917dc260bc3d5d5aab8c2c8290fb18fc49d3b2af1210a0d5ab9",
+  "results": [
+    {
+      "id": "name_ambiguous_form",
+      "repeat": 0,
+      "status": "submit_reading",
+      "checks": {
+        "expected_status": true,
+        "expected_tools": true,
+        "zero_tool_errors": true,
+        "no_model_error": true,
+        "saved": true,
+        "systems": true,
+        "valid_refs": true
+      },
+      "engineering_pass": true,
+      "quality_review": {
+        "direct_answer": true,
+        "time_consistent": true,
+        "supported_conclusion": true,
+        "no_fabricated_facts": true
+      },
+      "quality_pass": true,
+      "passed": true,
+      "tools": [
+        "analyze_name",
+        "start_reading",
+        "submit_reading"
+      ],
+      "tool_errors": [],
+      "latency_s": 16.525,
+      "review_latency_s": 4.702,
+      "model_calls": 2,
+      "model_request_attempts": 2,
+      "input_tokens": 3857,
+      "output_tokens": 1362,
+      "usage_missing_calls": 0,
+      "cached_input_tokens": 2176,
+      "cached_usage_complete": true,
+      "returned_models": [
+        "deepseek-v4.1-flash"
+      ],
+      "review_usage": {
+        "input_tokens": 4826,
+        "output_tokens": 211,
+        "usage_available": true,
+        "requested_model": "deepseek-v4.1-flash",
+        "returned_model": "deepseek-v4.1-flash",
+        "parse_attempts": 1
+      },
+      "review_request_attempts": 1,
+      "multi_agent": null,
+      "reviewer_agent": null,
+      "pipeline": {
+        "kind": "new",
+        "model_calls": 2,
+        "repairs": 1,
+        "degraded": "keywords",
+        "problems": [
+          1,
+          1
+        ]
+      }
+    },
+    {
+      "id": "name_compound_surname",
+      "repeat": 0,
+      "status": "submit_reading",
+      "checks": {
+        "expected_status": true,
+        "expected_tools": true,
+        "zero_tool_errors": true,
+        "no_model_error": true,
+        "saved": true,
+        "systems": true,
+        "valid_refs": true
+      },
+      "engineering_pass": true,
+      "quality_review": {
+        "direct_answer": true,
+        "time_consistent": true,
+        "supported_conclusion": true,
+        "no_fabricated_facts": true
+      },
+      "quality_pass": true,
+      "passed": true,
+      "tools": [
+        "analyze_name",
+        "start_reading",
+        "submit_reading"
+      ],
+      "tool_errors": [],
+      "latency_s": 7.759,
+      "review_latency_s": 6.818,
+      "model_calls": 1,
+      "model_request_attempts": 1,
+      "input_tokens": 1502,
+      "output_tokens": 671,
+      "usage_missing_calls": 0,
+      "cached_input_tokens": 0,
+      "cached_usage_complete": true,
+      "returned_models": [
+        "deepseek-v4.1-flash"
+      ],
+      "review_usage": {
+        "input_tokens": 5266,
+        "output_tokens": 359,
+        "usage_available": true,
+        "requested_model": "deepseek-v4.1-flash",
+        "returned_model": "deepseek-v4.1-flash",
+        "parse_attempts": 1
+      },
+      "review_request_attempts": 1,
+      "multi_agent": null,
+      "reviewer_agent": null,
+      "pipeline": {
+        "kind": "new",
+        "model_calls": 1,
+        "repairs": 0,
+        "degraded": null,
+        "problems": []
+      }
+    },
+    {
+      "id": "name_compare_two",
+      "repeat": 0,
+      "status": "submit_reading",
+      "checks": {
+        "expected_status": true,
+        "expected_tools": true,
+        "zero_tool_errors": true,
+        "no_model_error": true,
+        "saved": true,
+        "systems": true,
+        "valid_refs": true
+      },
+      "engineering_pass": true,
+      "quality_review": {
+        "direct_answer": false,
+        "time_consistent": true,
+        "supported_conclusion": false,
+        "no_fabricated_facts": true
+      },
+      "quality_pass": false,
+      "passed": false,
+      "tools": [
+        "analyze_name",
+        "start_reading",
+        "submit_reading"
+      ],
+      "tool_errors": [],
+      "latency_s": 13.242,
+      "review_latency_s": 6.469,
+      "model_calls": 2,
+      "model_request_attempts": 2,
+      "input_tokens": 5267,
+      "output_tokens": 989,
+      "usage_missing_calls": 0,
+      "cached_input_tokens": 2688,
+      "cached_usage_complete": true,
+      "returned_models": [
+        "deepseek-v4.1-flash"
+      ],
+      "review_usage": {
+        "input_tokens": 7862,
+        "output_tokens": 305,
+        "usage_available": true,
+        "requested_model": "deepseek-v4.1-flash",
+        "returned_model": "deepseek-v4.1-flash",
+        "parse_attempts": 1
+      },
+      "review_request_attempts": 1,
+      "multi_agent": null,
+      "reviewer_agent": null,
+      "pipeline": {
+        "kind": "new",
+        "model_calls": 2,
+        "repairs": 1,
+        "degraded": "keywords",
+        "problems": [
+          1,
+          1
+        ]
+      }
+    },
+    {
+      "id": "name_three_character",
+      "repeat": 0,
+      "status": "submit_reading",
+      "checks": {
+        "expected_status": true,
+        "expected_tools": true,
+        "zero_tool_errors": true,
+        "no_model_error": true,
+        "saved": true,
+        "systems": true,
+        "valid_refs": true
+      },
+      "engineering_pass": true,
+      "quality_review": {
+        "direct_answer": true,
+        "time_consistent": true,
+        "supported_conclusion": true,
+        "no_fabricated_facts": true
+      },
+      "quality_pass": true,
+      "passed": true,
+      "tools": [
+        "analyze_name",
+        "start_reading",
+        "submit_reading"
+      ],
+      "tool_errors": [],
+      "latency_s": 7.562,
+      "review_latency_s": 4.848,
+      "model_calls": 1,
+      "model_request_attempts": 1,
+      "input_tokens": 1424,
+      "output_tokens": 475,
+      "usage_missing_calls": 0,
+      "cached_input_tokens": 0,
+      "cached_usage_complete": true,
+      "returned_models": [
+        "deepseek-v4.1-flash"
+      ],
+      "review_usage": {
+        "input_tokens": 4586,
+        "output_tokens": 233,
+        "usage_available": true,
+        "requested_model": "deepseek-v4.1-flash",
+        "returned_model": "deepseek-v4.1-flash",
+        "parse_attempts": 1
+      },
+      "review_request_attempts": 1,
+      "multi_agent": null,
+      "reviewer_agent": null,
+      "pipeline": {
+        "kind": "new",
+        "model_calls": 1,
+        "repairs": 0,
+        "degraded": null,
+        "problems": []
+      }
+    },
+    {
+      "id": "name_without_lead_in",
+      "repeat": 0,
+      "status": "submit_reading",
+      "checks": {
+        "expected_status": true,
+        "expected_tools": true,
+        "zero_tool_errors": true,
+        "no_model_error": true,
+        "saved": true,
+        "systems": true,
+        "valid_refs": true
+      },
+      "engineering_pass": true,
+      "quality_review": {
+        "direct_answer": true,
+        "time_consistent": true,
+        "supported_conclusion": true,
+        "no_fabricated_facts": true
+      },
+      "quality_pass": true,
+      "passed": true,
+      "tools": [
+        "analyze_name",
+        "start_reading",
+        "submit_reading"
+      ],
+      "tool_errors": [],
+      "latency_s": 11.908,
+      "review_latency_s": 6.553,
+      "model_calls": 2,
+      "model_request_attempts": 2,
+      "input_tokens": 1561,
+      "output_tokens": 636,
+      "usage_missing_calls": 0,
+      "cached_input_tokens": 256,
+      "cached_usage_complete": true,
+      "returned_models": [
+        "deepseek-v4.1-flash"
+      ],
+      "review_usage": {
+        "input_tokens": 4909,
+        "output_tokens": 222,
+        "usage_available": true,
+        "requested_model": "deepseek-v4.1-flash",
+        "returned_model": "deepseek-v4.1-flash",
+        "parse_attempts": 1
+      },
+      "review_request_attempts": 1,
+      "multi_agent": null,
+      "reviewer_agent": null,
+      "pipeline": {
+        "kind": "new",
+        "model_calls": 2,
+        "repairs": 0,
+        "degraded": null,
+        "problems": []
+      }
+    },
+    {
+      "id": "name_career_grid",
+      "repeat": 0,
+      "status": "submit_reading",
+      "checks": {
+        "expected_status": true,
+        "expected_tools": true,
+        "zero_tool_errors": true,
+        "no_model_error": true,
+        "saved": true,
+        "systems": true,
+        "valid_refs": true
+      },
+      "engineering_pass": true,
+      "quality_review": {
+        "direct_answer": true,
+        "time_consistent": true,
+        "supported_conclusion": true,
+        "no_fabricated_facts": true
+      },
+      "quality_pass": true,
+      "passed": true,
+      "tools": [
+        "analyze_name",
+        "start_reading",
+        "submit_reading"
+      ],
+      "tool_errors": [],
+      "latency_s": 9.457,
+      "review_latency_s": 6.61,
+      "model_calls": 1,
+      "model_request_attempts": 1,
+      "input_tokens": 1399,
+      "output_tokens": 679,
+      "usage_missing_calls": 0,
+      "cached_input_tokens": 0,
+      "cached_usage_complete": true,
+      "returned_models": [
+        "deepseek-v4.1-flash"
+      ],
+      "review_usage": {
+        "input_tokens": 4940,
+        "output_tokens": 302,
+        "usage_available": true,
+        "requested_model": "deepseek-v4.1-flash",
+        "returned_model": "deepseek-v4.1-flash",
+        "parse_attempts": 1
+      },
+      "review_request_attempts": 1,
+      "multi_agent": null,
+      "reviewer_agent": null,
+      "pipeline": {
+        "kind": "new",
+        "model_calls": 1,
+        "repairs": 0,
+        "degraded": null,
+        "problems": []
+      }
+    },
+    {
+      "id": "name_ambiguous_form",
+      "repeat": 1,
+      "status": "submit_reading",
+      "checks": {
+        "expected_status": true,
+        "expected_tools": true,
+        "zero_tool_errors": true,
+        "no_model_error": true,
+        "saved": true,
+        "systems": true,
+        "valid_refs": true
+      },
+      "engineering_pass": true,
+      "quality_review": {
+        "direct_answer": true,
+        "time_consistent": true,
+        "supported_conclusion": true,
+        "no_fabricated_facts": true
+      },
+      "quality_pass": true,
+      "passed": true,
+      "tools": [
+        "analyze_name",
+        "start_reading",
+        "submit_reading"
+      ],
+      "tool_errors": [],
+      "latency_s": 6.901,
+      "review_latency_s": 5.515,
+      "model_calls": 1,
+      "model_request_attempts": 1,
+      "input_tokens": 1537,
+      "output_tokens": 500,
+      "usage_missing_calls": 0,
+      "cached_input_tokens": 1403,
+      "cached_usage_complete": true,
+      "returned_models": [
+        "deepseek-v4.1-flash"
+      ],
+      "review_usage": {
+        "input_tokens": 4753,
+        "output_tokens": 272,
+        "usage_available": true,
+        "requested_model": "deepseek-v4.1-flash",
+        "returned_model": "deepseek-v4.1-flash",
+        "parse_attempts": 1
+      },
+      "review_request_attempts": 1,
+      "multi_agent": null,
+      "reviewer_agent": null,
+      "pipeline": {
+        "kind": "new",
+        "model_calls": 1,
+        "repairs": 0,
+        "degraded": null,
+        "problems": []
+      }
+    },
+    {
+      "id": "name_compound_surname",
+      "repeat": 1,
+      "status": "submit_reading",
+      "checks": {
+        "expected_status": true,
+        "expected_tools": true,
+        "zero_tool_errors": true,
+        "no_model_error": true,
+        "saved": true,
+        "systems": true,
+        "valid_refs": true
+      },
+      "engineering_pass": true,
+      "quality_review": {
+        "direct_answer": true,
+        "time_consistent": true,
+        "supported_conclusion": true,
+        "no_fabricated_facts": true
+      },
+      "quality_pass": true,
+      "passed": true,
+      "tools": [
+        "analyze_name",
+        "start_reading",
+        "submit_reading"
+      ],
+      "tool_errors": [],
+      "latency_s": 8.944,
+      "review_latency_s": 5.157,
+      "model_calls": 1,
+      "model_request_attempts": 1,
+      "input_tokens": 1502,
+      "output_tokens": 519,
+      "usage_missing_calls": 0,
+      "cached_input_tokens": 1280,
+      "cached_usage_complete": true,
+      "returned_models": [
+        "deepseek-v4.1-flash"
+      ],
+      "review_usage": {
+        "input_tokens": 4839,
+        "output_tokens": 292,
+        "usage_available": true,
+        "requested_model": "deepseek-v4.1-flash",
+        "returned_model": "deepseek-v4.1-flash",
+        "parse_attempts": 1
+      },
+      "review_request_attempts": 1,
+      "multi_agent": null,
+      "reviewer_agent": null,
+      "pipeline": {
+        "kind": "new",
+        "model_calls": 1,
+        "repairs": 0,
+        "degraded": null,
+        "problems": []
+      }
+    },
+    {
+      "id": "name_compare_two",
+      "repeat": 1,
+      "status": "submit_reading",
+      "checks": {
+        "expected_status": true,
+        "expected_tools": true,
+        "zero_tool_errors": true,
+        "no_model_error": true,
+        "saved": true,
+        "systems": true,
+        "valid_refs": true
+      },
+      "engineering_pass": true,
+      "quality_review": {
+        "direct_answer": true,
+        "time_consistent": true,
+        "supported_conclusion": true,
+        "no_fabricated_facts": true
+      },
+      "quality_pass": true,
+      "passed": true,
+      "tools": [
+        "analyze_name",
+        "start_reading",
+        "submit_reading"
+      ],
+      "tool_errors": [],
+      "latency_s": 9.006,
+      "review_latency_s": 6.929,
+      "model_calls": 1,
+      "model_request_attempts": 1,
+      "input_tokens": 2296,
+      "output_tokens": 739,
+      "usage_missing_calls": 0,
+      "cached_input_tokens": 2048,
+      "cached_usage_complete": true,
+      "returned_models": [
+        "deepseek-v4.1-flash"
+      ],
+      "review_usage": {
+        "input_tokens": 7638,
+        "output_tokens": 338,
+        "usage_available": true,
+        "requested_model": "deepseek-v4.1-flash",
+        "returned_model": "deepseek-v4.1-flash",
+        "parse_attempts": 1
+      },
+      "review_request_attempts": 1,
+      "multi_agent": null,
+      "reviewer_agent": null,
+      "pipeline": {
+        "kind": "new",
+        "model_calls": 1,
+        "repairs": 0,
+        "degraded": null,
+        "problems": []
+      }
+    },
+    {
+      "id": "name_three_character",
+      "repeat": 1,
+      "status": "submit_reading",
+      "checks": {
+        "expected_status": true,
+        "expected_tools": true,
+        "zero_tool_errors": true,
+        "no_model_error": true,
+        "saved": true,
+        "systems": true,
+        "valid_refs": true
+      },
+      "engineering_pass": true,
+      "quality_review": {
+        "direct_answer": true,
+        "time_consistent": true,
+        "supported_conclusion": true,
+        "no_fabricated_facts": true
+      },
+      "quality_pass": true,
+      "passed": true,
+      "tools": [
+        "analyze_name",
+        "start_reading",
+        "submit_reading"
+      ],
+      "tool_errors": [],
+      "latency_s": 9.539,
+      "review_latency_s": 6.1,
+      "model_calls": 1,
+      "model_request_attempts": 1,
+      "input_tokens": 1424,
+      "output_tokens": 607,
+      "usage_missing_calls": 0,
+      "cached_input_tokens": 1280,
+      "cached_usage_complete": true,
+      "returned_models": [
+        "deepseek-v4.1-flash"
+      ],
+      "review_usage": {
+        "input_tokens": 4905,
+        "output_tokens": 277,
+        "usage_available": true,
+        "requested_model": "deepseek-v4.1-flash",
+        "returned_model": "deepseek-v4.1-flash",
+        "parse_attempts": 1
+      },
+      "review_request_attempts": 1,
+      "multi_agent": null,
+      "reviewer_agent": null,
+      "pipeline": {
+        "kind": "new",
+        "model_calls": 1,
+        "repairs": 0,
+        "degraded": null,
+        "problems": []
+      }
+    },
+    {
+      "id": "name_without_lead_in",
+      "repeat": 1,
+      "status": "submit_reading",
+      "checks": {
+        "expected_status": true,
+        "expected_tools": true,
+        "zero_tool_errors": true,
+        "no_model_error": true,
+        "saved": true,
+        "systems": true,
+        "valid_refs": true
+      },
+      "engineering_pass": true,
+      "quality_review": {
+        "direct_answer": true,
+        "time_consistent": true,
+        "supported_conclusion": true,
+        "no_fabricated_facts": true
+      },
+      "quality_pass": true,
+      "passed": true,
+      "tools": [
+        "analyze_name",
+        "start_reading",
+        "submit_reading"
+      ],
+      "tool_errors": [],
+      "latency_s": 19.333,
+      "review_latency_s": 4.183,
+      "model_calls": 2,
+      "model_request_attempts": 2,
+      "input_tokens": 1561,
+      "output_tokens": 512,
+      "usage_missing_calls": 0,
+      "cached_input_tokens": 1280,
+      "cached_usage_complete": true,
+      "returned_models": [
+        "deepseek-v4.1-flash"
+      ],
+      "review_usage": {
+        "input_tokens": 4656,
+        "output_tokens": 175,
+        "usage_available": true,
+        "requested_model": "deepseek-v4.1-flash",
+        "returned_model": "deepseek-v4.1-flash",
+        "parse_attempts": 1
+      },
+      "review_request_attempts": 1,
+      "multi_agent": null,
+      "reviewer_agent": null,
+      "pipeline": {
+        "kind": "new",
+        "model_calls": 2,
+        "repairs": 0,
+        "degraded": null,
+        "problems": []
+      }
+    },
+    {
+      "id": "name_career_grid",
+      "repeat": 1,
+      "status": "submit_reading",
+      "checks": {
+        "expected_status": true,
+        "expected_tools": true,
+        "zero_tool_errors": true,
+        "no_model_error": true,
+        "saved": true,
+        "systems": true,
+        "valid_refs": true
+      },
+      "engineering_pass": true,
+      "quality_review": {
+        "direct_answer": true,
+        "time_consistent": true,
+        "supported_conclusion": true,
+        "no_fabricated_facts": true
+      },
+      "quality_pass": true,
+      "passed": true,
+      "tools": [
+        "analyze_name",
+        "start_reading",
+        "submit_reading"
+      ],
+      "tool_errors": [],
+      "latency_s": 8.992,
+      "review_latency_s": 5.965,
+      "model_calls": 1,
+      "model_request_attempts": 1,
+      "input_tokens": 1399,
+      "output_tokens": 591,
+      "usage_missing_calls": 0,
+      "cached_input_tokens": 1152,
+      "cached_usage_complete": true,
+      "returned_models": [
+        "deepseek-v4.1-flash"
+      ],
+      "review_usage": {
+        "input_tokens": 4727,
+        "output_tokens": 265,
+        "usage_available": true,
+        "requested_model": "deepseek-v4.1-flash",
+        "returned_model": "deepseek-v4.1-flash",
+        "parse_attempts": 1
+      },
+      "review_request_attempts": 1,
+      "multi_agent": null,
+      "reviewer_agent": null,
+      "pipeline": {
+        "kind": "new",
+        "model_calls": 1,
+        "repairs": 0,
+        "degraded": null,
+        "problems": []
+      }
+    },
+    {
+      "id": "name_ambiguous_form",
+      "repeat": 2,
+      "status": "submit_reading",
+      "checks": {
+        "expected_status": true,
+        "expected_tools": true,
+        "zero_tool_errors": true,
+        "no_model_error": true,
+        "saved": true,
+        "systems": true,
+        "valid_refs": true
+      },
+      "engineering_pass": true,
+      "quality_review": {
+        "direct_answer": true,
+        "time_consistent": true,
+        "supported_conclusion": true,
+        "no_fabricated_facts": true,
+        "overall": true
+      },
+      "quality_pass": true,
+      "passed": true,
+      "tools": [
+        "analyze_name",
+        "start_reading",
+        "submit_reading"
+      ],
+      "tool_errors": [],
+      "latency_s": 12.49,
+      "review_latency_s": 6.452,
+      "model_calls": 2,
+      "model_request_attempts": 2,
+      "input_tokens": 3853,
+      "output_tokens": 1354,
+      "usage_missing_calls": 0,
+      "cached_input_tokens": 3579,
+      "cached_usage_complete": true,
+      "returned_models": [
+        "deepseek-v4.1-flash"
+      ],
+      "review_usage": {
+        "input_tokens": 4826,
+        "output_tokens": 290,
+        "usage_available": true,
+        "requested_model": "deepseek-v4.1-flash",
+        "returned_model": "deepseek-v4.1-flash",
+        "parse_attempts": 1
+      },
+      "review_request_attempts": 1,
+      "multi_agent": null,
+      "reviewer_agent": null,
+      "pipeline": {
+        "kind": "new",
+        "model_calls": 2,
+        "repairs": 1,
+        "degraded": "keywords",
+        "problems": [
+          1,
+          1
+        ]
+      }
+    },
+    {
+      "id": "name_compound_surname",
+      "repeat": 2,
+      "status": "submit_reading",
+      "checks": {
+        "expected_status": true,
+        "expected_tools": true,
+        "zero_tool_errors": true,
+        "no_model_error": true,
+        "saved": true,
+        "systems": true,
+        "valid_refs": true
+      },
+      "engineering_pass": true,
+      "quality_review": {
+        "direct_answer": true,
+        "time_consistent": true,
+        "supported_conclusion": true,
+        "no_fabricated_facts": true
+      },
+      "quality_pass": true,
+      "passed": true,
+      "tools": [
+        "analyze_name",
+        "start_reading",
+        "submit_reading"
+      ],
+      "tool_errors": [],
+      "latency_s": 7.145,
+      "review_latency_s": 6.207,
+      "model_calls": 1,
+      "model_request_attempts": 1,
+      "input_tokens": 1502,
+      "output_tokens": 566,
+      "usage_missing_calls": 0,
+      "cached_input_tokens": 1280,
+      "cached_usage_complete": true,
+      "returned_models": [
+        "deepseek-v4.1-flash"
+      ],
+      "review_usage": {
+        "input_tokens": 5446,
+        "output_tokens": 326,
+        "usage_available": true,
+        "requested_model": "deepseek-v4.1-flash",
+        "returned_model": "deepseek-v4.1-flash",
+        "parse_attempts": 1
+      },
+      "review_request_attempts": 1,
+      "multi_agent": null,
+      "reviewer_agent": null,
+      "pipeline": {
+        "kind": "new",
+        "model_calls": 1,
+        "repairs": 0,
+        "degraded": null,
+        "problems": []
+      }
+    },
+    {
+      "id": "name_compare_two",
+      "repeat": 2,
+      "status": "submit_reading",
+      "checks": {
+        "expected_status": true,
+        "expected_tools": true,
+        "zero_tool_errors": true,
+        "no_model_error": true,
+        "saved": true,
+        "systems": true,
+        "valid_refs": true
+      },
+      "engineering_pass": true,
+      "quality_review": {
+        "direct_answer": true,
+        "time_consistent": true,
+        "supported_conclusion": true,
+        "no_fabricated_facts": true
+      },
+      "quality_pass": true,
+      "passed": true,
+      "tools": [
+        "analyze_name",
+        "start_reading",
+        "submit_reading"
+      ],
+      "tool_errors": [],
+      "latency_s": 9.08,
+      "review_latency_s": 5.749,
+      "model_calls": 1,
+      "model_request_attempts": 1,
+      "input_tokens": 2296,
+      "output_tokens": 755,
+      "usage_missing_calls": 0,
+      "cached_input_tokens": 2048,
+      "cached_usage_complete": true,
+      "returned_models": [
+        "deepseek-v4.1-flash"
+      ],
+      "review_usage": {
+        "input_tokens": 8141,
+        "output_tokens": 258,
+        "usage_available": true,
+        "requested_model": "deepseek-v4.1-flash",
+        "returned_model": "deepseek-v4.1-flash",
+        "parse_attempts": 1
+      },
+      "review_request_attempts": 1,
+      "multi_agent": null,
+      "reviewer_agent": null,
+      "pipeline": {
+        "kind": "new",
+        "model_calls": 1,
+        "repairs": 0,
+        "degraded": null,
+        "problems": []
+      }
+    },
+    {
+      "id": "name_three_character",
+      "repeat": 2,
+      "status": "submit_reading",
+      "checks": {
+        "expected_status": true,
+        "expected_tools": true,
+        "zero_tool_errors": true,
+        "no_model_error": true,
+        "saved": true,
+        "systems": true,
+        "valid_refs": true
+      },
+      "engineering_pass": true,
+      "quality_review": {
+        "direct_answer": true,
+        "time_consistent": true,
+        "supported_conclusion": true,
+        "no_fabricated_facts": true
+      },
+      "quality_pass": true,
+      "passed": true,
+      "tools": [
+        "analyze_name",
+        "start_reading",
+        "submit_reading"
+      ],
+      "tool_errors": [],
+      "latency_s": 7.124,
+      "review_latency_s": 5.297,
+      "model_calls": 1,
+      "model_request_attempts": 1,
+      "input_tokens": 1424,
+      "output_tokens": 514,
+      "usage_missing_calls": 0,
+      "cached_input_tokens": 1280,
+      "cached_usage_complete": true,
+      "returned_models": [
+        "deepseek-v4.1-flash"
+      ],
+      "review_usage": {
+        "input_tokens": 4905,
+        "output_tokens": 276,
+        "usage_available": true,
+        "requested_model": "deepseek-v4.1-flash",
+        "returned_model": "deepseek-v4.1-flash",
+        "parse_attempts": 1
+      },
+      "review_request_attempts": 1,
+      "multi_agent": null,
+      "reviewer_agent": null,
+      "pipeline": {
+        "kind": "new",
+        "model_calls": 1,
+        "repairs": 0,
+        "degraded": null,
+        "problems": []
+      }
+    },
+    {
+      "id": "name_without_lead_in",
+      "repeat": 2,
+      "status": "submit_reading",
+      "checks": {
+        "expected_status": true,
+        "expected_tools": true,
+        "zero_tool_errors": true,
+        "no_model_error": true,
+        "saved": true,
+        "systems": true,
+        "valid_refs": true
+      },
+      "engineering_pass": true,
+      "quality_review": {
+        "direct_answer": true,
+        "time_consistent": true,
+        "supported_conclusion": true,
+        "no_fabricated_facts": true
+      },
+      "quality_pass": true,
+      "passed": true,
+      "tools": [
+        "analyze_name",
+        "start_reading",
+        "submit_reading"
+      ],
+      "tool_errors": [],
+      "latency_s": 11.133,
+      "review_latency_s": 5.509,
+      "model_calls": 2,
+      "model_request_attempts": 2,
+      "input_tokens": 1561,
+      "output_tokens": 686,
+      "usage_missing_calls": 0,
+      "cached_input_tokens": 1280,
+      "cached_usage_complete": true,
+      "returned_models": [
+        "deepseek-v4.1-flash"
+      ],
+      "review_usage": {
+        "input_tokens": 5007,
+        "output_tokens": 243,
+        "usage_available": true,
+        "requested_model": "deepseek-v4.1-flash",
+        "returned_model": "deepseek-v4.1-flash",
+        "parse_attempts": 1
+      },
+      "review_request_attempts": 1,
+      "multi_agent": null,
+      "reviewer_agent": null,
+      "pipeline": {
+        "kind": "new",
+        "model_calls": 2,
+        "repairs": 0,
+        "degraded": null,
+        "problems": []
+      }
+    },
+    {
+      "id": "name_career_grid",
+      "repeat": 2,
+      "status": "submit_reading",
+      "checks": {
+        "expected_status": true,
+        "expected_tools": true,
+        "zero_tool_errors": true,
+        "no_model_error": true,
+        "saved": true,
+        "systems": true,
+        "valid_refs": true
+      },
+      "engineering_pass": true,
+      "quality_review": {
+        "direct_answer": false,
+        "time_consistent": true,
+        "supported_conclusion": false,
+        "no_fabricated_facts": true
+      },
+      "quality_pass": false,
+      "passed": false,
+      "tools": [
+        "analyze_name",
+        "start_reading",
+        "submit_reading"
+      ],
+      "tool_errors": [],
+      "latency_s": 11.141,
+      "review_latency_s": 6.71,
+      "model_calls": 2,
+      "model_request_attempts": 2,
+      "input_tokens": 3368,
+      "output_tokens": 956,
+      "usage_missing_calls": 0,
+      "cached_input_tokens": 2944,
+      "cached_usage_complete": true,
+      "returned_models": [
+        "deepseek-v4.1-flash"
+      ],
+      "review_usage": {
+        "input_tokens": 4235,
+        "output_tokens": 312,
+        "usage_available": true,
+        "requested_model": "deepseek-v4.1-flash",
+        "returned_model": "deepseek-v4.1-flash",
+        "parse_attempts": 1
+      },
+      "review_request_attempts": 1,
+      "multi_agent": null,
+      "reviewer_agent": null,
+      "pipeline": {
+        "kind": "new",
+        "model_calls": 2,
+        "repairs": 1,
+        "degraded": "keywords",
+        "problems": [
+          1,
+          1
+        ]
+      }
+    }
+  ]
+}
