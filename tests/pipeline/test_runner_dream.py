@@ -823,3 +823,91 @@ async def test_the_matched_phrase_is_not_inherited_by_the_single_agent_validator
     assert "不是本次命中的意象" in validate_output(
         reading, runtime.session.state, Dream(runtime).matcher
     )
+
+
+# ---- PR #46 review: keep the r3 fixes without authorising other symbols -------------------
+
+
+@pytest.mark.parametrize(
+    "text",
+    [
+        "梦里的“回家吃饭”象征被照顾。",
+        "【回家吃饭】往往反映你需要被照顾。",
+        "《回家吃饭》的场景象征被照顾。",
+        "梦见“回家吃饭”。",
+        # No fuzzy match for the whole quote: the inner alias must still be checked.
+        "“吃饭休息”象征被照顾。",
+    ],
+)
+async def test_pr46_quoted_interpretations_of_unhit_symbols_are_repaired(make, text):
+    runtime, _, events = make(extraction(R3_GRANDMOTHER_SYMBOLS), with_layer(text), written)
+    outcome = await runtime.turn(GRANDMOTHER)
+    info = outcome.data["pipeline"]
+    assert outcome.status == "submit_reading"
+    assert (info["repairs"], info["degraded"]) == (1, None)
+    assert "吃饭" in info["problems"][0][0]
+    assert text not in outcome.text
+    assert planned(events).count("submit_reading") == 1
+
+
+@pytest.mark.parametrize(
+    "phrase,symbol,text",
+    [
+        ("猫和蛇", "蛇", "梦见猫和蛇象征你最近需要独立和警惕。"),
+        # A suffix alias of a broad source phrase is not an alias of the hit either.
+        ("蛇和猫", "蛇", "梦见猫象征你最近需要独立。"),
+        ("猫和蛇", "蛇", "梦里的“猫和蛇”象征你最近需要独立和警惕。"),
+        ("猫和牙齿一颗一颗掉下来", "掉牙", "梦见猫和牙齿一颗一颗掉下来象征压力。"),
+        ("牙齿一颗一颗掉下来和猫", "掉牙", "梦见猫象征你最近需要独立。"),
+    ],
+)
+async def test_pr46_a_broad_source_phrase_does_not_authorise_other_symbols(
+    make, phrase, symbol, text
+):
+    runtime, _, events = make(
+        extraction([{"phrase": phrase, "symbol": symbol}]), with_layer(text), written
+    )
+    outcome = await runtime.turn(f"我梦见{phrase}，醒来很紧张。")
+    info = outcome.data["pipeline"]
+    assert outcome.status == "submit_reading"
+    assert (info["repairs"], info["degraded"]) == (1, None)
+    assert "猫" in info["problems"][0][0]
+    assert text not in outcome.text
+    assert planned(events).count("submit_reading") == 1
+
+
+async def test_pr46_a_normalised_hit_with_other_content_can_still_be_retold(make):
+    phrase = "猫和牙齿一颗一颗掉下来"
+    text = "你梦见牙齿一颗一颗掉下来。"
+    runtime, *_ = make(extraction([{"phrase": phrase, "symbol": "掉牙"}]), with_layer(text))
+    outcome = await runtime.turn(f"我梦见{phrase}，醒来很紧张。")
+    info = outcome.data["pipeline"]
+    assert outcome.status == "submit_reading"
+    assert (info["repairs"], info["degraded"]) == (0, None), info["problems"]
+    assert text in outcome.text
+
+
+@pytest.mark.parametrize("phrase", ["去世的奶奶", "梦到去世的奶奶"])
+async def test_pr46_a_suffix_inside_the_hits_literal_alias_still_names_the_hit(make, phrase):
+    text = "梦里奶奶象征被照顾。"
+    runtime, *_ = make(extraction([{"phrase": phrase, "symbol": "去世的亲人"}]), with_layer(text))
+    outcome = await runtime.turn(GRANDMOTHER)
+    info = outcome.data["pipeline"]
+    assert outcome.status == "submit_reading"
+    assert (info["repairs"], info["degraded"]) == (0, None), info["problems"]
+    assert text in outcome.text
+
+
+@pytest.mark.parametrize("pipeline", [False, True])
+async def test_pr46_the_submission_validator_checks_quoted_interpretations(make, pipeline):
+    from common.schemas import Reading
+    from plugins.dream.validation import validate_output
+
+    runtime, *_ = make(extraction(R3_GRANDMOTHER_SYMBOLS), written)
+    outcome = await runtime.turn(GRANDMOTHER)
+    reading = Reading.model_validate(outcome.data["reading"])
+    reading.summary = "梦里的“回家吃饭”象征被照顾。"
+    state = dict(runtime.session.state)
+    if pipeline:
+        state["pipeline_run"] = {"system": "dream"}
+    assert "吃饭" in (validate_output(reading, state, Dream(runtime).matcher) or "")

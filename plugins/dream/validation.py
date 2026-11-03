@@ -11,6 +11,7 @@ prophecies, and a dream-only reading has no event timeline.
 import re
 
 from common.facts import public_texts
+from plugins.dream.match import NORMALISATIONS
 
 PROPHECY = re.compile(r"预示|预兆|征兆|兆头|预言|将会发生|会发生|一定会|必定|必然会|注定")
 NEGATION = re.compile(r"不|非|没有|无|并未|别")
@@ -43,17 +44,32 @@ def phrase_aliases(matcher, hits):
     奶奶 in 去世的奶奶 may name the matched 去世的亲人. This does not authorise
     the other aliases of 祖父母 (爷爷, 外公, …), or add another dictionary fact.
     """
-    return {
-        alias: hit["key"]
-        for hit in hits
-        for alias in matcher.aliases
-        if alias != (phrase := hit.get("phrase") or "") and phrase.endswith(alias)
-    }
+    aliases = {}
+    for hit in hits:
+        phrase = hit.get("phrase") or ""
+        for start, end, _, key in matcher.spans(phrase):
+            if key != hit["key"] or end != len(phrase):
+                continue
+            # The suffix must belong to a literal alias of this hit, not just occur
+            # somewhere in its source phrase (蛇和猫 does not make 猫 an alias of 蛇).
+            aliases.update(
+                (alias, key)
+                for alias in matcher.aliases
+                if alias != phrase and len(alias) <= end - start and phrase.endswith(alias)
+            )
+    return aliases
 
 
 def phrase_hits(hits):
-    """Each matched source phrase bound to its hit: 牙齿一颗一颗掉下来 is 掉牙 as a whole."""
-    return {hit["phrase"]: hit["key"] for hit in hits if hit.get("phrase")}
+    """Bind only controlled normalisation spans, preserving other objects in a source phrase."""
+    phrases = {}
+    for hit in hits:
+        rule = NORMALISATIONS.get(hit["key"])
+        if rule:
+            phrases.update(
+                (match[0], hit["key"]) for match in rule.finditer(hit.get("phrase") or "")
+            )
+    return phrases
 
 
 def excluded_mention(clause, start, end, boundary):
@@ -73,21 +89,28 @@ def excluded_mention(clause, start, end, boundary):
 def ungrounded(clause, matcher, hits, misses, *, aliases=None, phrases=None):
     """Return a bad mention, preserving its ownership when clauses contain many objects."""
     mentions = [(a, b, alias, key) for a, b, alias, key in matcher.spans(clause)]
+    symbol_quotes = []
     for quote in QUOTED.finditer(clause):
         term = quote.group(1)
-        # 「」 is how a symbol is rendered, so a near match there still names one. Other
-        # quotes (“回家吃饭”) name a symbol only with its exact alias; their aliases inside
-        # are checked like any other mention.
-        key = matcher.aliases.get(term) or (
-            matcher.match(term)["key"] if clause[quote.start()] == "「" else None
+        # Everyday advice may quote a phrase without naming a dream symbol. A quote
+        # used as an interpretation's subject or introduced as dreamed content does name one.
+        symbolic = (
+            clause[quote.start()] == "「"
+            or INTERPRETS.match(clause, quote.end())
+            or DREAMED.search(clause[: quote.start()])
         )
-        if key:
-            start, end = quote.span(1)
+        start, end = quote.span(1)
+        if symbolic:
+            symbol_quotes.append((start, end))
+        key = matcher.aliases.get(term) or (matcher.match(term)["key"] if symbolic else None)
+        # A fuzzy match for a compound quote must not erase its other symbols (猫和蛇).
+        inner = [m for m in mentions if start <= m[0] < end]
+        if key and all(m[3] == key for m in inner):
             mentions = [m for m in mentions if not (start <= m[0] < end)]
             mentions.append((start, end, term, key))
     for phrase, key in (phrases or {}).items():
         for match in re.finditer(re.escape(phrase), clause):
-            # The user's own phrase of a hit is that hit; 牙齿 inside it is not another.
+            # Only the recognised construction is one object, not its whole source phrase.
             mentions = [m for m in mentions if not (match.start() <= m[0] < match.end())]
             mentions.append((match.start(), match.end(), phrase, key))
     for miss in misses:
@@ -104,7 +127,7 @@ def ungrounded(clause, matcher, hits, misses, *, aliases=None, phrases=None):
             return f"意象“{alias}”未在词典中命中，只能说明未收录，不能解读"
         key = (aliases or {}).get(alias, key)
         if key not in hits:
-            quoted = (
+            quoted = any(a <= start and end <= b for a, b in symbol_quotes) or (
                 start > 0
                 and clause[start - 1] in "「“【《"
                 and end < len(clause)
