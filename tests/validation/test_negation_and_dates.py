@@ -394,3 +394,29 @@ async def test_the_high_risk_check_still_refuses_a_claim_the_policy_judge_would_
     runtime.session.policy_judge = object()  # the two-level mode: wording goes to a model
     error, _ = check(runtime, draft)
     assert error == "不能给出健康、投资或生死的确定性结论"
+
+
+@pytest.mark.parametrize(
+    "text",
+    [
+        "关于要不要去做检查：如果身体有不适，请及时就医。",
+        "你问要不要去做检查，这个梦本身不能说明身体状况。",
+        "需不需要去做检查，要看身体的实际感受。",
+    ],
+)
+def test_an_a_not_a_question_about_care_is_not_discouraging_it(text):
+    """P2 r2 (dream_hospital_health#2): 要不要去做检查 repeats the user's question."""
+    assert care_error([text]) is None
+
+
+@pytest.mark.parametrize(
+    "text",
+    [
+        "不要去做检查。",
+        "你不需要去做检查。",
+        "要不要紧都不要去医院。",
+        "用不用去医院，不用去医院。",
+    ],
+)
+def test_discouraging_care_next_to_a_question_is_still_refused(text):
+    assert care_error([text])

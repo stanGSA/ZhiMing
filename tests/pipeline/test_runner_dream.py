@@ -665,3 +665,50 @@ async def test_function_characters_inside_nouns_do_not_hide_omitted_symbols(make
     assert noun in outcome.data["pipeline"]["problems"][0][0]
     assert text not in outcome.text
     assert planned(events).count("submit_reading") == 1
+
+
+# ---- P2 r2: the refusals read in the drafts' problem texts --------------------------------
+
+
+async def test_echoing_whether_to_get_checked_does_not_end_in_the_safety_reply(make):
+    """r2 dream_hospital_health#2: both drafts were refused for “不要去做检查” inside
+    “要不要去做检查”, and the reading degraded to the safety template."""
+    echo = lambda m: written(  # noqa: E731
+        m, body="关于要不要去做检查：梦本身不能说明身体状况，如有不适请及时就医。"
+    )
+    runtime, *_ = make(extraction(PILOT_SYMBOLS[HOSPITAL]), echo)
+    runtime.session.state["selected_systems"] = ["dream"]
+    outcome = await runtime.turn(HOSPITAL)
+    info = outcome.data["pipeline"]
+    assert (outcome.status, info["repairs"], info["degraded"]) == ("submit_reading", 0, None)
+
+
+async def test_a_reaction_or_state_is_not_reported_as_an_unmatched_symbol(make):
+    """r2 dream_flood_and_snake#2: 不敢下去 was extracted, then refused as unmatched."""
+    question = "梦见家里进水了，水里还有一条蛇游来游去，我站在床上不敢下去。帮我解一下这个梦。"
+    symbols = [
+        {"phrase": "水", "symbol": "水"},
+        {"phrase": "蛇", "symbol": "蛇"},
+        {"phrase": "站在床上", "symbol": "床"},
+        {"phrase": "不敢下去", "symbol": "不敢下去"},
+        {"phrase": "游来游去", "symbol": "一直游"},
+        {"phrase": "家里进水了", "symbol": "家里进水了"},
+    ]
+    runtime, *_ = make(extraction(symbols), written)
+    runtime.session.state["selected_systems"] = ["dream"]
+    await runtime.turn(question)
+    result = Dream(runtime).result(runtime.session.state)
+    # 家里进水了 has no negation or degree: it stays an unmatched symbol.
+    assert "不敢下去" not in result["misses"]
+    assert {h["key"] for h in result["hits"]} >= {"水", "蛇", "床"}
+    # Retelling it is allowed; interpreting it is still content outside the fact sheet.
+    dream = Dream(runtime)
+    assert dream.problems(["你站在床上不敢下去，醒来还心有余悸。"], runtime.session) == []
+    assert dream.problems(["不敢下去，说明你在用退守的方式保护自己。"], runtime.session)
+
+
+async def test_a_refused_draft_is_traced_with_its_text(make):
+    runtime, _, events = make(extraction(), names_the_unmatched, written)
+    await runtime.turn(QUESTION)
+    traced = next(e for e in events if e.get("stage") == "problems")
+    assert "地铁闸机象征阻碍" in traced["text"]

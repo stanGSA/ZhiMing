@@ -64,5 +64,6 @@ Daily-pipeline 的 `time_consistent` 仍失败 5/18，原评分全部保留。�
 - [问题类别统计](pipeline-problems.md)
 - [解梦各稿问题原文（按用户要求发布的合成题证据）](dream-pipeline-problems-raw.md)
 - [被追进考场第 3 次的结尾原句和评委全部理由](dream-chased-to-exam-r3-review.md)
+- [解梦 r3 调参：逐条归因与改动](tuning-r3.md)
 - [完整性与门槛逐项结果](integrity.json)
 - [重跑前旧批次复核](../pilot/daily-prereview.md)

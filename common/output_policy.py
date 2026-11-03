@@ -310,6 +310,14 @@ def mark_unreviewed(confidence, signals) -> None:
     confidence.reason = reason
 
 
+def a_not_a(before: str, negative: re.Match) -> bool:
+    """Whether the negation is the 不 of an A-not-A question: 要不要, 需不需要, 用不用."""
+    word = negative.group()
+    if not word.startswith("不") or len(word) < 2:
+        return False
+    return before[: negative.start()].endswith(word[1])
+
+
 def care_advice(texts) -> tuple[bool, str | None]:
     """(an affirmative "see a doctor" advice is present, the first discouraging phrase)."""
     advised, discouraged = False, None
@@ -317,6 +325,9 @@ def care_advice(texts) -> tuple[bool, str | None]:
         for match in CARE_ACTION.finditer(text or ""):
             before = clause_before(text, match.start(), 40)
             negative = DISCOURAGE.search(before)
+            if negative and a_not_a(before, negative):
+                # “要不要去做检查” asks the question; it neither advises nor discourages.
+                continue
             if negative:
                 prefix = before[: negative.start()]
                 suffix = text[match.end() :]
