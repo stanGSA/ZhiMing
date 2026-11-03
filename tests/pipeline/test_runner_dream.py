@@ -911,3 +911,13 @@ async def test_pr46_the_submission_validator_checks_quoted_interpretations(make,
     if pipeline:
         state["pipeline_run"] = {"system": "dream"}
     assert "吃饭" in (validate_output(reading, state, Dream(runtime).matcher) or "")
+
+
+async def test_the_r4_teeth_variant_is_the_matched_symbol(make):
+    """r4 dream_teeth_falling#1: 一颗颗 is the same controlled phrase as 一颗一颗."""
+    text = "梦里牙齿一颗颗掉下来，醒来心慌，可能和最近担心失去掌控、形象受损或表达受阻有关。"
+    runtime, _, events = make(extraction(TEETH_SYMBOLS), with_layer(text), written)
+    outcome = await runtime.turn(TEETH)
+    info = outcome.data["pipeline"]
+    assert (outcome.status, info["repairs"], info["degraded"]) == ("submit_reading", 0, None)
+    assert text in outcome.text

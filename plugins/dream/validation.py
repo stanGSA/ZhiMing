@@ -108,11 +108,14 @@ def ungrounded(clause, matcher, hits, misses, *, aliases=None, phrases=None):
         if key and all(m[3] == key for m in inner):
             mentions = [m for m in mentions if not (start <= m[0] < end)]
             mentions.append((start, end, term, key))
-    for phrase, key in (phrases or {}).items():
-        for match in re.finditer(re.escape(phrase), clause):
+    bound = [(re.escape(phrase), key) for phrase, key in (phrases or {}).items()]
+    # The same controlled construction in other words (一颗颗 for 一颗一颗) is that hit too.
+    bound += [(NORMALISATIONS[key].pattern, key) for key in set((phrases or {}).values())]
+    for pattern, key in bound:
+        for match in re.finditer(pattern, clause):
             # Only the recognised construction is one object, not its whole source phrase.
             mentions = [m for m in mentions if not (match.start() <= m[0] < match.end())]
-            mentions.append((match.start(), match.end(), phrase, key))
+            mentions.append((match.start(), match.end(), match[0], key))
     for miss in misses:
         for match in re.finditer(re.escape(miss), clause):
             # An OOV phrase is one object; aliases inside it do not split its abstention.

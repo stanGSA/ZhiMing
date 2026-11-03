@@ -6,7 +6,13 @@ from types import SimpleNamespace
 
 import pytest
 
-from common.output_policy import HEALTH_NOTE, care_advice, care_error, certainty_claim
+from common.output_policy import (
+    HEALTH_NOTE,
+    care_advice,
+    care_error,
+    certainty_claim,
+    certainty_error,
+)
 from common.validation import risk_note
 from plugins.astro.validation import validate_output
 from scripts.compare_layers import rejection_category, repository_metadata
@@ -446,3 +452,28 @@ def test_a_repeated_character_across_words_is_not_a_care_question(text):
 
 def test_a_care_question_alone_does_not_count_as_affirmative_advice():
     assert care_advice(["用不用去医院？"]) == (False, None)
+
+
+@pytest.mark.parametrize(
+    "text",
+    [
+        "而不是把它理解成必然的坎坷。",
+        "不要把它理解成必然的坎坷。",
+        "并不是把这个数理看成注定的结果。",
+    ],
+)
+def test_declining_to_read_it_as_certain_is_not_a_certainty_claim(text):
+    """r4 name_three_character#2: the sentence rejects fatalism; it was refused twice."""
+    assert certainty_error([text]) is None
+
+
+@pytest.mark.parametrize(
+    "text",
+    [
+        "它必然遭遇坎坷。",
+        "不要把钱都投进去，理解成必然的收益。",
+        "这不是把它理解成必然，而是你一定会成功。",
+    ],
+)
+def test_a_certainty_claim_beside_such_a_negation_is_still_refused(text):
+    assert certainty_error([text])
