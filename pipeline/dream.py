@@ -23,7 +23,7 @@ from pipeline.render import safety_for
 from pipeline.state import RESUMABLE
 from pipeline.system import System
 from plugins.dream.match import NORMALISATIONS
-from plugins.dream.validation import phrase_aliases, text_error
+from plugins.dream.validation import phrase_aliases, phrase_hits, text_error
 
 DREAM = re.compile(
     r"梦见|梦到|梦里|梦中|做梦|做.{0,8}?个梦|做了.{0,8}梦|噩梦|梦境|解梦|的梦|[这那]个梦"
@@ -321,7 +321,11 @@ class Dream(System):
         hits = {hit["key"] for hit in result["hits"]}
         misses = set(result["misses"])
         aliases = phrase_aliases(self.matcher, result["hits"])
-        found = [text_error(text, self.matcher, hits, misses, aliases=aliases) for text in texts]
+        phrases = phrase_hits(result["hits"])
+        found = [
+            text_error(text, self.matcher, hits, misses, aliases=aliases, phrases=phrases)
+            for text in texts
+        ]
         found += self.unlisted(texts, session)
         found += self.wording_problems(texts, session)
         return list(dict.fromkeys(problem for problem in found if problem))

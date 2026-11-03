@@ -756,3 +756,70 @@ async def test_non_question_discouragement_in_a_dream_draft_is_not_submitted(mak
     assert (outcome.status, info["repairs"], info["degraded"]) == ("submit_reading", 1, "safety")
     assert text not in outcome.text
     assert planned(events).count("submit_reading") == 1
+
+
+# ---- P2 r3: the two false rejections located in plugins/dream/validation.py::ungrounded ----
+
+TEETH = "帮我解个梦：昨晚梦见牙齿一颗一颗掉下来，醒来心里很慌。"
+TEETH_SYMBOLS = [{"phrase": "牙齿一颗一颗掉下来", "symbol": "掉牙"}]
+R3_GRANDMOTHER_SYMBOLS = [
+    {"phrase": "去世的奶奶", "symbol": "去世的亲人"},
+    {"phrase": "老房子", "symbol": "房子"},
+    {"phrase": "给我做饭", "symbol": "做饭"},
+]
+HOME_MEAL = (
+    "如果你最近确实有些累，不妨给自己留一点像“回家吃饭”那样的松弛时刻，"
+    "比如好好做一顿饭、早点休息，或回一趟让你安心的地方。"
+)
+
+
+@pytest.mark.parametrize(
+    "question, symbols, text",
+    [
+        # r3 dream_teeth_falling#3: retelling the phrase that matched 掉牙 named 牙齿.
+        (TEETH, TEETH_SYMBOLS, "你梦见牙齿一颗一颗掉下来。"),
+        # r3 dream_late_grandmother#1: a quoted everyday phrase was fuzzily read as 吃饭.
+        (GRANDMOTHER, R3_GRANDMOTHER_SYMBOLS, HOME_MEAL),
+    ],
+)
+async def test_the_r3_false_rejections_pass_the_final_submission(make, question, symbols, text):
+    runtime, _, events = make(extraction(symbols), with_layer(text), written)
+    outcome = await runtime.turn(question)
+    assert outcome.status == "submit_reading"
+    info = outcome.data["pipeline"]
+    assert (info["repairs"], info["degraded"]) == (0, None), info["problems"]
+    assert text in outcome.text
+    assert planned(events).count("submit_reading") == 1
+
+
+@pytest.mark.parametrize(
+    "question, symbols, text",
+    [
+        # 牙齿 outside the matched phrase is still another, unmatched symbol.
+        (TEETH, TEETH_SYMBOLS, "梦见牙齿往往象征自我形象。"),
+        # The exact alias in quotes, and any near match in 「」, still name a symbol.
+        (GRANDMOTHER, R3_GRANDMOTHER_SYMBOLS, "梦里的“吃饭”象征被照顾。"),
+        (GRANDMOTHER, R3_GRANDMOTHER_SYMBOLS, "「回家吃饭」象征被照顾。"),
+        (GRANDMOTHER, R3_GRANDMOTHER_SYMBOLS, "梦见吃饭，说明你需要被照顾。"),
+    ],
+)
+async def test_what_the_r3_fixes_must_still_refuse(make, question, symbols, text):
+    runtime, *_ = make(extraction(symbols), with_layer(text), written)
+    outcome = await runtime.turn(question)
+    info = outcome.data["pipeline"]
+    assert info["repairs"] == 1
+    assert "不是本次命中的意象" in info["problems"][0][0]
+
+
+async def test_the_matched_phrase_is_not_inherited_by_the_single_agent_validator(make):
+    from common.schemas import Reading
+    from plugins.dream.validation import validate_output
+
+    runtime, *_ = make(extraction(TEETH_SYMBOLS), written)
+    outcome = await runtime.turn(TEETH)
+    reading = Reading.model_validate(outcome.data["reading"])
+    reading.summary = "你梦见牙齿一颗一颗掉下来。"
+    assert "pipeline_run" not in runtime.session.state
+    assert "不是本次命中的意象" in validate_output(
+        reading, runtime.session.state, Dream(runtime).matcher
+    )

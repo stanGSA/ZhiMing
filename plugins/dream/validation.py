@@ -51,6 +51,11 @@ def phrase_aliases(matcher, hits):
     }
 
 
+def phrase_hits(hits):
+    """Each matched source phrase bound to its hit: 牙齿一颗一颗掉下来 is 掉牙 as a whole."""
+    return {hit["phrase"]: hit["key"] for hit in hits if hit.get("phrase")}
+
+
 def excluded_mention(clause, start, end, boundary):
     """Scope an abstention to its object, stopping before the next mentioned symbol."""
     tail = clause[end:boundary]
@@ -65,16 +70,26 @@ def excluded_mention(clause, start, end, boundary):
     )
 
 
-def ungrounded(clause, matcher, hits, misses, *, aliases=None):
+def ungrounded(clause, matcher, hits, misses, *, aliases=None, phrases=None):
     """Return a bad mention, preserving its ownership when clauses contain many objects."""
     mentions = [(a, b, alias, key) for a, b, alias, key in matcher.spans(clause)]
     for quote in QUOTED.finditer(clause):
         term = quote.group(1)
-        key = matcher.aliases.get(term) or matcher.match(term)["key"]
+        # 「」 is how a symbol is rendered, so a near match there still names one. Other
+        # quotes (“回家吃饭”) name a symbol only with its exact alias; their aliases inside
+        # are checked like any other mention.
+        key = matcher.aliases.get(term) or (
+            matcher.match(term)["key"] if clause[quote.start()] == "「" else None
+        )
         if key:
             start, end = quote.span(1)
             mentions = [m for m in mentions if not (start <= m[0] < end)]
             mentions.append((start, end, term, key))
+    for phrase, key in (phrases or {}).items():
+        for match in re.finditer(re.escape(phrase), clause):
+            # The user's own phrase of a hit is that hit; 牙齿 inside it is not another.
+            mentions = [m for m in mentions if not (match.start() <= m[0] < match.end())]
+            mentions.append((match.start(), match.end(), phrase, key))
     for miss in misses:
         for match in re.finditer(re.escape(miss), clause):
             # An OOV phrase is one object; aliases inside it do not split its abstention.
@@ -111,25 +126,24 @@ def validate_output(reading, state, matcher):
     misses = {m for r in found for m in r["misses"]}
     # Only the active dream pipeline submission uses source-phrase aliases. A later
     # agent turn has no pipeline_run marker and retains the ordinary plugin rules.
-    aliases = (
-        phrase_aliases(matcher, [h for r in found for h in r["hits"]])
-        if state.get("pipeline_run") and reading.systems_used == ["dream"]
-        else {}
-    )
+    pipeline = bool(state.get("pipeline_run") and reading.systems_used == ["dream"])
+    matched = [h for r in found for h in r["hits"]]
+    aliases = phrase_aliases(matcher, matched) if pipeline else {}
+    phrases = phrase_hits(matched) if pipeline else {}
     for text in texts:
-        error = text_error(text, matcher, hits, misses, aliases=aliases)
+        error = text_error(text, matcher, hits, misses, aliases=aliases, phrases=phrases)
         if error:
             return error
     return None
 
 
-def text_error(text, matcher, hits, misses, *, aliases=None):
+def text_error(text, matcher, hits, misses, *, aliases=None, phrases=None):
     """The first problem of one user-visible text: a prophecy, or an ungrounded symbol."""
     for match in PROPHECY.finditer(text):
         if not NEGATION.search(text[max(0, match.start() - 6) : match.start()]):
             return "解梦只提供心理层面的线索，不能把梦境说成现实事件的预兆"
     for clause in CLAUSES.split(text):
-        error = ungrounded(clause, matcher, hits, misses, aliases=aliases)
+        error = ungrounded(clause, matcher, hits, misses, aliases=aliases, phrases=phrases)
         if error:
             return error
     return None
