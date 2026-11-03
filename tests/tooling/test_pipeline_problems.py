@@ -2,7 +2,7 @@
 
 import json
 
-from scripts.pipeline_problems import drafts, kind, render, tally
+from scripts.pipeline_problems import drafts, kind, render, sources, tally
 
 
 def batch(tmp_path, rows):
@@ -97,3 +97,26 @@ def test_tally_groups_name_errors_without_publishing_names(tmp_path):
 
 def test_unknown_problem_text_is_never_published():
     assert kind('未识别的错误：王晓敏，电话13812345678，"私人内容"') == "其他校验问题"
+
+
+def test_render_shows_the_sentence_a_refused_word_stands_in(tmp_path):
+    path = tmp_path / "t.jsonl"
+    events = [
+        {
+            "stage": "problems",
+            "draft": 1,
+            "problems": ["“火”不是本次命中的意象，不能解读"],
+            "text": "【摘要】这个梦反映你的不安。梦里像着火一样着急，往往反映压力。",
+        }
+    ]
+    path.write_text("\n".join(json.dumps(e, ensure_ascii=False) for e in events), encoding="utf-8")
+    rows = [{"id": "flood", "repeat": 2, "trace": str(path), "pipeline": {"problems": [1]}}]
+    live = batch(tmp_path, rows)
+    text = render(live, json.loads(live.read_text(encoding="utf-8")))
+    assert "    - 原句：梦里像着火一样着急，往往反映压力。" in text
+    # Published counts never carry the sentence.
+    assert "着火" not in tally(live, json.loads(live.read_text(encoding="utf-8")))
+
+
+def test_sources_without_a_recorded_draft_are_empty():
+    assert sources("“火”不是本次命中的意象，不能解读", "") == []

@@ -5,7 +5,8 @@ pipeline_record). The texts are traced as the ``problems`` stage (pipeline/runne
 reads them back on the machine that ran the batch; it never calls a model. Older traces show
 no texts, but saved readings may still hold them in the workspace database's pipeline_json.
 
-Without --tally the output names each answer's problems and quotes fragments of the drafts, so
+Without --tally the output names each answer's problems and quotes fragments of the drafts,
+with the sentence of the draft each quoted word stands in when the trace records the draft, so
 it stays local like scripts.quality_reasons. With --tally it is one table of the problem kinds
 per batch, using fixed labels only. Unknown problems use a generic label, so names and other
 unquoted source text cannot enter the published categories.
@@ -65,6 +66,29 @@ def drafts(row: dict) -> list[list[str]] | None:
     return found if found or not (row.get("pipeline") or {}).get("problems") else None
 
 
+def draft_texts(row: dict) -> list[str]:
+    """Each refused draft's own text, for traces that record it (else empty strings)."""
+    path = Path(row.get("trace") or "")
+    if not path.is_file():
+        return []
+    events = (json.loads(line) for line in path.read_text(encoding="utf-8").splitlines())
+    return [e.get("text") or "" for e in events if e.get("stage") == "problems"]
+
+
+QUOTE = re.compile(r"“([^”]+)”")
+SENTENCES = re.compile(r"[^。！？!?；;\n]+[。！？!?；;]?")
+
+
+def sources(problem: str, text: str) -> list[str]:
+    """The draft's sentences holding the words a problem quotes (local output only)."""
+    found = []
+    for word in QUOTE.findall(problem):
+        sentence = next((s.strip() for s in SENTENCES.findall(text) if word in s), "")
+        if sentence and sentence not in found:
+            found.append(sentence)
+    return found
+
+
 def kind(problem: str) -> str:
     """A fixed category, never any of the draft's or the user's own words."""
     return next((label for pattern, label in KINDS if re.search(pattern, problem)), "其他校验问题")
@@ -83,8 +107,12 @@ def render(path: Path, report: dict) -> str:
         if not found:
             continue
         lines.append(f"- {name}（降级：{row['pipeline'].get('degraded') or '无'}）")
+        texts = draft_texts(row)
         for number, problems in enumerate(found, 1):
-            lines += [f"  - 第{number}稿：{problem}" for problem in problems]
+            text = texts[number - 1] if number <= len(texts) else ""
+            for problem in problems:
+                lines.append(f"  - 第{number}稿：{problem}")
+                lines += [f"    - 原句：{sentence}" for sentence in sources(problem, text)]
     return "\n".join(lines)
 
 

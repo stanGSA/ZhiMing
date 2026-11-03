@@ -162,9 +162,15 @@ class PipelineRunner:
                     if terminal is not None:
                         return self.finish(run, terminal)
                     run.problems.append(problems)
-                    # The texts, not only how many: what a repair or degradation answered.
+                    # The texts, not only how many: what a repair or degradation answered,
+                    # with the draft itself, so a refused word can be read in its sentence.
+                    # Kept out of run.problems: the safety rules read those texts.
                     self.stage(
-                        "problems", run_id=run.run_id, draft=len(run.drafts), problems=problems
+                        "problems",
+                        run_id=run.run_id,
+                        draft=len(run.drafts),
+                        problems=problems,
+                        text=draft_text,
                     )
                 if run.repairs >= MAX_REPAIRS:
                     break

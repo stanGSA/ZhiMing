@@ -111,6 +111,8 @@ def grams(text: str) -> list[str]:
     return [text[i : i + 2] for i in range(len(text) - 1) if " " not in text[i : i + 2]]
 
 
+# Negation, degree or duration: what the extraction should fold into a symbol, not list.
+STATE = re.compile(r"不|没|未|一直|总是|到处")
 SENTENCE = re.compile(r"[^。！？!?]{4,120}[。！？!?]")
 MAX_SYMBOLS = 12
 NO_DREAM = "请描述一下梦里的内容：出现了哪些人、物或场景，发生了什么，醒来时是什么感受。"
@@ -194,6 +196,11 @@ class Dream(System):
                 if len(phrase) > 12:
                     continue
                 symbol = phrase
+            if STATE.search(symbol) and self.matcher.match(symbol)["key"] is None:
+                # 不敢下去, 没复习, 一直跑: a reaction or state, not a symbol to report as
+                # unmatched (DREAM_EXTRACT says so; code holds to it). Interpreting it is
+                # still refused as content outside the fact sheet.
+                continue
             if symbol in seen:
                 continue
             seen.add(symbol)
