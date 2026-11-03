@@ -13,6 +13,10 @@ import re
 from common.facts import public_texts
 from plugins.dream.match import NORMALISATIONS
 
+# Only entity-free constructions can authorise alternative output phrases. A lookup
+# rule such as 被追 also names different pursuers, which must remain independently grounded.
+OUTPUT_NORMALISATIONS = {"掉牙": NORMALISATIONS["掉牙"]}
+
 PROPHECY = re.compile(r"预示|预兆|征兆|兆头|预言|将会发生|会发生|一定会|必定|必然会|注定")
 NEGATION = re.compile(r"不|非|没有|无|并未|别")
 UNMATCHED = re.compile(
@@ -110,7 +114,11 @@ def ungrounded(clause, matcher, hits, misses, *, aliases=None, phrases=None):
             mentions.append((start, end, term, key))
     bound = [(re.escape(phrase), key) for phrase, key in (phrases or {}).items()]
     # The same controlled construction in other words (一颗颗 for 一颗一颗) is that hit too.
-    bound += [(NORMALISATIONS[key].pattern, key) for key in set((phrases or {}).values())]
+    bound += [
+        (OUTPUT_NORMALISATIONS[key].pattern, key)
+        for key in set((phrases or {}).values())
+        if key in OUTPUT_NORMALISATIONS
+    ]
     for pattern, key in bound:
         for match in re.finditer(pattern, clause):
             # Only the recognised construction is one object, not its whole source phrase.

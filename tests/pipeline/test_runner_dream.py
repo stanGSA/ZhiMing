@@ -921,3 +921,15 @@ async def test_the_r4_teeth_variant_is_the_matched_symbol(make):
     info = outcome.data["pipeline"]
     assert (outcome.status, info["repairs"], info["degraded"]) == ("submit_reading", 0, None)
     assert text in outcome.text
+
+
+@pytest.mark.parametrize("text", ["被老虎追象征最近的压力。", "梦里的“被老虎追”象征压力。"])
+async def test_a_normalised_chase_does_not_authorise_another_pursuer(make, text):
+    symbols = [{"phrase": "被一条大狗追", "symbol": "被追"}]
+    runtime, *_ = make(extraction(symbols), with_layer(text), written)
+    outcome = await runtime.turn("帮我解梦：梦见被一条大狗追，醒来很慌。")
+    info = outcome.data["pipeline"]
+    assert outcome.status == "submit_reading"
+    assert (info["repairs"], info["degraded"]) == (1, None)
+    assert "不是本次命中的意象" in info["problems"][0][0]
+    assert text not in outcome.text

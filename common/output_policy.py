@@ -94,7 +94,10 @@ SUBJECT_START = re.compile(rf"(?:{PRONOUNS}|{DEMONSTRATIVE})")
 NEGATED_NOUN = re.compile(
     r"(?:不是|并不是|并非|绝非)(?:一种|一个)$"
     r"|(?:没有|并没有)(?:什么|哪种|哪个|任何)(?:结果|事情|事|结局)?(?:是|会是)$"
-    r"|(?:不必|不要|别|不用|不是|并不是|并非)把[^，,。；;！!？?\n]{0,8}?"
+    # A controlled object cannot swallow another predicate or instruction before the frame.
+    r"|(?:不必|不要|别|不用|不是|并不是|并非)把"
+    r"(?:它们?|这(?:些|张牌)?|那(?:些|张牌)?|牌面|"
+    r"[这那](?:个|种|些|件)?(?:数理|结果|意象|梦境|梦|牌面|牌|事件|趋势))?"
     r"(?:理解为|理解成|看作|看成|当作|当成|视为|想成|解读为|解读成)$"
 )
 CLAUSE_START = re.compile(r".*[，,。；;：:！!？?\n]")

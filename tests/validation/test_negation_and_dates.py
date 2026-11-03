@@ -473,6 +473,9 @@ def test_declining_to_read_it_as_certain_is_not_a_certainty_claim(text):
         "它必然遭遇坎坷。",
         "不要把钱都投进去，理解成必然的收益。",
         "这不是把它理解成必然，而是你一定会成功。",
+        "不要把它当作偶然应理解成必然的结果。",
+        "别把它想复杂了应看成必然的结果。",
+        "不是把它理解成偶然是看成必然的结果。",
     ],
 )
 def test_a_certainty_claim_beside_such_a_negation_is_still_refused(text):

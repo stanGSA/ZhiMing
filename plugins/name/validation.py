@@ -12,12 +12,15 @@ import re
 from common.facts import public_texts, rendered_texts
 
 NUMBER = r"(?:\d+|[零〇一二两三四五六七八九十百]+)"
-# A Chinese numeral that counts something else is no grid value: 五格, 三项, 一份, 四吉一凶,
-# 三个位置. Numerals are excluded after it too, so 二十三项 cannot backtrack into 二十.
-# Arabic digits are not counts in this prose (人格23吉 is still a claim).
+# Recognise counts without suppressing a value followed by its classification (二十四吉).
+# 五格/五行/三才 are words, including immediately after a number. Never backtrack into
+# a shorter numeral to escape a counter: 二十三项 must not be read as 二十.
 CLAIMED = (
-    r"(?:\d+(?!\d)|[零〇一二两三四五六七八九十百]+"
-    r"(?![零〇一二两三四五六七八九十百格项个份位种条点成吉凶才行组类次层者样]))"
+    r"(?:\d+(?!\d)|"
+    r"(?!五格|三才|[零〇一二两三四五]吉[零〇一二两三四五]凶)"
+    r"(?:(?!五行|五格|三才)[零〇一二两三四五六七八九十百])+"
+    r"(?!(?!五行|五格|三才)[零〇一二两三四五六七八九十百])"
+    r"(?![项个份位种条组类次层]))"
 )
 GRID = re.compile(
     rf"(天格|人格|地格|外格|总格)(?:数理|数)?\s*(?:为|是|=|：|:|得|共)?\s*({CLAIMED})"

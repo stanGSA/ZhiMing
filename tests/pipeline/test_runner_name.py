@@ -429,7 +429,18 @@ async def test_the_r4_counted_numbers_are_not_read_as_grid_values(make):
 
 
 @pytest.mark.parametrize(
-    "claim", ["另外人格24也很好。", "人格是二十四。", "人格24吉。", "总格五，"]
+    "claim",
+    [
+        "另外人格24也很好。",
+        "人格是二十四。",
+        "人格24吉。",
+        "总格五，",
+        "人格二十四吉。",
+        "人格二十四凶。",
+        "数理二十四凶。",
+        "人格二十四五行属火。",
+        "人格二十四格。",
+    ],
 )
 async def test_a_wrong_grid_value_is_still_caught_beside_counts(make, claim):
     text = "".join(R4_COUNTS) + claim
@@ -437,3 +448,14 @@ async def test_a_wrong_grid_value_is_still_caught_beside_counts(make, claim):
     outcome = await runtime.turn("我叫王小明，想知道这个名字的三才配置说明什么。")
     assert outcome.data["pipeline"]["repairs"] == 1
     assert "与本次计算不符" in outcome.data["pipeline"]["problems"][0][0]
+
+
+async def test_correct_chinese_values_and_genuine_counts_can_share_a_draft(make):
+    text = (
+        "人格二十二吉，数理二十二吉，人格二十二五行属木。总格二十三项仅指列表长度。数理四吉一凶。"
+    )
+    runtime, *_ = make(lambda m: written(m, extra=text))
+    outcome = await runtime.turn("张伟这个名字的五格怎么样？")
+    assert outcome.status == "submit_reading"
+    assert outcome.data["pipeline"]["repairs"] == 0
+    assert text in outcome.text
