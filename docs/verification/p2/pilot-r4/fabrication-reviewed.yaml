@@ -1,0 +1,15 @@
+# 助手按用户要求复核原答、评委理由及计算事实；不改原始评分。
+# 仅分类已提交且原 no_fabricated_facts=false 的回答；一条可兼有两类。
+Dream-single: {}
+Dream-pipeline: {}
+Name-single:
+  name_compound_surname#2: [事实类, 叙述类]
+Name-pipeline: {}
+Daily-single:
+  daily_today_general#1: [事实类, 叙述类]
+  daily_unknown_birth_time#1: [事实类, 叙述类]
+  daily_today_general#2: [事实类]
+  daily_unknown_birth_time#2: [叙述类]
+  daily_today_general#3: [事实类, 叙述类]
+  daily_lucky_color#3: [事实类, 叙述类]
+Daily-pipeline: {}
