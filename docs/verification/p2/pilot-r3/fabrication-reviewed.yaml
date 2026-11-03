@@ -1,0 +1,27 @@
+# 助手按用户要求结合原回答、评委理由与计算事实复核；不是新增人工校准。
+# 只分类原始 no_fabricated_facts=false 的已提交回答，不改原始布尔评分。
+# 一条可同时计入事实类和叙述类，但失败总数仅计一次。
+Dream-single: {}
+Dream-pipeline: {}
+Name-single: {}
+Name-pipeline: {}
+Daily-single:
+  daily_today_general#1:
+    - 叙述类
+  daily_today_family#1:
+    - 事实类
+    - 叙述类
+  daily_today_family#2:
+    - 事实类
+    - 叙述类
+  daily_today_general#3:
+    - 事实类
+    - 叙述类
+  daily_tomorrow_work#3:
+    - 事实类
+    - 叙述类
+  daily_today_family#3:
+    - 叙述类
+  daily_unknown_birth_time#3:
+    - 叙述类
+Daily-pipeline: {}
