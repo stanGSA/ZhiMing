@@ -12,11 +12,20 @@ import re
 from common.facts import public_texts, rendered_texts
 
 NUMBER = r"(?:\d+|[零〇一二两三四五六七八九十百]+)"
-GRID = re.compile(rf"(天格|人格|地格|外格|总格)(?:数理|数)?\s*(?:为|是|=|：|:|得|共)?\s*({NUMBER})")
+# A Chinese numeral that counts something else is no grid value: 五格, 三项, 一份, 四吉一凶,
+# 三个位置. Numerals are excluded after it too, so 二十三项 cannot backtrack into 二十.
+# Arabic digits are not counts in this prose (人格23吉 is still a claim).
+CLAIMED = (
+    r"(?:\d+(?!\d)|[零〇一二两三四五六七八九十百]+"
+    r"(?![零〇一二两三四五六七八九十百格项个份位种条点成吉凶才行组类次层者样]))"
+)
+GRID = re.compile(
+    rf"(天格|人格|地格|外格|总格)(?:数理|数)?\s*(?:为|是|=|：|:|得|共)?\s*({CLAIMED})"
+)
 STROKE = re.compile(
     rf"[「“\"《【]?([㐀-鿿])[」”\"》】]?(?:字)?\s*(?:按|为|是|计|算|作|有|共)?\s*(?:康熙)?(?:笔画)?\s*({NUMBER})\s*画"
 )
-SHULI = re.compile(rf"数理(?:数)?\s*(?:为|是|=|：|:)?\s*({NUMBER})")
+SHULI = re.compile(rf"数理(?:数)?\s*(?:为|是|=|：|:)?\s*({CLAIMED})")
 TOTAL_STROKES = re.compile(rf"(?:总笔画|笔画总数)\s*(?:为|是|共|计|：|:)?\s*({NUMBER})\s*画")
 SANCAI = re.compile(r"三才(?:配置|组合|五行)?\s*(?:为|是|：|:)?\s*[「“【]?([木火土金水]{3})")
 FATALISM = re.compile(

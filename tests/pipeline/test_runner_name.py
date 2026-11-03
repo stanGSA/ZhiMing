@@ -403,3 +403,37 @@ async def test_a_dream_character_inside_a_name_does_not_change_the_system(make):
     outcome = await runtime.turn("李梦瑶这个名字的五格怎么样？")
     assert outcome.status == "submit_reading"
     assert outcome.data["reading"]["systems_used"] == ["name"]
+
+
+# ---- P2 r4: numbers that count something else are no grid values ----------------------------
+
+R4_COUNTS = [
+    "整体五格数理四吉一凶。",
+    "人格是五格里最被看重的“自我与做事方式”那一格。",
+    "人格、地格、总格三项都在传统所谓“吉”数里。",
+    "三才是看天格、人格、地格三个位置尾数对应的五行关系。",
+    "只有外格一项提示波折。",
+    "名字的数理是一份自我观察的线索。",
+]
+
+
+async def test_the_r4_counted_numbers_are_not_read_as_grid_values(make):
+    """r4 name_three_character#3 degraded twice on 外格一项 and 数理是一份 (and single ran
+    out of retries on the other sentences): each was read as a wrong grid value."""
+    text = "".join(R4_COUNTS)
+    runtime, _, events = make(lambda m: written(m, extra=text))
+    outcome = await runtime.turn("我叫王小明，想知道这个名字的三才配置说明什么。")
+    info = outcome.data["pipeline"]
+    assert (outcome.status, info["repairs"], info["degraded"]) == ("submit_reading", 0, None)
+    assert planned(events).count("submit_reading") == 1
+
+
+@pytest.mark.parametrize(
+    "claim", ["另外人格24也很好。", "人格是二十四。", "人格24吉。", "总格五，"]
+)
+async def test_a_wrong_grid_value_is_still_caught_beside_counts(make, claim):
+    text = "".join(R4_COUNTS) + claim
+    runtime, *_ = make(lambda m: written(m, extra=text), written)
+    outcome = await runtime.turn("我叫王小明，想知道这个名字的三才配置说明什么。")
+    assert outcome.data["pipeline"]["repairs"] == 1
+    assert "与本次计算不符" in outcome.data["pipeline"]["problems"][0][0]
