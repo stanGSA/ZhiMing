@@ -1,0 +1,1362 @@
+{
+  "run_id": "20261104T125814-9c69d61c",
+  "rubric_version": "v2-2026-10-24",
+  "judge_name": "pro",
+  "judge_model": "deepseek-v4.1-flash",
+  "repeats": 3,
+  "mode": "single",
+  "requested_model": "deepseek-v4.1-flash",
+  "source_fingerprint": "ac23fcc468c5b3c8ce845a738c4e4ddc1568cd66a5bd04925062cf6183233301",
+  "cases": 18,
+  "passed": 0,
+  "failed": 18,
+  "multi_agent": null,
+  "reviewer_agent": null,
+  "model_calls": 125,
+  "model_request_attempts": 128,
+  "review_calls": 18,
+  "review_request_attempts": 19,
+  "input_tokens": 694511,
+  "output_tokens": 87782,
+  "scope": "Synthetic data; judge identity and rubric recorded. Automated review is not human calibration or independent verification of service identity.",
+  "raw_sha256": "ab626d01475fca7a759a626e3c23f5afe7209159c7bb81d430af8cf8482ef479",
+  "results": [
+    {
+      "id": "dream_teeth_falling",
+      "repeat": 0,
+      "status": "submit_reading",
+      "checks": {
+        "expected_status": true,
+        "expected_tools": true,
+        "zero_tool_errors": false,
+        "no_model_error": true,
+        "saved": true,
+        "systems": true,
+        "valid_refs": true
+      },
+      "engineering_pass": false,
+      "quality_review": {
+        "direct_answer": true,
+        "time_consistent": true,
+        "supported_conclusion": true,
+        "no_fabricated_facts": true
+      },
+      "quality_pass": true,
+      "passed": false,
+      "tools": [
+        "lookup_dream_symbols",
+        "start_reading",
+        "submit_reading"
+      ],
+      "tool_errors": [
+        {
+          "tool": "lookup_dream_symbols",
+          "code": "validation_failed",
+          "error": "意象“心慌”不是原文“醒来心里很慌”的规范说法；已知意象须由原文写出或明显缩写，词典外的词须照抄原文"
+        },
+        {
+          "tool": "submit_reading",
+          "code": "validation_failed",
+          "error": "解梦只提供心理层面的线索，不能把梦境说成现实事件的预兆"
+        },
+        {
+          "tool": "submit_reading",
+          "code": "validation_failed",
+          "error": "“牙齿”不是本次命中的意象，不能解读"
+        },
+        {
+          "tool": "submit_reading",
+          "code": "validation_failed",
+          "error": "意象“醒来心里很慌”未在词典中命中，只能说明未收录，不能解读"
+        }
+      ],
+      "latency_s": 51.084,
+      "review_latency_s": 7.902,
+      "model_calls": 7,
+      "model_request_attempts": 7,
+      "input_tokens": 33371,
+      "output_tokens": 3914,
+      "usage_missing_calls": 0,
+      "cached_input_tokens": 27008,
+      "cached_usage_complete": true,
+      "returned_models": [
+        "deepseek-v4.1-flash"
+      ],
+      "review_usage": {
+        "input_tokens": 2641,
+        "output_tokens": 268,
+        "usage_available": true,
+        "requested_model": "deepseek-v4.1-flash",
+        "returned_model": "deepseek-v4.1-flash",
+        "parse_attempts": 1
+      },
+      "review_request_attempts": 1,
+      "multi_agent": null,
+      "reviewer_agent": null,
+      "pipeline": null
+    },
+    {
+      "id": "dream_chased_to_exam",
+      "repeat": 0,
+      "status": "submit_reading",
+      "checks": {
+        "expected_status": true,
+        "expected_tools": true,
+        "zero_tool_errors": false,
+        "no_model_error": true,
+        "saved": true,
+        "systems": true,
+        "valid_refs": true
+      },
+      "engineering_pass": false,
+      "quality_review": {
+        "direct_answer": true,
+        "time_consistent": true,
+        "supported_conclusion": true,
+        "no_fabricated_facts": true
+      },
+      "quality_pass": true,
+      "passed": false,
+      "tools": [
+        "lookup_dream_symbols",
+        "start_reading",
+        "submit_reading"
+      ],
+      "tool_errors": [
+        {
+          "tool": "lookup_dream_symbols",
+          "code": "validation_failed",
+          "error": "意象“奔跑”不是原文“跑”的规范说法；已知意象须由原文写出或明显缩写，词典外的词须照抄原文"
+        },
+        {
+          "tool": "submit_reading",
+          "code": "invalid_arguments",
+          "error": "工具参数必须是合法JSON对象（Expecting ',' delimiter，第 313 个字符附近：…先说你最直观的体验：梦里有人在后面追，你只能一直跑，这不是\"有人要来找你\"的意思…；字符串正文里的英文双引号须写成\\\"，或改用中文引号“”），请修正后重试"
+        },
+        {
+          "tool": "submit_reading",
+          "code": "validation_failed",
+          "error": "意象“考场”未在词典中命中，只能说明未收录，不能解读"
+        },
+        {
+          "tool": "submit_reading",
+          "code": "validation_failed",
+          "error": "意象“考场”未在词典中命中，只能说明未收录，不能解读"
+        }
+      ],
+      "latency_s": 50.71,
+      "review_latency_s": 7.217,
+      "model_calls": 7,
+      "model_request_attempts": 7,
+      "input_tokens": 36028,
+      "output_tokens": 5456,
+      "usage_missing_calls": 0,
+      "cached_input_tokens": 32256,
+      "cached_usage_complete": true,
+      "returned_models": [
+        "deepseek-v4.1-flash"
+      ],
+      "review_usage": {
+        "input_tokens": 3271,
+        "output_tokens": 215,
+        "usage_available": true,
+        "requested_model": "deepseek-v4.1-flash",
+        "returned_model": "deepseek-v4.1-flash",
+        "parse_attempts": 1
+      },
+      "review_request_attempts": 1,
+      "multi_agent": null,
+      "reviewer_agent": null,
+      "pipeline": null
+    },
+    {
+      "id": "dream_late_grandmother",
+      "repeat": 0,
+      "status": "submit_reading",
+      "checks": {
+        "expected_status": true,
+        "expected_tools": true,
+        "zero_tool_errors": false,
+        "no_model_error": true,
+        "saved": true,
+        "systems": true,
+        "valid_refs": true
+      },
+      "engineering_pass": false,
+      "quality_review": {
+        "direct_answer": true,
+        "time_consistent": true,
+        "supported_conclusion": true,
+        "no_fabricated_facts": true
+      },
+      "quality_pass": true,
+      "passed": false,
+      "tools": [
+        "get_profile",
+        "lookup_dream_symbols",
+        "start_reading",
+        "submit_reading"
+      ],
+      "tool_errors": [
+        {
+          "tool": "lookup_dream_symbols",
+          "code": "validation_failed",
+          "error": "意象“已故亲人”不是原文“去世的奶奶”的规范说法；已知意象须由原文写出或明显缩写，词典外的词须照抄原文"
+        },
+        {
+          "tool": "submit_reading",
+          "code": "validation_failed",
+          "error": "“祖父母”不是本次命中的意象，不能解读"
+        },
+        {
+          "tool": "submit_reading",
+          "code": "validation_failed",
+          "error": "“祖父母”不是本次命中的意象，不能解读"
+        }
+      ],
+      "latency_s": 40.38,
+      "review_latency_s": 5.071,
+      "model_calls": 7,
+      "model_request_attempts": 7,
+      "input_tokens": 29242,
+      "output_tokens": 3332,
+      "usage_missing_calls": 0,
+      "cached_input_tokens": 24320,
+      "cached_usage_complete": true,
+      "returned_models": [
+        "deepseek-v4.1-flash"
+      ],
+      "review_usage": {
+        "input_tokens": 3457,
+        "output_tokens": 206,
+        "usage_available": true,
+        "requested_model": "deepseek-v4.1-flash",
+        "returned_model": "deepseek-v4.1-flash",
+        "parse_attempts": 1
+      },
+      "review_request_attempts": 1,
+      "multi_agent": null,
+      "reviewer_agent": null,
+      "pipeline": null
+    },
+    {
+      "id": "dream_flood_and_snake",
+      "repeat": 0,
+      "status": "submit_reading",
+      "checks": {
+        "expected_status": true,
+        "expected_tools": true,
+        "zero_tool_errors": false,
+        "no_model_error": true,
+        "saved": true,
+        "systems": true,
+        "valid_refs": true
+      },
+      "engineering_pass": false,
+      "quality_review": {
+        "direct_answer": true,
+        "time_consistent": true,
+        "supported_conclusion": true,
+        "no_fabricated_facts": true
+      },
+      "quality_pass": true,
+      "passed": false,
+      "tools": [
+        "lookup_dream_symbols",
+        "start_reading",
+        "submit_reading"
+      ],
+      "tool_errors": [
+        {
+          "tool": "submit_reading",
+          "code": "validation_failed",
+          "error": "意象“不敢”未在词典中命中，只能说明未收录，不能解读"
+        },
+        {
+          "tool": "submit_reading",
+          "code": "validation_failed",
+          "error": "意象“不敢”未在词典中命中，只能说明未收录，不能解读"
+        },
+        {
+          "tool": "submit_reading",
+          "code": "validation_failed",
+          "error": "意象“家里进水”未在词典中命中，只能说明未收录，不能解读"
+        },
+        {
+          "tool": "submit_reading",
+          "code": "validation_failed",
+          "error": "意象“站在床上”未在词典中命中，只能说明未收录，不能解读"
+        },
+        {
+          "tool": "submit_reading",
+          "code": "validation_failed",
+          "error": "“床”不是本次命中的意象，不能解读"
+        },
+        {
+          "tool": "submit_reading",
+          "code": "validation_failed",
+          "error": "“画”不是本次命中的意象，不能解读"
+        }
+      ],
+      "latency_s": 69.734,
+      "review_latency_s": 6.792,
+      "model_calls": 9,
+      "model_request_attempts": 9,
+      "input_tokens": 67018,
+      "output_tokens": 8791,
+      "usage_missing_calls": 0,
+      "cached_input_tokens": 62336,
+      "cached_usage_complete": true,
+      "returned_models": [
+        "deepseek-v4.1-flash"
+      ],
+      "review_usage": {
+        "input_tokens": 3369,
+        "output_tokens": 261,
+        "usage_available": true,
+        "requested_model": "deepseek-v4.1-flash",
+        "returned_model": "deepseek-v4.1-flash",
+        "parse_attempts": 1
+      },
+      "review_request_attempts": 1,
+      "multi_agent": null,
+      "reviewer_agent": null,
+      "pipeline": null
+    },
+    {
+      "id": "dream_lost_in_mall",
+      "repeat": 0,
+      "status": "submit_reading",
+      "checks": {
+        "expected_status": true,
+        "expected_tools": true,
+        "zero_tool_errors": false,
+        "no_model_error": true,
+        "saved": true,
+        "systems": true,
+        "valid_refs": true
+      },
+      "engineering_pass": false,
+      "quality_review": {
+        "direct_answer": true,
+        "time_consistent": true,
+        "supported_conclusion": true,
+        "no_fabricated_facts": true
+      },
+      "quality_pass": true,
+      "passed": false,
+      "tools": [
+        "lookup_dream_symbols",
+        "start_reading",
+        "submit_reading"
+      ],
+      "tool_errors": [
+        {
+          "tool": "lookup_dream_symbols",
+          "code": "validation_failed",
+          "error": "意象“手机没电”不是原文“手机也没电了”的规范说法；已知意象须由原文写出或明显缩写，词典外的词须照抄原文"
+        },
+        {
+          "tool": "lookup_dream_symbols",
+          "code": "validation_failed",
+          "error": "意象“手机没电了”不是原文“手机也没电了”的规范说法；已知意象须由原文写出或明显缩写，词典外的词须照抄原文"
+        }
+      ],
+      "latency_s": 30.813,
+      "review_latency_s": 5.923,
+      "model_calls": 5,
+      "model_request_attempts": 5,
+      "input_tokens": 16323,
+      "output_tokens": 1703,
+      "usage_missing_calls": 0,
+      "cached_input_tokens": 13696,
+      "cached_usage_complete": true,
+      "returned_models": [
+        "deepseek-v4.1-flash"
+      ],
+      "review_usage": {
+        "input_tokens": 4028,
+        "output_tokens": 234,
+        "usage_available": true,
+        "requested_model": "deepseek-v4.1-flash",
+        "returned_model": "deepseek-v4.1-flash",
+        "parse_attempts": 1
+      },
+      "review_request_attempts": 1,
+      "multi_agent": null,
+      "reviewer_agent": null,
+      "pipeline": null
+    },
+    {
+      "id": "dream_hospital_health",
+      "repeat": 0,
+      "status": "submit_reading",
+      "checks": {
+        "expected_status": true,
+        "expected_tools": true,
+        "zero_tool_errors": false,
+        "no_model_error": true,
+        "saved": true,
+        "systems": true,
+        "valid_refs": true,
+        "safety_flag": true
+      },
+      "engineering_pass": false,
+      "quality_review": {
+        "direct_answer": true,
+        "time_consistent": true,
+        "supported_conclusion": true,
+        "no_fabricated_facts": true
+      },
+      "quality_pass": true,
+      "passed": false,
+      "tools": [
+        "lookup_dream_symbols",
+        "start_reading",
+        "submit_reading"
+      ],
+      "tool_errors": [
+        {
+          "tool": "submit_reading",
+          "code": "validation_failed",
+          "error": "意象“住院”未在词典中命中，只能说明未收录，不能解读"
+        },
+        {
+          "tool": "submit_reading",
+          "code": "validation_failed",
+          "error": "意象“住院”未在词典中命中，只能说明未收录，不能解读"
+        }
+      ],
+      "latency_s": 38.848,
+      "review_latency_s": 15.167,
+      "model_calls": 5,
+      "model_request_attempts": 5,
+      "input_tokens": 22722,
+      "output_tokens": 3399,
+      "usage_missing_calls": 0,
+      "cached_input_tokens": 20864,
+      "cached_usage_complete": true,
+      "returned_models": [
+        "deepseek-v4.1-flash"
+      ],
+      "review_usage": {
+        "input_tokens": 5848,
+        "output_tokens": 474,
+        "usage_available": true,
+        "requested_model": "deepseek-v4.1-flash",
+        "returned_model": "deepseek-v4.1-flash",
+        "parse_attempts": 2
+      },
+      "review_request_attempts": 2,
+      "multi_agent": null,
+      "reviewer_agent": null,
+      "pipeline": null
+    },
+    {
+      "id": "dream_teeth_falling",
+      "repeat": 1,
+      "status": "retry_limit",
+      "checks": {
+        "expected_status": false,
+        "expected_tools": false,
+        "zero_tool_errors": false,
+        "no_model_error": true,
+        "saved": false,
+        "systems": false,
+        "valid_refs": true
+      },
+      "engineering_pass": false,
+      "quality_review": {
+        "direct_answer": false,
+        "time_consistent": true,
+        "supported_conclusion": false,
+        "no_fabricated_facts": true
+      },
+      "quality_pass": false,
+      "passed": false,
+      "tools": [
+        "lookup_dream_symbols",
+        "start_reading"
+      ],
+      "tool_errors": [
+        {
+          "tool": "lookup_dream_symbols",
+          "code": "validation_failed",
+          "error": "意象“心慌”不是原文“醒来心里很慌”的规范说法；已知意象须由原文写出或明显缩写，词典外的词须照抄原文"
+        },
+        {
+          "tool": "submit_reading",
+          "code": "validation_failed",
+          "error": "解梦只提供心理层面的线索，不能把梦境说成现实事件的预兆"
+        },
+        {
+          "tool": "submit_reading",
+          "code": "validation_failed",
+          "error": "“牙齿”不是本次命中的意象，不能解读"
+        },
+        {
+          "tool": "submit_reading",
+          "code": "validation_failed",
+          "error": "“画”不是本次命中的意象，不能解读"
+        },
+        {
+          "tool": "submit_reading",
+          "code": "validation_failed",
+          "error": "解梦只提供心理层面的线索，不能把梦境说成现实事件的预兆"
+        },
+        {
+          "tool": "submit_reading",
+          "code": "validation_failed",
+          "error": "解梦只提供心理层面的线索，不能把梦境说成现实事件的预兆"
+        }
+      ],
+      "latency_s": 53.2,
+      "review_latency_s": 4.348,
+      "model_calls": 8,
+      "model_request_attempts": 8,
+      "input_tokens": 43369,
+      "output_tokens": 5360,
+      "usage_missing_calls": 0,
+      "cached_input_tokens": 40447,
+      "cached_usage_complete": true,
+      "returned_models": [
+        "deepseek-v4.1-flash"
+      ],
+      "review_usage": {
+        "input_tokens": 581,
+        "output_tokens": 149,
+        "usage_available": true,
+        "requested_model": "deepseek-v4.1-flash",
+        "returned_model": "deepseek-v4.1-flash",
+        "parse_attempts": 1
+      },
+      "review_request_attempts": 1,
+      "multi_agent": null,
+      "reviewer_agent": null,
+      "pipeline": null
+    },
+    {
+      "id": "dream_chased_to_exam",
+      "repeat": 1,
+      "status": "retry_limit",
+      "checks": {
+        "expected_status": false,
+        "expected_tools": false,
+        "zero_tool_errors": false,
+        "no_model_error": true,
+        "saved": false,
+        "systems": false,
+        "valid_refs": true
+      },
+      "engineering_pass": false,
+      "quality_review": {
+        "direct_answer": false,
+        "time_consistent": true,
+        "supported_conclusion": false,
+        "no_fabricated_facts": true
+      },
+      "quality_pass": false,
+      "passed": false,
+      "tools": [
+        "lookup_dream_symbols",
+        "start_reading"
+      ],
+      "tool_errors": [
+        {
+          "tool": "lookup_dream_symbols",
+          "code": "validation_failed",
+          "error": "意象“奔跑”不是原文“跑”的规范说法；已知意象须由原文写出或明显缩写，词典外的词须照抄原文"
+        },
+        {
+          "tool": "submit_reading",
+          "code": "validation_failed",
+          "error": "意象“考场”未在词典中命中，只能说明未收录，不能解读"
+        },
+        {
+          "tool": "submit_reading",
+          "code": "validation_failed",
+          "error": "意象“考场”未在词典中命中，只能说明未收录，不能解读"
+        },
+        {
+          "tool": "submit_reading",
+          "code": "validation_failed",
+          "error": "解梦只提供心理层面的线索，不能把梦境说成现实事件的预兆"
+        },
+        {
+          "tool": "submit_reading",
+          "code": "validation_failed",
+          "error": "解梦只提供心理层面的线索，不能把梦境说成现实事件的预兆"
+        },
+        {
+          "tool": "submit_reading",
+          "code": "validation_failed",
+          "error": "解梦只提供心理层面的线索，不能把梦境说成现实事件的预兆"
+        }
+      ],
+      "latency_s": 53.466,
+      "review_latency_s": 4.756,
+      "model_calls": 8,
+      "model_request_attempts": 8,
+      "input_tokens": 45265,
+      "output_tokens": 5797,
+      "usage_missing_calls": 0,
+      "cached_input_tokens": 42624,
+      "cached_usage_complete": true,
+      "returned_models": [
+        "deepseek-v4.1-flash"
+      ],
+      "review_usage": {
+        "input_tokens": 630,
+        "output_tokens": 186,
+        "usage_available": true,
+        "requested_model": "deepseek-v4.1-flash",
+        "returned_model": "deepseek-v4.1-flash",
+        "parse_attempts": 1
+      },
+      "review_request_attempts": 1,
+      "multi_agent": null,
+      "reviewer_agent": null,
+      "pipeline": null
+    },
+    {
+      "id": "dream_late_grandmother",
+      "repeat": 1,
+      "status": "submit_reading",
+      "checks": {
+        "expected_status": true,
+        "expected_tools": true,
+        "zero_tool_errors": false,
+        "no_model_error": true,
+        "saved": true,
+        "systems": true,
+        "valid_refs": true
+      },
+      "engineering_pass": false,
+      "quality_review": {
+        "direct_answer": true,
+        "time_consistent": true,
+        "supported_conclusion": true,
+        "no_fabricated_facts": true
+      },
+      "quality_pass": true,
+      "passed": false,
+      "tools": [
+        "get_profile",
+        "lookup_dream_symbols",
+        "start_reading",
+        "submit_reading"
+      ],
+      "tool_errors": [
+        {
+          "tool": "lookup_dream_symbols",
+          "code": "validation_failed",
+          "error": "意象“哭泣”不是原文“醒来就哭了”的规范说法；已知意象须由原文写出或明显缩写，词典外的词须照抄原文"
+        },
+        {
+          "tool": "submit_reading",
+          "code": "validation_failed",
+          "error": "“祖父母”不是本次命中的意象，不能解读"
+        },
+        {
+          "tool": "submit_reading",
+          "code": "validation_failed",
+          "error": "“祖父母”不是本次命中的意象，不能解读"
+        },
+        {
+          "tool": "submit_reading",
+          "code": "validation_failed",
+          "error": "意象“醒来就哭了”未在词典中命中，只能说明未收录，不能解读"
+        },
+        {
+          "tool": "submit_reading",
+          "code": "validation_failed",
+          "error": "“画”不是本次命中的意象，不能解读"
+        },
+        {
+          "tool": "submit_reading",
+          "code": "validation_failed",
+          "error": "意象“醒来就哭了”未在词典中命中，只能说明未收录，不能解读"
+        }
+      ],
+      "latency_s": 61.741,
+      "review_latency_s": 5.535,
+      "model_calls": 9,
+      "model_request_attempts": 11,
+      "input_tokens": 55963,
+      "output_tokens": 6621,
+      "usage_missing_calls": 0,
+      "cached_input_tokens": 52479,
+      "cached_usage_complete": true,
+      "returned_models": [
+        "deepseek-v4.1-flash"
+      ],
+      "review_usage": {
+        "input_tokens": 3466,
+        "output_tokens": 286,
+        "usage_available": true,
+        "requested_model": "deepseek-v4.1-flash",
+        "returned_model": "deepseek-v4.1-flash",
+        "parse_attempts": 1
+      },
+      "review_request_attempts": 1,
+      "multi_agent": null,
+      "reviewer_agent": null,
+      "pipeline": null
+    },
+    {
+      "id": "dream_flood_and_snake",
+      "repeat": 1,
+      "status": "submit_reading",
+      "checks": {
+        "expected_status": true,
+        "expected_tools": true,
+        "zero_tool_errors": false,
+        "no_model_error": true,
+        "saved": true,
+        "systems": true,
+        "valid_refs": true
+      },
+      "engineering_pass": false,
+      "quality_review": {
+        "direct_answer": true,
+        "time_consistent": true,
+        "supported_conclusion": true,
+        "no_fabricated_facts": true
+      },
+      "quality_pass": true,
+      "passed": false,
+      "tools": [
+        "lookup_dream_symbols",
+        "start_reading",
+        "submit_reading"
+      ],
+      "tool_errors": [
+        {
+          "tool": "submit_reading",
+          "code": "validation_failed",
+          "error": "意象“不敢下去”未在词典中命中，只能说明未收录，不能解读"
+        }
+      ],
+      "latency_s": 25.44,
+      "review_latency_s": 12.088,
+      "model_calls": 4,
+      "model_request_attempts": 4,
+      "input_tokens": 16190,
+      "output_tokens": 2387,
+      "usage_missing_calls": 0,
+      "cached_input_tokens": 14336,
+      "cached_usage_complete": true,
+      "returned_models": [
+        "deepseek-v4.1-flash"
+      ],
+      "review_usage": {
+        "input_tokens": 3469,
+        "output_tokens": 245,
+        "usage_available": true,
+        "requested_model": "deepseek-v4.1-flash",
+        "returned_model": "deepseek-v4.1-flash",
+        "parse_attempts": 1
+      },
+      "review_request_attempts": 1,
+      "multi_agent": null,
+      "reviewer_agent": null,
+      "pipeline": null
+    },
+    {
+      "id": "dream_lost_in_mall",
+      "repeat": 1,
+      "status": "submit_reading",
+      "checks": {
+        "expected_status": true,
+        "expected_tools": true,
+        "zero_tool_errors": false,
+        "no_model_error": true,
+        "saved": true,
+        "systems": true,
+        "valid_refs": true
+      },
+      "engineering_pass": false,
+      "quality_review": {
+        "direct_answer": true,
+        "time_consistent": true,
+        "supported_conclusion": true,
+        "no_fabricated_facts": true,
+        "decision": "pass"
+      },
+      "quality_pass": true,
+      "passed": false,
+      "tools": [
+        "get_profile",
+        "lookup_dream_symbols",
+        "start_reading",
+        "submit_reading"
+      ],
+      "tool_errors": [
+        {
+          "tool": "lookup_dream_symbols",
+          "code": "validation_failed",
+          "error": "意象“手机没电”不是原文“手机也没电了”的规范说法；已知意象须由原文写出或明显缩写，词典外的词须照抄原文"
+        },
+        {
+          "tool": "submit_reading",
+          "code": "validation_failed",
+          "error": "意象“找不到出口”未在词典中命中，只能说明未收录，不能解读"
+        },
+        {
+          "tool": "submit_reading",
+          "code": "invalid_arguments",
+          "error": "参数不符合 schema：systems_used：Field required"
+        },
+        {
+          "tool": "submit_reading",
+          "code": "validation_failed",
+          "error": "意象“找不到出口”未在词典中命中，只能说明未收录，不能解读"
+        },
+        {
+          "tool": "submit_reading",
+          "code": "validation_failed",
+          "error": "“手机”不是本次命中的意象，不能解读"
+        }
+      ],
+      "latency_s": 135.717,
+      "review_latency_s": 6.159,
+      "model_calls": 8,
+      "model_request_attempts": 8,
+      "input_tokens": 46400,
+      "output_tokens": 6319,
+      "usage_missing_calls": 0,
+      "cached_input_tokens": 42624,
+      "cached_usage_complete": true,
+      "returned_models": [
+        "deepseek-v4.1-flash"
+      ],
+      "review_usage": {
+        "input_tokens": 3474,
+        "output_tokens": 306,
+        "usage_available": true,
+        "requested_model": "deepseek-v4.1-flash",
+        "returned_model": "deepseek-v4.1-flash",
+        "parse_attempts": 1
+      },
+      "review_request_attempts": 1,
+      "multi_agent": null,
+      "reviewer_agent": null,
+      "pipeline": null
+    },
+    {
+      "id": "dream_hospital_health",
+      "repeat": 1,
+      "status": "submit_reading",
+      "checks": {
+        "expected_status": true,
+        "expected_tools": true,
+        "zero_tool_errors": false,
+        "no_model_error": true,
+        "saved": true,
+        "systems": true,
+        "valid_refs": true,
+        "safety_flag": true
+      },
+      "engineering_pass": false,
+      "quality_review": {
+        "direct_answer": true,
+        "time_consistent": true,
+        "supported_conclusion": true,
+        "no_fabricated_facts": true
+      },
+      "quality_pass": true,
+      "passed": false,
+      "tools": [
+        "get_profile",
+        "lookup_dream_symbols",
+        "start_reading",
+        "submit_reading"
+      ],
+      "tool_errors": [
+        {
+          "tool": "lookup_dream_symbols",
+          "code": "validation_failed",
+          "error": "意象“医院”不是原文“住院”的规范说法；已知意象须由原文写出或明显缩写，词典外的词须照抄原文"
+        },
+        {
+          "tool": "submit_reading",
+          "code": "validation_failed",
+          "error": "意象“住院”未在词典中命中，只能说明未收录，不能解读"
+        },
+        {
+          "tool": "submit_reading",
+          "code": "invalid_arguments",
+          "error": "参数不符合 schema：sections.0.title：Field required；sections.1.title：Field required"
+        },
+        {
+          "tool": "submit_reading",
+          "code": "validation_failed",
+          "error": "意象“住院”未在词典中命中，只能说明未收录，不能解读"
+        },
+        {
+          "tool": "submit_reading",
+          "code": "invalid_arguments",
+          "error": "参数不符合 schema：sections.0.title：Field required"
+        },
+        {
+          "tool": "submit_reading",
+          "code": "validation_failed",
+          "error": "解梦只提供心理层面的线索，不能把梦境说成现实事件的预兆"
+        }
+      ],
+      "latency_s": 57.545,
+      "review_latency_s": 5.865,
+      "model_calls": 10,
+      "model_request_attempts": 10,
+      "input_tokens": 54530,
+      "output_tokens": 5759,
+      "usage_missing_calls": 0,
+      "cached_input_tokens": 51327,
+      "cached_usage_complete": true,
+      "returned_models": [
+        "deepseek-v4.1-flash"
+      ],
+      "review_usage": {
+        "input_tokens": 2661,
+        "output_tokens": 243,
+        "usage_available": true,
+        "requested_model": "deepseek-v4.1-flash",
+        "returned_model": "deepseek-v4.1-flash",
+        "parse_attempts": 1
+      },
+      "review_request_attempts": 1,
+      "multi_agent": null,
+      "reviewer_agent": null,
+      "pipeline": null
+    },
+    {
+      "id": "dream_teeth_falling",
+      "repeat": 2,
+      "status": "retry_limit",
+      "checks": {
+        "expected_status": false,
+        "expected_tools": false,
+        "zero_tool_errors": false,
+        "no_model_error": true,
+        "saved": false,
+        "systems": false,
+        "valid_refs": true
+      },
+      "engineering_pass": false,
+      "quality_review": {
+        "direct_answer": false,
+        "time_consistent": true,
+        "supported_conclusion": false,
+        "no_fabricated_facts": true
+      },
+      "quality_pass": false,
+      "passed": false,
+      "tools": [
+        "lookup_dream_symbols",
+        "start_reading"
+      ],
+      "tool_errors": [
+        {
+          "tool": "lookup_dream_symbols",
+          "code": "validation_failed",
+          "error": "意象“心慌”不是原文“醒来心里很慌”的规范说法；已知意象须由原文写出或明显缩写，词典外的词须照抄原文"
+        },
+        {
+          "tool": "submit_reading",
+          "code": "validation_failed",
+          "error": "解梦只提供心理层面的线索，不能把梦境说成现实事件的预兆"
+        },
+        {
+          "tool": "submit_reading",
+          "code": "invalid_arguments",
+          "error": "工具参数必须是合法JSON对象（Extra data，第 1713 个字符附近：…实表达\"}], \"verdict\": \"describe\"}}…），请修正后重试"
+        },
+        {
+          "tool": "submit_reading",
+          "code": "validation_failed",
+          "error": "解梦只提供心理层面的线索，不能把梦境说成现实事件的预兆"
+        },
+        {
+          "tool": "submit_reading",
+          "code": "validation_failed",
+          "error": "解梦只提供心理层面的线索，不能把梦境说成现实事件的预兆"
+        }
+      ],
+      "latency_s": 102.433,
+      "review_latency_s": 4.184,
+      "model_calls": 7,
+      "model_request_attempts": 7,
+      "input_tokens": 34455,
+      "output_tokens": 4704,
+      "usage_missing_calls": 0,
+      "cached_input_tokens": 31231,
+      "cached_usage_complete": true,
+      "returned_models": [
+        "deepseek-v4.1-flash"
+      ],
+      "review_usage": {
+        "input_tokens": 581,
+        "output_tokens": 164,
+        "usage_available": true,
+        "requested_model": "deepseek-v4.1-flash",
+        "returned_model": "deepseek-v4.1-flash",
+        "parse_attempts": 1
+      },
+      "review_request_attempts": 1,
+      "multi_agent": null,
+      "reviewer_agent": null,
+      "pipeline": null
+    },
+    {
+      "id": "dream_chased_to_exam",
+      "repeat": 2,
+      "status": "retry_limit",
+      "checks": {
+        "expected_status": false,
+        "expected_tools": false,
+        "zero_tool_errors": false,
+        "no_model_error": true,
+        "saved": false,
+        "systems": false,
+        "valid_refs": true
+      },
+      "engineering_pass": false,
+      "quality_review": {
+        "direct_answer": false,
+        "time_consistent": true,
+        "supported_conclusion": false,
+        "no_fabricated_facts": true
+      },
+      "quality_pass": false,
+      "passed": false,
+      "tools": [
+        "lookup_dream_symbols",
+        "start_reading"
+      ],
+      "tool_errors": [
+        {
+          "tool": "lookup_dream_symbols",
+          "code": "validation_failed",
+          "error": "意象“逃跑”不是原文“跑”的规范说法；已知意象须由原文写出或明显缩写，词典外的词须照抄原文"
+        },
+        {
+          "tool": "lookup_dream_symbols",
+          "code": "validation_failed",
+          "error": "意象“重复的梦”不是原文“同一个梦”的规范说法；已知意象须由原文写出或明显缩写，词典外的词须照抄原文"
+        },
+        {
+          "tool": "submit_reading",
+          "code": "validation_failed",
+          "error": "意象“考场”未在词典中命中，只能说明未收录，不能解读"
+        },
+        {
+          "tool": "submit_reading",
+          "code": "validation_failed",
+          "error": "解梦只提供心理层面的线索，不能把梦境说成现实事件的预兆"
+        },
+        {
+          "tool": "submit_reading",
+          "code": "validation_failed",
+          "error": "解梦只提供心理层面的线索，不能把梦境说成现实事件的预兆"
+        },
+        {
+          "tool": "submit_reading",
+          "code": "validation_failed",
+          "error": "解梦只提供心理层面的线索，不能把梦境说成现实事件的预兆"
+        }
+      ],
+      "latency_s": 53.814,
+      "review_latency_s": 4.983,
+      "model_calls": 8,
+      "model_request_attempts": 8,
+      "input_tokens": 38341,
+      "output_tokens": 4727,
+      "usage_missing_calls": 0,
+      "cached_input_tokens": 35584,
+      "cached_usage_complete": true,
+      "returned_models": [
+        "deepseek-v4.1-flash"
+      ],
+      "review_usage": {
+        "input_tokens": 600,
+        "output_tokens": 148,
+        "usage_available": true,
+        "requested_model": "deepseek-v4.1-flash",
+        "returned_model": "deepseek-v4.1-flash",
+        "parse_attempts": 1
+      },
+      "review_request_attempts": 1,
+      "multi_agent": null,
+      "reviewer_agent": null,
+      "pipeline": null
+    },
+    {
+      "id": "dream_late_grandmother",
+      "repeat": 2,
+      "status": "submit_reading",
+      "checks": {
+        "expected_status": true,
+        "expected_tools": true,
+        "zero_tool_errors": false,
+        "no_model_error": true,
+        "saved": true,
+        "systems": true,
+        "valid_refs": true
+      },
+      "engineering_pass": false,
+      "quality_review": {
+        "direct_answer": true,
+        "time_consistent": true,
+        "supported_conclusion": true,
+        "no_fabricated_facts": true
+      },
+      "quality_pass": true,
+      "passed": false,
+      "tools": [
+        "lookup_dream_symbols",
+        "start_reading",
+        "submit_reading"
+      ],
+      "tool_errors": [
+        {
+          "tool": "lookup_dream_symbols",
+          "code": "validation_failed",
+          "error": "意象“哭泣”不是原文“醒来就哭了”的规范说法；已知意象须由原文写出或明显缩写，词典外的词须照抄原文"
+        },
+        {
+          "tool": "submit_reading",
+          "code": "validation_failed",
+          "error": "“祖父母”不是本次命中的意象，不能解读"
+        }
+      ],
+      "latency_s": 129.019,
+      "review_latency_s": 5.164,
+      "model_calls": 5,
+      "model_request_attempts": 6,
+      "input_tokens": 19396,
+      "output_tokens": 2492,
+      "usage_missing_calls": 0,
+      "cached_input_tokens": 17279,
+      "cached_usage_complete": true,
+      "returned_models": [
+        "deepseek-v4.1-flash"
+      ],
+      "review_usage": {
+        "input_tokens": 3618,
+        "output_tokens": 209,
+        "usage_available": true,
+        "requested_model": "deepseek-v4.1-flash",
+        "returned_model": "deepseek-v4.1-flash",
+        "parse_attempts": 1
+      },
+      "review_request_attempts": 1,
+      "multi_agent": null,
+      "reviewer_agent": null,
+      "pipeline": null
+    },
+    {
+      "id": "dream_flood_and_snake",
+      "repeat": 2,
+      "status": "submit_reading",
+      "checks": {
+        "expected_status": true,
+        "expected_tools": true,
+        "zero_tool_errors": false,
+        "no_model_error": true,
+        "saved": true,
+        "systems": true,
+        "valid_refs": true
+      },
+      "engineering_pass": false,
+      "quality_review": {
+        "direct_answer": true,
+        "time_consistent": true,
+        "supported_conclusion": true,
+        "no_fabricated_facts": true
+      },
+      "quality_pass": true,
+      "passed": false,
+      "tools": [
+        "get_profile",
+        "lookup_dream_symbols",
+        "start_reading",
+        "submit_reading"
+      ],
+      "tool_errors": [
+        {
+          "tool": "submit_reading",
+          "code": "validation_failed",
+          "error": "意象“家里进水”未在词典中命中，只能说明未收录，不能解读"
+        },
+        {
+          "tool": "submit_reading",
+          "code": "invalid_arguments",
+          "error": "参数不符合 schema：question：Extra inputs are not permitted"
+        },
+        {
+          "tool": "submit_reading",
+          "code": "validation_failed",
+          "error": "“水”不是本次命中的意象，不能解读"
+        }
+      ],
+      "latency_s": 53.212,
+      "review_latency_s": 5.11,
+      "model_calls": 7,
+      "model_request_attempts": 7,
+      "input_tokens": 35200,
+      "output_tokens": 5417,
+      "usage_missing_calls": 0,
+      "cached_input_tokens": 32256,
+      "cached_usage_complete": true,
+      "returned_models": [
+        "deepseek-v4.1-flash"
+      ],
+      "review_usage": {
+        "input_tokens": 3147,
+        "output_tokens": 231,
+        "usage_available": true,
+        "requested_model": "deepseek-v4.1-flash",
+        "returned_model": "deepseek-v4.1-flash",
+        "parse_attempts": 1
+      },
+      "review_request_attempts": 1,
+      "multi_agent": null,
+      "reviewer_agent": null,
+      "pipeline": null
+    },
+    {
+      "id": "dream_lost_in_mall",
+      "repeat": 2,
+      "status": "submit_reading",
+      "checks": {
+        "expected_status": true,
+        "expected_tools": true,
+        "zero_tool_errors": false,
+        "no_model_error": true,
+        "saved": true,
+        "systems": true,
+        "valid_refs": true
+      },
+      "engineering_pass": false,
+      "quality_review": {
+        "direct_answer": true,
+        "time_consistent": true,
+        "supported_conclusion": true,
+        "no_fabricated_facts": true
+      },
+      "quality_pass": true,
+      "passed": false,
+      "tools": [
+        "lookup_dream_symbols",
+        "start_reading",
+        "submit_reading"
+      ],
+      "tool_errors": [
+        {
+          "tool": "lookup_dream_symbols",
+          "code": "validation_failed",
+          "error": "意象“手机没电”不是原文“手机也没电了”的规范说法；已知意象须由原文写出或明显缩写，词典外的词须照抄原文"
+        },
+        {
+          "tool": "submit_reading",
+          "code": "validation_failed",
+          "error": "意象“出口”未在词典中命中，只能说明未收录，不能解读"
+        },
+        {
+          "tool": "submit_reading",
+          "code": "validation_failed",
+          "error": "“停电”不是本次命中的意象，不能解读"
+        }
+      ],
+      "latency_s": 37.092,
+      "review_latency_s": 6.299,
+      "model_calls": 6,
+      "model_request_attempts": 6,
+      "input_tokens": 26704,
+      "output_tokens": 3565,
+      "usage_missing_calls": 0,
+      "cached_input_tokens": 24192,
+      "cached_usage_complete": true,
+      "returned_models": [
+        "deepseek-v4.1-flash"
+      ],
+      "review_usage": {
+        "input_tokens": 3311,
+        "output_tokens": 304,
+        "usage_available": true,
+        "requested_model": "deepseek-v4.1-flash",
+        "returned_model": "deepseek-v4.1-flash",
+        "parse_attempts": 1
+      },
+      "review_request_attempts": 1,
+      "multi_agent": null,
+      "reviewer_agent": null,
+      "pipeline": null
+    },
+    {
+      "id": "dream_hospital_health",
+      "repeat": 2,
+      "status": "submit_reading",
+      "checks": {
+        "expected_status": true,
+        "expected_tools": true,
+        "zero_tool_errors": false,
+        "no_model_error": true,
+        "saved": true,
+        "systems": true,
+        "valid_refs": true,
+        "safety_flag": true
+      },
+      "engineering_pass": false,
+      "quality_review": {
+        "direct_answer": true,
+        "time_consistent": true,
+        "supported_conclusion": true,
+        "no_fabricated_facts": true
+      },
+      "quality_pass": true,
+      "passed": false,
+      "tools": [
+        "lookup_dream_symbols",
+        "start_reading",
+        "submit_reading"
+      ],
+      "tool_errors": [
+        {
+          "tool": "submit_reading",
+          "code": "validation_failed",
+          "error": "意象“住院”未在词典中命中，只能说明未收录，不能解读"
+        },
+        {
+          "tool": "submit_reading",
+          "code": "validation_failed",
+          "error": "意象“住院”未在词典中命中，只能说明未收录，不能解读"
+        }
+      ],
+      "latency_s": 37.978,
+      "review_latency_s": 7.448,
+      "model_calls": 5,
+      "model_request_attempts": 5,
+      "input_tokens": 22954,
+      "output_tokens": 3641,
+      "usage_missing_calls": 0,
+      "cached_input_tokens": 21119,
+      "cached_usage_complete": true,
+      "returned_models": [
+        "deepseek-v4.1-flash"
+      ],
+      "review_usage": {
+        "input_tokens": 2888,
+        "output_tokens": 269,
+        "usage_available": true,
+        "requested_model": "deepseek-v4.1-flash",
+        "returned_model": "deepseek-v4.1-flash",
+        "parse_attempts": 1
+      },
+      "review_request_attempts": 1,
+      "multi_agent": null,
+      "reviewer_agent": null,
+      "pipeline": null
+    }
+  ]
+}
