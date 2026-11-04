@@ -23,7 +23,7 @@ from pipeline.render import safety_for
 from pipeline.state import RESUMABLE
 from pipeline.system import System
 from plugins.dream.match import NORMALISATIONS
-from plugins.dream.validation import phrase_aliases, phrase_hits, text_error
+from plugins.dream.validation import OUTPUT_NORMALISATIONS, phrase_aliases, phrase_hits, text_error
 
 DREAM = re.compile(
     r"梦见|梦到|梦里|梦中|做梦|做.{0,8}?个梦|做了.{0,8}梦|噩梦|梦境|解梦|的梦|[这那]个梦"
@@ -353,13 +353,22 @@ class Dream(System):
         outside the matched symbols' words and a short list of common words.
         """
         terms = self.hit_terms(session)
-        dream = strip(told(session.state.get("question") or ""), terms)
+        keys = {hit["key"] for hit in self.result(session.state)["hits"]}
+        constructs = [rule for key, rule in OUTPUT_NORMALISATIONS.items() if key in keys]
+
+        def strip_hits(text: str) -> str:
+            # A matched symbol's controlled construction (找不到出口 for 迷路) is that symbol.
+            for rule in constructs:
+                text = rule.sub(" ", text)
+            return strip(text, terms)
+
+        dream = strip_hits(told(session.state.get("question") or ""))
         # What the fact sheet itself says about a hit (手机: “没电或损坏”) is in the fact sheet.
         sheet = {gram for fact in self.facts(session) for gram in grams(fact.line)}
         described = {gram for gram in grams(dream) if gram not in COMMON_GRAMS | sheet}
 
         def other(text: str) -> str:
-            rest = GENERIC.sub(" ", FEELING_REFERENCE.sub(" ", strip(text, terms)))
+            rest = GENERIC.sub(" ", FEELING_REFERENCE.sub(" ", strip_hits(text)))
             rest = CONNECTORS.sub(" ", rest)
             return next((run for run in HAN_RUN.findall(rest) if set(grams(run)) & described), "")
 

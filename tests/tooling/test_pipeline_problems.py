@@ -146,3 +146,8 @@ def test_sources_keep_draft_order_and_deduplicate_shared_sentences():
         "蛇和火象征压力。",
         "蛇未收录。",
     ]
+
+
+def test_sources_of_a_name_problem_are_the_sentences_naming_its_grid():
+    text = "【摘要】赵杰的名字整体平稳。这个名字的数理一般被看作习俗。人格偏稳。"
+    assert sources("赵杰的数理1与本次计算不符", text) == ["这个名字的数理一般被看作习俗。"]
