@@ -155,6 +155,10 @@ async def test_a_wrong_number_is_caught_before_submission_and_repaired(make):
     assert (info["repairs"], info["degraded"]) == (1, None)
     assert info["problems"][0] == ["赵杰的人格24与本次计算不符"]
     assert planned(events).count("submit_reading") == 1
+    refused = next(event for event in events if event.get("stage") == "problems")
+    assert "{{" in refused["text"]
+    assert "{{" not in refused["rendered_text"]
+    assert "人格26" in refused["rendered_text"]
 
 
 async def test_fate_twice_degrades_to_the_conventions(make):
@@ -464,7 +468,9 @@ async def test_correct_chinese_values_and_genuine_counts_can_share_a_draft(make)
 # ---- P2 r5: a lone numeral inside a word is no value (数理一般, 外格二者) --------------------
 
 R5_WORDS = (
-    "这个名字的数理一般被看作一种取名习俗，数理一致的地方可以多留意。外格二者相近，人格十分重要。"
+    "这个名字的数理一般被看作一种取名习俗，数理一致的地方可以多留意。"
+    "数理一说只作参考，数理一共涉及五格。外格二者相近，外格两相比较，外格二人相同。"
+    "人格十分重要。名字的数理是一面用于自我反思的镜子。"
 )
 
 
@@ -482,3 +488,16 @@ async def test_a_lone_numeral_value_is_still_checked(make, claim):
     outcome = await runtime.turn("我叫王小明，想知道这个名字的三才配置说明什么。")
     assert outcome.data["pipeline"]["repairs"] == 1
     assert "与本次计算不符" in outcome.data["pipeline"]["problems"][0][0]
+
+
+@pytest.mark.parametrize(
+    "claim",
+    ["人格为五属土。", "人格是十代表圆满。", "数理为一代表独立。", "外格为三属于吉数。"],
+)
+async def test_a_single_digit_before_a_predicate_is_still_a_value(make, claim):
+    runtime, *_ = make(lambda m: written(m, extra=claim), written)
+    outcome = await runtime.turn("张伟这个名字的五格怎么样？")
+    info = outcome.data["pipeline"]
+    assert (outcome.status, info["repairs"], info["degraded"]) == ("submit_reading", 1, None)
+    assert "与本次计算不符" in info["problems"][0][0]
+    assert claim not in outcome.text

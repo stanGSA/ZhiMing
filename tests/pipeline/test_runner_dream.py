@@ -986,3 +986,17 @@ async def test_a_lost_construction_passes_the_final_submission(make):
     info = outcome.data["pipeline"]
     assert (outcome.status, info["repairs"], info["degraded"]) == ("submit_reading", 0, None)
     assert text in outcome.text
+
+
+@pytest.mark.parametrize(
+    "text",
+    ["梦里的出口象征新的机会。", "梦里的出口代表新的方向。"],
+)
+async def test_a_lost_construction_does_not_authorise_its_object_alone(make, text):
+    runtime, *_ = make(extraction(MALL_HITS), with_layer(text), written)
+    runtime.session.state["selected_systems"] = ["dream"]
+    outcome = await runtime.turn(MALL)
+    info = outcome.data["pipeline"]
+    assert (outcome.status, info["repairs"], info["degraded"]) == ("submit_reading", 1, None)
+    assert "不在事实表里" in info["problems"][0][0]
+    assert text not in outcome.text

@@ -67,12 +67,16 @@ def drafts(row: dict) -> list[list[str]] | None:
 
 
 def draft_texts(row: dict) -> list[str]:
-    """Each refused draft's own text, for traces that record it (else empty strings)."""
+    """Each refused draft as checked, falling back to raw text in older traces."""
     path = Path(row.get("trace") or "")
     if not path.is_file():
         return []
     events = (json.loads(line) for line in path.read_text(encoding="utf-8").splitlines())
-    return [e.get("text") or "" for e in events if e.get("stage") == "problems"]
+    return [
+        e.get("rendered_text") or e.get("text") or ""
+        for e in events
+        if e.get("stage") == "problems"
+    ]
 
 
 QUOTE = re.compile(r"“([^”]+)”")

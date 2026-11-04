@@ -171,6 +171,7 @@ class PipelineRunner:
                         draft=len(run.drafts),
                         problems=problems,
                         text=draft_text,
+                        rendered_text=expand(draft_text, {fact.alias: fact for fact in facts})[0],
                     )
                 if run.repairs >= MAX_REPAIRS:
                     break

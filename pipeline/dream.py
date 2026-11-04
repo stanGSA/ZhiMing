@@ -362,7 +362,9 @@ class Dream(System):
                 text = rule.sub(" ", text)
             return strip(text, terms)
 
-        dream = strip_hits(told(session.state.get("question") or ""))
+        # Keep objects from the original construction as unlisted-content cues. Allowing
+        # 找不到出口 as 迷路 must not also authorise interpreting 出口 on its own.
+        dream = strip(told(session.state.get("question") or ""), terms)
         # What the fact sheet itself says about a hit (手机: “没电或损坏”) is in the fact sheet.
         sheet = {gram for fact in self.facts(session) for gram in grams(fact.line)}
         described = {gram for gram in grams(dream) if gram not in COMMON_GRAMS | sheet}

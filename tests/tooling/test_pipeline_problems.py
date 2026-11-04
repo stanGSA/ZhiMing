@@ -151,3 +151,23 @@ def test_sources_keep_draft_order_and_deduplicate_shared_sentences():
 def test_sources_of_a_name_problem_are_the_sentences_naming_its_grid():
     text = "【摘要】赵杰的名字整体平稳。这个名字的数理一般被看作习俗。人格偏稳。"
     assert sources("赵杰的数理1与本次计算不符", text) == ["这个名字的数理一般被看作习俗。"]
+
+
+def test_render_locates_name_errors_in_the_expanded_draft(tmp_path):
+    path = tmp_path / "name.jsonl"
+    path.write_text(
+        json.dumps(
+            {
+                "stage": "problems",
+                "problems": ["林晓的外格22与本次计算不符"],
+                "text": "需要留意的是{{R4}}2数，提醒你把基础打扎实。",
+                "rendered_text": "需要留意的是外格22数，提醒你把基础打扎实。",
+            },
+            ensure_ascii=False,
+        ),
+        encoding="utf-8",
+    )
+    rows = [{"id": "name", "trace": str(path), "pipeline": {"problems": [1]}}]
+    live = batch(tmp_path, rows)
+    text = render(live, {"results": rows})
+    assert "候选原句：需要留意的是外格22数，提醒你把基础打扎实。" in text
