@@ -459,3 +459,26 @@ async def test_correct_chinese_values_and_genuine_counts_can_share_a_draft(make)
     assert outcome.status == "submit_reading"
     assert outcome.data["pipeline"]["repairs"] == 0
     assert text in outcome.text
+
+
+# ---- P2 r5: a lone numeral inside a word is no value (数理一般, 外格二者) --------------------
+
+R5_WORDS = (
+    "这个名字的数理一般被看作一种取名习俗，数理一致的地方可以多留意。外格二者相近，人格十分重要。"
+)
+
+
+async def test_a_lone_numeral_inside_a_word_is_not_a_grid_value(make):
+    runtime, _, events = make(lambda m: written(m, extra=R5_WORDS))
+    outcome = await runtime.turn("我叫王小明，想知道这个名字的三才配置说明什么。")
+    info = outcome.data["pipeline"]
+    assert (outcome.status, info["repairs"], info["degraded"]) == ("submit_reading", 0, None)
+    assert R5_WORDS in outcome.text
+
+
+@pytest.mark.parametrize("claim", ["总格五，", "人格五吉。", "人格五的含义。"])
+async def test_a_lone_numeral_value_is_still_checked(make, claim):
+    runtime, *_ = make(lambda m: written(m, extra=R5_WORDS + claim), written)
+    outcome = await runtime.turn("我叫王小明，想知道这个名字的三才配置说明什么。")
+    assert outcome.data["pipeline"]["repairs"] == 1
+    assert "与本次计算不符" in outcome.data["pipeline"]["problems"][0][0]

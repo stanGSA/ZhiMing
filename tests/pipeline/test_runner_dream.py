@@ -538,7 +538,8 @@ async def test_what_the_pilot_refused_on_the_dream_and_the_fact_sheet_is_accepte
         (CHASED, "这个梦里的考场象征被评价的压力。"),
         # Unmatched symbols stay unmatched, and so does what the fact sheet does not say.
         (HOSPITAL, "梦见住院往往反映你希望被照顾。"),
-        (MALL, "到处找不到出口，往往反映你对方向的困惑。"),
+        # 找不到出口 with 迷路 matched is that symbol (owner, r5); without 迷路 it stays
+        # refused, see test_what_the_lost_construction_does_not_cover_is_still_refused.
         (MALL, "巨大的商场往往代表选择太多。"),
     ],
 )
@@ -933,3 +934,55 @@ async def test_a_normalised_chase_does_not_authorise_another_pursuer(make, text)
     assert (info["repairs"], info["degraded"]) == (1, None)
     assert "不是本次命中的意象" in info["problems"][0][0]
     assert text not in outcome.text
+
+
+# ---- P2 r5: 找不到出口 is 迷路 in other words (找不到路 is already its alias) ----------------
+
+MALL_HITS = [
+    {"phrase": "商场", "symbol": "商场"},
+    {"phrase": "迷路", "symbol": "迷路"},
+    {"phrase": "手机", "symbol": "手机"},
+]
+
+
+@pytest.mark.parametrize(
+    "text",
+    [
+        # r5 dream_lost_in_mall#1, both refused sentences.
+        "你在商场里找不到出口，可能提示最近面对的选择不少，或者身处一个新环境。",
+        "梦里你在商场里四处走却找不到出口，可能说明你正处在需要辨认路线的阶段。",
+        # r5 dream_lost_in_mall#3.
+        "梦里找不到出口的着急是真实的，但它更多反映的是当下情绪，而不是现实走向。",
+        "梦里的商场出口难找，可能对应你最近面对不少选项。",
+    ],
+)
+async def test_the_r5_lost_constructions_are_the_matched_symbol(make, text):
+    runtime, *_ = make(extraction(MALL_HITS), written)
+    runtime.session.state["selected_systems"] = ["dream"]
+    await runtime.turn(MALL)
+    assert Dream(runtime).problems([text], runtime.session) == [], text
+
+
+@pytest.mark.parametrize(
+    "symbols, text",
+    [
+        # Without 迷路 matched, the same construction is still content outside the fact sheet.
+        (MALL_HITS[:1] + MALL_HITS[2:], "到处找不到出口，往往反映你对方向的困惑。"),
+        # The construction does not cover the rest of the scene.
+        (MALL_HITS, "巨大的商场往往代表选择太多。"),
+    ],
+)
+async def test_what_the_lost_construction_does_not_cover_is_still_refused(make, symbols, text):
+    runtime, *_ = make(extraction(symbols), written)
+    runtime.session.state["selected_systems"] = ["dream"]
+    await runtime.turn(MALL)
+    assert Dream(runtime).problems([text], runtime.session), text
+
+
+async def test_a_lost_construction_passes_the_final_submission(make):
+    text = "你在商场里找不到出口，可能提示最近面对的选择不少。"
+    runtime, _, events = make(extraction(MALL_HITS), with_layer(text), written)
+    outcome = await runtime.turn(MALL)
+    info = outcome.data["pipeline"]
+    assert (outcome.status, info["repairs"], info["degraded"]) == ("submit_reading", 0, None)
+    assert text in outcome.text

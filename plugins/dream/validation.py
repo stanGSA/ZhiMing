@@ -15,7 +15,15 @@ from plugins.dream.match import NORMALISATIONS
 
 # Only entity-free constructions can authorise alternative output phrases. A lookup
 # rule such as 被追 also names different pursuers, which must remain independently grounded.
-OUTPUT_NORMALISATIONS = {"掉牙": NORMALISATIONS["掉牙"]}
+OUTPUT_NORMALISATIONS = {
+    "掉牙": NORMALISATIONS["掉牙"],
+    # 找不到路 is already an alias of 迷路; the same construction with 出口/出路/方向, none of
+    # them a dictionary entity, is that symbol too (r5 dream_lost_in_mall).
+    "迷路": re.compile(
+        r"(?:到处|四处|一直)?(?:找|寻)不(?:到|着)(?:出口|出路|方向|路)"
+        r"|(?:出口|出路)(?:很|太|总|也|都)?(?:难找|找不到)"
+    ),
+}
 
 PROPHECY = re.compile(r"预示|预兆|征兆|兆头|预言|将会发生|会发生|一定会|必定|必然会|注定")
 NEGATION = re.compile(r"不|非|没有|无|并未|别")

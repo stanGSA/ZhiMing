@@ -15,9 +15,15 @@ NUMBER = r"(?:\d+|[零〇一二两三四五六七八九十百]+)"
 # Recognise counts without suppressing a value followed by its classification (二十四吉).
 # 五格/五行/三才 are words, including immediately after a number. Never backtrack into
 # a shorter numeral to escape a counter: 二十三项 must not be read as 二十.
+# A lone numeral character inside a word is no value either: 数理一般/一致/一说, 外格二者,
+# 两相比较, 十分重要. A single-character value stands before punctuation, 吉/凶 or 的
+# (总格五，人格五吉), never directly before another word.
+LONE_IN_WORD = (
+    r"(?![零〇一二两三四五六七八九十百](?![零〇一二两三四五六七八九十百])"
+    r"(?![吉凶的]|[^\u4e00-\u9fff]|$))"
+)
 CLAIMED = (
-    r"(?:\d+(?!\d)|"
-    r"(?!五格|三才|[零〇一二两三四五]吉[零〇一二两三四五]凶)"
+    r"(?:\d+(?!\d)|" + LONE_IN_WORD + r"(?!五格|三才|[零〇一二两三四五]吉[零〇一二两三四五]凶)"
     r"(?:(?!五行|五格|三才)[零〇一二两三四五六七八九十百])+"
     r"(?!(?!五行|五格|三才)[零〇一二两三四五六七八九十百])"
     r"(?![项个份位种条组类次层]))"

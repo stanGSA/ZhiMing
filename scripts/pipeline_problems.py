@@ -79,9 +79,13 @@ QUOTE = re.compile(r"“([^”]+)”")
 SENTENCES = re.compile(r"[^。！？!?；;\n]+[。！？!?；;]?")
 
 
+# Name problems quote nothing (“赵杰的数理1与本次计算不符”): the grid word they name is the cue.
+NAMED_GRID = re.compile(r"(天格|人格|地格|外格|总格|数理|三才|总笔画)")
+
+
 def sources(problem: str, text: str) -> list[str]:
     """All candidate sentences in draft order; a word match does not locate the violation."""
-    words = QUOTE.findall(problem)
+    words = QUOTE.findall(problem) or NAMED_GRID.findall(problem)
     return list(
         dict.fromkeys(
             sentence.strip()
