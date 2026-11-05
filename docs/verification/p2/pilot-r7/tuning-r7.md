@@ -1,5 +1,7 @@
 # r7：修复 r6 定位的误拒，收紧复核中发现的放过
 
+> 执行更新（2026-11-05）：PR #49 已合并，三类审查回归已修复（`52c5e51`）。负责人随后确认否定“稳赚”放行、现有追跑绑定范围合适，见 [decisions.md](decisions.md)。本文件下文记录 PR #49 原始方案；其中“否定的稳赚仍拒”已被该决策替代，本轮被测代码按新规则执行。
+
 | 项目 | 内容 |
 | --- | --- |
 | 依据 | 负责人的 [r6 评估](../pilot-r6/assessment.md)、[质量归因](../pilot-r6/quality-attribution.md)、[离线回放](../pilot-r6/validation-replay.json)，以及我的 [r6 复核](../pilot-r6/review.md) |

@@ -8,6 +8,7 @@ from common.output_policy import (
     care_error,
     certainty_claim,
     certainty_error,
+    hard_claim,
     medication_error,
     normalize_reading,
     warn,
@@ -37,8 +38,8 @@ RISKS = (
     ),
 )
 HIGH_RISK = re.compile("|".join(pattern for _, pattern, _ in RISKS))
-# Claims a high-risk answer may never make, negated or not as written here.
-HIGH_RISK_CLAIM = re.compile(r"(?<!不)(?<!不能)(?<!无法)保证收益|稳赚|必死|必然确诊")
+# Additional high-risk claims; shared hard words and the approved 稳赚 denial use hard_claim.
+HIGH_RISK_CLAIM = re.compile(r"(?<!不)(?<!不能)(?<!无法)保证收益|必死|必然确诊")
 
 
 def risk_note(text: str) -> str | None:
@@ -215,10 +216,10 @@ def validate_reading(reading, session) -> str | None:
     if error:
         return error
     if session.policy_judge is not None:
-        from common.policy_judge import HARD, candidates
+        from common.policy_judge import candidates
 
         texts = authored_texts(reading)
-        if any(HARD.search(text) for text in texts):
+        if hard_claim(texts):
             return "不能给出确定性结果或停药建议，请改写"
         state["policy_candidates"] = candidates(texts)
         error = None
@@ -232,6 +233,10 @@ def validate_reading(reading, session) -> str | None:
             return "涉及健康、投资、法律或生死，必须标注安全说明"
         # 一定会 counts only where no negation governs it, as everywhere else: "不一定会" and
         # "这不代表这只股票一定会涨" are the hedges these answers are asked to write.
-        if certainty_claim(authored_texts(reading)) or HIGH_RISK_CLAIM.search(text):
+        if (
+            certainty_claim(authored_texts(reading))
+            or hard_claim(authored_texts(reading))
+            or HIGH_RISK_CLAIM.search(text)
+        ):
             return "不能给出健康、投资或生死的确定性结论"
     return None

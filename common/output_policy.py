@@ -33,6 +33,14 @@ BREAK_TAG = re.compile(r"<br\s*/?>", re.IGNORECASE)
 SENTENCE = re.compile(r"[^。！？!?\n]*(?:[。！？!?]+|\n|$)")
 
 CERTAINTY = re.compile(r"一定会|一定能|一定是|必然|必定|注定|肯定会|绝对会|百分之百|毫无疑问|铁定")
+HARD = re.compile(r"稳赚|必涨|必死|必然确诊")
+# Only the approved 稳赚 denial is relaxed; the other hard words retain their policy.
+GAIN_DISMISSAL = re.compile(
+    r"(?:别|不要|不能|不应(?:该|当)?|不|并不)"
+    r"(?:(?:把|将)(?:配合|合作|投资|收益|回报|这笔投资|这次合作|它|这))?"
+    r"(?:当作|当成|当|视为|看成|看作|理解为)$"
+)
+GAIN_DENIAL_NEGATED = re.compile(r"(?:不|非|不是|没有|不得|不能|不可|不可以)(?:说|认为|觉得)?$")
 # Shared with source checks. Only enumerated subjects and predicates are accepted;
 # an intervening predicate or contrast must not hide a separate affirmative claim.
 DISCLAIMER_CLAIM = (
@@ -241,6 +249,26 @@ def certainty_claim(texts) -> str | None:
             if negates_claim(before):
                 continue
             return match.group()
+    return None
+
+
+def hard_claim(texts) -> str | None:
+    """Hard words, except a governing denial of 稳赚 (owner decision for P2 r7).
+
+    Each occurrence and field has its own scope: 别把配合当稳赚 does not authorise
+    a later 这笔投资稳赚. Double negatives must not be read as disclaimers either.
+    """
+    for text in texts:
+        for match in HARD.finditer(text or ""):
+            if match[0] == "稳赚":
+                before = clause_before(text, match.start(), 40)
+                before = re.split(r"但是|然而|不过|反而|而是|可是|却|但", before)[-1]
+                denial = GAIN_DISMISSAL.search(before) or DIRECT_NEGATION.search(before)
+                if denial and GAIN_DENIAL_NEGATED.search(before[: denial.start()]):
+                    return match[0]
+                if GAIN_DISMISSAL.search(before) or negates_claim(before):
+                    continue
+            return match[0]
     return None
 
 

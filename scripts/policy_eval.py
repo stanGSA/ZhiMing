@@ -9,7 +9,8 @@ import yaml
 from dotenv import load_dotenv
 
 from app import ROOT, build_model
-from common.policy_judge import HARD, PROMPT, Decision, candidates, regex_decision
+from common.output_policy import hard_claim
+from common.policy_judge import PROMPT, Decision, candidates, regex_decision
 
 
 def confusion(rows, predictions, key):
@@ -73,10 +74,10 @@ async def evaluate(dataset, output, model_name=None):
         variants["regex_then_model"] = [
             (
                 dict(certainty=True, discourage_care=False)
-                if HARD.search(row["sentence"])
+                if hard_claim([row["sentence"]])
                 else prediction
             )
-            if candidates([row["sentence"]]) or HARD.search(row["sentence"])
+            if candidates([row["sentence"]]) or hard_claim([row["sentence"]])
             else dict(certainty=False, discourage_care=False)
             for row, prediction in zip(rows, variants["model_only"], strict=True)
         ]
