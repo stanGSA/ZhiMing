@@ -11,6 +11,7 @@ prophecies, and a dream-only reading has no event timeline.
 import re
 
 from common.facts import public_texts
+from common.output_policy import clause_before, negates_claim
 from plugins.dream.match import NORMALISATIONS
 
 # Only entity-free constructions can authorise alternative output phrases. A lookup
@@ -26,13 +27,36 @@ OUTPUT_NORMALISATIONS = {
 }
 
 PROPHECY = re.compile(r"预示|预兆|征兆|兆头|预言|将会发生|会发生|一定会|必定|必然会|注定")
-NEGATION = re.compile(r"不|非|没有|无|并未|别")
+# A prophecy word is cancelled only by a negation that governs it (output_policy.negates_claim),
+# never by a stray negative character in front of it: 这不是坏事，它预示…, 不是坏事而是预示…,
+# 这是不幸的预兆, 这无疑预示…, 别人… and 不久会发生… all still assert one (r6 review).
+# As a noun, 预兆 is also cancelled by what denies or dismisses it: 不是健康的预兆, 没有什么预兆,
+# 不作为现实预兆, 别把梦当成预兆, 不必担心预兆, and r6's comparison 比担心预兆更有用 / 与其担心这是不是预兆.
+# A modifier between the denial and the noun is one short word, never 一般/普通 (不是一般的预兆
+# says the opposite), and a contrast (而是, 但 …) starts a new assertion.
+DENIED_OMEN = re.compile(
+    r"(?:"
+    r"(?:不是|并不是|并非|绝非|而非|并无|毫无|没有|并没有|无关|不算|不属于|不等于|不作为|不作|"
+    r"不谈|(?:不能|不应|不要|不必|别)(?:当作|当成|作为|说成|写成|看成|视为))"
+    r"(?:什么|任何|一种|一个)?"
+    r"|(?:不必|不用|不要|别|无需|无须|用不着|没必要)(?:去|再|太|过于|总)?"
+    r"(?:担心|害怕|纠结|在意|琢磨|当成|当作|看成|看作|视为)(?:什么|任何|这是|它是)?"
+    r"|(?:不必|不用|不要|别|不是|并不是|并非)把(?:梦|梦境|这个梦|这场梦|它)"
+    r"(?:当成|当作|看成|看作|视为|理解为|理解成|想成)(?:什么|任何)?"
+    r"|(?:比|与其)(?:去|总|总是|反复|一直)?(?:担心|害怕|纠结|琢磨|猜测|在意)"
+    r"(?:它|这)?(?:是不是|是否|会不会)?(?:什么|所谓的)?"
+    r")"
+    r"(?:(?!一般|普通)[\u4e00-\u9fff]{1,2}的?)?$"
+)
+OMEN = re.compile(r"预兆|征兆|兆头|预言")
 UNMATCHED = re.compile(
     r"未收录|没有收录|未命中|无法解读|不作解读|不解读|没有依据|暂无|词典外|不在词典"
 )
 QUOTED = re.compile(r"[「“【《]([^」”】》]{1,8})[」”】》]")
+# An adverb between a symbol and its verb (猫都象征…, 被追和猫也代表…) does not hide it (r6 review).
 INTERPRETS = re.compile(
     r"\s*(?:(?:的|这个|这一)?(?:意象|形象|出现|场景|含义)|的梦|这个梦)?\s*"
+    r"(?:都|也|还|则|就|均|同样|一起|共同|其实)?\s*"
     r"(?:常常|往往|通常|多半|多|可能|也许|似乎)?\s*"
     r"(?:象征|代表|意味|寓意|暗示|预示|说明|反映|提示|对应|是在|与.{0,8}有关|常与|多与)"
 )
@@ -70,6 +94,30 @@ def phrase_aliases(matcher, hits):
                 if alias != phrase and len(alias) <= end - start and phrase.endswith(alias)
             )
     return aliases
+
+
+# The dreamer's own running in a chase (被人追着一直跑) is the matched 被追, so the dictionary's
+# word for that running, 奔跑, names the hit rather than 跑步 (r6 dream_chased_to_exam#2).
+# Only when the user's own clause runs from the chase, joined by at most an adverb: a run told
+# elsewhere (被狗追，后来去操场跑步) stays 跑步, and 跑步 itself is never bound to the chase.
+CHASE_RUN = re.compile(
+    NORMALISATIONS["被追"].pattern
+    + r"(?:着|得)?(?:一直|一路|拼命|使劲|不停地?|到处|四处|赶紧|飞快地?)?(?:地)?(?:往前)?(?:跑|奔跑)"
+)
+CHASE_RUN_ALIASES = ("奔跑",)
+
+
+def chase_aliases(hits, question):
+    """奔跑 → 被追 when 被追 is a hit and the user's clause runs from that chase."""
+    keys = {hit["key"] for hit in hits}
+    if "被追" not in keys or "跑步" in keys or not CHASE_RUN.search(question or ""):
+        return {}
+    return dict.fromkeys(CHASE_RUN_ALIASES, "被追")
+
+
+def hit_aliases(matcher, hits, question):
+    """Every pipeline-only alias of a hit: suffixes of its phrase, and the chase's running."""
+    return {**phrase_aliases(matcher, hits), **chase_aliases(hits, question)}
 
 
 def phrase_hits(hits):
@@ -170,7 +218,7 @@ def validate_output(reading, state, matcher):
     # agent turn has no pipeline_run marker and retains the ordinary plugin rules.
     pipeline = bool(state.get("pipeline_run") and reading.systems_used == ["dream"])
     matched = [h for r in found for h in r["hits"]]
-    aliases = phrase_aliases(matcher, matched) if pipeline else {}
+    aliases = hit_aliases(matcher, matched, state.get("question")) if pipeline else {}
     phrases = phrase_hits(matched) if pipeline else {}
     for text in texts:
         error = text_error(text, matcher, hits, misses, aliases=aliases, phrases=phrases)
@@ -179,10 +227,22 @@ def validate_output(reading, state, matcher):
     return None
 
 
+def prophecy_negated(text, match) -> bool:
+    """Whether a negation or a dismissal in its own clause governs this prophecy word."""
+    before = clause_before(text, match.start(), 40)
+    if negates_claim(before):
+        return True
+    if not OMEN.fullmatch(match[0]):
+        return False
+    # A contrast starts a new assertion: 不是坏事而是预兆 affirms it.
+    before = re.split(r"但是|然而|不过|反而|而是|可是|却|但", before)[-1]
+    return bool(DENIED_OMEN.search(before))
+
+
 def text_error(text, matcher, hits, misses, *, aliases=None, phrases=None):
     """The first problem of one user-visible text: a prophecy, or an ungrounded symbol."""
     for match in PROPHECY.finditer(text):
-        if not NEGATION.search(text[max(0, match.start() - 6) : match.start()]):
+        if not prophecy_negated(text, match):
             return "解梦只提供心理层面的线索，不能把梦境说成现实事件的预兆"
     for clause in CLAUSES.split(text):
         error = ungrounded(clause, matcher, hits, misses, aliases=aliases, phrases=phrases)

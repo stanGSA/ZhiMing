@@ -33,6 +33,16 @@ STROKE = re.compile(
 SHULI = re.compile(rf"数理(?:数)?\s*(?:为|是|=|：|:)?\s*({CLAIMED})")
 TOTAL_STROKES = re.compile(rf"(?:总笔画|笔画总数)\s*(?:为|是|共|计|：|:)?\s*({NUMBER})\s*画")
 SANCAI = re.compile(r"三才(?:配置|组合|五行)?\s*(?:为|是|：|:)?\s*[「“【]?([木火土金水]{3})")
+# A subject that covers every analysed name (“两个名字都可留意外格2”) binds the claims after it
+# in its sentence to all of them, so each claim must hold for every name (r6 name_compare_two#2:
+# both 外格 are 2). Its count must be the number of names; a negated one (并非两个名字都…)
+# binds nothing; a full name written after it takes the claims back to that name.
+COLLECTIVE = re.compile(
+    r"(?<!非)(?<!不是)(?<!未必)(?<!不)(?:这)?([两二三四五])(?:个名字|个姓名|位|人)(?:的[\u4e00-\u9fff]{0,4})?"
+    r"(?:都|均|皆)"
+)
+COUNTS = {"两": 2, "二": 2, "三": 3, "四": 4, "五": 5}
+SENTENCE_END = re.compile(r"[。；;！!？?\n]")
 FATALISM = re.compile(
     r"(?:注定|一定会|必然|必定)(?:会)?(?:失败|不幸|短命|破财|离婚|成功|富贵|发财)"
 )
@@ -88,39 +98,54 @@ def check_claims(text, bound, results):
     by_name = {result["full_name"]: result for result in results.values()}
     pattern = "|".join(re.escape(name) for name in sorted(by_name, key=len, reverse=True))
     names = [(m.start(), by_name[m[0]]) for m in re.finditer(pattern, text)] if pattern else []
+    collectives = [m.start() for m in COLLECTIVE.finditer(text) if COUNTS[m[1]] == len(results) > 1]
 
-    def owner(position):
-        before = [r for start, r in names if start <= position]
-        return before[-1] if before else bound
+    def owners(position):
+        """The names a claim at ``position`` is about; empty when it cannot be bound."""
+        before = [(start, r) for start, r in names if start <= position]
+        sentence = max((m.end() for m in SENTENCE_END.finditer(text, 0, position)), default=0)
+        latest = before[-1][0] if before else -1
+        if any(sentence <= start <= position and start > latest for start in collectives):
+            return list(results.values())
+        if before:
+            return [before[-1][1]]
+        return [bound] if bound is not None else []
 
     for match in GRID.finditer(text):
-        result = owner(match.start())
         grid, value = match.group(1), number(match.group(2))
-        if result is None:
+        found = owners(match.start())
+        if not found:
             return f"有多个姓名时，{grid}{value}须写明是哪个名字"
-        if value not in (result["grids"][grid], result["shuli"][grid]):
-            return f"{result['full_name']}的{grid}{value}与本次计算不符"
+        for result in found:
+            if value not in (result["grids"][grid], result["shuli"][grid]):
+                return f"{result['full_name']}的{grid}{value}与本次计算不符"
     for match in SHULI.finditer(text):
-        result = owner(match.start())
-        if result is None:
+        found = owners(match.start())
+        if not found:
             return "有多个姓名时，数理须写明是哪个名字"
-        if number(match[1]) not in result["shuli"].values():
-            return f"{result['full_name']}的数理{number(match[1])}与本次计算不符"
+        for result in found:
+            if number(match[1]) not in result["shuli"].values():
+                return f"{result['full_name']}的数理{number(match[1])}与本次计算不符"
     for match in TOTAL_STROKES.finditer(text):
-        result = owner(match.start())
-        if result is None:
+        found = owners(match.start())
+        if not found:
             return "有多个姓名时，总笔画须写明是哪个名字"
-        if number(match[1]) != result["grids"]["总格"]:
-            return f"{result['full_name']}的总笔画与本次计算不符"
+        for result in found:
+            if number(match[1]) != result["grids"]["总格"]:
+                return f"{result['full_name']}的总笔画与本次计算不符"
     for match in SANCAI.finditer(text):
-        result = owner(match.start())
-        if result is None:
+        found = owners(match.start())
+        if not found:
             return "有多个姓名时，三才配置须写明是哪个名字"
-        if match.group(1) != result["sancai"]["key"]:
-            return f"{result['full_name']}的三才配置与本次计算不符"
+        for result in found:
+            if match.group(1) != result["sancai"]["key"]:
+                return f"{result['full_name']}的三才配置与本次计算不符"
     for match in STROKE.finditer(text):
         char, value = match.group(1), number(match.group(2))
-        result = owner(match.start())
+        found = owners(match.start())
+        # A character's count is checked against the one name it belongs to; otherwise
+        # (unbound, or several names) against any analysed name that has the character.
+        result = found[0] if len(found) == 1 else None
         candidates = [result] if result is not None else list(results.values())
         known = [stroke_options(r)[char] for r in candidates if char in stroke_options(r)]
         if (

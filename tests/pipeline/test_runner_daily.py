@@ -329,3 +329,27 @@ def test_daily_segments_use_consultation_timezone_instead_of_utc_dates():
     assert "地支辰与辰" in texts[result["interpretations"][0]["fact"]][1]
     assert "仅00:00–23:00，Asia/Shanghai" in texts[result["interpretations"][0]["fact"]][1]
     assert "仅23:00–24:00，Asia/Shanghai" in texts["day:2026-11-02T15:00:00+00:00:辛巳:偏财"][1]
+
+
+# ---- P2 r6: the hard words are refused even when negated, so the writer is told -----------
+
+INVESTMENT = "今天运势怎么样？适合把积蓄拿去买股票吗？"
+
+
+async def test_the_writer_is_told_the_hard_words_are_refused_even_when_negated(make):
+    """r6 daily_investment_risk#2 wrote “别把配合当稳赚” and was repaired once."""
+    runtime, composer, _ = make(written)
+    await runtime.turn(INVESTMENT)
+    system = composer.seen[0][0][0]["content"]
+    assert "别当稳赚" in system and "不保证收益" in system
+
+
+@pytest.mark.parametrize("claim", ["有联结也有牵绊，别把配合当稳赚。", "这笔投资稳赚。"])
+async def test_the_hard_words_are_still_refused_negated_or_not(make, claim):
+    """The shared rule itself is unchanged: 稳赚 is refused whatever governs it."""
+    runtime, *_ = make(lambda m: written(m, extra=claim), written)
+    outcome = await runtime.turn(INVESTMENT)
+    info = outcome.data["pipeline"]
+    assert (outcome.status, info["repairs"]) == ("submit_reading", 1)
+    assert "确定性" in info["problems"][0][0]
+    assert claim not in outcome.text

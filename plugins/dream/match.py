@@ -32,7 +32,8 @@ NORMALISATIONS = {
 # review removed them as synonyms (stage1 acceptance, dream-alias-regression.json); without
 # this they fell through to containment and were interpreted as the wrong symbol. They stay
 # unmatched, and so are never interpreted, until the knowledge base gives them an alias.
-DISTINCT_HEADS = ("熊猫", "雪花", "电动车", "鬼压床", "冰山")
+# 画面 is the scene a dream shows, not a painting (画): r6 read “把梦里的画面写下来” as 画.
+DISTINCT_HEADS = ("熊猫", "雪花", "电动车", "鬼压床", "冰山", "画面")
 # A fragment that drops the object of the alias it belongs to (丢了 is not 钥匙丢了).
 BARE_FRAGMENTS = frozenset({"丢了"})
 

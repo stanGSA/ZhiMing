@@ -23,7 +23,7 @@ from pipeline.render import safety_for
 from pipeline.state import RESUMABLE
 from pipeline.system import System
 from plugins.dream.match import NORMALISATIONS
-from plugins.dream.validation import OUTPUT_NORMALISATIONS, phrase_aliases, phrase_hits, text_error
+from plugins.dream.validation import OUTPUT_NORMALISATIONS, hit_aliases, phrase_hits, text_error
 
 DREAM = re.compile(
     r"梦见|梦到|梦里|梦中|做梦|做.{0,8}?个梦|做了.{0,8}梦|噩梦|梦境|解梦|的梦|[这那]个梦"
@@ -320,7 +320,7 @@ class Dream(System):
         result = self.result(session.state)
         hits = {hit["key"] for hit in result["hits"]}
         misses = set(result["misses"])
-        aliases = phrase_aliases(self.matcher, result["hits"])
+        aliases = hit_aliases(self.matcher, result["hits"], session.state.get("question"))
         phrases = phrase_hits(result["hits"])
         found = [
             text_error(text, self.matcher, hits, misses, aliases=aliases, phrases=phrases)
@@ -337,7 +337,7 @@ class Dream(System):
         terms = {f"「{key}」" for key in keys} | keys
         terms |= {alias for alias, key in self.matcher.aliases.items() if key in keys}
         terms |= {hit["phrase"] for hit in result["hits"] if hit.get("phrase")}
-        terms |= phrase_aliases(self.matcher, result["hits"]).keys()
+        terms |= hit_aliases(self.matcher, result["hits"], session.state.get("question")).keys()
         return sorted(terms, key=len, reverse=True)
 
     def unlisted(self, texts, session) -> list[str]:
