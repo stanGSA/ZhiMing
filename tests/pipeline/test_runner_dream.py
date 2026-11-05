@@ -1209,3 +1209,32 @@ async def test_pr49_comparisons_and_denials_cannot_authorise_an_omen(make, text)
     assert (outcome.status, info["repairs"], info["degraded"]) == ("submit_reading", 1, None)
     assert "预兆" in info["problems"][0][0]
     assert text not in outcome.text
+
+
+# ---- P2 r7: a care question opening with a connective --------------------------------------
+
+
+async def test_the_r7_care_question_title_does_not_end_in_the_safety_reply(make):
+    """r7 dream_hospital_health#3: both drafts titled a layer “那要不要去做检查”."""
+    title = lambda m: written(m).replace(  # noqa: E731
+        "【建议】",
+        "【分层】那要不要去做检查\n梦本身不能说明身体状况，是否检查看身体的实际感受，"
+        "如有不适请及时就医。\n【建议】",
+    )
+    runtime, *_ = make(extraction(PILOT_SYMBOLS[HOSPITAL]), title)
+    outcome = await runtime.turn(HOSPITAL)
+    info = outcome.data["pipeline"]
+    assert (outcome.status, info["repairs"], info["degraded"]) == ("submit_reading", 0, None), info[
+        "problems"
+    ]
+    assert "那要不要去做检查" in outcome.text
+
+
+async def test_a_connective_before_discouraging_care_is_still_refused(make):
+    discourage = lambda m: written(m, body="那就不要去做检查了，梦只是情绪。")  # noqa: E731
+    runtime, *_ = make(extraction(PILOT_SYMBOLS[HOSPITAL]), discourage, written)
+    outcome = await runtime.turn(HOSPITAL)
+    info = outcome.data["pipeline"]
+    assert info["repairs"] == 1
+    assert "不能劝阻就医" in info["problems"][0][0]
+    assert "不要去做检查" not in outcome.text

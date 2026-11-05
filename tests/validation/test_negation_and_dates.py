@@ -416,6 +416,11 @@ async def test_the_high_risk_check_still_refuses_a_claim_the_policy_judge_would_
         "你问我用不用去医院。",
         "你问“要不要去做检查”，梦本身不能说明身体状况。",
         "我想问一下用不用去医院？",
+        # r7 dream_hospital_health#3: a title opening with a connective.
+        "那要不要去做检查",
+        "那么要不要去做检查？",
+        "那你到底要不要去医院？",
+        "所以要不要去做检查，要看身体的实际感受。",
     ],
 )
 def test_an_a_not_a_question_about_care_is_not_discouraging_it(text):
@@ -430,6 +435,12 @@ def test_an_a_not_a_question_about_care_is_not_discouraging_it(text):
         "你不需要去做检查。",
         "要不要紧都不要去医院。",
         "用不用去医院，不用去医院。",
+        # A connective is no question by itself (r7 review).
+        "那不要去做检查了。",
+        "那就不要去做检查。",
+        "那只要不要去医院就行。",
+        "那要不要紧都不要去医院。",
+        "那要不要去做检查？那不用去医院。",
     ],
 )
 def test_discouraging_care_next_to_a_question_is_still_refused(text):
