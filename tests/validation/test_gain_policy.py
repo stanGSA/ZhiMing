@@ -170,3 +170,34 @@ def test_the_r8_denials_with_an_adverbial_are_allowed(text):
 def test_what_the_r8_adverbial_widening_must_still_refuse(text):
     assert hard_claim([text]) == "稳赚"
     assert "hard_claim" in safety_rules([text], "股票投资")
+
+
+@pytest.mark.parametrize(
+    "text",
+    [
+        "别把市场反应当成稳赚。",
+        "别把想象中的收益当成稳赚。",
+        "别把市场看好当成稳赚。",
+        "别把短期的认可当成稳赚。",
+        "别把当下的反应当成稳赚。",
+        "别把市场反应直接当成稳赚。",
+        "别在情绪顺畅时把市场反应当成稳赚。",
+    ],
+)
+def test_ordinary_object_words_are_not_mistaken_for_frame_verbs(text):
+    assert hard_claim([text]) is None
+    assert safety_rules([text], "股票投资") == []
+
+
+@pytest.mark.parametrize(
+    "text",
+    [
+        "别把它当作偶然应理解成稳赚。",
+        "别把它想复杂了应看成稳赚。",
+        "不能说这不是稳赚。",
+        "不能认为这不是稳赚。",
+    ],
+)
+def test_another_frame_or_outer_negation_cannot_hide_a_gain_claim(text):
+    assert hard_claim([text]) == "稳赚"
+    assert "hard_claim" in safety_rules([text], "股票投资")

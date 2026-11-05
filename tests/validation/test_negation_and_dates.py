@@ -516,6 +516,39 @@ def test_what_the_r8_guarantee_fix_must_still_refuse(text):
 @pytest.mark.parametrize(
     "text",
     [
+        "不能说这不是事情必然顺利的保证。",
+        "不能认为这不是行情必然上涨的证明。",
+        "不能说这种配合不是事情必然顺利的保证。",
+        "不能说这不等于事情必然顺利的结论。",
+        "不是说这不能把配合当成必然有利。",
+        "别把配合当成必然有利的反面。",
+        "不要把配合当成必然成功以外的结果。",
+        "别把这次机会当成必然成功的对立面。",
+        "这不是行情必然上涨的证明的反面。",
+    ],
+)
+def test_outer_negations_and_reversed_complements_do_not_deny_certainty(text):
+    assert certainty_error([text])
+
+
+@pytest.mark.parametrize(
+    "text",
+    [
+        "别把市场反应当成必然有利。",
+        "别把想象中的收益当成必然成功。",
+        "不是事情必然顺利的保证。相反，行动仍须谨慎。",
+        "别把配合当成必然有利，相反，应当考虑风险。",
+        "你不一定会在预期之外亏损。",
+        "这不代表你必然在预期之外亏损。",
+    ],
+)
+def test_safe_denials_keep_their_own_object_and_clause_scope(text):
+    assert certainty_error([text]) is None
+
+
+@pytest.mark.parametrize(
+    "text",
+    [
         "它必然遭遇坎坷。",
         "不要把钱都投进去，理解成必然的收益。",
         "这不是把它理解成必然，而是你一定会成功。",

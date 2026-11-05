@@ -38,11 +38,15 @@ HARD = re.compile(r"稳赚|必涨|必死|必然确诊")
 # The object may carry a modifier or quotes (r7: 别把一时的配合顺畅当成稳赚, 别把顺手当稳赚,
 # 别把“配合顺”误解为“稳赚”). It is one short phrase without a negation, a contrast, a
 # certainty or another hard word, so it cannot hide a second clause or a double negative.
-# Nor a frame verb or modal: 不要把它当作偶然应理解成必然 holds two frames, not one object.
+# Frame verbs are checked inside the captured object, not across its boundary: the 应 in
+# 市场反应 followed by 当成 is part of a noun, not the modal 应当.
 GAIN_OBJECT = (
-    r"[“‘「\"']?(?:(?![不没非无别但而却是必]|一定|肯定|注定|铁定|绝对|百分|毫无|稳赚"
-    r"|[当看视想认应该要误]|理解|解读|作为)"
-    r"[\u4e00-\u9fff]){1,10}[”’」\"']?"
+    r"(?P<object>[“‘「\"']?(?:(?![不没非无别但而却是必]"
+    r"|一定|肯定|注定|铁定|绝对|百分|毫无|稳赚)[\u4e00-\u9fff]){1,10}[”’」\"']?)"
+)
+OBJECT_PREDICATE = re.compile(
+    r"当作|当成|视为|看成|看作|想成|认为|认定|应该|应当|理解|解读|作为|误解|误认|错当"
+    r"|想(?:复杂|简单)"
 )
 # One controlled adverbial may stand between the negation and 把, and one adverb before the
 # verb (r8: 别在情绪顺畅时把配合或行情当成稳赚, 别因为情绪顺畅就把…当作稳赚, 别把“有机会”
@@ -145,6 +149,8 @@ NEGATED_HEAD_AFTER = re.compile(
     rf"{PLAIN}{{0,8}}?的(?:保证|结论|定论|预言|承诺|依据|证明|意思)(?![^。；;！!？?\n]*[吗么？?])"
 )
 CLAUSE_START = re.compile(r".*[，,。；;：:！!？?\n]")
+# Negating the opposite or the alternatives does not negate the certainty itself.
+DENIAL_REVERSAL = re.compile(r"反面|对立面|反义|相反|以外|之外")
 
 HEALTH = re.compile(
     r"健康|身体|体力|透支|睡眠|失眠|熬夜|免疫|疲劳|脏腑|[心肝脾肺肾]脏|肾|肝|脾胃|肠胃|"
@@ -285,7 +291,12 @@ def certainty_claim(texts) -> str | None:
         text = NEGATED_DISCLAIMER.sub(" ", text or "")
         for match in CERTAINTY.finditer(text):
             before = clause_before(text, match.start(), 40)
-            if negates_claim(before) or negated_head(text, match, before):
+            denied = negates_claim(before)
+            if denied and not governing_denial(NEGATED_NOUN, before):
+                continue
+            if (denied or negated_head(text, match, before)) and not denial_reversed(
+                text[match.end() :]
+            ):
                 continue
             return match.group()
     return None
@@ -295,10 +306,38 @@ def negated_head(text: str, match: re.Match, before: str) -> bool:
     """“不是X必然Y的保证”: a copula denies the claim through the noun closing its phrase."""
     before = re.split(r"但是|然而|不过|反而|而是|可是|却|但", before)[-1]
     return bool(
-        NEGATED_HEAD_BEFORE.search(before)
-        and not GAIN_DENIAL_NEGATED.search(before[: NEGATED_HEAD_BEFORE.search(before).start()])
+        governing_denial(NEGATED_HEAD_BEFORE, before)
         and NEGATED_HEAD_AFTER.match(text, match.end())
     )
+
+
+def denial_reversed(rest: str) -> bool:
+    """Check only this complement: a later clause's 相反 does not undo its denial."""
+    clause = re.split(r"[，,。；;：:！!？?\n]", rest, maxsplit=1)[0]
+    return bool(DENIAL_REVERSAL.search(clause))
+
+
+def denial_negated(prefix: str) -> bool:
+    """An outer denial may govern an intervening subject: 不能说这不是… ."""
+    return bool(
+        GAIN_DENIAL_NEGATED.search(prefix)
+        or any(
+            claim_subject(prefix[match.end() :])
+            for pattern in (NEGATED_FRAME, NEGATED_SUBJECT)
+            for match in pattern.finditer(prefix)
+        )
+    )
+
+
+def governing_denial(pattern: re.Pattern, before: str) -> re.Match | None:
+    match = pattern.search(before)
+    if match is None or denial_negated(before[: match.start()]):
+        return None
+    # Reject a second predicate in the object while allowing ordinary compound nouns such
+    # as 反应, 想象, 看好 and 认可. Inspect only the object, never the following frame verb.
+    if OBJECT_PREDICATE.search(match.groupdict().get("object") or ""):
+        return None
+    return match
 
 
 def hard_claim(texts) -> str | None:
@@ -313,10 +352,10 @@ def hard_claim(texts) -> str | None:
                 before = clause_before(text, match.start(), 40)
                 before = re.split(r"但是|然而|不过|反而|而是|可是|却|但", before)[-1]
                 denial = GAIN_DISMISSAL.search(before) or DIRECT_NEGATION.search(before)
-                if denial and GAIN_DENIAL_NEGATED.search(before[: denial.start()]):
+                if denial and denial_negated(before[: denial.start()]):
                     return match[0]
                 rest = text[match.end() :]
-                if (GAIN_DISMISSAL.search(before) or negates_claim(before)) and (
+                if (governing_denial(GAIN_DISMISSAL, before) or negates_claim(before)) and (
                     GAIN_DISMISSED_REST.match(rest)
                 ):
                     continue
@@ -332,15 +371,17 @@ def negates_claim(before: str) -> bool:
     """
     before = re.split(r"但是|然而|不过|反而|而是|但", before)[-1].strip()
     return bool(
-        DIRECT_NEGATION.search(before)
-        or NEGATED_NOUN.search(before)
+        governing_denial(DIRECT_NEGATION, before)
+        or governing_denial(NEGATED_NOUN, before)
         or any(
-            claim_subject(before[match.end() :])
+            not denial_negated(before[: match.start()]) and claim_subject(before[match.end() :])
             for pattern in (NEGATED_FRAME, NEGATED_SUBJECT)
             for match in pattern.finditer(before)
         )
         or any(
-            claim_subject(rest) and (not rest or SUBJECT_START.match(rest))
+            not denial_negated(before[: match.start()])
+            and claim_subject(rest)
+            and (not rest or SUBJECT_START.match(rest))
             for match in COPULA.finditer(before)
             for rest in [MODIFIERS.sub("", before[match.end() :].strip())]
         )

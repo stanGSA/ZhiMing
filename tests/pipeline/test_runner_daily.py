@@ -500,3 +500,34 @@ async def test_what_the_r8_denial_fixes_must_still_refuse(make, question, claim)
     info = outcome.data["pipeline"]
     assert (outcome.status, info["repairs"]) == ("submit_reading", 1)
     assert claim not in outcome.text
+
+
+@pytest.mark.parametrize(
+    "claim",
+    ["别把市场反应当成稳赚。", "别把想象中的收益当成稳赚。"],
+)
+async def test_a_safe_reminder_does_not_need_repair_or_degrade(make, claim):
+    draft = lambda m: written(m, extra=claim)  # noqa: E731
+    runtime, composer, _ = make(draft, draft)
+    outcome = await runtime.turn(INVESTMENT)
+    info = outcome.data["pipeline"]
+    assert (outcome.status, info["repairs"], info["degraded"]) == ("submit_reading", 0, None)
+    assert len(composer.seen) == 1
+    assert claim in outcome.text
+
+
+@pytest.mark.parametrize(
+    "claim",
+    [
+        "不能说这不是事情必然顺利的保证。",
+        "不能认为这不是行情必然上涨的证明。",
+        "别把配合当成必然有利的反面。",
+        "不要把配合当成必然成功以外的结果。",
+    ],
+)
+async def test_a_nested_or_reversed_denial_is_repaired_before_submission(make, claim):
+    runtime, *_ = make(lambda m: written(m, extra=claim), written)
+    outcome = await runtime.turn(INVESTMENT)
+    info = outcome.data["pipeline"]
+    assert (outcome.status, info["repairs"], info["degraded"]) == ("submit_reading", 1, None)
+    assert claim not in outcome.text
