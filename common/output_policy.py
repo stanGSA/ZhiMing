@@ -35,10 +35,22 @@ SENTENCE = re.compile(r"[^。！？!?\n]*(?:[。！？!?]+|\n|$)")
 CERTAINTY = re.compile(r"一定会|一定能|一定是|必然|必定|注定|肯定会|绝对会|百分之百|毫无疑问|铁定")
 HARD = re.compile(r"稳赚|必涨|必死|必然确诊")
 # Only the approved 稳赚 denial is relaxed; the other hard words retain their policy.
+# The object may carry a modifier or quotes (r7: 别把一时的配合顺畅当成稳赚, 别把顺手当稳赚,
+# 别把“配合顺”误解为“稳赚”). It is one short phrase without a negation, a contrast, a
+# certainty or another hard word, so it cannot hide a second clause or a double negative.
+GAIN_OBJECT = (
+    r"[“‘「\"']?(?:(?![不没非无别但而却是必]|一定|肯定|注定|铁定|绝对|百分|毫无|稳赚)"
+    r"[\u4e00-\u9fff]){1,10}[”’」\"']?"
+)
 GAIN_DISMISSAL = re.compile(
     r"(?:别|不要|不能|不应(?:该|当)?|不|并不)"
-    r"(?:(?:把|将)(?:配合|合作|投资|收益|回报|这笔投资|这次合作|它|这))?"
-    r"(?:当作|当成|当|视为|看成|看作|理解为)$"
+    rf"(?:(?:把|将){GAIN_OBJECT})?"
+    r"(?:当作|当成|当|视为|看成|看作|理解为|理解成|误解为|误认为|错当成)[“‘「\"']?$"
+)
+# What may follow a dismissed 稳赚 in its clause: 别当稳赚以外的选择 affirms it.
+GAIN_DISMISSED_REST = re.compile(
+    r"[”’」\"']?(?:的(?:事|事情|机会|买卖|生意|保证|承诺|信号|理由|依据|把握))?"
+    r"(?:了|啊|呀|哦)?[”’」\"']?\s*(?:[，,。；;！!？?\n—…]|$)"
 )
 GAIN_DENIAL_NEGATED = re.compile(r"(?:不|非|不是|没有|不得|不能|不可|不可以)(?:说|认为|觉得)?$")
 # Shared with source checks. Only enumerated subjects and predicates are accepted;
@@ -136,7 +148,10 @@ CARE_DIRECT_NEGATION = re.compile(r"(?:并非|绝非|并不是|不是)$")
 CARE_CONDITION = re.compile(r"(?:如果|若|万一|一旦)(?:你们|我们|你|您|我)?(?:暂时|一时)?$")
 # A repeated character is ambiguous across word boundaries (副作用不用, 只要不要).
 # Exempt a question only at the clause's start, after its subject, or in a question frame.
-CARE_QUESTION_SUBJECT = re.compile(r"(?:你们|我们|您|你|我|自己)?(?:现在|到底|究竟)?")
+# A clause may open with a connective (r7 dream_hospital_health#3: 那要不要去做检查).
+CARE_QUESTION_SUBJECT = re.compile(
+    r"(?:那么|那|所以)?(?:你们|我们|您|你|我|自己)?(?:现在|到底|究竟)?"
+)
 CARE_QUESTION_FRAME = re.compile(
     r"(?:关于|至于|问(?:一下)?|想知道|想了解|确认|考虑|判断|决定)"
     r"(?:你们|我们|您|你|我|自己)?(?:现在|到底|究竟)?$"
@@ -266,7 +281,10 @@ def hard_claim(texts) -> str | None:
                 denial = GAIN_DISMISSAL.search(before) or DIRECT_NEGATION.search(before)
                 if denial and GAIN_DENIAL_NEGATED.search(before[: denial.start()]):
                     return match[0]
-                if GAIN_DISMISSAL.search(before) or negates_claim(before):
+                rest = text[match.end() :]
+                if (GAIN_DISMISSAL.search(before) or negates_claim(before)) and (
+                    GAIN_DISMISSED_REST.match(rest)
+                ):
                     continue
             return match[0]
     return None

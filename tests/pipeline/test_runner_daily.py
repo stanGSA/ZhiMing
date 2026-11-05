@@ -365,3 +365,77 @@ async def test_the_r6_gain_denial_no_longer_needs_repair_or_counts_as_unsafe(mak
     assert (outcome.status, info["repairs"], info["degraded"]) == ("submit_reading", 0, None)
     assert not any(e["event"] == "pipeline_stage" and e.get("stage") == "safety" for e in events)
     assert claim in outcome.text
+
+
+# ---- P2 r7: the approved denial written with a modified or quoted object ------------------
+
+
+@pytest.mark.parametrize(
+    "claim",
+    [
+        "别把一时的配合顺畅当成稳赚，亏损的可能需要提前想清楚。",
+        "别把顺手当稳赚。",
+        "别把“配合顺”误解为“稳赚”。",
+    ],
+)
+async def test_the_r7_gain_denials_pass_without_repair_or_safety_reply(make, claim):
+    runtime, _, events = make(lambda m: written(m, extra=claim))
+    outcome = await runtime.turn(INVESTMENT)
+    info = outcome.data["pipeline"]
+    assert (outcome.status, info["repairs"], info["degraded"]) == ("submit_reading", 0, None)
+    assert claim in outcome.text
+
+
+@pytest.mark.parametrize("claim", ["别把顺手当成稳赚的反面。", "不得不把一时的配合顺畅当成稳赚。"])
+async def test_what_the_r7_gain_widening_must_still_refuse(make, claim):
+    runtime, *_ = make(lambda m: written(m, extra=claim), written)
+    outcome = await runtime.turn(INVESTMENT)
+    info = outcome.data["pipeline"]
+    assert (outcome.status, info["repairs"]) == ("submit_reading", 1)
+    assert "确定性" in info["problems"][0][0]
+    assert claim not in outcome.text
+
+
+# ---- P2 r7 review: a hand-written aspect must be one of the day's -------------------------
+
+TOMORROW = "明天运势怎么样？"
+
+
+@pytest.mark.parametrize(
+    "claim",
+    [
+        # The day's own events (2026-10-31 for BIRTH): Moon–Jupiter opposition, Mercury–
+        # Jupiter sextile.
+        "月亮与本命木星的对分相让你容易想得多。",
+        "行运水星与本命木星六分相，沟通可以顺一点。",
+    ],
+)
+async def test_a_hand_written_aspect_of_the_day_is_accepted(make, claim):
+    runtime, *_ = make(lambda m: written(m, extra=claim))
+    outcome = await runtime.turn(TOMORROW)
+    info = outcome.data["pipeline"]
+    assert (outcome.status, info["repairs"], info["degraded"]) == ("submit_reading", 0, None), info[
+        "problems"
+    ]
+    assert claim in outcome.text
+
+
+@pytest.mark.parametrize(
+    "claim, problem",
+    [
+        # r7 tomorrow_work#3's form with aspects that are not this day's.
+        ("月亮与本命火星、金星的三分相让行动顺手。", "当天没有月亮与本命火星的三分相"),
+        ("月亮与本命冥王星的对分相让你紧张。", "当天没有月亮与本命冥王星的对分相"),
+        # One body of a list that is not the day's is enough.
+        ("月亮与本命太阳、木星的六分相。", "当天没有月亮与本命木星的六分相"),
+        # The right bodies with another aspect.
+        ("月亮与本命木星的四分相让你紧张。", "当天没有月亮与本命木星的四分相"),
+    ],
+)
+async def test_a_hand_written_aspect_that_is_not_the_days_is_repaired(make, claim, problem):
+    runtime, *_ = make(lambda m: written(m, extra=claim), written)
+    outcome = await runtime.turn(TOMORROW)
+    info = outcome.data["pipeline"]
+    assert (outcome.status, info["repairs"], info["degraded"]) == ("submit_reading", 1, None)
+    assert any(problem in p for p in info["problems"][0]), info["problems"]
+    assert claim not in outcome.text
