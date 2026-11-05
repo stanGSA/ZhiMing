@@ -1000,3 +1000,164 @@ async def test_a_lost_construction_does_not_authorise_its_object_alone(make, tex
     assert (outcome.status, info["repairs"], info["degraded"]) == ("submit_reading", 1, None)
     assert "不在事实表里" in info["problems"][0][0]
     assert text not in outcome.text
+
+
+# ---- P2 r6: 画面, a dismissed 预兆 and the chase's own running ------------------------------
+
+R6_ACCEPTED = [
+    # r6 dream_late_grandmother#1: 画面 is the dream's scene, not the symbol 画.
+    (
+        GRANDMOTHER,
+        R3_GRANDMOTHER_SYMBOLS,
+        "留个出口：找个安静的时候，把梦里的画面和想对奶奶说的话写下来，不必写完整。",
+    ),
+    # r6 dream_hospital_health#1 and #2, both refused sentences of each draft.
+    (
+        HOSPITAL,
+        PILOT_SYMBOLS[HOSPITAL],
+        "把注意力放回真实的疲惫感上，比反复琢磨梦里的画面更能照顾自己。",
+    ),
+    (HOSPITAL, PILOT_SYMBOLS[HOSPITAL], "梦是情绪的一面镜子，照顾好真实的疲惫，比担心预兆更有用。"),
+    # r6 dream_chased_to_exam#2: the running of 被人追着一直跑 is the matched 被追.
+    (
+        CHASED,
+        PILOT_SYMBOLS[CHASED],
+        "梦里的奔跑不代表你做得不够，它更像一个信号：你也许需要先照顾那个一直没敢停下来的自己。",
+    ),
+]
+
+
+@pytest.mark.parametrize("question, symbols, text", R6_ACCEPTED)
+async def test_the_r6_false_rejections_pass_the_final_submission(make, question, symbols, text):
+    runtime, _, events = make(extraction(symbols), with_layer(text), written)
+    outcome = await runtime.turn(question)
+    info = outcome.data["pipeline"]
+    assert (outcome.status, info["repairs"], info["degraded"]) == ("submit_reading", 0, None), info[
+        "problems"
+    ]
+    assert text in outcome.text
+    assert planned(events).count("submit_reading") == 1
+
+
+@pytest.mark.parametrize(
+    "question, text",
+    [
+        # 画 itself, its other aliases, drawing, and any other symbol beside 画面 still count.
+        (GRANDMOTHER, "梦见一幅画，象征你想留住和奶奶的回忆。"),
+        (GRANDMOTHER, "梦里的「画」代表你想留住回忆。"),
+        (GRANDMOTHER, "梦见画画象征你想表达思念。"),
+        (GRANDMOTHER, "梦里的画面里有一只猫，猫象征独立。"),
+        # Another unmatched symbol in the same sentence as the chase's running.
+        (CHASED, "梦里的奔跑和猫都象征你想逃开压力。"),
+        # 跑步 itself is never bound to the chase.
+        (CHASED, "梦见跑步象征你在追赶目标。"),
+        # An adverb before the verb does not hide an unmatched symbol (found reviewing r6).
+        (CHASED, "被追和猫都象征你想逃开压力。"),
+        (CHASED, "猫也代表你想独立。"),
+    ],
+)
+async def test_what_the_r6_dream_fixes_must_still_refuse(make, question, text):
+    problems = await problems_of(make, question, text)
+    assert any("不是本次命中的意象" in problem for problem in problems), problems
+
+
+@pytest.mark.parametrize(
+    "text",
+    [
+        # A dismissal covers only its own 预兆; a later prophecy in the text still counts.
+        "比担心预兆更重要的是，这个梦预示你会康复。",
+        "与其担心预兆，不如相信它预示着好转。",
+        "你担心的预兆会成真。",
+        # A negation first and an affirmation after it (PR #46-#48 review pattern).
+        "这不是坏事，它预示着你会好转。",
+        "这不是坏事而是预示好转。",
+        "这不是坏事但是预兆。",
+        "不必担心，这是好的预兆。",
+        "这不是一般的预兆。",
+        # Characters that negate nothing: 不幸, 不安, 无论, 无疑, 非常, 别人, 不久, 不仅, 不出.
+        "这是不幸的预兆。",
+        "这种不安预示着改变。",
+        "无论如何这预示着好运。",
+        "这无疑预示着好运。",
+        "这个梦非常明确地预示着好转。",
+        "梦见别人生病预示你会好转。",
+        "这个梦说明不久会发生好事。",
+        "这不仅预示着压力。",
+        "不出意外这个梦预示着好转。",
+    ],
+)
+async def test_what_the_r6_prophecy_fix_must_still_refuse(make, text):
+    problems = await problems_of(make, HOSPITAL, text)
+    assert any("预兆" in problem for problem in problems), problems
+
+
+@pytest.mark.parametrize(
+    "text",
+    [
+        "这个梦不是健康的预兆，更多反映你最近很累。",
+        "不是要出事，这个梦更像压力感受，不预示现实事件。",
+        "这些联想仅供自我反思，不代表现实事件的预兆。",
+        "这类意象可作为理解自身需求的参考，不作为现实预兆。",
+        "别把梦当成预兆。",
+        "没有什么预兆。",
+        "它并不意味着有什么预兆。",
+        "不必担心预兆。",
+        "与其担心这是不是预兆，不如先好好休息。",
+    ],
+)
+async def test_negated_and_dismissed_prophecy_words_are_accepted(make, text):
+    problems = await problems_of(make, HOSPITAL, text)
+    assert not any("预兆" in problem for problem in problems), problems
+
+
+@pytest.mark.parametrize(
+    "question, symbols",
+    [
+        # No 被追 hit: the running is not grounded in anything matched.
+        (
+            "梦见被人追着一直跑，路边还有一只猫。这个梦什么意思？",
+            [{"phrase": "猫", "symbol": "猫"}],
+        ),
+        # A run told in another clause is not the chase's running.
+        (
+            "梦见被一条大狗追，后来我去操场跑步。这个梦什么意思？",
+            [{"phrase": "被一条大狗追", "symbol": "被追"}],
+        ),
+        (
+            "梦见被人追，跑进考场才发现没复习。这个梦什么意思？",
+            [{"phrase": "被人追", "symbol": "被追"}],
+        ),
+    ],
+)
+async def test_running_outside_the_matched_chase_is_still_refused(make, question, symbols):
+    text = "梦里的奔跑象征你想释放压力。"
+    runtime, *_ = make(extraction(symbols), with_layer(text), written)
+    outcome = await runtime.turn(question)
+    info = outcome.data["pipeline"]
+    assert (outcome.status, info["repairs"], info["degraded"]) == ("submit_reading", 1, None)
+    assert "跑步" in info["problems"][0][0]
+    assert text not in outcome.text
+
+
+async def test_the_chase_running_alias_is_not_inherited_by_the_single_agent_validator(make):
+    from common.schemas import Reading
+    from plugins.dream.validation import validate_output
+
+    runtime, *_ = make(extraction(PILOT_SYMBOLS[CHASED]), written)
+    outcome = await runtime.turn(CHASED)
+    reading = Reading.model_validate(outcome.data["reading"])
+    reading.summary = "梦里的奔跑象征你想逃开压力。"
+    state = dict(runtime.session.state)
+    assert "pipeline_run" not in state
+    assert "跑步" in (validate_output(reading, state, Dream(runtime).matcher) or "")
+    state["pipeline_run"] = {"system": "dream"}
+    assert validate_output(reading, state, Dream(runtime).matcher) is None
+
+
+def test_a_dream_scene_is_not_read_as_a_painting(make):
+    """画面 is a distinct head: it yields no 画, while 画 and 一幅画 still match."""
+    runtime, *_ = make()
+    matcher = Dream(runtime).matcher
+    assert matcher.scan("梦里的画面很清晰") == []
+    assert matcher.scan("梦见一幅画，画面里有一只猫") == ["画", "猫"]
+    assert matcher.match("画面")["key"] is None

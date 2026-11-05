@@ -501,3 +501,64 @@ async def test_a_single_digit_before_a_predicate_is_still_a_value(make, claim):
     assert (outcome.status, info["repairs"], info["degraded"]) == ("submit_reading", 1, None)
     assert "与本次计算不符" in info["problems"][0][0]
     assert claim not in outcome.text
+
+
+# ---- P2 r6: a subject covering both names binds a shared value to each --------------------
+
+COMPARE = "张伟和李娜，这两个名字从五格看哪个更好？"
+
+
+def advising(advice):
+    """Both names' layers, plus advice items that name neither of them."""
+    items = "".join(f"- {item}\n" for item in advice)
+    return lambda m: written(m).replace("【建议】\n", f"【建议】\n{items}")
+
+
+async def test_the_r6_shared_outer_grid_passes_the_final_submission(make):
+    """r6 name_compare_two#2: 张伟 and 李娜 both have 外格2."""
+    advice = "补短板：两个名字都可留意外格2的提示，做计划时先把基础打扎实。"
+    runtime, _, events = make(advising([advice]))
+    outcome = await runtime.turn(COMPARE)
+    info = outcome.data["pipeline"]
+    assert (outcome.status, info["repairs"], info["degraded"]) == ("submit_reading", 0, None), info[
+        "problems"
+    ]
+    assert "两个名字都可留意外格2" in outcome.text
+    assert planned(events).count("submit_reading") == 1
+
+
+@pytest.mark.parametrize(
+    "advice, problem",
+    [
+        # A shared subject binds every name, so the value must hold for each of them.
+        ("留意：两个名字都可留意外格4。", "外格4与本次计算不符"),
+        # 张伟's 人格 is 22, 李娜's is 17: another value in the same sentence is checked too.
+        ("留意：两个名字都可留意外格2和人格22。", "李娜的人格22与本次计算不符"),
+        ("留意：两人都是外格2，人格17。", "张伟的人格17与本次计算不符"),
+        # A negated collective, a wrong count, or one in an earlier sentence binds nothing.
+        ("留意：并非两个名字都要留意外格2。", "须写明是哪个名字"),
+        ("留意：不是两个名字都要留意外格2。", "须写明是哪个名字"),
+        ("留意：三个名字都可留意外格2。", "须写明是哪个名字"),
+        ("留意：两个名字都不错。人格22值得留意。", "须写明是哪个名字"),
+        # A claim before the collective is not covered by it.
+        ("留意：外格2，两个名字都要留意。", "须写明是哪个名字"),
+        # A full name written after the collective takes the claims back to that name.
+        ("留意：两个名字都不错，李娜的人格22值得留意。", "李娜的人格22与本次计算不符"),
+    ],
+)
+async def test_what_the_r6_collective_fix_must_still_refuse(make, advice, problem):
+    runtime, *_ = make(advising([advice]), written)
+    outcome = await runtime.turn(COMPARE)
+    info = outcome.data["pipeline"]
+    assert (outcome.status, info["repairs"], info["degraded"]) == ("submit_reading", 1, None)
+    assert problem in info["problems"][0][0], info["problems"]
+    assert advice not in outcome.text
+
+
+async def test_a_collective_alone_does_not_bind_a_single_name_reading(make):
+    """With one name there is nothing to share: 两个名字 never widens what is checked."""
+    runtime, *_ = make(advising(["留意：两个名字都可留意人格24。"]), written)
+    outcome = await runtime.turn("张伟这个名字的五格怎么样？")
+    info = outcome.data["pipeline"]
+    assert info["repairs"] == 1
+    assert "与本次计算不符" in info["problems"][0][0]
