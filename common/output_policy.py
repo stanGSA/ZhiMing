@@ -38,13 +38,23 @@ HARD = re.compile(r"稳赚|必涨|必死|必然确诊")
 # The object may carry a modifier or quotes (r7: 别把一时的配合顺畅当成稳赚, 别把顺手当稳赚,
 # 别把“配合顺”误解为“稳赚”). It is one short phrase without a negation, a contrast, a
 # certainty or another hard word, so it cannot hide a second clause or a double negative.
+# Nor a frame verb or modal: 不要把它当作偶然应理解成必然 holds two frames, not one object.
 GAIN_OBJECT = (
-    r"[“‘「\"']?(?:(?![不没非无别但而却是必]|一定|肯定|注定|铁定|绝对|百分|毫无|稳赚)"
+    r"[“‘「\"']?(?:(?![不没非无别但而却是必]|一定|肯定|注定|铁定|绝对|百分|毫无|稳赚"
+    r"|[当看视想认应该要误]|理解|解读|作为)"
     r"[\u4e00-\u9fff]){1,10}[”’」\"']?"
 )
+# One controlled adverbial may stand between the negation and 把, and one adverb before the
+# verb (r8: 别在情绪顺畅时把配合或行情当成稳赚, 别因为情绪顺畅就把…当作稳赚, 别把“有机会”
+# 直接当成“稳赚”). Its words hold no negation, contrast, 把/将 or certainty either.
+PLAIN = r"(?:(?![不没非无别但而却是必把将]|一定|肯定|注定|铁定|绝对|稳赚)[\u4e00-\u9fff])"
+DISMISS_ADVERBIAL = (
+    rf"(?:(?:在|趁){PLAIN}{{1,8}}(?:时|的时候)|因为{PLAIN}{{1,8}}|一下子|轻易|急着|随便|再)?就?"
+)
+DISMISS_VERB_ADVERB = r"(?:直接|轻易|简单地?|随便|马上|就)?"
 GAIN_DISMISSAL = re.compile(
     r"(?:别|不要|不能|不应(?:该|当)?|不|并不)"
-    rf"(?:(?:把|将){GAIN_OBJECT})?"
+    rf"(?:{DISMISS_ADVERBIAL}(?:把|将){GAIN_OBJECT}{DISMISS_VERB_ADVERB})?"
     r"(?:当作|当成|当|视为|看成|看作|理解为|理解成|误解为|误认为|错当成)[“‘「\"']?$"
 )
 # What may follow a dismissed 稳赚 in its clause: 别当稳赚以外的选择 affirms it.
@@ -119,6 +129,20 @@ NEGATED_NOUN = re.compile(
     r"(?:它们?|这(?:些|张牌)?|那(?:些|张牌)?|牌面|"
     r"[这那](?:个|种|些|件)?(?:数理|结果|意象|梦境|梦|牌面|牌|事件|趋势))?"
     r"(?:理解为|理解成|看作|看成|当作|当成|视为|想成|解读为|解读成)$"
+    # The same frame with any short plain object, as for 稳赚 (r8 daily_lucky_color#3:
+    # 别把配合当成必然有利). Double negatives (不得不把, 不是不把) are not denials.
+    r"|(?<!不)(?<!非)(?<!不是)(?<!没有)(?<!不得)(?<!不能)(?<!不可)"
+    rf"(?:不必|不要|别|不用|不能|不应(?:该|当)?)(?:{DISMISS_ADVERBIAL})(?:把|将){GAIN_OBJECT}"
+    rf"{DISMISS_VERB_ADVERB}(?:理解为|理解成|看作|看成|当作|当成|当|视为|想成|解读为|解读成)$"
+)
+# “不是事情必然顺利的保证” (r8 daily_today_general#2) denies a guarantee: the copula governs the
+# claim through the noun that ends its phrase. The subject between is one short plain phrase,
+# the rest of the phrase holds no break, and a question (…的保证吗) asks the opposite.
+NEGATED_HEAD_BEFORE = re.compile(
+    rf"(?:不是|并不是|并非|绝非|不等于|不构成|不能作为|不作为){PLAIN}{{0,6}}$"
+)
+NEGATED_HEAD_AFTER = re.compile(
+    rf"{PLAIN}{{0,8}}?的(?:保证|结论|定论|预言|承诺|依据|证明|意思)(?![^。；;！!？?\n]*[吗么？?])"
 )
 CLAUSE_START = re.compile(r".*[，,。；;：:！!？?\n]")
 
@@ -261,10 +285,20 @@ def certainty_claim(texts) -> str | None:
         text = NEGATED_DISCLAIMER.sub(" ", text or "")
         for match in CERTAINTY.finditer(text):
             before = clause_before(text, match.start(), 40)
-            if negates_claim(before):
+            if negates_claim(before) or negated_head(text, match, before):
                 continue
             return match.group()
     return None
+
+
+def negated_head(text: str, match: re.Match, before: str) -> bool:
+    """“不是X必然Y的保证”: a copula denies the claim through the noun closing its phrase."""
+    before = re.split(r"但是|然而|不过|反而|而是|可是|却|但", before)[-1]
+    return bool(
+        NEGATED_HEAD_BEFORE.search(before)
+        and not GAIN_DENIAL_NEGATED.search(before[: NEGATED_HEAD_BEFORE.search(before).start()])
+        and NEGATED_HEAD_AFTER.match(text, match.end())
+    )
 
 
 def hard_claim(texts) -> str | None:

@@ -31,6 +31,53 @@ supported_conclusion：每个体系的关键判断有实际计算与所引用释
 no_fabricated_facts：不编造出生信息、星体落座或宫位、干支十神、起运、家庭或工作经历；未知时辰不解释宫位、四轴、时柱。把结论落到用户可能遇到的场景时，写成条件句（“如果你正在……容易……”）或建议是允许的；把这些场景写成用户已知的经历，或预言必然发生的具体事件，应false。保守免责声明不能代替作答。不要因为HTTP、格式或工具成功就判质量合格。"""
 
 
+UNPARSED_REPLY_CHARS = 4000
+JUDGED = ("direct_answer", "time_consistent", "supported_conclusion", "no_fabricated_facts")
+
+
+async def judge_answer(review_model, messages) -> tuple[dict, dict]:
+    """(review, usage) from at most two judge replies, as the campaign has always scored them.
+
+    A reply that cannot be parsed is kept, truncated, so an unscored row can be diagnosed
+    afterwards (r8 daily_unknown_birth_time#3); parsing and scores are unchanged.
+    """
+    review, usage, parse_error, unparsed = None, {}, None, []
+    for attempt in range(2):
+        reply = None
+        try:
+            reply = await review_model.chat(messages, [])
+            usage = dict(
+                input_tokens=(usage.get("input_tokens", 0) or 0) + (reply.input_tokens or 0),
+                output_tokens=(usage.get("output_tokens", 0) or 0) + (reply.output_tokens or 0),
+                usage_available=usage.get("usage_available", True) and reply.usage_available,
+                requested_model=review_model.model,
+                returned_model=reply.model,
+                parse_attempts=attempt + 1,
+            )
+            review = extract_json_object(reply.text)
+            if not all(type(review.get(key)) is bool for key in JUDGED):
+                raise ValueError("评委JSON缺少有效的布尔判定字段")
+            parse_error = None
+            break
+        except ValueError as exc:
+            parse_error = exc
+            text = (reply.text or "") if reply else None
+            unparsed.append(
+                dict(error=str(exc)[:200], reply=text[:UNPARSED_REPLY_CHARS] if text else text)
+            )
+        except Exception as exc:
+            review = {"error_type": type(exc).__name__, "scored": False}
+            break
+    if parse_error is not None:
+        review = {
+            "error_type": type(parse_error).__name__,
+            "scored": False,
+            "parse_attempts": 2,
+            "unparsed_replies": unparsed,
+        }
+    return review, usage
+
+
 def extract_json_object(text: str) -> dict:
     """Extract one JSON object from plain or fenced judge output."""
     text = text.strip()
@@ -486,43 +533,7 @@ async def evaluate(
                             ),
                         ),
                     ]
-                    parse_error = None
-                    for attempt in range(2):
-                        try:
-                            reply = await review_model.chat(messages, [])
-                            review_usage = dict(
-                                input_tokens=(review_usage.get("input_tokens", 0) or 0)
-                                + (reply.input_tokens or 0),
-                                output_tokens=(review_usage.get("output_tokens", 0) or 0)
-                                + (reply.output_tokens or 0),
-                                usage_available=review_usage.get("usage_available", True)
-                                and reply.usage_available,
-                                requested_model=review_model.model,
-                                returned_model=reply.model,
-                                parse_attempts=attempt + 1,
-                            )
-                            review = extract_json_object(reply.text)
-                            required = (
-                                "direct_answer",
-                                "time_consistent",
-                                "supported_conclusion",
-                                "no_fabricated_facts",
-                            )
-                            if not all(type(review.get(key)) is bool for key in required):
-                                raise ValueError("评委JSON缺少有效的布尔判定字段")
-                            parse_error = None
-                            break
-                        except ValueError as exc:
-                            parse_error = exc
-                        except Exception as exc:
-                            review = {"error_type": type(exc).__name__, "scored": False}
-                            break
-                    if parse_error is not None:
-                        review = {
-                            "error_type": type(parse_error).__name__,
-                            "scored": False,
-                            "parse_attempts": 2,
-                        }
+                    review, review_usage = await judge_answer(review_model, messages)
                     review_elapsed = time.perf_counter() - review_start
                 quality_pass = (
                     bool(

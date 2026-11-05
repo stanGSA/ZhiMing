@@ -536,3 +536,48 @@ async def test_ref_only_evidence_covers_all_computation_plugins(runtime, system)
             None,
         )
         assert error is None, (system, item, error)
+
+
+class ScriptedJudge:
+    model = "judge-model"
+
+    def __init__(self, *texts):
+        self.texts = list(texts)
+
+    async def chat(self, messages, tools):
+        return ModelResponse(text=self.texts.pop(0), input_tokens=10, output_tokens=5)
+
+
+async def test_an_unparsed_judge_reply_is_kept_for_diagnosis():
+    """r8 daily_unknown_birth_time#3 was unscored after two replies nobody could read back."""
+    from scripts.live_week23 import UNPARSED_REPLY_CHARS, judge_answer
+
+    broken = '{"direct_answer": true, "reasons": ["引号"没有转义"]}'
+    partial = '{"direct_answer": true, "time_consistent": "是"}' + "x" * UNPARSED_REPLY_CHARS
+    review, usage = await judge_answer(ScriptedJudge(broken, partial), [])
+    assert review["scored"] is False and review["error_type"] == "ValueError"
+    assert review["parse_attempts"] == usage["parse_attempts"] == 2
+    first, second = review["unparsed_replies"]
+    assert first["reply"] == broken and "JSON" in first["error"]
+    assert len(second["reply"]) == UNPARSED_REPLY_CHARS and "布尔" in second["error"]
+
+
+async def test_a_judge_reply_parsed_on_the_second_attempt_is_scored_as_before():
+    from scripts.live_week23 import judge_answer
+
+    valid = json.dumps(
+        dict(
+            direct_answer=True,
+            time_consistent=True,
+            supported_conclusion=False,
+            no_fabricated_facts=True,
+            reasons=[],
+        )
+    )
+    review, usage = await judge_answer(ScriptedJudge("没有JSON", valid), [])
+    assert review == json.loads(valid)
+    assert (usage["parse_attempts"], usage["input_tokens"], usage["returned_model"]) == (
+        2,
+        20,
+        None,
+    )

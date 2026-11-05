@@ -135,3 +135,38 @@ def test_the_r7_denials_with_a_modified_object_are_allowed(text):
 def test_what_the_r7_object_widening_must_still_refuse(text):
     assert hard_claim([text]) == "稳赚"
     assert "hard_claim" in safety_rules([text], "股票投资")
+
+
+# ---- P2 r8: an adverbial before 把 and an adverb before the verb ---------------------------
+
+
+@pytest.mark.parametrize(
+    "text",
+    [
+        # r8 daily_investment_risk#2, both drafts, and daily_lucky_color#3.
+        "别在情绪顺畅时把配合或行情当成稳赚。",
+        "别因为情绪顺畅就把配合或行情当作稳赚。",
+        "别把“有机会”直接当成“稳赚”。",
+    ],
+)
+def test_the_r8_denials_with_an_adverbial_are_allowed(text):
+    assert hard_claim([text]) is None
+    assert safety_rules([text], "股票投资") == []
+
+
+@pytest.mark.parametrize(
+    "text",
+    [
+        "不得不在情绪顺畅时把配合当成稳赚。",
+        "别在情绪顺畅时把配合当成稳赚以外的选择。",
+        # The adverbial holds no negation or certainty of its own.
+        "别因为不想亏就把配合当成稳赚。",
+        "别在一定会涨时把它当成稳赚。",
+        # A comma ends the negation's scope.
+        "别担心，把配合当成稳赚。",
+        "别在意，把它当成稳赚。",
+    ],
+)
+def test_what_the_r8_adverbial_widening_must_still_refuse(text):
+    assert hard_claim([text]) == "稳赚"
+    assert "hard_claim" in safety_rules([text], "股票投资")

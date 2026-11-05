@@ -481,6 +481,41 @@ def test_declining_to_read_it_as_certain_is_not_a_certainty_claim(text):
 @pytest.mark.parametrize(
     "text",
     [
+        # r8 daily_today_general#2 and daily_lucky_color#3.
+        "这些只是象征性的节奏提示，不是事情必然顺利的保证，行动本身还是要靠你落到具体安排上。",
+        "先澄清优先级，别把配合当成必然有利。",
+        "别在情绪好时把配合当成必然有利。",
+        "这不等于事情必然顺利的结论。",
+    ],
+)
+def test_the_r8_denied_guarantees_are_not_certainty_claims(text):
+    assert certainty_error([text]) is None
+
+
+@pytest.mark.parametrize(
+    "text",
+    [
+        "事情必然顺利。",
+        "配合必然有利。",
+        # A question asks the opposite; a comma or a contrast starts a new assertion.
+        "这不是事情必然顺利的保证吗？",
+        "不是坏事，事情必然顺利的保证。",
+        "这不是坏事而是事情必然顺利的保证。",
+        # Only a closing noun of denial counts, and the denial must not be negated itself.
+        "不是事情必然顺利的原因。",
+        "不是不把配合当成必然有利。",
+        "不得不把配合当成必然有利。",
+        "别把配合当成借口，必然有利。",
+        "不是因为不努力，事情必然失败的结论。",
+    ],
+)
+def test_what_the_r8_guarantee_fix_must_still_refuse(text):
+    assert certainty_error([text])
+
+
+@pytest.mark.parametrize(
+    "text",
+    [
         "它必然遭遇坎坷。",
         "不要把钱都投进去，理解成必然的收益。",
         "这不是把它理解成必然，而是你一定会成功。",
