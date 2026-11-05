@@ -73,16 +73,64 @@ ASPECT_ZH = {
 }
 PILLAR_ZH = {"year": "年柱", "month": "月柱", "day": "日柱", "time": "时柱"}
 # A hand-written aspect (r7 tomorrow_work#3: 月亮与本命火星、金星的三分相) is a fact like any
-# other: the prompt asks for placeholders, and one that is not the day's is refused. Only the
-# transit form is read; a natal body (本命X) first is not the day's aspect at all.
+# other: the prompt asks for placeholders, and one that is not the day's is refused. Support the
+# common aliases and either body order, while retaining lists and the optional 的.
 BODY_NAMES = "|".join(BODY_ZH.values())
-ASPECT_WORDS = {"合相": "conjunction", "对分": "opposition", "四分": "square"}
-ASPECT_WORDS |= {"三分": "trine", "六分": "sextile"}
-ASPECT_CLAIM = re.compile(
-    rf"(?<!本命)(?<!本命的)(?:行运的?)?({BODY_NAMES})(?:与|和|对)(?:本命的?)?"
-    rf"((?:{BODY_NAMES})(?:(?:、|和|与|及|以及)(?:本命的?)?(?:{BODY_NAMES}))*)"
-    r"(?:之间)?(?:的|形成的?|呈|构成|成)?\s*(合相|对分|四分|三分|六分)"
+ASPECT_WORDS = {
+    "合相": "conjunction",
+    "合": "conjunction",
+    "对分": "opposition",
+    "对冲": "opposition",
+    "冲相": "opposition",
+    "冲": "opposition",
+    "三分": "trine",
+    "拱相": "trine",
+    "拱": "trine",
+    "四分": "square",
+    "刑相": "square",
+    "刑": "square",
+    "刑克": "square",
+    "六分": "sextile",
+    "六合": "sextile",
+}
+ASPECT_ALIASES = "|".join(
+    re.escape(word) + ("(?!突)" if word == "冲" else "")
+    for word in sorted(ASPECT_WORDS, key=len, reverse=True)
 )
+ASPECT_BODY = rf"(?:(?:行运|本命)的?)?(?:{BODY_NAMES})"
+ASPECT_LEFT = rf"(?P<left_marker>行运|本命)?的?(?P<left>{BODY_NAMES})"
+ASPECT_RIGHT = rf"(?P<right>{ASPECT_BODY}(?:(?:、|和|与|及|以及){ASPECT_BODY})*)"
+ASPECT_NAME = rf"(?P<aspect>{ASPECT_ALIASES})(?:相)?"
+ASPECT_CLAIMS = (
+    re.compile(
+        rf"{ASPECT_LEFT}(?:与|和|对){ASPECT_RIGHT}"
+        rf"(?:之间)?(?:的|形成的?|呈|构成|成)?\s*{ASPECT_NAME}"
+    ),
+    re.compile(rf"{ASPECT_LEFT}(?:与|和|对)?\s*{ASPECT_NAME}\s*{ASPECT_RIGHT}"),
+)
+ASPECT_BODY_TOKEN = re.compile(rf"(?P<marker>行运|本命)?的?(?P<body>{BODY_NAMES})")
+
+
+def daily_aspect_assertions(text: str):
+    """Yield (transit body, natal body, aspect) for hand-written daily claims."""
+    names = {zh: key for key, zh in BODY_ZH.items()}
+    for pattern in ASPECT_CLAIMS:
+        for match in pattern.finditer(text):
+            left = names[match["left"]]
+            # Unmarked daily claims retain the original left-transit convention. Reverse
+            # natal-first claims only with an explicit transit marker; otherwise they may
+            # describe the natal chart. List roles persist until another marker occurs.
+            right_marker = "本命"
+            for item in ASPECT_BODY_TOKEN.finditer(match["right"]):
+                right_marker = item["marker"] or right_marker
+                left_marker = match["left_marker"] or ("本命" if right_marker == "行运" else "行运")
+                if left_marker == right_marker:
+                    continue  # Natal–natal and transit–transit are not daily events.
+                right = names[item["body"]]
+                transit, natal = (right, left) if left_marker == "本命" else (left, right)
+                yield transit, natal, ASPECT_WORDS[match["aspect"]]
+
+
 CONVENTIONS = {
     "daily_seed": "每日一牌的抽法",
     "no_exact_events": "当天没有精确相位",
@@ -350,15 +398,11 @@ class Daily(System):
                 found.append(f"当天流日五行是{element}，正文写成了{match[1]}")
 
         events = {(e["transit_body"], e["natal_body"], e["aspect"]) for e in result["events"]}
-        bodies = {zh: body for body, zh in BODY_ZH.items()}
-        for match in ASPECT_CLAIM.finditer(text):
-            transit, aspect = bodies[match[1]], ASPECT_WORDS[match[3]]
-            for natal in re.findall(BODY_NAMES, match[2]):
-                if (transit, bodies[natal], aspect) not in events:
-                    found.append(
-                        f"当天没有{match[1]}与本命{natal}的{match[3]}{'' if match[3] == '合相' else '相'}；"
-                        "相位只写事实表里的编号"
-                    )
+        for transit, natal, aspect in daily_aspect_assertions(text):
+            if (transit, natal, aspect) not in events:
+                found.append(
+                    f"当天没有{BODY_ZH[transit]}与本命{BODY_ZH[natal]}的{ASPECT_ZH[aspect]}；相位只写事实表里的编号"
+                )
 
         for match in re.finditer(r"(?<!\d)(\d{4})年(\d{1,2})月(\d{1,2})[日号]?", text):
             context = text[max(0, match.start() - 12) : match.end() + 8]

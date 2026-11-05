@@ -421,6 +421,25 @@ async def test_a_hand_written_aspect_of_the_day_is_accepted(make, claim):
 
 
 @pytest.mark.parametrize(
+    "claim",
+    [
+        # Existing aspect vocabulary includes aliases and permits either body order.
+        "行运月亮对冲本命木星，容易想得多。",
+        "本命木星与行运月亮对冲，容易想得多。",
+        "行运的水星与本命的木星六合，沟通可以顺一点。",
+    ],
+)
+async def test_a_hand_written_daily_aspect_alias_matching_the_day_is_accepted(make, claim):
+    runtime, *_ = make(lambda m: written(m, extra=claim))
+    outcome = await runtime.turn(TOMORROW)
+    info = outcome.data["pipeline"]
+    assert (outcome.status, info["repairs"], info["degraded"]) == ("submit_reading", 0, None), info[
+        "problems"
+    ]
+    assert claim in outcome.text
+
+
+@pytest.mark.parametrize(
     "claim, problem",
     [
         # r7 tomorrow_work#3's form with aspects that are not this day's.
@@ -430,6 +449,10 @@ async def test_a_hand_written_aspect_of_the_day_is_accepted(make, claim):
         ("月亮与本命太阳、木星的六分相。", "当天没有月亮与本命木星的六分相"),
         # The right bodies with another aspect.
         ("月亮与本命木星的四分相让你紧张。", "当天没有月亮与本命木星的四分相"),
+        # The same incorrect claims bypassed the canonical-only parser in r8.
+        ("月亮与本命冥王星刑克让你紧张。", "当天没有月亮与本命冥王星的四分相"),
+        ("月亮刑克本命冥王星让你紧张。", "当天没有月亮与本命冥王星的四分相"),
+        ("本命冥王星与行运月亮对冲让你紧张。", "当天没有月亮与本命冥王星的对分相"),
     ],
 )
 async def test_a_hand_written_aspect_that_is_not_the_days_is_repaired(make, claim, problem):
