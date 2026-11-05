@@ -31,7 +31,7 @@ PROPHECY = re.compile(r"预示|预兆|征兆|兆头|预言|将会发生|会发�
 # never by a stray negative character in front of it: 这不是坏事，它预示…, 不是坏事而是预示…,
 # 这是不幸的预兆, 这无疑预示…, 别人… and 不久会发生… all still assert one (r6 review).
 # As a noun, 预兆 is also cancelled by what denies or dismisses it: 不是健康的预兆, 没有什么预兆,
-# 不作为现实预兆, 别把梦当成预兆, 不必担心预兆, and r6's comparison 比担心预兆更有用 / 与其担心这是不是预兆.
+# 不作为现实预兆, 别把梦当成预兆, 不必担心预兆. Comparisons need a safe continuation too.
 # A modifier between the denial and the noun is one short word, never 一般/普通 (不是一般的预兆
 # says the opposite), and a contrast (而是, 但 …) starts a new assertion.
 DENIED_OMEN = re.compile(
@@ -41,14 +41,30 @@ DENIED_OMEN = re.compile(
     r"(?:什么|任何|一种|一个)?"
     r"|(?:不必|不用|不要|别|无需|无须|用不着|没必要)(?:去|再|太|过于|总)?"
     r"(?:担心|害怕|纠结|在意|琢磨|当成|当作|看成|看作|视为)(?:什么|任何|这是|它是)?"
-    r"|(?:不必|不用|不要|别|不是|并不是|并非)把(?:梦|梦境|这个梦|这场梦|它)"
+    r"|(?<!不)(?<!非)(?<!不是)(?<!没有)(?<!不得)(?<!不能)(?<!不可)(?<!不可以)"
+    r"(?:不|并不|不能|不可|不可以|不应|不应该|不应当|不必|不用|不要|别|不是|并不是|并非)"
+    r"(?:把|将)(?:梦|梦境|这个梦|这场梦|它)"
     r"(?:当成|当作|看成|看作|视为|理解为|理解成|想成)(?:什么|任何)?"
-    r"|(?:比|与其)(?:去|总|总是|反复|一直)?(?:担心|害怕|纠结|琢磨|猜测|在意)"
-    r"(?:它|这)?(?:是不是|是否|会不会)?(?:什么|所谓的)?"
+    r"|(?<!不)(?<!非)(?<!不是)(?<!没有)(?<!不得)(?<!不能)(?<!不可)(?<!不可以)"
+    r"(?:不|并不|不能|不可|不可以|不应|不应该|不应当|不必|不要)被"
+    r"(?:当成|当作|看成|看作|视为|理解为|理解成|想成)(?:什么|任何)?"
     r")"
     r"(?:(?!一般|普通)[\u4e00-\u9fff]{1,2}的?)?$"
 )
 OMEN = re.compile(r"预兆|征兆|兆头|预言")
+OMEN_COMPARISON = re.compile(
+    r"(比|与其)(?:去|总|总是|反复|一直)?(?:担心|害怕|纠结|琢磨|猜测|在意)"
+    r"(?:它|这)?(?:是不是|是否|会不会)?(?:什么|所谓的)?$"
+)
+# These are complete continuations, not prefixes: 等着它成真 and 相信它会带来好运
+# must not inherit the exemption from 比担心/与其担心. Keep the known r6 wording and
+# concrete self-care alternatives; other comparisons can be rewritten during repair.
+SAFE_OMEN_COMPARISON = {
+    "比": re.compile(r"更(?:有用|重要|能照顾自己)"),
+    "与其": re.compile(
+        r"[，,]?\s*不如(?:先)?(?:好好)?(?:休息|照顾自己|照顾好自己|关注当下|放松一下)"
+    ),
+}
 UNMATCHED = re.compile(
     r"未收录|没有收录|未命中|无法解读|不作解读|不解读|没有依据|暂无|词典外|不在词典"
 )
@@ -230,6 +246,10 @@ def validate_output(reading, state, matcher):
 def prophecy_negated(text, match) -> bool:
     """Whether a negation or a dismissal in its own clause governs this prophecy word."""
     before = clause_before(text, match.start(), 40)
+    comparison = OMEN_COMPARISON.search(before)
+    if comparison and OMEN.fullmatch(match[0]):
+        after = re.split(r"[。；;！!？?\n]", text[match.end() :], maxsplit=1)[0].strip()
+        return bool(SAFE_OMEN_COMPARISON[comparison[1]].fullmatch(after))
     if negates_claim(before):
         return True
     if not OMEN.fullmatch(match[0]):

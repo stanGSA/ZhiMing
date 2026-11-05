@@ -1161,3 +1161,51 @@ def test_a_dream_scene_is_not_read_as_a_painting(make):
     assert matcher.scan("梦里的画面很清晰") == []
     assert matcher.scan("梦见一幅画，画面里有一只猫") == ["画", "猫"]
     assert matcher.match("画面")["key"] is None
+
+
+@pytest.mark.parametrize(
+    "text",
+    [
+        "不把梦当作预言，只把它作为心理感受的线索。",
+        "不要将梦看作预兆，只把它作为心理感受的线索。",
+        "这个梦不应该被看成预兆，只把它作为心理感受的线索。",
+        "不能将梦境理解为现实的预兆。",
+        "梦境不应被视为健康的预言。",
+        "比担心预兆更有用。",
+        "与其担心这是不是预兆，不如先好好休息。",
+    ],
+)
+async def test_pr49_explicit_denials_and_practical_comparisons_need_no_repair(make, text):
+    runtime, *_ = make(extraction(PILOT_SYMBOLS[HOSPITAL]), with_layer(text), written)
+    outcome = await runtime.turn(HOSPITAL)
+    info = outcome.data["pipeline"]
+    assert (outcome.status, info["repairs"], info["degraded"]) == ("submit_reading", 0, None), info[
+        "problems"
+    ]
+    assert text in outcome.text
+
+
+@pytest.mark.parametrize(
+    "text",
+    [
+        "比担心预兆更应该相信它会带来好运。",
+        "与其担心预兆不如等着它成真。",
+        "与其担心这是不是预兆，不如相信它会成真。",
+        "比担心预兆更有用的是相信它会成真。",
+        "与其担心预兆，不如先好好休息并等它成真。",
+        "不把梦当作压力，而是当作预言。",
+        "不要将梦看作坏事，它是健康的预兆。",
+        "这个梦不应该被看成普通的梦而是预兆。",
+        "不得不把梦当作预言。",
+        "不是不把梦当作预言。",
+        "不能不将梦看作预兆。",
+        "这个梦不得不被看成预兆。",
+    ],
+)
+async def test_pr49_comparisons_and_denials_cannot_authorise_an_omen(make, text):
+    runtime, *_ = make(extraction(PILOT_SYMBOLS[HOSPITAL]), with_layer(text), written)
+    outcome = await runtime.turn(HOSPITAL)
+    info = outcome.data["pipeline"]
+    assert (outcome.status, info["repairs"], info["degraded"]) == ("submit_reading", 1, None)
+    assert "预兆" in info["problems"][0][0]
+    assert text not in outcome.text

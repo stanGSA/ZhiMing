@@ -562,3 +562,34 @@ async def test_a_collective_alone_does_not_bind_a_single_name_reading(make):
     info = outcome.data["pipeline"]
     assert info["repairs"] == 1
     assert "与本次计算不符" in info["problems"][0][0]
+
+
+@pytest.mark.parametrize("negation", ["并非", "不是", "未必", "不"])
+@pytest.mark.parametrize("subject", ["这两个名字", "那两个名字", "两人"])
+async def test_pr49_a_demonstrative_cannot_hide_collective_negation(make, negation, subject):
+    advice = f"留意：{negation}{subject}都外格2。"
+    runtime, *_ = make(advising([advice]), written)
+    outcome = await runtime.turn(COMPARE)
+    info = outcome.data["pipeline"]
+    assert (outcome.status, info["repairs"], info["degraded"]) == ("submit_reading", 1, None)
+    assert "须写明是哪个名字" in info["problems"][0][0]
+    assert advice not in outcome.text
+
+
+async def test_pr49_a_negated_collective_cancels_an_earlier_subject(make):
+    advice = "两个名字都值得参考，但并非这两个名字都外格2。"
+    runtime, *_ = make(advising([advice]), written)
+    outcome = await runtime.turn(COMPARE)
+    assert outcome.data["pipeline"]["repairs"] == 1
+
+
+@pytest.mark.parametrize("subject", ["这两个名字", "那两人"])
+async def test_pr49_an_affirmative_collective_keeps_its_shared_value(make, subject):
+    advice = f"{subject}都可留意外格2。"
+    runtime, *_ = make(advising([advice]))
+    outcome = await runtime.turn(COMPARE)
+    info = outcome.data["pipeline"]
+    assert (outcome.status, info["repairs"], info["degraded"]) == ("submit_reading", 0, None), info[
+        "problems"
+    ]
+    assert advice in outcome.text

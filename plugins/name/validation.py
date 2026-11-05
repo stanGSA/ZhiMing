@@ -38,9 +38,10 @@ SANCAI = re.compile(r"三才(?:配置|组合|五行)?\s*(?:为|是|：|:)?\s*[�
 # both 外格 are 2). Its count must be the number of names; a negated one (并非两个名字都…)
 # binds nothing; a full name written after it takes the claims back to that name.
 COLLECTIVE = re.compile(
-    r"(?<!非)(?<!不是)(?<!未必)(?<!不)(?:这)?([两二三四五])(?:个名字|个姓名|位|人)(?:的[\u4e00-\u9fff]{0,4})?"
+    r"(?<![这那])(?:[这那])?([两二三四五])(?:个名字|个姓名|位|人)(?:的[\u4e00-\u9fff]{0,4})?"
     r"(?:都|均|皆)"
 )
+COLLECTIVE_NEGATION = re.compile(r"(?:非|不是|未必|不)\s*$")
 COUNTS = {"两": 2, "二": 2, "三": 3, "四": 4, "五": 5}
 SENTENCE_END = re.compile(r"[。；;！!？?\n]")
 FATALISM = re.compile(
@@ -98,15 +99,29 @@ def check_claims(text, bound, results):
     by_name = {result["full_name"]: result for result in results.values()}
     pattern = "|".join(re.escape(name) for name in sorted(by_name, key=len, reverse=True))
     names = [(m.start(), by_name[m[0]]) for m in re.finditer(pattern, text)] if pattern else []
-    collectives = [m.start() for m in COLLECTIVE.finditer(text) if COUNTS[m[1]] == len(results) > 1]
+    # Match the whole subject before checking its prefix. Otherwise an optional 这
+    # can be skipped and the match restarted at 两, hiding the negation in 并非这两个名字.
+    collectives = [
+        (
+            m.start(),
+            COUNTS[m[1]] == len(results) > 1 and not COLLECTIVE_NEGATION.search(text[: m.start()]),
+        )
+        for m in COLLECTIVE.finditer(text)
+        if len(results) > 1
+    ]
 
     def owners(position):
         """The names a claim at ``position`` is about; empty when it cannot be bound."""
         before = [(start, r) for start, r in names if start <= position]
         sentence = max((m.end() for m in SENTENCE_END.finditer(text, 0, position)), default=0)
         latest = before[-1][0] if before else -1
-        if any(sentence <= start <= position and start > latest for start in collectives):
-            return list(results.values())
+        subjects = [
+            valid
+            for start, valid in collectives
+            if sentence <= start <= position and start > latest
+        ]
+        if subjects:
+            return list(results.values()) if subjects[-1] else []
         if before:
             return [before[-1][1]]
         return [bound] if bound is not None else []
