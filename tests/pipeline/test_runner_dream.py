@@ -1238,3 +1238,34 @@ async def test_a_connective_before_discouraging_care_is_still_refused(make):
     assert info["repairs"] == 1
     assert "不能劝阻就医" in info["problems"][0][0]
     assert "不要去做检查" not in outcome.text
+
+
+# ---- P2 r8: the copula of a restatement inside the matched teeth phrase -------------------
+
+
+async def test_the_r8_teeth_restatement_is_the_matched_symbol(make):
+    """r8 dream_teeth_falling#1: 梦里牙齿是一颗一颗掉下来的 was refused as 牙齿."""
+    text = "梦里牙齿是一颗一颗掉下来的，不是一下子全没，这个缓慢的过程可能让你在梦里眼看着却拦不住，醒来才会慌。"
+    runtime, _, events = make(extraction(TEETH_SYMBOLS), with_layer(text), written)
+    outcome = await runtime.turn(TEETH)
+    info = outcome.data["pipeline"]
+    assert (outcome.status, info["repairs"], info["degraded"]) == ("submit_reading", 0, None), info[
+        "problems"
+    ]
+    assert text in outcome.text
+
+
+@pytest.mark.parametrize(
+    "text",
+    [
+        "梦里牙齿象征财富。",
+        "梦里牙齿是一颗一颗掉下来的，牙齿象征财富。",
+        "梦见牙齿是白的，象征自我形象。",
+    ],
+)
+async def test_what_the_r8_teeth_fix_must_still_refuse(make, text):
+    runtime, *_ = make(extraction(TEETH_SYMBOLS), written)
+    runtime.session.state["selected_systems"] = ["dream"]
+    await runtime.turn(TEETH)
+    problems = Dream(runtime).problems([text], runtime.session)
+    assert any("牙齿" in problem for problem in problems), problems

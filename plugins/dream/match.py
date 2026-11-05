@@ -17,9 +17,10 @@ from knowledge.review import normalize_entry
 FILLER = re.compile(r"[的了着过在把被一个很好多大小些]")
 # Only these documented constructions may normalise non-contiguous words. Never rebuild
 # arbitrary nouns from a bag of characters (手机飞到手里 does not contain an aircraft).
+# 掉牙 admits the copula of a restatement (r8: 梦里牙齿是一颗一颗掉下来的).
 NORMALISATIONS = {
     "掉牙": re.compile(
-        r"牙(?:齿)?(?:一颗颗|一粒粒|一颗(?:一颗)?|一粒(?:一粒)?|全都|全部|都|又|也|突然|慢慢|不停地|不断地|往下|了|的)*\s*(?:掉|脱落)"
+        r"牙(?:齿)?(?:一颗颗|一粒粒|一颗(?:一颗)?|一粒(?:一粒)?|全都|全部|都|又|也|是|突然|慢慢|不停地|不断地|往下|了|的)*\s*(?:掉|脱落)"
     ),
     "被追": re.compile(
         r"被(?:一[只条个人群]|大|小|陌生的|陌生|凶猛的|凶猛|人|狗|狼|老虎|狮子|怪物|坏人|警察|朋友|同学|追赶者)*追(?:赶)?"

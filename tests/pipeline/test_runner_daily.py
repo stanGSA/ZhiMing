@@ -462,3 +462,41 @@ async def test_a_hand_written_aspect_that_is_not_the_days_is_repaired(make, clai
     assert (outcome.status, info["repairs"], info["degraded"]) == ("submit_reading", 1, None)
     assert any(problem in p for p in info["problems"][0]), info["problems"]
     assert claim not in outcome.text
+
+
+# ---- P2 r8: denials written with an adverbial or a closing noun ---------------------------
+
+
+@pytest.mark.parametrize(
+    "question, claim",
+    [
+        (INVESTMENT, "别在情绪顺畅时把配合或行情当成稳赚。"),
+        (INVESTMENT, "别因为情绪顺畅就把配合或行情当作稳赚。"),
+        (TODAY, "这些只是象征性的节奏提示，不是事情必然顺利的保证。"),
+        (TODAY, "先澄清优先级，别把配合当成必然有利。"),
+        (TODAY, "别把“有机会”直接当成“稳赚”。"),
+    ],
+)
+async def test_the_r8_denials_pass_without_repair(make, question, claim):
+    runtime, *_ = make(lambda m: written(m, extra=claim))
+    outcome = await runtime.turn(question)
+    info = outcome.data["pipeline"]
+    assert (outcome.status, info["repairs"], info["degraded"]) == ("submit_reading", 0, None), info[
+        "problems"
+    ]
+    assert claim in outcome.text
+
+
+@pytest.mark.parametrize(
+    "question, claim",
+    [
+        (INVESTMENT, "别因为不想亏就把配合当成稳赚。"),
+        (TODAY, "这不是事情必然顺利的保证吗？"),
+    ],
+)
+async def test_what_the_r8_denial_fixes_must_still_refuse(make, question, claim):
+    runtime, *_ = make(lambda m: written(m, extra=claim), written)
+    outcome = await runtime.turn(question)
+    info = outcome.data["pipeline"]
+    assert (outcome.status, info["repairs"]) == ("submit_reading", 1)
+    assert claim not in outcome.text
