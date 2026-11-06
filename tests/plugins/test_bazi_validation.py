@@ -113,3 +113,33 @@ def test_unknown_time_does_not_block_flow_day_evidence(state):
     state["bazi_result"]["time_known"] = False
     state["bazi_result"]["pillars"]["time"] = None
     assert validate_output(draft("流日日柱甲子。"), state) is None
+
+
+# ---- P2 r9: 己 in the word 自己 is no stem -------------------------------------------------
+
+
+@pytest.mark.parametrize(
+    "text",
+    [
+        # r9 Dream-single hospital_health#2, all three drafts.
+        "梦里病倒，有时反而是心里在给自己申请一个可以停下来的理由。",
+        "像是在给自己申请一个休息的理由。",
+    ],
+)
+def test_the_word_ziji_before_a_branch_is_not_a_pillar(state, text):
+    assert validate_output(draft(text), state) is None
+
+
+@pytest.mark.parametrize(
+    "text",
+    [
+        # 自 meaning “from” before another stem still names a pillar that is not computed.
+        "自庚子年起运势转好。",
+        "你的日柱是庚子。",
+        # 己 not inside 自己 is still a stem.
+        "己申年会顺一些。",
+        "今年是己未年。",
+    ],
+)
+def test_other_stem_branch_pairs_are_still_checked(state, text):
+    assert validate_output(draft(text), state)

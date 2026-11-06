@@ -85,7 +85,9 @@ def validate_output(reading, state):
     for p in periods:
         gz.update(p["pillars"].values())
     gz.update(segment["pillar"] for segment in (daily.get("day") or {}).get("segments", []))
-    for value in re.findall(r"[甲乙丙丁戊己庚辛壬癸][子丑寅卯辰巳午未申酉戌亥]", text):
+    # 己 in the word 自己 is no stem (r9: 给自己申请 is not 己申), as common.validation.JARGON
+    # already reads “自己未来”. Only 己: 自 is also “from”, and 自甲子年起 names a pillar.
+    for value in re.findall(r"(?:[甲乙丙丁戊庚辛壬癸]|(?<!自)己)[子丑寅卯辰巳午未申酉戌亥]", text):
         if value not in gz:
             return "本次工具结果没有该干支，不能编造"
     # The daily fortune's day pillars are flow days as well.

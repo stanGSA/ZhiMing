@@ -59,7 +59,7 @@ B 的其余各条不变，四条 P1 通过条件仍以最终验收集为准。�
 | Name-single / compound_surname#1、career_grid#2（重试耗尽） | “地格三者”被读成地格 3 | `plugins/name/validation.py::CLAIMED/GRID` |
 | Name-single / without_lead_in#3（重试耗尽） | “天格加地格减人格得18”被读成人格 18 | `plugins/name/validation.py::GRID` |
 
-**风险：**这三处都在共用校验器里，流水线的回答同样会经过它们，只是 r9 的流水线没写出这些说法。如果 r10 的流水线写到了，并因此降级，按现行口径会阻断冻结。是否在 P2 一并修，请负责人决定；r10 的 PR 按口径没有修。
+**风险：**这三处都在共用校验器里，流水线的回答同样会经过它们，只是 r9 的流水线没写出这些说法。如果 r10 的流水线写到了，并因此降级，按现行口径会阻断冻结。负责人决定在 P2 一并修，r10 的 PR 已包含这三处修复（[tuning-r10.md](../pilot-r10/tuning-r10.md)）。
 
 **按体系统计的校验拒绝次数**（single 指 agent 循环中 validation_failed 的工具错误，pipeline 指被拒的稿件）：
 

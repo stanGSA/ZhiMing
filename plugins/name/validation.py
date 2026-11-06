@@ -17,7 +17,8 @@ NUMBER = r"(?:\d+|[零〇一二两三四五六七八九十百]+)"
 # a shorter numeral to escape a counter: 二十三项 must not be read as 二十.
 # Exempt complete words, not every lone numeral followed by Han text: 人格五属土 and
 # 数理一代表独立 still assert values. 一面 includes r5's actual “数理是一面…镜子”.
-NUMBER_WORD = r"(?!一般|一致|一说|一共|一面|二者|二人|两相|十分)"
+# 三者 and its kin count the grids just listed (r9: 三才指天格、人格、地格三者尾数…).
+NUMBER_WORD = r"(?!一般|一致|一说|一共|一面|二者|二人|两相|十分|两者|两人|三者|三人|四者|五者)"
 CLAIMED = (
     r"(?:\d+(?!\d)|" + NUMBER_WORD + r"(?!五格|三才|[零〇一二两三四五]吉[零〇一二两三四五]凶)"
     r"(?:(?!五行|五格|三才)[零〇一二两三四五六七八九十百])+"
@@ -26,6 +27,16 @@ CLAIMED = (
 )
 GRID = re.compile(
     rf"(天格|人格|地格|外格|总格)(?:数理|数)?\s*(?:为|是|=|：|:|得|共)?\s*({CLAIMED})"
+)
+# An arithmetic expression of grids states its result, not the last operand's value (r9:
+# 外格由天格加地格减人格得18 is 17+26−25, not 人格18). The result is computed from the name's
+# own grids and must equal the stated value, and the subject grid when one is written.
+GRID_NAME = r"(?:天格|人格|地格|外格|总格)"
+OPERATOR = r"\s*(?:加上|加|减去|减|再加上?|再减去?|[+＋\-−－])\s*"
+EXPRESSION = re.compile(
+    rf"(?:({GRID_NAME})(?:数)?\s*(?:由|等于|=|是|为)\s*)?"
+    rf"({GRID_NAME}(?:{OPERATOR}{GRID_NAME})+)"
+    rf"(?:数)?\s*(?:得|等于|=|为|是)\s*({CLAIMED})"
 )
 STROKE = re.compile(
     rf"[「“\"《【]?([㐀-鿿])[」”\"》】]?(?:字)?\s*(?:按|为|是|计|算|作|有|共)?\s*(?:康熙)?(?:笔画)?\s*({NUMBER})\s*画"
@@ -127,7 +138,24 @@ def check_claims(text, bound, results):
             return [before[-1][1]]
         return [bound] if bound is not None else []
 
+    expressions = []
+    for match in EXPRESSION.finditer(text):
+        subject, terms, value = match.group(1), match.group(2), number(match.group(3))
+        found = owners(match.start())
+        if not found:
+            return f"有多个姓名时，{terms}{value}须写明是哪个名字"
+        operands = re.findall(GRID_NAME, terms)
+        signs = [1] + [
+            -1 if re.search(r"减|[\-−－]", op) else 1 for op in re.findall(OPERATOR, terms)
+        ]
+        for result in found:
+            total = sum(sign * result["grids"][g] for sign, g in zip(signs, operands, strict=True))
+            if total != value or (subject and result["grids"][subject] != value):
+                return f"{result['full_name']}的{match[0]}与本次计算不符"
+        expressions.append(match.span())
     for match in GRID.finditer(text):
+        if any(start <= match.start() < end for start, end in expressions):
+            continue
         grid, value = match.group(1), number(match.group(2))
         found = owners(match.start())
         if not found:
