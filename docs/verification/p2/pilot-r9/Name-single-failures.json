@@ -1,0 +1,218 @@
+[
+  {
+    "key": "name_ambiguous_form#1",
+    "status": "ask_user",
+    "model_calls": 2,
+    "events": []
+  },
+  {
+    "key": "name_compound_surname#1",
+    "status": "retry_limit",
+    "model_calls": 5,
+    "events": [
+      {
+        "event": "tool_result",
+        "tool": "submit_reading",
+        "result": {
+          "ok": false,
+          "data": {},
+          "error": "欧阳子涵的地格3与本次计算不符",
+          "code": "validation_failed",
+          "cached": false
+        },
+        "code": null,
+        "attempts": null
+      },
+      {
+        "event": "tool_result",
+        "tool": "submit_reading",
+        "result": {
+          "ok": false,
+          "data": {},
+          "error": "欧阳子涵的地格3与本次计算不符",
+          "code": "validation_failed",
+          "cached": false
+        },
+        "code": null,
+        "attempts": null
+      },
+      {
+        "event": "tool_result",
+        "tool": "submit_reading",
+        "result": {
+          "ok": false,
+          "data": {},
+          "error": "欧阳子涵的地格3与本次计算不符",
+          "code": "validation_failed",
+          "cached": false
+        },
+        "code": null,
+        "attempts": null
+      },
+      {
+        "event": "repeated_failure_limit",
+        "tool": "submit_reading",
+        "result": null,
+        "code": "validation_failed",
+        "attempts": 3
+      }
+    ]
+  },
+  {
+    "key": "name_without_lead_in#1",
+    "status": "ask_user",
+    "model_calls": 2,
+    "events": []
+  },
+  {
+    "key": "name_without_lead_in#2",
+    "status": "ask_user",
+    "model_calls": 2,
+    "events": []
+  },
+  {
+    "key": "name_career_grid#2",
+    "status": "retry_limit",
+    "model_calls": 7,
+    "events": [
+      {
+        "event": "tool_result",
+        "tool": "lookup_meaning",
+        "result": {
+          "ok": false,
+          "data": {},
+          "error": "缺条目：精确 key 或同义词未命中；key须照抄工具结果中的meaning_key或key；本版本有效key候选：stroke_rule、bazi_compare、ambiguous_form、compound_surname。已有计算附带释义时直接使用；不要继续猜key。",
+          "code": "missing_entry",
+          "cached": false
+        },
+        "code": null,
+        "attempts": null
+      },
+      {
+        "event": "tool_result",
+        "tool": "submit_reading",
+        "result": {
+          "ok": false,
+          "data": {},
+          "error": "林晓的地格3与本次计算不符",
+          "code": "validation_failed",
+          "cached": false
+        },
+        "code": null,
+        "attempts": null
+      },
+      {
+        "event": "tool_result",
+        "tool": "submit_reading",
+        "result": {
+          "ok": false,
+          "data": {},
+          "error": "林晓的地格3与本次计算不符",
+          "code": "validation_failed",
+          "cached": false
+        },
+        "code": null,
+        "attempts": null
+      },
+      {
+        "event": "tool_result",
+        "tool": "submit_reading",
+        "result": {
+          "ok": false,
+          "data": {},
+          "error": "林晓的地格3与本次计算不符",
+          "code": "validation_failed",
+          "cached": false
+        },
+        "code": null,
+        "attempts": null
+      },
+      {
+        "event": "repeated_failure_limit",
+        "tool": "submit_reading",
+        "result": null,
+        "code": "validation_failed",
+        "attempts": 3
+      }
+    ]
+  },
+  {
+    "key": "name_without_lead_in#3",
+    "status": "retry_limit",
+    "model_calls": 10,
+    "events": [
+      {
+        "event": "tool_result",
+        "tool": "submit_reading",
+        "result": {
+          "ok": false,
+          "data": {},
+          "error": "免责声明由应用统一添加，正文不要重复",
+          "code": "validation_failed",
+          "cached": false
+        },
+        "code": null,
+        "attempts": null
+      },
+      {
+        "event": "tool_result",
+        "tool": "submit_reading",
+        "result": {
+          "ok": false,
+          "data": {},
+          "error": "免责声明由应用统一添加，正文不要重复",
+          "code": "validation_failed",
+          "cached": false
+        },
+        "code": null,
+        "attempts": null
+      },
+      {
+        "event": "tool_result",
+        "tool": "submit_reading",
+        "result": {
+          "ok": false,
+          "data": {},
+          "error": "陈思远的人格18与本次计算不符",
+          "code": "validation_failed",
+          "cached": false
+        },
+        "code": null,
+        "attempts": null
+      },
+      {
+        "event": "tool_result",
+        "tool": "submit_reading",
+        "result": {
+          "ok": false,
+          "data": {},
+          "error": "陈思远的人格18与本次计算不符",
+          "code": "validation_failed",
+          "cached": false
+        },
+        "code": null,
+        "attempts": null
+      },
+      {
+        "event": "tool_result",
+        "tool": "submit_reading",
+        "result": {
+          "ok": false,
+          "data": {},
+          "error": "陈思远的人格18与本次计算不符",
+          "code": "validation_failed",
+          "cached": false
+        },
+        "code": null,
+        "attempts": null
+      },
+      {
+        "event": "repeated_failure_limit",
+        "tool": "submit_reading",
+        "result": null,
+        "code": "validation_failed",
+        "attempts": 3
+      }
+    ]
+  }
+]

@@ -1,0 +1,42 @@
+{
+  "model_calls": 0,
+  "key": "Name-pipeline/name_compare_two#3",
+  "actual_rejections": [
+    {
+      "recorded": [
+        "有多个姓名时，外格2须写明是哪个名字"
+      ],
+      "replayed": [
+        "有多个姓名时，外格2须写明是哪个名字"
+      ],
+      "reproduced": true
+    },
+    {
+      "recorded": [
+        "有多个姓名时，外格2须写明是哪个名字"
+      ],
+      "replayed": [
+        "有多个姓名时，外格2须写明是哪个名字"
+      ],
+      "reproduced": true
+    }
+  ],
+  "controls": [
+    {
+      "text": "两个名字：都留意外格2数提示的基础与分工问题。",
+      "error": "有多个姓名时，外格2须写明是哪个名字"
+    },
+    {
+      "text": "两个名字都留意外格2数提示的基础与分工问题。",
+      "error": null
+    },
+    {
+      "text": "张伟的外格2、李娜的外格2。",
+      "error": null
+    },
+    {
+      "text": "两个名字都留意外格3。",
+      "error": "张伟的外格3与本次计算不符"
+    }
+  ]
+}
