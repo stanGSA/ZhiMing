@@ -39,7 +39,8 @@ SANCAI = re.compile(r"三才(?:配置|组合|五行)?\s*(?:为|是|：|:)?\s*[�
 # binds nothing; a full name written after it takes the claims back to that name.
 COLLECTIVE = re.compile(
     r"(?<![这那])(?:[这那])?([两二三四五])(?:个名字|个姓名|位|人)(?:的[\u4e00-\u9fff]{0,4})?"
-    r"(?:都|均|皆)"
+    # A label's colon or a comma may stand before 都 (r9 name_compare_two#3: 两个名字：都留意外格2).
+    r"(?:\s*[：:，,]\s*)?(?:都|均|皆)"
 )
 COLLECTIVE_NEGATION = re.compile(r"(?:非|不是|未必|不)\s*$")
 COUNTS = {"两": 2, "二": 2, "三": 3, "四": 4, "五": 5}

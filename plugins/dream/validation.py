@@ -136,15 +136,24 @@ def hit_aliases(matcher, hits, question):
     return {**phrase_aliases(matcher, hits), **chase_aliases(hits, question)}
 
 
-def phrase_hits(hits):
-    """Bind only controlled normalisation spans, preserving other objects in a source phrase."""
+def phrase_hits(hits, matcher=None):
+    """Bind only controlled normalisation spans, preserving other objects in a source phrase.
+
+    A source phrase that is, as a whole, one alias of another symbol is the hit itself:
+    去世的奶奶 matched 祖父母 (r9 dream_late_grandmother#1), so retelling those words does not
+    name 去世的亲人. Only that exact phrase is bound; the other symbol's other aliases
+    (去世的亲人, 去世的爷爷) stay unmatched, and a phrase of several objects binds nothing.
+    """
     phrases = {}
     for hit in hits:
+        phrase = hit.get("phrase") or ""
         rule = NORMALISATIONS.get(hit["key"])
         if rule:
-            phrases.update(
-                (match[0], hit["key"]) for match in rule.finditer(hit.get("phrase") or "")
-            )
+            phrases.update((match[0], hit["key"]) for match in rule.finditer(phrase))
+        if matcher is not None and phrase:
+            spans = matcher.spans(phrase)
+            if len(spans) == 1 and spans[0][:2] == (0, len(phrase)) and spans[0][3] != hit["key"]:
+                phrases.setdefault(phrase, hit["key"])
     return phrases
 
 
@@ -235,7 +244,7 @@ def validate_output(reading, state, matcher):
     pipeline = bool(state.get("pipeline_run") and reading.systems_used == ["dream"])
     matched = [h for r in found for h in r["hits"]]
     aliases = hit_aliases(matcher, matched, state.get("question")) if pipeline else {}
-    phrases = phrase_hits(matched) if pipeline else {}
+    phrases = phrase_hits(matched, matcher) if pipeline else {}
     for text in texts:
         error = text_error(text, matcher, hits, misses, aliases=aliases, phrases=phrases)
         if error:

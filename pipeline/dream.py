@@ -321,7 +321,7 @@ class Dream(System):
         hits = {hit["key"] for hit in result["hits"]}
         misses = set(result["misses"])
         aliases = hit_aliases(self.matcher, result["hits"], session.state.get("question"))
-        phrases = phrase_hits(result["hits"])
+        phrases = phrase_hits(result["hits"], self.matcher)
         found = [
             text_error(text, self.matcher, hits, misses, aliases=aliases, phrases=phrases)
             for text in texts

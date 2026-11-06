@@ -1269,3 +1269,73 @@ async def test_what_the_r8_teeth_fix_must_still_refuse(make, text):
     await runtime.turn(TEETH)
     problems = Dream(runtime).problems([text], runtime.session)
     assert any("牙齿" in problem for problem in problems), problems
+
+
+# ---- P2 r9: a source phrase that is, as a whole, another symbol's alias -------------------
+
+R9_GRANDMOTHER_SYMBOLS = [
+    {"phrase": "去世的奶奶", "symbol": "奶奶"},
+    {"phrase": "老房子", "symbol": "房子"},
+    {"phrase": "做饭", "symbol": "做饭"},
+]
+
+
+@pytest.mark.parametrize(
+    "text",
+    [
+        # r9 dream_late_grandmother#1: 去世的奶奶 matched 祖父母, then was read as 去世的亲人.
+        "你梦到去世的奶奶在老房子里给你做饭。",
+        "去世的奶奶在梦里给你做饭，往往反映你对被照顾的怀念。",
+    ],
+)
+async def test_the_r9_grandmother_retelling_passes_the_final_submission(make, text):
+    runtime, _, events = make(extraction(R9_GRANDMOTHER_SYMBOLS), with_layer(text), written)
+    outcome = await runtime.turn(GRANDMOTHER)
+    info = outcome.data["pipeline"]
+    assert (outcome.status, info["repairs"], info["degraded"]) == ("submit_reading", 0, None), info[
+        "problems"
+    ]
+    assert text in outcome.text
+
+
+@pytest.mark.parametrize(
+    "text",
+    [
+        # The other symbol's other aliases stay unmatched.
+        "去世的亲人象征新的财富。",
+        "梦见去世的爷爷，象征你在思念。",
+        # Another symbol in the same sentence as the bound phrase.
+        "去世的奶奶和猫都象征被照顾。",
+    ],
+)
+async def test_what_the_r9_grandmother_fix_must_still_refuse(make, text):
+    runtime, *_ = make(extraction(R9_GRANDMOTHER_SYMBOLS), written)
+    runtime.session.state["selected_systems"] = ["dream"]
+    await runtime.turn(GRANDMOTHER)
+    problems = Dream(runtime).problems([text], runtime.session)
+    assert any("不是本次命中的意象" in problem for problem in problems), problems
+
+
+async def test_a_broad_phrase_that_names_several_symbols_binds_nothing(make):
+    """A phrase is bound only when it is one alias as a whole (PR #46 guard)."""
+    text = "梦见猫象征你最近需要独立。"
+    runtime, *_ = make(
+        extraction([{"phrase": "猫和蛇", "symbol": "蛇"}]), with_layer(text), written
+    )
+    outcome = await runtime.turn("我梦见猫和蛇，醒来很紧张。")
+    assert outcome.data["pipeline"]["repairs"] == 1
+    assert "猫" in outcome.data["pipeline"]["problems"][0][0]
+
+
+async def test_the_bound_phrase_is_not_inherited_by_the_single_agent_validator(make):
+    from common.schemas import Reading
+    from plugins.dream.validation import validate_output
+
+    runtime, *_ = make(extraction(R9_GRANDMOTHER_SYMBOLS), written)
+    outcome = await runtime.turn(GRANDMOTHER)
+    reading = Reading.model_validate(outcome.data["reading"])
+    reading.summary = "去世的奶奶象征被照顾。"
+    state = dict(runtime.session.state)
+    assert "去世的亲人" in (validate_output(reading, state, Dream(runtime).matcher) or "")
+    state["pipeline_run"] = {"system": "dream"}
+    assert validate_output(reading, state, Dream(runtime).matcher) is None

@@ -593,3 +593,39 @@ async def test_pr49_an_affirmative_collective_keeps_its_shared_value(make, subje
         "problems"
     ]
     assert advice in outcome.text
+
+
+# ---- P2 r9: a label's colon between the shared subject and 都 -----------------------------
+
+
+async def test_the_r9_colon_collective_passes_the_final_submission(make):
+    """r9 name_compare_two#3: both drafts were refused, then degraded to keywords."""
+    advice = "两个名字：都留意外格2数提示的基础与分工问题。"
+    runtime, _, events = make(advising([advice]))
+    outcome = await runtime.turn(COMPARE)
+    info = outcome.data["pipeline"]
+    assert (outcome.status, info["repairs"], info["degraded"]) == ("submit_reading", 0, None), info[
+        "problems"
+    ]
+    assert advice in outcome.text
+
+
+@pytest.mark.parametrize(
+    "advice, problem",
+    [
+        ("两个名字：都留意外格4。", "外格4与本次计算不符"),
+        ("两个名字，都留意人格22。", "李娜的人格22与本次计算不符"),
+        # Without 都 the label binds nothing; a negated one neither.
+        ("两个名字：外格2。", "须写明是哪个名字"),
+        ("并非两个名字：都要留意外格2。", "须写明是哪个名字"),
+        # A full name written after the label takes the claim back to that name.
+        ("两个名字：都不错，张伟的人格17值得留意。", "张伟的人格17与本次计算不符"),
+    ],
+)
+async def test_what_the_r9_colon_fix_must_still_refuse(make, advice, problem):
+    runtime, *_ = make(advising([advice]), written)
+    outcome = await runtime.turn(COMPARE)
+    info = outcome.data["pipeline"]
+    assert (outcome.status, info["repairs"], info["degraded"]) == ("submit_reading", 1, None)
+    assert problem in info["problems"][0][0], info["problems"]
+    assert advice not in outcome.text
