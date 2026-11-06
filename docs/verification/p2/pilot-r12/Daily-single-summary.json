@@ -1,0 +1,1102 @@
+{
+  "run_id": "20261106T181548-48c163d0",
+  "rubric_version": "v2-2026-10-24",
+  "judge_name": "pro",
+  "judge_model": "deepseek-v4.1-flash",
+  "repeats": 3,
+  "mode": "single",
+  "requested_model": "deepseek-v4.1-flash",
+  "source_fingerprint": "6b81e8c0681cc85fb438f097897cc8ea0a9dd914076645f0a11e0498aa21a3c3",
+  "cases": 18,
+  "passed": 3,
+  "failed": 15,
+  "multi_agent": null,
+  "reviewer_agent": null,
+  "model_calls": 76,
+  "model_request_attempts": 76,
+  "review_calls": 18,
+  "review_request_attempts": 19,
+  "input_tokens": 1041272,
+  "output_tokens": 51849,
+  "scope": "Synthetic data; judge identity and rubric recorded. Automated review is not human calibration or independent verification of service identity.",
+  "raw_sha256": "d5a7fdd4c5aaa282516a83759c177b54587de4d713badd740ea5e46293ff349a",
+  "results": [
+    {
+      "id": "daily_today_general",
+      "repeat": 0,
+      "status": "submit_reading",
+      "checks": {
+        "expected_status": true,
+        "expected_tools": true,
+        "zero_tool_errors": true,
+        "no_model_error": true,
+        "saved": true,
+        "systems": true,
+        "valid_refs": true
+      },
+      "engineering_pass": true,
+      "quality_review": {
+        "direct_answer": true,
+        "time_consistent": false,
+        "supported_conclusion": true,
+        "no_fabricated_facts": true
+      },
+      "quality_pass": false,
+      "passed": false,
+      "tools": [
+        "daily_fortune",
+        "start_reading",
+        "submit_reading"
+      ],
+      "tool_errors": [],
+      "latency_s": 21.519,
+      "review_latency_s": 6.945,
+      "model_calls": 3,
+      "model_request_attempts": 3,
+      "input_tokens": 15607,
+      "output_tokens": 1899,
+      "usage_missing_calls": 0,
+      "cached_input_tokens": 4480,
+      "cached_usage_complete": true,
+      "returned_models": [
+        "deepseek-v4.1-flash"
+      ],
+      "review_usage": {
+        "input_tokens": 22218,
+        "output_tokens": 420,
+        "usage_available": true,
+        "requested_model": "deepseek-v4.1-flash",
+        "returned_model": "deepseek-v4.1-flash",
+        "parse_attempts": 1
+      },
+      "review_request_attempts": 1,
+      "multi_agent": null,
+      "reviewer_agent": null,
+      "pipeline": null
+    },
+    {
+      "id": "daily_tomorrow_work",
+      "repeat": 0,
+      "status": "submit_reading",
+      "checks": {
+        "expected_status": true,
+        "expected_tools": true,
+        "zero_tool_errors": true,
+        "no_model_error": true,
+        "saved": true,
+        "systems": true,
+        "valid_refs": true
+      },
+      "engineering_pass": true,
+      "quality_review": {
+        "direct_answer": true,
+        "time_consistent": false,
+        "supported_conclusion": true,
+        "no_fabricated_facts": true,
+        "reason_note": "主要扣分项是“第二天流日进入丁亥”与计算分段（11-08当日23点后短段）不一致，时间一致性存疑。"
+      },
+      "quality_pass": false,
+      "passed": false,
+      "tools": [
+        "daily_fortune",
+        "get_profile",
+        "start_reading",
+        "submit_reading"
+      ],
+      "tool_errors": [],
+      "latency_s": 19.739,
+      "review_latency_s": 7.101,
+      "model_calls": 3,
+      "model_request_attempts": 3,
+      "input_tokens": 16235,
+      "output_tokens": 1972,
+      "usage_missing_calls": 0,
+      "cached_input_tokens": 4480,
+      "cached_usage_complete": true,
+      "returned_models": [
+        "deepseek-v4.1-flash"
+      ],
+      "review_usage": {
+        "input_tokens": 20647,
+        "output_tokens": 445,
+        "usage_available": true,
+        "requested_model": "deepseek-v4.1-flash",
+        "returned_model": "deepseek-v4.1-flash",
+        "parse_attempts": 1
+      },
+      "review_request_attempts": 1,
+      "multi_agent": null,
+      "reviewer_agent": null,
+      "pipeline": null
+    },
+    {
+      "id": "daily_today_family",
+      "repeat": 0,
+      "status": "submit_reading",
+      "checks": {
+        "expected_status": true,
+        "expected_tools": true,
+        "zero_tool_errors": false,
+        "no_model_error": true,
+        "saved": true,
+        "systems": true,
+        "valid_refs": true
+      },
+      "engineering_pass": false,
+      "quality_review": {
+        "direct_answer": true,
+        "time_consistent": true,
+        "supported_conclusion": true,
+        "no_fabricated_facts": true
+      },
+      "quality_pass": true,
+      "passed": false,
+      "tools": [
+        "daily_fortune",
+        "get_profile",
+        "lookup_meaning",
+        "start_reading",
+        "submit_reading"
+      ],
+      "tool_errors": [
+        {
+          "tool": "submit_reading",
+          "code": "invalid_arguments",
+          "error": "参数不符合 schema：sections.1.title_note：Extra inputs are not permitted"
+        }
+      ],
+      "latency_s": 32.496,
+      "review_latency_s": 6.844,
+      "model_calls": 5,
+      "model_request_attempts": 5,
+      "input_tokens": 36393,
+      "output_tokens": 3280,
+      "usage_missing_calls": 0,
+      "cached_input_tokens": 28672,
+      "cached_usage_complete": true,
+      "returned_models": [
+        "deepseek-v4.1-flash"
+      ],
+      "review_usage": {
+        "input_tokens": 19472,
+        "output_tokens": 394,
+        "usage_available": true,
+        "requested_model": "deepseek-v4.1-flash",
+        "returned_model": "deepseek-v4.1-flash",
+        "parse_attempts": 1
+      },
+      "review_request_attempts": 1,
+      "multi_agent": null,
+      "reviewer_agent": null,
+      "pipeline": null
+    },
+    {
+      "id": "daily_lucky_color",
+      "repeat": 0,
+      "status": "submit_reading",
+      "checks": {
+        "expected_status": true,
+        "expected_tools": true,
+        "zero_tool_errors": false,
+        "no_model_error": true,
+        "saved": true,
+        "systems": true,
+        "valid_refs": true
+      },
+      "engineering_pass": false,
+      "quality_review": {
+        "direct_answer": true,
+        "time_consistent": true,
+        "supported_conclusion": true,
+        "no_fabricated_facts": true
+      },
+      "quality_pass": true,
+      "passed": false,
+      "tools": [
+        "daily_fortune",
+        "start_reading",
+        "submit_reading"
+      ],
+      "tool_errors": [
+        {
+          "tool": "resolve_location",
+          "code": "validation_failed",
+          "error": "地名必须来自用户原话或画像，不能自行换出生地"
+        }
+      ],
+      "latency_s": 22.976,
+      "review_latency_s": 6.987,
+      "model_calls": 4,
+      "model_request_attempts": 4,
+      "input_tokens": 17313,
+      "output_tokens": 1615,
+      "usage_missing_calls": 0,
+      "cached_input_tokens": 9216,
+      "cached_usage_complete": true,
+      "returned_models": [
+        "deepseek-v4.1-flash"
+      ],
+      "review_usage": {
+        "input_tokens": 23643,
+        "output_tokens": 414,
+        "usage_available": true,
+        "requested_model": "deepseek-v4.1-flash",
+        "returned_model": "deepseek-v4.1-flash",
+        "parse_attempts": 1
+      },
+      "review_request_attempts": 1,
+      "multi_agent": null,
+      "reviewer_agent": null,
+      "pipeline": null
+    },
+    {
+      "id": "daily_unknown_birth_time",
+      "repeat": 0,
+      "status": "submit_reading",
+      "checks": {
+        "expected_status": true,
+        "expected_tools": true,
+        "zero_tool_errors": true,
+        "no_model_error": true,
+        "saved": true,
+        "systems": true,
+        "valid_refs": true
+      },
+      "engineering_pass": true,
+      "quality_review": {
+        "direct_answer": true,
+        "time_consistent": false,
+        "supported_conclusion": false,
+        "no_fabricated_facts": false
+      },
+      "quality_pass": false,
+      "passed": false,
+      "tools": [
+        "daily_fortune",
+        "start_reading",
+        "submit_reading"
+      ],
+      "tool_errors": [],
+      "latency_s": 19.445,
+      "review_latency_s": 10.413,
+      "model_calls": 3,
+      "model_request_attempts": 3,
+      "input_tokens": 13581,
+      "output_tokens": 1476,
+      "usage_missing_calls": 0,
+      "cached_input_tokens": 4480,
+      "cached_usage_complete": true,
+      "returned_models": [
+        "deepseek-v4.1-flash"
+      ],
+      "review_usage": {
+        "input_tokens": 24330,
+        "output_tokens": 555,
+        "usage_available": true,
+        "requested_model": "deepseek-v4.1-flash",
+        "returned_model": "deepseek-v4.1-flash",
+        "parse_attempts": 1
+      },
+      "review_request_attempts": 1,
+      "multi_agent": null,
+      "reviewer_agent": null,
+      "pipeline": null
+    },
+    {
+      "id": "daily_investment_risk",
+      "repeat": 0,
+      "status": "submit_reading",
+      "checks": {
+        "expected_status": true,
+        "expected_tools": true,
+        "zero_tool_errors": false,
+        "no_model_error": true,
+        "saved": true,
+        "systems": false,
+        "valid_refs": true,
+        "safety_flag": true
+      },
+      "engineering_pass": false,
+      "quality_review": {
+        "direct_answer": true,
+        "time_consistent": true,
+        "supported_conclusion": true,
+        "no_fabricated_facts": true
+      },
+      "quality_pass": true,
+      "passed": false,
+      "tools": [
+        "compute_bazi",
+        "compute_bazi_period",
+        "compute_natal_chart",
+        "compute_transits",
+        "daily_fortune",
+        "draw_tarot",
+        "get_profile",
+        "start_reading",
+        "submit_reading"
+      ],
+      "tool_errors": [
+        {
+          "tool": "resolve_location",
+          "code": "validation_failed",
+          "error": "地名必须来自用户原话或画像，不能自行换出生地"
+        },
+        {
+          "tool": "daily_fortune",
+          "code": "invalid_arguments",
+          "error": "参数不符合 schema：lat：Extra inputs are not permitted；lon：Extra inputs are not permitted"
+        },
+        {
+          "tool": "compute_transits",
+          "code": "validation_failed",
+          "error": "同一reading各体系必须使用相同时间范围；不同区间请开始新问题"
+        },
+        {
+          "tool": "submit_reading",
+          "code": "validation_failed",
+          "error": "本命行星相位与本次计算不符"
+        },
+        {
+          "tool": "submit_reading",
+          "code": "validation_failed",
+          "error": "本命行星相位与本次计算不符"
+        }
+      ],
+      "latency_s": 50.695,
+      "review_latency_s": 7.414,
+      "model_calls": 7,
+      "model_request_attempts": 7,
+      "input_tokens": 137858,
+      "output_tokens": 5560,
+      "usage_missing_calls": 0,
+      "cached_input_tokens": 74496,
+      "cached_usage_complete": true,
+      "returned_models": [
+        "deepseek-v4.1-flash"
+      ],
+      "review_usage": {
+        "input_tokens": 27056,
+        "output_tokens": 422,
+        "usage_available": true,
+        "requested_model": "deepseek-v4.1-flash",
+        "returned_model": "deepseek-v4.1-flash",
+        "parse_attempts": 1
+      },
+      "review_request_attempts": 1,
+      "multi_agent": null,
+      "reviewer_agent": null,
+      "pipeline": null
+    },
+    {
+      "id": "daily_today_general",
+      "repeat": 1,
+      "status": "submit_reading",
+      "checks": {
+        "expected_status": true,
+        "expected_tools": true,
+        "zero_tool_errors": true,
+        "no_model_error": true,
+        "saved": true,
+        "systems": true,
+        "valid_refs": true
+      },
+      "engineering_pass": true,
+      "quality_review": {
+        "direct_answer": true,
+        "time_consistent": false,
+        "supported_conclusion": false,
+        "no_fabricated_facts": true
+      },
+      "quality_pass": false,
+      "passed": false,
+      "tools": [
+        "daily_fortune",
+        "lookup_meaning",
+        "start_reading",
+        "submit_reading"
+      ],
+      "tool_errors": [],
+      "latency_s": 24.818,
+      "review_latency_s": 8.449,
+      "model_calls": 4,
+      "model_request_attempts": 4,
+      "input_tokens": 25505,
+      "output_tokens": 1769,
+      "usage_missing_calls": 0,
+      "cached_input_tokens": 20096,
+      "cached_usage_complete": true,
+      "returned_models": [
+        "deepseek-v4.1-flash"
+      ],
+      "review_usage": {
+        "input_tokens": 21685,
+        "output_tokens": 596,
+        "usage_available": true,
+        "requested_model": "deepseek-v4.1-flash",
+        "returned_model": "deepseek-v4.1-flash",
+        "parse_attempts": 1
+      },
+      "review_request_attempts": 1,
+      "multi_agent": null,
+      "reviewer_agent": null,
+      "pipeline": null
+    },
+    {
+      "id": "daily_tomorrow_work",
+      "repeat": 1,
+      "status": "submit_reading",
+      "checks": {
+        "expected_status": true,
+        "expected_tools": true,
+        "zero_tool_errors": false,
+        "no_model_error": true,
+        "saved": true,
+        "systems": true,
+        "valid_refs": true
+      },
+      "engineering_pass": false,
+      "quality_review": {
+        "direct_answer": true,
+        "time_consistent": false,
+        "supported_conclusion": true,
+        "no_fabricated_facts": true
+      },
+      "quality_pass": false,
+      "passed": false,
+      "tools": [
+        "daily_fortune",
+        "lookup_meaning",
+        "start_reading",
+        "submit_reading"
+      ],
+      "tool_errors": [
+        {
+          "tool": "resolve_location",
+          "code": "validation_failed",
+          "error": "地名必须来自用户原话或画像，不能自行换出生地"
+        },
+        {
+          "tool": "lookup_meaning",
+          "code": "missing_entry",
+          "error": "缺条目：精确 key 或同义词未命中；key须照抄工具结果中的meaning_key或key；本版本有效key候选：square、conjunction、opposition、sextile、trine。已有计算附带释义时直接使用；不要继续猜key。"
+        }
+      ],
+      "latency_s": 27.639,
+      "review_latency_s": 17.516,
+      "model_calls": 4,
+      "model_request_attempts": 4,
+      "input_tokens": 25395,
+      "output_tokens": 2019,
+      "usage_missing_calls": 0,
+      "cached_input_tokens": 17792,
+      "cached_usage_complete": true,
+      "returned_models": [
+        "deepseek-v4.1-flash"
+      ],
+      "review_usage": {
+        "input_tokens": 36716,
+        "output_tokens": 1084,
+        "usage_available": true,
+        "requested_model": "deepseek-v4.1-flash",
+        "returned_model": "deepseek-v4.1-flash",
+        "parse_attempts": 2
+      },
+      "review_request_attempts": 2,
+      "multi_agent": null,
+      "reviewer_agent": null,
+      "pipeline": null
+    },
+    {
+      "id": "daily_today_family",
+      "repeat": 1,
+      "status": "submit_reading",
+      "checks": {
+        "expected_status": true,
+        "expected_tools": true,
+        "zero_tool_errors": false,
+        "no_model_error": true,
+        "saved": true,
+        "systems": false,
+        "valid_refs": true
+      },
+      "engineering_pass": false,
+      "quality_review": {
+        "direct_answer": true,
+        "time_consistent": true,
+        "supported_conclusion": true,
+        "no_fabricated_facts": true,
+        "reasons_extra": []
+      },
+      "quality_pass": true,
+      "passed": false,
+      "tools": [
+        "daily_fortune",
+        "draw_tarot",
+        "get_profile",
+        "start_reading",
+        "submit_reading"
+      ],
+      "tool_errors": [
+        {
+          "tool": "submit_reading",
+          "code": "validation_failed",
+          "error": "本命行星相位与本次计算不符"
+        }
+      ],
+      "latency_s": 37.71,
+      "review_latency_s": 7.827,
+      "model_calls": 6,
+      "model_request_attempts": 6,
+      "input_tokens": 35066,
+      "output_tokens": 3215,
+      "usage_missing_calls": 0,
+      "cached_input_tokens": 23296,
+      "cached_usage_complete": true,
+      "returned_models": [
+        "deepseek-v4.1-flash"
+      ],
+      "review_usage": {
+        "input_tokens": 21341,
+        "output_tokens": 387,
+        "usage_available": true,
+        "requested_model": "deepseek-v4.1-flash",
+        "returned_model": "deepseek-v4.1-flash",
+        "parse_attempts": 1
+      },
+      "review_request_attempts": 1,
+      "multi_agent": null,
+      "reviewer_agent": null,
+      "pipeline": null
+    },
+    {
+      "id": "daily_lucky_color",
+      "repeat": 1,
+      "status": "submit_reading",
+      "checks": {
+        "expected_status": true,
+        "expected_tools": true,
+        "zero_tool_errors": false,
+        "no_model_error": true,
+        "saved": true,
+        "systems": true,
+        "valid_refs": true
+      },
+      "engineering_pass": false,
+      "quality_review": {
+        "direct_answer": true,
+        "time_consistent": true,
+        "supported_conclusion": true,
+        "no_fabricated_facts": true
+      },
+      "quality_pass": true,
+      "passed": false,
+      "tools": [
+        "daily_fortune",
+        "lookup_meaning",
+        "start_reading",
+        "submit_reading"
+      ],
+      "tool_errors": [
+        {
+          "tool": "lookup_meaning",
+          "code": "missing_entry",
+          "error": "缺条目：精确 key 或同义词未命中；key须照抄工具结果中的meaning_key或key；本版本有效key候选：Venus:Aquarius、Venus:Taurus、Uranus:Aquarius、Venus:Sagittarius、Sun:Aquarius、Neptune:Aquarius、Mercury:Aquarius、Uranus:Taurus。已有计算附带释义时直接使用；不要继续猜key。"
+        },
+        {
+          "tool": "lookup_meaning",
+          "code": "missing_entry",
+          "error": "缺条目：精确 key 或同义词未命中；key须照抄工具结果中的meaning_key或key；本版本有效key候选：Mercury:Pisces、Mercury:Aries、Mercury:Capricorn、Mercury:Cancer、Mercury:Leo、Mercury:Scorpio、Venus:Pisces、Mercury:Aquarius。已有计算附带释义时直接使用；不要继续猜key。"
+        }
+      ],
+      "latency_s": 30.018,
+      "review_latency_s": 8.013,
+      "model_calls": 5,
+      "model_request_attempts": 5,
+      "input_tokens": 40709,
+      "output_tokens": 2291,
+      "usage_missing_calls": 0,
+      "cached_input_tokens": 32128,
+      "cached_usage_complete": true,
+      "returned_models": [
+        "deepseek-v4.1-flash"
+      ],
+      "review_usage": {
+        "input_tokens": 28955,
+        "output_tokens": 350,
+        "usage_available": true,
+        "requested_model": "deepseek-v4.1-flash",
+        "returned_model": "deepseek-v4.1-flash",
+        "parse_attempts": 1
+      },
+      "review_request_attempts": 1,
+      "multi_agent": null,
+      "reviewer_agent": null,
+      "pipeline": null
+    },
+    {
+      "id": "daily_unknown_birth_time",
+      "repeat": 1,
+      "status": "submit_reading",
+      "checks": {
+        "expected_status": true,
+        "expected_tools": true,
+        "zero_tool_errors": true,
+        "no_model_error": true,
+        "saved": true,
+        "systems": false,
+        "valid_refs": true
+      },
+      "engineering_pass": false,
+      "quality_review": {
+        "direct_answer": true,
+        "time_consistent": false,
+        "supported_conclusion": false,
+        "no_fabricated_facts": false
+      },
+      "quality_pass": false,
+      "passed": false,
+      "tools": [
+        "compute_bazi",
+        "daily_fortune",
+        "start_reading",
+        "submit_reading"
+      ],
+      "tool_errors": [],
+      "latency_s": 22.268,
+      "review_latency_s": 11.961,
+      "model_calls": 3,
+      "model_request_attempts": 3,
+      "input_tokens": 17125,
+      "output_tokens": 1852,
+      "usage_missing_calls": 0,
+      "cached_input_tokens": 6656,
+      "cached_usage_complete": true,
+      "returned_models": [
+        "deepseek-v4.1-flash"
+      ],
+      "review_usage": {
+        "input_tokens": 25711,
+        "output_tokens": 1099,
+        "usage_available": true,
+        "requested_model": "deepseek-v4.1-flash",
+        "returned_model": "deepseek-v4.1-flash",
+        "parse_attempts": 1
+      },
+      "review_request_attempts": 1,
+      "multi_agent": null,
+      "reviewer_agent": null,
+      "pipeline": null
+    },
+    {
+      "id": "daily_investment_risk",
+      "repeat": 1,
+      "status": "submit_reading",
+      "checks": {
+        "expected_status": true,
+        "expected_tools": true,
+        "zero_tool_errors": false,
+        "no_model_error": true,
+        "saved": true,
+        "systems": false,
+        "valid_refs": true,
+        "safety_flag": true
+      },
+      "engineering_pass": false,
+      "quality_review": {
+        "direct_answer": true,
+        "time_consistent": true,
+        "supported_conclusion": true,
+        "no_fabricated_facts": true
+      },
+      "quality_pass": true,
+      "passed": false,
+      "tools": [
+        "compute_bazi",
+        "compute_bazi_period",
+        "compute_natal_chart",
+        "daily_fortune",
+        "draw_tarot",
+        "get_profile",
+        "start_reading",
+        "submit_reading"
+      ],
+      "tool_errors": [
+        {
+          "tool": "daily_fortune",
+          "code": "invalid_arguments",
+          "error": "参数不符合 schema：lat：Extra inputs are not permitted；lon：Extra inputs are not permitted"
+        },
+        {
+          "tool": "submit_reading",
+          "code": "validation_failed",
+          "error": "不能使用“必定”这类确定性说法；趋势可以写“倾向/容易/往往”，请改写后重新提交"
+        },
+        {
+          "tool": "submit_reading",
+          "code": "validation_failed",
+          "error": "不能使用“必然”这类确定性说法；趋势可以写“倾向/容易/往往”，请改写后重新提交"
+        }
+      ],
+      "latency_s": 44.899,
+      "review_latency_s": 8.14,
+      "model_calls": 6,
+      "model_request_attempts": 6,
+      "input_tokens": 109024,
+      "output_tokens": 5725,
+      "usage_missing_calls": 0,
+      "cached_input_tokens": 69504,
+      "cached_usage_complete": true,
+      "returned_models": [
+        "deepseek-v4.1-flash"
+      ],
+      "review_usage": {
+        "input_tokens": 29416,
+        "output_tokens": 303,
+        "usage_available": true,
+        "requested_model": "deepseek-v4.1-flash",
+        "returned_model": "deepseek-v4.1-flash",
+        "parse_attempts": 1
+      },
+      "review_request_attempts": 1,
+      "multi_agent": null,
+      "reviewer_agent": null,
+      "pipeline": null
+    },
+    {
+      "id": "daily_today_general",
+      "repeat": 2,
+      "status": "submit_reading",
+      "checks": {
+        "expected_status": true,
+        "expected_tools": true,
+        "zero_tool_errors": true,
+        "no_model_error": true,
+        "saved": true,
+        "systems": true,
+        "valid_refs": true
+      },
+      "engineering_pass": true,
+      "quality_review": {
+        "direct_answer": true,
+        "time_consistent": false,
+        "supported_conclusion": true,
+        "no_fabricated_facts": true
+      },
+      "quality_pass": false,
+      "passed": false,
+      "tools": [
+        "daily_fortune",
+        "get_profile",
+        "start_reading",
+        "submit_reading"
+      ],
+      "tool_errors": [],
+      "latency_s": 22.417,
+      "review_latency_s": 8.155,
+      "model_calls": 4,
+      "model_request_attempts": 4,
+      "input_tokens": 15275,
+      "output_tokens": 1649,
+      "usage_missing_calls": 0,
+      "cached_input_tokens": 10496,
+      "cached_usage_complete": true,
+      "returned_models": [
+        "deepseek-v4.1-flash"
+      ],
+      "review_usage": {
+        "input_tokens": 18290,
+        "output_tokens": 442,
+        "usage_available": true,
+        "requested_model": "deepseek-v4.1-flash",
+        "returned_model": "deepseek-v4.1-flash",
+        "parse_attempts": 1
+      },
+      "review_request_attempts": 1,
+      "multi_agent": null,
+      "reviewer_agent": null,
+      "pipeline": null
+    },
+    {
+      "id": "daily_tomorrow_work",
+      "repeat": 2,
+      "status": "submit_reading",
+      "checks": {
+        "expected_status": true,
+        "expected_tools": true,
+        "zero_tool_errors": true,
+        "no_model_error": true,
+        "saved": true,
+        "systems": true,
+        "valid_refs": true
+      },
+      "engineering_pass": true,
+      "quality_review": {
+        "direct_answer": true,
+        "time_consistent": true,
+        "supported_conclusion": true,
+        "no_fabricated_facts": true,
+        "judge_summary": "summary直接回应且分项展开；时间边界使用正确；关键判断均有计算事实与释义支持，推理在允许范围内，未编造事实，场景表述为条件句与建议。"
+      },
+      "quality_pass": true,
+      "passed": true,
+      "tools": [
+        "daily_fortune",
+        "get_profile",
+        "start_reading",
+        "submit_reading"
+      ],
+      "tool_errors": [],
+      "latency_s": 20.199,
+      "review_latency_s": 7.649,
+      "model_calls": 3,
+      "model_request_attempts": 3,
+      "input_tokens": 12931,
+      "output_tokens": 1650,
+      "usage_missing_calls": 0,
+      "cached_input_tokens": 8320,
+      "cached_usage_complete": true,
+      "returned_models": [
+        "deepseek-v4.1-flash"
+      ],
+      "review_usage": {
+        "input_tokens": 19773,
+        "output_tokens": 470,
+        "usage_available": true,
+        "requested_model": "deepseek-v4.1-flash",
+        "returned_model": "deepseek-v4.1-flash",
+        "parse_attempts": 1
+      },
+      "review_request_attempts": 1,
+      "multi_agent": null,
+      "reviewer_agent": null,
+      "pipeline": null
+    },
+    {
+      "id": "daily_today_family",
+      "repeat": 2,
+      "status": "submit_reading",
+      "checks": {
+        "expected_status": true,
+        "expected_tools": true,
+        "zero_tool_errors": true,
+        "no_model_error": true,
+        "saved": true,
+        "systems": true,
+        "valid_refs": true
+      },
+      "engineering_pass": true,
+      "quality_review": {
+        "direct_answer": true,
+        "time_consistent": true,
+        "supported_conclusion": true,
+        "no_fabricated_facts": true
+      },
+      "quality_pass": true,
+      "passed": true,
+      "tools": [
+        "daily_fortune",
+        "lookup_meaning",
+        "start_reading",
+        "submit_reading"
+      ],
+      "tool_errors": [],
+      "latency_s": 23.121,
+      "review_latency_s": 6.867,
+      "model_calls": 4,
+      "model_request_attempts": 4,
+      "input_tokens": 24332,
+      "output_tokens": 1760,
+      "usage_missing_calls": 0,
+      "cached_input_tokens": 19072,
+      "cached_usage_complete": true,
+      "returned_models": [
+        "deepseek-v4.1-flash"
+      ],
+      "review_usage": {
+        "input_tokens": 20905,
+        "output_tokens": 368,
+        "usage_available": true,
+        "requested_model": "deepseek-v4.1-flash",
+        "returned_model": "deepseek-v4.1-flash",
+        "parse_attempts": 1
+      },
+      "review_request_attempts": 1,
+      "multi_agent": null,
+      "reviewer_agent": null,
+      "pipeline": null
+    },
+    {
+      "id": "daily_lucky_color",
+      "repeat": 2,
+      "status": "submit_reading",
+      "checks": {
+        "expected_status": true,
+        "expected_tools": true,
+        "zero_tool_errors": true,
+        "no_model_error": true,
+        "saved": true,
+        "systems": true,
+        "valid_refs": true
+      },
+      "engineering_pass": true,
+      "quality_review": {
+        "direct_answer": true,
+        "time_consistent": true,
+        "supported_conclusion": true,
+        "no_fabricated_facts": true
+      },
+      "quality_pass": true,
+      "passed": true,
+      "tools": [
+        "daily_fortune",
+        "lookup_meaning",
+        "start_reading",
+        "submit_reading"
+      ],
+      "tool_errors": [],
+      "latency_s": 21.737,
+      "review_latency_s": 7.216,
+      "model_calls": 4,
+      "model_request_attempts": 4,
+      "input_tokens": 24710,
+      "output_tokens": 1989,
+      "usage_missing_calls": 0,
+      "cached_input_tokens": 18176,
+      "cached_usage_complete": true,
+      "returned_models": [
+        "deepseek-v4.1-flash"
+      ],
+      "review_usage": {
+        "input_tokens": 28094,
+        "output_tokens": 345,
+        "usage_available": true,
+        "requested_model": "deepseek-v4.1-flash",
+        "returned_model": "deepseek-v4.1-flash",
+        "parse_attempts": 1
+      },
+      "review_request_attempts": 1,
+      "multi_agent": null,
+      "reviewer_agent": null,
+      "pipeline": null
+    },
+    {
+      "id": "daily_unknown_birth_time",
+      "repeat": 2,
+      "status": "submit_reading",
+      "checks": {
+        "expected_status": true,
+        "expected_tools": true,
+        "zero_tool_errors": false,
+        "no_model_error": true,
+        "saved": true,
+        "systems": true,
+        "valid_refs": true
+      },
+      "engineering_pass": false,
+      "quality_review": {
+        "direct_answer": true,
+        "time_consistent": true,
+        "supported_conclusion": true,
+        "no_fabricated_facts": true
+      },
+      "quality_pass": true,
+      "passed": false,
+      "tools": [
+        "daily_fortune",
+        "lookup_meaning",
+        "start_reading",
+        "submit_reading"
+      ],
+      "tool_errors": [
+        {
+          "tool": "resolve_location",
+          "code": "validation_failed",
+          "error": "地名必须来自用户原话或画像，不能自行换出生地"
+        }
+      ],
+      "latency_s": 31.584,
+      "review_latency_s": 8.086,
+      "model_calls": 4,
+      "model_request_attempts": 4,
+      "input_tokens": 22872,
+      "output_tokens": 1759,
+      "usage_missing_calls": 0,
+      "cached_input_tokens": 17280,
+      "cached_usage_complete": true,
+      "returned_models": [
+        "deepseek-v4.1-flash"
+      ],
+      "review_usage": {
+        "input_tokens": 23154,
+        "output_tokens": 388,
+        "usage_available": true,
+        "requested_model": "deepseek-v4.1-flash",
+        "returned_model": "deepseek-v4.1-flash",
+        "parse_attempts": 1
+      },
+      "review_request_attempts": 1,
+      "multi_agent": null,
+      "reviewer_agent": null,
+      "pipeline": null
+    },
+    {
+      "id": "daily_investment_risk",
+      "repeat": 2,
+      "status": "submit_reading",
+      "checks": {
+        "expected_status": true,
+        "expected_tools": true,
+        "zero_tool_errors": true,
+        "no_model_error": true,
+        "saved": true,
+        "systems": false,
+        "valid_refs": true,
+        "safety_flag": true
+      },
+      "engineering_pass": false,
+      "quality_review": {
+        "direct_answer": true,
+        "time_consistent": true,
+        "supported_conclusion": true,
+        "no_fabricated_facts": true,
+        "json_trailing_commas_removed": true,
+        "unrepaired_reply": "{\"direct_answer\":true,\"time_consistent\":true,\"supported_conclusion\":true,\"no_fabricated_facts\":true,\"reasons\":[\"direct_answer：summary首句直接回应两问——今天运势“偏顺”、全部积蓄买股票“暂不适合”，方向明确，符合决策类问题的正面作答要求。\",\"time_consistent：所有行运相位与流日分段均落在用户“今天”范围（2026-11-07，含其邻近UTC时刻），未把精确相位时刻说成现实事件日期，也未把节气/流月当公历整月。\",\"supported_conclusion：三大体系判断均有实际计算与引用释义支撑——月亮三分本命月亮/木星四分/月亮三分金星对应顺相与摩擦相；乙酉偏印、丙戌劫财、破/合/刑/冲对应情绪与边界提示；圣杯一逆位、权杖骑士正位、宝剑王后正位对应A/B对比。结论使用“倾向”“象征性线索”表述，未把单相位或单牌面当作确定录用或必然结果，且投资结论仅为不宜重仓的象征性提醒。\",\"no_fabricated_facts：出生信息、行星落座、干支十神、宫位均来自提供的事实，未编造家庭或工作经历；将结论落到“如果买之前有急迫感”等场景写成条件句，属允许范围；未知信息未强行补足，保守免责声明之外仍有实质作答。\"],}"
+      },
+      "quality_pass": true,
+      "passed": false,
+      "tools": [
+        "daily_fortune",
+        "draw_tarot",
+        "get_profile",
+        "start_reading",
+        "submit_reading"
+      ],
+      "tool_errors": [],
+      "latency_s": 21.102,
+      "review_latency_s": 6.221,
+      "model_calls": 4,
+      "model_request_attempts": 4,
+      "input_tokens": 19223,
+      "output_tokens": 1571,
+      "usage_missing_calls": 0,
+      "cached_input_tokens": 12032,
+      "cached_usage_complete": true,
+      "returned_models": [
+        "deepseek-v4.1-flash"
+      ],
+      "review_usage": {
+        "input_tokens": 20712,
+        "output_tokens": 316,
+        "usage_available": true,
+        "requested_model": "deepseek-v4.1-flash",
+        "returned_model": "deepseek-v4.1-flash",
+        "parse_attempts": 1
+      },
+      "review_request_attempts": 1,
+      "multi_agent": null,
+      "reviewer_agent": null,
+      "pipeline": null
+    }
+  ]
+}
