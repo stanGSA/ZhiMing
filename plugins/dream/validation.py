@@ -49,8 +49,9 @@ DENIED_OMEN = re.compile(
     r"(?:不|并不|不能|不可|不可以|不应|不应该|不应当|不必|不要)被"
     r"(?:当成|当作|看成|看作|视为|理解为|理解成|想成)(?:什么|任何)?"
     r")"
-    # The modifier is no second negation either: 不是不作预兆解读 affirms (PR #53 review).
-    r"(?:(?:(?![不没非无别]|一般|普通)[\u4e00-\u9fff]){1,2}的?)?$"
+    # The modifier is no second negation either: 不是不作预兆解读 affirms (PR #53 review), while the
+    # whole adjectives 不幸/不祥/不好/不利/不吉 only qualify the omen (r12 review: 不是不幸的预兆).
+    r"(?:(?:不幸|不祥|不好|不利|不吉|(?![不没非无别]|一般|普通)[\u4e00-\u9fff]){1,2}的?)?$"
 )
 OMEN = re.compile(r"预兆|征兆|兆头|预言")
 OMEN_COMPARISON = re.compile(
@@ -258,7 +259,9 @@ def validate_output(reading, state, matcher):
 # 不作诊断或预兆解读 / 不作诊断或预示解读).
 # Either denial is void under an outer one, adjacent or across a short subject (PR #53
 # review F1: 这个梦不可能没有预示…, 不能说这个梦没有预示…, 这个梦不是不提供预言).
-NO_PROPHECY = re.compile(r"(?:并)?没(?:有)?$")
+# A degree word belongs to the inner denial (r12 review: 这个梦不可能完全没有预示…), so the outer
+# one is still found before it.
+NO_PROPHECY = re.compile(r"(?:并)?(?:完全|根本|压根|从来|丝毫|一点也|一点都)?没(?:有)?$")
 DECLINED = re.compile(
     r"(?:不作|不做|不进行|不提供|不给出)(?:[\u4e00-\u9fff]{1,4}(?:或|和|与|、|及|以及))?$"
 )

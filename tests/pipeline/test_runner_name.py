@@ -741,3 +741,45 @@ async def test_whole_counting_words_still_pass(make, claim):
     outcome = await runtime.turn(CHEN)
     info = outcome.data["pipeline"]
     assert (outcome.status, info["repairs"]) == ("submit_reading", 0), info["problems"]
+
+
+# ---- r12: a label written again before a rendered fact -----------------------------------
+
+
+def labelled(prefix):
+    """The first 外格 fact of 张伟 written after ``prefix`` in the advice."""
+
+    def draft(messages):
+        alias = alias_of(messages, "外格", "张伟")
+        return written(messages).replace(
+            "【建议】\n", f"【建议】\n- 留意：{prefix}{{{{{alias}}}}}的提示。\n"
+        )
+
+    return draft
+
+
+@pytest.mark.parametrize(
+    "prefix",
+    [
+        # r12 name_compare_two#1: another name's fact in 李娜's paragraph.
+        "李娜的外格",
+        "外格",
+    ],
+)
+async def test_a_label_written_again_before_a_fact_is_repaired(make, prefix):
+    runtime, composer, _ = make(labelled(prefix), written)
+    outcome = await runtime.turn(COMPARE)
+    info = outcome.data["pipeline"]
+    assert (outcome.status, info["repairs"], info["degraded"]) == ("submit_reading", 1, None)
+    assert "写了两遍" in info["problems"][0][0]
+    assert "外格张伟的外格2" not in outcome.text
+    assert "出问题的句子" in composer.seen[1][0][-1]["content"]
+
+
+async def test_a_placeholder_alone_and_the_prompt_rule_pass(make):
+    runtime, composer, _ = make(labelled(""))
+    outcome = await runtime.turn(COMPARE)
+    info = outcome.data["pipeline"]
+    assert (outcome.status, info["repairs"]) == ("submit_reading", 0), info["problems"]
+    assert "留意：张伟的外格2的提示" in outcome.text
+    assert "编号前不要再写姓名或格名" in composer.seen[0][0][0]["content"]

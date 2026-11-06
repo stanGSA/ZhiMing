@@ -87,6 +87,30 @@ def split(full: str, text: str) -> tuple[str, str]:
     return full[0], full[1:]
 
 
+GRIDS = "天格|人格|地格|外格|总格"
+
+
+def repeated_label(text: str, results: dict) -> str | None:
+    """A grid or name written again before a rendered fact that already carries it.
+
+    With two names a placeholder renders as “张伟的外格2”. Writing “外格{{R5}}” or “李娜的外格
+    {{R5}}” gives “外格张伟的外格2”: the label twice, or another name's fact (r12
+    name_compare_two#1, r11 “地格李娜的地格11”). The writer is asked to write the placeholder only.
+    """
+    names = "|".join(re.escape(r["full_name"]) for r in results.values())
+    patterns = [rf"(?:(?:{names})的)?({GRIDS})(?:数)?\s*\1\d"]
+    if names:
+        patterns.append(rf"(?:(?:{names})的)?({GRIDS})(?:数)?\s*(?:{names})的\1")
+    for pattern in patterns:
+        match = re.search(pattern, text)
+        if match:
+            return (
+                f"“{match[0]}”把姓名或格名写了两遍：编号会替换成带姓名和格名的文字，"
+                "编号前不要再写，也不要用另一个名字的编号"
+            )
+    return None
+
+
 class Name(System):
     name = "name"
     kept = "姓名计算结果"
@@ -339,6 +363,7 @@ class Name(System):
         results = name_results(session.state)
         bound = next(iter(results.values())) if len(results) == 1 else None
         found = [check_claims(text, bound, results) for text in texts]
+        found += [repeated_label(text, results) for text in texts]
         if FATALISM.search(" ".join(texts)):
             found.append("姓名数理是民间约定，不能作命运断言")
         found += self.wording_problems(texts, session)

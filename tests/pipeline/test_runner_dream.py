@@ -1455,3 +1455,38 @@ async def test_a_repair_quotes_the_pair_of_sentences_a_cross_sentence_check_refu
     stage = next(e for e in events if e["event"] == "pipeline_stage" and e["stage"] == "repair")
     assert list(stage["quotes"].values()) == [[R11_RETOLD]]
     assert f"“{R11_RETOLD}”" in composer.seen[2][0][-1]["content"]
+
+
+# ---- r12 review: a degree word inside the denial, and whole ominous adjectives -------------
+
+
+@pytest.mark.parametrize(
+    "text", ["这个梦不可能完全没有预示现实中的好转。", "这个梦不是完全没有预示现实中的好转。"]
+)
+async def test_what_the_r12_prophecy_review_must_refuse(make, text):
+    runtime, *_ = make(extraction(PILOT_SYMBOLS[HOSPITAL]), with_layer(text), written)
+    outcome = await runtime.turn(HOSPITAL)
+    info = outcome.data["pipeline"]
+    assert info["repairs"] == 1 and "预兆" in info["problems"][0][0]
+    assert text not in outcome.text
+
+
+@pytest.mark.parametrize(
+    "text", ["这个梦不是不幸的预兆。", "这个梦不是不祥的预兆。", "这个梦完全没有预示什么。"]
+)
+async def test_the_r12_denied_ominous_omens_pass_the_final_submission(make, text):
+    runtime, *_ = make(extraction(PILOT_SYMBOLS[HOSPITAL]), with_layer(text), written)
+    outcome = await runtime.turn(HOSPITAL)
+    info = outcome.data["pipeline"]
+    assert (outcome.status, info["repairs"], info["degraded"]) == ("submit_reading", 0, None), info[
+        "problems"
+    ]
+    assert text in outcome.text
+
+
+@pytest.mark.parametrize(
+    "text", ["这是不幸的预兆。", "这个梦是不祥的预兆。", "这个梦不是不幸的预兆，而是好运的预兆。"]
+)
+async def test_an_ominous_omen_is_still_refused(make, text):
+    problems = await problems_of(make, HOSPITAL, text)
+    assert any("预兆" in problem for problem in problems), problems
