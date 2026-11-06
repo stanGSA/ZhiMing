@@ -1,0 +1,121 @@
+[
+  {
+    "key": "daily_today_general#1",
+    "status": "retry_limit",
+    "model_calls": 6,
+    "events": [
+      {
+        "event": "tool_result",
+        "tool": "submit_reading",
+        "result": {
+          "ok": false,
+          "data": {},
+          "error": "工具参数必须是合法JSON对象（Expecting ',' delimiter，第 215 个字符附近：… \"sections\": [{\"title\": \"今天适合\"借力\"，不适合硬扛\"…；字符串正文里的英文双引号须写成\\\"，或改用中文引号“”），请修正后重试",
+          "code": "invalid_arguments",
+          "cached": false
+        },
+        "code": null,
+        "attempts": null
+      },
+      {
+        "event": "tool_result",
+        "tool": "submit_reading",
+        "result": {
+          "ok": false,
+          "data": {},
+          "error": "本命行星相位与本次计算不符",
+          "code": "validation_failed",
+          "cached": false
+        },
+        "code": null,
+        "attempts": null
+      },
+      {
+        "event": "tool_result",
+        "tool": "submit_reading",
+        "result": {
+          "ok": false,
+          "data": {},
+          "error": "本命行星相位与本次计算不符",
+          "code": "validation_failed",
+          "cached": false
+        },
+        "code": null,
+        "attempts": null
+      },
+      {
+        "event": "tool_result",
+        "tool": "submit_reading",
+        "result": {
+          "ok": false,
+          "data": {},
+          "error": "本命行星相位与本次计算不符",
+          "code": "validation_failed",
+          "cached": false
+        },
+        "code": null,
+        "attempts": null
+      },
+      {
+        "event": "repeated_failure_limit",
+        "tool": "submit_reading",
+        "result": null,
+        "code": "validation_failed",
+        "attempts": 3
+      }
+    ]
+  },
+  {
+    "key": "daily_unknown_birth_time#3",
+    "status": "retry_limit",
+    "model_calls": 7,
+    "events": [
+      {
+        "event": "tool_result",
+        "tool": "submit_reading",
+        "result": {
+          "ok": false,
+          "data": {},
+          "error": "出生时间未知，不能使用宫位或四轴解读",
+          "code": "validation_failed",
+          "cached": false
+        },
+        "code": null,
+        "attempts": null
+      },
+      {
+        "event": "tool_result",
+        "tool": "submit_reading",
+        "result": {
+          "ok": false,
+          "data": {},
+          "error": "出生时间未知，不能使用宫位或四轴解读",
+          "code": "validation_failed",
+          "cached": false
+        },
+        "code": null,
+        "attempts": null
+      },
+      {
+        "event": "tool_result",
+        "tool": "submit_reading",
+        "result": {
+          "ok": false,
+          "data": {},
+          "error": "出生时间未知，不能使用宫位或四轴解读",
+          "code": "validation_failed",
+          "cached": false
+        },
+        "code": null,
+        "attempts": null
+      },
+      {
+        "event": "repeated_failure_limit",
+        "tool": "submit_reading",
+        "result": null,
+        "code": "validation_failed",
+        "attempts": 3
+      }
+    ]
+  }
+]

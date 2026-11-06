@@ -1,0 +1,1090 @@
+{
+  "run_id": "20261106T113716-e036f7f7",
+  "rubric_version": "v2-2026-10-24",
+  "judge_name": "pro",
+  "judge_model": "deepseek-v4.1-flash",
+  "repeats": 3,
+  "mode": "single",
+  "requested_model": "deepseek-v4.1-flash",
+  "source_fingerprint": "671227dec997801cc8a66f4fd780916c8bf3a26d8811b2ee6c181fae9e80e034",
+  "cases": 18,
+  "passed": 4,
+  "failed": 14,
+  "multi_agent": null,
+  "reviewer_agent": null,
+  "model_calls": 74,
+  "model_request_attempts": 74,
+  "review_calls": 18,
+  "review_request_attempts": 18,
+  "input_tokens": 465112,
+  "output_tokens": 47665,
+  "scope": "Synthetic data; judge identity and rubric recorded. Automated review is not human calibration or independent verification of service identity.",
+  "raw_sha256": "290b41deddb262226a3ba4daca292dee353f70af1d335a1db8a8aa65d41e35f6",
+  "results": [
+    {
+      "id": "name_ambiguous_form",
+      "repeat": 0,
+      "status": "submit_reading",
+      "checks": {
+        "expected_status": true,
+        "expected_tools": true,
+        "zero_tool_errors": false,
+        "no_model_error": true,
+        "saved": true,
+        "systems": true,
+        "valid_refs": true
+      },
+      "engineering_pass": false,
+      "quality_review": {
+        "direct_answer": true,
+        "time_consistent": true,
+        "supported_conclusion": true,
+        "no_fabricated_facts": true
+      },
+      "quality_pass": true,
+      "passed": false,
+      "tools": [
+        "analyze_name",
+        "get_profile",
+        "start_reading",
+        "submit_reading"
+      ],
+      "tool_errors": [
+        {
+          "tool": "submit_reading",
+          "code": "validation_failed",
+          "error": "赵杰的“杰”有多种写法（傑12画/杰8画），须在用户可见的摘要、分析或建议中说明各字形笔画并请用户确认。可使用：赵杰的“杰”默认按傑12画，备选写法为杰8画，请按证件写法确认。"
+        }
+      ],
+      "latency_s": 29.634,
+      "review_latency_s": 5.687,
+      "model_calls": 4,
+      "model_request_attempts": 4,
+      "input_tokens": 18759,
+      "output_tokens": 2828,
+      "usage_missing_calls": 0,
+      "cached_input_tokens": 13312,
+      "cached_usage_complete": true,
+      "returned_models": [
+        "deepseek-v4.1-flash"
+      ],
+      "review_usage": {
+        "input_tokens": 6259,
+        "output_tokens": 292,
+        "usage_available": true,
+        "requested_model": "deepseek-v4.1-flash",
+        "returned_model": "deepseek-v4.1-flash",
+        "parse_attempts": 1
+      },
+      "review_request_attempts": 1,
+      "multi_agent": null,
+      "reviewer_agent": null,
+      "pipeline": null
+    },
+    {
+      "id": "name_compound_surname",
+      "repeat": 0,
+      "status": "submit_reading",
+      "checks": {
+        "expected_status": true,
+        "expected_tools": true,
+        "zero_tool_errors": false,
+        "no_model_error": true,
+        "saved": true,
+        "systems": true,
+        "valid_refs": true
+      },
+      "engineering_pass": false,
+      "quality_review": {
+        "direct_answer": true,
+        "time_consistent": true,
+        "supported_conclusion": true,
+        "no_fabricated_facts": true
+      },
+      "quality_pass": true,
+      "passed": false,
+      "tools": [
+        "analyze_name",
+        "get_profile",
+        "lookup_meaning",
+        "start_reading",
+        "submit_reading"
+      ],
+      "tool_errors": [
+        {
+          "tool": "lookup_meaning",
+          "code": "missing_entry",
+          "error": "缺条目：精确 key 或同义词未命中；key须照抄工具结果中的meaning_key或key；本版本有效key候选：stroke_rule、bazi_compare、ambiguous_form、compound_surname。已有计算附带释义时直接使用；不要继续猜key。"
+        }
+      ],
+      "latency_s": 22.329,
+      "review_latency_s": 6.649,
+      "model_calls": 4,
+      "model_request_attempts": 4,
+      "input_tokens": 17695,
+      "output_tokens": 1888,
+      "usage_missing_calls": 0,
+      "cached_input_tokens": 14464,
+      "cached_usage_complete": true,
+      "returned_models": [
+        "deepseek-v4.1-flash"
+      ],
+      "review_usage": {
+        "input_tokens": 6775,
+        "output_tokens": 332,
+        "usage_available": true,
+        "requested_model": "deepseek-v4.1-flash",
+        "returned_model": "deepseek-v4.1-flash",
+        "parse_attempts": 1
+      },
+      "review_request_attempts": 1,
+      "multi_agent": null,
+      "reviewer_agent": null,
+      "pipeline": null
+    },
+    {
+      "id": "name_compare_two",
+      "repeat": 0,
+      "status": "submit_reading",
+      "checks": {
+        "expected_status": true,
+        "expected_tools": true,
+        "zero_tool_errors": false,
+        "no_model_error": true,
+        "saved": true,
+        "systems": true,
+        "valid_refs": true
+      },
+      "engineering_pass": false,
+      "quality_review": {
+        "direct_answer": true,
+        "time_consistent": true,
+        "supported_conclusion": true,
+        "no_fabricated_facts": true
+      },
+      "quality_pass": true,
+      "passed": false,
+      "tools": [
+        "analyze_name",
+        "get_profile",
+        "start_reading",
+        "submit_reading"
+      ],
+      "tool_errors": [
+        {
+          "tool": "submit_reading",
+          "code": "validation_failed",
+          "error": "“张”不属于李娜，笔画不能串用"
+        },
+        {
+          "tool": "submit_reading",
+          "code": "validation_failed",
+          "error": "“張”不属于李娜，笔画不能串用"
+        },
+        {
+          "tool": "submit_reading",
+          "code": "validation_failed",
+          "error": "“偉”不属于李娜，笔画不能串用"
+        }
+      ],
+      "latency_s": 44.591,
+      "review_latency_s": 5.835,
+      "model_calls": 7,
+      "model_request_attempts": 7,
+      "input_tokens": 46339,
+      "output_tokens": 5965,
+      "usage_missing_calls": 0,
+      "cached_input_tokens": 38272,
+      "cached_usage_complete": true,
+      "returned_models": [
+        "deepseek-v4.1-flash"
+      ],
+      "review_usage": {
+        "input_tokens": 9156,
+        "output_tokens": 295,
+        "usage_available": true,
+        "requested_model": "deepseek-v4.1-flash",
+        "returned_model": "deepseek-v4.1-flash",
+        "parse_attempts": 1
+      },
+      "review_request_attempts": 1,
+      "multi_agent": null,
+      "reviewer_agent": null,
+      "pipeline": null
+    },
+    {
+      "id": "name_three_character",
+      "repeat": 0,
+      "status": "submit_reading",
+      "checks": {
+        "expected_status": true,
+        "expected_tools": true,
+        "zero_tool_errors": true,
+        "no_model_error": true,
+        "saved": true,
+        "systems": true,
+        "valid_refs": true
+      },
+      "engineering_pass": true,
+      "quality_review": {
+        "direct_answer": true,
+        "time_consistent": true,
+        "supported_conclusion": true,
+        "no_fabricated_facts": true
+      },
+      "quality_pass": true,
+      "passed": true,
+      "tools": [
+        "analyze_name",
+        "start_reading",
+        "submit_reading"
+      ],
+      "tool_errors": [],
+      "latency_s": 20.649,
+      "review_latency_s": 4.713,
+      "model_calls": 3,
+      "model_request_attempts": 3,
+      "input_tokens": 10829,
+      "output_tokens": 1412,
+      "usage_missing_calls": 0,
+      "cached_input_tokens": 6528,
+      "cached_usage_complete": true,
+      "returned_models": [
+        "deepseek-v4.1-flash"
+      ],
+      "review_usage": {
+        "input_tokens": 5772,
+        "output_tokens": 176,
+        "usage_available": true,
+        "requested_model": "deepseek-v4.1-flash",
+        "returned_model": "deepseek-v4.1-flash",
+        "parse_attempts": 1
+      },
+      "review_request_attempts": 1,
+      "multi_agent": null,
+      "reviewer_agent": null,
+      "pipeline": null
+    },
+    {
+      "id": "name_without_lead_in",
+      "repeat": 0,
+      "status": "submit_reading",
+      "checks": {
+        "expected_status": true,
+        "expected_tools": true,
+        "zero_tool_errors": false,
+        "no_model_error": true,
+        "saved": true,
+        "systems": true,
+        "valid_refs": true
+      },
+      "engineering_pass": false,
+      "quality_review": {
+        "direct_answer": true,
+        "time_consistent": true,
+        "supported_conclusion": true,
+        "no_fabricated_facts": true
+      },
+      "quality_pass": true,
+      "passed": false,
+      "tools": [
+        "analyze_name",
+        "get_profile",
+        "start_reading",
+        "submit_reading"
+      ],
+      "tool_errors": [
+        {
+          "tool": "lookup_meaning",
+          "code": "missing_entry",
+          "error": "缺条目：精确 key 或同义词未命中；key须照抄工具结果中的meaning_key或key；本版本有效key候选：stroke_rule、bazi_compare、ambiguous_form、compound_surname。已有计算附带释义时直接使用；不要继续猜key。"
+        }
+      ],
+      "latency_s": 20.461,
+      "review_latency_s": 6.429,
+      "model_calls": 4,
+      "model_request_attempts": 4,
+      "input_tokens": 17103,
+      "output_tokens": 1515,
+      "usage_missing_calls": 0,
+      "cached_input_tokens": 14208,
+      "cached_usage_complete": true,
+      "returned_models": [
+        "deepseek-v4.1-flash"
+      ],
+      "review_usage": {
+        "input_tokens": 5916,
+        "output_tokens": 331,
+        "usage_available": true,
+        "requested_model": "deepseek-v4.1-flash",
+        "returned_model": "deepseek-v4.1-flash",
+        "parse_attempts": 1
+      },
+      "review_request_attempts": 1,
+      "multi_agent": null,
+      "reviewer_agent": null,
+      "pipeline": null
+    },
+    {
+      "id": "name_career_grid",
+      "repeat": 0,
+      "status": "ask_user",
+      "checks": {
+        "expected_status": false,
+        "expected_tools": false,
+        "zero_tool_errors": true,
+        "no_model_error": true,
+        "saved": false,
+        "systems": false,
+        "valid_refs": true
+      },
+      "engineering_pass": false,
+      "quality_review": {
+        "direct_answer": true,
+        "time_consistent": true,
+        "supported_conclusion": true,
+        "no_fabricated_facts": true,
+        "note": "用户问的是姓名五格对事业的帮助；回答先追问姓名用字、是否本名及行业方向，未直接给出五格结论。按判定标准，追问信息场景只问必要资料、不编结论即符合要求，因此各项均通过。"
+      },
+      "quality_pass": true,
+      "passed": false,
+      "tools": [
+        "ask_user",
+        "get_profile"
+      ],
+      "tool_errors": [],
+      "latency_s": 7.683,
+      "review_latency_s": 5.425,
+      "model_calls": 2,
+      "model_request_attempts": 2,
+      "input_tokens": 4466,
+      "output_tokens": 187,
+      "usage_missing_calls": 0,
+      "cached_input_tokens": 3968,
+      "cached_usage_complete": true,
+      "returned_models": [
+        "deepseek-v4.1-flash"
+      ],
+      "review_usage": {
+        "input_tokens": 504,
+        "output_tokens": 227,
+        "usage_available": true,
+        "requested_model": "deepseek-v4.1-flash",
+        "returned_model": "deepseek-v4.1-flash",
+        "parse_attempts": 1
+      },
+      "review_request_attempts": 1,
+      "multi_agent": null,
+      "reviewer_agent": null,
+      "pipeline": null
+    },
+    {
+      "id": "name_ambiguous_form",
+      "repeat": 1,
+      "status": "submit_reading",
+      "checks": {
+        "expected_status": true,
+        "expected_tools": true,
+        "zero_tool_errors": false,
+        "no_model_error": true,
+        "saved": true,
+        "systems": true,
+        "valid_refs": true
+      },
+      "engineering_pass": false,
+      "quality_review": {
+        "direct_answer": true,
+        "time_consistent": true,
+        "supported_conclusion": true,
+        "no_fabricated_facts": true
+      },
+      "quality_pass": true,
+      "passed": false,
+      "tools": [
+        "analyze_name",
+        "get_profile",
+        "lookup_meaning",
+        "start_reading",
+        "submit_reading"
+      ],
+      "tool_errors": [
+        {
+          "tool": "lookup_meaning",
+          "code": "missing_entry",
+          "error": "缺条目：精确 key 或同义词未命中；key须照抄工具结果中的meaning_key或key；本版本有效key候选：stroke_rule、bazi_compare、ambiguous_form、compound_surname。已有计算附带释义时直接使用；不要继续猜key。"
+        },
+        {
+          "tool": "submit_reading",
+          "code": "validation_failed",
+          "error": "赵杰的人格15与本次计算不符"
+        },
+        {
+          "tool": "submit_reading",
+          "code": "validation_failed",
+          "error": "赵杰的“杰”有多种写法（傑12画/杰8画），须在用户可见的摘要、分析或建议中说明各字形笔画并请用户确认。可使用：赵杰的“杰”默认按傑12画，备选写法为杰8画，请按证件写法确认。"
+        },
+        {
+          "tool": "submit_reading",
+          "code": "validation_failed",
+          "error": "不能使用“必然”这类确定性说法；趋势可以写“倾向/容易/往往”，请改写后重新提交"
+        }
+      ],
+      "latency_s": 62.172,
+      "review_latency_s": 5.853,
+      "model_calls": 9,
+      "model_request_attempts": 9,
+      "input_tokens": 58469,
+      "output_tokens": 6920,
+      "usage_missing_calls": 0,
+      "cached_input_tokens": 52736,
+      "cached_usage_complete": true,
+      "returned_models": [
+        "deepseek-v4.1-flash"
+      ],
+      "review_usage": {
+        "input_tokens": 6857,
+        "output_tokens": 302,
+        "usage_available": true,
+        "requested_model": "deepseek-v4.1-flash",
+        "returned_model": "deepseek-v4.1-flash",
+        "parse_attempts": 1
+      },
+      "review_request_attempts": 1,
+      "multi_agent": null,
+      "reviewer_agent": null,
+      "pipeline": null
+    },
+    {
+      "id": "name_compound_surname",
+      "repeat": 1,
+      "status": "submit_reading",
+      "checks": {
+        "expected_status": true,
+        "expected_tools": true,
+        "zero_tool_errors": true,
+        "no_model_error": true,
+        "saved": true,
+        "systems": true,
+        "valid_refs": true
+      },
+      "engineering_pass": true,
+      "quality_review": {
+        "direct_answer": true,
+        "time_consistent": true,
+        "supported_conclusion": true,
+        "no_fabricated_facts": true
+      },
+      "quality_pass": true,
+      "passed": true,
+      "tools": [
+        "analyze_name",
+        "start_reading",
+        "submit_reading"
+      ],
+      "tool_errors": [],
+      "latency_s": 17.092,
+      "review_latency_s": 5.606,
+      "model_calls": 3,
+      "model_request_attempts": 3,
+      "input_tokens": 10979,
+      "output_tokens": 1428,
+      "usage_missing_calls": 0,
+      "cached_input_tokens": 8320,
+      "cached_usage_complete": true,
+      "returned_models": [
+        "deepseek-v4.1-flash"
+      ],
+      "review_usage": {
+        "input_tokens": 6242,
+        "output_tokens": 292,
+        "usage_available": true,
+        "requested_model": "deepseek-v4.1-flash",
+        "returned_model": "deepseek-v4.1-flash",
+        "parse_attempts": 1
+      },
+      "review_request_attempts": 1,
+      "multi_agent": null,
+      "reviewer_agent": null,
+      "pipeline": null
+    },
+    {
+      "id": "name_compare_two",
+      "repeat": 1,
+      "status": "submit_reading",
+      "checks": {
+        "expected_status": true,
+        "expected_tools": true,
+        "zero_tool_errors": true,
+        "no_model_error": true,
+        "saved": true,
+        "systems": true,
+        "valid_refs": true
+      },
+      "engineering_pass": true,
+      "quality_review": {
+        "direct_answer": true,
+        "time_consistent": true,
+        "supported_conclusion": true,
+        "no_fabricated_facts": true
+      },
+      "quality_pass": true,
+      "passed": true,
+      "tools": [
+        "analyze_name",
+        "start_reading",
+        "submit_reading"
+      ],
+      "tool_errors": [],
+      "latency_s": 21.174,
+      "review_latency_s": 6.464,
+      "model_calls": 3,
+      "model_request_attempts": 3,
+      "input_tokens": 12396,
+      "output_tokens": 1645,
+      "usage_missing_calls": 0,
+      "cached_input_tokens": 8443,
+      "cached_usage_complete": true,
+      "returned_models": [
+        "deepseek-v4.1-flash"
+      ],
+      "review_usage": {
+        "input_tokens": 9208,
+        "output_tokens": 305,
+        "usage_available": true,
+        "requested_model": "deepseek-v4.1-flash",
+        "returned_model": "deepseek-v4.1-flash",
+        "parse_attempts": 1
+      },
+      "review_request_attempts": 1,
+      "multi_agent": null,
+      "reviewer_agent": null,
+      "pipeline": null
+    },
+    {
+      "id": "name_three_character",
+      "repeat": 1,
+      "status": "submit_reading",
+      "checks": {
+        "expected_status": true,
+        "expected_tools": true,
+        "zero_tool_errors": true,
+        "no_model_error": true,
+        "saved": true,
+        "systems": true,
+        "valid_refs": true
+      },
+      "engineering_pass": true,
+      "quality_review": {
+        "direct_answer": true,
+        "time_consistent": true,
+        "supported_conclusion": true,
+        "no_fabricated_facts": true
+      },
+      "quality_pass": true,
+      "passed": true,
+      "tools": [
+        "analyze_name",
+        "get_profile",
+        "start_reading",
+        "submit_reading"
+      ],
+      "tool_errors": [],
+      "latency_s": 20.915,
+      "review_latency_s": 6.789,
+      "model_calls": 3,
+      "model_request_attempts": 3,
+      "input_tokens": 10941,
+      "output_tokens": 1555,
+      "usage_missing_calls": 0,
+      "cached_input_tokens": 8192,
+      "cached_usage_complete": true,
+      "returned_models": [
+        "deepseek-v4.1-flash"
+      ],
+      "review_usage": {
+        "input_tokens": 6051,
+        "output_tokens": 430,
+        "usage_available": true,
+        "requested_model": "deepseek-v4.1-flash",
+        "returned_model": "deepseek-v4.1-flash",
+        "parse_attempts": 1
+      },
+      "review_request_attempts": 1,
+      "multi_agent": null,
+      "reviewer_agent": null,
+      "pipeline": null
+    },
+    {
+      "id": "name_without_lead_in",
+      "repeat": 1,
+      "status": "ask_user",
+      "checks": {
+        "expected_status": false,
+        "expected_tools": false,
+        "zero_tool_errors": true,
+        "no_model_error": true,
+        "saved": false,
+        "systems": false,
+        "valid_refs": true
+      },
+      "engineering_pass": false,
+      "quality_review": {
+        "direct_answer": true,
+        "time_consistent": true,
+        "supported_conclusion": true,
+        "no_fabricated_facts": true
+      },
+      "quality_pass": true,
+      "passed": false,
+      "tools": [
+        "ask_user",
+        "get_profile"
+      ],
+      "tool_errors": [],
+      "latency_s": 7.038,
+      "review_latency_s": 3.908,
+      "model_calls": 2,
+      "model_request_attempts": 2,
+      "input_tokens": 4408,
+      "output_tokens": 152,
+      "usage_missing_calls": 0,
+      "cached_input_tokens": 3968,
+      "cached_usage_complete": true,
+      "returned_models": [
+        "deepseek-v4.1-flash"
+      ],
+      "review_usage": {
+        "input_tokens": 509,
+        "output_tokens": 200,
+        "usage_available": true,
+        "requested_model": "deepseek-v4.1-flash",
+        "returned_model": "deepseek-v4.1-flash",
+        "parse_attempts": 1
+      },
+      "review_request_attempts": 1,
+      "multi_agent": null,
+      "reviewer_agent": null,
+      "pipeline": null
+    },
+    {
+      "id": "name_career_grid",
+      "repeat": 1,
+      "status": "submit_reading",
+      "checks": {
+        "expected_status": true,
+        "expected_tools": true,
+        "zero_tool_errors": false,
+        "no_model_error": true,
+        "saved": true,
+        "systems": true,
+        "valid_refs": true
+      },
+      "engineering_pass": false,
+      "quality_review": {
+        "direct_answer": true,
+        "time_consistent": true,
+        "supported_conclusion": true,
+        "no_fabricated_facts": true
+      },
+      "quality_pass": true,
+      "passed": false,
+      "tools": [
+        "analyze_name",
+        "get_profile",
+        "start_reading",
+        "submit_reading"
+      ],
+      "tool_errors": [
+        {
+          "tool": "submit_reading",
+          "code": "validation_failed",
+          "error": "林晓的人格8与本次计算不符"
+        },
+        {
+          "tool": "submit_reading",
+          "code": "validation_failed",
+          "error": "“晓”的笔画与本次计算不符"
+        }
+      ],
+      "latency_s": 34.856,
+      "review_latency_s": 5.888,
+      "model_calls": 6,
+      "model_request_attempts": 6,
+      "input_tokens": 28802,
+      "output_tokens": 3521,
+      "usage_missing_calls": 0,
+      "cached_input_tokens": 25596,
+      "cached_usage_complete": true,
+      "returned_models": [
+        "deepseek-v4.1-flash"
+      ],
+      "review_usage": {
+        "input_tokens": 5335,
+        "output_tokens": 318,
+        "usage_available": true,
+        "requested_model": "deepseek-v4.1-flash",
+        "returned_model": "deepseek-v4.1-flash",
+        "parse_attempts": 1
+      },
+      "review_request_attempts": 1,
+      "multi_agent": null,
+      "reviewer_agent": null,
+      "pipeline": null
+    },
+    {
+      "id": "name_ambiguous_form",
+      "repeat": 2,
+      "status": "submit_reading",
+      "checks": {
+        "expected_status": true,
+        "expected_tools": true,
+        "zero_tool_errors": false,
+        "no_model_error": true,
+        "saved": true,
+        "systems": true,
+        "valid_refs": true
+      },
+      "engineering_pass": false,
+      "quality_review": {
+        "direct_answer": true,
+        "time_consistent": true,
+        "supported_conclusion": true,
+        "no_fabricated_facts": true
+      },
+      "quality_pass": true,
+      "passed": false,
+      "tools": [
+        "analyze_name",
+        "get_profile",
+        "lookup_meaning",
+        "start_reading",
+        "submit_reading"
+      ],
+      "tool_errors": [
+        {
+          "tool": "submit_reading",
+          "code": "validation_failed",
+          "error": "赵杰的“杰”有多种写法（傑12画/杰8画），须在用户可见的摘要、分析或建议中说明各字形笔画并请用户确认。可使用：赵杰的“杰”默认按傑12画，备选写法为杰8画，请按证件写法确认。"
+        }
+      ],
+      "latency_s": 35.306,
+      "review_latency_s": 6.017,
+      "model_calls": 6,
+      "model_request_attempts": 6,
+      "input_tokens": 28117,
+      "output_tokens": 2998,
+      "usage_missing_calls": 0,
+      "cached_input_tokens": 24192,
+      "cached_usage_complete": true,
+      "returned_models": [
+        "deepseek-v4.1-flash"
+      ],
+      "review_usage": {
+        "input_tokens": 6325,
+        "output_tokens": 486,
+        "usage_available": true,
+        "requested_model": "deepseek-v4.1-flash",
+        "returned_model": "deepseek-v4.1-flash",
+        "parse_attempts": 1
+      },
+      "review_request_attempts": 1,
+      "multi_agent": null,
+      "reviewer_agent": null,
+      "pipeline": null
+    },
+    {
+      "id": "name_compound_surname",
+      "repeat": 2,
+      "status": "submit_reading",
+      "checks": {
+        "expected_status": true,
+        "expected_tools": true,
+        "zero_tool_errors": false,
+        "no_model_error": true,
+        "saved": true,
+        "systems": true,
+        "valid_refs": true
+      },
+      "engineering_pass": false,
+      "quality_review": {
+        "direct_answer": true,
+        "time_consistent": true,
+        "supported_conclusion": true,
+        "no_fabricated_facts": true
+      },
+      "quality_pass": true,
+      "passed": false,
+      "tools": [
+        "analyze_name",
+        "lookup_meaning",
+        "start_reading",
+        "submit_reading"
+      ],
+      "tool_errors": [
+        {
+          "tool": "lookup_meaning",
+          "code": "missing_entry",
+          "error": "缺条目：精确 key 或同义词未命中；key须照抄工具结果中的meaning_key或key；本版本有效key候选：人格、总格、天格、外格、地格。已有计算附带释义时直接使用；不要继续猜key。"
+        }
+      ],
+      "latency_s": 21.863,
+      "review_latency_s": 4.676,
+      "model_calls": 4,
+      "model_request_attempts": 4,
+      "input_tokens": 17589,
+      "output_tokens": 1713,
+      "usage_missing_calls": 0,
+      "cached_input_tokens": 14464,
+      "cached_usage_complete": true,
+      "returned_models": [
+        "deepseek-v4.1-flash"
+      ],
+      "review_usage": {
+        "input_tokens": 6540,
+        "output_tokens": 240,
+        "usage_available": true,
+        "requested_model": "deepseek-v4.1-flash",
+        "returned_model": "deepseek-v4.1-flash",
+        "parse_attempts": 1
+      },
+      "review_request_attempts": 1,
+      "multi_agent": null,
+      "reviewer_agent": null,
+      "pipeline": null
+    },
+    {
+      "id": "name_compare_two",
+      "repeat": 2,
+      "status": "submit_reading",
+      "checks": {
+        "expected_status": true,
+        "expected_tools": true,
+        "zero_tool_errors": false,
+        "no_model_error": true,
+        "saved": true,
+        "systems": true,
+        "valid_refs": true
+      },
+      "engineering_pass": false,
+      "quality_review": {
+        "direct_answer": true,
+        "time_consistent": true,
+        "supported_conclusion": true,
+        "no_fabricated_facts": true
+      },
+      "quality_pass": true,
+      "passed": false,
+      "tools": [
+        "analyze_name",
+        "get_profile",
+        "lookup_meaning",
+        "start_reading",
+        "submit_reading"
+      ],
+      "tool_errors": [
+        {
+          "tool": "submit_reading",
+          "code": "validation_failed",
+          "error": "李娜的地格12与本次计算不符"
+        },
+        {
+          "tool": "submit_reading",
+          "code": "validation_failed",
+          "error": "“娜”不属于张伟，笔画不能串用"
+        },
+        {
+          "tool": "submit_reading",
+          "code": "invalid_arguments",
+          "error": "参数不符合 schema：sections.2.title：Field required"
+        }
+      ],
+      "latency_s": 52.193,
+      "review_latency_s": 6.574,
+      "model_calls": 7,
+      "model_request_attempts": 7,
+      "input_tokens": 56528,
+      "output_tokens": 6985,
+      "usage_missing_calls": 0,
+      "cached_input_tokens": 51067,
+      "cached_usage_complete": true,
+      "returned_models": [
+        "deepseek-v4.1-flash"
+      ],
+      "review_usage": {
+        "input_tokens": 9539,
+        "output_tokens": 255,
+        "usage_available": true,
+        "requested_model": "deepseek-v4.1-flash",
+        "returned_model": "deepseek-v4.1-flash",
+        "parse_attempts": 1
+      },
+      "review_request_attempts": 1,
+      "multi_agent": null,
+      "reviewer_agent": null,
+      "pipeline": null
+    },
+    {
+      "id": "name_three_character",
+      "repeat": 2,
+      "status": "submit_reading",
+      "checks": {
+        "expected_status": true,
+        "expected_tools": true,
+        "zero_tool_errors": false,
+        "no_model_error": true,
+        "saved": true,
+        "systems": true,
+        "valid_refs": true
+      },
+      "engineering_pass": false,
+      "quality_review": {
+        "direct_answer": true,
+        "time_consistent": true,
+        "supported_conclusion": true,
+        "no_fabricated_facts": true
+      },
+      "quality_pass": true,
+      "passed": false,
+      "tools": [
+        "analyze_name",
+        "get_profile",
+        "start_reading",
+        "submit_reading"
+      ],
+      "tool_errors": [
+        {
+          "tool": "lookup_meaning",
+          "code": "missing_entry",
+          "error": "缺条目：精确 key 或同义词未命中；key须照抄工具结果中的meaning_key或key；本版本有效key候选：ambiguous_form、bazi_compare、compound_surname、stroke_rule。已有计算附带释义时直接使用；不要继续猜key。"
+        }
+      ],
+      "latency_s": 23.197,
+      "review_latency_s": 5.302,
+      "model_calls": 4,
+      "model_request_attempts": 4,
+      "input_tokens": 17093,
+      "output_tokens": 1628,
+      "usage_missing_calls": 0,
+      "cached_input_tokens": 14336,
+      "cached_usage_complete": true,
+      "returned_models": [
+        "deepseek-v4.1-flash"
+      ],
+      "review_usage": {
+        "input_tokens": 6001,
+        "output_tokens": 200,
+        "usage_available": true,
+        "requested_model": "deepseek-v4.1-flash",
+        "returned_model": "deepseek-v4.1-flash",
+        "parse_attempts": 1
+      },
+      "review_request_attempts": 1,
+      "multi_agent": null,
+      "reviewer_agent": null,
+      "pipeline": null
+    },
+    {
+      "id": "name_without_lead_in",
+      "repeat": 2,
+      "status": "ask_user",
+      "checks": {
+        "expected_status": false,
+        "expected_tools": false,
+        "zero_tool_errors": true,
+        "no_model_error": true,
+        "saved": false,
+        "systems": false,
+        "valid_refs": true
+      },
+      "engineering_pass": false,
+      "quality_review": {
+        "direct_answer": true,
+        "time_consistent": true,
+        "supported_conclusion": true,
+        "no_fabricated_facts": true
+      },
+      "quality_pass": true,
+      "passed": false,
+      "tools": [
+        "ask_user"
+      ],
+      "tool_errors": [],
+      "latency_s": 6.222,
+      "review_latency_s": 4.525,
+      "model_calls": 1,
+      "model_request_attempts": 1,
+      "input_tokens": 2172,
+      "output_tokens": 131,
+      "usage_missing_calls": 0,
+      "cached_input_tokens": 1920,
+      "cached_usage_complete": true,
+      "returned_models": [
+        "deepseek-v4.1-flash"
+      ],
+      "review_usage": {
+        "input_tokens": 497,
+        "output_tokens": 173,
+        "usage_available": true,
+        "requested_model": "deepseek-v4.1-flash",
+        "returned_model": "deepseek-v4.1-flash",
+        "parse_attempts": 1
+      },
+      "review_request_attempts": 1,
+      "multi_agent": null,
+      "reviewer_agent": null,
+      "pipeline": null
+    },
+    {
+      "id": "name_career_grid",
+      "repeat": 2,
+      "status": "ask_user",
+      "checks": {
+        "expected_status": false,
+        "expected_tools": false,
+        "zero_tool_errors": true,
+        "no_model_error": true,
+        "saved": false,
+        "systems": false,
+        "valid_refs": true
+      },
+      "engineering_pass": false,
+      "quality_review": {
+        "direct_answer": true,
+        "time_consistent": true,
+        "supported_conclusion": true,
+        "no_fabricated_facts": true
+      },
+      "quality_pass": true,
+      "passed": false,
+      "tools": [
+        "ask_user",
+        "get_profile"
+      ],
+      "tool_errors": [],
+      "latency_s": 9.994,
+      "review_latency_s": 3.577,
+      "model_calls": 2,
+      "model_request_attempts": 2,
+      "input_tokens": 4423,
+      "output_tokens": 181,
+      "usage_missing_calls": 0,
+      "cached_input_tokens": 4092,
+      "cached_usage_complete": true,
+      "returned_models": [
+        "deepseek-v4.1-flash"
+      ],
+      "review_usage": {
+        "input_tokens": 518,
+        "output_tokens": 159,
+        "usage_available": true,
+        "requested_model": "deepseek-v4.1-flash",
+        "returned_model": "deepseek-v4.1-flash",
+        "parse_attempts": 1
+      },
+      "review_request_attempts": 1,
+      "multi_agent": null,
+      "reviewer_agent": null,
+      "pipeline": null
+    }
+  ]
+}

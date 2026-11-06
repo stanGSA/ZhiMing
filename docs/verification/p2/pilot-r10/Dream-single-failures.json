@@ -1,0 +1,126 @@
+[
+  {
+    "key": "dream_hospital_health#1",
+    "status": "text",
+    "model_calls": 1,
+    "events": []
+  },
+  {
+    "key": "dream_chased_to_exam#3",
+    "status": "retry_limit",
+    "model_calls": 10,
+    "events": [
+      {
+        "event": "tool_result",
+        "tool": "lookup_dream_symbols",
+        "result": {
+          "ok": false,
+          "data": {},
+          "error": "意象“重复的梦”不是原文“同一个梦”的规范说法；已知意象须由原文写出或明显缩写，词典外的词须照抄原文",
+          "code": "validation_failed",
+          "cached": false
+        },
+        "code": null,
+        "attempts": null
+      },
+      {
+        "event": "tool_result",
+        "tool": "lookup_dream_symbols",
+        "result": {
+          "ok": false,
+          "data": {},
+          "error": "意象“被人追着跑”不是原文“被人追着一直跑”的规范说法；已知意象须由原文写出或明显缩写，词典外的词须照抄原文",
+          "code": "validation_failed",
+          "cached": false
+        },
+        "code": null,
+        "attempts": null
+      },
+      {
+        "event": "tool_result",
+        "tool": "submit_reading",
+        "result": {
+          "ok": false,
+          "data": {},
+          "error": "意象“考场”未在词典中命中，只能说明未收录，不能解读",
+          "code": "validation_failed",
+          "cached": false
+        },
+        "code": null,
+        "attempts": null
+      },
+      {
+        "event": "tool_result",
+        "tool": "submit_reading",
+        "result": {
+          "ok": false,
+          "data": {},
+          "error": "意象“同一个梦”未在词典中命中，只能说明未收录，不能解读",
+          "code": "validation_failed",
+          "cached": false
+        },
+        "code": null,
+        "attempts": null
+      },
+      {
+        "event": "tool_result",
+        "tool": "submit_reading",
+        "result": {
+          "ok": false,
+          "data": {},
+          "error": "解梦只提供心理层面的线索，不能把梦境说成现实事件的预兆",
+          "code": "validation_failed",
+          "cached": false
+        },
+        "code": null,
+        "attempts": null
+      },
+      {
+        "event": "tool_result",
+        "tool": "submit_reading",
+        "result": {
+          "ok": false,
+          "data": {},
+          "error": "意象“同一个梦”未在词典中命中，只能说明未收录，不能解读",
+          "code": "validation_failed",
+          "cached": false
+        },
+        "code": null,
+        "attempts": null
+      },
+      {
+        "event": "tool_result",
+        "tool": "submit_reading",
+        "result": {
+          "ok": false,
+          "data": {},
+          "error": "解梦只提供心理层面的线索，不能把梦境说成现实事件的预兆",
+          "code": "validation_failed",
+          "cached": false
+        },
+        "code": null,
+        "attempts": null
+      },
+      {
+        "event": "tool_result",
+        "tool": "submit_reading",
+        "result": {
+          "ok": false,
+          "data": {},
+          "error": "解梦只提供心理层面的线索，不能把梦境说成现实事件的预兆",
+          "code": "validation_failed",
+          "cached": false
+        },
+        "code": null,
+        "attempts": null
+      },
+      {
+        "event": "repeated_failure_limit",
+        "tool": "submit_reading",
+        "result": null,
+        "code": "validation_failed",
+        "attempts": 3
+      }
+    ]
+  }
+]
