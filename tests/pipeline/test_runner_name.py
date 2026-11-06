@@ -593,3 +593,85 @@ async def test_pr49_an_affirmative_collective_keeps_its_shared_value(make, subje
         "problems"
     ]
     assert advice in outcome.text
+
+
+# ---- P2 r9: a label's colon between the shared subject and 都 -----------------------------
+
+
+async def test_the_r9_colon_collective_passes_the_final_submission(make):
+    """r9 name_compare_two#3: both drafts were refused, then degraded to keywords."""
+    advice = "两个名字：都留意外格2数提示的基础与分工问题。"
+    runtime, _, events = make(advising([advice]))
+    outcome = await runtime.turn(COMPARE)
+    info = outcome.data["pipeline"]
+    assert (outcome.status, info["repairs"], info["degraded"]) == ("submit_reading", 0, None), info[
+        "problems"
+    ]
+    assert advice in outcome.text
+
+
+@pytest.mark.parametrize(
+    "advice, problem",
+    [
+        ("两个名字：都留意外格4。", "外格4与本次计算不符"),
+        ("两个名字，都留意人格22。", "李娜的人格22与本次计算不符"),
+        # Without 都 the label binds nothing; a negated one neither.
+        ("两个名字：外格2。", "须写明是哪个名字"),
+        ("并非两个名字：都要留意外格2。", "须写明是哪个名字"),
+        # A full name written after the label takes the claim back to that name.
+        ("两个名字：都不错，张伟的人格17值得留意。", "张伟的人格17与本次计算不符"),
+    ],
+)
+async def test_what_the_r9_colon_fix_must_still_refuse(make, advice, problem):
+    runtime, *_ = make(advising([advice]), written)
+    outcome = await runtime.turn(COMPARE)
+    info = outcome.data["pipeline"]
+    assert (outcome.status, info["repairs"], info["degraded"]) == ("submit_reading", 1, None)
+    assert problem in info["problems"][0][0], info["problems"]
+    assert advice not in outcome.text
+
+
+# ---- P2 r9 (single): 三者 counts grids; an arithmetic expression states its result --------
+
+CHEN = "陈思远这个名字的五格怎么样？"
+
+
+@pytest.mark.parametrize(
+    "claim",
+    [
+        # r9 name_compound_surname#1 / name_career_grid#2.
+        "三才指天格、人格、地格三者尾数对应的五行。",
+        # r9 name_without_lead_in#3: 天格17 + 地格26 − 人格25 = 外格18.
+        "外格由天格加地格减人格得18。",
+        "天格加地格减人格得18。",
+    ],
+)
+async def test_the_r9_single_false_rejections_pass(make, claim):
+    runtime, _, events = make(lambda m: written(m, extra=claim))
+    outcome = await runtime.turn(CHEN)
+    info = outcome.data["pipeline"]
+    assert (outcome.status, info["repairs"], info["degraded"]) == ("submit_reading", 0, None), info[
+        "problems"
+    ]
+    assert claim in outcome.text
+
+
+@pytest.mark.parametrize(
+    "claim",
+    [
+        # A wrong result, or a subject grid that is not the result, is still refused.
+        "外格由天格加地格减人格得19。",
+        "人格由天格加地格减人格得18。",
+        "天格加地格得42。",
+        # The expression does not cover a separate claim after it, nor a lone numeral.
+        "外格由天格加地格减人格得18，人格18。",
+        "地格三。",
+    ],
+)
+async def test_what_the_r9_single_fixes_must_still_refuse(make, claim):
+    runtime, *_ = make(lambda m: written(m, extra=claim), written)
+    outcome = await runtime.turn(CHEN)
+    info = outcome.data["pipeline"]
+    assert (outcome.status, info["repairs"], info["degraded"]) == ("submit_reading", 1, None)
+    assert "与本次计算不符" in info["problems"][0][0], info["problems"]
+    assert claim not in outcome.text
