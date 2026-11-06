@@ -1406,3 +1406,52 @@ async def test_a_repair_quotes_nothing_it_cannot_locate(make):
     await runtime.turn(QUESTION)
     request = composer.seen[2][0][-1]["content"]
     assert "出问题的句子" not in request
+
+
+# ---- PR #53 review: outer negations, and a repair quoting a pair of sentences -------------
+
+
+@pytest.mark.parametrize(
+    "text",
+    [
+        # F1: an outer denial voids the inner one.
+        "这个梦不可能没有预示现实中的好转。",
+        "不能说这个梦没有预示现实中的好转。",
+        "这个梦不是不提供预言。",
+        "这个梦未必没有预示好转。",
+        "不能说没有预示。",
+        "不是不作预兆解读。",
+    ],
+)
+async def test_what_the_pr53_prophecy_review_must_refuse(make, text):
+    problems = await problems_of(make, HOSPITAL, text)
+    assert any("预兆" in problem for problem in problems), problems
+
+
+@pytest.mark.parametrize("text", ["这个梦不可能没有预示现实中的好转。", "这个梦不是不提供预言。"])
+async def test_the_pr53_review_prophecies_are_not_submitted(make, text):
+    runtime, *_ = make(extraction(PILOT_SYMBOLS[HOSPITAL]), with_layer(text), written)
+    outcome = await runtime.turn(HOSPITAL)
+    info = outcome.data["pipeline"]
+    assert info["repairs"] == 1 and "预兆" in info["problems"][0][0]
+    assert text not in outcome.text
+
+
+R11_RETOLD = (
+    "梦里你跑着跑着进入一个需要应对的场面，又发现自己什么都没准备。"
+    "这个转折说明，想避开的那份压力可能并没有消失，而是换了个形式跟上来。"
+)
+
+
+async def test_a_repair_quotes_the_pair_of_sentences_a_cross_sentence_check_refused(make):
+    """r11 dream_chased_to_exam#1: neither sentence alone raised the problem, so the repair
+    request quoted nothing and the second draft was refused again."""
+    runtime, composer, events = make(
+        extraction(PILOT_SYMBOLS[CHASED]), with_layer(R11_RETOLD), written
+    )
+    outcome = await runtime.turn(CHASED)
+    info = outcome.data["pipeline"]
+    assert info["repairs"] == 1 and "不在事实表里" in info["problems"][0][0]
+    stage = next(e for e in events if e["event"] == "pipeline_stage" and e["stage"] == "repair")
+    assert list(stage["quotes"].values()) == [[R11_RETOLD]]
+    assert f"“{R11_RETOLD}”" in composer.seen[2][0][-1]["content"]

@@ -230,30 +230,43 @@ class PipelineRunner:
         when the rule misread a sentence, the writer keeps it and the second draft is refused for
         the same reason (every false-rejection degradation of r6–r10). Each sentence is checked
         alone with the same closed-vocabulary checks and the submission's high-risk rule; only an
-        exact match of the problem's text counts. The checks themselves are unchanged.
+        exact match of the problem's text counts; when no sentence does, two neighbouring
+        sentences of one field are tried together. The checks themselves are unchanged.
         """
         draft, format_problems = compose.parse(draft_text, sections_required=not followup)
         if format_problems:
             return {}
         _, _, texts = reading_args(draft, facts, question_type=question_type, question=risk_text)
-        sentences = list(
-            dict.fromkeys(
+        # Sentences per field, so a neighbouring pair never spans two fields.
+        fields = [
+            [
                 piece.strip()
-                for text in texts
                 for piece in re.split(r"(?<=[。！？!?；;])|\n", text or "")
                 if piece.strip()
+            ]
+            for text in texts
+        ]
+        sentences = list(dict.fromkeys(s for field in fields for s in field))
+        # A check that reads across sentences (解梦: a retold detail, then a generic subject
+        # interpreting it, r11 dream_chased_to_exam#1) is located by the pair that raises it.
+        pairs = list(
+            dict.fromkeys(
+                field[i] + field[i + 1] for field in fields for i in range(len(field) - 1)
             )
         )
         risky = bool(HIGH_RISK.search(risk_text))
+
+        def raises(text: str, problem: str) -> bool:
+            alone = system.problems([text], self.session)
+            if risky and (certainty_claim([text]) or hard_claim([text])):
+                alone.append(HIGH_RISK_CLAIM_PROBLEM)
+            return problem in alone
+
         quotes = {}
         for problem in problems:
-            found = []
-            for sentence in sentences:
-                alone = system.problems([sentence], self.session)
-                if risky and (certainty_claim([sentence]) or hard_claim([sentence])):
-                    alone.append(HIGH_RISK_CLAIM_PROBLEM)
-                if problem in alone:
-                    found.append(sentence)
+            found = [sentence for sentence in sentences if raises(sentence, problem)]
+            if not found:
+                found = [pair for pair in pairs if raises(pair, problem)]
             if found:
                 quotes[problem] = found[:MAX_QUOTES]
         return quotes

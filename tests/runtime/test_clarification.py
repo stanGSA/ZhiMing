@@ -320,3 +320,17 @@ def test_rises_after_a_quantity_noun_is_not_the_ascendant(text):
 )
 def test_the_ascendant_is_still_refused_when_time_is_unknown(text):
     assert validate_output(reading(text), dict(natal_result=dict(time_known=False)))
+
+
+@pytest.mark.parametrize(
+    "text",
+    ["你是阳性上升，外在表达主动。", "你的阴性上升让你显得内敛。", "信心上升，你的上升是白羊座"],
+)
+def test_pr53_a_single_character_does_not_exempt_the_ascendant(text):
+    """PR #53 review F2: 性 before 上升 exempted 阳性上升/阴性上升."""
+    assert validate_output(reading(text), dict(natal_result=dict(time_known=False)))
+
+
+@pytest.mark.parametrize("text", ["压力有所上升", "收入有上升空间"])
+def test_whole_quantity_words_still_rise(text):
+    assert validate_output(reading(text), dict(natal_result=dict(time_known=False))) is None

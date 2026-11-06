@@ -707,3 +707,37 @@ async def test_a_name_repair_quotes_the_sentence_with_the_wrong_value(make):
     await runtime.turn(CHEN)
     request = composer.seen[1][0][-1]["content"]
     assert "出问题的句子：" in request and "人格24也很好。" in request
+
+
+# ---- PR #53 review F3: 点 counts only in 一点, and grids have no decimals --------------------
+
+
+@pytest.mark.parametrize(
+    "claim, problem",
+    [
+        # The review's cases: a decimal is refused before its whole part is compared.
+        ("陈思远的人格二十四点五。", "小数"),
+        ("陈思远的数理二十四点五。", "小数"),
+        ("人格一点五。", "小数"),
+        # The right whole part does not save a decimal.
+        ("陈思远的人格二十五点五。", "小数"),
+        ("人格25.5。", "小数"),
+    ],
+)
+async def test_what_the_pr53_counter_review_must_refuse(make, claim, problem):
+    runtime, *_ = make(lambda m: written(m, extra=claim), written)
+    outcome = await runtime.turn(CHEN)
+    info = outcome.data["pipeline"]
+    assert (outcome.status, info["repairs"]) == ("submit_reading", 1)
+    assert problem in info["problems"][0][0], info["problems"]
+    assert claim not in outcome.text
+
+
+@pytest.mark.parametrize(
+    "claim", ["人格一点也不差。", "数理是一些人的参考。", "人格25，点评如下。"]
+)
+async def test_whole_counting_words_still_pass(make, claim):
+    runtime, *_ = make(lambda m: written(m, extra=claim))
+    outcome = await runtime.turn(CHEN)
+    info = outcome.data["pipeline"]
+    assert (outcome.status, info["repairs"]) == ("submit_reading", 0), info["problems"]

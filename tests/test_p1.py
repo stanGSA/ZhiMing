@@ -604,3 +604,25 @@ async def test_a_trailing_comma_is_the_only_judge_reply_repair():
     assert "json_trailing_commas_removed" not in review
     review, _ = await judge_answer(ScriptedJudge(reply[:-1], reply[:-1]), [])
     assert review["scored"] is False
+
+
+async def test_pr53_the_trailing_comma_repair_keeps_strings_and_the_reply():
+    """PR #53 review F4: removing ,} inside a reason rewrote the judge's evidence."""
+    from scripts.live_week23 import judge_answer
+
+    reasons = ["引用的原文包含 ,} 和 ,]。", '带"引号,}的理由']
+    body = json.dumps(
+        dict(
+            direct_answer=True,
+            time_consistent=True,
+            supported_conclusion=True,
+            no_fabricated_facts=True,
+            reasons=reasons,
+        ),
+        ensure_ascii=False,
+    )
+    reply = body[:-2] + "],}"  # one structural trailing comma
+    review, _ = await judge_answer(ScriptedJudge(reply), [])
+    assert review["reasons"] == reasons
+    assert review["json_trailing_commas_removed"] is True
+    assert review["unrepaired_reply"] == reply

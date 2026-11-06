@@ -11,7 +11,7 @@ prophecies, and a dream-only reading has no event timeline.
 import re
 
 from common.facts import public_texts
-from common.output_policy import clause_before, negates_claim
+from common.output_policy import clause_before, denial_negated, negates_claim
 from plugins.dream.match import NORMALISATIONS
 
 # Only entity-free constructions can authorise alternative output phrases. A lookup
@@ -49,7 +49,8 @@ DENIED_OMEN = re.compile(
     r"(?:不|并不|不能|不可|不可以|不应|不应该|不应当|不必|不要)被"
     r"(?:当成|当作|看成|看作|视为|理解为|理解成|想成)(?:什么|任何)?"
     r")"
-    r"(?:(?!一般|普通)[\u4e00-\u9fff]{1,2}的?)?$"
+    # The modifier is no second negation either: 不是不作预兆解读 affirms (PR #53 review).
+    r"(?:(?:(?![不没非无别]|一般|普通)[\u4e00-\u9fff]){1,2}的?)?$"
 )
 OMEN = re.compile(r"预兆|征兆|兆头|预言")
 OMEN_COMPARISON = re.compile(
@@ -255,18 +256,33 @@ def validate_output(reading, state, matcher):
 # 没有 directly before the verb denies it (r10: 这个梦没有预示什么), unless it is itself denied
 # (不是没有预示). A declined analysis may list the prophecy word with another one (r10 single:
 # 不作诊断或预兆解读 / 不作诊断或预示解读).
-NO_PROPHECY = re.compile(r"(?<!不是)(?<!并非)(?<!不能说)(?:并)?没(?:有)?$")
+# Either denial is void under an outer one, adjacent or across a short subject (PR #53
+# review F1: 这个梦不可能没有预示…, 不能说这个梦没有预示…, 这个梦不是不提供预言).
+NO_PROPHECY = re.compile(r"(?:并)?没(?:有)?$")
 DECLINED = re.compile(
     r"(?:不作|不做|不进行|不提供|不给出)(?:[\u4e00-\u9fff]{1,4}(?:或|和|与|、|及|以及))?$"
 )
+LEADING_SUBJECT = re.compile(r"(?:这个梦|这场梦|梦境|梦|它|这)$")
+OUTER_DENIAL = re.compile(r"(?:不可能|不会|未必|不见得|难说|很难说)(?:说)?$")
+
+
+def inner_denial(pattern, before):
+    """A denial ending ``before`` that no outer denial governs."""
+    match = pattern.search(before)
+    if match is None:
+        return None
+    prefix = before[: match.start()]
+    if denial_negated(prefix) or OUTER_DENIAL.search(LEADING_SUBJECT.sub("", prefix)):
+        return None
+    return match
 
 
 def prophecy_negated(text, match) -> bool:
     """Whether a negation or a dismissal in its own clause governs this prophecy word."""
     before = clause_before(text, match.start(), 40)
-    if DECLINED.search(before):
+    if inner_denial(DECLINED, before):
         return True
-    if match[0] in ("预示", "预言") and NO_PROPHECY.search(before):
+    if match[0] in ("预示", "预言") and inner_denial(NO_PROPHECY, before):
         return True
     comparison = OMEN_COMPARISON.search(before)
     if comparison and OMEN.fullmatch(match[0]):
@@ -278,7 +294,7 @@ def prophecy_negated(text, match) -> bool:
         return False
     # A contrast starts a new assertion: 不是坏事而是预兆 affirms it.
     before = re.split(r"但是|然而|不过|反而|而是|可是|却|但", before)[-1]
-    return bool(DENIED_OMEN.search(before))
+    return bool(inner_denial(DENIED_OMEN, before))
 
 
 def text_error(text, matcher, hits, misses, *, aliases=None, phrases=None):
