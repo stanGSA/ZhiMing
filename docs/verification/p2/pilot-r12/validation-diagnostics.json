@@ -1,0 +1,481 @@
+{
+  "model_calls": 0,
+  "known_boundary_replay": [
+    {
+      "text": "这个梦不可能完全没有预示现实中的好转。",
+      "rejected": false
+    },
+    {
+      "text": "这个梦不是完全没有预示现实中的好转。",
+      "rejected": false
+    },
+    {
+      "text": "这个梦不是不幸的预兆。",
+      "rejected": true
+    },
+    {
+      "text": "这个梦不是不祥的预兆。",
+      "rejected": true
+    },
+    {
+      "text": "梦里出现生病，往往和最近的消耗程度有关，而不是身体疾病的预兆。",
+      "rejected": true
+    }
+  ],
+  "repair_quote_checks": [
+    {
+      "group": "Daily-pipeline",
+      "key": "daily_tomorrow_work#1",
+      "quotes": {
+        "不能使用“必然”这类确定性说法；趋势可以写“倾向/容易/往往”，请改写后重新提交": [
+          "工作上先谈清配合方式、留好缓冲，别把“合得来”当成事情必然顺利。"
+        ]
+      },
+      "quote_count": 1,
+      "any_quote": true,
+      "degraded": null,
+      "repair_rejected": false,
+      "comparison_source": "final rendered answer",
+      "quoted_sentences_still_exactly_present": []
+    },
+    {
+      "group": "Dream-pipeline",
+      "key": "dream_chased_to_exam#1",
+      "quotes": {
+        "“没复习”不在事实表里，只能解读事实表里的意象": [
+          "梦里“什么都没复习”的感受，可能更多是那种准备不足、心里没底的情绪在起作用，而不一定对应现实中的某场具体考验。"
+        ]
+      },
+      "quote_count": 1,
+      "any_quote": true,
+      "degraded": null,
+      "repair_rejected": false,
+      "comparison_source": "final rendered answer",
+      "quoted_sentences_still_exactly_present": []
+    },
+    {
+      "group": "Dream-pipeline",
+      "key": "dream_flood_and_snake#1",
+      "quotes": {
+        "意象“站在床上”未在词典中命中，只能说明未收录，不能解读": [
+          "梦里它在水里游来游去，而你站在床上不敢下去，这个姿态可能对应一种“先不靠近、先看看”的自我保护。"
+        ],
+        "“床上”不在事实表里，只能解读事实表里的意象": [
+          "梦里你被水和蛇困在床上，主要反映面对未知变化时的警觉与退缩感。"
+        ],
+        "“床上不敢下去”不在事实表里，只能解读事实表里的意象": [
+          "梦里它在水里游来游去，而你站在床上不敢下去，这个姿态可能对应一种“先不靠近、先看看”的自我保护。"
+        ]
+      },
+      "quote_count": 3,
+      "any_quote": true,
+      "degraded": "keywords",
+      "repair_rejected": true,
+      "comparison_source": "rejected repair draft",
+      "quoted_sentences_still_exactly_present": []
+    },
+    {
+      "group": "Dream-pipeline",
+      "key": "dream_flood_and_snake#2",
+      "quotes": {
+        "“游来游去”不在事实表里，只能解读事实表里的意象": [
+          "「蛇」常与本能、转变、未知的担心或被压抑的力量有关，而它在水里游来游去，说明这份不安不是静止的，是活的、会动的。"
+        ]
+      },
+      "quote_count": 1,
+      "any_quote": true,
+      "degraded": null,
+      "repair_rejected": false,
+      "comparison_source": "final rendered answer",
+      "quoted_sentences_still_exactly_present": []
+    },
+    {
+      "group": "Dream-pipeline",
+      "key": "dream_hospital_health#2",
+      "quotes": {
+        "解梦只提供心理层面的线索，不能把梦境说成现实事件的预兆": [
+          "梦里出现生病，往往和最近的消耗程度有关，而不是身体疾病的预兆。"
+        ]
+      },
+      "quote_count": 1,
+      "any_quote": true,
+      "degraded": null,
+      "repair_rejected": false,
+      "comparison_source": "final rendered answer",
+      "quoted_sentences_still_exactly_present": []
+    },
+    {
+      "group": "Dream-pipeline",
+      "key": "dream_chased_to_exam#3",
+      "quotes": {
+        "意象“考场”未在词典中命中，只能说明未收录，不能解读": [
+          "跑进考场又发现没复习"
+        ]
+      },
+      "quote_count": 1,
+      "any_quote": true,
+      "degraded": null,
+      "repair_rejected": false,
+      "comparison_source": "final rendered answer",
+      "quoted_sentences_still_exactly_present": []
+    },
+    {
+      "group": "Name-pipeline",
+      "key": "name_career_grid#2",
+      "quotes": {
+        "林晓的人格1与本次计算不符": [
+          "数理只是取名习俗，不决定实际经历，其中人格一格最值得留意。"
+        ]
+      },
+      "quote_count": 1,
+      "any_quote": true,
+      "degraded": null,
+      "repair_rejected": false,
+      "comparison_source": "final rendered answer",
+      "quoted_sentences_still_exactly_present": []
+    }
+  ],
+  "single_terminal_errors": [
+    {
+      "group": "Dream-single",
+      "key": "dream_lost_in_mall#1",
+      "status": "retry_limit",
+      "errors": [
+        {
+          "tool": "lookup_dream_symbols",
+          "error": "意象“手机没电”不是原文“手机也没电了”的规范说法；已知意象须由原文写出或明显缩写，词典外的词须照抄原文",
+          "code": "validation_failed"
+        },
+        {
+          "tool": "lookup_dream_symbols",
+          "error": "意象“手机没电”不是原文“手机也没电了”的规范说法；已知意象须由原文写出或明显缩写，词典外的词须照抄原文",
+          "code": "validation_failed"
+        },
+        {
+          "tool": "lookup_dream_symbols",
+          "error": "意象“手机没电了”不是原文“手机也没电了”的规范说法；已知意象须由原文写出或明显缩写，词典外的词须照抄原文",
+          "code": "validation_failed"
+        },
+        {
+          "tool": "submit_reading",
+          "error": "意象“手机也没电了”未在词典中命中，只能说明未收录，不能解读",
+          "code": "validation_failed"
+        },
+        {
+          "tool": "submit_reading",
+          "error": "意象“手机也没电了”未在词典中命中，只能说明未收录，不能解读",
+          "code": "validation_failed"
+        },
+        {
+          "tool": "submit_reading",
+          "error": "意象“手机也没电了”未在词典中命中，只能说明未收录，不能解读",
+          "code": "validation_failed"
+        }
+      ]
+    },
+    {
+      "group": "Dream-single",
+      "key": "dream_hospital_health#1",
+      "status": "retry_limit",
+      "errors": [
+        {
+          "tool": "submit_reading",
+          "error": "“医院”不是本次命中的意象，不能解读",
+          "code": "validation_failed"
+        },
+        {
+          "tool": "submit_reading",
+          "error": "“医院”不是本次命中的意象，不能解读",
+          "code": "validation_failed"
+        },
+        {
+          "tool": "submit_reading",
+          "error": "“医院”不是本次命中的意象，不能解读",
+          "code": "validation_failed"
+        }
+      ]
+    },
+    {
+      "group": "Dream-single",
+      "key": "dream_chased_to_exam#2",
+      "status": "retry_limit",
+      "errors": [
+        {
+          "tool": "submit_reading",
+          "error": "意象“考场”未在词典中命中，只能说明未收录，不能解读",
+          "code": "validation_failed"
+        },
+        {
+          "tool": "submit_reading",
+          "error": "意象“考场”未在词典中命中，只能说明未收录，不能解读",
+          "code": "validation_failed"
+        },
+        {
+          "tool": "submit_reading",
+          "error": "意象“考场”未在词典中命中，只能说明未收录，不能解读",
+          "code": "validation_failed"
+        }
+      ]
+    },
+    {
+      "group": "Dream-single",
+      "key": "dream_hospital_health#2",
+      "status": "ask_user",
+      "errors": []
+    },
+    {
+      "group": "Dream-single",
+      "key": "dream_chased_to_exam#3",
+      "status": "retry_limit",
+      "errors": [
+        {
+          "tool": "lookup_dream_symbols",
+          "error": "意象“没准备”不是原文“什么都没复习”的规范说法；已知意象须由原文写出或明显缩写，词典外的词须照抄原文",
+          "code": "validation_failed"
+        },
+        {
+          "tool": "submit_reading",
+          "error": "解梦只提供心理层面的线索，不能把梦境说成现实事件的预兆",
+          "code": "validation_failed"
+        },
+        {
+          "tool": "submit_reading",
+          "error": "意象“考场”未在词典中命中，只能说明未收录，不能解读",
+          "code": "validation_failed"
+        },
+        {
+          "tool": "submit_reading",
+          "error": "意象“考场”未在词典中命中，只能说明未收录，不能解读",
+          "code": "validation_failed"
+        },
+        {
+          "tool": "submit_reading",
+          "error": "解梦只提供心理层面的线索，不能把梦境说成现实事件的预兆",
+          "code": "validation_failed"
+        },
+        {
+          "tool": "submit_reading",
+          "error": "解梦只提供心理层面的线索，不能把梦境说成现实事件的预兆",
+          "code": "validation_failed"
+        }
+      ]
+    },
+    {
+      "group": "Dream-single",
+      "key": "dream_flood_and_snake#3",
+      "status": "retry_limit",
+      "errors": [
+        {
+          "tool": "submit_reading",
+          "error": "意象“站在床上”未在词典中命中，只能说明未收录，不能解读",
+          "code": "validation_failed"
+        },
+        {
+          "tool": "submit_reading",
+          "error": "解梦只提供心理层面的线索，不能把梦境说成现实事件的预兆",
+          "code": "validation_failed"
+        },
+        {
+          "tool": "submit_reading",
+          "error": "解梦只提供心理层面的线索，不能把梦境说成现实事件的预兆",
+          "code": "validation_failed"
+        },
+        {
+          "tool": "submit_reading",
+          "error": "意象“站在床上”未在词典中命中，只能说明未收录，不能解读",
+          "code": "validation_failed"
+        },
+        {
+          "tool": "submit_reading",
+          "error": "意象“站在床上”未在词典中命中，只能说明未收录，不能解读",
+          "code": "validation_failed"
+        }
+      ]
+    },
+    {
+      "group": "Dream-single",
+      "key": "dream_hospital_health#3",
+      "status": "retry_limit",
+      "errors": [
+        {
+          "tool": "submit_reading",
+          "error": "意象“住院”未在词典中命中，只能说明未收录，不能解读",
+          "code": "validation_failed"
+        },
+        {
+          "tool": "submit_reading",
+          "error": "解梦只提供心理层面的线索，不能把梦境说成现实事件的预兆",
+          "code": "validation_failed"
+        },
+        {
+          "tool": "submit_reading",
+          "error": "参数不符合 schema：verdict：Input should be 'favorable', 'steady', 'pressured', 'volatile', 'suitable', 'not_now', 'conditional', 'prefer_a', 'prefer_b' or 'describe'",
+          "code": "invalid_arguments"
+        },
+        {
+          "tool": "submit_reading",
+          "error": "解梦只提供心理层面的线索，不能把梦境说成现实事件的预兆",
+          "code": "validation_failed"
+        },
+        {
+          "tool": "submit_reading",
+          "error": "解梦只提供心理层面的线索，不能把梦境说成现实事件的预兆",
+          "code": "validation_failed"
+        }
+      ]
+    },
+    {
+      "group": "Name-single",
+      "key": "name_compound_surname#1",
+      "status": "retry_limit",
+      "errors": [
+        {
+          "tool": "submit_reading",
+          "error": "欧阳子涵的人格1与本次计算不符",
+          "code": "validation_failed"
+        },
+        {
+          "tool": "submit_reading",
+          "error": "欧阳子涵的人格1与本次计算不符",
+          "code": "validation_failed"
+        },
+        {
+          "tool": "submit_reading",
+          "error": "欧阳子涵的天格2与本次计算不符",
+          "code": "validation_failed"
+        },
+        {
+          "tool": "lookup_meaning",
+          "error": "缺条目：精确 key 或同义词未命中；key须照抄工具结果中的meaning_key或key；本版本有效key候选：stroke_rule、compound_surname、ambiguous_form、bazi_compare。已有计算附带释义时直接使用；不要继续猜key。",
+          "code": "missing_entry"
+        },
+        {
+          "tool": "lookup_meaning",
+          "error": "缺条目：精确 key 或同义词未命中；key须照抄工具结果中的meaning_key或key；本版本有效key候选：stroke_rule、ambiguous_form、bazi_compare、compound_surname。已有计算附带释义时直接使用；不要继续猜key。",
+          "code": "missing_entry"
+        },
+        {
+          "tool": "submit_reading",
+          "error": "欧阳子涵的天格2与本次计算不符",
+          "code": "validation_failed"
+        },
+        {
+          "tool": "submit_reading",
+          "error": "欧阳子涵的天格2与本次计算不符",
+          "code": "validation_failed"
+        }
+      ]
+    },
+    {
+      "group": "Name-single",
+      "key": "name_without_lead_in#1",
+      "status": "ask_user",
+      "errors": []
+    },
+    {
+      "group": "Name-single",
+      "key": "name_career_grid#1",
+      "status": "ask_user",
+      "errors": []
+    },
+    {
+      "group": "Name-single",
+      "key": "name_ambiguous_form#2",
+      "status": "retry_limit",
+      "errors": [
+        {
+          "tool": "submit_reading",
+          "error": "工具参数必须是合法JSON对象（Expecting ':' delimiter，第 1842 个字符附近：… \"帮我看看另几个候选名字的五格\"], \"question\"…；字符串正文里的英文双引号须写成\\\"，或改用中文引号“”），请修正后重试",
+          "code": "invalid_arguments"
+        },
+        {
+          "tool": "submit_reading",
+          "error": "免责声明由应用统一添加，正文不要重复",
+          "code": "validation_failed"
+        },
+        {
+          "tool": "submit_reading",
+          "error": "免责声明由应用统一添加，正文不要重复",
+          "code": "validation_failed"
+        },
+        {
+          "tool": "submit_reading",
+          "error": "免责声明由应用统一添加，正文不要重复",
+          "code": "validation_failed"
+        }
+      ]
+    },
+    {
+      "group": "Name-single",
+      "key": "name_compound_surname#2",
+      "status": "retry_limit",
+      "errors": [
+        {
+          "tool": "lookup_meaning",
+          "error": "缺条目：精确 key 或同义词未命中；key须照抄工具结果中的meaning_key或key；本版本有效key候选：ambiguous_form、bazi_compare、compound_surname、stroke_rule。已有计算附带释义时直接使用；不要继续猜key。",
+          "code": "missing_entry"
+        },
+        {
+          "tool": "submit_reading",
+          "error": "欧阳子涵的天格2与本次计算不符",
+          "code": "validation_failed"
+        },
+        {
+          "tool": "submit_reading",
+          "error": "欧阳子涵的天格2与本次计算不符",
+          "code": "validation_failed"
+        },
+        {
+          "tool": "submit_reading",
+          "error": "欧阳子涵的天格2与本次计算不符",
+          "code": "validation_failed"
+        }
+      ]
+    },
+    {
+      "group": "Name-single",
+      "key": "name_without_lead_in#2",
+      "status": "ask_user",
+      "errors": []
+    },
+    {
+      "group": "Name-single",
+      "key": "name_ambiguous_form#3",
+      "status": "ask_user",
+      "errors": []
+    },
+    {
+      "group": "Name-single",
+      "key": "name_without_lead_in#3",
+      "status": "ask_user",
+      "errors": []
+    }
+  ],
+  "judge_repaired_rows": [
+    {
+      "group": "Daily-single",
+      "key": "daily_investment_risk#3",
+      "quality_review": {
+        "direct_answer": true,
+        "time_consistent": true,
+        "supported_conclusion": true,
+        "no_fabricated_facts": true,
+        "reasons": [
+          "direct_answer：summary首句直接回应两问——今天运势“偏顺”、全部积蓄买股票“暂不适合”，方向明确，符合决策类问题的正面作答要求。",
+          "time_consistent：所有行运相位与流日分段均落在用户“今天”范围（2026-11-07，含其邻近UTC时刻），未把精确相位时刻说成现实事件日期，也未把节气/流月当公历整月。",
+          "supported_conclusion：三大体系判断均有实际计算与引用释义支撑——月亮三分本命月亮/木星四分/月亮三分金星对应顺相与摩擦相；乙酉偏印、丙戌劫财、破/合/刑/冲对应情绪与边界提示；圣杯一逆位、权杖骑士正位、宝剑王后正位对应A/B对比。结论使用“倾向”“象征性线索”表述，未把单相位或单牌面当作确定录用或必然结果，且投资结论仅为不宜重仓的象征性提醒。",
+          "no_fabricated_facts：出生信息、行星落座、干支十神、宫位均来自提供的事实，未编造家庭或工作经历；将结论落到“如果买之前有急迫感”等场景写成条件句，属允许范围；未知信息未强行补足，保守免责声明之外仍有实质作答。"
+        ],
+        "json_trailing_commas_removed": true,
+        "unrepaired_reply": "{\"direct_answer\":true,\"time_consistent\":true,\"supported_conclusion\":true,\"no_fabricated_facts\":true,\"reasons\":[\"direct_answer：summary首句直接回应两问——今天运势“偏顺”、全部积蓄买股票“暂不适合”，方向明确，符合决策类问题的正面作答要求。\",\"time_consistent：所有行运相位与流日分段均落在用户“今天”范围（2026-11-07，含其邻近UTC时刻），未把精确相位时刻说成现实事件日期，也未把节气/流月当公历整月。\",\"supported_conclusion：三大体系判断均有实际计算与引用释义支撑——月亮三分本命月亮/木星四分/月亮三分金星对应顺相与摩擦相；乙酉偏印、丙戌劫财、破/合/刑/冲对应情绪与边界提示；圣杯一逆位、权杖骑士正位、宝剑王后正位对应A/B对比。结论使用“倾向”“象征性线索”表述，未把单相位或单牌面当作确定录用或必然结果，且投资结论仅为不宜重仓的象征性提醒。\",\"no_fabricated_facts：出生信息、行星落座、干支十神、宫位均来自提供的事实，未编造家庭或工作经历；将结论落到“如果买之前有急迫感”等场景写成条件句，属允许范围；未知信息未强行补足，保守免责声明之外仍有实质作答。\"],}"
+      }
+    }
+  ],
+  "quote_metrics": {
+    "repairs": 7,
+    "with_quotes": 7,
+    "without_quotes": 0,
+    "with_quotes_and_no_degrade": 6,
+    "quoted_sentences_still_present": 0
+  }
+}
