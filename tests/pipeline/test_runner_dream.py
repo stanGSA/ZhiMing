@@ -1339,3 +1339,154 @@ async def test_the_bound_phrase_is_not_inherited_by_the_single_agent_validator(m
     assert "去世的亲人" in (validate_output(reading, state, Dream(runtime).matcher) or "")
     state["pipeline_run"] = {"system": "dream"}
     assert validate_output(reading, state, Dream(runtime).matcher) is None
+
+
+# ---- P2 r10: denied prophecy verbs, and the repair quotes its sentence ---------------------
+
+
+async def test_the_r10_denied_prophecy_passes_the_final_submission(make):
+    """r10 dream_late_grandmother#2: both drafts were refused and degraded to keywords."""
+    text = "这个梦没有预示什么，它更像是在说：你值得被好好喂饱。"
+    runtime, *_ = make(extraction(R9_GRANDMOTHER_SYMBOLS), with_layer(text), written)
+    outcome = await runtime.turn(GRANDMOTHER)
+    info = outcome.data["pipeline"]
+    assert (outcome.status, info["repairs"], info["degraded"]) == ("submit_reading", 0, None), info[
+        "problems"
+    ]
+    assert text in outcome.text
+
+
+@pytest.mark.parametrize(
+    "text",
+    [
+        "这个梦并没有预示什么。",
+        "这个梦没有预示任何现实事件。",
+        # r10 Dream-single chased_to_exam#3's safety note.
+        "不作诊断或预兆解读。",
+        "不作诊断或预示解读。",
+    ],
+)
+async def test_denied_and_declined_prophecy_words_are_accepted(make, text):
+    problems = await problems_of(make, HOSPITAL, text)
+    assert not any("预兆" in problem for problem in problems), problems
+
+
+@pytest.mark.parametrize(
+    "text",
+    [
+        "不是没有预示，它预示着好转。",
+        "不是没有预示。",
+        "这个梦没有预示什么，但它预示着好转。",
+        "没有人能否认它预示着好转。",
+        "不作诊断，但这预示着好转。",
+        "不作诊断但预示好转。",
+        "不作多想预示着好转。",
+    ],
+)
+async def test_what_the_r10_prophecy_fix_must_still_refuse(make, text):
+    problems = await problems_of(make, HOSPITAL, text)
+    assert any("预兆" in problem for problem in problems), problems
+
+
+async def test_a_repair_quotes_the_sentence_that_raised_the_problem(make):
+    """r10 review: every false-rejection degradation of r6–r10 kept the refused sentence."""
+    bad = "这个梦预示你下个月会遇到麻烦。"
+    runtime, composer, events = make(extraction(), with_layer(bad), written)
+    outcome = await runtime.turn(QUESTION)
+    assert outcome.data["pipeline"]["repairs"] == 1
+    request = composer.seen[2][0][-1]["content"]
+    assert f"出问题的句子：“{bad}”" in request and "换一种说法" in request
+    stage = next(e for e in events if e["event"] == "pipeline_stage" and e["stage"] == "repair")
+    assert list(stage["quotes"].values()) == [[bad]]
+
+
+async def test_a_repair_quotes_nothing_it_cannot_locate(make):
+    """A format problem is no sentence; the request lists it as before."""
+    runtime, composer, _ = make(extraction(), lambda m: "这不是标记文本", written)
+    await runtime.turn(QUESTION)
+    request = composer.seen[2][0][-1]["content"]
+    assert "出问题的句子" not in request
+
+
+# ---- PR #53 review: outer negations, and a repair quoting a pair of sentences -------------
+
+
+@pytest.mark.parametrize(
+    "text",
+    [
+        # F1: an outer denial voids the inner one.
+        "这个梦不可能没有预示现实中的好转。",
+        "不能说这个梦没有预示现实中的好转。",
+        "这个梦不是不提供预言。",
+        "这个梦未必没有预示好转。",
+        "不能说没有预示。",
+        "不是不作预兆解读。",
+    ],
+)
+async def test_what_the_pr53_prophecy_review_must_refuse(make, text):
+    problems = await problems_of(make, HOSPITAL, text)
+    assert any("预兆" in problem for problem in problems), problems
+
+
+@pytest.mark.parametrize("text", ["这个梦不可能没有预示现实中的好转。", "这个梦不是不提供预言。"])
+async def test_the_pr53_review_prophecies_are_not_submitted(make, text):
+    runtime, *_ = make(extraction(PILOT_SYMBOLS[HOSPITAL]), with_layer(text), written)
+    outcome = await runtime.turn(HOSPITAL)
+    info = outcome.data["pipeline"]
+    assert info["repairs"] == 1 and "预兆" in info["problems"][0][0]
+    assert text not in outcome.text
+
+
+R11_RETOLD = (
+    "梦里你跑着跑着进入一个需要应对的场面，又发现自己什么都没准备。"
+    "这个转折说明，想避开的那份压力可能并没有消失，而是换了个形式跟上来。"
+)
+
+
+async def test_a_repair_quotes_the_pair_of_sentences_a_cross_sentence_check_refused(make):
+    """r11 dream_chased_to_exam#1: neither sentence alone raised the problem, so the repair
+    request quoted nothing and the second draft was refused again."""
+    runtime, composer, events = make(
+        extraction(PILOT_SYMBOLS[CHASED]), with_layer(R11_RETOLD), written
+    )
+    outcome = await runtime.turn(CHASED)
+    info = outcome.data["pipeline"]
+    assert info["repairs"] == 1 and "不在事实表里" in info["problems"][0][0]
+    stage = next(e for e in events if e["event"] == "pipeline_stage" and e["stage"] == "repair")
+    assert list(stage["quotes"].values()) == [[R11_RETOLD]]
+    assert f"“{R11_RETOLD}”" in composer.seen[2][0][-1]["content"]
+
+
+# ---- r12 review: a degree word inside the denial, and whole ominous adjectives -------------
+
+
+@pytest.mark.parametrize(
+    "text", ["这个梦不可能完全没有预示现实中的好转。", "这个梦不是完全没有预示现实中的好转。"]
+)
+async def test_what_the_r12_prophecy_review_must_refuse(make, text):
+    runtime, *_ = make(extraction(PILOT_SYMBOLS[HOSPITAL]), with_layer(text), written)
+    outcome = await runtime.turn(HOSPITAL)
+    info = outcome.data["pipeline"]
+    assert info["repairs"] == 1 and "预兆" in info["problems"][0][0]
+    assert text not in outcome.text
+
+
+@pytest.mark.parametrize(
+    "text", ["这个梦不是不幸的预兆。", "这个梦不是不祥的预兆。", "这个梦完全没有预示什么。"]
+)
+async def test_the_r12_denied_ominous_omens_pass_the_final_submission(make, text):
+    runtime, *_ = make(extraction(PILOT_SYMBOLS[HOSPITAL]), with_layer(text), written)
+    outcome = await runtime.turn(HOSPITAL)
+    info = outcome.data["pipeline"]
+    assert (outcome.status, info["repairs"], info["degraded"]) == ("submit_reading", 0, None), info[
+        "problems"
+    ]
+    assert text in outcome.text
+
+
+@pytest.mark.parametrize(
+    "text", ["这是不幸的预兆。", "这个梦是不祥的预兆。", "这个梦不是不幸的预兆，而是好运的预兆。"]
+)
+async def test_an_ominous_omen_is_still_refused(make, text):
+    problems = await problems_of(make, HOSPITAL, text)
+    assert any("预兆" in problem for problem in problems), problems

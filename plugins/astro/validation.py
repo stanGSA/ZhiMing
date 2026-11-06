@@ -14,6 +14,10 @@ ASPECT_WORDS = {
     "sextile": r"六分|六合",
 }
 AXES = {"上升": "asc", "天顶": "mc", "下降": "dsc", "天底": "ic"}
+RISING_QUANTITY = re.compile(
+    r"(?:活跃度|热度|人气|信心|士气|情绪|兴致|斗志|好感度|关注度|效率|指数|温度|体温|血压|"
+    r"价格|收入|业绩|销量|压力|能量|水平|比例|数值|成本|需求|风险)(?:也|还|会|在|逐渐|明显|有所)?上升"
+)
 BODY_PATTERN = "|".join([*BODY_ZH.values(), *AXES])
 
 
@@ -139,9 +143,14 @@ def validate_output(reading, state):
                 re.search(r"无法|不能|不使用|不解读|不确定|未知|不提供|不可用", sentence)
             )
             if natal and not natal.get("time_known") and not negative:
+                # 上升 after a whole quantity word is the verb “rises” (r10: 交际活跃度上升),
+                # not the ascendant. Whole words only: a single character would also exempt
+                # 阳性上升/阴性上升, which name the ascendant (PR #53 review F2).
+                rises = RISING_QUANTITY.sub("", sentence)
                 if re.search(
-                    r"上升(?!期|空间|趋势|通道|机会|幅度|潜力)|天顶|下降点|天底|(?:第)?[一二三四五六七八九十\d]+宫",
-                    sentence,
+                    r"上升(?!期|空间|趋势|通道|机会|幅度|潜力)"
+                    r"|天顶|下降点|天底|(?:第)?[一二三四五六七八九十\d]+宫",
+                    rises,
                 ):
                     return "出生时间未知，不能使用宫位或四轴解读"
             matches = list(re.finditer(BODY_PATTERN, sentence))

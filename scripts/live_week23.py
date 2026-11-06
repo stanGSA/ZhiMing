@@ -54,9 +54,20 @@ async def judge_answer(review_model, messages) -> tuple[dict, dict]:
                 returned_model=reply.model,
                 parse_attempts=attempt + 1,
             )
-            review = extract_json_object(reply.text)
+            try:
+                review = extract_json_object(reply.text)
+                repaired = False
+            except ValueError:
+                review = extract_json_object(reply.text, trailing_commas=True)
+                repaired = True
             if not all(type(review.get(key)) is bool for key in JUDGED):
                 raise ValueError("评委JSON缺少有效的布尔判定字段")
+            if repaired:
+                review = {
+                    **review,
+                    "json_trailing_commas_removed": True,
+                    "unrepaired_reply": reply.text[:UNPARSED_REPLY_CHARS],
+                }
             parse_error = None
             break
         except ValueError as exc:
@@ -78,9 +89,48 @@ async def judge_answer(review_model, messages) -> tuple[dict, dict]:
     return review, usage
 
 
-def extract_json_object(text: str) -> dict:
+# A comma before a closing bracket (r10 name_career_grid#3: …"],}) is the only repair; any other
+# malformed reply stays unscored. The row records that the repair was used and keeps the reply.
+
+
+def without_trailing_commas(text: str) -> str:
+    """Drop commas that only precede a closing bracket, outside JSON strings (PR #53 review F4:
+    a reason quoting “,}” must keep its words)."""
+    out, in_string, escaped, pending = [], False, False, None
+    for char in text:
+        if in_string:
+            out.append(char)
+            if escaped:
+                escaped = False
+            elif char == "\\":
+                escaped = True
+            elif char == '"':
+                in_string = False
+            continue
+        if pending is not None:
+            if char.isspace():
+                pending.append(char)
+                continue
+            if char not in "}]":
+                out.append(",")
+            out.extend(pending[1:])
+            pending = None
+        if char == ",":
+            pending = [char]
+            continue
+        out.append(char)
+        if char == '"':
+            in_string = True
+    if pending is not None:
+        out.extend(pending)
+    return "".join(out)
+
+
+def extract_json_object(text: str, *, trailing_commas: bool = False) -> dict:
     """Extract one JSON object from plain or fenced judge output."""
     text = text.strip()
+    if trailing_commas:
+        text = without_trailing_commas(text)
     if text.startswith("```"):
         text = re.sub(r"^```(?:json)?\s*|\s*```$", "", text, flags=re.IGNORECASE)
     decoder = json.JSONDecoder()

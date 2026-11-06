@@ -14,6 +14,7 @@ import json
 import re
 import uuid
 
+from common.output_policy import certainty_claim, hard_claim
 from common.validation import HIGH_RISK
 from harness.budget import Budget
 from harness.failures import failure, model_failure
@@ -38,6 +39,9 @@ HARD_SAFETY = re.compile(
     r"不能给出健康、投资或生死的确定性结论|不能给出确定性结果或停药建议|不能劝阻就医"
 )
 CERTAINTY = re.compile(r"这类确定性说法")
+# The submission's high-risk refusal (common/validation.py), located per sentence for repairs.
+HIGH_RISK_CLAIM_PROBLEM = "不能给出健康、投资或生死的确定性结论"
+MAX_QUOTES = 2
 __all__ = ["SAFETY_FALLBACK", "SYSTEM_TYPES", "PipelineRunner"]
 
 
@@ -176,9 +180,22 @@ class PipelineRunner:
                 if run.repairs >= MAX_REPAIRS:
                     break
                 self.keep(run)
-                self.stage("repair", run_id=run.run_id, problems=len(problems))
+                # Tarot keeps the repair request its P1 acceptance ran with.
+                quotes = (
+                    {}
+                    if system.name == "tarot"
+                    else self.triggering(
+                        system, draft_text, facts, question_type, risk_text, followup, problems
+                    )
+                )
+                self.stage("repair", run_id=run.run_id, problems=len(problems), quotes=quotes)
                 messages = compose.repair_messages(
-                    messages, draft_text, problems, facts, positions=system.name == "tarot"
+                    messages,
+                    draft_text,
+                    problems,
+                    facts,
+                    positions=system.name == "tarot",
+                    quotes=quotes,
                 )
                 draft_text, truncated = await self.ask(messages, "repair", run)
                 # Counted once the repair is written: an interrupted one is still to do.
@@ -205,6 +222,54 @@ class PipelineRunner:
             self.session, facts, question_type, risk_text, followup, safety_only=hard
         )
         return await self.submit_by_code(run, args)
+
+    def triggering(self, system, draft_text, facts, question_type, risk_text, followup, problems):
+        """problem → the draft's sentences that raise it on their own (r10 review).
+
+        A repair request that only names a rule leaves the writer guessing which words broke it;
+        when the rule misread a sentence, the writer keeps it and the second draft is refused for
+        the same reason (every false-rejection degradation of r6–r10). Each sentence is checked
+        alone with the same closed-vocabulary checks and the submission's high-risk rule; only an
+        exact match of the problem's text counts; when no sentence does, two neighbouring
+        sentences of one field are tried together. The checks themselves are unchanged.
+        """
+        draft, format_problems = compose.parse(draft_text, sections_required=not followup)
+        if format_problems:
+            return {}
+        _, _, texts = reading_args(draft, facts, question_type=question_type, question=risk_text)
+        # Sentences per field, so a neighbouring pair never spans two fields.
+        fields = [
+            [
+                piece.strip()
+                for piece in re.split(r"(?<=[。！？!?；;])|\n", text or "")
+                if piece.strip()
+            ]
+            for text in texts
+        ]
+        sentences = list(dict.fromkeys(s for field in fields for s in field))
+        # A check that reads across sentences (解梦: a retold detail, then a generic subject
+        # interpreting it, r11 dream_chased_to_exam#1) is located by the pair that raises it.
+        pairs = list(
+            dict.fromkeys(
+                field[i] + field[i + 1] for field in fields for i in range(len(field) - 1)
+            )
+        )
+        risky = bool(HIGH_RISK.search(risk_text))
+
+        def raises(text: str, problem: str) -> bool:
+            alone = system.problems([text], self.session)
+            if risky and (certainty_claim([text]) or hard_claim([text])):
+                alone.append(HIGH_RISK_CLAIM_PROBLEM)
+            return problem in alone
+
+        quotes = {}
+        for problem in problems:
+            found = [sentence for sentence in sentences if raises(sentence, problem)]
+            if not found:
+                found = [pair for pair in pairs if raises(pair, problem)]
+            if found:
+                quotes[problem] = found[:MAX_QUOTES]
+        return quotes
 
     def classify(self, draft_text: str, facts, risk_text: str, run: PipelineRun) -> list[str]:
         """The hard safety rules this draft breaks, whatever its first reported problem is."""

@@ -531,3 +531,46 @@ async def test_a_nested_or_reversed_denial_is_repaired_before_submission(make, c
     info = outcome.data["pipeline"]
     assert (outcome.status, info["repairs"], info["degraded"]) == ("submit_reading", 1, None)
     assert claim not in outcome.text
+
+
+# ---- P2 r10: 稳赚 + noun without 的, and the repair quotes the sentence ----------------------
+
+
+@pytest.mark.parametrize(
+    "claim",
+    [
+        # r10 daily_investment_risk#1, both drafts.
+        "如仍想参与，先用小比例资金试水，不把“配合感”当稳赚信号。",
+        "如仍想参与，先用小比例资金试水，不把一时配合感当稳赚信号。",
+    ],
+)
+async def test_the_r10_gain_signal_denials_pass_without_repair(make, claim):
+    runtime, *_ = make(lambda m: written(m, extra=claim))
+    outcome = await runtime.turn(INVESTMENT)
+    info = outcome.data["pipeline"]
+    assert (outcome.status, info["repairs"], info["degraded"]) == ("submit_reading", 0, None), info[
+        "problems"
+    ]
+    assert claim in outcome.text
+
+
+@pytest.mark.parametrize(
+    "claim",
+    ["这就是稳赚信号。", "不把配合当稳赚信号以外的东西。", "不把配合当稳赚，这是稳赚信号。"],
+)
+async def test_what_the_r10_gain_fix_must_still_refuse(make, claim):
+    runtime, *_ = make(lambda m: written(m, extra=claim), written)
+    outcome = await runtime.turn(INVESTMENT)
+    info = outcome.data["pipeline"]
+    assert (outcome.status, info["repairs"]) == ("submit_reading", 1)
+    assert claim not in outcome.text
+
+
+async def test_a_high_risk_repair_quotes_the_refused_sentence(make):
+    """r10 review: the request named only the rule, so both drafts kept 稳赚信号."""
+    claim = "这笔投资稳赚。"
+    runtime, composer, _ = make(lambda m: written(m, extra=claim), written)
+    await runtime.turn(INVESTMENT)
+    request = composer.seen[1][0][-1]["content"]
+    assert "不能给出健康、投资或生死的确定性结论" in request
+    assert "出问题的句子：" in request and claim in request

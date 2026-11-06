@@ -98,7 +98,7 @@ NAME_SYSTEM = (
     """你是知命的姓名五格解读撰写者。程序已经按康熙笔画算好了五格（天格、人格、地格、外格、总格）、81数理和三才配置，事实表列出了每一项的编号、数值、关键词和一般含义。你只负责把它们写成给用户看的白话解读。
 
 【事实规则】
-- 提到五格、数理或三才时只写编号占位符，例如{{R2}}，程序会替换成“人格23”这样的文字。不要自己写格数、数理数字或三才配置；笔画只能照抄“康熙笔画”一行。
+- 提到五格、数理或三才时只写编号占位符，例如{{R2}}，程序会替换成“人格23”这样的文字；比较两个名字时替换成“张伟的人格23”，已经带着姓名和格名，所以编号前不要再写姓名或格名，也不要拿另一个名字的编号来说这个名字。不要自己写格数、数理数字或三才配置；笔画只能照抄“康熙笔画”一行。
 - 含义只从事实表的关键词和一般含义出发。五格数理和三才吉凶是民间约定，各家说法不一：写成有条件的倾向，不作命运断言，不写“注定、一定会成功、必然失败”这类话。
 - """
     + SCENARIO_RULE
@@ -295,11 +295,28 @@ def json_object(text: str) -> str:
 
 
 def repair_messages(
-    messages: list[dict], draft: str, problems: list[str], facts, *, positions: bool = True
+    messages: list[dict],
+    draft: str,
+    problems: list[str],
+    facts,
+    *,
+    positions: bool = True,
+    quotes: dict[str, list[str]] | None = None,
 ) -> list[dict]:
     """The repair request. ``positions``: the facts are tarot positions (牌位); for the other
-    systems the labels are symbols, grids or the day's items, so the seat wording is left out."""
-    listed = "\n".join(f"{i}. {problem}" for i, problem in enumerate(problems, 1))
+    systems the labels are symbols, grids or the day's items, so the seat wording is left out.
+    ``quotes``: the draft's sentences that raise each problem, quoted so the writer rewrites
+    those sentences in other words rather than guessing (r10 review)."""
+    quotes = quotes or {}
+
+    def item(index: int, problem: str) -> str:
+        found = quotes.get(problem)
+        if not found:
+            return f"{index}. {problem}"
+        cited = "；".join(f"“{sentence}”" for sentence in found)
+        return f"{index}. {problem}\n   出问题的句子：{cited}\n   请换一种说法重写这些句子，不要沿用原来的措辞。"
+
+    listed = "\n".join(item(i, problem) for i, problem in enumerate(problems, 1))
     if positions:
         seats = "；".join(f"{fact.alias}={fact.label}位{fact.text}" for fact in facts)
         rule = f"可引用的编号只有：{seats}。写某个牌位时，只能用该牌位对应的编号。"

@@ -581,3 +581,48 @@ async def test_a_judge_reply_parsed_on_the_second_attempt_is_scored_as_before():
         20,
         None,
     )
+
+
+async def test_a_trailing_comma_is_the_only_judge_reply_repair():
+    """r10 Name-pipeline name_career_grid#3: both replies ended with …"],} and were unscored."""
+    from scripts.live_week23 import judge_answer
+
+    reply = (
+        '{"direct_answer":true,"time_consistent":true,"supported_conclusion":true,'
+        '"no_fabricated_facts":true,"reasons":["一致。","无冲突。"],}'
+    )
+    review, usage = await judge_answer(ScriptedJudge(reply), [])
+    assert review["json_trailing_commas_removed"] is True
+    assert (review["direct_answer"], review["reasons"], usage["parse_attempts"]) == (
+        True,
+        ["一致。", "无冲突。"],
+        1,
+    )
+    # A reply that parses as written is not marked; other malformed replies stay unscored.
+    clean = reply.replace("],}", "]}")
+    review, _ = await judge_answer(ScriptedJudge(clean), [])
+    assert "json_trailing_commas_removed" not in review
+    review, _ = await judge_answer(ScriptedJudge(reply[:-1], reply[:-1]), [])
+    assert review["scored"] is False
+
+
+async def test_pr53_the_trailing_comma_repair_keeps_strings_and_the_reply():
+    """PR #53 review F4: removing ,} inside a reason rewrote the judge's evidence."""
+    from scripts.live_week23 import judge_answer
+
+    reasons = ["引用的原文包含 ,} 和 ,]。", '带"引号,}的理由']
+    body = json.dumps(
+        dict(
+            direct_answer=True,
+            time_consistent=True,
+            supported_conclusion=True,
+            no_fabricated_facts=True,
+            reasons=reasons,
+        ),
+        ensure_ascii=False,
+    )
+    reply = body[:-2] + "],}"  # one structural trailing comma
+    review, _ = await judge_answer(ScriptedJudge(reply), [])
+    assert review["reasons"] == reasons
+    assert review["json_trailing_commas_removed"] is True
+    assert review["unrepaired_reply"] == reply

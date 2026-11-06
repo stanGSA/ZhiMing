@@ -18,7 +18,12 @@ NUMBER = r"(?:\d+|[零〇一二两三四五六七八九十百]+)"
 # Exempt complete words, not every lone numeral followed by Han text: 人格五属土 and
 # 数理一代表独立 still assert values. 一面 includes r5's actual “数理是一面…镜子”.
 # 三者 and its kin count the grids just listed (r9: 三才指天格、人格、地格三者尾数…).
-NUMBER_WORD = r"(?!一般|一致|一说|一共|一面|二者|二人|两相|十分|两者|两人|三者|三人|四者|五者)"
+# 一套/一些/一点 are whole words (r10: 数理是一套民间取名习俗 is not 数理1); never a numeral
+# followed by 点, which would also hide a decimal (PR #53 review F3: 人格二十四点五).
+NUMBER_WORD = (
+    r"(?!一般|一致|一说|一共|一面|二者|二人|两相|十分|两者|两人|三者|三人|四者|五者|一套|一些"
+    r"|一点(?![零〇一二两三四五六七八九十百\d]))"
+)
 CLAIMED = (
     r"(?:\d+(?!\d)|" + NUMBER_WORD + r"(?!五格|三才|[零〇一二两三四五]吉[零〇一二两三四五]凶)"
     r"(?:(?!五行|五格|三才)[零〇一二两三四五六七八九十百])+"
@@ -28,6 +33,7 @@ CLAIMED = (
 GRID = re.compile(
     rf"(天格|人格|地格|外格|总格)(?:数理|数)?\s*(?:为|是|=|：|:|得|共)?\s*({CLAIMED})"
 )
+DECIMAL = re.compile(r"\s*(?:点|\.)\s*[零〇一二两三四五六七八九\d]")
 # An arithmetic expression of grids states its result, not the last operand's value (r9:
 # 外格由天格加地格减人格得18 is 17+26−25, not 人格18). The result is computed from the name's
 # own grids and must equal the stated value, and the subject grid when one is written.
@@ -157,6 +163,9 @@ def check_claims(text, bound, results):
         if any(start <= match.start() < end for start, end in expressions):
             continue
         grid, value = match.group(1), number(match.group(2))
+        if DECIMAL.match(text, match.end()):
+            # Grid values are whole numbers: 人格二十五点五 is wrong even when 25 is right.
+            return f"{grid}{value}后面接了小数，五格数值都是整数"
         found = owners(match.start())
         if not found:
             return f"有多个姓名时，{grid}{value}须写明是哪个名字"
@@ -164,6 +173,8 @@ def check_claims(text, bound, results):
             if value not in (result["grids"][grid], result["shuli"][grid]):
                 return f"{result['full_name']}的{grid}{value}与本次计算不符"
     for match in SHULI.finditer(text):
+        if DECIMAL.match(text, match.end()):
+            return f"数理{number(match[1])}后面接了小数，五格数值都是整数"
         found = owners(match.start())
         if not found:
             return "有多个姓名时，数理须写明是哪个名字"
