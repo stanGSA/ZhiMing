@@ -63,7 +63,8 @@ GAIN_DISMISSAL = re.compile(
 )
 # What may follow a dismissed 稳赚 in its clause: 别当稳赚以外的选择 affirms it.
 GAIN_DISMISSED_REST = re.compile(
-    r"[”’」\"']?(?:的(?:事|事情|机会|买卖|生意|保证|承诺|信号|理由|依据|把握))?"
+    # The noun may follow without 的 (r10: 不把“配合感”当稳赚信号).
+    r"[”’」\"']?(?:的?(?:事|事情|机会|买卖|生意|保证|承诺|信号|理由|依据|把握))?"
     r"(?:了|啊|呀|哦)?[”’」\"']?\s*(?:[，,。；;！!？?\n—…]|$)"
 )
 GAIN_DENIAL_NEGATED = re.compile(r"(?:不|非|不是|没有|不得|不能|不可|不可以)(?:说|认为|觉得)?$")

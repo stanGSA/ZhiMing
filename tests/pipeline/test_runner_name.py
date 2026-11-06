@@ -675,3 +675,35 @@ async def test_what_the_r9_single_fixes_must_still_refuse(make, claim):
     assert (outcome.status, info["repairs"], info["degraded"]) == ("submit_reading", 1, None)
     assert "与本次计算不符" in info["problems"][0][0], info["problems"]
     assert claim not in outcome.text
+
+
+# ---- P2 r10: 一套 counts, and the repair quotes the sentence -------------------------------
+
+
+async def test_the_r10_counted_set_passes_the_final_submission(make):
+    """r10 name_without_lead_in#2: 数理是一套… was read as 数理1, twice, then degraded."""
+    claim = "五格数理是一套民间取名习俗，可当自我反思的镜子，路怎么走仍在自己脚下。"
+    runtime, *_ = make(lambda m: written(m, extra=claim))
+    outcome = await runtime.turn(CHEN)
+    info = outcome.data["pipeline"]
+    assert (outcome.status, info["repairs"], info["degraded"]) == ("submit_reading", 0, None), info[
+        "problems"
+    ]
+    assert claim in outcome.text
+
+
+@pytest.mark.parametrize("claim", ["数理是一。", "陈思远的数理1。", "人格一。"])
+async def test_what_the_r10_counter_fix_must_still_refuse(make, claim):
+    runtime, *_ = make(lambda m: written(m, extra=claim), written)
+    outcome = await runtime.turn(CHEN)
+    info = outcome.data["pipeline"]
+    assert (outcome.status, info["repairs"]) == ("submit_reading", 1)
+    assert "与本次计算不符" in info["problems"][0][0]
+
+
+async def test_a_name_repair_quotes_the_sentence_with_the_wrong_value(make):
+    claim = "另外人格24也很好。"
+    runtime, composer, _ = make(lambda m: written(m, extra=claim), written)
+    await runtime.turn(CHEN)
+    request = composer.seen[1][0][-1]["content"]
+    assert "出问题的句子：" in request and "人格24也很好。" in request

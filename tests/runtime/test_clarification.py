@@ -307,3 +307,16 @@ async def test_timezone_inferred_and_reused_in_new_session(runtime, project):
         assert period_timezone(NS(tz=None), later.session, chart) == "America/Los_Angeles"
     finally:
         later.close()
+
+
+@pytest.mark.parametrize("text", ["交际活跃度上升", "信心上升，适合多沟通", "人气上升"])
+def test_rises_after_a_quantity_noun_is_not_the_ascendant(text):
+    """r10 Daily-single unknown_birth_time#3: 交际活跃度上升 was refused three times."""
+    assert validate_output(reading(text), dict(natal_result=dict(time_known=False))) is None
+
+
+@pytest.mark.parametrize(
+    "text", ["你的上升是白羊座", "上升白羊座的人", "太阳与上升合相", "上升星座是白羊"]
+)
+def test_the_ascendant_is_still_refused_when_time_is_unknown(text):
+    assert validate_output(reading(text), dict(natal_result=dict(time_known=False)))

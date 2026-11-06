@@ -139,8 +139,11 @@ def validate_output(reading, state):
                 re.search(r"无法|不能|不使用|不解读|不确定|未知|不提供|不可用", sentence)
             )
             if natal and not natal.get("time_known") and not negative:
+                # 上升 after a quantity noun is the verb “rises” (r10: 交际活跃度上升), not the
+                # ascendant; 你的上升, 与上升 or a sentence-initial 上升 still name the axis.
                 if re.search(
-                    r"上升(?!期|空间|趋势|通道|机会|幅度|潜力)|天顶|下降点|天底|(?:第)?[一二三四五六七八九十\d]+宫",
+                    r"(?<![度率量值数平感力性心气潮绪价温])上升(?!期|空间|趋势|通道|机会|幅度|潜力)"
+                    r"|天顶|下降点|天底|(?:第)?[一二三四五六七八九十\d]+宫",
                     sentence,
                 ):
                     return "出生时间未知，不能使用宫位或四轴解读"

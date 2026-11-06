@@ -252,9 +252,22 @@ def validate_output(reading, state, matcher):
     return None
 
 
+# 没有 directly before the verb denies it (r10: 这个梦没有预示什么), unless it is itself denied
+# (不是没有预示). A declined analysis may list the prophecy word with another one (r10 single:
+# 不作诊断或预兆解读 / 不作诊断或预示解读).
+NO_PROPHECY = re.compile(r"(?<!不是)(?<!并非)(?<!不能说)(?:并)?没(?:有)?$")
+DECLINED = re.compile(
+    r"(?:不作|不做|不进行|不提供|不给出)(?:[\u4e00-\u9fff]{1,4}(?:或|和|与|、|及|以及))?$"
+)
+
+
 def prophecy_negated(text, match) -> bool:
     """Whether a negation or a dismissal in its own clause governs this prophecy word."""
     before = clause_before(text, match.start(), 40)
+    if DECLINED.search(before):
+        return True
+    if match[0] in ("预示", "预言") and NO_PROPHECY.search(before):
+        return True
     comparison = OMEN_COMPARISON.search(before)
     if comparison and OMEN.fullmatch(match[0]):
         after = re.split(r"[。；;！!？?\n]", text[match.end() :], maxsplit=1)[0].strip()

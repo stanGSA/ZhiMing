@@ -54,9 +54,16 @@ async def judge_answer(review_model, messages) -> tuple[dict, dict]:
                 returned_model=reply.model,
                 parse_attempts=attempt + 1,
             )
-            review = extract_json_object(reply.text)
+            try:
+                review = extract_json_object(reply.text)
+                repaired = False
+            except ValueError:
+                review = extract_json_object(reply.text, trailing_commas=True)
+                repaired = True
             if not all(type(review.get(key)) is bool for key in JUDGED):
                 raise ValueError("评委JSON缺少有效的布尔判定字段")
+            if repaired:
+                review = {**review, "json_trailing_commas_removed": True}
             parse_error = None
             break
         except ValueError as exc:
@@ -78,9 +85,16 @@ async def judge_answer(review_model, messages) -> tuple[dict, dict]:
     return review, usage
 
 
-def extract_json_object(text: str) -> dict:
+# A comma before a closing bracket (r10 name_career_grid#3: …"],}) is the only repair; any other
+# malformed reply stays unscored. The row records that the repair was used.
+TRAILING_COMMA = re.compile(r",(\s*[}\]])")
+
+
+def extract_json_object(text: str, *, trailing_commas: bool = False) -> dict:
     """Extract one JSON object from plain or fenced judge output."""
     text = text.strip()
+    if trailing_commas:
+        text = TRAILING_COMMA.sub(r"\1", text)
     if text.startswith("```"):
         text = re.sub(r"^```(?:json)?\s*|\s*```$", "", text, flags=re.IGNORECASE)
     decoder = json.JSONDecoder()

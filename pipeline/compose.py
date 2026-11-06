@@ -295,11 +295,28 @@ def json_object(text: str) -> str:
 
 
 def repair_messages(
-    messages: list[dict], draft: str, problems: list[str], facts, *, positions: bool = True
+    messages: list[dict],
+    draft: str,
+    problems: list[str],
+    facts,
+    *,
+    positions: bool = True,
+    quotes: dict[str, list[str]] | None = None,
 ) -> list[dict]:
     """The repair request. ``positions``: the facts are tarot positions (牌位); for the other
-    systems the labels are symbols, grids or the day's items, so the seat wording is left out."""
-    listed = "\n".join(f"{i}. {problem}" for i, problem in enumerate(problems, 1))
+    systems the labels are symbols, grids or the day's items, so the seat wording is left out.
+    ``quotes``: the draft's sentences that raise each problem, quoted so the writer rewrites
+    those sentences in other words rather than guessing (r10 review)."""
+    quotes = quotes or {}
+
+    def item(index: int, problem: str) -> str:
+        found = quotes.get(problem)
+        if not found:
+            return f"{index}. {problem}"
+        cited = "；".join(f"“{sentence}”" for sentence in found)
+        return f"{index}. {problem}\n   出问题的句子：{cited}\n   请换一种说法重写这些句子，不要沿用原来的措辞。"
+
+    listed = "\n".join(item(i, problem) for i, problem in enumerate(problems, 1))
     if positions:
         seats = "；".join(f"{fact.alias}={fact.label}位{fact.text}" for fact in facts)
         rule = f"可引用的编号只有：{seats}。写某个牌位时，只能用该牌位对应的编号。"

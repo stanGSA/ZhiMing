@@ -1339,3 +1339,70 @@ async def test_the_bound_phrase_is_not_inherited_by_the_single_agent_validator(m
     assert "去世的亲人" in (validate_output(reading, state, Dream(runtime).matcher) or "")
     state["pipeline_run"] = {"system": "dream"}
     assert validate_output(reading, state, Dream(runtime).matcher) is None
+
+
+# ---- P2 r10: denied prophecy verbs, and the repair quotes its sentence ---------------------
+
+
+async def test_the_r10_denied_prophecy_passes_the_final_submission(make):
+    """r10 dream_late_grandmother#2: both drafts were refused and degraded to keywords."""
+    text = "这个梦没有预示什么，它更像是在说：你值得被好好喂饱。"
+    runtime, *_ = make(extraction(R9_GRANDMOTHER_SYMBOLS), with_layer(text), written)
+    outcome = await runtime.turn(GRANDMOTHER)
+    info = outcome.data["pipeline"]
+    assert (outcome.status, info["repairs"], info["degraded"]) == ("submit_reading", 0, None), info[
+        "problems"
+    ]
+    assert text in outcome.text
+
+
+@pytest.mark.parametrize(
+    "text",
+    [
+        "这个梦并没有预示什么。",
+        "这个梦没有预示任何现实事件。",
+        # r10 Dream-single chased_to_exam#3's safety note.
+        "不作诊断或预兆解读。",
+        "不作诊断或预示解读。",
+    ],
+)
+async def test_denied_and_declined_prophecy_words_are_accepted(make, text):
+    problems = await problems_of(make, HOSPITAL, text)
+    assert not any("预兆" in problem for problem in problems), problems
+
+
+@pytest.mark.parametrize(
+    "text",
+    [
+        "不是没有预示，它预示着好转。",
+        "不是没有预示。",
+        "这个梦没有预示什么，但它预示着好转。",
+        "没有人能否认它预示着好转。",
+        "不作诊断，但这预示着好转。",
+        "不作诊断但预示好转。",
+        "不作多想预示着好转。",
+    ],
+)
+async def test_what_the_r10_prophecy_fix_must_still_refuse(make, text):
+    problems = await problems_of(make, HOSPITAL, text)
+    assert any("预兆" in problem for problem in problems), problems
+
+
+async def test_a_repair_quotes_the_sentence_that_raised_the_problem(make):
+    """r10 review: every false-rejection degradation of r6–r10 kept the refused sentence."""
+    bad = "这个梦预示你下个月会遇到麻烦。"
+    runtime, composer, events = make(extraction(), with_layer(bad), written)
+    outcome = await runtime.turn(QUESTION)
+    assert outcome.data["pipeline"]["repairs"] == 1
+    request = composer.seen[2][0][-1]["content"]
+    assert f"出问题的句子：“{bad}”" in request and "换一种说法" in request
+    stage = next(e for e in events if e["event"] == "pipeline_stage" and e["stage"] == "repair")
+    assert list(stage["quotes"].values()) == [[bad]]
+
+
+async def test_a_repair_quotes_nothing_it_cannot_locate(make):
+    """A format problem is no sentence; the request lists it as before."""
+    runtime, composer, _ = make(extraction(), lambda m: "这不是标记文本", written)
+    await runtime.turn(QUESTION)
+    request = composer.seen[2][0][-1]["content"]
+    assert "出问题的句子" not in request

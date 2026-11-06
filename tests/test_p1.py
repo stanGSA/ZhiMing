@@ -581,3 +581,26 @@ async def test_a_judge_reply_parsed_on_the_second_attempt_is_scored_as_before():
         20,
         None,
     )
+
+
+async def test_a_trailing_comma_is_the_only_judge_reply_repair():
+    """r10 Name-pipeline name_career_grid#3: both replies ended with …"],} and were unscored."""
+    from scripts.live_week23 import judge_answer
+
+    reply = (
+        '{"direct_answer":true,"time_consistent":true,"supported_conclusion":true,'
+        '"no_fabricated_facts":true,"reasons":["一致。","无冲突。"],}'
+    )
+    review, usage = await judge_answer(ScriptedJudge(reply), [])
+    assert review["json_trailing_commas_removed"] is True
+    assert (review["direct_answer"], review["reasons"], usage["parse_attempts"]) == (
+        True,
+        ["一致。", "无冲突。"],
+        1,
+    )
+    # A reply that parses as written is not marked; other malformed replies stay unscored.
+    clean = reply.replace("],}", "]}")
+    review, _ = await judge_answer(ScriptedJudge(clean), [])
+    assert "json_trailing_commas_removed" not in review
+    review, _ = await judge_answer(ScriptedJudge(reply[:-1], reply[:-1]), [])
+    assert review["scored"] is False
