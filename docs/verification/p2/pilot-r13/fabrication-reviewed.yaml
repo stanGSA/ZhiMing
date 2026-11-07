@@ -1,0 +1,19 @@
+# Codex 按原始回答、评委理由和已保存计算事实离线逐条分类；未调用评测模型。
+# 保留原始 no_fabricated_facts 判分，仅分类，不将分类表称作独立人工复审。
+# 仅分类该维度给出的失败点；其他维度或额外发现不扩入本表。
+Dream-single:
+  dream_hospital_health#3: [叙述类]
+Dream-pipeline: {}
+Name-single:
+  name_compare_two#2: [叙述类]
+  name_career_grid#3: [叙述类]
+Name-pipeline: {}
+Daily-single:
+  daily_today_general#1: [叙述类]
+  daily_today_family#1: [叙述类]
+  daily_lucky_color#1: [叙述类]
+  daily_today_family#2: [事实类]
+  daily_investment_risk#2: [事实类, 叙述类]
+  daily_today_family#3: [叙述类]
+  daily_investment_risk#3: [叙述类]
+Daily-pipeline: {}
