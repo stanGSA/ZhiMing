@@ -18,6 +18,7 @@ from __future__ import annotations
 import re
 from datetime import date, timedelta
 
+from common.facts import value_claim
 from common.input_evidence import DATE as BIRTH_DATE
 from common.input_evidence import clock_in
 from common.time_utils import NeedsInput
@@ -31,7 +32,7 @@ from pipeline.state import RESUMABLE, snapshot
 from pipeline.system import System
 from plugins.astro.calculator import BODY_ZH, SIGN_ZH
 from plugins.astro.tools import AstroPlugin
-from plugins.astro.validation import DATE, aspect_assertions
+from plugins.astro.validation import DATE, aspect_assertions, bound_dates, on_date, relation_kind
 
 ASTRO = re.compile(
     # 上升 alone is ordinary prose (压力上升); the rising sign is named as such.
@@ -62,7 +63,8 @@ BIRTH_CORRECTION = re.compile(
 # “1990年3月” as one; such messages stay with the agent loop, whatever the profile holds.
 BIRTH_MENTION = re.compile(
     r"(?:出生|生于|生日)[^，,。；;？?！!]{0,12}?\d{4}|\d{4}\s*[年\-/.][^，,。；;？?！!]{0,12}?"
-    r"(?:出生|生的|生人|生日)"
+    r"(?:出生|生的|生人|生日|生(?=[，,。；;？?！!\s]|$))"
+    r"|我(?:是)?\s*\d{4}年的(?=[，,。；;？?！!\s]|$)"
 )
 UNKNOWN_TIME = re.compile(
     r"(?:不知道|不知|未知|不确定|查不到|不清楚).{0,6}(?:出生时间|时间|时辰|几点)"
@@ -86,8 +88,9 @@ BODY_NAMES = "|".join(BODY_ZH.values())
 HOUSE_NUMBER = r"[一二三四五六七八九十]{1,3}|\d{1,2}"
 # “太阳在金牛座”“太阳的星座是金牛”“太阳星座金牛”“月亮落在了天蝎”, and the same said of several
 # planets at once (“太阳、水星都落在天秤座”“土星与海王星同在摩羯座”): each listed planet is
-# checked. The sign or house may also come first (“天秤座的太阳和水星”). Denials are left to
-# the shared validator, which runs after these.
+# checked. The sign or house may also come first (“天秤座的太阳和水星”). These checks and
+# the shared validator both distinguish a denied inference
+# ("并非太阳在金牛座就意味着固执") from a denial of the position itself.
 PLACED = r"(?:的)?(?:星座|所在星座)?(?:落在|落入|落于|落|进入|在|位于|处于|是|为)?了?"
 ADVERB = r"(?:都|也|均|皆|同|同样|一起|一同|全都|还|又|则|正好|恰好){0,2}"
 JOINER = r"(?:、|和|与|及|以及|跟)"
@@ -123,16 +126,22 @@ EARLIER = re.compile(r"(?:中旬|月中|下旬|月底|月末)(?:以前|之前|�
 TOLERANCE = 2
 
 
-# A denial in front of a position claim (“并非太阳在狮子座”“不是金牛座的太阳和月亮”). A denied
-# claim is right only when the position is not the chart's: denying the chart's own position is
-# refused, denying another one passes. A denied denial (“并非不是……”) asserts the position.
-NEGATION = re.compile(r"(?:并)?(?:不是|并非|不在|没在|未在)\s*$")
-DOUBLE_NEGATION = re.compile(r"(?:并非|并不是|不是)\s*(?:不是|并非|不在|没在|未在)\s*$")
-
-
-def negated(text: str, start: int) -> bool:
-    before = text[max(0, start - 8) : start]
-    return bool(NEGATION.search(before)) and not DOUBLE_NEGATION.search(before)
+def clock_answer_changes_birth(question: str, session) -> bool:
+    """A clock answer may repeat the saved date, but cannot silently replace or contradict it."""
+    dates = list(re.finditer(BIRTH_DATE, question))
+    if not dates:
+        return bool(BIRTH_MENTION.search(question))
+    binding = getattr(session, "birth_binding", None) or {}
+    profile = binding.get("profile") or session.profile
+    expected = str(profile.get("birth_local_dt") or "")[:10]
+    for match in dates:
+        try:
+            supplied = date(*map(int, match.groups())).isoformat()
+        except ValueError:
+            return True
+        if supplied != expected:
+            return True
+    return False
 
 
 def part_of_month(day: int) -> str:
@@ -225,8 +234,9 @@ class Astro(System):
                 handed = (
                     (selected is None and OTHER.search(question))
                     or (
-                        run["state"].get("needs") != "missing_birth_time"
-                        and BIRTH_MENTION.search(question)
+                        clock_answer_changes_birth(question, session)
+                        if run["state"].get("needs") == "missing_birth_time"
+                        else BIRTH_MENTION.search(question)
                     )
                     or run["state"].get("asks", 0) >= MAX_ASKS
                     or (
@@ -558,7 +568,10 @@ class Astro(System):
                 )
             for match in [*SIGN_CLAIM.finditer(text), *SIGN_FIRST.finditer(text)]:
                 sign = match["sign"]
-                denied = negated(text, match.start())
+                claim = value_claim(text, match.start(), match.end())
+                if claim is None:
+                    continue
+                denied = claim == "denied"
                 for body in re.findall(BODY_NAMES, match["bodies"]):
                     if match.groupdict().get("marker") == "行运":
                         found.append(
@@ -574,11 +587,14 @@ class Astro(System):
                             f"本命{body}在{planets[body]['sign_zh']}座，正文写成了{sign}座"
                         )
             for match in [*HOUSE_CLAIM.finditer(text), *HOUSE_FIRST.finditer(text)]:
+                claim = value_claim(text, match.start(), match.end())
+                if claim is None:
+                    continue
                 house = chinese_number(match["house"])
                 if not known:
                     found.append("出生时间未知，没有宫位，正文不能写宫位")
                     continue
-                denied = negated(text, match.start())
+                denied = claim == "denied"
                 for body in re.findall(BODY_NAMES, match["bodies"]):
                     if match.groupdict().get("marker") == "行运":
                         found.append(f"行运{body}的宫位不在事实表里：“{match[0]}”")
@@ -669,15 +685,21 @@ class Astro(System):
         if start.year != end.year or start.month != end.month:
             return found
         dated = {}
-        texts = {fact.alias: fact.text for fact in facts}
         for fact in facts:
             if fact.label != "行运相位":
                 continue
             event = next(
-                (e for e in transit["events"] if f":transit:{e['exact_utc']}:" in fact.ref), None
+                (
+                    e
+                    for e in transit["events"]
+                    if fact.ref.endswith(
+                        f":transit:{e['exact_utc']}:{e['transit_body']}:{e['natal_body']}:{e['aspect']}"
+                    )
+                ),
+                None,
             )
             if event:
-                dated[fact.alias] = int(event["exact_date"][8:10])
+                dated[fact.alias] = event
         for section in args.get("sections", []):
             title = section.get("title") or ""
             parts = [span for pattern, span in PARTS if pattern.search(title)]
@@ -694,15 +716,38 @@ class Astro(System):
             # parsed into the last section (compose.parse) but cites the whole reading (r2:
             # six degradations from such lists, none from a section's own text).
             written = f"{title}\n{section.get('body') or ''}"
-            for alias in section.get("ref_ids", []):
-                day = dated.get(alias)
-                if day is None or texts.get(alias, "\0") not in written:
-                    continue
-                if not low <= day <= high:
-                    found.append(
-                        f"“{title}”这一层引用了{transit['start'][5:7].lstrip('0')}月{day}日精确的"
-                        f"相位{alias}，不在这一段里；按事实表的“时段”分段"
-                    )
+            claims = []
+            for clause in re.split(r"[，,。；;！!？?\n]", written):
+                assertions = list(aspect_assertions(clause))
+                claims.extend(
+                    (source, target, aspect, dates)
+                    for (position, source, target, aspect), dates in bound_dates(clause, assertions)
+                    if relation_kind(clause, position) != "本命"
+                )
+            # Handwritten relations must be checked even if the writer omitted 【引用】.
+            cited = {
+                alias: event
+                for alias, event in dated.items()
+                if alias in section.get("ref_ids", [])
+            }
+            for source, target, aspect, dates in claims:
+                matching = {
+                    alias: event
+                    for alias, event in dated.items()
+                    if (source, target, aspect)
+                    == (event["transit_body"], event["natal_body"], event["aspect"])
+                    and all(on_date([event], when) for when in dates)
+                }
+                # A citation disambiguates repeated occurrences of this relation. An
+                # unrelated citation must not hide a handwritten, uncited relation.
+                selected = {alias: event for alias, event in matching.items() if alias in cited}
+                for alias, event in (selected or matching).items():
+                    day = int(event["exact_date"][8:10])
+                    if not low <= day <= high:
+                        found.append(
+                            f"“{title}”这一层引用了{transit['start'][5:7].lstrip('0')}月{day}日精确的"
+                            f"相位{alias}，不在这一段里；按事实表的“时段”分段"
+                        )
         return found
 
     # ---- what code adds ------------------------------------------------------------------

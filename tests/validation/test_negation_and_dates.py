@@ -199,12 +199,28 @@ def test_negated_sign_inference_is_separate_from_a_position_claim(field):
     inference = "并不是狮子座的人都外向"
     assert check_position(f"太阳狮子座，{inference}。") is None
     assert check_position("太阳狮子座，并非白羊座就一定内向。") is None
+    for text in (
+        "并非本命太阳在白羊座。",
+        "并非太阳在狮子座就意味着做事一定固执。",
+        "并非本命太阳在第4宫就代表一定成功。",
+        "并非太阳不在狮子座。",
+        "并非太阳在第3宫。",
+        "并非不是太阳在狮子座。",
+        "太阳不在白羊座，而在狮子座。",
+    ):
+        assert check_position(text) is None, text
     # Both explicit and denied position claims must still bind to the computed Sun in Leo.
     for text in (
         f"太阳白羊座，{inference}。",
         f"太阳不是狮子座，{inference}。",
         "太阳狮子座，并非狮子座就一定外向，也不在狮子座。",
         "太阳狮子座，并不是第4宫就意味着失败，但不在第4宫。",
+        "并非本命太阳在狮子座。",
+        "并非本命太阳在第4宫。",
+        "并非不是太阳在白羊座。",
+        "并非太阳不在白羊座。",
+        "并非太阳在白羊座，而是太阳在金牛座。",
+        "并非太阳在白羊座，而是太阳在第3宫。",
     ):
         assert check_position(text)
 

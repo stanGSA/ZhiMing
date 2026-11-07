@@ -120,6 +120,26 @@ def public_parts(reading):
     ]
 
 
+def position_value_claim(text, body, value):
+    """Combine negation before the body and before its first position value.
+
+    “并非太阳在白羊座” denies 白羊, while “并非太阳在金牛座就意味着固执”
+    denies an inference. A later value/clause keeps its own negation.
+    """
+    start, end = body.end() + value.start(), body.end() + value.end()
+    inner = value_claim(text, start, end)
+    between = text[body.end() : start]
+    if re.search(rf"[，,。；;]|{'|'.join(SIGN_ZH)}|[零一二三四五六七八九十\d]+宫", between):
+        return inner
+    marker = re.search(r"(?:本命|行运)(?:的)?\s*$", text[: body.start()])
+    outer = value_claim(text, marker.start() if marker else body.start(), end)
+    if outer is None or inner is None:
+        return None
+    if outer == "denied":
+        return "asserted" if inner == "denied" else "denied"
+    return inner
+
+
 def validate_output(reading, state):
     daily = state.get("daily_result") or {}
     natal = state.get("natal_result") or daily.get("natal") or {}
@@ -165,12 +185,12 @@ def validate_output(reading, state):
                 signs = [
                     (m[1], claim)
                     for m in re.finditer(rf"({'|'.join(SIGN_ZH)})(?:座)?", tail[:24])
-                    if (claim := value_claim(tail, m.start(), m.end())) is not None
+                    if (claim := position_value_claim(sentence, body, m)) is not None
                 ]
                 houses = [
                     (m[1], claim)
                     for m in re.finditer(r"(?:第)?([零一二三四五六七八九十\d]+)宫", tail[:30])
-                    if (claim := value_claim(tail, m.start(), m.end())) is not None
+                    if (claim := position_value_claim(sentence, body, m)) is not None
                 ]
                 if transit_context and (signs or houses):
                     return "行运星落座宫位未作为本次事实提供，请仅陈述已计算相位"

@@ -9,7 +9,7 @@ from common.input_evidence import question_range
 # sentence denies, not one it asserts. Only the words directly before the value count. A denied
 # value is still a checkable claim: denying the computed value is as wrong as asserting another.
 NEGATED_VALUE = re.compile(
-    r"(?:不是|并不是|并非|而非|不再是|不在|并不在|不落在|没有落在|没落在)\s*[【「《“\"]?$"
+    r"(?:不是|并不是|并非|而非|不再是|不在|并不在|没在|未在|不落在|没有落在|没落在)\s*[【「《“\"]?$"
 )
 # “并非不在白羊座” denies the denial, so the value is asserted.
 DENIED_NEGATION = re.compile(r"(?:不是|并不是|并非|绝非|非)\s*$")
