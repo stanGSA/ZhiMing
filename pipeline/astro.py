@@ -57,6 +57,13 @@ BIRTH_CORRECTION = re.compile(
     r"(?:更正|改成|改为|记错|不准确|不对).{0,16}"
     r"(?:出生(?:日期|时间|时刻|地点|资料|信息)|出生信息|出生表单)"
 )
+# A birth date or year in the message (“我1990年3月5日出生”“我是1990年3月出生的”“生日是1995年
+# 8月20日”). Its date is not a range to compute, yet the Guard's own question_range reads
+# “1990年3月” as one; such messages stay with the agent loop, whatever the profile holds.
+BIRTH_MENTION = re.compile(
+    r"(?:出生|生于|生日)[^，,。；;？?！!]{0,12}?\d{4}|\d{4}\s*[年\-/.][^，,。；;？?！!]{0,12}?"
+    r"(?:出生|生的|生人|生日)"
+)
 UNKNOWN_TIME = re.compile(
     r"(?:不知道|不知|未知|不确定|查不到|不清楚).{0,6}(?:出生时间|时间|时辰|几点)"
     r"|(?:出生时间|时辰).{0,6}(?:不知道|未知|不知|不确定|不详|查不到|不清楚)"
@@ -114,6 +121,18 @@ AROUND = re.compile(r"前后|左右|附近|一带")
 LATER = re.compile(r"(?:上旬|月初|中旬|月中)(?:以后|之后|起|开始)")
 EARLIER = re.compile(r"(?:中旬|月中|下旬|月底|月末)(?:以前|之前|前)(?!后)")
 TOLERANCE = 2
+
+
+# A denial in front of a position claim (“并非太阳在狮子座”“不是金牛座的太阳和月亮”). A denied
+# claim is right only when the position is not the chart's: denying the chart's own position is
+# refused, denying another one passes. A denied denial (“并非不是……”) asserts the position.
+NEGATION = re.compile(r"(?:并)?(?:不是|并非|不在|没在|未在)\s*$")
+DOUBLE_NEGATION = re.compile(r"(?:并非|并不是|不是)\s*(?:不是|并非|不在|没在|未在)\s*$")
+
+
+def negated(text: str, start: int) -> bool:
+    before = text[max(0, start - 8) : start]
+    return bool(NEGATION.search(before)) and not DOUBLE_NEGATION.search(before)
 
 
 def part_of_month(day: int) -> str:
@@ -205,6 +224,10 @@ class Astro(System):
             if run["stage"] == "awaiting_input":
                 handed = (
                     (selected is None and OTHER.search(question))
+                    or (
+                        run["state"].get("needs") != "missing_birth_time"
+                        and BIRTH_MENTION.search(question)
+                    )
                     or run["state"].get("asks", 0) >= MAX_ASKS
                     or (
                         run["state"].get("needs") == "birth"
@@ -225,6 +248,7 @@ class Astro(System):
             return None
         if (
             UNSUPPORTED.search(question)
+            or BIRTH_MENTION.search(question)
             or REFERS_TO_READING.search(question)
             or BIRTH_CORRECTION.search(question)
         ):
@@ -533,37 +557,37 @@ class Astro(System):
                     "编号前不要再写"
                 )
             for match in [*SIGN_CLAIM.finditer(text), *SIGN_FIRST.finditer(text)]:
-                if re.search(
-                    r"(?:并)?(?:不是|并非|不在|没在|未在)\s*$",
-                    text[max(0, match.start() - 8) : match.start()],
-                ):
-                    continue
                 sign = match["sign"]
+                denied = negated(text, match.start())
                 for body in re.findall(BODY_NAMES, match["bodies"]):
                     if match.groupdict().get("marker") == "行运":
                         found.append(
                             f"行运{body}的星座不在事实表里：“{match[0]}”；行运只写事实表里的相位编号"
                         )
                         break
-                    if body in planets and planets[body]["sign_zh"] != sign:
+                    if body not in planets:
+                        continue
+                    if denied and planets[body]["sign_zh"] == sign:
+                        found.append(f"本命{body}就在{sign}座，正文却否认了：“{match[0]}”")
+                    elif not denied and planets[body]["sign_zh"] != sign:
                         found.append(
                             f"本命{body}在{planets[body]['sign_zh']}座，正文写成了{sign}座"
                         )
             for match in [*HOUSE_CLAIM.finditer(text), *HOUSE_FIRST.finditer(text)]:
-                if re.search(
-                    r"(?:并)?(?:不是|并非|不在|没在|未在)\s*$",
-                    text[max(0, match.start() - 8) : match.start()],
-                ):
-                    continue
                 house = chinese_number(match["house"])
                 if not known:
                     found.append("出生时间未知，没有宫位，正文不能写宫位")
                     continue
+                denied = negated(text, match.start())
                 for body in re.findall(BODY_NAMES, match["bodies"]):
                     if match.groupdict().get("marker") == "行运":
                         found.append(f"行运{body}的宫位不在事实表里：“{match[0]}”")
                         break
-                    if body in planets and planets[body]["house"] != house:
+                    if body not in planets:
+                        continue
+                    if denied and planets[body]["house"] == house:
+                        found.append(f"本命{body}就在第{house}宫，正文却否认了：“{match[0]}”")
+                    elif not denied and planets[body]["house"] != house:
                         found.append(
                             f"本命{body}在第{planets[body]['house']}宫，正文写成了第{house}宫"
                         )
@@ -645,6 +669,7 @@ class Astro(System):
         if start.year != end.year or start.month != end.month:
             return found
         dated = {}
+        texts = {fact.alias: fact.text for fact in facts}
         for fact in facts:
             if fact.label != "行运相位":
                 continue
@@ -665,9 +690,15 @@ class Astro(System):
                 low = 1
             if AROUND.search(title):
                 low, high = low - TOLERANCE, high + TOLERANCE
+            # Only what the section itself writes: a 【引用】 list at the end of the draft is
+            # parsed into the last section (compose.parse) but cites the whole reading (r2:
+            # six degradations from such lists, none from a section's own text).
+            written = f"{title}\n{section.get('body') or ''}"
             for alias in section.get("ref_ids", []):
                 day = dated.get(alias)
-                if day is not None and not low <= day <= high:
+                if day is None or texts.get(alias, "\0") not in written:
+                    continue
+                if not low <= day <= high:
                     found.append(
                         f"“{title}”这一层引用了{transit['start'][5:7].lstrip('0')}月{day}日精确的"
                         f"相位{alias}，不在这一段里；按事实表的“时段”分段"

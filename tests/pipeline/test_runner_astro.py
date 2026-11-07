@@ -639,11 +639,17 @@ async def test_section_parts_of_the_month_hold_their_transits(make):
             day = int(re.search(r"11月(\d+)日精确", fact.text)[1])
             transits_by_day.setdefault(day, fact.alias)
 
-    def check(title, day):
-        args = summary_args(
-            "下个月平稳。", [{"title": title, "body": "", "ref_ids": [transits_by_day[day]]}]
-        )
+    text_of = {fact.alias: fact.text for fact in facts}
+
+    def check(title, day, written=True):
+        alias = transits_by_day[day]
+        body = f"{text_of[alias]}提示你调整节奏。" if written else "这一层只谈节奏。"
+        args = summary_args("下个月平稳。", [{"title": title, "body": body, "ref_ids": [alias]}])
         return astro.reading_problems(args, facts, session)
+
+    # r3: a reference listed for the section but not written in it is not checked.
+    for day in transits_by_day:
+        assert check("下旬：节奏" if day <= 10 else "上旬：节奏", day, written=False) == []
 
     for day in transits_by_day:
         part = "上旬" if day <= 10 else "中旬" if day <= 20 else "下旬"
@@ -666,3 +672,170 @@ async def test_section_parts_of_the_month_hold_their_transits(make):
     early = [d for d in transits_by_day if d <= 20]
     if early:
         assert check("下旬以前", early[0]) == []
+
+
+# ---- r3: the r2 pilot's degraded drafts ----------------------------------------------------
+
+R2_EVIDENCE = "docs/verification/p3/astro-pilot-r2/repair-evidence.json"
+R2_CLOCK = datetime(2026, 11, 7, 15, 30, tzinfo=UTC)  # 23:30 in Shanghai, as the r2 batch ran
+
+
+async def r2_session(project, case_id):
+    """The pilot case's session at the r2 run's date: the same chart, range and R-numbers."""
+    import yaml
+
+    from app import ROOT
+
+    cases = yaml.safe_load((ROOT / "evals/cases/astro_pilot.yaml").read_text(encoding="utf-8"))
+    case = next(c for c in cases["cases"] if c["id"] == case_id)
+    runtime = create_runtime(
+        root=project,
+        user_id=case_id,
+        seed=7,
+        model=Composer(written, written),
+        mode="pipeline",
+        clock=lambda: R2_CLOCK,
+    )
+    runtime.store.update_profile_fields(case_id, case["profile"], "合成测试资料")
+    runtime.session.profile = runtime.store.get_profile(case_id)
+    runtime.session.refresh_calendar(R2_CLOCK)
+    outcome = await runtime.turn(case["question"])
+    if outcome.status == "ask_user":
+        outcome = await runtime.turn(case["clarification"])
+    assert outcome.status == "submit_reading", outcome.text
+    return runtime
+
+
+def draft_problems(runtime, text):
+    """What the pipeline's checks say about a draft, before submission (runner.check_and_submit)."""
+    from pipeline import compose
+    from pipeline.render import reading_args
+
+    astro = PipelineRunner(runtime).systems["astro"]
+    facts = astro.facts(runtime.session)
+    draft, problems = compose.parse(text)
+    args, more, texts = reading_args(draft, facts, question_type="timing", question="")
+    return (
+        problems
+        + more
+        + astro.problems(texts, runtime.session)
+        + astro.reading_problems(args, facts, runtime.session)
+    )
+
+
+@pytest.fixture
+def r2_drafts():
+    import json
+
+    from app import ROOT
+
+    return json.loads((ROOT / R2_EVIDENCE).read_text(encoding="utf-8"))
+
+
+async def test_r2_degraded_drafts_are_no_longer_refused(project, r2_drafts):
+    """r2: a 【引用】 list closing the draft was checked against the last section's title, and
+    six readings degraded. Their twelve refused drafts pass once only a section's own text is
+    checked; each refused there for nothing but such references."""
+    runtimes = {}
+    try:
+        for item in r2_drafts:
+            if item["degraded"] != "keywords":
+                continue
+            if item["id"] not in runtimes:
+                runtimes[item["id"]] = await r2_session(project, item["id"])
+            runtime = runtimes[item["id"]]
+            # The draft's R-numbers are this session's: the facts are recomputed alike.
+            sheet = {
+                f.alias: f.text
+                for f in PipelineRunner(runtime).systems["astro"].facts(runtime.session)
+            }
+            for alias in re.findall(r"\{\{(R\d+)\}\}", item["text"]):
+                assert alias in sheet
+            assert item["problems"]  # refused in r2
+            assert draft_problems(runtime, item["text"]) == [], (
+                item["id"],
+                item["repeat"],
+                item["draft"],
+            )
+    finally:
+        for runtime in runtimes.values():
+            runtime.close()
+
+
+async def test_a_transit_written_in_the_wrong_part_is_still_refused(project, r2_drafts):
+    """r2 next_month_career#3 draft 1 wrote R23 (December 4) into its 中旬 section's own text."""
+    item = next(
+        i for i in r2_drafts if i["id"] == "astro_pilot_next_month_career" and i["repeat"] == 3
+    )
+    runtime = await r2_session(project, item["id"])
+    try:
+        found = draft_problems(runtime, item["text"])
+        assert found == [p for p in item["problems"] if "R23" in p and "中旬" in p]
+        assert len(found) == 1
+    finally:
+        runtime.close()
+
+
+async def test_denials_of_positions(charted):
+    """A denied position is right only when it is not the chart's (r2 owner fix, refined)."""
+    runtime, astro = charted
+    sun, moon = planet(runtime, "Sun"), planet(runtime, "Moon")
+    actual, house = sun["sign_zh"], sun["house"]
+    wrong = next(
+        s
+        for s in __import__("plugins.astro.calculator", fromlist=["SIGN_ZH"]).SIGN_ZH
+        if s not in (actual, moon["sign_zh"])
+    )
+    passes = [
+        f"并不是太阳在{wrong}座。",
+        f"不是{wrong}座的太阳和月亮。",
+        f"并非太阳在第{house % 12 + 1}宫。",
+        # A denial, then the right position.
+        f"不是太阳在{wrong}座，而是太阳在{actual}座。",
+    ]
+    for sentence in passes:
+        assert astro.problems([sentence], runtime.session) == [], sentence
+    refused = [
+        # Denying the chart's own position (outer negation), alone or with a degree word.
+        f"并非太阳在{actual}座。",
+        f"不是太阳在{actual}座。",
+        f"并不是太阳在{actual}座。",
+        f"不是{actual}座的太阳。",
+        f"并非太阳在第{house}宫。",
+        # A denied denial asserts the position.
+        f"并非不是太阳在{wrong}座。",
+        f"不是不在第{house % 12 + 1}宫的太阳。",
+        # A denial, then a wrong position.
+        f"不是太阳在{wrong}座，而是月亮在{wrong}座。",
+    ]
+    for sentence in refused:
+        assert astro.problems([sentence], runtime.session), sentence
+
+
+@pytest.mark.parametrize(
+    "message",
+    [
+        "看星盘，我1990年3月5日出生，最近运势怎么样？",
+        "看星盘，我是1990年3月出生的，最近事业运如何？",
+        "生日是1995年8月20日，从星盘看下个月适合换工作吗？",
+        "看星盘，出生于1988年，下个月怎么样？",
+    ],
+)
+async def test_a_birth_date_in_the_message_goes_to_the_agent_loop(make, message):
+    """Even with a saved profile: the Guard reads “1990年3月” as the question's range."""
+    runtime, *_ = make(written)
+    assert PipelineRunner(runtime).detect(message) is None
+
+
+@pytest.mark.parametrize(
+    "message",
+    [
+        "我不知道自己的出生时间，用星盘看看我的性格优势。",
+        "看星盘，2026年12月25日适合签约吗？",
+        "看星盘，下周三到周五适合出差吗？",
+    ],
+)
+async def test_messages_without_a_birth_date_stay(make, message):
+    runtime, *_ = make(written)
+    found = PipelineRunner(runtime).detect(message)
+    assert found is not None and found.system == "astro"
