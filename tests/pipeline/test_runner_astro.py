@@ -100,12 +100,10 @@ async def test_a_month_takes_one_writing_call(make):
     assert outcome.status == "submit_reading", outcome.text
     info = outcome.data["pipeline"]
     assert (info["model_calls"], info["repairs"], info["degraded"]) == (1, 0, None)
-    assert planned(events) == [
-        "start_reading",
-        "compute_natal_chart",
-        "compute_transits",
-        "submit_reading",
-    ]
+    calls = planned(events)
+    assert calls[:3] == ["start_reading", "compute_natal_chart", "compute_transits"]
+    assert calls[-1] == "submit_reading" and set(calls[2:-1]) == {"compute_transits"}
+    assert len(calls[2:-1]) <= 3  # the transit tiers
     ((messages, tools),) = composer.seen
     assert tools == [] and "astro:" not in str(messages)
     sheet = messages[1]["content"]
@@ -452,3 +450,190 @@ async def test_daylight_saving_birth_and_a_transit_across_midnight(make):
     assert astro.problems([claim.replace(crossing["exact_date"], utc_day)], runtime.session)
     if utc_day not in {e["exact_date"] for e in events}:
         assert astro.problems([f"{utc_day}前后留意节奏。"], runtime.session)
+
+
+# ---- r2: transit tiers, repeated labels, time words ---------------------------------------
+
+
+def listed_transits(messages) -> list[str]:
+    return [text for _, label, text in facts_in(messages) if label == "行运相位"]
+
+
+@pytest.mark.parametrize(
+    "question", [NEXT_MONTH, "看星盘，明年的整体运势怎么样？", "看星盘，下周适合谈合作吗？"]
+)
+async def test_tiers_list_the_same_transits_as_all_ten_planets(make, question):
+    """Computing slow planets first changes how long it takes, not what the fact sheet lists."""
+    from plugins.astro.calculator import transits
+
+    runtime, composer, events = make(written)
+    outcome = await runtime.turn(question)
+    assert outcome.status == "submit_reading", outcome.text
+    state = runtime.session.state
+    tiered = state["transit_result"]
+    chart = runtime.store.get_calculation("astro", runtime.session.user_id, state["chart_id"])
+    full = transits(chart, tiered["start"], tiered["end"], tiered["tz"])
+
+    def key(e):
+        return (e["exact_utc"], e["transit_body"], e["natal_body"], e["aspect"])
+
+    assert [key(e) for e in AstroPlugin.project(dict(tiered))["events"]] == [
+        key(e) for e in AstroPlugin.project(dict(full))["events"]
+    ]
+    assert len(listed_transits(composer.seen[0][0])) == min(12, len(full["events"]))
+
+
+async def test_a_year_computes_the_slow_planets_only(make):
+    runtime, composer, events = make(written)
+    outcome = await runtime.turn("看星盘，明年的整体运势怎么样？")
+    assert outcome.status == "submit_reading", outcome.text
+    assert planned(events).count("compute_transits") == 1
+    assert runtime.session.state["transit_bodies"] == [
+        "Saturn",
+        "Jupiter",
+        "Mars",
+        "Uranus",
+        "Neptune",
+        "Pluto",
+    ]
+
+
+async def test_listed_transits_carry_their_part_of_the_month(make):
+    runtime, composer, events = make(written)
+    await runtime.turn(NEXT_MONTH)
+    sheet = composer.seen[0][0][1]["content"]
+    for line in sheet.splitlines():
+        if "｜行运相位｜" in line:
+            day = int(re.search(r"2026年11月(\d+)日精确", line)[1])
+            part = "上旬" if day <= 10 else "中旬" if day <= 20 else "下旬"
+            assert f"｜时段：11月{part}｜" in line, line
+    assert "用户说的时间是“下个月”，即2026-11-01至2026-11-30" in sheet
+
+
+async def test_repeated_labels_are_caught(charted):
+    runtime, astro = charted
+    mercury = planet(runtime, "Mercury")["sign_zh"]
+    for sentence in (
+        f"你本命本命水星在{mercury}座。",
+        "行运行运土星与本命太阳三分相。",
+        "本命的本命水星",
+    ):
+        assert any("写了两遍" in p for p in astro.problems([sentence], runtime.session)), sentence
+    for sentence in (
+        f"你的本命水星在{mercury}座。",
+        "这是本命盘里的行运提示。",
+        "本命和行运要分开看。",
+    ):
+        assert not any("写了两遍" in p for p in astro.problems([sentence], runtime.session))
+
+
+async def test_lists_of_planets_are_each_checked(charted):
+    runtime, astro = charted
+    sun, mercury = planet(runtime, "Sun")["sign_zh"], planet(runtime, "Mercury")["sign_zh"]
+    moon = planet(runtime, "Moon")["sign_zh"]
+    house = planet(runtime, "Sun")["house"]
+    right = [
+        f"太阳在{sun}座，水星也在{mercury}座。",
+        f"{sun}座的太阳让你更看重稳定。",
+        f"太阳同样在{sun}座。",
+        f"太阳都在第{house}宫。",
+    ]
+    if sun == mercury:
+        right += [f"太阳、水星都落在{sun}座。", f"太阳与水星同在{sun}座。", f"{sun}座的太阳和水星"]
+    assert astro.problems(right, runtime.session) == []
+    wrong = other_sign(sun) if other_sign(sun) != mercury else other_sign(mercury)
+    for sentence in (
+        f"太阳、水星都落在{wrong}座。",
+        f"太阳与水星同在{wrong}座。",
+        f"太阳也在{wrong}座。",
+        f"太阳和月亮均位于{wrong if wrong != moon else other_sign(wrong)}座。",
+        f"太阳同样在{wrong}座。",
+        f"{wrong}座的太阳和水星",
+        f"太阳一起落在了{wrong}座。",
+        # The second planet of a list is checked too.
+        f"太阳、水星都在{sun if sun != mercury else other_sign(sun)}座。",
+        f"第{house % 12 + 1}宫的太阳和月亮",
+    ):
+        assert any("正文写成了" in p for p in astro.problems([sentence], runtime.session)), sentence
+    # r1's escape: the sign first, the second planet wrong (frozen code and the shared
+    # validator both let “金牛座的太阳和月亮” through when only the Sun is in Taurus).
+    moon_house = planet(runtime, "Moon")["house"]
+    second_wrong = []
+    if moon != sun:
+        second_wrong += [f"{sun}座的太阳和月亮", f"{sun}座的太阳、水星和月亮"]
+    if moon_house != house:
+        second_wrong.append(f"第{house}宫的太阳和月亮")
+    assert second_wrong
+    for sentence in second_wrong:
+        assert any("正文写成了" in p for p in astro.problems([sentence], runtime.session)), sentence
+
+
+def summary_args(summary: str, sections=()):
+    return {"summary": summary, "sections": list(sections)}
+
+
+async def test_the_summary_says_the_asked_time(charted):
+    runtime, astro = charted  # asked about 下个月 = 2026-11 (today 2026-10-30)
+    session = runtime.session
+    bad = [
+        "这个月事业上先有拉扯，后有配合。",
+        "本月整体平稳。",
+        "整体来看，这个月不算平顺。",
+        "下下个月会更顺。",
+        "明年的节奏偏快。",
+    ]
+    for summary in bad:
+        found = astro.reading_problems(summary_args(summary), [], session)
+        assert any("摘要第一句写成了" in p for p in found), summary
+    good = [
+        "下个月事业上先有拉扯，后有配合。",
+        "11月整体平稳，留意沟通。",
+        "比起这个月，下个月更适合推进。",
+        "下个月不是这个月那样的拉扯，而是先紧后松。",
+        "这段时间整体平稳。",
+        # Only the first sentence is the answer; later ones may plan around today.
+        "下个月整体平稳。这个月先把简历准备好。",
+    ]
+    for summary in good:
+        assert astro.reading_problems(summary_args(summary), [], session) == [], summary
+
+
+async def test_section_parts_of_the_month_hold_their_transits(make):
+    runtime, composer, events = make(written)
+    await runtime.turn(NEXT_MONTH)
+    session = runtime.session
+    astro = PipelineRunner(runtime).systems["astro"]
+    facts = astro.facts(session)
+    transits_by_day = {}
+    for fact in facts:
+        if fact.label == "行运相位":
+            day = int(re.search(r"11月(\d+)日精确", fact.text)[1])
+            transits_by_day.setdefault(day, fact.alias)
+
+    def check(title, day):
+        args = summary_args(
+            "下个月平稳。", [{"title": title, "body": "", "ref_ids": [transits_by_day[day]]}]
+        )
+        return astro.reading_problems(args, facts, session)
+
+    for day in transits_by_day:
+        part = "上旬" if day <= 10 else "中旬" if day <= 20 else "下旬"
+        assert check(f"{part}：节奏", day) == [], (part, day)
+        wrong = "下旬" if day <= 10 else "上旬"
+        assert check(f"{wrong}：节奏", day), (wrong, day)
+    edge = {d for d in transits_by_day if d in (9, 10, 11, 12, 19, 20, 21, 22)}
+    for day in edge:
+        # 前后 widens a part by two days; without it the boundary is exact.
+        near = (
+            "月中前后"
+            if day in (9, 10, 21, 22)
+            else ("月初前后" if day in (11, 12) else "月底前后")
+        )
+        assert check(near, day) == [], (near, day)
+    late = [d for d in transits_by_day if d >= 11]
+    if late:
+        assert check("月中以后", late[0]) == []
+        assert check("上旬到中旬", min(late)) == [] if min(late) <= 20 else True
+    early = [d for d in transits_by_day if d <= 20]
+    if early:
+        assert check("下旬以前", early[0]) == []

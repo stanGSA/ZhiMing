@@ -319,6 +319,7 @@ class PipelineRunner:
             draft, facts, question_type=question_type, question=risk_text
         )
         problems += system.problems(texts, self.session)
+        problems += system.reading_problems(args, facts, self.session)
         if problems:
             return problems, None
         system.complete(args, self.session)

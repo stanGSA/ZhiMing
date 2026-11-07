@@ -16,7 +16,7 @@ and questions that also name another system (问道's several systems are P3.5).
 from __future__ import annotations
 
 import re
-from datetime import date
+from datetime import date, timedelta
 
 from common.input_evidence import DATE as BIRTH_DATE
 from common.time_utils import NeedsInput
@@ -60,6 +60,10 @@ UNKNOWN_TIME = re.compile(
     r"(?:不知道|不知|未知|不确定|查不到|不清楚).{0,6}(?:出生时间|时间|时辰|几点)"
     r"|(?:出生时间|时辰).{0,6}(?:不知道|未知|不知|不确定|不详|查不到|不清楚)"
 )
+# Transit bodies in the order AstroPlugin.project lists them, in three tiers.
+SLOW = ("Saturn", "Jupiter", "Mars", "Uranus", "Neptune", "Pluto")
+TRANSIT_TIERS = (SLOW, (*SLOW, "Sun", "Mercury", "Venus"), None)
+LISTED_TRANSITS = 12
 # A pipeline run asks at most twice; a third message goes to the agent loop.
 MAX_ASKS = 2
 ASPECT_ZH = {
@@ -72,19 +76,76 @@ ASPECT_ZH = {
 SIGN_NAMES = "|".join(SIGN_ZH)
 BODY_NAMES = "|".join(BODY_ZH.values())
 HOUSE_NUMBER = r"[一二三四五六七八九十]{1,3}|\d{1,2}"
-# “太阳在金牛座”“太阳的星座是金牛”“太阳星座金牛”“月亮落在了天蝎”. Denials and the
-# house-first order (第十宫的太阳) are left to the shared validator, which runs after these.
+# “太阳在金牛座”“太阳的星座是金牛”“太阳星座金牛”“月亮落在了天蝎”, and the same said of several
+# planets at once (“太阳、水星都落在天秤座”“土星与海王星同在摩羯座”): each listed planet is
+# checked. The sign or house may also come first (“天秤座的太阳和水星”). Denials are left to
+# the shared validator, which runs after these.
 PLACED = r"(?:的)?(?:星座|所在星座)?(?:落在|落入|落于|落|进入|在|位于|处于|是|为)?了?"
+ADVERB = r"(?:都|也|均|皆|同|同样|一起|一同|全都|还|又|则|正好|恰好){0,2}"
+JOINER = r"(?:、|和|与|及|以及|跟)"
+BODIES = rf"(?P<bodies>(?:{BODY_NAMES})(?:{JOINER}(?:本命)?的?(?:{BODY_NAMES}))*)"
 SIGN_CLAIM = re.compile(
-    rf"(?P<marker>行运|本命)?的?(?P<body>{BODY_NAMES}){PLACED}(?P<sign>{SIGN_NAMES})(?:座)?"
+    rf"(?P<marker>行运|本命)?的?{BODIES}{ADVERB}{PLACED}(?P<sign>{SIGN_NAMES})(?:座)?"
 )
+SIGN_FIRST = re.compile(rf"(?P<sign>{SIGN_NAMES})座?(?:里|中)?的{BODIES}")
 HOUSE_CLAIM = re.compile(
-    rf"(?P<marker>行运|本命)?的?(?P<body>{BODY_NAMES})(?:的)?(?:宫位)?"
+    rf"(?P<marker>行运|本命)?的?{BODIES}(?:的)?(?:宫位)?{ADVERB}"
     rf"(?:落在|落入|落于|落|进入|在|位于|处于|是|为)?了?第?(?P<house>{HOUSE_NUMBER})宫"
 )
+HOUSE_FIRST = re.compile(rf"第(?P<house>{HOUSE_NUMBER})宫(?:里|中)?的{BODIES}")
+# A placeholder renders “本命太阳在金牛座” / “行运土星与本命太阳三分相”: written in front of one,
+# 本命 or 行运 appears twice (r1 unclear_range#2: “你本命本命水星在金牛座”).
+REPEATED_LABEL = re.compile(r"(本命|行运)的?\1")
 ANGLE_CLAIM = re.compile(
     rf"(?P<angle>上升|天顶)(?:星座)?(?:是|为|在|落在|落)?(?P<sign>{SIGN_NAMES})"
 )
+# Relative time words and the span each names, from the calendar's today (r1
+# next_month_career#1: the user asked about 下个月, the summary said 这个月).
+RELATIVE = re.compile(r"下下个月|下个月|这个月|本月|下周|这周|本周|今天|明天|后天|明年|今年")
+COMPARED = re.compile(r"比|相比|比起|不是|而不是|并非|之前|以前|已经|过去|上个月|刚过")
+# Parts of a month a section title may name, and what widens or extends them.
+PARTS = (
+    (re.compile(r"上旬|月初"), (1, 10)),
+    (re.compile(r"中旬|月中"), (11, 20)),
+    (re.compile(r"下旬|月底|月末"), (21, 31)),
+)
+AROUND = re.compile(r"前后|左右|附近|一带")
+LATER = re.compile(r"(?:上旬|月初|中旬|月中)(?:以后|之后|起|开始)")
+EARLIER = re.compile(r"(?:中旬|月中|下旬|月底|月末)(?:以前|之前|前)(?!后)")
+TOLERANCE = 2
+
+
+def part_of_month(day: int) -> str:
+    return "上旬" if day <= 10 else "中旬" if day <= 20 else "下旬"
+
+
+def relative_span(word: str, today: date) -> tuple[date, date]:
+    """The dates a relative time word names, counted from ``today``."""
+    import calendar as months
+
+    def month(offset: int) -> tuple[date, date]:
+        year, index = divmod(today.year * 12 + today.month - 1 + offset, 12)
+        last = months.monthrange(year, index + 1)[1]
+        return date(year, index + 1, 1), date(year, index + 1, last)
+
+    monday = today - timedelta(days=today.weekday())
+    spans = {
+        "这个月": month(0),
+        "本月": month(0),
+        "下个月": month(1),
+        "下下个月": month(2),
+        "这周": (monday, monday + timedelta(days=6)),
+        "本周": (monday, monday + timedelta(days=6)),
+        "下周": (monday + timedelta(days=7), monday + timedelta(days=13)),
+        "今天": (today, today),
+        "明天": (today + timedelta(days=1), today + timedelta(days=1)),
+        "后天": (today + timedelta(days=2), today + timedelta(days=2)),
+        "今年": (date(today.year, 1, 1), date(today.year, 12, 31)),
+        "明年": (date(today.year + 1, 1, 1), date(today.year + 1, 12, 31)),
+    }
+    return spans[word]
+
+
 TIMING_LABELS = ("行运相位", "行运")
 SECTION_ORDER = ("行运相位", "行运", "本命落座", "本命宫位", "本命相位")
 MAX_NATAL_ASPECTS = 8
@@ -254,10 +315,22 @@ class Astro(System):
         # (plugins.context.period_timezone); its own checks are unchanged.
         state["timeframe_tz"] = period.tz
         state["timeframe_default"] = period.defaulted
-        results, _ = await runner.planned(
-            [("compute_transits", {"chart_id": state["chart_id"], "start": start, "end": end})]
-        )
-        return await self.checked(runner, run, results[0])
+        # The fact sheet lists twelve transits, slow planets first (AstroPlugin.project). The
+        # slow planets are computed first and faster ones only while fewer than twelve
+        # events are found: the listed twelve are the same as from all ten planets, and a
+        # year's range no longer computes every lunar aspect (r1 P95 199 s, mostly the Moon).
+        for bodies in TRANSIT_TIERS:
+            arguments = {"chart_id": state["chart_id"], "start": start, "end": end}
+            if bodies is not None:
+                arguments["bodies"] = list(bodies)
+            results, _ = await runner.planned([("compute_transits", arguments)])
+            stopped = await self.checked(runner, run, results[0])
+            if stopped is not None:
+                return stopped
+            state["transit_bodies"] = list(bodies) if bodies is not None else None
+            if len(state["transit_result"]["events"]) >= LISTED_TRANSITS:
+                return None
+        return None
 
     async def checked(self, runner, run, result: dict):
         if not result["ok"]:
@@ -304,14 +377,26 @@ class Astro(System):
                 continue
             label, text = texts[item["fact"]]
             alias = short(item["ref_id"], session)
+            when = ""
+            if label == "行运相位" and self.spans_a_month(transit):
+                day = int(item["timeframe"][8:10])
+                when = f"｜时段：{item['timeframe'][5:7].lstrip('0')}月{part_of_month(day)}"
             meaning = item.get("meaning") or {}
             keywords = "、".join(chinese(meaning.get("keywords"))[:6])
             general = shorten(CAVEAT.sub("", meaning.get("text") or ""), 140)
             line = (
-                f"{alias}｜{label}｜{text}｜关键词：{keywords or '无'}｜一般含义：{general or '无'}"
+                f"{alias}｜{label}｜{text}{when}｜关键词：{keywords or '无'}"
+                f"｜一般含义：{general or '无'}"
             )
             facts.append(Fact(alias, item["ref_id"], label, text, line))
         return facts
+
+    @staticmethod
+    def spans_a_month(transit: dict) -> bool:
+        if not transit:
+            return False
+        start, end = date.fromisoformat(transit["start"]), date.fromisoformat(transit["end"])
+        return (end - start).days >= 10
 
     @staticmethod
     def texts(state) -> dict[str, tuple[str, str]]:
@@ -365,12 +450,20 @@ class Astro(System):
             lines.append(
                 f"问题类型：时机。日期范围：{transit['start']}至{transit['end']}（{transit['tz']}，首尾两天都含）"
             )
-            total = len(transit.get("events", []))
-            listed = min(total, 12)
-            if total > listed:
+            phrase = RELATIVE.search(session.state.get("question") or "")
+            if phrase:
                 lines.append(
-                    f"这段时间共有{total}个精确行运相位，事实表按慢行星优先列出其中{listed}个。"
+                    f"用户说的时间是“{phrase[0]}”，即{transit['start']}至{transit['end']}；"
+                    f"正文提到这段时间时写“{phrase[0]}”或具体月份，不要换成别的说法（如“这个月”）。"
                 )
+            if self.spans_a_month(transit):
+                lines.append(
+                    "按上旬、中旬、下旬或月初、月中、月底分段时，每段只放事实表“时段”一栏对应的相位。"
+                )
+            total = len(transit.get("events", []))
+            listed = min(total, LISTED_TRANSITS)
+            if total > listed:
+                lines.append(f"这段时间的精确行运相位按慢行星优先，事实表列出其中{listed}个。")
         else:
             lines.append("问题类型：本命（性格、倾向、做事方式）")
         if not natal.get("time_known", True):
@@ -419,22 +512,36 @@ class Astro(System):
             dated.setdefault(key, set()).add(e["exact_date"])
         found = []
         for text in texts:
-            for match in SIGN_CLAIM.finditer(text):
-                body, sign = match["body"], match["sign"]
-                if match["marker"] == "行运":
-                    found.append(
-                        f"行运{body}的星座不在事实表里：“{match[0]}”；行运只写事实表里的相位编号"
-                    )
-                elif body in planets and planets[body]["sign_zh"] != sign:
-                    found.append(f"本命{body}在{planets[body]['sign_zh']}座，正文写成了{sign}座")
-            for match in HOUSE_CLAIM.finditer(text):
-                body, house = match["body"], chinese_number(match["house"])
+            for match in REPEATED_LABEL.finditer(text):
+                found.append(
+                    f"“{match[0]}”把“{match[1]}”写了两遍：编号会替换成带“本命”或“行运”的文字，"
+                    "编号前不要再写"
+                )
+            for match in [*SIGN_CLAIM.finditer(text), *SIGN_FIRST.finditer(text)]:
+                sign = match["sign"]
+                for body in re.findall(BODY_NAMES, match["bodies"]):
+                    if match.groupdict().get("marker") == "行运":
+                        found.append(
+                            f"行运{body}的星座不在事实表里：“{match[0]}”；行运只写事实表里的相位编号"
+                        )
+                        break
+                    if body in planets and planets[body]["sign_zh"] != sign:
+                        found.append(
+                            f"本命{body}在{planets[body]['sign_zh']}座，正文写成了{sign}座"
+                        )
+            for match in [*HOUSE_CLAIM.finditer(text), *HOUSE_FIRST.finditer(text)]:
+                house = chinese_number(match["house"])
                 if not known:
                     found.append("出生时间未知，没有宫位，正文不能写宫位")
-                elif match["marker"] == "行运":
-                    found.append(f"行运{body}的宫位不在事实表里：“{match[0]}”")
-                elif body in planets and planets[body]["house"] != house:
-                    found.append(f"本命{body}在第{planets[body]['house']}宫，正文写成了第{house}宫")
+                    continue
+                for body in re.findall(BODY_NAMES, match["bodies"]):
+                    if match.groupdict().get("marker") == "行运":
+                        found.append(f"行运{body}的宫位不在事实表里：“{match[0]}”")
+                        break
+                    if body in planets and planets[body]["house"] != house:
+                        found.append(
+                            f"本命{body}在第{planets[body]['house']}宫，正文写成了第{house}宫"
+                        )
             for match in ANGLE_CLAIM.finditer(text):
                 angle = "asc" if match["angle"] == "上升" else "mc"
                 if not known or not natal.get(angle):
@@ -447,7 +554,7 @@ class Astro(System):
                 if (source, target, aspect) in natal_aspects | events:
                     continue
                 found.append(
-                    f"本次没有{BODY_ZH[source]}与{BODY_ZH[target]}的{ASPECT_ZH[aspect]}；"
+                    f"事实表里没有{BODY_ZH[source]}与{BODY_ZH[target]}的{ASPECT_ZH[aspect]}；"
                     "相位只写事实表里的编号"
                 )
             found += self.date_problems(text, dates, dated)
@@ -480,6 +587,66 @@ class Astro(System):
                     )
                 else:
                     found.append(f"日期{match[0]}不在事实表里；日期只能通过编号写入")
+        return found
+
+    def reading_problems(self, args, facts, session):
+        """The summary's time words and the sections' parts of the month, against the range.
+
+        The summary's first sentence answers the question, so a relative time word in it must
+        name a span inside the computed range (这个月 for a question about next month is
+        refused; 比起这个月 is a comparison and is not). A section title that names a part of
+        a single month (上旬, 月中前后…) may cite only transits whose exact date falls in it;
+        前后/左右 widen the part by two days, 以后/以前 extend it to the month's end or start.
+        """
+        state = session.state
+        transit = state.get("transit_result") or {}
+        if state.get("astro_question_type") != "timing" or not transit:
+            return []
+        found = []
+        start, end = date.fromisoformat(transit["start"]), date.fromisoformat(transit["end"])
+        today = date.fromisoformat(session.calendar_anchor) if session.calendar_anchor else None
+        first = re.split(r"[。！？!?]", args.get("summary") or "")[0]
+        if today is not None:
+            for clause in re.split(r"[，,；;：:]", first):
+                if COMPARED.search(clause):
+                    continue
+                for match in RELATIVE.finditer(clause):
+                    low, high = relative_span(match[0], today)
+                    if high < start or low > end:
+                        found.append(
+                            f"摘要第一句写成了“{match[0]}”，这次看的是{transit['start']}至"
+                            f"{transit['end']}；按用户说的时间写"
+                        )
+        if start.year != end.year or start.month != end.month:
+            return found
+        dated = {}
+        for fact in facts:
+            if fact.label != "行运相位":
+                continue
+            event = next(
+                (e for e in transit["events"] if f":transit:{e['exact_utc']}:" in fact.ref), None
+            )
+            if event:
+                dated[fact.alias] = int(event["exact_date"][8:10])
+        for section in args.get("sections", []):
+            title = section.get("title") or ""
+            parts = [span for pattern, span in PARTS if pattern.search(title)]
+            if not parts:
+                continue
+            low, high = min(p[0] for p in parts), max(p[1] for p in parts)
+            if LATER.search(title):
+                high = 31
+            if EARLIER.search(title):
+                low = 1
+            if AROUND.search(title):
+                low, high = low - TOLERANCE, high + TOLERANCE
+            for alias in section.get("ref_ids", []):
+                day = dated.get(alias)
+                if day is not None and not low <= day <= high:
+                    found.append(
+                        f"“{title}”这一层引用了{transit['start'][5:7].lstrip('0')}月{day}日精确的"
+                        f"相位{alias}，不在这一段里；按事实表的“时段”分段"
+                    )
         return found
 
     # ---- what code adds ------------------------------------------------------------------

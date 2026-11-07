@@ -34,6 +34,8 @@ def pipeline_record(outcome) -> dict | None:
     return {
         **{k: record[k] for k in ("kind", "model_calls", "repairs", "degraded")},
         "problems": [len(problems) for problems in record.get("problems", [])],
+        # Questions code asked before computing (P3.1), when there were any.
+        **({"asks": record["asks"]} if record.get("asks") else {}),
     }
 
 

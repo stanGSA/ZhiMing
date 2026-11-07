@@ -55,6 +55,11 @@ class System:
             found += [certainty_error(texts), care_error(texts)]
         return [problem for problem in found if problem]
 
+    def reading_problems(self, args: dict, facts, session) -> list[str]:
+        """Problems that need the reading's structure (which text is the summary, which facts a
+        section cites), checked with problems() before submission."""
+        return []
+
     def complete(self, args: dict, session) -> None:
         """Add what code writes into every reading of this system (after rendering)."""
 
