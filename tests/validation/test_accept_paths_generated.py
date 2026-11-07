@@ -18,6 +18,7 @@ import pytest
 from common.schemas import Reading
 from common.validation import validate_reading
 from harness.refs import transform
+from pipeline.astro import Astro
 from pipeline.daily import Daily
 from pipeline.dream import UNMATCHED_TITLE, Dream
 from pipeline.name import CONFIRM, Name
@@ -622,8 +623,6 @@ CHART_MISSED = {
         f"{c.natal['pillars']['month']}相合。",
         [flow_month_ref(c)],
     ),
-    # The same wrong date is rejected when no comma separates it from the aspect.
-    "transit_date_before_a_comma": lambda c: transit_sentence(c, 4, "，"),
 }
 
 
@@ -950,3 +949,71 @@ async def test_dream_mutations_are_rejected(runtime, dream):
     teeth = ref(runtime.session, ":掉牙")
     assert_rejected(runtime.session, "dream", ("梦见蛇象征转变。", [teeth]))
     assert_rejected(runtime.session, "dream", ("掉牙预示家里会有人生病。", [teeth]))
+
+
+# ---- the astro pipeline's path (P3.4) ------------------------------------------------------
+
+
+def astro_pipeline_rejections(c: Charts, sentences):
+    """The astro pipeline's path: the chart's closed vocabulary, then the validators."""
+    system, session = Astro(c.runtime), c.session
+    session.state["astro_question_type"] = "timing"
+    refused = []
+    for body, refs in sentences:
+        problems = system.problems([body], session)
+        error = "；".join(problems) or validate_reading(
+            layered(session, "timing", body, refs), session
+        )
+        if error:
+            refused.append((body, str(error)))
+    return refused
+
+
+async def test_astro_pipeline_path_accepts_the_charts_facts(charts):
+    sentences = astro_sentences(charts)
+    assert len(sentences) > 20
+    assert astro_pipeline_rejections(charts, sentences) == []
+
+
+async def test_astro_pipeline_path_refuses_every_chart_mutation(charts):
+    for name in (
+        "sun_sign",
+        "sun_house",
+        "natal_aspect_kind",
+        "transit_date",
+        "transit_aspect_kind",
+    ):
+        assert astro_pipeline_rejections(charts, [CHART_MUTATIONS[name](charts)]), name
+
+
+async def test_transit_date_before_a_comma_is_caught_on_the_pipeline_path(charts):
+    """P0.2's missed astro mutation, refused by the astro pipeline's closed vocabulary (P3.4).
+
+    A wrong date before a comma is not tied to the aspect after it by the shared validator,
+    which still lets it through; the pipeline accepts only the fact sheet's dates.
+    """
+    body, refs = transit_sentence(charts, 4, "，")
+    s = charts.session
+    assert validate_reading(layered(s, "timing", body, refs), s) is None  # still missed there
+    assert astro_pipeline_rejections(charts, [(body, refs)])
+
+
+async def test_astro_pipeline_path_refuses_denials_and_the_house_first_order(charts):
+    """What the closed set leaves to the shared validator is still refused on the full path."""
+    s = charts.session
+    sun = next(p for p in charts.chart["planets"] if p["body"] == "Sun")
+    actual = SIGN_ZH[SIGNS.index(sun["sign"])]
+    elsewhere = next(zh for zh in SIGN_ZH if zh != actual)
+    sign_ref, house_ref = ref(s, f":Sun:{sun['sign']}"), ref(s, f":Sun:house{sun['house']}")
+    for body, cited in (
+        # Denying the computed value, alone, with another value, or with a degree word.
+        (f"太阳不在{actual}座，而在{elsewhere}座。", sign_ref),
+        (f"太阳不在{elsewhere}座，也不在{actual}座。", sign_ref),
+        (f"太阳根本不在{actual}座。", sign_ref),
+        # A denied denial asserts the wrong sign.
+        (f"太阳并非不在{elsewhere}座。", sign_ref),
+        # The house first, then the planet.
+        (f"第{wrong_house(sun)}宫的太阳让你更关注这一面。", house_ref),
+        (f"{elsewhere}座的太阳让你更看重稳定。", sign_ref),
+    ):
+        assert astro_pipeline_rejections(charts, [(body, [cited])]), body

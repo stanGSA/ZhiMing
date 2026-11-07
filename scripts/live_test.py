@@ -17,6 +17,7 @@ import yaml
 from dotenv import load_dotenv
 
 from app import ROOT, create_runtime
+from evals.heldout import timing_answer, timing_answer_legacy
 from knowledge.build import build
 
 EXPECTED_CASES = 17
@@ -33,6 +34,8 @@ def pipeline_record(outcome) -> dict | None:
     return {
         **{k: record[k] for k in ("kind", "model_calls", "repairs", "degraded")},
         "problems": [len(problems) for problems in record.get("problems", [])],
+        # Questions code asked before computing (P3.1), when there were any.
+        **({"asks": record["asks"]} if record.get("asks") else {}),
     }
 
 
@@ -155,6 +158,7 @@ async def evaluate(model_name: str | None, output: Path, mode: str = "single") -
             # Tool rejections remain visible as diagnostics, but recovered retries
             # do not fail the acceptance case.
             "pass": all(v is True for key, v in checks.items() if key != "zero_tool_errors"),
+            **legacy(checks, outcome),
             "text": outcome.text,
             "trace": str(
                 runtime.tracer.user_dir(runtime.session.user_id) / f"{runtime.session.id}.jsonl"
@@ -371,12 +375,8 @@ async def evaluate(model_name: str | None, output: Path, mode: str = "single") -
             reading = out.data.get("reading", {})
             return {
                 **valid_reading("three_card")(out, runtime, calls),
-                "direct_timing_answer": bool(
-                    re.search(
-                        r"下个月.*(?:适合|适宜|不宜|建议|可以).*跳槽|(?:适合|不适合|不宜|建议).*下个月.*跳槽",
-                        reading.get("summary", "").split("。")[0],
-                    )
-                ),
+                # P3.0: either word order; the P1/P2 assertion is kept in legacy_checks.
+                "direct_timing_answer": timing_answer(reading.get("summary")),
                 "concrete_conditions": bool(reading.get("advice")),
                 "timing_question_type": reading.get("question_type") == "timing",
             }
@@ -458,6 +458,18 @@ async def evaluate(model_name: str | None, output: Path, mode: str = "single") -
         ]
     (output / "live.md").write_text("\n".join(lines) + "\n", encoding="utf-8")
     return report
+
+
+def legacy(checks: dict, outcome) -> dict:
+    """The P1/P2 reading of an assertion P3.0 changed, reported beside the new one."""
+    if "direct_timing_answer" not in checks:
+        return {}
+    summary = (outcome.data.get("reading") or {}).get("summary")
+    old = {**checks, "direct_timing_answer": timing_answer_legacy(summary)}
+    return {
+        "legacy_checks": {"direct_timing_answer": old["direct_timing_answer"]},
+        "legacy_pass": all(v is True for key, v in old.items() if key != "zero_tool_errors"),
+    }
 
 
 def main():

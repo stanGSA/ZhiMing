@@ -33,7 +33,7 @@ CONTINUE = re.compile(r"^\s*(?:请)?(?:继续|接着|重试|再试)")
 @dataclass
 class Intent:
     system: str
-    kind: str  # "new", "followup" or "resume"
+    kind: str  # "new", "followup", "resume" or "input" (the answer to a run's question)
     reading_id: str | None = None
     run: dict | None = None  # the stored unfinished run to resume
 

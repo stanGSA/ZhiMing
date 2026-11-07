@@ -31,10 +31,16 @@ class PipelineRun:
     repairs: int = 0
     degraded: str | None = None  # how code wrote the reading: "keywords", "safety", …
     safety: list[list[str]] = field(default_factory=list)  # hard safety rules of each draft
+    # A run waiting for the user's answer (stage awaiting_input, P3.1): its reading, how many
+    # questions it asked and what it asked for.
+    reading_id: str | None = None
+    asks: int = 0
+    needs: str | None = None
+    asked: str | None = None
 
     def record(self) -> dict:
         """What is kept with the saved reading and reported: how it was written, not drafts."""
-        return {
+        record = {
             "run_id": self.run_id,
             "kind": self.kind,
             "model_calls": self.model_calls,
@@ -42,6 +48,10 @@ class PipelineRun:
             "degraded": self.degraded,
             "problems": self.problems,
         }
+        if self.asks:
+            # Questions code asked before computing (P3.1); absent for runs that asked none.
+            record["asks"] = self.asks
+        return record
 
     def save(self, store, session, stage: str) -> None:
         self.stage = stage

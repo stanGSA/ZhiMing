@@ -43,6 +43,13 @@ EXPECTED_CASES = {
         for stage, count in (("", 18), ("Final", 12))
         for mode in ("single", "pipeline")
     },
+    # P3: one system at a time (scripts.p1_campaign --campaign p3-astro / p3-astro-final).
+    **{
+        f"{label}{stage}-{mode}": count
+        for label in ("Astro",)
+        for stage, count in (("", 18), ("Final", 12))
+        for mode in ("single", "pipeline")
+    },
 }
 HELDOUT = ("B0-heldout", "Final-heldout")
 P2_LABELS = ("Dream", "Name", "Daily")
@@ -77,6 +84,15 @@ CAMPAIGNS = {
             ),
         )
         for campaign, stage in (("p2", ""), ("p2-final", "Final"))
+    },
+    **{
+        f"p3-{system}{suffix}": dict(
+            runs=[f"{label}{stage}-{mode}" for mode in ("single", "pipeline")],
+            heldout=(),
+            pairs=((f"{label}{stage}-single", f"{label}{stage}-pipeline"),),
+        )
+        for label, system in (("Astro", "astro"),)
+        for suffix, stage in (("", ""), ("-final", "Final"))
     },
 }
 PRIVATE = {

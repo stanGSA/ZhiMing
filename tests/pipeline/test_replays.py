@@ -17,7 +17,13 @@ CASES = load_all()
 PIPELINE_SYSTEMS = set(
     yaml.safe_load((ROOT / "config.yaml").read_text(encoding="utf-8"))["pipeline"]["systems"]
 )
-MOVED = [case for case in CASES if case["systems"] and set(case["systems"]) <= PIPELINE_SYSTEMS]
+IN_PIPELINE = [
+    case for case in CASES if case["systems"] and set(case["systems"]) <= PIPELINE_SYSTEMS
+]
+# A chain of a pipeline system the pipeline still hands to the agent loop, with the reason in
+# its ``pipeline`` section (P3: astro birth data typed into the message).
+HANDED_OVER = [case for case in IN_PIPELINE if case["pipeline"].get("handled_by") == "agent_loop"]
+MOVED = [case for case in IN_PIPELINE if case not in HANDED_OVER]
 
 
 def test_replays_cover_the_main_failure_categories():
@@ -75,5 +81,16 @@ async def test_pipeline_answers_the_recorded_chain(project, case):
         evidence = {e["ref_id"] for e in outcome.data["reading"]["evidence"]}
         assert evidence <= state["allowed_refs"]
         assert runtime.store.unfinished_pipeline_run("replay") is None
+    finally:
+        runtime.close()
+
+
+@pytest.mark.parametrize("case", HANDED_OVER, ids=[case["id"] for case in HANDED_OVER])
+async def test_chains_left_with_the_agent_loop_are_handed_over(project, case):
+    from pipeline.runner import PipelineRunner
+
+    runtime = create_runtime(root=project, user_id="replay", seed=42, mode="pipeline")
+    try:
+        assert PipelineRunner(runtime).detect(case["turns"][0]) is None
     finally:
         runtime.close()

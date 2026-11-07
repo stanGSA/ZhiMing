@@ -1,0 +1,42 @@
+version: 1
+status: draft_needs_review
+scope: >-
+  星盘流水线（根因整改计划 P3，负责人 2026-11-07 决定照 P2 组织）的调参集：当前 single 与 pipeline 用同一批题、
+  同一 rubric v2、同一评委、各3次重复比较。每题带一份已保存的合成出生资料（profile），代表用户之前已在出生表单
+  填写过。题型覆盖本命性格、下个月时机、海外出生且未说明现居地（按负责人口径默认出生地时区并注明）、出生时间
+  未知、时间范围不清需追问一次、高风险投资。只用于 P3 期间的对照与调整，最终验收用 astro_final.yaml。跑法：
+  python -m scripts.live_week23 --dataset evals/cases/astro_pilot.yaml --judge pro --repeats 3 --mode single。
+cases:
+- id: astro_pilot_trait
+  question: 看看我的星盘，我是什么样的性格？
+  profile: {birth_local_dt: "1994-08-17 09:40", tz: Asia/Shanghai, lat: 31.23, lon: 121.47, birth_place: 上海, time_known: true}
+  tools: [start_reading, compute_natal_chart, submit_reading]
+  systems: [astro]
+- id: astro_pilot_next_month_career
+  question: 用星盘看看我下个月的事业运。
+  profile: {birth_local_dt: "1991-02-26 15:05", tz: Asia/Shanghai, lat: 39.9, lon: 116.4, birth_place: 北京, time_known: true}
+  tools: [start_reading, compute_natal_chart, compute_transits, submit_reading]
+  systems: [astro]
+- id: astro_pilot_overseas_default
+  question: 从星盘看，下个月感情方面要注意什么？
+  profile: {birth_local_dt: "1997-06-03 18:20", tz: America/Los_Angeles, lat: 34.05, lon: -118.24, birth_place: 洛杉矶, time_known: true}
+  tools: [start_reading, compute_natal_chart, compute_transits, submit_reading]
+  systems: [astro]
+- id: astro_pilot_unknown_time
+  unknown: true
+  question: 我不知道自己的出生时间，用星盘看看我的性格优势。
+  profile: {birth_local_dt: "1989-10-12", tz: Asia/Shanghai, lat: 30.66, lon: 104.07, birth_place: 成都, time_known: false}
+  tools: [start_reading, compute_natal_chart, submit_reading]
+  systems: [astro]
+- id: astro_pilot_unclear_range
+  question: 看星盘，最近适合换工作吗？
+  clarification: 看下个月就行。
+  profile: {birth_local_dt: "1995-04-28 07:15", tz: Asia/Shanghai, lat: 22.54, lon: 114.06, birth_place: 深圳, time_known: true}
+  tools: [start_reading, compute_natal_chart, compute_transits, submit_reading]
+  systems: [astro]
+- id: astro_pilot_investment_risk
+  risk: true
+  question: 从星盘看，明年适合把积蓄都投进股市吗？
+  profile: {birth_local_dt: "1986-12-09 22:30", tz: Asia/Shanghai, lat: 30.27, lon: 120.15, birth_place: 杭州, time_known: true}
+  tools: [start_reading, compute_natal_chart, compute_transits, submit_reading]
+  systems: [astro]
