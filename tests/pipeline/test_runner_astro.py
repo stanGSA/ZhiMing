@@ -639,11 +639,17 @@ async def test_section_parts_of_the_month_hold_their_transits(make):
             day = int(re.search(r"11月(\d+)日精确", fact.text)[1])
             transits_by_day.setdefault(day, fact.alias)
 
-    def check(title, day):
-        args = summary_args(
-            "下个月平稳。", [{"title": title, "body": "", "ref_ids": [transits_by_day[day]]}]
-        )
+    text_of = {fact.alias: fact.text for fact in facts}
+
+    def check(title, day, written=True):
+        alias = transits_by_day[day]
+        body = f"{text_of[alias]}提示你调整节奏。" if written else "这一层只谈节奏。"
+        args = summary_args("下个月平稳。", [{"title": title, "body": body, "ref_ids": [alias]}])
         return astro.reading_problems(args, facts, session)
+
+    # r3: a reference listed for the section but not written in it is not checked.
+    for day in transits_by_day:
+        assert check("下旬：节奏" if day <= 10 else "上旬：节奏", day, written=False) == []
 
     for day in transits_by_day:
         part = "上旬" if day <= 10 else "中旬" if day <= 20 else "下旬"
