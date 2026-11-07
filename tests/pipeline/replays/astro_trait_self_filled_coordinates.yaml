@@ -29,6 +29,11 @@ legacy:
             refs: ["{{ref:Sun:Capricorn}}"]
   outcome: submit_reading
 pipeline:
+  # P3 astro PR: the birth data is typed into the message and no birth form or profile
+  # holds it. Resolving a place needs the location tool, so the astro pipeline hands this
+  # chain to the agent loop until code reads typed birth data (docs/verification/
+  # p3-星盘离线验收.md). The expectations below are for the pipeline once it does.
+  handled_by: agent_loop
   # The planner resolves the place before any calculation; the model never fills coordinates.
   outcome: submit_reading
   max_model_calls_per_turn: 3

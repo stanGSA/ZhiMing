@@ -1,0 +1,28 @@
+version: 1
+status: draft_needs_review
+scope: >-
+  星盘流水线（P3）的最终验收集：不参与 P3 期间的提示词或代码调整，只在星盘调参结束、代码冻结后对当前 single 与
+  pipeline 各跑一次（3次重复、rubric v2、同一评委），确认调参集上的结果不是对题目过拟合。题型与调参集对应，
+  问法、出生资料和生活面向不同；含海外出生但说明了现居地（须追问一次时区）的情形。
+cases:
+- id: astro_final_work_style
+  question: 从本命星盘看，我适合什么样的工作方式？
+  profile: {birth_local_dt: "1992-11-21 13:50", tz: Asia/Shanghai, lat: 23.13, lon: 113.26, birth_place: 广州, time_known: true}
+  tools: [start_reading, compute_natal_chart, submit_reading]
+  systems: [astro]
+- id: astro_final_named_month
+  question: 用星盘看看2027年3月我的人际关系运势。
+  profile: {birth_local_dt: "1998-01-14 11:25", tz: Asia/Shanghai, lat: 32.06, lon: 118.8, birth_place: 南京, time_known: true}
+  tools: [start_reading, compute_natal_chart, compute_transits, submit_reading]
+  systems: [astro]
+- id: astro_final_overseas_residence
+  question: 我现在住在上海，从星盘看下个月的财运怎么样？
+  clarification: 按北京时间。
+  profile: {birth_local_dt: "1993-09-05 04:35", tz: Europe/London, lat: 51.51, lon: -0.13, birth_place: 伦敦, time_known: true}
+  tools: [start_reading, compute_natal_chart, compute_transits, submit_reading]
+  systems: [astro]
+- id: astro_final_next_week
+  question: 看星盘，下周适合谈合作吗？
+  profile: {birth_local_dt: "1987-05-30 20:10", tz: Asia/Shanghai, lat: 34.34, lon: 108.94, birth_place: 西安, time_known: true}
+  tools: [start_reading, compute_natal_chart, compute_transits, submit_reading]
+  systems: [astro]

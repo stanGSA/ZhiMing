@@ -21,6 +21,7 @@ from harness.failures import failure, model_failure
 from harness.loop import call_model, estimate_call, execute_calls
 from harness.models import ModelResponse, ToolCall, TurnOutcome
 from pipeline import compose, intent
+from pipeline.astro import Astro
 from pipeline.daily import Daily
 from pipeline.dream import Dream
 from pipeline.name import Name
@@ -30,7 +31,7 @@ from pipeline.tarot import SAFETY_FALLBACK, Tarot
 from pipeline.verify import safety_rules
 
 # In the order their detection runs: a message is the first system's that claims it.
-SYSTEM_TYPES = (Tarot, Dream, Name, Daily)
+SYSTEM_TYPES = (Tarot, Dream, Name, Daily, Astro)
 MAX_REPAIRS = 1
 TRUNCATED = "上一稿超过输出上限被截断：请精简为摘要加2-3层，每层不超过250字"
 # Problems that fail a safety rule rather than a fact (common/validation.py, output_policy.py):
@@ -90,6 +91,18 @@ class PipelineRunner:
             if stale:
                 self.store.finish_pipeline_run(stale["run_id"])  # an abandoned calculation
             run = PipelineRun(system.name, "new", system.question(message))
+            stopped = await system.compute(self, run)
+            if stopped is not None:
+                return stopped
+            run.snapshot = snapshot(self.session.state)
+            run.save(self.store, self.session, "computed")
+        elif found.kind == "input":
+            # The run asked for something and this message answers it (P3.1): compute again,
+            # with the answer among the messages the calculators read.
+            run = PipelineRun.load(found.run)
+            if self.session.state.get("active_reading_id") != run.reading_id:
+                restore(self.session, run.snapshot)  # defensive: the state moved on
+            self.stage("resume_input", run_id=run.run_id, needs=run.needs)
             stopped = await system.compute(self, run)
             if stopped is not None:
                 return stopped

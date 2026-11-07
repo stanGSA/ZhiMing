@@ -81,6 +81,20 @@ def p2_jobs(final: bool):
     return jobs
 
 
+# P3 (owner, 2026-11-07): one system per PR, each with its own pilot and final set, as in P2.
+P3_SYSTEMS = (("Astro", "astro"),)
+
+
+def p3_jobs(label: str, system: str, final: bool):
+    dataset = f"evals/cases/{system}_{'final' if final else 'pilot'}.yaml"
+    count = (4 if final else 6) * 3
+    name = f"{label}{'Final' if final else ''}"
+    return [
+        (f"{name}-{mode}", "scripts.live_week23", ["--dataset", dataset, "--mode", mode], count)
+        for mode in ("single", "pipeline")
+    ]
+
+
 CAMPAIGN_JOBS = {
     "p1": P1_JOBS,
     "tarot": [
@@ -104,6 +118,11 @@ CAMPAIGN_JOBS = {
     ],
     "p2": p2_jobs(final=False),
     "p2-final": p2_jobs(final=True),
+    **{
+        f"p3-{system}{'-final' if final else ''}": p3_jobs(label, system, final)
+        for label, system in P3_SYSTEMS
+        for final in (False, True)
+    },
 }
 
 
