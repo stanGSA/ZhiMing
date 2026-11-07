@@ -7,6 +7,7 @@ from pydantic import Field
 from common.input_evidence import (
     DATE,
     birth_mentions,
+    clock_in,
     question_range,
     reading_text,
     supported_birth,
@@ -169,8 +170,17 @@ def birth_provenance(args, session):
     birth = args.birth_local
     if birth and birth != session.profile.get("birth_local_dt"):
         known = args.time_known and len(birth) > 10
-        if not supported_birth(birth, text, known) and not supported_birth(
-            birth, str(session.profile.get("birth_local_dt", "")), known
+        profile_birth = str(session.profile.get("birth_local_dt", ""))
+        combined_profile_date_and_user_clock = (
+            known
+            and len(profile_birth) == 10
+            and birth[:10] == profile_birth
+            and clock_in(text) == birth[11:16]
+        )
+        if not (
+            supported_birth(birth, text, known)
+            or supported_birth(birth, profile_birth, known)
+            or combined_profile_date_and_user_clock
         ):
             return "出生日期必须来自用户原话或已有画像，不能猜测。" + (
                 f"原话中的出生时间是 {inferred_birth(session)}；请按此重试"

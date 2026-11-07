@@ -19,6 +19,7 @@ import re
 from datetime import date, timedelta
 
 from common.input_evidence import DATE as BIRTH_DATE
+from common.input_evidence import clock_in
 from common.time_utils import NeedsInput
 from harness.failures import failure
 from harness.refs import short
@@ -102,7 +103,7 @@ ANGLE_CLAIM = re.compile(
 # Relative time words and the span each names, from the calendar's today (r1
 # next_month_career#1: the user asked about 下个月, the summary said 这个月).
 RELATIVE = re.compile(r"下下个月|下个月|这个月|本月|下周|这周|本周|今天|明天|后天|明年|今年")
-COMPARED = re.compile(r"比|相比|比起|不是|而不是|并非|之前|以前|已经|过去|上个月|刚过")
+COMPARED = re.compile(r"比(?!较)|相比|比起|不是|而不是|并非|之前|以前|已经|过去|上个月|刚过")
 # Parts of a month a section title may name, and what widens or extends them.
 PARTS = (
     (re.compile(r"上旬|月初"), (1, 10)),
@@ -295,6 +296,20 @@ class Astro(System):
             arguments = {}
             if session.profile.get("time_known") is False or UNKNOWN_TIME.search(text):
                 arguments["time_known"] = False
+            answer = session.user_messages[-1] if session.user_messages else ""
+            if run.needs == "missing_birth_time":
+                clock = clock_in(answer)
+                birth = session.profile.get("birth_local_dt")
+                if clock and birth:
+                    arguments["birth_local"] = f"{birth[:10]} {clock}"
+            elif run.needs == "ambiguous_local_time":
+                fold = re.search(r"fold\s*=\s*([01])", answer)
+                if fold:
+                    arguments["fold"] = int(fold[1])
+                elif "回拨前" in answer:
+                    arguments["fold"] = 0
+                elif "回拨后" in answer:
+                    arguments["fold"] = 1
             results, _ = await runner.planned([("compute_natal_chart", arguments)])
             stopped = await self.checked(runner, run, results[0])
             if stopped is not None:
@@ -518,6 +533,11 @@ class Astro(System):
                     "编号前不要再写"
                 )
             for match in [*SIGN_CLAIM.finditer(text), *SIGN_FIRST.finditer(text)]:
+                if re.search(
+                    r"(?:并)?(?:不是|并非|不在|没在|未在)\s*$",
+                    text[max(0, match.start() - 8) : match.start()],
+                ):
+                    continue
                 sign = match["sign"]
                 for body in re.findall(BODY_NAMES, match["bodies"]):
                     if match.groupdict().get("marker") == "行运":
@@ -530,6 +550,11 @@ class Astro(System):
                             f"本命{body}在{planets[body]['sign_zh']}座，正文写成了{sign}座"
                         )
             for match in [*HOUSE_CLAIM.finditer(text), *HOUSE_FIRST.finditer(text)]:
+                if re.search(
+                    r"(?:并)?(?:不是|并非|不在|没在|未在)\s*$",
+                    text[max(0, match.start() - 8) : match.start()],
+                ):
+                    continue
                 house = chinese_number(match["house"])
                 if not known:
                     found.append("出生时间未知，没有宫位，正文不能写宫位")

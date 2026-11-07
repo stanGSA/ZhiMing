@@ -150,8 +150,30 @@ def asked_range(text: str, anchor: str | None) -> tuple[str, str] | None:
         except ValueError:
             return None
         return (start.isoformat(), end.isoformat()) if end >= start else None
+    # A weekday range such as “下周三到周五”; the second weekday shares the first's week.
+    weekday_range = re.search(
+        rf"(这|本|下)(?:个)?(?:周|星期|礼拜)([{WEEKDAYS}])\s*(?:至|到|—|~|～|–)\s*"
+        rf"(?:(?:这|本|下)(?:个)?(?:周|星期|礼拜))?(?:周|星期|礼拜)?([{WEEKDAYS}])",
+        cleaned,
+    )
+    if weekday_range and today is not None:
+        monday = (
+            today - timedelta(days=today.weekday()) + timedelta(days=7 * (weekday_range[1] == "下"))
+        )
+        start = monday + timedelta(days=min(WEEKDAYS.index(weekday_range[2]), 6))
+        end = monday + timedelta(days=min(WEEKDAYS.index(weekday_range[3]), 6))
+        if end < start:
+            end += timedelta(days=7)
+        return start.isoformat(), end.isoformat()
     if today is None:
         return None
+    single = re.search(DATE, cleaned)
+    if single:
+        try:
+            day = date(*map(int, single.groups())).isoformat()
+        except ValueError:
+            return None
+        return day, day
     short = re.search(
         r"(?<!\d)(\d{1,2})月(\d{1,2})[日号]\s*(?:至|到|—|~|～|–|-)\s*(?:(\d{1,2})月)?(\d{1,2})[日号]",
         cleaned,
@@ -199,7 +221,7 @@ def asked_range(text: str, anchor: str | None) -> tuple[str, str] | None:
         if stated:
             year = int(stated[1])
     month = re.search(
-        r"(?<![\d年])(\d{1,2}|[一二三四五六七八九十]|十[一二])月(?!\d{1,2}[日号])", cleaned
+        r"(?<!\d)(\d{1,2}|[一二三四五六七八九十]|十[一二])月(?!\d{1,2}[日号])", cleaned
     )
     if month and year is None:
         value = _number(month[1])
@@ -208,6 +230,11 @@ def asked_range(text: str, anchor: str | None) -> tuple[str, str] | None:
             last = calendar.monthrange(year, value)[1]
             return f"{year:04d}-{value:02d}-01", f"{year:04d}-{value:02d}-{last:02d}"
     if year is not None:
+        if month:
+            value = _number(month[1])
+            if value and 1 <= value <= 12:
+                last = calendar.monthrange(year, value)[1]
+                return f"{year:04d}-{value:02d}-01", f"{year:04d}-{value:02d}-{last:02d}"
         if "上半年" in cleaned:
             return f"{year:04d}-01-01", f"{year:04d}-06-30"
         if "下半年" in cleaned:

@@ -124,6 +124,33 @@ async def test_a_month_takes_one_writing_call(make):
     assert "出生地" not in reading["closing"]
 
 
+async def test_missing_birth_time_answer_is_used(make):
+    birth = {**SHANGHAI, "birth_local_dt": "1996-05-10"}
+    runtime, _, _ = make(written, birth=birth)
+    first = await runtime.turn(TRAIT)
+    assert first.status == "ask_user" and "出生钟表时间" in first.text
+    second = await runtime.turn("早上8点30分")
+    assert second.status == "submit_reading", second.text
+    assert runtime.session.state["natal_result"]["input"]["birth_local"] == "1996-05-10 08:30"
+    assert second.data["pipeline"]["asks"] == 1
+
+
+async def test_ambiguous_birth_time_answer_supplies_fold(make):
+    birth = {
+        **SHANGHAI,
+        "birth_local_dt": "1996-10-27 01:30",
+        "tz": "America/New_York",
+        "lat": 40.71,
+        "lon": -74.01,
+    }
+    runtime, _, _ = make(written, birth=birth)
+    first = await runtime.turn(TRAIT)
+    assert first.status == "ask_user" and "fold=1" in first.text
+    second = await runtime.turn("回拨后，fold=1")
+    assert second.status == "submit_reading", second.text
+    assert second.data["pipeline"]["asks"] == 1
+
+
 async def test_a_trait_question_reads_the_natal_chart_only(make):
     runtime, composer, events = make(written)
     outcome = await runtime.turn(TRAIT)
@@ -239,6 +266,7 @@ async def test_correct_hand_written_positions_pass(charted):
         f"{event['exact_date'][5:7].lstrip('0')}月{event['exact_date'][8:].lstrip('0')}日前后留意节奏。",
         "1996年5月10日出生的你，往往先观察再行动。",
         "这个月整体平稳，土星的提醒是循序渐进。",
+        "并不是白羊座的太阳，而是金牛座的太阳。",
     ]
     assert astro.problems(sentences, runtime.session) == []
 
@@ -581,6 +609,7 @@ async def test_the_summary_says_the_asked_time(charted):
         "整体来看，这个月不算平顺。",
         "下下个月会更顺。",
         "明年的节奏偏快。",
+        "这个月比较平稳。",
     ]
     for summary in bad:
         found = astro.reading_problems(summary_args(summary), [], session)
