@@ -111,3 +111,16 @@ def test_the_p3_astro_campaigns_pair_single_and_pipeline_on_the_astro_sets():
             assert expected == count
             assert args[args.index("--dataset") + 1] == f"evals/cases/astro_{stage}.yaml"
         assert len(CAMPAIGNS[campaign]["pairs"]) == 1 and not CAMPAIGNS[campaign]["heldout"]
+
+
+def test_the_p3_bazi_campaigns_pair_single_and_pipeline_on_the_bazi_sets():
+    assert [name for name, *_ in CAMPAIGN_JOBS["p3-bazi"]] == ["Bazi-single", "Bazi-pipeline"]
+    assert [name for name, *_ in CAMPAIGN_JOBS["p3-bazi-final"]] == [
+        "BaziFinal-single",
+        "BaziFinal-pipeline",
+    ]
+    for campaign, stage, count in (("p3-bazi", "pilot", 18), ("p3-bazi-final", "final", 12)):
+        for _name, _module, args, expected in CAMPAIGN_JOBS[campaign]:
+            assert expected == count
+            assert args[args.index("--dataset") + 1] == f"evals/cases/bazi_{stage}.yaml"
+        assert len(CAMPAIGNS[campaign]["pairs"]) == 1 and not CAMPAIGNS[campaign]["heldout"]

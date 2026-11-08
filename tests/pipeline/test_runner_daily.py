@@ -158,13 +158,8 @@ async def test_the_web_birth_note_is_not_part_of_the_question(make):
 @pytest.mark.parametrize(
     ("birth", "message"),
     [
-        # No birth data: the agent loop asks and saves it.
-        (None, TODAY),
-        ({**BIRTH, "lat": None, "lon": None}, TODAY),
-        # An overseas birth whose true solar time is not settled.
-        ({**BIRTH, "tz": "America/New_York", "lat": 40.7, "lon": -74.0}, TODAY),
-        # A consultation timezone stated in the message.
-        (BIRTH, "按纽约时间，今天运势怎么样？"),
+        # Missing birth data, an overseas birth and a stated timezone are the pipeline's since
+        # the owner's decision of 2026-11-08 (tests below).
         # A range longer than a day.
         (BIRTH, "这周运势怎么样？"),
         # Another system named outside the daily page.
@@ -216,9 +211,92 @@ async def test_multi_day_requests_stay_with_the_agent_loop(make, message):
     assert Daily(runtime).detect(runtime, message) is None
 
 
-async def test_an_iana_consultation_timezone_stays_with_the_agent_loop(make):
-    runtime, *_ = make()
-    assert Daily(runtime).detect(runtime, "咨询使用America/New_York，今天运势怎么样？") is None
+# ---- what the day needs, asked by code (owner, 2026-11-08) ---------------------------------
+
+
+async def test_missing_birth_data_asks_for_the_form_and_a_typed_birth_answers_it(make):
+    runtime, composer, events = make(written, birth=None)
+    first = await runtime.turn(TODAY)
+    assert first.status == "ask_user" and "出生信息表" in first.text
+    assert composer.seen == []
+    second = await runtime.turn("我1996年5月10日早上8点30分出生在成都")
+    assert second.status == "submit_reading", second.text
+    assert second.data["pipeline"]["asks"] == 1
+    profile = runtime.store.get_profile(runtime.session.user_id)
+    assert profile["birth_local_dt"] == "1996-05-10 08:30" and profile["birth_place"] == "成都"
+
+
+async def test_birth_data_typed_with_the_question(make):
+    runtime, _, events = make(written, birth=None)
+    outcome = await runtime.turn("我1996年5月10日早上8点30分出生在成都，今天运势怎么样？")
+    assert outcome.status == "submit_reading", outcome.text
+    assert planned(events)[:3] == ["start_reading", "update_profile", "resolve_location"]
+    assert runtime.session.state["daily_result"]["date"] == "2026-10-30"
+
+
+async def test_a_typed_birth_without_a_clock_asks_for_it(make):
+    runtime, *_ = make(written, birth=None)
+    first = await runtime.turn("我1996年5月10日出生在成都，今天运势怎么样？")
+    assert first.status == "ask_user" and "出生时间" in first.text
+    second = await runtime.turn("1996年5月10日早上8点30分")
+    assert second.status == "submit_reading", second.text
+    profile = runtime.store.get_profile(runtime.session.user_id)
+    assert profile["birth_local_dt"] == "1996-05-10 08:30"
+
+
+async def test_a_typed_birth_in_xinjiang_asks_for_the_clock(make):
+    runtime, *_ = make(written, birth=None)
+    first = await runtime.turn("我1996年5月10日早上8点30分出生在乌鲁木齐，今天运势怎么样？")
+    assert first.status == "ask_user" and "新疆时间" in first.text
+    second = await runtime.turn("北京时间")
+    assert second.status == "submit_reading", second.text
+    assert runtime.store.get_profile(runtime.session.user_id)["tz"] == "Asia/Shanghai"
+
+
+NEW_YORK = {**BIRTH, "tz": "America/New_York", "lat": 40.71, "lon": -74.01, "birth_place": "纽约"}
+
+
+async def test_overseas_birth_asks_for_solar_time_and_is_dated_in_the_birth_timezone(make):
+    """Owner, 2026-11-08: no stated residence, so the birth place's timezone, and noted."""
+    runtime, *_ = make(written, birth=NEW_YORK)
+    first = await runtime.turn(TODAY)
+    assert first.status == "ask_user" and "真太阳时" in first.text
+    second = await runtime.turn("不用真太阳时")
+    assert second.status == "submit_reading", second.text
+    result = runtime.session.state["daily_result"]
+    assert result["tz"] == "America/New_York"
+    assert "日期按出生地纽约的时区（America/New_York）计算" in second.data["reading"]["closing"]
+    assert runtime.store.get_profile(runtime.session.user_id)["true_solar_time"] is False
+
+
+async def test_a_stated_iana_timezone_dates_the_day(make):
+    runtime, *_ = make(written)
+    runtime.clock = lambda: datetime(2026, 10, 30, 2, 0, tzinfo=UTC)
+    runtime.session.refresh_calendar(runtime.clock())
+    outcome = await runtime.turn("咨询使用America/New_York，今天运势怎么样？")
+    assert outcome.status == "submit_reading", outcome.text
+    result = runtime.session.state["daily_result"]
+    assert (result["date"], result["tz"]) == ("2026-10-29", "America/New_York")
+    assert "出生地" not in outcome.data["reading"]["closing"]
+    assert runtime.store.get_profile(runtime.session.user_id)["consultation_tz"] == (
+        "America/New_York"
+    )
+
+
+async def test_a_city_named_for_the_time_is_asked_then_resolved(make):
+    runtime, *_ = make(written)
+    first = await runtime.turn("按纽约时间，今天运势怎么样？")
+    assert first.status == "ask_user" and "哪个城市的时间" in first.text
+    second = await runtime.turn("按纽约时间")
+    assert second.status == "submit_reading", second.text
+    assert runtime.session.state["daily_result"]["tz"] == "America/New_York"
+
+
+async def test_a_birth_in_beijing_time_is_not_noted(make):
+    runtime, *_ = make(written)
+    outcome = await runtime.turn(TODAY)
+    assert outcome.status == "submit_reading"
+    assert "出生地" not in outcome.data["reading"]["closing"]
 
 
 @pytest.mark.parametrize(

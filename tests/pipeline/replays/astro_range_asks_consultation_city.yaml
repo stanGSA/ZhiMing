@@ -34,16 +34,18 @@ legacy:
             refs: ["{{ref:transit:2026-11#0}}"]
   outcome: submit_reading
 pipeline:
-  # P3 astro PR: the birth data is typed into the message and no birth form or profile
-  # holds it. Resolving a place needs the location tool, so the astro pipeline hands this
-  # chain to the agent loop until code reads typed birth data (docs/verification/
-  # p3-星盘离线验收.md). The expectations below are for the pipeline once it does.
-  handled_by: agent_loop
+  # Bazi PR (P3): code reads the typed birth (pipeline/birth.py) and resolves 纽约 itself.
   # Owner, 2026-11-07: an overseas birth without a stated residence is answered in the birth
-  # place's timezone and the reading says so; once the pipeline takes this chain, the first
-  # turn answers in America/New_York instead of asking.
-  # Decided in P3's requirements table: ask first (as now) or answer in the birthplace's time
-  # and say so. Until then the pipeline keeps the current behaviour: the first turn asks from a
-  # template, the second computes and composes.
+  # place's timezone and the reading says so, so the first turn answers in America/New_York
+  # instead of asking; the recorded second turn is not needed.
+  turns:
+    - 合成资料：公历1995-12-31 23:45，纽约（美国）出生。只用西方占星回答2026-11-01至2026-11-30是否适合启动求职，计算完整区间行运，给条件建议，不能把相位日期当录用日期。
+  drafts: [cites_facts]
+  repairs: 0
+  degraded: null
+  state:
+    transit_result.tz: America/New_York
+    transit_result.start: "2026-11-01"
+    natal_result.input.birth_local: "1995-12-31 23:45"
   outcome: submit_reading
   max_model_calls_per_turn: 3

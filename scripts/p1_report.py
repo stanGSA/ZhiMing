@@ -43,10 +43,11 @@ EXPECTED_CASES = {
         for stage, count in (("", 18), ("Final", 12))
         for mode in ("single", "pipeline")
     },
-    # P3: one system at a time (scripts.p1_campaign --campaign p3-astro / p3-astro-final).
+    # P3: one system at a time (scripts.p1_campaign --campaign p3-astro / p3-astro-final,
+    # p3-bazi / p3-bazi-final).
     **{
         f"{label}{stage}-{mode}": count
-        for label in ("Astro",)
+        for label in ("Astro", "Bazi")
         for stage, count in (("", 18), ("Final", 12))
         for mode in ("single", "pipeline")
     },
@@ -91,7 +92,7 @@ CAMPAIGNS = {
             heldout=(),
             pairs=((f"{label}{stage}-single", f"{label}{stage}-pipeline"),),
         )
-        for label, system in (("Astro", "astro"),)
+        for label, system in (("Astro", "astro"), ("Bazi", "bazi"))
         for suffix, stage in (("", ""), ("-final", "Final"))
     },
 }

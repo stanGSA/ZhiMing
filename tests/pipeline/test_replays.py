@@ -21,7 +21,7 @@ IN_PIPELINE = [
     case for case in CASES if case["systems"] and set(case["systems"]) <= PIPELINE_SYSTEMS
 ]
 # A chain of a pipeline system the pipeline still hands to the agent loop, with the reason in
-# its ``pipeline`` section (P3: astro birth data typed into the message).
+# its ``pipeline`` section (P3.5: a question for several systems).
 HANDED_OVER = [case for case in IN_PIPELINE if case["pipeline"].get("handled_by") == "agent_loop"]
 MOVED = [case for case in IN_PIPELINE if case not in HANDED_OVER]
 
@@ -64,7 +64,8 @@ async def test_pipeline_answers_the_recorded_chain(project, case):
     events = []
     runtime.tracer.listeners.append(events.append)
     try:
-        for message in case["turns"]:
+        # A chain whose recorded second turn the pipeline no longer needs lists its own turns.
+        for message in expected.get("turns", case["turns"]):
             before = len(events)
             outcome = await runtime.turn(message)
             calls = [e for e in events[before:] if e["event"] == "model_response"]
@@ -75,14 +76,23 @@ async def test_pipeline_answers_the_recorded_chain(project, case):
         assert info["degraded"] == expected["degraded"]
         # The final facts are the draw's own: every card as drawn, every reference citable.
         state = runtime.session.state
-        for card in state["tarot_result"]["cards"]:
+        for card in (state.get("tarot_result") or {}).get("cards", []):
             side = "逆位" if card["reversed"] else "正位"
             assert f"【{card['name']}】{side}" in outcome.text
+        for key, value in expected.get("state", {}).items():
+            assert pick(state, key) == value, key
         evidence = {e["ref_id"] for e in outcome.data["reading"]["evidence"]}
         assert evidence <= state["allowed_refs"]
         assert runtime.store.unfinished_pipeline_run("replay") is None
     finally:
         runtime.close()
+
+
+def pick(state: dict, path: str):
+    """state["a"]["b"] for "a.b"."""
+    for part in path.split("."):
+        state = state[part]
+    return state
 
 
 @pytest.mark.parametrize("case", HANDED_OVER, ids=[case["id"] for case in HANDED_OVER])

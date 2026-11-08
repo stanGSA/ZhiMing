@@ -384,9 +384,13 @@ async def test_messages_the_astro_pipeline_leaves_alone(make, message):
     assert found is None or found.system != "astro", message
 
 
-async def test_birth_data_typed_into_the_message_goes_to_the_agent_loop(make):
+async def test_birth_data_typed_into_the_message_is_bound_by_code(make):
+    """Bazi PR (P3.1): code reads a typed birth (tests/pipeline/test_typed_birth.py); a birth
+    without a full date still goes to the agent loop."""
     runtime, *_ = make(written, birth=None)
-    assert PipelineRunner(runtime).detect("我1990年3月5日早上8点出生在上海，看看星盘性格") is None
+    found = PipelineRunner(runtime).detect("我1990年3月5日早上8点出生在上海，看看星盘性格")
+    assert found is not None and found.system == "astro"
+    assert PipelineRunner(runtime).detect("我是1990年3月出生的，看看星盘性格") is None
 
 
 async def test_a_waiting_question_from_another_conversation_is_not_answered(make, project):

@@ -19,6 +19,7 @@ from common.schemas import Reading
 from common.validation import validate_reading
 from harness.refs import transform
 from pipeline.astro import Astro
+from pipeline.bazi import Bazi
 from pipeline.daily import Daily
 from pipeline.dream import UNMATCHED_TITLE, Dream
 from pipeline.name import CONFIRM, Name
@@ -636,10 +637,8 @@ async def test_chart_mutation_is_rejected(charts, mutation):
     assert_rejected(charts.session, "timing", CHART_MUTATIONS[mutation](charts))
 
 
-@pytest.mark.xfail(strict=True, reason="漏拦：留给流水线的闭集比对（P1–P3）")
-@pytest.mark.parametrize("mutation", sorted(CHART_MISSED))
-async def test_chart_mutation_missed_today(charts, mutation):
-    assert_rejected(charts.session, "timing", CHART_MISSED[mutation](charts))
+# CHART_MISSED is refused on the bazi pipeline's path (P3.4), below; the shared validators still
+# let these through.
 
 
 async def test_tarot_mutations_are_rejected(runtime, tarot):
@@ -1017,3 +1016,169 @@ async def test_astro_pipeline_path_refuses_denials_and_the_house_first_order(cha
         (f"{elsewhere}座的太阳让你更看重稳定。", sign_ref),
     ):
         assert astro_pipeline_rejections(charts, [(body, [cited])]), body
+
+
+# ---- the bazi pipeline's path (P3.4) -------------------------------------------------------
+
+
+def bazi_pipeline_rejections(session, sentences, question_type="timing"):
+    """The bazi pipeline's path: the chart's closed vocabulary, then the validators."""
+    system = Bazi(None)
+    session.state.setdefault("bazi_question_type", question_type)
+    refused = []
+    for body, refs in sentences:
+        problems = system.problems([body], session)
+        error = "；".join(problems) or validate_reading(
+            layered(session, question_type, body, refs), session
+        )
+        if error:
+            refused.append((body, str(error)))
+    return refused
+
+
+async def test_bazi_pipeline_path_accepts_the_charts_facts(charts):
+    sentences = bazi_sentences(charts)
+    assert len(sentences) > 20
+    assert bazi_pipeline_rejections(charts.session, sentences) == []
+
+
+@pytest.mark.parametrize("mutation", sorted(CHART_MISSED))
+async def test_bazi_missed_mutations_are_refused_on_the_pipeline_path(charts, mutation):
+    """P0.2's four missed bazi mutations (formerly strict xfails), refused by the closed set."""
+    assert bazi_pipeline_rejections(charts.session, [CHART_MISSED[mutation](charts)]), mutation
+
+
+async def test_bazi_pipeline_path_refuses_the_caught_mutations(charts):
+    for name in ("day_pillar", "flow_month_ganzhi", "flow_month_called_flow_year"):
+        assert bazi_pipeline_rejections(charts.session, [CHART_MUTATIONS[name](charts)]), name
+
+
+# ---- bazi accept paths added in P3: luck cycles, handover years, solar-term days, leap months --
+
+
+async def bazi_chart(runtime, message, question, **arguments):
+    runtime.session.append_user(message)
+    assert (await invoke(runtime, "start_reading", dict(question=question))).ok
+    place = await invoke(runtime, "resolve_location", dict(query="北京"))
+    assert place.data["status"] == "resolved"
+    result = await invoke(
+        runtime,
+        "compute_bazi",
+        dict(location_id=place.data["location"]["location_id"], **arguments),
+    )
+    assert result.ok, result
+    return result.data
+
+
+def both_paths(session, sentences, question_type):
+    """Rejections on the validators' path and on the bazi pipeline's path."""
+    return rejections(session, question_type, sentences) + bazi_pipeline_rejections(
+        session, sentences, question_type
+    )
+
+
+async def test_a_luck_cycle_overview_is_accepted(runtime):
+    natal = await bazi_chart(
+        runtime,
+        "我是男，出生于1993-08-17 23:20，北京；看看我的大运。",
+        "看看我的大运",
+        birth_local="1993-08-17 23:20",
+        gender="male",
+    )
+    s, dayun = runtime.session, natal["dayun"]
+    s.state["bazi_question_type"] = "dayun"
+    y, m, d = map(int, dayun["start_solar"].split("-"))
+    sequence = dayun["sequence"]
+    first = sequence[0]["ganzhi"]
+    cited = [ref(s, ":dayun:")]
+    sentences = [
+        (f"{y}年{m}月{d}日起运，首步大运{first}。", cited),
+        (f"首步大运是{first}，{sequence[0]['start_year']}年交运。", cited),
+        (f"{sequence[0]['start_age']}岁起运。", cited),
+    ]
+    for index, stage in enumerate(sequence):
+        gz, year = stage["ganzhi"], stage["start_year"]
+        god = ten_god_of(natal, gz)
+        # The first and the current cycles carry facts of their own; the others are cited by
+        # the luck-cycle fact.
+        own = [r for r in s.state["allowed_refs"] if f"dayun_stage:{index + 1}:{gz}:" in r]
+        stage_ref = own or cited
+        stem_ref = [r for r in s.state["allowed_refs"] if f"dayun_stem:{index + 1}:{gz}:" in r]
+        sentences += [
+            (f"第{chinese(index + 1)}步大运{gz}（{year}年交运）。", stage_ref),
+            (f"第{index + 1}步大运{gz}天干为{god}。", stem_ref or cited),
+            (f"{year}年前后交运，进入{gz}大运。", stage_ref),
+        ]
+    for stage in dayun["current_candidates"]:
+        sentences.append((f"当前大运{stage['ganzhi']}。", cited))
+    assert len(sentences) > 20
+    assert both_paths(s, sentences, "trait") == []
+    # A later cycle named as the first, and a year that is no handover, are refused.
+    assert bazi_pipeline_rejections(s, [(f"首步大运{sequence[1]['ganzhi']}。", cited)], "trait")
+    year = sequence[1]["start_year"] + 1
+    assert bazi_pipeline_rejections(s, [(f"{year}年交运。", cited)], "trait")
+
+
+def ten_god_of(natal, gz):
+    from plugins.bazi.calculator import ten_god
+
+    return ten_god(natal["day_master"][0], gz[0])
+
+
+async def test_an_unknown_hour_on_a_solar_term_day_is_accepted(runtime):
+    """2023-02-04 is 立春: without the hour the year and month pillars have two candidates."""
+    natal = await bazi_chart(
+        runtime,
+        "出生于2023-02-04，北京，出生时间不知道，仍不知道，展示两种候选。",
+        "我的性格",
+        birth_local="2023-02-04",
+        time_known=False,
+        accept_uncertain=True,
+    )
+    s = runtime.session
+    s.state["bazi_question_type"] = "trait"
+    candidates = natal["alternatives"]
+    assert len({c["month"] for c in candidates}) == 2
+    months = [c["month"] for c in candidates]
+    cited = [ref(s, ":unknown_time_candidates")]
+    sentences = [
+        (f"出生当天交节，候选月柱{months[0]}或{months[1]}。", cited),
+        (f"月柱有{months[0]}和{months[1]}两种可能，要等出生时间确定。", cited),
+    ]
+    if natal["pillars"]["day"]:
+        day = natal["pillars"]["day"]
+        sentences.append((f"日柱{day}提示了这一层的底色。", [ref(s, f":day:{day}:gan")]))
+    assert both_paths(s, sentences, "trait") == []
+    # An undetermined pillar stated as one value, or an hour pillar, is refused.
+    assert both_paths(s, [(f"原局月柱{months[0]}。", cited)], "trait")
+    assert both_paths(s, [("时柱甲子。", cited)], "trait")
+
+
+@pytest.mark.parametrize(
+    "message, lunar_date, leap, solar",
+    [
+        ("农历2023年闰二月十五 10:00，北京出生。", "2023年闰二月十五 10:00", True, "2023-04-05"),
+        (
+            "农历2023年二月十五 10:00，北京出生，普通月。",
+            "2023年二月十五 10:00",
+            False,
+            "2023-03-06",
+        ),
+    ],
+)
+async def test_a_lunar_leap_month_is_accepted(runtime, message, lunar_date, leap, solar):
+    natal = await bazi_chart(
+        runtime,
+        message,
+        "我的性格",
+        calendar="lunar",
+        lunar_date=lunar_date,
+        calendar_confirmed=True,
+        leap_month=leap,
+    )
+    assert natal["solar_date"] == solar
+    s = runtime.session
+    s.state["bazi_question_type"] = "trait"
+    sentences = bazi_natal_sentences(s, natal)
+    assert len(sentences) > 5
+    assert both_paths(s, sentences, "trait") == []

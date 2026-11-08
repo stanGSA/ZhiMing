@@ -176,3 +176,32 @@ def test_timing_questions(text, timing):
     from pipeline.requirements import is_timing
 
     assert is_timing(text) is timing
+
+
+@pytest.mark.parametrize(
+    "message",
+    [
+        "不用真太阳时，按固定UTC+8。",
+        "用真太阳时。",
+        "关闭真太阳时",
+    ],
+)
+def test_a_solar_time_choice_is_not_a_residence(message):
+    """Bazi PR: the bazi clock convention says nothing about where the user lives."""
+    period = choose("America/Los_Angeles", "下个月工作上要注意什么？", message)
+    assert (period.tz, period.defaulted) == ("America/Los_Angeles", True)
+
+
+@pytest.mark.parametrize(
+    "message",
+    [
+        # Still asked: a residence or a timezone beside the solar-time choice.
+        "不用真太阳时，我现在住在多伦多",
+        "按固定UTC+8，用UTC看下个月",
+        "用真太阳时，按多伦多时间看下个月",
+        "按UTC+8时间看下个月",
+    ],
+)
+def test_a_residence_beside_a_solar_time_choice_is_still_asked(message):
+    with pytest.raises(NeedsInput):
+        choose("America/Los_Angeles", "下个月工作上要注意什么？", message)

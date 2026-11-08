@@ -5,11 +5,13 @@ to the natal chart, the day pillar with its ten-god relation and its relations t
 pillars, a card drawn with a fixed seed, and the day's element; the same user and day reads the
 same cached result. The pipeline only writes it up.
 
-By the owner's decision (P2), the pipeline takes a daily question only when the profile already
-holds birth data the calculation can use as it is. Missing or unconfirmed data (no birth date or
-place, an overseas birth whose true solar time is not settled, a consultation timezone stated
-in the message or differing from the calendar's) and ranges longer than a day stay with the
-agent loop, which asks and saves; P3's requirements stage moves that into code.
+By the owner's decision of 2026-11-08 (P3, bazi PR), what the day needs is settled by code, as for
+astro and bazi: missing birth data asks for the birth form or is read from the message
+(pipeline/birth.py); a missing clock, a Xinjiang birth clock and an overseas birth's solar-time
+choice are asked; a timezone or residence the user states is saved as consultation_tz, and one
+that names no timezone is asked about; an overseas birth without a stated residence is dated in
+the birth place's timezone, and the reading says so. Ranges longer than a day, follow-ups and
+corrections of birth data stay with the agent loop.
 """
 
 from __future__ import annotations
@@ -19,19 +21,19 @@ from datetime import date as Date
 from datetime import datetime
 from zoneinfo import ZoneInfo
 
+from common.input_evidence import DATE as BIRTH_DATE
+from common.input_evidence import birth_mentions
 from common.location import consultation_timezone_evidence
-from common.time_utils import NeedsInput
 from harness.failures import failure
 from harness.refs import short
-from harness.session import profile_timezone
-from pipeline import compose, verify
+from pipeline import birth, compose, requirements, verify
 from pipeline.factsheet import CAVEAT, Fact, shorten
 from pipeline.intent import CONTINUE, Intent
 from pipeline.render import safety_for
-from pipeline.state import RESUMABLE
+from pipeline.state import RESUMABLE, snapshot
 from pipeline.system import System
 from plugins.astro.calculator import BODY_ZH
-from plugins.daily.tools import DailyInput, InvalidDate, date_mentions
+from plugins.daily.tools import InvalidDate, date_mentions
 
 DAILY = re.compile(
     r"(?:今日|今天|明日|明天|后天|大后天|当天|每日|日)[^，,。？?！!\n]{0,6}?(?:运势|运气|运程)|"
@@ -42,10 +44,6 @@ RANGE = re.compile(r"本周|这周|下周|一周|这个月|本月|下个?月|今
 OTHER = re.compile(
     r"塔罗|牌阵|抽[一二两三]?张|八字|四柱|命盘|占星|星盘|星座|行运|本命|姓名|名字|五格|"
     r"解梦|梦见|梦到|流年|大运"
-)
-# The consultation timezone is a confirmation the agent loop saves before the day is dated.
-TIMEZONE = re.compile(
-    r"时区|UTC|GMT|当地时间|北京时间|按.{0,8}时间|在国外|现居|现在住在|我在[^，。]{0,6}(?:国|市|州)"
 )
 BIRTH_CORRECTION = re.compile(
     r"(?:出生(?:日期|时间|时刻|地点|资料|信息)|出生信息|出生表单).{0,16}"
@@ -137,6 +135,15 @@ CONVENTIONS = {
     "unknown_time": "出生时间未知",
 }
 SAFETY_FALLBACK = "这类问题牵涉重大的现实决定，请结合专业意见再做判断。"
+# A run asks at most three times: typed birth data may need its place and clock, then an
+# overseas birth's solar-time choice.
+MAX_ASKS = 3
+ASK_CLOCK = (
+    "每日运势需要出生时间：请把出生日期和时间一起再说一遍，例如“1990年3月5日早上8点”；"
+    "不知道时间就说“不知道出生时间”。"
+)
+ASK_XINJIANG = "请确认出生钟表时间使用北京时间还是新疆时间。"
+ASK_TIMEZONE = "今天按哪个城市的时间来看？可以说“按北京时间”，或“按纽约时间”。"
 SECTION_ORDER = ("流日", "流日（换日后）", "流日与本命", "当天的相位", "每日一牌", "流日五行")
 
 
@@ -148,23 +155,51 @@ def chinese(keywords) -> list[str]:
 class Daily(System):
     name = "daily"
     kept = "当天的计算结果"
+    birth_form = (
+        "看每日运势需要出生日期、时间和地点：请在页面上的出生信息表里补全"
+        "（时间不知道可以选未知），填好后发送“继续”。也可以直接告诉我，例如"
+        "“我1990年3月5日早上8点出生在杭州”。"
+    )
 
     # ---- ① intent ------------------------------------------------------------------------
 
     def detect(self, runtime, message):
+        from pipeline.astro import BIRTH_MENTION, Astro, typed_birth_usable
+
         session = runtime.session
         selected = session.state.get("selected_systems")
         if selected not in (None, ["daily"]) or session.pinned_reading_id:
             return None
-        run = runtime.store.unfinished_pipeline_run(session.user_id)
-        if (
-            run
-            and run["stage"] in RESUMABLE
-            and run["state"].get("system") == "daily"
-            and (CONTINUE.search(message) or message.strip() == run["state"]["question"].strip())
-        ):
-            return Intent("daily", "resume", run=run)
         question = self.question(message)
+        run = runtime.store.unfinished_pipeline_run(session.user_id)
+        if run and run["state"].get("system") == "daily" and run["stage"] == "awaiting_input":
+            if not Astro.answering(session, run):
+                runtime.store.finish_pipeline_run(run["run_id"])
+                run = None
+        if run and run["state"].get("system") == "daily":
+            if run["stage"] == "awaiting_input":
+                needs = run["state"].get("needs")
+                handed = (
+                    (selected is None and OTHER.search(question))
+                    or run["state"].get("asks", 0) >= MAX_ASKS
+                    or (
+                        BIRTH_MENTION.search(question)
+                        and needs not in ("birth", "missing_birth_time")
+                    )
+                    or (
+                        needs == "birth"
+                        and not requirements.birth_ready(session)
+                        and not typed_birth_usable(question, session)
+                    )
+                )
+                if handed:
+                    runtime.store.finish_pipeline_run(run["run_id"])
+                    return None
+                return Intent("daily", "input", run=run)
+            if run["stage"] in RESUMABLE and (
+                CONTINUE.search(message) or question == run["state"]["question"].strip()
+            ):
+                return Intent("daily", "resume", run=run)
         if selected is None and (OTHER.search(question) or not DAILY.search(question)):
             return None
         if RANGE.search(question) or REFERS_TO_READING.search(question):
@@ -188,7 +223,16 @@ class Daily(System):
             return None
         if not DAILY.search(question) and self.saved_daily(runtime):
             return None
-        return Intent("daily", "new") if self.ready(runtime, question) else None
+        if BIRTH_MENTION.search(question) and not typed_birth_usable(question, session):
+            return None  # a birth without a full date, or one that corrects the saved birth
+        if not requirements.birth_ready(session) and (
+            re.search(BIRTH_DATE, question) or re.search(r"出生|生于", question)
+        ):
+            if not typed_birth_usable(question, session):
+                return None
+        if self.target(session, question) is None:
+            return None  # a day that does not exist: the agent loop asks which one
+        return Intent("daily", "new")
 
     def question(self, message):
         return BIRTH_NOTE.sub("", message).strip() or message
@@ -218,44 +262,157 @@ class Daily(System):
             return mentions[-1]
         return anchor.isoformat() if anchor else None
 
-    def ready(self, runtime, question: str) -> bool:
-        """Whether the calculation can run on the profile as it is, without asking anything."""
-        session = runtime.session
-        if TIMEZONE.search(question) or self.target(session, question) is None:
-            return False
-        if any(
-            consultation_timezone_evidence(text, session, session.profile.get("tz"))
-            for text in (question,)
-        ):
-            return False
-        if not session.profile.get("birth_local_dt"):
-            return False
-        try:
-            birth, _ = runtime.plugins["daily"].inputs(DailyInput(date="2000-01-01"), session)
-        except NeedsInput:
-            return False
-        # The day is dated in the calendar's timezone and computed in the profile's; they agree
-        # unless a consultation timezone is pending, which the agent loop confirms and saves.
-        return (profile_timezone(session.profile) or birth["tz"]) == session.calendar_timezone
+    # ---- ② requirements and ③ compute (plan P3.1, owner 2026-11-08) ---------------------
 
-    # ---- ③ compute -----------------------------------------------------------------------
+    async def ask(self, runner, run, question: str, needs: str):
+        """End the turn with a question; the run waits for the answer (stage awaiting_input)."""
+        session = runner.session
+        run.asks += 1
+        run.needs = needs
+        run.asked = question
+        _, terminal = await runner.planned([("ask_user", {"question": question})])
+        run.snapshot = snapshot(session.state)
+        run.save(runner.store, session, "awaiting_input")
+        return terminal or failure(session, "tool_error", "ask_failed", question)
 
     async def compute(self, runner, run):
         session = runner.session
+        if not (run.reading_id and session.state.get("active_reading_id") == run.reading_id):
+            results, _ = await runner.planned(
+                [("start_reading", {"question": run.question, "systems": ["daily"]})]
+            )
+            if not results[0]["ok"]:
+                error = results[0]
+                return failure(session, "tool_error", error.get("code"), error["error"])
+            run.reading_id = session.state["active_reading_id"]
+        stopped = await self.birth_data(runner, run)
+        if stopped is not None:
+            return stopped
+        stopped = await self.consultation_timezone(runner, run)
+        if stopped is not None:
+            return stopped
         day = self.target(session, run.question)
-        results, _ = await runner.planned(
-            [
-                ("start_reading", {"question": run.question, "systems": ["daily"]}),
-                ("daily_fortune", {"date": day}),
-            ]
-        )
-        error = next((r for r in results if not r["ok"]), None)
-        if error is not None:
+        if day is None:
+            return failure(session, "tool_error", "invalid_date", "用户给出的日期不存在")
+        results, _ = await runner.planned([("daily_fortune", {"date": day})])
+        if not results[0]["ok"]:
+            error = results[0]
             return failure(session, "tool_error", error.get("code"), error["error"])
-        data = results[1]["data"]
+        data = results[0]["data"]
         if data.get("status") == "needs_input":
-            _, terminal = await runner.planned([("ask_user", {"question": data["question"]})])
-            return terminal or failure(session, "tool_error", "ask_failed", data["question"])
+            code = data.get("code") or "input"
+            question = (
+                ASK_CLOCK
+                if code in ("missing_birth_time", "uncertain_day_master")
+                else (data["question"])
+            )
+            needs = "missing_birth_time" if question is ASK_CLOCK else code
+            return await self.ask(runner, run, question, needs)
+        if session.state.get("daily_tz_default") and data.get("tz") != session.profile.get("tz"):
+            session.state["daily_tz_default"] = False
+        return None
+
+    async def birth_data(self, runner, run):
+        """Birth data from the profile, the message (pipeline.birth) or an answer, saved by
+        planned update_profile and resolve_location calls; daily_fortune reads the profile."""
+        session = runner.session
+        answer = session.user_messages[-1] if session.user_messages else ""
+        if run.needs == "missing_birth_time":
+            saved = str(session.profile.get("birth_local_dt") or "")
+            mentions = birth_mentions(answer)
+            precise = [(day, clock) for day, clock in mentions if clock and day == saved[:10]]
+            if precise:
+                day, clock = precise[0]
+                await runner.planned(
+                    [
+                        (
+                            "update_profile",
+                            {
+                                "field": "birth_local_dt",
+                                "value": f"{day} {clock}",
+                                "evidence": answer,
+                            },
+                        )
+                    ]
+                )
+            elif birth.UNKNOWN_TIME.search(answer):
+                await runner.planned(
+                    [
+                        (
+                            "update_profile",
+                            {"field": "time_known", "value": False, "evidence": answer},
+                        )
+                    ]
+                )
+        if run.needs == "xinjiang_clock":
+            # resolve_location saves the birth clock once the user has named it.
+            await runner.planned(
+                [("resolve_location", {"query": session.profile.get("birth_place") or ""})]
+            )
+        if requirements.birth_ready(session):
+            return None
+        if not birth.bound(session):
+            stopped = await birth.bind(self, runner, run)
+            if stopped is not None:
+                return stopped
+        if requirements.birth_ready(session):
+            return None
+        locations = list(session.state.get("locations", {}).values())
+        if (
+            session.profile.get("birth_place")
+            and len(locations) == 1
+            and locations[0]["tz"] == "Asia/Urumqi"
+            and not session.profile.get("tz")
+        ):
+            return await self.ask(runner, run, ASK_XINJIANG, "xinjiang_clock")
+        return await self.ask(runner, run, self.birth_form, "birth")
+
+    async def consultation_timezone(self, runner, run):
+        """The timezone the day is dated in (owner, 2026-11-08, as astro_timing on 2026-11-07).
+
+        A timezone or residence the user states is saved as consultation_tz, which also dates
+        “今天”; a residence that does not name a timezone is asked about; an overseas birth
+        without a stated residence keeps the birth place's timezone, and the reading says so.
+        """
+        session = runner.session
+        profile = session.profile
+        birth_tz = profile.get("tz")
+        index = session.state.get("question_message_index", 0)
+        texts = [
+            requirements.strip_birth_note(text)
+            for text in (
+                session.user_messages[index:] if index >= 0 else session.user_messages[-1:]
+            )
+        ]
+        if run.needs == "timezone":
+            city = re.search(
+                r"(?:按|用)\s*(?P<city>[\u4e00-\u9fff]{2,8}?)(?:的)?(?:当地)?时间", texts[-1]
+            )
+            if city and city["city"] not in ("北京", "当地", "出生地"):
+                await runner.planned([("resolve_location", {"query": city["city"]})])
+        stated = None
+        for text in texts:
+            found = consultation_timezone_evidence(text, session, birth_tz)
+            if found:
+                stated = (found, text)
+        if stated and stated[0] != profile.get("consultation_tz"):
+            value, evidence = stated
+            results, _ = await runner.planned(
+                [
+                    (
+                        "update_profile",
+                        {"field": "consultation_tz", "value": value, "evidence": evidence},
+                    )
+                ]
+            )
+            if not results[0]["ok"]:
+                return await self.ask(runner, run, ASK_TIMEZONE, "timezone")
+            return None
+        if stated or profile.get("consultation_tz"):
+            return None
+        if any(requirements.RESIDENCE.search(text) for text in texts):
+            return await self.ask(runner, run, ASK_TIMEZONE, "timezone")
+        session.state["daily_tz_default"] = requirements.overseas(birth_tz)
         return None
 
     # ---- ④ fact sheet --------------------------------------------------------------------
@@ -415,12 +572,32 @@ class Daily(System):
 
     # ---- readings written by code --------------------------------------------------------
 
+    def note(self, session) -> str:
+        """Which clock dated the day, when code chose the birth place's (owner, 2026-11-08)."""
+        state = session.state
+        result = self.result(state)
+        if not state.get("daily_tz_default") or not result:
+            return ""
+        binding = getattr(session, "birth_binding", None) or {}
+        place = (binding.get("location") or {}).get("name") or session.profile.get("birth_place")
+        return requirements.Period(result["date"], result["date"], result["tz"], True).note(place)
+
+    def complete(self, args, session):
+        note = self.note(session)
+        if not note:
+            return
+        closing = args.get("closing") or ""
+        room = 200 - len(note) - 1
+        if len(closing) > room:
+            closing = closing[: max(0, room - 1)] + "…" if room > 1 else ""
+        args["closing"] = f"{closing}\n{note}" if closing else note
+
     def degraded(self, session, facts, question_type, risk_text, followup, *, safety_only):
         result = self.result(session.state)
         safety = safety_for(risk_text)
         evidence = [{"ref_id": fact.alias} for fact in facts]
         if safety_only:
-            return {
+            args = {
                 "question_type": question_type,
                 "systems_used": ["daily"],
                 "summary": f"这是{result['date']}的运势计算。这个问题牵涉重大的现实决定，这次不作解读。",
@@ -431,6 +608,8 @@ class Daily(System):
                 "confidence": {"level": "low", "reason": "这次没有给出运势解读。"},
                 "safety": safety if safety["flag"] else {"flag": True, "note": SAFETY_FALLBACK},
             }
+            self.complete(args, session)
+            return args
         meanings = {item["ref_id"]: item.get("meaning") or {} for item in result["interpretations"]}
         groups = {label: [] for label in SECTION_ORDER}
         for fact in facts:
@@ -453,7 +632,7 @@ class Daily(System):
                     "ref_ids": [f.alias for f in group],
                 }
             )
-        return {
+        args = {
             "question_type": question_type,
             "systems_used": ["daily"],
             "summary": f"这是{result['date']}的运势计算。下面先列出当天的各项依据和一般说法，请当作当天的提示参考。"[
@@ -466,3 +645,5 @@ class Daily(System):
             "confidence": {"level": "low", "reason": "这次只给出了各项的一般说法。"},
             "safety": safety,
         }
+        self.complete(args, session)
+        return args
