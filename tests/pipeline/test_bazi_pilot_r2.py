@@ -17,7 +17,9 @@ from pipeline.bazi import title_findings, title_spans
 from tests.pipeline.test_runner_bazi import LOS_ANGELES, NEXT_MONTH, make, planned  # noqa: F401
 from tests.pipeline.test_runner_bazi import written as bazi_written
 
-PILOT = json.loads((Path(__file__).parent / "data/bazi_pilot_r1_titles.json").read_text("utf-8"))
+PILOT = json.loads(
+    (Path(__file__).parent / "fixtures/bazi_pilot_r1_titles.json").read_text("utf-8")
+)
 RUN_DAY = date(2026, 11, 8)
 ESCAPE = ("bazi_pilot_typed_birth#1", "先甜后磨的上半年尾巴")
 
@@ -32,7 +34,7 @@ def findings(section, today=RUN_DAY):
 
 
 def test_the_pilot_escape_is_refused_and_every_other_pilot_title_accepted():
-    """All 34 sections of the 18 pilot answers: only the known escape is refused."""
+    """All 34 sections of the 12 timing answers: only the known escape is refused."""
     refused = [(s["case"], s["title"]) for s in PILOT["sections"] if findings(s)]
     assert refused == [ESCAPE]
     assert len(PILOT["sections"]) == 34

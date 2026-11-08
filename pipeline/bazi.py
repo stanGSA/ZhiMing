@@ -289,11 +289,15 @@ def run_start(periods: list[dict], key: str, start: str) -> str:
 # Calendar time a section title may name (r2: “先甜后磨的上半年尾巴” over a July-to-December range
 # passed every check). Parts of a year are read broadly: a title is a summary, not a boundary.
 MONTH_WORD = r"(?:十[一二]|[一二三四五六七八九十]|1[0-2]|[1-9])"
-MONTH_PART = r"(?:上旬|中旬|下旬|月初|月中|月底|月末|初|中|底|末)?"
+BARE_PART = r"(?:上中旬|中下旬|上旬|中旬|下旬|月初|月中|月底|月末)"
+MONTH_PART = rf"(?:{BARE_PART}|初|中|底|末)"
+PART_AFTER = r"(?:以后|之后|后|起|开始)"
 MONTH_SPAN = re.compile(
-    rf"(?P<a>{MONTH_WORD})月(?P<pa>{MONTH_PART})"
-    rf"(?:(?:到|至|—|-|~|～)(?P<b>{MONTH_WORD})月(?P<pb>{MONTH_PART}))?"
+    rf"(?P<a>{MONTH_WORD})月(?P<pa>{MONTH_PART})?(?P<sa>{PART_AFTER})?"
+    rf"(?:(?:到|至|—|-|~|～)(?P<b>{MONTH_WORD})月(?P<pb>{MONTH_PART})?(?P<sb>{PART_AFTER})?)?"
 )
+PART_SPAN = re.compile(rf"(?P<part>{BARE_PART})(?P<after>{PART_AFTER})?")
+RELATIVE_PART = re.compile(rf"(?P<part>{MONTH_PART})(?P<after>{PART_AFTER})?")
 YEAR_PARTS = {
     "上半年": ((1, 1), (6, 30)),
     "下半年": ((7, 1), (12, 31)),
@@ -301,6 +305,9 @@ YEAR_PARTS = {
     "年中": ((5, 1), (8, 31)),
     "年底": ((11, 1), (12, 31)),
     "年末": ((11, 1), (12, 31)),
+}
+SEASON = re.compile(r"(?P<season>[春夏秋])(?:季|天)")
+SEASON_PARTS = {
     "春": ((2, 1), (5, 31)),
     "夏": ((5, 1), (8, 31)),
     "秋": ((8, 1), (11, 30)),
@@ -313,11 +320,13 @@ def month_number(text: str) -> int:
     return int(text) if text.isdigit() else MONTH_NUMBER[text]
 
 
-def part_of(year: int, month: int, part: str) -> tuple[date, date]:
+def part_of(year: int, month: int, part: str | None, after: str | None = None) -> tuple[date, date]:
     import calendar as months
 
     last = months.monthrange(year, month)[1]
     low, high = {
+        "上中旬": (1, 20),
+        "中下旬": (11, last),
         "上旬": (1, 10),
         "月初": (1, 10),
         "初": (1, 10),
@@ -325,6 +334,8 @@ def part_of(year: int, month: int, part: str) -> tuple[date, date]:
         "月中": (11, 20),
         "中": (11, 20),
     }.get(part, (21, last) if part in ("下旬", "月底", "月末", "底", "末") else (1, last))
+    if after:
+        high = last
     return date(year, month, low), date(year, month, min(high, last))
 
 
@@ -334,8 +345,6 @@ def title_spans(title: str, start: date, end: date, today: date | None) -> list[
     “八月到九月”, “7月中到8月初”, “十月到年底”, “上半年”, “春季到夏季”; a part of a month alone
     (上旬, 月中之后…) only when the range is a single month; 下个月/这周… from today.
     """
-    import calendar as months
-
     years = list(range(start.year, end.year + 1))
     if today is not None and "明年" in title:
         years = [today.year + 1]
@@ -349,38 +358,36 @@ def title_spans(title: str, start: date, end: date, today: date | None) -> list[
         first = month_number(match["a"])
         last = month_number(match["b"]) if match["b"] else first
         for year in years:
-            low = part_of(year, first, match["pa"])[0]
-            high = part_of(year if last >= first else year + 1, last, match["pb"] or match["pa"])[1]
-            if match["b"] is None and match["pa"]:
-                high = part_of(year, first, match["pa"])[1]
+            low, high = part_of(year, first, match["pa"], match["sa"])
+            if match["b"]:
+                last_year = year if last >= first else year + 1
+                _, high = part_of(last_year, last, match["pb"], match["sb"])
             out.append((low, high))
     rest = MONTH_SPAN.sub("", title)
     for word, ((m1, d1), (m2, d2)) in YEAR_PARTS.items():
         if word in rest:
             out += [(date(year, m1, d1), date(year, m2, d2)) for year in years]
+    # A bare 春/秋 also occurs in idioms (春风得意、秋后算账), not just calendar titles.
+    for match in SEASON.finditer(rest):
+        (m1, d1), (m2, d2) = SEASON_PARTS[match["season"]]
+        out += [(date(year, m1, d1), date(year, m2, d2)) for year in years]
     if out and re.search(r"(?:到|至)(?:年底|年末)", title):
         out = [(out[0][0], date(out[0][0].year, 12, 31))]
-    if not out and start.year == end.year and start.month == end.month:
-        parts = [
-            span
-            for pattern, span in (
-                (r"上旬|月初", (1, 10)),
-                (r"中旬|月中|中下旬", (11, 20)),
-                (r"下旬|月底|月末|中下旬", (21, 31)),
-            )
-            if re.search(pattern, rest)
-        ]
-        if parts:
-            low, high = min(p[0] for p in parts), max(p[1] for p in parts)
-            if re.search(r"(?:上旬|月初|中旬|月中)(?:以后|之后|后|起|开始)", rest):
-                high = 31
-            last = months.monthrange(start.year, start.month)[1]
-            out.append(
-                (date(start.year, start.month, low), date(start.year, start.month, min(high, last)))
-            )
+    # Resolve a relative month before borrowing the calculation's month for a bare 上旬.
     if not out and today is not None:
         for match in RELATIVE.finditer(title):
-            out.append(relative_span(match[0], today))
+            low, high = relative_span(match[0], today)
+            part = RELATIVE_PART.match(title, match.end())
+            if part and match[0] in ("下下个月", "下个月", "这个月", "本月"):
+                low, high = part_of(low.year, low.month, part["part"], part["after"])
+            out.append((low, high))
+    if not out and start.year == end.year and start.month == end.month:
+        parts = [
+            part_of(start.year, start.month, match["part"], match["after"])
+            for match in PART_SPAN.finditer(rest)
+        ]
+        if parts:
+            out.append((min(p[0] for p in parts), max(p[1] for p in parts)))
     return out
 
 
