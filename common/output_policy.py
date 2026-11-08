@@ -286,12 +286,17 @@ def clause_before(text: str, start: int, width: int = 16) -> str:
     return CLAUSE_START.sub("", text[max(0, start - width) : start])
 
 
+OPEN_QUOTE = re.compile(r"[“‘「『\"']+\s*$")
+
+
 def certainty_claim(texts) -> str | None:
     """The first certainty word that no negation in its clause governs."""
     for text in texts:
         text = NEGATED_DISCLAIMER.sub(" ", text or "")
         for match in CERTAINTY.finditer(text):
-            before = clause_before(text, match.start(), 40)
+            # An opening quotation mark between a negation and the word (不是“必然发财”, bazi
+            # pilot r1) is punctuation, not a new clause: the words are read as without it.
+            before = OPEN_QUOTE.sub("", clause_before(text, match.start(), 40))
             denied = negates_claim(before)
             if denied and not governing_denial(NEGATED_NOUN, before):
                 continue

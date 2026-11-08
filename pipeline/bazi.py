@@ -21,7 +21,7 @@ calculator does not have (合婚, 紫微, 神煞…) and questions that also nam
 from __future__ import annotations
 
 import re
-from datetime import date, datetime
+from datetime import date, datetime, timedelta
 from zoneinfo import ZoneInfo
 
 from common.facts import value_claim
@@ -243,6 +243,14 @@ def local(instant: str, tz: str) -> datetime:
     return datetime.fromisoformat(instant).astimezone(ZoneInfo(tz))
 
 
+def local_day(instant: str, tz: str, *, end: bool = False) -> date:
+    """The local date of an instant; an exclusive end at midnight belongs to the day before."""
+    moment = local(instant, tz)
+    if end and (moment.hour, moment.minute, moment.second) == (0, 0, 0):
+        return (moment - timedelta(seconds=1)).date()
+    return moment.date()
+
+
 def span_text(period: dict, tz: str) -> str:
     start, end = local(period["start_utc"], tz), local(period["end_utc"], tz)
     return f"{start.year}年{start.month}月{start.day}日{start:%H:%M}至{end.year}年{end.month}月{end.day}日{end:%H:%M}"
@@ -276,6 +284,136 @@ def run_start(periods: list[dict], key: str, start: str) -> str:
     while index and periods[index - 1]["pillars"].get(key) == gz:
         index -= 1
     return periods[index]["start_utc"]
+
+
+# Calendar time a section title may name (r2: “先甜后磨的上半年尾巴” over a July-to-December range
+# passed every check). Parts of a year are read broadly: a title is a summary, not a boundary.
+MONTH_WORD = r"(?:十[一二]|[一二三四五六七八九十]|1[0-2]|[1-9])"
+MONTH_PART = r"(?:上旬|中旬|下旬|月初|月中|月底|月末|初|中|底|末)?"
+MONTH_SPAN = re.compile(
+    rf"(?P<a>{MONTH_WORD})月(?P<pa>{MONTH_PART})"
+    rf"(?:(?:到|至|—|-|~|～)(?P<b>{MONTH_WORD})月(?P<pb>{MONTH_PART}))?"
+)
+YEAR_PARTS = {
+    "上半年": ((1, 1), (6, 30)),
+    "下半年": ((7, 1), (12, 31)),
+    "年初": ((1, 1), (3, 31)),
+    "年中": ((5, 1), (8, 31)),
+    "年底": ((11, 1), (12, 31)),
+    "年末": ((11, 1), (12, 31)),
+    "春": ((2, 1), (5, 31)),
+    "夏": ((5, 1), (8, 31)),
+    "秋": ((8, 1), (11, 30)),
+}
+MONTH_NUMBER = {"十一": 11, "十二": 12, **{c: i for i, c in enumerate("一二三四五六七八九十", 1)}}
+SPAN_SLACK = 2
+
+
+def month_number(text: str) -> int:
+    return int(text) if text.isdigit() else MONTH_NUMBER[text]
+
+
+def part_of(year: int, month: int, part: str) -> tuple[date, date]:
+    import calendar as months
+
+    last = months.monthrange(year, month)[1]
+    low, high = {
+        "上旬": (1, 10),
+        "月初": (1, 10),
+        "初": (1, 10),
+        "中旬": (11, 20),
+        "月中": (11, 20),
+        "中": (11, 20),
+    }.get(part, (21, last) if part in ("下旬", "月底", "月末", "底", "末") else (1, last))
+    return date(year, month, low), date(year, month, min(high, last))
+
+
+def title_spans(title: str, start: date, end: date, today: date | None) -> list[tuple[date, date]]:
+    """The calendar spans a section title names, in the range's years; [] when it names none.
+
+    “八月到九月”, “7月中到8月初”, “十月到年底”, “上半年”, “春季到夏季”; a part of a month alone
+    (上旬, 月中之后…) only when the range is a single month; 下个月/这周… from today.
+    """
+    import calendar as months
+
+    years = list(range(start.year, end.year + 1))
+    if today is not None and "明年" in title:
+        years = [today.year + 1]
+    elif today is not None and "今年" in title:
+        years = [today.year]
+    stated = re.search(r"(\d{4})年", title)
+    if stated:
+        years = [int(stated[1])]
+    out = []
+    for match in MONTH_SPAN.finditer(title):
+        first = month_number(match["a"])
+        last = month_number(match["b"]) if match["b"] else first
+        for year in years:
+            low = part_of(year, first, match["pa"])[0]
+            high = part_of(year if last >= first else year + 1, last, match["pb"] or match["pa"])[1]
+            if match["b"] is None and match["pa"]:
+                high = part_of(year, first, match["pa"])[1]
+            out.append((low, high))
+    rest = MONTH_SPAN.sub("", title)
+    for word, ((m1, d1), (m2, d2)) in YEAR_PARTS.items():
+        if word in rest:
+            out += [(date(year, m1, d1), date(year, m2, d2)) for year in years]
+    if out and re.search(r"(?:到|至)(?:年底|年末)", title):
+        out = [(out[0][0], date(out[0][0].year, 12, 31))]
+    if not out and start.year == end.year and start.month == end.month:
+        parts = [
+            span
+            for pattern, span in (
+                (r"上旬|月初", (1, 10)),
+                (r"中旬|月中|中下旬", (11, 20)),
+                (r"下旬|月底|月末|中下旬", (21, 31)),
+            )
+            if re.search(pattern, rest)
+        ]
+        if parts:
+            low, high = min(p[0] for p in parts), max(p[1] for p in parts)
+            if re.search(r"(?:上旬|月初|中旬|月中)(?:以后|之后|后|起|开始)", rest):
+                high = 31
+            last = months.monthrange(start.year, start.month)[1]
+            out.append(
+                (date(start.year, start.month, low), date(start.year, start.month, min(high, last)))
+            )
+    if not out and today is not None:
+        for match in RELATIVE.finditer(title):
+            out.append(relative_span(match[0], today))
+    return out
+
+
+def overlaps(spans, low: date, high: date, slack: int = SPAN_SLACK) -> bool:
+    gap = timedelta(days=slack)
+    return any(a - gap <= high and low <= b + gap for a, b in spans)
+
+
+def title_findings(
+    title: str, start: date, end: date, cited: list[tuple[date, date]], today: date | None
+) -> list[str]:
+    """Problems with the time a section title names: it must lie in the computed range, and a
+    section citing flow periods must cite at least one in that time (lenient: a title sums up
+    the section, so a period running on past it is not refused)."""
+    spans = title_spans(title, start, end, today)
+    if not spans:
+        return []
+    named = "、".join(
+        f"{a.month}月{a.day}日至{b.month}月{b.day}日" if a.year == b.year else f"{a}至{b}"
+        for a, b in spans
+    )
+    if not overlaps(spans, start, end, 0):
+        return [
+            f"“{title}”这一层的标题说的是{named}，这次看的是{start.isoformat()}至"
+            f"{end.isoformat()}；按这段时间里的月份写标题"
+        ]
+    if cited and not any(overlaps(spans, low, high) for low, high in cited):
+        listed = "、".join(f"{a.month}月{a.day}日至{b.month}月{b.day}日" for a, b in cited[:3])
+        return [
+            f"“{title}”这一层的标题说的是{named}，正文引用的流期却在{listed}；"
+            "按流期的实际起止写标题，或把这些句子移到对应时段的那一层"
+        ]
+    return []
 
 
 def zone_label(tz: str) -> str:
@@ -1045,7 +1183,8 @@ class Bazi(System):
         return list(dict.fromkeys(p["pillars"][key] for p in periods if key in p["pillars"]))
 
     def reading_problems(self, args, facts, session):
-        """The summary's time words must name a span inside the computed range (as astro)."""
+        """The summary's time words must name a span inside the computed range (as astro), and
+        a section title's time must lie in the range and match the flow periods it cites."""
         state = session.state
         period = state.get("bazi_period_result") or {}
         if state.get("bazi_question_type") != "timing" or not period or not session.calendar_anchor:
@@ -1064,6 +1203,62 @@ class Bazi(System):
                         f"摘要第一句写成了“{match[0]}”，这次看的是{period['start']}至"
                         f"{period['end']}；按用户说的时间写"
                     )
+        found += list(dict.fromkeys(p for p, _ in self.section_findings(args, facts, session)))
+        return found
+
+    def reading_quotes(self, args, facts, session) -> dict[str, list[str]]:
+        """problem → the title that raised it, for the repair request (as astro r4)."""
+        quotes: dict[str, list[str]] = {}
+        for problem, sentence in self.section_findings(args, facts, session):
+            if sentence not in quotes.setdefault(problem, []):
+                quotes[problem].append(sentence)
+        return quotes
+
+    def section_findings(self, args, facts, session) -> list[tuple[str, str]]:
+        """(problem, title) for section titles whose time is outside the range or the flow
+        periods the section cites (by number, or by a flow pillar written by hand)."""
+        state = session.state
+        period = state.get("bazi_period_result") or {}
+        if state.get("bazi_question_type") != "timing" or not period:
+            return []
+        start, end = date.fromisoformat(period["start"]), date.fromisoformat(period["end"])
+        today = date.fromisoformat(session.calendar_anchor) if session.calendar_anchor else None
+        tz = period.get("tz") or "Asia/Shanghai"
+        periods = period.get("periods", [])
+        spans = merged_spans(periods)
+        by_alias = {}
+        for fact in facts:
+            fact_text = fact.ref.split(":", 2)[-1] if fact.ref.count(":") >= 2 else ""
+            if not fact_text.startswith("period:"):
+                continue
+            # period:<start>:<pillar>:<ganzhi>:<ten god>, or …:<ganzhi>:<relation>:<natal side>.
+            parts = fact_text.split(":")
+            offset = 3 if parts[-1] in TEN_GODS else 4
+            if len(parts) < offset + 2:
+                continue
+            key, gz = parts[-offset], parts[-offset + 1]
+            run = (key, gz, ":".join(parts[1:-offset]))
+            if run in spans:
+                by_alias[fact.alias] = spans[run]
+        found = []
+        for section in args.get("sections", []):
+            title = section.get("title") or ""
+            cited = [by_alias[a] for a in section.get("ref_ids", []) if a in by_alias]
+            body = section.get("body") or ""
+            for match in re.finditer(rf"(流年|流月|流日)({JIAZI})", body):
+                key = FLOW_KEY[match[1]]
+                cited += [
+                    spans[(key, match[2], p["start_utc"])]
+                    for p in periods
+                    if p["pillars"].get(key) == match[2]
+                    and (key, match[2], p["start_utc"]) in spans
+                ]
+            local = [
+                (local_day(span["start_utc"], tz), local_day(span["end_utc"], tz, end=True))
+                for span in cited
+            ]
+            for problem in title_findings(title, start, end, local, today):
+                found.append((problem, title))
         return found
 
     # ---- what code writes ----------------------------------------------------------------
@@ -1076,9 +1271,14 @@ class Bazi(System):
         period = state.get("bazi_period_result") or {}
         binding = getattr(session, "birth_binding", None) or {}
         place = (binding.get("location") or {}).get("name") or session.profile.get("birth_place")
-        return requirements.Period(
+        note = requirements.Period(
             period.get("start", ""), period.get("end", ""), period.get("tz", ""), True
         ).note(place)
+        # Bazi pilot r1: “不用真太阳时，按固定UTC+8” chose the birth clock, which a reader (and the
+        # judge) took for the dates' clock. Say that the two are different things.
+        chart = (state.get("bazi_result") or {}).get("input") or {}
+        clock = "真太阳时" if chart.get("true_solar_time") else "固定UTC+8"
+        return f"出生时刻按{clock}排盘；{note}"
 
     def complete(self, args, session):
         """Owner, 2026-11-08: an overseas birth without a stated residence is dated in the birth
