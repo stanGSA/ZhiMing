@@ -680,8 +680,12 @@ R2_EVIDENCE = "docs/verification/p3/astro-pilot-r2/repair-evidence.json"
 R2_CLOCK = datetime(2026, 11, 7, 15, 30, tzinfo=UTC)  # 23:30 in Shanghai, as the r2 batch ran
 
 
-async def r2_session(project, case_id):
-    """The pilot case's session at the r2 run's date: the same chart, range and R-numbers."""
+async def r2_session(project, case_id, drafts=None, clock=None):
+    """The pilot case's session at the r2 run's date: the same chart, range and R-numbers.
+
+    ``drafts``: the writer's replies (scripted ones by default); ``clock``: another run's date.
+    """
+    clock = clock or R2_CLOCK
     import yaml
 
     from app import ROOT
@@ -692,17 +696,21 @@ async def r2_session(project, case_id):
         root=project,
         user_id=case_id,
         seed=7,
-        model=Composer(written, written),
+        model=Composer(*(drafts or (written, written))),
         mode="pipeline",
-        clock=lambda: R2_CLOCK,
+        clock=lambda: clock,
     )
     runtime.store.update_profile_fields(case_id, case["profile"], "合成测试资料")
     runtime.session.profile = runtime.store.get_profile(case_id)
-    runtime.session.refresh_calendar(R2_CLOCK)
+    runtime.session.refresh_calendar(clock)
+    events = []
+    runtime.tracer.listeners.append(events.append)
+    runtime.events = events
     outcome = await runtime.turn(case["question"])
     if outcome.status == "ask_user":
         outcome = await runtime.turn(case["clarification"])
     assert outcome.status == "submit_reading", outcome.text
+    runtime.outcome = outcome
     return runtime
 
 
@@ -770,8 +778,10 @@ async def test_a_transit_written_in_the_wrong_part_is_still_refused(project, r2_
     runtime = await r2_session(project, item["id"])
     try:
         found = draft_problems(runtime, item["text"])
-        assert found == [p for p in item["problems"] if "R23" in p and "中旬" in p]
-        assert len(found) == 1
+        expected = [p for p in item["problems"] if "R23" in p and "中旬" in p]
+        assert len(found) == len(expected) == 1
+        # r4 adds the transit's own part and how to fix it; the problem itself is the same.
+        assert found[0].startswith(expected[0].split("不在这一段里")[0] + "不在这一段里")
     finally:
         runtime.close()
 
@@ -839,3 +849,77 @@ async def test_messages_without_a_birth_date_stay(make, message):
     runtime, *_ = make(written)
     found = PipelineRunner(runtime).detect(message)
     assert found is not None and found.system == "astro"
+
+
+# ---- r4: the repair request quotes a misplaced transit ------------------------------------
+
+R3_EVIDENCE = "docs/verification/p3/astro-pilot-r3/repair-evidence.json"
+R3_CLOCK = datetime(2026, 11, 8, 4, 10, tzinfo=UTC)  # 12:10 in Shanghai, as the r3 batch ran
+
+
+@pytest.mark.parametrize(
+    "case_id, repeat, sentence",
+    [
+        (
+            "astro_pilot_overseas_default",
+            1,
+            "行运太阳与本命土星三分相（2026年12月9日精确，America/Los_Angeles当地日期）",
+        ),
+        (
+            "astro_pilot_next_month_career",
+            3,
+            "行运水星与本命水星四分相（2026年12月9日精确，北京时间）",
+        ),
+    ],
+)
+async def test_a_misplaced_transit_is_quoted_in_the_repair(project, case_id, repeat, sentence):
+    """r3: both section degradations had a repair without a quote, and both repairs kept the
+    sentence. The repair now quotes it and says which part of the month the transit is in."""
+    import json
+
+    from app import ROOT
+
+    evidence = json.loads((ROOT / R3_EVIDENCE).read_text(encoding="utf-8"))
+    first = next(
+        i["text"]
+        for i in evidence
+        if i["id"] == case_id and i["repeat"] == repeat and i["draft"] == 1
+    )
+    runtime = await r2_session(project, case_id, drafts=(first, written), clock=R3_CLOCK)
+    try:
+        repair = next(
+            e for e in runtime.events if e["event"] == "pipeline_stage" and e["stage"] == "repair"
+        )
+        ((problem, quoted),) = repair["quotes"].items()
+        assert "不在这一段里（它属于12月上旬）" in problem
+        assert "移到对应时段的那一层" in problem
+        assert len(quoted) == 1 and sentence in quoted[0]
+        assert runtime.outcome.data["pipeline"]["repairs"] == 1
+    finally:
+        runtime.close()
+
+
+async def test_quotes_name_only_the_sentences_that_misplace(make):
+    """A section with one misplaced transit quotes that sentence, not the section's others."""
+    runtime, composer, events = make(written)
+    await runtime.turn(NEXT_MONTH)
+    session = runtime.session
+    astro = PipelineRunner(runtime).systems["astro"]
+    facts = astro.facts(session)
+    by_day = {}
+    for fact in facts:
+        if fact.label == "行运相位":
+            by_day.setdefault(int(re.search(r"11月(\d+)日精确", fact.text)[1]), fact)
+    early = [f for d, f in by_day.items() if d <= 10]
+    late = [f for d, f in by_day.items() if d >= 21]
+    if not (early and late):
+        pytest.skip("this chart has no transit in both parts")
+    body = f"{late[0].text}提示你收尾。{early[0].text}提示你沟通。"
+    args = summary_args(
+        "下个月平稳。",
+        [{"title": "下旬：收尾", "body": body, "ref_ids": [late[0].alias, early[0].alias]}],
+    )
+    quotes = astro.reading_quotes(args, facts, session)
+    ((problem, quoted),) = quotes.items()
+    assert early[0].alias in problem and quoted == [f"{early[0].text}提示你沟通。"]
+    assert astro.reading_problems(args, facts, session) == [problem]
