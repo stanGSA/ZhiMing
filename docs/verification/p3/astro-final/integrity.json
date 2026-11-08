@@ -1,0 +1,200 @@
+{
+  "status": "verified",
+  "source_commit": "babeceaad67d2ab8887cbc30041b568aece4051e",
+  "source_fingerprint": "1b96414d8332a4c3388150b99d6992d94117296a13030fe0f99ba1dc0a5ff53c",
+  "config_sha256": "248e6db07c2c5d82240d20beaa32bfe55a6d31301ca2d3f64a9b659dd57acb9c",
+  "original_config_sha256": "d20f8ebd922f11bad6cda4b850ac66d17fcb50d0a656dd7800e89671cf243a24",
+  "config_restored": true,
+  "experiment_config_unchanged": true,
+  "total_rows": 24,
+  "all_groups_same_source_hashes": true,
+  "source_file_count": 179,
+  "nonconfig_file_count": 178,
+  "nonconfig_files_match_git_commit": true,
+  "raw_report_hashes_verified": true,
+  "trace_files_present": true,
+  "identical_pair_keys": true,
+  "all_results_scored": true,
+  "scored_rows": 24,
+  "groups": {
+    "AstroFinal-single": {
+      "run_id": "20261108T112206-a16e9965",
+      "rows": 12,
+      "statuses": {
+        "retry_limit": 3,
+        "submit_reading": 8,
+        "ask_user": 1
+      },
+      "statistics": {
+        "run_id": "20261108T112206-a16e9965",
+        "mode": "single",
+        "model": "deepseek-v4.1-flash",
+        "rubric_version": "v2-2026-10-24",
+        "cases": 12,
+        "task_success": 8,
+        "first_try_clean": 4,
+        "submitted": 8,
+        "quality_scored": 12,
+        "quality_unscored": 0,
+        "quality": 8,
+        "submitted_quality": 7,
+        "task_and_quality": 7,
+        "repaired": 0,
+        "degraded": 0,
+        "degraded_rate": 0.0,
+        "no_symbol": 0,
+        "no_symbol_rate": 0.0,
+        "degraded_without_no_symbol": 0,
+        "degraded_without_no_symbol_rate": 0.0,
+        "clean_success": 4,
+        "strict_v1": 3,
+        "tool_errors": 19,
+        "model_calls": 85,
+        "median_s": 46.0135,
+        "p95_s": 70.976,
+        "input_tokens": 703094,
+        "output_tokens": 44785,
+        "cache_rate": 0.6690428306883575,
+        "categories": [
+          [
+            "I 表达策略",
+            9,
+            5,
+            2
+          ],
+          [
+            "E 事实与计算不符",
+            3,
+            1,
+            1
+          ],
+          [
+            "C 资料来源/地点未确认就计算",
+            2,
+            1,
+            1
+          ],
+          [
+            "Z 其他：国家限制必须由用户明确提供，不能自行消歧",
+            2,
+            1,
+            1
+          ],
+          [
+            "A 参数不是合法JSON",
+            1,
+            1,
+            0
+          ],
+          [
+            "Z 其他：国家或省州仍未唯一确定同名城市，请确认真实候选locatio",
+            1,
+            1,
+            1
+          ],
+          [
+            "Z 其他：行运星落座宫位未作为本次事实提供，请仅陈述已计算相位",
+            1,
+            1,
+            0
+          ]
+        ],
+        "outcomes": {
+          "结局为 retry_limit，未通过：expected_status、expected_tools、saved、systems": 3,
+          "结局为 ask_user，未通过：expected_status、expected_tools、saved、systems": 1
+        },
+        "quality_failures": {
+          "direct_answer": 3,
+          "supported_conclusion": 3,
+          "time_consistent": 2,
+          "no_fabricated_facts": 1
+        }
+      },
+      "scored": 12,
+      "submitted_quality": 7,
+      "max_model_calls": 12,
+      "requested_model": "deepseek-v4.1-flash",
+      "judge_model": "deepseek-v4.1-flash",
+      "returned_models": [
+        "deepseek-v4.1-flash"
+      ],
+      "overseas_asks": [
+        null,
+        null,
+        null
+      ],
+      "next_week_latency_s": [
+        40.453,
+        43.114,
+        53.038
+      ],
+      "no_fabricated_facts_false": 1,
+      "submitted_no_fabricated_facts_false": 1
+    },
+    "AstroFinal-pipeline": {
+      "run_id": "20261108T113344-7e91f1c8",
+      "rows": 12,
+      "statuses": {
+        "submit_reading": 12
+      },
+      "statistics": {
+        "run_id": "20261108T113344-7e91f1c8",
+        "mode": "pipeline",
+        "model": "deepseek-v4.1-flash",
+        "rubric_version": "v2-2026-10-24",
+        "cases": 12,
+        "task_success": 12,
+        "first_try_clean": 12,
+        "submitted": 12,
+        "quality_scored": 12,
+        "quality_unscored": 0,
+        "quality": 11,
+        "submitted_quality": 11,
+        "task_and_quality": 11,
+        "repaired": 1,
+        "degraded": 0,
+        "degraded_rate": 0.0,
+        "no_symbol": 0,
+        "no_symbol_rate": 0.0,
+        "degraded_without_no_symbol": 0,
+        "degraded_without_no_symbol_rate": 0.0,
+        "clean_success": 11,
+        "strict_v1": 11,
+        "tool_errors": 0,
+        "model_calls": 13,
+        "median_s": 14.8165,
+        "p95_s": 23.16,
+        "input_tokens": 46193,
+        "output_tokens": 9117,
+        "cache_rate": 0.5984023553352239,
+        "categories": [],
+        "outcomes": {},
+        "quality_failures": {
+          "time_consistent": 1
+        }
+      },
+      "scored": 12,
+      "submitted_quality": 11,
+      "max_model_calls": 2,
+      "requested_model": "deepseek-v4.1-flash",
+      "judge_model": "deepseek-v4.1-flash",
+      "returned_models": [
+        "deepseek-v4.1-flash"
+      ],
+      "overseas_asks": [
+        1,
+        1,
+        1
+      ],
+      "next_week_latency_s": [
+        12.744,
+        13.394,
+        14.155
+      ],
+      "no_fabricated_facts_false": 0,
+      "submitted_no_fabricated_facts_false": 0
+    }
+  },
+  "frozen_merge": "d7c3ff89f6e39f48f41038be781e85e7fdbd0cf1",
+  "docs_only_successor": true
+}
