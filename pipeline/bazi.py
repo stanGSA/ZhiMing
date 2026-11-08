@@ -167,6 +167,7 @@ START_AGE = re.compile(r"(?P<age>\d{1,2})岁(?:起运|交运|上运)")
 # 流月流月丙子: a placeholder already renders the label.
 REPEATED_LABEL = re.compile(r"(流年|流月|流日|日主|大运|年柱|月柱|日柱|时柱)的?\1")
 ASK_GENDER = "排大运需要知道性别（大运顺排还是逆排由性别和年干决定）：请告诉我是男还是女。"
+ASK_FORM_GENDER = "排大运需要性别：请在出生信息表中选择性别，填好后发送“继续”。"
 ASK_PHYSICAL = (
     "按真太阳时修正后的出生时刻跨过了节气，修正钟表口径的大运会和年柱、月柱冲突。"
     "如果同意按物理出生时刻起运，请回复“物理时刻起运”。"
@@ -438,15 +439,17 @@ class Bazi(System):
                 return await self.ask(runner, run, self.birth_form, "birth")
         answer = session.user_messages[-1] if session.user_messages else ""
         gender = state.get("bazi_gender") or session.profile.get("gender")
-        if not gender:
+        bound = getattr(session, "birth_binding", None)
+        if bound:
+            gender = bound["profile"].get("gender")
+        if not gender and not bound:
             stated = stated_gender(text)
             if stated is None and run.needs == "gender":
                 found = gender_evidence(answer)
                 stated = (next(iter(found)), answer.strip()) if len(found) == 1 else None
             if stated is not None:
                 gender = stated[0]
-                state["bazi_gender"] = gender
-                await runner.planned(
+                results, _ = await runner.planned(
                     [
                         (
                             "update_profile",
@@ -454,8 +457,12 @@ class Bazi(System):
                         )
                     ]
                 )
+                if not results[0]["ok"]:
+                    error = results[0]
+                    return failure(session, "tool_error", error.get("code"), error["error"])
+                state["bazi_gender"] = gender
         if kind == "dayun" and not gender:
-            return await self.ask(runner, run, ASK_GENDER, "gender")
+            return await self.ask(runner, run, ASK_FORM_GENDER if bound else ASK_GENDER, "gender")
         if not state.get("bazi_result"):
             arguments = self.arguments(run, session, text, answer)
             if gender and gender in ("male", "female"):
@@ -949,7 +956,8 @@ class Bazi(System):
             if value != dayun["start_solar"]:
                 found.append(f"起运日是{dayun['start_solar']}，正文写成了{value}")
         for match in START_AGE.finditer(text):
-            if int(match["age"]) not in ages:
+            expected = ages if "交运" in match[0] else {dayun["sequence"][0]["start_age"]}
+            if int(match["age"]) not in expected:
                 found.append(f"“{match[0]}”与排出的交运岁数不符")
         return found
 

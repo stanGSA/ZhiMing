@@ -118,7 +118,8 @@ def without_birth(text: str) -> str:
         for index, match in enumerate(dates):
             left = dates[index - 1].end() if index else 0
             prefix = re.split(r"[，,]", part[max(left, match.start() - 24) : match.start()])[-1]
-            suffix = part[match.end() : match.end() + 24]
+            right = dates[index + 1].start() if index + 1 < len(dates) else len(part)
+            suffix = part[match.end() : min(match.end() + 24, right)]
             if re.search(r"出生|生于|生辰|生日", prefix) or re.search(
                 r"出生|生于|生辰|生日", suffix
             ):
@@ -230,18 +231,26 @@ async def bind(system, runner, run):
     index = state.get("question_message_index", 0)
     messages = session.user_messages[index:] if index >= 0 else session.user_messages[-1:]
     stated = next((t for t in map(typed, messages) if t), None)
+    saved_only = False
     lunar = None
     if stated is None and getattr(system, "lunar", False):
         lunar = next((t for t in map(typed_lunar, messages) if t), None)
     if stated is None and lunar is None:
-        return await system.ask(runner, run, system.birth_form, "birth")
+        saved = str(session.profile.get("birth_local_dt") or "")
+        if not saved:
+            return await system.ask(runner, run, system.birth_form, "birth")
+        # The saved date needs no new evidence. Resolve or ask only for its missing place.
+        stated = Typed(saved[:10], saved[11:16] or None, " ".join(messages), False)
+        saved_only = True
     profile = session.profile
     if lunar is not None:
         # The calculator converts the lunar date once the leap month is confirmed; the date is
         # kept with the reading, not saved to the profile as a solar one.
         state["typed_lunar"] = lunar.value
         stated = lunar
-    elif str(profile.get("birth_local_dt") or "") != (inferred_birth(session) or stated.value):
+    elif not saved_only and str(profile.get("birth_local_dt") or "") != (
+        inferred_birth(session) or stated.value
+    ):
         value = inferred_birth(session) or stated.value
         results, _ = await runner.planned(
             [
@@ -278,8 +287,23 @@ async def bind(system, runner, run):
         results, _ = await runner.planned([("resolve_location", {"query": query, **arguments})])
         return await located(system, runner, run, query, results[0])
     wordings = places(stated.message)
+    if not wordings and saved_only and profile.get("birth_place"):
+        wordings = [profile["birth_place"]]
     if run.needs == "birth_place":
         wordings = places(answer) or [answer.strip().rstrip("。.！!")]
+        # A bare city answers the birthplace question. Save that direct evidence so the
+        # location tool can persist the confirmed birth coordinates and refresh the calendar.
+        if len(wordings) == 1 and wordings[0] in answer and not OTHER_PLACE.search(answer):
+            results, _ = await runner.planned(
+                [
+                    (
+                        "update_profile",
+                        {"field": "birth_place", "value": wordings[0], "evidence": answer},
+                    )
+                ]
+            )
+            if not results[0]["ok"]:
+                return await system.ask(runner, run, ASK_PLACE, "birth_place")
     for place in wordings:
         narrowed = hint(stated.message, place)
         for query in variants(place):
