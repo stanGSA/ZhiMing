@@ -75,7 +75,7 @@ async def test_the_degraded_reading_keeps_whole_sentences_and_its_own_pairs(make
     assert outcome.status == "submit_reading", outcome.text
     reading = outcome.data["reading"]
     assert outcome.data["pipeline"]["degraded"] == "keywords"
-    assert "不能决定" in reading["summary"]  # a high-risk question is still answered
+    assert reading["summary"].startswith("不能依据八字作这类重大现实决定。")
     pairs = 0
     for section in reading["sections"]:
         body = section["body"]

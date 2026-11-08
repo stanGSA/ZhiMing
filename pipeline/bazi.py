@@ -184,6 +184,7 @@ SAFETY_FALLBACK = "这类问题牵涉重大的现实决定，请结合专业意�
 MAX_ASKS = 3
 MAX_PERIODS = 48
 BODY_LIMIT = 1200  # common.schemas.Reading: a section body
+SECTION_LIMIT = compose.LIMITS["sections"]
 SECTION_ORDER = ("日主", "四柱", "大运", "流年", "流月", "流日", "流期与原局", "约定")
 
 
@@ -248,7 +249,7 @@ def local(instant: str, tz: str) -> datetime:
 def local_day(instant: str, tz: str, *, end: bool = False) -> date:
     """The local date of an instant; an exclusive end at midnight belongs to the day before."""
     moment = local(instant, tz)
-    if end and (moment.hour, moment.minute, moment.second) == (0, 0, 0):
+    if end and (moment.hour, moment.minute, moment.second, moment.microsecond) == (0, 0, 0, 0):
         return (moment - timedelta(seconds=1)).date()
     return moment.date()
 
@@ -286,6 +287,48 @@ def relevant_keywords(keywords, text: str) -> list[str]:
             continue
         out.append(keyword)
     return out
+
+
+def keyword_sections(rows: list[tuple[str, str, str]]) -> tuple[list[dict], int]:
+    """Keep category boundaries when they fit; otherwise share sections before omitting facts.
+
+    Each row is (category, whole sentence, reference). The schema caps both body length and
+    section count, so a tiny day-master section must not crowd out the final flow relations.
+    Return the number omitted as well, including any single sentence too long to fit.
+    """
+
+    def pack(compact: bool) -> list[dict]:
+        sections = []
+        body, labels, refs = "", [], []
+
+        def flush():
+            sections.append({"title": "、".join(labels), "body": body, "ref_ids": refs})
+
+        for label, sentence, ref in rows:
+            if len(sentence) > BODY_LIMIT:
+                continue
+            separator = "\n" if labels and label != labels[-1] else ""
+            if body and (
+                len(body) + len(separator) + len(sentence) > BODY_LIMIT
+                or (not compact and label != labels[-1])
+            ):
+                flush()
+                body, labels, refs = "", [], []
+                separator = ""
+            body += separator + sentence
+            if label not in labels:
+                labels.append(label)
+            refs.append(ref)
+        if body:
+            flush()
+        return sections
+
+    sections = pack(compact=False)
+    if len(sections) > SECTION_LIMIT:
+        sections = pack(compact=True)
+    sections = sections[:SECTION_LIMIT]
+    omitted = len(rows) - sum(len(section["ref_ids"]) for section in sections)
+    return sections, omitted
 
 
 def merged_spans(periods: list[dict]) -> dict[tuple[str, str, str], dict]:
@@ -1385,13 +1428,8 @@ class Bazi(System):
         for fact in facts:
             if fact.label != "约定":
                 groups.setdefault(fact.label, []).append(fact)
-        sections = []
+        rows = []
         for label, group in groups.items():
-            if not group:
-                continue
-            # Whole sentences only (r2: the last section was cut mid-word at 1200 characters);
-            # a group too long for one section continues in the next, up to six sections.
-            body, refs = "", []
             for fact in group:
                 keywords = "、".join(
                     relevant_keywords(meanings.get(fact.ref, {}).get("keywords"), fact.text)[:3]
@@ -1399,30 +1437,23 @@ class Bazi(System):
                 sentence = (
                     f"{fact.text}，常和{keywords}联系在一起。" if keywords else f"{fact.text}。"
                 )
-                if body and len(body) + len(sentence) > BODY_LIMIT:
-                    sections.append({"title": label, "body": body, "ref_ids": refs})
-                    body, refs = "", []
-                if len(sentence) <= BODY_LIMIT:
-                    body += sentence
-                    refs.append(fact.alias)
-            if body:
-                sections.append({"title": label, "body": body, "ref_ids": refs})
-        sections = sections[:6]
+                rows.append((label, sentence, fact.alias))
+        sections, omitted = keyword_sections(rows)
         if HIGH_RISK.search(risk_text):
             # The question asks for a real decision: the summary answers it before the facts.
-            summary = (
-                f"这是{what}。八字只能作反思参考，不能决定这类现实中的重大决定；"
-                "下面列出各项依据和一般说法。"
-            )
+            summary = f"不能依据八字作这类重大现实决定。以下是{what}，只能作反思参考。"
         else:
             summary = f"这是{what}。下面先列出各项依据和一般说法，请当作提示参考。"
+        advice = ["当作提示：对照自己的安排，选一两件事多留意。"]
+        if omitted:
+            advice.append(f"篇幅有限：另有{omitted}项依据未在正文展开，已保留在本次计算记录中。")
         args = {
             "question_type": question_type,
             "systems_used": ["bazi"],
             "summary": summary[:200],
             "sections": sections,
             "evidence": evidence,
-            "advice": ["当作提示：对照自己的安排，选一两件事多留意。"],
+            "advice": advice,
             "closing": "",
             "confidence": {"level": "low", "reason": "这次只给出了各项的一般说法。"},
             "safety": safety,
