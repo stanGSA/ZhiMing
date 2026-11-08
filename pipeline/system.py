@@ -60,6 +60,11 @@ class System:
         section cites), checked with problems() before submission."""
         return []
 
+    def reading_quotes(self, args: dict, facts, session) -> dict[str, list[str]]:
+        """problem → the sentences behind a reading_problems() problem, quoted in the repair
+        request like the sentences runner.triggering finds for problems()."""
+        return {}
+
     def complete(self, args: dict, session) -> None:
         """Add what code writes into every reading of this system (after rendering)."""
 

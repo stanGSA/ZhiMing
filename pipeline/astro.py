@@ -682,8 +682,30 @@ class Astro(System):
                             f"摘要第一句写成了“{match[0]}”，这次看的是{transit['start']}至"
                             f"{transit['end']}；按用户说的时间写"
                         )
+        found += list(dict.fromkeys(p for p, _ in self.section_findings(args, facts, session)))
+        return found
+
+    def reading_quotes(self, args, facts, session) -> dict[str, list[str]]:
+        """problem → the sentences that raised it, for the repair request (r3: both section
+        degradations had no quote, and both repairs kept the misplaced sentence)."""
+        quotes: dict[str, list[str]] = {}
+        for problem, sentence in self.section_findings(args, facts, session):
+            if sentence not in quotes.setdefault(problem, []):
+                quotes[problem].append(sentence)
+        return quotes
+
+    def section_findings(self, args, facts, session) -> list[tuple[str, str]]:
+        """(problem, the sentence that states it) for transits written outside their section's
+        part of the month. Only a single month's range is checked."""
+        state = session.state
+        transit = state.get("transit_result") or {}
+        if state.get("astro_question_type") != "timing" or not transit:
+            return []
+        start, end = date.fromisoformat(transit["start"]), date.fromisoformat(transit["end"])
         if start.year != end.year or start.month != end.month:
-            return found
+            return []
+        found = []
+        month = transit["start"][5:7].lstrip("0")
         dated = {}
         for fact in facts:
             if fact.label != "行运相位":
@@ -717,20 +739,23 @@ class Astro(System):
             # six degradations from such lists, none from a section's own text).
             written = f"{title}\n{section.get('body') or ''}"
             claims = []
-            for clause in re.split(r"[，,。；;！!？?\n]", written):
-                assertions = list(aspect_assertions(clause))
-                claims.extend(
-                    (source, target, aspect, dates)
-                    for (position, source, target, aspect), dates in bound_dates(clause, assertions)
-                    if relation_kind(clause, position) != "本命"
-                )
+            for sentence in re.split(r"(?<=[。！？!?；;])|\n", written):
+                for clause in re.split(r"[，,。；;！!？?]", sentence):
+                    assertions = list(aspect_assertions(clause))
+                    claims.extend(
+                        (source, target, aspect, dates, sentence.strip())
+                        for (position, source, target, aspect), dates in bound_dates(
+                            clause, assertions
+                        )
+                        if relation_kind(clause, position) != "本命"
+                    )
             # Handwritten relations must be checked even if the writer omitted 【引用】.
             cited = {
                 alias: event
                 for alias, event in dated.items()
                 if alias in section.get("ref_ids", [])
             }
-            for source, target, aspect, dates in claims:
+            for source, target, aspect, dates, sentence in claims:
                 matching = {
                     alias: event
                     for alias, event in dated.items()
@@ -745,8 +770,12 @@ class Astro(System):
                     day = int(event["exact_date"][8:10])
                     if not low <= day <= high:
                         found.append(
-                            f"“{title}”这一层引用了{transit['start'][5:7].lstrip('0')}月{day}日精确的"
-                            f"相位{alias}，不在这一段里；按事实表的“时段”分段"
+                            (
+                                f"“{title}”这一层引用了{month}月{day}日精确的相位{alias}，"
+                                f"不在这一段里（它属于{month}月{part_of_month(day)}）；"
+                                "把写这个相位的句子移到对应时段的那一层，或改这一层的标题",
+                                sentence,
+                            )
                         )
         return found
 

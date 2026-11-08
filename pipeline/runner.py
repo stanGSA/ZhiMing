@@ -249,7 +249,7 @@ class PipelineRunner:
         draft, format_problems = compose.parse(draft_text, sections_required=not followup)
         if format_problems:
             return {}
-        _, _, texts = reading_args(draft, facts, question_type=question_type, question=risk_text)
+        args, _, texts = reading_args(draft, facts, question_type=question_type, question=risk_text)
         # Sentences per field, so a neighbouring pair never spans two fields.
         fields = [
             [
@@ -282,6 +282,12 @@ class PipelineRunner:
                 found = [pair for pair in pairs if raises(pair, problem)]
             if found:
                 quotes[problem] = found[:MAX_QUOTES]
+        # Problems that need the reading's structure (which section a sentence is in) are
+        # located by the system itself (r3 astro: misplaced transits had no quote).
+        located = system.reading_quotes(args, facts, self.session)
+        for problem in problems:
+            if problem not in quotes and located.get(problem):
+                quotes[problem] = located[problem][:MAX_QUOTES]
         return quotes
 
     def classify(self, draft_text: str, facts, risk_text: str, run: PipelineRun) -> list[str]:
