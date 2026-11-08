@@ -271,3 +271,23 @@ def test_a_lunar_clock_must_follow_the_lunar_date(messages, value, supported):
     from plugins.bazi.tools import stated_lunar
 
     assert stated_lunar(value, messages) is supported
+
+
+async def test_the_agent_loop_keeps_the_lunar_date_rule(runtime):
+    """stated_lunar applies only to the lunar date the pipeline bound; a model's call is not."""
+    from tests.plugins.test_astro_bazi_integration import invoke
+
+    runtime.session.append_user("我农历2023年二月十五早上10点出生在北京，普通月，看看八字")
+    assert (await invoke(runtime, "start_reading", dict(question="我的性格"))).ok
+    place = await invoke(runtime, "resolve_location", dict(query="北京"))
+    arguments = dict(
+        location_id=place.data["location"]["location_id"],
+        calendar="lunar",
+        lunar_date="2023年二月十五 10:00",
+        calendar_confirmed=True,
+        leap_month=False,
+    )
+    refused = await invoke(runtime, "compute_bazi", arguments)
+    assert not refused.ok and "农历日期" in refused.error
+    runtime.session.state["typed_lunar"] = "2023年二月十五 10:00"
+    assert (await invoke(runtime, "compute_bazi", arguments)).ok

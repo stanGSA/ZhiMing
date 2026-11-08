@@ -180,7 +180,12 @@ class BaziPlugin(MeaningPlugin):
             args.lunar_date
             and args.lunar_date not in text
             and args.lunar_date != session.profile.get("lunar_date")
-            and not stated_lunar(args.lunar_date, session.user_messages)
+            and not (
+                # Only a lunar date the pipeline's code read (pipeline/birth.py); the agent loop
+                # keeps the rule that the value is the user's own text.
+                session.state.get("typed_lunar") == args.lunar_date
+                and stated_lunar(args.lunar_date, session.user_messages)
+            )
         ):
             return "农历日期必须来自用户原话或画像"
         if (
