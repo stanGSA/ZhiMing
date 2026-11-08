@@ -28,6 +28,7 @@ from common.facts import value_claim
 from common.input_evidence import DATE as BIRTH_DATE
 from common.input_evidence import clock_in, gender_evidence
 from common.time_utils import NeedsInput
+from common.validation import HIGH_RISK
 from harness.failures import failure
 from harness.refs import short
 from pipeline import birth, compose, requirements
@@ -182,6 +183,7 @@ SAFETY_FALLBACK = "这类问题牵涉重大的现实决定，请结合专业意�
 # place, its clock and an overseas solar-time choice before the chart can be computed.
 MAX_ASKS = 3
 MAX_PERIODS = 48
+BODY_LIMIT = 1200  # common.schemas.Reading: a section body
 SECTION_ORDER = ("日主", "四柱", "大运", "流年", "流月", "流日", "流期与原局", "约定")
 
 
@@ -254,6 +256,36 @@ def local_day(instant: str, tz: str, *, end: bool = False) -> date:
 def span_text(period: dict, tz: str) -> str:
     start, end = local(period["start_utc"], tz), local(period["end_utc"], tz)
     return f"{start.year}年{start.month}月{start.day}日{start:%H:%M}至{end.year}年{end.month}月{end.day}日{end:%H:%M}"
+
+
+def short_span(period: dict, tz: str, range_start: str | None) -> str:
+    """“12月7日至12月31日”: local dates, the end inclusive, years only when another year."""
+    first = local_day(period["start_utc"], tz)
+    last = local_day(period["end_utc"], tz, end=True)
+    year = int(range_start[:4]) if range_start else first.year
+
+    def day(value: date) -> str:
+        return (
+            f"{value.month}月{value.day}日"
+            if value.year == year
+            else f"{value.year}年{value.month}月{value.day}日"
+        )
+
+    return day(first) if first == last else f"{day(first)}至{day(last)}"
+
+
+def relevant_keywords(keywords, text: str) -> list[str]:
+    """Keywords that name a specific pair or group (甲己合, 申子辰) only when the fact is that
+    pair: the knowledge base lists every pair of a relation, and the first ones are not this
+    fact's (bazi pilot r2: 丙辛合 described as 甲己合)."""
+    marks = set(STEMS + BRANCHES)
+    out = []
+    for keyword in chinese(keywords):
+        named = [c for c in keyword if c in marks]
+        if len(named) >= 2 and not set(named) <= set(text):
+            continue
+        out.append(keyword)
+    return out
 
 
 def merged_spans(periods: list[dict]) -> dict[tuple[str, str, str], dict]:
@@ -768,6 +800,9 @@ class Bazi(System):
                     FLOW_ZH[key],
                     f"{FLOW_ZH[key]}{gz}（十神{god}；{when}）",
                 )
+                # Relations repeat their flow pillar's span: dates only, so a section citing
+                # many stays within the 1200-character limit (bazi pilot r2, investment #1).
+                dates = short_span(spans[(key, gz, item["start_utc"])], tz, period.get("start"))
                 for relation in item["relations"][key]:
                     kind = relation["type"]
                     where = relation.get("natal_pillar", relation.get("branches"))
@@ -775,10 +810,12 @@ class Bazi(System):
                     if "natal_pillar" in relation:
                         text = (
                             f"{FLOW_ZH[key]}{gz}与本命{PILLAR_ZH[where]}"
-                            f"{relation['natal_ganzhi']}{kind}（{when}）"
+                            f"{relation['natal_ganzhi']}{kind}（{dates}）"
                         )
                     else:
-                        text = f"{FLOW_ZH[key]}{gz}地支{gz[1]}与原局地支构成{where}{kind}（{when}）"
+                        text = (
+                            f"{FLOW_ZH[key]}{gz}地支{gz[1]}与原局地支构成{where}{kind}（{dates}）"
+                        )
                     out[fact] = ("流期与原局", text)
         return out
 
@@ -816,7 +853,7 @@ class Bazi(System):
             label, text = texts[item["fact"]]
             alias = short(item["ref_id"], session)
             meaning = item.get("meaning") or {}
-            keywords = "、".join(chinese(meaning.get("keywords"))[:6])
+            keywords = "、".join(relevant_keywords(meaning.get("keywords"), text)[:6])
             general = shorten(CAVEAT.sub("", meaning.get("text") or ""), 140)
             line = (
                 f"{alias}｜{label}｜{text}｜关键词：{keywords or '无'}｜一般含义：{general or '无'}"
@@ -1194,12 +1231,13 @@ class Bazi(System):
         a section title's time must lie in the range and match the flow periods it cites."""
         state = session.state
         period = state.get("bazi_period_result") or {}
+        length = self.length_problems(args)
         if state.get("bazi_question_type") != "timing" or not period or not session.calendar_anchor:
-            return []
+            return length
         start, end = date.fromisoformat(period["start"]), date.fromisoformat(period["end"])
         today = date.fromisoformat(session.calendar_anchor)
         first = re.split(r"[。！？!?]", args.get("summary") or "")[0]
-        found = []
+        found = list(length)
         for clause in re.split(r"[，,；;：:]", first):
             if COMPARED.search(clause):
                 continue
@@ -1211,6 +1249,22 @@ class Bazi(System):
                         f"{period['end']}；按用户说的时间写"
                     )
         found += list(dict.fromkeys(p for p, _ in self.section_findings(args, facts, session)))
+        return found
+
+    @staticmethod
+    def length_problems(args) -> list[str]:
+        """A body within 1200 characters as written can exceed it once its numbers expand into
+        facts with dates (bazi pilot r2: 24 numbers, 396 characters written, about 1400 after;
+        the submission's schema error twice, then a degraded reading). Said before submission,
+        with what to do."""
+        found = []
+        for index, section in enumerate(args.get("sections", []), 1):
+            body = section.get("body") or ""
+            if len(body) > BODY_LIMIT:
+                found.append(
+                    f"第{index}层正文的编号展开成事实后有{len(body)}字，超过{BODY_LIMIT}字的上限："
+                    "每个编号会展开成带日期的整句，把这一层拆成两层，或少引几个编号"
+                )
         return found
 
     def reading_quotes(self, args, facts, session) -> dict[str, list[str]]:
@@ -1335,24 +1389,38 @@ class Bazi(System):
         for label, group in groups.items():
             if not group:
                 continue
-            sentences = []
+            # Whole sentences only (r2: the last section was cut mid-word at 1200 characters);
+            # a group too long for one section continues in the next, up to six sections.
+            body, refs = "", []
             for fact in group:
-                keywords = "、".join(chinese(meanings.get(fact.ref, {}).get("keywords"))[:3])
-                sentences.append(
+                keywords = "、".join(
+                    relevant_keywords(meanings.get(fact.ref, {}).get("keywords"), fact.text)[:3]
+                )
+                sentence = (
                     f"{fact.text}，常和{keywords}联系在一起。" if keywords else f"{fact.text}。"
                 )
-            sections.append(
-                {
-                    "title": label,
-                    "body": "".join(sentences)[:1200],
-                    "ref_ids": [f.alias for f in group],
-                }
+                if body and len(body) + len(sentence) > BODY_LIMIT:
+                    sections.append({"title": label, "body": body, "ref_ids": refs})
+                    body, refs = "", []
+                if len(sentence) <= BODY_LIMIT:
+                    body += sentence
+                    refs.append(fact.alias)
+            if body:
+                sections.append({"title": label, "body": body, "ref_ids": refs})
+        sections = sections[:6]
+        if HIGH_RISK.search(risk_text):
+            # The question asks for a real decision: the summary answers it before the facts.
+            summary = (
+                f"这是{what}。八字只能作反思参考，不能决定这类现实中的重大决定；"
+                "下面列出各项依据和一般说法。"
             )
+        else:
+            summary = f"这是{what}。下面先列出各项依据和一般说法，请当作提示参考。"
         args = {
             "question_type": question_type,
             "systems_used": ["bazi"],
-            "summary": f"这是{what}。下面先列出各项依据和一般说法，请当作提示参考。"[:200],
-            "sections": sections[:6],
+            "summary": summary[:200],
+            "sections": sections,
             "evidence": evidence,
             "advice": ["当作提示：对照自己的安排，选一两件事多留意。"],
             "closing": "",
