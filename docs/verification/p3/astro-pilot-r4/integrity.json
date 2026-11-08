@@ -1,0 +1,196 @@
+{
+  "status": "verified",
+  "source_commit": "dfbc2dba01335b571f41afa207d07e5296d5c7b9",
+  "source_fingerprint": "1b96414d8332a4c3388150b99d6992d94117296a13030fe0f99ba1dc0a5ff53c",
+  "source_context": "PR #58 head; isolated worktree; PR not merged by this run",
+  "main_workspace_config_sha256": "d20f8ebd922f11bad6cda4b850ac66d17fcb50d0a656dd7800e89671cf243a24",
+  "main_workspace_config_unchanged": true,
+  "config_sha256": "248e6db07c2c5d82240d20beaa32bfe55a6d31301ca2d3f64a9b659dd57acb9c",
+  "original_config_sha256": "909824cf6261c4d0b65b1a5334d5f4b7f8ad111140def050e3341cfa6f6a12ad",
+  "config_restored": true,
+  "experiment_config_unchanged": true,
+  "total_rows": 36,
+  "all_groups_same_source_hashes": true,
+  "source_file_count": 179,
+  "nonconfig_file_count": 178,
+  "nonconfig_files_match_git_commit": true,
+  "raw_report_hashes_verified": true,
+  "trace_files_present": true,
+  "identical_pair_keys": true,
+  "all_results_scored": true,
+  "scored_rows": 36,
+  "groups": {
+    "Astro-single": {
+      "run_id": "20261108T102617-c9e13f6a",
+      "rows": 18,
+      "statuses": {
+        "submit_reading": 11,
+        "ask_user": 3,
+        "retry_limit": 4
+      },
+      "statistics": {
+        "run_id": "20261108T102617-c9e13f6a",
+        "mode": "single",
+        "model": "deepseek-v4.1-flash",
+        "rubric_version": "v2-2026-10-24",
+        "cases": 18,
+        "task_success": 11,
+        "first_try_clean": 8,
+        "submitted": 11,
+        "quality_scored": 18,
+        "quality_unscored": 0,
+        "quality": 11,
+        "submitted_quality": 9,
+        "task_and_quality": 9,
+        "repaired": 0,
+        "degraded": 0,
+        "degraded_rate": 0.0,
+        "no_symbol": 0,
+        "no_symbol_rate": 0.0,
+        "degraded_without_no_symbol": 0,
+        "degraded_without_no_symbol_rate": 0.0,
+        "clean_success": 6,
+        "strict_v1": 4,
+        "tool_errors": 26,
+        "model_calls": 112,
+        "median_s": 55.34,
+        "p95_s": 210.154,
+        "input_tokens": 967776,
+        "output_tokens": 66354,
+        "cache_rate": 0.6874979334060775,
+        "categories": [
+          [
+            "E 事实与计算不符",
+            17,
+            7,
+            4
+          ],
+          [
+            "I 表达策略",
+            4,
+            2,
+            1
+          ],
+          [
+            "G 释义查询未命中",
+            2,
+            1,
+            0
+          ],
+          [
+            "A 参数不是合法JSON",
+            1,
+            1,
+            0
+          ],
+          [
+            "C 资料来源/地点未确认就计算",
+            1,
+            1,
+            0
+          ],
+          [
+            "D ref_id不属于本次计算",
+            1,
+            1,
+            0
+          ]
+        ],
+        "outcomes": {
+          "结局为 ask_user，未通过：expected_status、expected_tools、saved、systems": 3,
+          "结局为 retry_limit，未通过：expected_status、expected_tools、saved、systems": 3,
+          "结局为 retry_limit，未通过：expected_status、expected_tools、saved、systems、safety_flag": 1
+        },
+        "quality_failures": {
+          "direct_answer": 5,
+          "time_consistent": 4,
+          "supported_conclusion": 6,
+          "no_fabricated_facts": 2
+        }
+      },
+      "scored": 18,
+      "submitted_quality": 9,
+      "max_model_calls": 8,
+      "requested_model": "deepseek-v4.1-flash",
+      "judge_model": "deepseek-v4.1-flash",
+      "returned_models": [
+        "deepseek-v4.1-flash"
+      ],
+      "investment_latency_s": [
+        210.154,
+        76.59,
+        202.69
+      ],
+      "clarification_asks": [
+        null,
+        null,
+        null
+      ],
+      "no_fabricated_facts_false": 2,
+      "submitted_no_fabricated_facts_false": 2
+    },
+    "Astro-pipeline": {
+      "run_id": "20261108T105023-5f60c847",
+      "rows": 18,
+      "statuses": {
+        "submit_reading": 18
+      },
+      "statistics": {
+        "run_id": "20261108T105023-5f60c847",
+        "mode": "pipeline",
+        "model": "deepseek-v4.1-flash",
+        "rubric_version": "v2-2026-10-24",
+        "cases": 18,
+        "task_success": 18,
+        "first_try_clean": 18,
+        "submitted": 18,
+        "quality_scored": 18,
+        "quality_unscored": 0,
+        "quality": 17,
+        "submitted_quality": 17,
+        "task_and_quality": 17,
+        "repaired": 3,
+        "degraded": 0,
+        "degraded_rate": 0.0,
+        "no_symbol": 0,
+        "no_symbol_rate": 0.0,
+        "degraded_without_no_symbol": 0,
+        "degraded_without_no_symbol_rate": 0.0,
+        "clean_success": 15,
+        "strict_v1": 17,
+        "tool_errors": 0,
+        "model_calls": 21,
+        "median_s": 16.8315,
+        "p95_s": 35.258,
+        "input_tokens": 74502,
+        "output_tokens": 15488,
+        "cache_rate": 0.5771925585890312,
+        "categories": [],
+        "outcomes": {},
+        "quality_failures": {
+          "supported_conclusion": 1
+        }
+      },
+      "scored": 18,
+      "submitted_quality": 17,
+      "max_model_calls": 2,
+      "requested_model": "deepseek-v4.1-flash",
+      "judge_model": "deepseek-v4.1-flash",
+      "returned_models": [
+        "deepseek-v4.1-flash"
+      ],
+      "investment_latency_s": [
+        30.665,
+        35.258,
+        31.371
+      ],
+      "clarification_asks": [
+        1,
+        1,
+        1
+      ],
+      "no_fabricated_facts_false": 0,
+      "submitted_no_fabricated_facts_false": 0
+    }
+  }
+}
