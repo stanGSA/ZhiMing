@@ -3,7 +3,7 @@ status: draft_needs_review
 scope: >-
   八字流水线（根因整改计划 P3，负责人 2026-11-07 决定照 P2 组织）的调参集：当前 single 与 pipeline 用同一批题、
   同一 rubric v2、同一评委、各3次重复比较。题型覆盖原局性格、大运概览、下个月流月、海外出生须确认真太阳时
-  （追问一次）、消息里用文字给出生资料（不预置画像，由代码读日期并解析地名）、高风险投资。只用于 P3 期间的
+  （追问一次）且问下个月（按负责人 2026-11-08 的口径默认出生地时区并注明）、消息里用文字给出生资料（不预置画像，由代码读日期并解析地名）、高风险投资。只用于 P3 期间的
   对照与调整，最终验收用 bazi_final.yaml。跑法：
   python -m scripts.live_week23 --dataset evals/cases/bazi_pilot.yaml --judge pro --repeats 3 --mode single。
 cases:
@@ -23,10 +23,10 @@ cases:
   tools: [start_reading, compute_bazi, compute_bazi_period, submit_reading]
   systems: [bazi]
 - id: bazi_pilot_overseas_solar
-  question: 从八字看，我适合什么样的工作方式？
+  question: 从八字看，下个月工作上要注意什么？
   clarification: 不用真太阳时，按固定UTC+8。
   profile: {birth_local_dt: "1997-06-03 18:20", tz: America/Los_Angeles, lat: 34.05, lon: -118.24, birth_place: 洛杉矶, time_known: true, gender: female}
-  tools: [start_reading, compute_bazi, submit_reading]
+  tools: [start_reading, compute_bazi, compute_bazi_period, submit_reading]
   systems: [bazi]
 - id: bazi_pilot_typed_birth
   question: 我是女生，1995年4月28日早上7点15分出生在深圳，用八字看看我今年下半年的感情运。

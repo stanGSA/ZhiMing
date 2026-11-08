@@ -27,6 +27,7 @@ from zoneinfo import ZoneInfo
 from common.facts import value_claim
 from common.input_evidence import DATE as BIRTH_DATE
 from common.input_evidence import clock_in, gender_evidence
+from common.time_utils import NeedsInput
 from harness.failures import failure
 from harness.refs import short
 from pipeline import birth, compose, requirements
@@ -472,6 +473,14 @@ class Bazi(System):
         start, end = found
         if (date.fromisoformat(end) - date.fromisoformat(start)).days >= 3660:
             return await self.ask(runner, run, requirements.TOO_LONG_BAZI, "range")
+        try:
+            period = requirements.period_choice(session, state["bazi_result"], start, end)
+        except NeedsInput as exc:
+            return await self.ask(runner, run, exc.question, "timezone")
+        # compute_bazi_period reads the consultation timezone from here when none is passed
+        # (plugins.context.period_timezone), exactly as compute_transits does for astro.
+        state["timeframe_tz"] = period.tz
+        state["timeframe_default"] = period.defaulted
         arguments = {
             "bazi_id": state["bazi_id"],
             "start": start,
@@ -1051,6 +1060,30 @@ class Bazi(System):
 
     # ---- what code writes ----------------------------------------------------------------
 
+    def note(self, session) -> str:
+        """Which clock the flow periods are dated in, when code chose the birth place's."""
+        state = session.state
+        if not state.get("timeframe_default"):
+            return ""
+        period = state.get("bazi_period_result") or {}
+        binding = getattr(session, "birth_binding", None) or {}
+        place = (binding.get("location") or {}).get("name") or session.profile.get("birth_place")
+        return requirements.Period(
+            period.get("start", ""), period.get("end", ""), period.get("tz", ""), True
+        ).note(place)
+
+    def complete(self, args, session):
+        """Owner, 2026-11-08: an overseas birth without a stated residence is dated in the birth
+        place's timezone, and the reading says so (as astro_timing, 2026-11-07)."""
+        note = self.note(session)
+        if not note:
+            return
+        closing = args.get("closing") or ""
+        room = 200 - len(note) - 1
+        if len(closing) > room:
+            closing = closing[: max(0, room - 1)] + "…" if room > 1 else ""
+        args["closing"] = f"{closing}\n{note}" if closing else note
+
     def degraded(self, session, facts, question_type, risk_text, followup, *, safety_only):
         state = session.state
         period = state.get("bazi_period_result") or {}
@@ -1073,6 +1106,7 @@ class Bazi(System):
                 "confidence": {"level": "low", "reason": "这次没有给出八字解读。"},
                 "safety": safety if safety["flag"] else {"flag": True, "note": SAFETY_FALLBACK},
             }
+            self.complete(args, session)
             return args
         meanings = {}
         for key in ("bazi_result", "bazi_period_result"):
@@ -1099,7 +1133,7 @@ class Bazi(System):
                     "ref_ids": [f.alias for f in group],
                 }
             )
-        return {
+        args = {
             "question_type": question_type,
             "systems_used": ["bazi"],
             "summary": f"这是{what}。下面先列出各项依据和一般说法，请当作提示参考。"[:200],
@@ -1110,3 +1144,5 @@ class Bazi(System):
             "confidence": {"level": "low", "reason": "这次只给出了各项的一般说法。"},
             "safety": safety,
         }
+        self.complete(args, session)
+        return args

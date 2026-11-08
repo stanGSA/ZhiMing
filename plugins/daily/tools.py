@@ -15,6 +15,7 @@ from pathlib import Path
 
 from pydantic import Field
 
+from common.input_evidence import solar_time_choice
 from common.time_utils import NeedsInput
 from harness.models import StrictInput, ToolResult
 from harness.registry import Tool
@@ -69,6 +70,10 @@ def consultation_mention(text: str, start: int, end: int, *, explicit: bool) -> 
         or DATE_REQUEST.search(after)
         or (explicit and re.search(r"咨询|运势", before))
     )
+
+
+def tz_overseas(tz: str | None) -> bool:
+    return bool(tz) and tz not in ("Asia/Shanghai", "Asia/Urumqi", "Etc/GMT-8")
 
 
 class InvalidDate(ValueError):
@@ -253,6 +258,12 @@ class DailyPlugin:
         tz = birth["tz"]
         overseas = tz not in ("Asia/Shanghai", "Asia/Urumqi", "Etc/GMT-8")
         solar = session.profile.get("true_solar_time")
+        if overseas:
+            # The choice the user states for this question, read as compute_bazi reads it.
+            for message in session.user_messages[session.state.get("question_message_index", 0) :]:
+                choice = solar_time_choice(message)
+                if choice is not None:
+                    solar = choice
         if overseas and solar is None:
             raise NeedsInput(
                 "confirm_bazi_clock",
@@ -311,6 +322,13 @@ class DailyPlugin:
             result["cache_reused"] = False
             if cached is not None:
                 result["recomputed_after_profile_change"] = True
+        if bazi_inputs["true_solar_time"] != session.profile.get("true_solar_time") and (
+            tz_overseas(birth["tz"])
+        ):
+            # Freeze the choice the calculation used, as compute_bazi does.
+            value = bazi_inputs["true_solar_time"]
+            self.store.update_derived_profile(session.user_id, "true_solar_time", value)
+            session.profile = {**session.profile, "true_solar_time": value}
         state = session.state
         signals = [Signal.model_validate(s) for s in result["signals"]]
         old = {s["ref_id"] for s in state["signals"]}

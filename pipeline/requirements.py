@@ -55,9 +55,10 @@ REQUIREMENTS = {
     ("bazi", "timing"): dict(
         required=("同原局", "时间范围（流月、流日 ≤ 366 天，流年 ≤ 3660 天）"),
         confirm=(
-            "区间时区：说明了就用；北京时间出生默认北京时间；其余追问（不沿用星盘的出生地默认）",
+            "区间时区：说明了现居地或时区就用它；海外出生且未说明现居地时默认出生地时区并注明"
+            "（负责人 2026-11-08，同 astro）",
         ),
-        where="asked_range（时间范围）；compute_bazi_period 的 NeedsInput（区间时区）",
+        where="asked_range（时间范围）；period_choice（区间时区）；compute_bazi_period 的 NeedsInput",
     ),
     ("astro", "timing"): dict(
         required=("出生日期", "出生时间（未知时须说明）", "出生地点", "时间范围（≤ 3660 天）"),
@@ -301,7 +302,7 @@ def period_choice(session, chart: dict, start: str, end: str) -> Period:
     index = session.state.get("question_message_index", 0)
     texts = session.user_messages[index:] if index >= 0 else session.user_messages[-1:]
     stated = any(
-        RESIDENCE.search(strip_birth_note(text))
+        RESIDENCE.search(SOLAR_CHOICE.sub("", strip_birth_note(text)))
         or consultation_timezone_evidence(text, session, birth_tz)
         for text in texts
     )
@@ -314,6 +315,12 @@ def period_choice(session, chart: dict, start: str, end: str) -> Period:
 
 
 BIRTH_NOTE = re.compile(r"\n*我在出生信息表中填写的资料：[^\n]*")
+# A bazi solar-time choice (“不用真太阳时，按固定UTC+8”) is about the birth clock, not where the
+# user lives: it is not a stated residence (bazi pilot, overseas birth).
+SOLAR_CHOICE = re.compile(
+    r"(?:不(?:要)?(?:使用|采用|用|按)|关闭|不开启|无需|使用|采用|启用|开启|按|用)\s*真太阳时"
+    r"|(?:按)?\s*固定\s*UTC\s*\+\s*8"
+)
 
 
 def strip_birth_note(text: str) -> str:

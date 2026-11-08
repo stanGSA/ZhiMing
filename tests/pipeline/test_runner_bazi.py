@@ -255,3 +255,54 @@ async def test_each_evaluation_case_reaches_submission(make, case):
         assert runtime.session.state["bazi_period_result"]["periods"]
     if case.get("clarification"):
         assert result["input"]["true_solar_time"] is ("不用" not in case["clarification"])
+    period = runtime.session.state.get("bazi_period_result")
+    profile = case.get("profile") or {}
+    if period and profile.get("tz", "Asia/Shanghai") != "Asia/Shanghai":
+        # Owner, 2026-11-08: no stated residence, so the birth place's timezone, noted.
+        assert period["tz"] == profile["tz"]
+        assert "日期按出生地" in reading["closing"]
+
+
+# ---- the consultation timezone of a range (owner, 2026-11-08) -------------------------------
+
+
+async def test_overseas_birth_without_residence_uses_the_birth_timezone(make):
+    """An overseas birth without a stated residence: the birth place's timezone, noted."""
+    birth = {**LOS_ANGELES, "true_solar_time": False}
+    runtime, composer, events = make(written, birth=birth)
+    outcome = await runtime.turn(NEXT_MONTH)
+    assert outcome.status == "submit_reading", outcome.text
+    assert "ask_user" not in planned(events)
+    period = runtime.session.state["bazi_period_result"]
+    assert period["tz"] == "America/Los_Angeles"
+    closing = outcome.data["reading"]["closing"]
+    assert "日期按出生地洛杉矶的时区（America/Los_Angeles）计算" in closing
+    assert "America/Los_Angeles当地时间" in composer.seen[0][0][1]["content"]
+
+
+async def test_overseas_birth_with_a_stated_residence_is_asked(make):
+    birth = {**LOS_ANGELES, "true_solar_time": False}
+    runtime, composer, events = make(written, birth=birth)
+    first = await runtime.turn("我现在住在多伦多，用八字看看我下个月的事业运。")
+    assert first.status == "ask_user" and "哪个城市的时间" in first.text
+    assert "compute_bazi_period" not in planned(events) and composer.seen == []
+    second = await runtime.turn("按北京时间")
+    assert second.status == "submit_reading", second.text
+    assert runtime.session.state["bazi_period_result"]["tz"] == "Asia/Shanghai"
+    assert "出生地" not in second.data["reading"]["closing"]
+
+
+async def test_a_stated_timezone_is_used_for_the_range(make):
+    birth = {**LOS_ANGELES, "true_solar_time": False}
+    runtime, *_ = make(written, birth=birth)
+    outcome = await runtime.turn("按北京时间，用八字看看我下个月的事业运。")
+    assert outcome.status == "submit_reading", outcome.text
+    assert runtime.session.state["bazi_period_result"]["tz"] == "Asia/Shanghai"
+    assert "出生地" not in outcome.data["reading"]["closing"]
+
+
+async def test_a_birth_in_beijing_time_is_not_noted(make):
+    runtime, *_ = make(written)
+    outcome = await runtime.turn(NEXT_MONTH)
+    assert runtime.session.state["bazi_period_result"]["tz"] == "Asia/Shanghai"
+    assert "出生地" not in outcome.data["reading"]["closing"]
