@@ -1,0 +1,72 @@
+{
+  "scope": "P3 bazi pilot only; no final acceptance run or code-freeze decision",
+  "basis": "Original saved rubric scores; no rescoring. Fabrication split by Codex offline classification, not independent human adjudication.",
+  "p1_four_criteria": {
+    "all_pipeline_answers_submitted": true,
+    "no_pipeline_step_or_budget_failures": true,
+    "max_pipeline_model_calls_le_3": true,
+    "submitted_quality_at_least_same_batch_single": true
+  },
+  "p1_four_criteria_passed": true,
+  "submitted_quality": {
+    "single": {
+      "passed": 7,
+      "submitted": 13
+    },
+    "pipeline": {
+      "passed": 14,
+      "submitted": 18
+    }
+  },
+  "max_pipeline_model_calls": 2,
+  "pipeline_engineering_failures": 0,
+  "pipeline_step_or_budget_or_model_failures": 0,
+  "fabrication_counts": {
+    "Bazi-single": {
+      "submitted": 13,
+      "scored": 13,
+      "unscored": 0,
+      "failures": 5,
+      "fact": 2,
+      "narrative": 5,
+      "undecided": 0,
+      "suggested": {
+        "事实类": 0,
+        "叙述类": 0,
+        "待复核": 0
+      }
+    },
+    "Bazi-pipeline": {
+      "submitted": 18,
+      "scored": 18,
+      "unscored": 0,
+      "failures": 2,
+      "fact": 1,
+      "narrative": 2,
+      "undecided": 0,
+      "suggested": {
+        "事实类": 0,
+        "叙述类": 0,
+        "待复核": 0
+      }
+    }
+  },
+  "fabrication_hard_criteria": {
+    "pipeline_fact_failures_zero": false,
+    "pipeline_narrative_share_no_higher_than_single": true
+  },
+  "aspirational_pipeline_narrative_share_le_10_percent": false,
+  "pipeline_degraded_count": 0,
+  "judge_model": "deepseek-v4.1-flash",
+  "independent_human_calibration_completed": false,
+  "fabrication_disputes": {
+    "fact_counts_include_disputed_original_judge_allegations": true,
+    "pipeline_overseas_solar_repeat_3": "The UTC+8 reply concerns the birth clock. America/Los_Angeles is the agreed consultation timezone. The original fact allegation and score are retained."
+  },
+  "pilot_freeze_assessment": {
+    "recommendation": "do_not_freeze",
+    "known_escape": "typed_birth#1: July is labelled the end of the first half; the current time check accepts the heading.",
+    "false_rejection": "dayun#2: explicit denial of inevitable wealth triggers the shared certainty check; repaired successfully.",
+    "final_acceptance_campaign_run": false
+  }
+}
