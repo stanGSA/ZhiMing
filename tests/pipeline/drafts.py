@@ -82,8 +82,25 @@ def unknown_refs(messages) -> str:
     return good(messages).replace("【收尾】", "【引用】R4 R5\n【收尾】")
 
 
+SHEET_LINE = re.compile(r"^(R\d+)｜", re.M)
+
+
+def cites_facts(messages) -> str:
+    """A reading of any system that cites the first two facts of its sheet by number."""
+    aliases = SHEET_LINE.findall(messages[1]["content"])
+    first, second = aliases[0], aliases[min(1, len(aliases) - 1)]
+    return (
+        "【表态】有条件适合\n【摘要】整体有条件适合，先把前提理清再推进。留意节奏，不要急着下结论。\n"
+        f"【分层】这段时间的节奏\n{{{{{first}}}}}提示你把精力放在长期目标上，先做小范围尝试。\n"
+        f"【引用】{first}\n"
+        f"【分层】你的底色\n{{{{{second}}}}}说明你做事偏稳，往往先观察再行动。\n【引用】{second}\n"
+        "【建议】\n- 先排序：把最重要的两件事写下来。\n【收尾】按自己的节奏来。"
+    )
+
+
 DRAFTS = {
     "good": good,
+    "cites_facts": cites_facts,
     "followup_answer": followup_answer,
     "wrong_orientation": wrong_orientation,
     "swapped_positions": swapped_positions,

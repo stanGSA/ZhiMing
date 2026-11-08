@@ -1,0 +1,29 @@
+version: 1
+status: draft_needs_review
+scope: >-
+  八字流水线（P3）的最终验收集：不参与 P3 期间的提示词或代码调整，只在八字调参结束、代码冻结后对当前 single 与
+  pipeline 各跑一次（3次重复、rubric v2、同一评委），确认调参集上的结果不是对题目过拟合。题型与调参集对应，
+  问法、出生资料和生活面向不同：出生时间未知的原局、大运与交运年份、海外出生须确认真太阳时（追问一次）、
+  消息里用文字给出的农历生日（说明了普通月）加下周时机。
+cases:
+- id: bazi_final_unknown_time
+  unknown: true
+  question: 我不知道自己的出生时间，用八字看看我的性格优势。
+  profile: {birth_local_dt: "1989-10-12", tz: Asia/Shanghai, lat: 30.66, lon: 104.07, birth_place: 成都, time_known: false, gender: female}
+  tools: [start_reading, compute_bazi, submit_reading]
+  systems: [bazi]
+- id: bazi_final_dayun_handover
+  question: 八字里我的首步大运是什么？下一次交运是哪一年？
+  profile: {birth_local_dt: "1992-11-21 13:50", tz: Asia/Shanghai, lat: 23.13, lon: 113.26, birth_place: 广州, time_known: true, gender: female}
+  tools: [start_reading, compute_bazi, submit_reading]
+  systems: [bazi]
+- id: bazi_final_overseas_solar
+  question: 用八字看看，我更适合自己创业还是在公司里发展？
+  clarification: 用真太阳时。
+  profile: {birth_local_dt: "1993-09-05 04:35", tz: America/Toronto, lat: 43.65, lon: -79.38, birth_place: 多伦多, time_known: true, gender: male}
+  tools: [start_reading, compute_bazi, submit_reading]
+  systems: [bazi]
+- id: bazi_final_typed_lunar_week
+  question: 我是男生，农历1987年五月初四晚上8点10分出生在西安，是普通月，用八字看看下周适合谈合作吗？
+  tools: [start_reading, resolve_location, compute_bazi, compute_bazi_period, submit_reading]
+  systems: [bazi]

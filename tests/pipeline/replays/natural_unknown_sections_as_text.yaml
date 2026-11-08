@@ -32,6 +32,9 @@ legacy:
       draft: *unknown
   outcome: submit_reading
 pipeline:
-  # The draft is plain text with markers; no long JSON is written by the model.
+  # A question for two systems is 问道's (P3.5): with astro and bazi both in the pipeline it is
+  # still handed to the agent loop until the multi-system PR. Once moved, the draft is plain
+  # text with markers; no long JSON is written by the model.
+  handled_by: agent_loop
   outcome: submit_reading
   max_model_calls_per_turn: 3

@@ -1,9 +1,15 @@
+import re
 from pathlib import Path
 from typing import Literal
 
 from pydantic import Field
 
-from common.input_evidence import gender_evidence, normalized_gender, solar_time_choice
+from common.input_evidence import (
+    clock_in,
+    gender_evidence,
+    normalized_gender,
+    solar_time_choice,
+)
 from common.time_utils import NeedsInput, date_range
 from harness.models import StrictInput, ToolResult
 from harness.registry import Tool
@@ -62,6 +68,27 @@ class PeriodInput(StrictInput):
         default="primary",
         description="通常用primary并与咨询区间一致；仅大运说明的首运/当前大运历史比较可分别用dayun_first/dayun_current，不改变咨询主区间。",
     )
+
+
+def stated_lunar(value: str, messages: list[str]) -> bool:
+    """A lunar date the user wrote, with the clock they wrote right after it (P3 bazi).
+
+    “农历2023年二月十五早上10点出生” supports “2023年二月十五 10:00”: the date as written,
+    and the exact clock that follows it in the same clause of the same message. A clock in
+    another sentence, an approximate one (大约10点) or another date's is not evidence.
+    """
+    date, _, clock = value.partition(" ")
+    if not clock:
+        return False
+    for message in messages:
+        for match in re.finditer(re.escape(date), message):
+            tail = re.split(r"[。；;\n]", message[match.end() :], maxsplit=1)[0]
+            later = re.search(r"\d{4}[-年/.]", tail)
+            if later:
+                tail = tail[: later.start()]
+            if clock_in(tail) == clock:
+                return True
+    return False
 
 
 class BaziPlugin(MeaningPlugin):
@@ -153,6 +180,7 @@ class BaziPlugin(MeaningPlugin):
             args.lunar_date
             and args.lunar_date not in text
             and args.lunar_date != session.profile.get("lunar_date")
+            and not stated_lunar(args.lunar_date, session.user_messages)
         ):
             return "农历日期必须来自用户原话或画像"
         if (
@@ -165,8 +193,6 @@ class BaziPlugin(MeaningPlugin):
         if args.accept_uncertain and not any(x in text for x in ("候选", "两种", "仍不知道")):
             return "节气当天时辰未知请先追问，不能擅自确认候选"
         if args.calendar == "lunar" and args.leap_month is not None:
-            import re
-
             confirmed = (
                 bool(re.search(r"闰[正冬腊一二三四五六七八九十]+月", text))
                 if args.leap_month

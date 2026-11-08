@@ -1,0 +1,1112 @@
+"""Bazi in the pipeline: the natal chart, the luck cycles and flow periods over a range (plan P3).
+
+Code decides what a calculation needs (pipeline/requirements.py, the bazi rows): the birth data,
+the gender a luck-cycle question needs, the range of a timing question and its granularity.
+What is missing is asked with a templated question that ends the turn; the next message resumes
+the run. The calculators keep their own confirmations (an overseas birth's solar-time choice, a
+Xinjiang birth clock, a lunar leap month, an unknown hour on the day of a solar term): their
+NeedsInput becomes the same kind of question, and the answer is read by the same input_evidence
+functions the tools use. The planned calls are compute_bazi and, for a timing question,
+compute_bazi_period, both through the Guard.
+
+The writer cites the day master, pillars, ten gods, luck cycles and flow periods by number only;
+what it writes by hand is checked against the calculation (P3.4): stem-branch pairs, the day
+master, a ten god named for a pillar, a luck cycle named as the first, current or n-th one, a
+handover year, and a relation between a pillar and the natal chart.
+
+Left with the agent loop: follow-ups to a saved reading, corrections of birth data, techniques the
+calculator does not have (合婚, 紫微, 神煞…) and questions that also name another system.
+"""
+
+from __future__ import annotations
+
+import re
+from datetime import date, datetime
+from zoneinfo import ZoneInfo
+
+from common.facts import value_claim
+from common.input_evidence import DATE as BIRTH_DATE
+from common.input_evidence import clock_in, gender_evidence
+from harness.failures import failure
+from harness.refs import short
+from pipeline import birth, compose, requirements
+from pipeline.astro import BIRTH_MENTION, COMPARED, RELATIVE, chinese, relative_span
+from pipeline.factsheet import CAVEAT, Fact, shorten
+from pipeline.intent import CONTINUE, Intent
+from pipeline.render import safety_for
+from pipeline.state import RESUMABLE, snapshot
+from pipeline.system import System
+from plugins.bazi.calculator import relations, ten_god
+
+BAZI = re.compile(
+    r"八字|四柱|命盘|命局|命理|排盘|日主|日元|十神|大运|流年|流月|起运|交运|首运|"
+    r"喜用神?|五行(?:缺|旺|弱|强|分布|属性)"
+)
+OTHER = re.compile(
+    r"塔罗|牌阵|抽[一二两三]?张|[一二两三单]张牌|星盘|占星|星座|行运|本命盘|上升星座|"
+    r"姓名|名字|五格|解梦|梦见|梦到|做梦|每日运势|今日运势|今天运势"
+)
+# What compute_bazi and compute_bazi_period do not calculate.
+UNSUPPORTED = re.compile(
+    r"合婚|合八字|八字合|配对|两个人|夫妻宫|紫微|斗数|六爻|奇门|梅花|称骨|神煞|胎元|命宫|身宫|"
+    r"纳音五行合|小运|流时|时辰吉凶|择日|改名"
+)
+REFERS_TO_READING = re.compile(
+    r"(?:上一条|上一次|上次|刚才|之前|前面|那次|原来)(?:那个|这个|那次|那条|的)?"
+    r"(?:八字|命盘|解读|记录|分析|结果)|原记录|[这那]段解读|(?:你|刚才)(?:说|提到)的"
+)
+BIRTH_CORRECTION = re.compile(
+    r"(?:出生(?:日期|时间|时刻|地点|资料|信息)|出生信息|出生表单|生辰).{0,16}"
+    r"(?:更正|改成|改为|记错|不准确|不对)|"
+    r"(?:更正|改成|改为|记错|不准确|不对).{0,16}"
+    r"(?:出生(?:日期|时间|时刻|地点|资料|信息)|出生信息|出生表单|生辰)"
+)
+# The gender the user states for themselves (“我是女生”“性别男”); 女朋友 or 男同事 is not one.
+GENDER_STATED = re.compile(
+    r"(?:我是|我为|本人|本人是|性别(?:是|为|：|:)?\s*)(?:一[个名位])?\s*"
+    r"(?P<gender>男|女)(?:性|生|士|孩|的)?(?![朋同友儿婿人方家])"
+)
+LEAP = re.compile(r"闰[正冬腊一二三四五六七八九十]+月")
+REGULAR = re.compile(r"普通月|非闰|不是闰|不闰|regular")
+PHYSICAL = re.compile(r"physical|物理时刻起运")
+UNCERTAIN = re.compile(r"候选|两种|仍不知道")
+STEMS = "甲乙丙丁戊己庚辛壬癸"
+BRANCHES = "子丑寅卯辰巳午未申酉戌亥"
+ELEMENT = dict(zip(STEMS, "木木火火土土金金水水", strict=True))
+# 己 in 自己 is no stem, as plugins/bazi/validation.py reads it.
+STEM = r"(?:[甲乙丙丁戊庚辛壬癸]|(?<!自)己)"
+JIAZI = rf"{STEM}[{BRANCHES}]"
+GANZHI = re.compile(JIAZI)
+TEN_GODS = ("比肩", "劫财", "食神", "伤官", "偏财", "正财", "七杀", "正官", "偏印", "正印")
+TEN_GOD = re.compile("|".join(TEN_GODS))
+PILLAR_ZH = {"year": "年柱", "month": "月柱", "day": "日柱", "time": "时柱"}
+PILLAR_KEY = {"年": "year", "月": "month", "日": "day", "时": "time"}
+FLOW_ZH = {"year": "流年", "month": "流月", "day": "流日"}
+FLOW_KEY = {"流年": "year", "流月": "month", "流日": "day"}
+# Negations that turn a denial back into a statement: “不能说日主不是乙木” states 乙木.
+OUTER = re.compile(
+    r"不能说|不可能|不会|不应|不该|未必|不一定|谈不上|说不上|很难说|难说|不代表|不等于|"
+    r"并不意味|不见得|怎么会|岂"
+)
+# A degree word between the negation and the value (“不完全是”): neither a plain statement
+# nor a plain denial, so it is checked both ways.
+HEDGED = re.compile(r"(?:不|没|并非|并不)(?:完全|全然|一定|绝对|根本|全)是?\s*$")
+CLAUSE_BREAK = "，,。；;！!？?\n"
+# What follows a value in a denied inference: “并不是丁火日主都外向”“不是七杀就一定压力大”.
+INFERENCE = re.compile(
+    r"[木火土金水]?(?:日主|日元|大运|格)?(?:的)?(?:人)?(?:都|就|一定|必然|必定|未必|便)"
+)
+# Words between a pillar and the ten god named for it: “月柱癸巳根本不是七杀”.
+FUNCTION_TAIL = re.compile(
+    r"(?:的|天干|十神|就|也|都|却|其实|确实|并|根本|完全|全然|绝对|是|为|属于|属|当令|当值|"
+    r"透出|带|：|:|即|不|非|而|\s)$"
+)
+# The governing negations common.facts.NEGATED_VALUE reads, found anywhere in the clause.
+NEGATION = re.compile(r"不是|并不是|并非|而非|不再是|不在|并不在|没在|未在")
+RELATION_WORD = (
+    r"天干五合|天干合|天干相冲|天干冲|地支六合|六合|相合|合|地支相冲|地支冲|相冲|冲|"
+    r"地支相刑|相刑|自刑|刑|地支相害|相害|害|地支相破|相破|破"
+)
+RELATION_KINDS = {
+    "合": {"天干合", "地支六合"},
+    "冲": {"天干冲", "地支冲"},
+    "刑": {"地支刑", "自刑"},
+    "害": {"地支害"},
+    "破": {"地支破"},
+}
+NATAL_SIDE = r"(?:本命|原局|命局|出生)?的?(?P<natal>[年月日时])(?:柱|干|支)(?P<ngz>{JIAZI})?"
+RELATION_AFTER = re.compile(
+    rf"(?P<subject>(?:流年|流月|流日|大运)?{JIAZI}|流年|流月|流日)(?:的)?(?:天干|地支)?"
+    rf"(?:与|和|跟|同)"
+    + NATAL_SIDE.format(JIAZI=JIAZI)
+    + rf"(?:之间)?(?P<between>[^，,。；;！!？?\n]{{0,8}}?)(?P<kind>{RELATION_WORD})"
+)
+RELATION_BEFORE = re.compile(
+    rf"(?P<subject>(?:流年|流月|流日|大运)?{JIAZI}|流年|流月|流日)(?P<between>[^，,。；;！!？?\n与和跟同]{{0,6}}?)"
+    rf"(?P<kind>合|冲|刑|害|破)(?:住|动|到|了)?" + NATAL_SIDE.format(JIAZI=JIAZI)
+)
+# “……，与日柱也相合”: a clause that names only the natal side keeps the sentence's subject.
+RELATION_CARRY = re.compile(
+    r"[，,]\s*(?:又|也|还|并且|而且)?(?:与|和|跟|同)"
+    + NATAL_SIDE.format(JIAZI=JIAZI)
+    + rf"(?:之间)?(?P<between>[^，,。；;！!？?\n]{{0,8}}?)(?P<kind>{RELATION_WORD})"
+)
+NATAL_SCOPE = re.compile(r"命局|原局|八字|四柱|命里|命中|命盘")
+ABSENT = re.compile(r"(?:没有|没|无|缺少|缺)\s*$")
+RELATION_DENIED = re.compile(r"不|没|未|并非|无")
+DOUBLE_DENIAL = re.compile(r"不是不|并非不|不会不|没有不|并不是不")
+# A negation may stand between the label and the value; claim() reads it.
+DENIAL = r"(?:(?:根本|完全|并|也|就)?(?:不是|并非|而非|不)(?:完全|全然|一定|绝对)?){0,2}"
+NATAL_PILLAR = re.compile(
+    rf"(?<![流第步])(?:本命|原局|出生)?的?(?P<name>[年月日时])柱\s*{DENIAL}(?:是|为|：|:)?\s*(?P<gz>{JIAZI})"
+)
+DAY_MASTER = re.compile(
+    rf"(?:日主|日元|日干)\s*{DENIAL}(?:是|为|属于|属|：|:)?\s*(?P<stem>{STEM})|"
+    rf"(?P<before>{STEM})[木火土金水]?(?:日主|日元)"
+)
+STEM_ELEMENT = re.compile(rf"(?P<stem>{STEM})(?P<element>[木火土金水])(?![日月年时柱])")
+SUBJECT = re.compile(
+    rf"(?P<label>首步大运|第一步大运|首运|第[一二三四五六七八九十\d]+步大运|当前大运|目前大运|现在的大运|"
+    rf"大运|流年|流月|流日|[年月日时](?:柱|干))?的?(?P<gz>{JIAZI})?(?:天干)?(?:[{STEMS}])?$"
+)
+FIRST_DAYUN = re.compile(
+    rf"(?:首步大运|第一步大运|首运)\s*{DENIAL}(?:是|为|：|:|走)?\s*(?P<gz>{JIAZI})"
+)
+NTH_DAYUN = re.compile(
+    rf"第(?P<n>[一二三四五六七八九十\d]+)步大运\s*{DENIAL}(?:是|为|：|:|走)?\s*(?P<gz>{JIAZI})"
+)
+CURRENT_DAYUN = re.compile(
+    rf"(?:当前|目前|现在|眼下|正在走)的?大运\s*{DENIAL}(?:是|为|：|:|走)?\s*(?P<gz>{JIAZI})|"
+    rf"(?:正在走|现在走|目前走|正走|走到了?)\s*(?P<walking>{JIAZI})大运"
+)
+ANY_DAYUN = re.compile(rf"(?P<gz>{JIAZI})大运|大运(?:是|为|：|:)?\s*(?P<after>{JIAZI})")
+HANDOVER = re.compile(r"(?P<year>\d{4})年(?:前后|左右)?(?:交运|换运|换大运|交大运|进入下一步大运)")
+START_DATE = re.compile(r"(?P<y>\d{4})年(?P<m>\d{1,2})月(?P<d>\d{1,2})日(?:前后)?起运")
+START_AGE = re.compile(r"(?P<age>\d{1,2})岁(?:起运|交运|上运)")
+# 流月流月丙子: a placeholder already renders the label.
+REPEATED_LABEL = re.compile(r"(流年|流月|流日|日主|大运|年柱|月柱|日柱|时柱)的?\1")
+ASK_GENDER = "排大运需要知道性别（大运顺排还是逆排由性别和年干决定）：请告诉我是男还是女。"
+ASK_PHYSICAL = (
+    "按真太阳时修正后的出生时刻跨过了节气，修正钟表口径的大运会和年柱、月柱冲突。"
+    "如果同意按物理出生时刻起运，请回复“物理时刻起运”。"
+)
+# A lunar date's clock must be written right after the date (plugins.bazi.tools.stated_lunar).
+ASK_LUNAR_CLOCK = (
+    "排时柱需要出生时间：请把农历生日和时间连在一起再写一遍，例如“农历2023年二月十五早上10点出生”；"
+    "不知道时间就说“不知道出生时间”。"
+)
+SAFETY_FALLBACK = "这类问题牵涉重大的现实决定，请结合专业意见再做判断。"
+# A run asks at most three times (astro: two): birth data typed into the message may need its
+# place, its clock and an overseas solar-time choice before the chart can be computed.
+MAX_ASKS = 3
+MAX_PERIODS = 48
+SECTION_ORDER = ("日主", "四柱", "大运", "流年", "流月", "流日", "流期与原局", "约定")
+
+
+def number(text: str) -> int:
+    if text.isdigit():
+        return int(text)
+    digits = dict(zip("一二三四五六七八九", range(1, 10), strict=True))
+    if text.startswith("十"):
+        return 10 + digits.get(text[1:], 0)
+    if "十" in text:
+        head, tail = text.split("十", 1)
+        return digits.get(head, 0) * 10 + digits.get(tail, 0)
+    return digits.get(text, 0)
+
+
+def claim(text: str, start: int, end: int) -> str | None:
+    """“asserted”, “denied”, “hedged” or None (a denied inference), for a value at start:end.
+
+    common.facts.value_claim reads the words right before the value; a denial inside an outer
+    negation (不能说……不是, 不可能不是) states the value again, and a degree word between the
+    negation and the value (不完全是) is neither.
+    """
+    head = text[max(0, start - 12) : start]
+    if HEDGED.search(head):
+        return "hedged"
+    kind = value_claim(text, start, end)
+    if kind != "denied":
+        return kind
+    if re.search(r"并不是|不是|并非|而非", head) and INFERENCE.match(text, end):
+        return None  # “并不是丁火日主都外向” denies an inference about day masters
+    clause = max(text.rfind(c, 0, start) for c in CLAUSE_BREAK) + 1
+    before = text[clause:start]
+    negations = list(NEGATION.finditer(before))
+    lead = before[: negations[-1].start()] if negations else before
+    return "asserted" if OUTER.search(lead) else "denied"
+
+
+def reasserted(text: str, end: int, value: str) -> bool:
+    """Whether a value denied before ``end`` is stated again later in the same sentence
+    (“日主不是乙木，但其实是乙木”): the denial does not stand."""
+    stop = min((i for i in (text.find(c, end) for c in "。！？!?\n") if i != -1), default=len(text))
+    for match in re.finditer(re.escape(value), text[end:stop]):
+        start = end + match.start()
+        if claim(text, start, start + len(value)) == "asserted":
+            return True
+    return False
+
+
+def wrong(kind: str | None, actual: bool) -> bool:
+    """Whether a value claim of this kind is wrong for a value that is (not) the actual one."""
+    if kind is None:
+        return False
+    if kind == "hedged":
+        return True
+    return (kind == "asserted") != actual
+
+
+def local(instant: str, tz: str) -> datetime:
+    return datetime.fromisoformat(instant).astimezone(ZoneInfo(tz))
+
+
+def span_text(period: dict, tz: str) -> str:
+    start, end = local(period["start_utc"], tz), local(period["end_utc"], tz)
+    return f"{start.year}年{start.month}月{start.day}日{start:%H:%M}至{end.year}年{end.month}月{end.day}日{end:%H:%M}"
+
+
+def merged_spans(periods: list[dict]) -> dict[tuple[str, str, str], dict]:
+    """(pillar, ganzhi, a period's start) → the span of the run of periods sharing that pillar.
+
+    Flow days are cut at each day; the flow year and month they share run across them, and the
+    fact sheet gives each such run once with its whole span.
+    """
+    out = {}
+    for key in ("year", "month", "day"):
+        run = []
+        for item in [*periods, None]:
+            gz = item["pillars"].get(key) if item else None
+            if run and gz != run[0]["pillars"][key]:
+                span = {"start_utc": run[0]["start_utc"], "end_utc": run[-1]["end_utc"]}
+                for member in run:
+                    out[(key, member["pillars"][key], member["start_utc"])] = span
+                run = []
+            if gz:
+                run.append(item)
+    return out
+
+
+def run_start(periods: list[dict], key: str, start: str) -> str:
+    """The start of the first period in the run of ``key`` that the period at ``start`` is in."""
+    index = next(i for i, p in enumerate(periods) if p["start_utc"] == start)
+    gz = periods[index]["pillars"][key]
+    while index and periods[index - 1]["pillars"].get(key) == gz:
+        index -= 1
+    return periods[index]["start_utc"]
+
+
+def zone_label(tz: str) -> str:
+    return "北京时间" if tz == "Asia/Shanghai" else f"{tz}当地时间"
+
+
+def granularity(start: str, end: str) -> str:
+    """Flow days for a few days, flow months up to a year, flow years beyond."""
+    days = (date.fromisoformat(end) - date.fromisoformat(start)).days + 1
+    return "day" if days <= 10 else "month" if days <= 366 else "year"
+
+
+def stated_gender(text: str) -> tuple[str, str] | None:
+    """(gender, the words stating it) when the user states their own gender exactly once."""
+    found = {(m["gender"], m.group()) for m in GENDER_STATED.finditer(text)}
+    genders = {g for g, _ in found}
+    if len(genders) != 1:
+        return None
+    gender, words = next(iter(found))
+    value = "male" if gender == "男" else "female"
+    return (value, words) if value in gender_evidence(words) else None
+
+
+def lunar_usable(question: str, session) -> bool:
+    """A lunar birth typed into the message, with nothing saved it would replace."""
+    return (
+        not getattr(session, "birth_binding", None)
+        and not session.profile.get("birth_local_dt")
+        and birth.typed_lunar(question) is not None
+    )
+
+
+class Bazi(System):
+    name = "bazi"
+    kept = "八字计算结果"
+    lunar = True  # pipeline.birth binds a lunar birth for bazi
+    birth_form = (
+        "看八字需要出生日期、时间和地点：请在页面上的出生信息表里补全"
+        "（时间不知道可以选未知），填好后发送“继续”。也可以直接告诉我，例如"
+        "“我1990年3月5日早上8点出生在杭州”。"
+    )
+
+    # ---- ① intent ------------------------------------------------------------------------
+
+    def detect(self, runtime, message):
+        from pipeline.astro import typed_birth_usable as solar_usable
+
+        def typed_birth_usable(question, session):
+            return solar_usable(question, session) or lunar_usable(question, session)
+
+        session = runtime.session
+        selected = session.state.get("selected_systems")
+        if selected not in (None, ["bazi"]) or session.pinned_reading_id:
+            return None
+        question = self.question(message)
+        run = runtime.store.unfinished_pipeline_run(session.user_id)
+        if run and run["state"].get("system") == "bazi" and run["stage"] == "awaiting_input":
+            from pipeline.astro import Astro
+
+            if not Astro.answering(session, run):
+                runtime.store.finish_pipeline_run(run["run_id"])
+                run = None
+        if run and run["state"].get("system") == "bazi":
+            if run["stage"] == "awaiting_input":
+                needs = run["state"].get("needs")
+                handed = (
+                    (selected is None and OTHER.search(question))
+                    or (
+                        BIRTH_MENTION.search(question)
+                        and not (needs == "birth" and typed_birth_usable(question, session))
+                        and needs not in ("missing_birth_time", "unknown_time_at_term")
+                    )
+                    or run["state"].get("asks", 0) >= MAX_ASKS
+                    or (
+                        needs == "birth"
+                        and not requirements.birth_ready(session)
+                        and not typed_birth_usable(question, session)
+                    )
+                )
+                if needs in ("missing_birth_time", "unknown_time_at_term"):
+                    from pipeline.astro import clock_answer_changes_birth
+
+                    kept = str(run["state"].get("snapshot", {}).get("typed_lunar") or "")
+                    restated = birth.typed_lunar(question)
+                    if restated is not None:
+                        # The lunar date written again with its clock: the same date only.
+                        handed = handed or restated.date != kept.split(" ")[0]
+                    else:
+                        handed = handed or clock_answer_changes_birth(question, session)
+                if handed:
+                    runtime.store.finish_pipeline_run(run["run_id"])
+                    return None
+                return Intent("bazi", "input", run=run)
+            if run["stage"] in RESUMABLE and (
+                CONTINUE.search(message) or question == run["state"]["question"].strip()
+            ):
+                return Intent("bazi", "resume", run=run)
+        if selected is None and (OTHER.search(question) or not BAZI.search(question)):
+            return None
+        if (
+            UNSUPPORTED.search(question)
+            or REFERS_TO_READING.search(question)
+            or BIRTH_CORRECTION.search(question)
+        ):
+            return None
+        if BIRTH_MENTION.search(question) and not typed_birth_usable(question, session):
+            return None
+        if not requirements.birth_ready(session) and (
+            re.search(BIRTH_DATE, question) or re.search(r"出生|生于", question)
+        ):
+            if not typed_birth_usable(question, session):
+                return None
+        return Intent("bazi", "new")
+
+    def question(self, message):
+        return requirements.strip_birth_note(message).strip() or message
+
+    # ---- ② requirements and ③ compute ----------------------------------------------------
+
+    def text(self, run, session) -> str:
+        index = session.state.get("question_message_index", 0)
+        answers = session.user_messages[index:] if index >= 0 else session.user_messages[-1:]
+        parts = [run.question, *(requirements.strip_birth_note(a) for a in answers)]
+        return " ".join(dict.fromkeys(p.strip() for p in parts if p and p.strip()))
+
+    async def ask(self, runner, run, question: str, needs: str):
+        session = runner.session
+        run.asks += 1
+        run.needs = needs
+        run.asked = question
+        _, terminal = await runner.planned([("ask_user", {"question": question})])
+        run.snapshot = snapshot(session.state)
+        run.save(runner.store, session, "awaiting_input")
+        return terminal or failure(session, "tool_error", "ask_failed", question)
+
+    async def compute(self, runner, run):
+        session = runner.session
+        state = session.state
+        if not (run.reading_id and state.get("active_reading_id") == run.reading_id):
+            results, _ = await runner.planned(
+                [("start_reading", {"question": run.question, "systems": ["bazi"]})]
+            )
+            if not results[0]["ok"]:
+                error = results[0]
+                return failure(session, "tool_error", error.get("code"), error["error"])
+            run.reading_id = session.state["active_reading_id"]
+            state = session.state
+        text = self.text(run, session)
+        ranged = birth.without_birth(text)
+        if not state.get("bazi_question_type"):
+            state["bazi_question_type"] = requirements.bazi_question_type(
+                run.question, ranged, session.calendar_anchor
+            )
+        kind = state["bazi_question_type"]
+        if not requirements.birth_ready(session) and not birth.bound(session):
+            stopped = await birth.bind(self, runner, run)
+            if stopped is not None:
+                return stopped
+            state = session.state
+            if not requirements.birth_ready(session) and not birth.bound(session):
+                return await self.ask(runner, run, self.birth_form, "birth")
+        answer = session.user_messages[-1] if session.user_messages else ""
+        gender = state.get("bazi_gender") or session.profile.get("gender")
+        if not gender:
+            stated = stated_gender(text)
+            if stated is None and run.needs == "gender":
+                found = gender_evidence(answer)
+                stated = (next(iter(found)), answer.strip()) if len(found) == 1 else None
+            if stated is not None:
+                gender = stated[0]
+                state["bazi_gender"] = gender
+                await runner.planned(
+                    [
+                        (
+                            "update_profile",
+                            {"field": "gender", "value": gender, "evidence": stated[1]},
+                        )
+                    ]
+                )
+        if kind == "dayun" and not gender:
+            return await self.ask(runner, run, ASK_GENDER, "gender")
+        if not state.get("bazi_result"):
+            arguments = self.arguments(run, session, text, answer)
+            if gender and gender in ("male", "female"):
+                arguments["gender"] = gender
+            results, _ = await runner.planned([("compute_bazi", arguments)])
+            stopped = await self.checked(runner, run, results[0])
+            if stopped is not None:
+                return stopped
+            state = session.state
+        if kind != "timing" or state.get("bazi_period_result"):
+            return None
+        found = requirements.asked_range(ranged, session.calendar_anchor)
+        if found is None:
+            return await self.ask(runner, run, requirements.UNCLEAR_RANGE, "range")
+        start, end = found
+        if (date.fromisoformat(end) - date.fromisoformat(start)).days >= 3660:
+            return await self.ask(runner, run, requirements.TOO_LONG_BAZI, "range")
+        arguments = {
+            "bazi_id": state["bazi_id"],
+            "start": start,
+            "end": end,
+            "granularity": granularity(start, end),
+        }
+        results, _ = await runner.planned([("compute_bazi_period", arguments)])
+        return await self.checked(runner, run, results[0])
+
+    def arguments(self, run, session, text: str, answer: str) -> dict:
+        """compute_bazi's arguments for what the user answered; the rest comes from the profile."""
+        arguments = {}
+        profile = session.profile
+        if profile.get("time_known") is False or birth.UNKNOWN_TIME.search(text):
+            arguments["time_known"] = False
+        saved = str(profile.get("birth_local_dt") or "")
+        if run.needs in ("missing_birth_time", "unknown_time_at_term"):
+            clock = clock_in(answer)
+            if clock and saved:
+                arguments["birth_local"] = f"{saved[:10]} {clock}"
+                arguments["time_known"] = True
+            elif run.needs == "unknown_time_at_term" and UNCERTAIN.search(answer):
+                arguments["accept_uncertain"] = True
+        elif run.needs == "ambiguous_local_time":
+            fold = re.search(r"fold\s*=\s*([01])", answer)
+            if fold:
+                arguments["fold"] = int(fold[1])
+            elif "回拨前" in answer:
+                arguments["fold"] = 0
+            elif "回拨后" in answer:
+                arguments["fold"] = 1
+        if PHYSICAL.search(text):
+            arguments["dayun_time_basis"] = "physical"
+        lunar = session.state.get("typed_lunar") or (
+            profile.get("lunar_date") if profile.get("calendar_input") == "lunar" else None
+        )
+        if lunar:
+            arguments.update(calendar="lunar", lunar_date=lunar, calendar_confirmed=True)
+            restated = birth.typed_lunar(answer) if run.needs == "missing_birth_time" else None
+            if restated is not None and restated.clock:
+                # The lunar date written again with its clock (ASK_LUNAR_CLOCK).
+                arguments["lunar_date"] = restated.value
+                session.state["typed_lunar"] = restated.value
+            if LEAP.search(text):
+                arguments["leap_month"] = True
+            elif REGULAR.search(text):
+                arguments["leap_month"] = False
+        return arguments
+
+    async def checked(self, runner, run, result: dict):
+        if not result["ok"]:
+            return failure(runner.session, "tool_error", result.get("code"), result["error"])
+        data = result["data"]
+        if data.get("status") == "needs_input":
+            code = data.get("code") or "input"
+            question = ASK_PHYSICAL if code == "confirm_dayun_time_basis" else data["question"]
+            if code == "missing_birth_time" and runner.session.state.get("typed_lunar"):
+                question = ASK_LUNAR_CLOCK
+            return await self.ask(runner, run, question, code)
+        return None
+
+    # ---- ④ fact sheet --------------------------------------------------------------------
+
+    def question_type(self, run, session, followup):
+        kind = session.state.get("bazi_question_type")
+        return "timing" if kind == "timing" else "trait"
+
+    @staticmethod
+    def texts(state) -> dict[str, tuple[str, str]]:
+        """fact → (where it sits on the fact sheet, the text code renders for it)."""
+        natal = state.get("bazi_result") or {}
+        out = {}
+        if not natal:
+            return out
+        master = natal.get("day_master")
+        if master:
+            out[f"day_master:{master}"] = ("日主", f"日主{master}")
+        rule = (natal.get("input") or {}).get("zishi_rule")
+        if rule:
+            out[f"zishi:{rule}"] = (
+                "约定",
+                "子时按23点换日" if rule == "next_day" else "子时按0点换日",
+            )
+        pillars = natal.get("pillars", {})
+        gods = natal.get("ten_gods_stems", {})
+        for key, gz in pillars.items():
+            if not gz:
+                continue
+            if key == "day":
+                out[f"day:{gz}:gan"] = ("四柱", f"日柱{gz}（日主所在）")
+                out[f"day:{gz}:zhi"] = ("四柱", f"日柱{gz}地支{gz[1]}")
+                continue
+            god = gods.get(key)
+            if god:
+                out[f"{key}:{gz}:{god}"] = (
+                    "四柱",
+                    f"{PILLAR_ZH[key]}{gz}（天干{gz[0]}为{god}）",
+                )
+        dayun = natal.get("dayun")
+        if dayun:
+            first = dayun["sequence"][0]
+            y, m, d = map(int, dayun["start_solar"].split("-"))
+            out[f"dayun:{dayun['start_solar']}:{first['ganzhi']}"] = (
+                "大运",
+                f"{y}年{m}月{d}日起运，首步大运{first['ganzhi']}（{first['start_year']}年交运）",
+            )
+            for index, stage in enumerate(dayun["sequence"]):
+                gz = stage["ganzhi"]
+                year = stage["start_year"]
+                out[f"dayun_stage:{index + 1}:{gz}:{year}至{year + 10}交运年份标记"] = (
+                    "大运",
+                    f"第{index + 1}步大运{gz}（{year}年交运，{year + 10}年换下一步）",
+                )
+                god = ten_god(master[0], gz[0]) if master else None
+                if god:
+                    out[f"dayun_stem:{index + 1}:{gz}:{god}"] = (
+                        "大运",
+                        f"第{index + 1}步大运{gz}天干{gz[0]}为{god}",
+                    )
+        if natal.get("alternatives"):
+            out["unknown_time_candidates"] = (
+                "约定",
+                "出生时间未知，出生当天交节，年柱或月柱有两种可能",
+            )
+        period = state.get("bazi_period_result") or {}
+        tz = period.get("tz") or "Asia/Shanghai"
+        spans = merged_spans(period.get("periods", []))
+        for item in period.get("periods", []):
+            for key, gz in item["pillars"].items():
+                when = f"{span_text(spans[(key, gz, item['start_utc'])], tz)}，{zone_label(tz)}"
+                god = item["ten_gods"][key]
+                out[f"period:{item['start_utc']}:{key}:{gz}:{god}"] = (
+                    FLOW_ZH[key],
+                    f"{FLOW_ZH[key]}{gz}（十神{god}；{when}）",
+                )
+                for relation in item["relations"][key]:
+                    kind = relation["type"]
+                    where = relation.get("natal_pillar", relation.get("branches"))
+                    fact = f"period:{item['start_utc']}:{key}:{gz}:{kind}:{where}"
+                    if "natal_pillar" in relation:
+                        text = (
+                            f"{FLOW_ZH[key]}{gz}与本命{PILLAR_ZH[where]}"
+                            f"{relation['natal_ganzhi']}{kind}（{when}）"
+                        )
+                    else:
+                        text = f"{FLOW_ZH[key]}{gz}地支{gz[1]}与原局地支构成{where}{kind}（{when}）"
+                    out[fact] = ("流期与原局", text)
+        return out
+
+    def facts(self, session):
+        state = session.state
+        natal = state.get("bazi_result") or {}
+        period = state.get("bazi_period_result") or {}
+        allowed = state.get("allowed_refs", ())
+        texts = self.texts(state)
+        items = list(natal.get("interpretations", []))
+        periods = period.get("periods", [])
+        pillars, relations_ = [], []
+        for item in period.get("interpretations", []):
+            # A flow year or month shared by several flow days is listed once, from the first
+            # period of its run (merged_spans gives the run's whole span).
+            parts = item["fact"].split(":")
+            if item["fact"].startswith("period:") and len(parts) >= 6:
+                start = (
+                    ":".join(parts[1:-3]) if item["kind"] == "ten_god" else ":".join(parts[1:-4])
+                )
+                key = parts[-3] if item["kind"] == "ten_god" else parts[-4]
+                if key in ("year", "month", "day") and any(
+                    p["start_utc"] == start for p in periods
+                ):
+                    if run_start(periods, key, start) != start:
+                        continue
+            (pillars if item["kind"] == "ten_god" else relations_).append(item)
+        # Every flow pillar first; their relations to the natal chart fill what room is left.
+        items += pillars[:MAX_PERIODS]
+        items += relations_[: max(0, MAX_PERIODS - len(pillars))]
+        facts = []
+        for item in items:
+            if item["ref_id"] not in allowed or item["fact"] not in texts:
+                continue
+            label, text = texts[item["fact"]]
+            alias = short(item["ref_id"], session)
+            meaning = item.get("meaning") or {}
+            keywords = "、".join(chinese(meaning.get("keywords"))[:6])
+            general = shorten(CAVEAT.sub("", meaning.get("text") or ""), 140)
+            line = (
+                f"{alias}｜{label}｜{text}｜关键词：{keywords or '无'}｜一般含义：{general or '无'}"
+            )
+            facts.append(Fact(alias, item["ref_id"], label, text, line))
+        return facts
+
+    # ---- ⑤ compose -----------------------------------------------------------------------
+
+    def context(self, session) -> list[str]:
+        state = session.state
+        natal = state.get("bazi_result") or {}
+        period = state.get("bazi_period_result") or {}
+        kind = state.get("bazi_question_type")
+        lines = []
+        if kind == "timing" and period:
+            lines.append(
+                f"问题类型：时机。日期范围：{period['start']}至{period['end']}（{period['tz']}，首尾两天都含）"
+            )
+            phrase = RELATIVE.search(state.get("question") or "")
+            if phrase:
+                lines.append(
+                    f"用户说的时间是“{phrase[0]}”，即{period['start']}至{period['end']}；"
+                    f"正文提到这段时间时写“{phrase[0]}”或具体月份，不要换成别的说法。"
+                )
+            lines.append(
+                "流年按立春换年，流月按节气换月，不是公历的1月1日或每月1日；"
+                "事实表写明了每个流期的起止时刻。"
+            )
+        elif kind == "dayun":
+            lines.append("问题类型：大运概览（起运、各步大运和交运年份）")
+        else:
+            lines.append("问题类型：原局（性格、倾向、做事方式）")
+        count = natal.get("wuxing_count")
+        if count:
+            listed = "、".join(f"{k}{v}" for k, v in count.items())
+            lines.append(f"五行简单计数（天干地支各算一个，不是旺衰权重）：{listed}")
+        if not natal.get("time_known", True):
+            lines.append("出生时间未知：只有年、月、日三柱，没有时柱，不要写时柱或精确起运。")
+        dayun = natal.get("dayun")
+        if dayun:
+            current = "、".join(s["ganzhi"] for s in dayun.get("current_candidates", []))
+            if current:
+                lines.append(
+                    f"按今年算，所在大运是{current}（交运年份只是年份标记，交运年可能前后两运并存）。"
+                )
+        elif natal:
+            lines.append("没有性别资料，没有排大运；不要写大运。")
+        if (natal.get("input") or {}).get("true_solar_time"):
+            lines.append("日柱和时柱按出生地真太阳时排。")
+        lines.append("喜用神程序不计算；要谈喜用倾向，只能据月令和五行计数推断，并写明依据。")
+        return lines
+
+    def messages(self, run, facts, session, *, prior=None, extra=""):
+        return compose.bazi_messages(run.question, self.context(session), facts, extra=extra)
+
+    # ---- ⑥ verify ------------------------------------------------------------------------
+
+    def problems(self, texts, session):
+        """The chart's closed vocabulary (plan P3.4) and the shared wording rules."""
+        state = session.state
+        natal = state.get("bazi_result") or {}
+        if not natal:
+            return self.wording_problems(texts, session)
+        found = []
+        for text in texts:
+            found += [
+                f"“{m[0]}”把“{m[1]}”写了两遍：编号会替换成带“{m[1]}”的文字，编号前不要再写"
+                for m in REPEATED_LABEL.finditer(text)
+            ]
+            found += self.ganzhi_problems(text, state)
+            found += self.pillar_problems(text, natal)
+            found += self.day_master_problems(text, natal)
+            found += self.ten_god_problems(text, state)
+            found += self.dayun_problems(text, natal)
+            found += self.relation_problems(text, state)
+        found += self.wording_problems(texts, session)
+        return list(dict.fromkeys(found))
+
+    @staticmethod
+    def known_ganzhi(state) -> set[str]:
+        natal = state.get("bazi_result") or {}
+        known = {gz for gz in natal.get("pillars", {}).values() if gz}
+        for candidate in natal.get("alternatives", []):
+            known.update(gz for gz in candidate.values() if gz)
+        known.update(s["ganzhi"] for s in (natal.get("dayun") or {}).get("sequence", []))
+        for item in (state.get("bazi_period_result") or {}).get("periods", []):
+            known.update(item["pillars"].values())
+        return known
+
+    def ganzhi_problems(self, text: str, state) -> list[str]:
+        known = self.known_ganzhi(state)
+        return [
+            f"{m[0]}不在这次的计算里（四柱、大运和所看的流年流月都没有它）"
+            for m in GANZHI.finditer(text)
+            if m[0] not in known and claim(text, m.start(), m.end()) not in (None, "denied")
+        ]
+
+    @staticmethod
+    def pillar_problems(text: str, natal: dict) -> list[str]:
+        """A natal pillar named with a stem-branch pair must be that pillar's (“年柱癸巳”)."""
+        pillars = natal.get("pillars", {})
+        found = []
+        for match in NATAL_PILLAR.finditer(text):
+            key = PILLAR_KEY[match["name"]]
+            actual = pillars.get(key)
+            if not actual:
+                continue  # an unknown hour: the validator refuses any 时柱
+            kind = claim(text, match.start("gz"), match.end("gz"))
+            if kind == "denied" and reasserted(text, match.end("gz"), match["gz"]):
+                kind = "asserted"
+            if wrong(kind, match["gz"] == actual):
+                found.append(f"{PILLAR_ZH[key]}是{actual}，正文写成了“{match[0]}”")
+        return found
+
+    @staticmethod
+    def day_master_problems(text: str, natal: dict) -> list[str]:
+        master = natal.get("day_master")
+        if not master:
+            return []
+        found = []
+        for match in DAY_MASTER.finditer(text):
+            group = "stem" if match["stem"] else "before"
+            stem = match[group]
+            start, end = match.start(group), match.end(group)
+            kind = claim(text, start, end)
+            if kind == "denied" and reasserted(text, match.end(), stem):
+                kind = "asserted"
+            if wrong(kind, stem == master[0]):
+                found.append(f"日主是{master}，正文写成了“{match[0]}”")
+        for match in STEM_ELEMENT.finditer(text):
+            if ELEMENT[match["stem"]] != match["element"]:
+                found.append(
+                    f"{match['stem']}的五行是{ELEMENT[match['stem']]}，正文写成了“{match[0]}”"
+                )
+        return found
+
+    @staticmethod
+    def expected_gods(label: str | None, gz: str | None, state) -> set[str] | None:
+        """The ten gods a pillar named in the text may have; None when it names none."""
+        natal = state.get("bazi_result") or {}
+        master = natal.get("day_master")
+        if not master:
+            return None
+        pillars = natal.get("pillars", {})
+        gods = natal.get("ten_gods_stems", {})
+        periods = (state.get("bazi_period_result") or {}).get("periods", [])
+        sequence = (natal.get("dayun") or {}).get("sequence", [])
+        if label and label[0] in PILLAR_KEY and label[1:] in ("柱", "干"):
+            key = PILLAR_KEY[label[0]]
+            if key == "day" or not pillars.get(key):
+                return None
+            if gz and gz != pillars[key]:
+                return None  # a wrong pillar is the validator's and ganzhi_problems' to refuse
+            return {gods[key]} if gods.get(key) else None
+        if label in FLOW_KEY:
+            key = FLOW_KEY[label]
+            values = {
+                p["ten_gods"][key]
+                for p in periods
+                if key in p["pillars"] and (gz is None or p["pillars"][key] == gz)
+            }
+            return values or None
+        if label and "大运" in label or label == "首运":
+            if gz:
+                return {ten_god(master[0], gz[0])}
+            if label in ("首步大运", "第一步大运", "首运") and sequence:
+                return {ten_god(master[0], sequence[0]["ganzhi"][0])}
+            nth = re.match(r"第(.+)步大运", label or "")
+            if nth and sequence and 1 <= number(nth[1]) <= len(sequence):
+                return {ten_god(master[0], sequence[number(nth[1]) - 1]["ganzhi"][0])}
+            return None
+        if gz:
+            if gz[0] == master[0]:
+                return None
+            return {ten_god(master[0], gz[0])}
+        return None
+
+    def ten_god_problems(self, text: str, state) -> list[str]:
+        natal = state.get("bazi_result") or {}
+        periods = (state.get("bazi_period_result") or {}).get("periods", [])
+        on_sheet = set((natal.get("ten_gods_stems") or {}).values())
+        master = natal.get("day_master")
+        for stage in (natal.get("dayun") or {}).get("sequence", []):
+            if master:
+                on_sheet.add(ten_god(master[0], stage["ganzhi"][0]))
+        for item in periods:
+            on_sheet.update(item["ten_gods"].values())
+        hidden = {g for gods in (natal.get("hidden_ten_gods") or {}).values() for g in gods}
+        found = []
+        for match in TEN_GOD.finditer(text):
+            god = match[0]
+            kind = claim(text, match.start(), match.end())
+            if kind is None:
+                continue
+            if kind == "asserted" and ABSENT.search(
+                text[max(0, match.start() - 4) : match.start()]
+            ):
+                # “命局里没有比肩” says the chart lacks it; “不能说没有比肩” says it has it.
+                clause = max(text.rfind(c, 0, match.start()) for c in CLAUSE_BREAK) + 1
+                lead = text[clause : match.start()]
+                lead = lead[: ABSENT.search(lead).start()] if ABSENT.search(lead) else lead
+                kind = "asserted" if OUTER.search(lead) or DOUBLE_DENIAL.search(lead) else "denied"
+            if kind == "denied" and reasserted(text, match.end(), god):
+                kind = "asserted"
+            clause = max(text.rfind(c, 0, match.start()) for c in CLAUSE_BREAK) + 1
+            before = text[clause : match.start()]
+            if re.search(r"藏干|藏|地支", before):
+                if wrong(kind, god in hidden):
+                    found.append(f"这次的地支藏干里没有{god}")
+                continue
+            head = before[-16:]
+            while True:
+                stripped = FUNCTION_TAIL.sub("", head)
+                if stripped == head:
+                    break
+                head = stripped
+            subject = SUBJECT.search(head)
+            expected = (
+                self.expected_gods(subject["label"], subject["gz"], state)
+                if subject and (subject["label"] or subject["gz"])
+                else None
+            )
+            if expected is not None:
+                if wrong(kind, god in expected):
+                    found.append(
+                        f"“{before[-12:]}{god}”：这里的十神是{'、'.join(sorted(expected))}"
+                    )
+            elif kind == "denied":
+                natal_gods = set((natal.get("ten_gods_stems") or {}).values()) | hidden
+                if NATAL_SCOPE.search(before) and god in natal_gods:
+                    found.append(f"原局里有{god}，正文却说没有")
+            elif wrong(kind, god in on_sheet):
+                found.append(f"命局、大运和这段时间的流年流月里都没有{god}")
+        return found
+
+    @staticmethod
+    def dayun_problems(text: str, natal: dict) -> list[str]:
+        dayun = natal.get("dayun")
+        if not dayun:
+            if re.search(r"(?:首步|第.{1,2}步|当前|目前)大运|起运", text) and not re.search(
+                r"没有排|没排|未排|不排|无法排|不能排", text
+            ):
+                return ["这次没有排大运（没有性别资料或出生时间未知），正文不能写大运"]
+            return []
+        sequence = [s["ganzhi"] for s in dayun["sequence"]]
+        current = [s["ganzhi"] for s in dayun.get("current_candidates", [])]
+        years = {s["start_year"] for s in dayun["sequence"]}
+        ages = {s["start_age"] for s in dayun["sequence"]}
+        found = []
+
+        def kind_of(match, group):
+            kind = claim(text, match.start(group), match.end(group))
+            if kind == "denied" and reasserted(text, match.end(group), match[group]):
+                return "asserted"
+            return kind
+
+        for match in FIRST_DAYUN.finditer(text):
+            if wrong(kind_of(match, "gz"), match["gz"] == sequence[0]):
+                found.append(f"首步大运是{sequence[0]}，正文写成了{match['gz']}")
+        for match in NTH_DAYUN.finditer(text):
+            n = number(match["n"])
+            actual = sequence[n - 1] if 1 <= n <= len(sequence) else None
+            if wrong(kind_of(match, "gz"), match["gz"] == actual):
+                found.append(f"第{n}步大运是{actual or '（没有排到）'}，正文写成了{match['gz']}")
+        for match in CURRENT_DAYUN.finditer(text):
+            group = "gz" if match["gz"] else "walking"
+            if current and wrong(kind_of(match, group), match[group] in current):
+                found.append(f"按今年算所在的大运是{'或'.join(current)}，正文写成了{match[group]}")
+        for match in ANY_DAYUN.finditer(text):
+            group = "gz" if match["gz"] else "after"
+            if match[group] not in sequence and claim(
+                text, match.start(group), match.end(group)
+            ) not in (None, "denied"):
+                found.append(f"{match[group]}不是这次排出的大运")
+        for match in HANDOVER.finditer(text):
+            if int(match["year"]) not in years:
+                listed = "、".join(str(y) for y in sorted(years))
+                found.append(f"交运年份是{listed}，正文写成了{match['year']}年")
+        for match in START_DATE.finditer(text):
+            value = f"{int(match['y']):04d}-{int(match['m']):02d}-{int(match['d']):02d}"
+            if value != dayun["start_solar"]:
+                found.append(f"起运日是{dayun['start_solar']}，正文写成了{value}")
+        for match in START_AGE.finditer(text):
+            if int(match["age"]) not in ages:
+                found.append(f"“{match[0]}”与排出的交运岁数不符")
+        return found
+
+    def relation_problems(self, text: str, state) -> list[str]:
+        natal = state.get("bazi_result") or {}
+        pillars = natal.get("pillars", {})
+        periods = (state.get("bazi_period_result") or {}).get("periods", [])
+        found = []
+        seen = set()
+        named = sorted(
+            (m.start(), m.end(), m["subject"])
+            for pattern in (RELATION_AFTER, RELATION_BEFORE)
+            for m in pattern.finditer(text)
+        )
+        for pattern in (RELATION_AFTER, RELATION_BEFORE, RELATION_CARRY):
+            for match in pattern.finditer(text):
+                if (match.start(), match["kind"]) in seen:
+                    continue
+                seen.add((match.start(), match["kind"]))
+                key = PILLAR_KEY[match["natal"]]
+                natal_gz = pillars.get(key)
+                if not natal_gz or (match["ngz"] and match["ngz"] != natal_gz):
+                    continue  # a wrong or unknown natal pillar is refused elsewhere
+                if pattern is RELATION_CARRY:
+                    sentence = max(text.rfind(c, 0, match.start()) for c in "。！？!?\n") + 1
+                    earlier = [n for n in named if sentence <= n[0] and n[1] <= match.start()]
+                    if not earlier:
+                        continue
+                    subject = earlier[-1][2]
+                else:
+                    subject = match["subject"]
+                subjects = self.subjects(subject, periods)
+                if not subjects:
+                    continue
+                word = match["kind"]
+                kinds = next((v for k, v in RELATION_KINDS.items() if word.endswith(k)), {word})
+                if word.startswith("天干"):
+                    kinds = {k for k in kinds if k.startswith("天干")}
+                elif word.startswith("地支") or word == "六合":
+                    kinds = {k for k in kinds if not k.startswith("天干")}
+                actual = any(
+                    r["type"] in kinds for gz in subjects for r in relations(gz, {key: natal_gz})
+                )
+                between = match["between"] or ""
+                clause = max(text.rfind(c, 0, match.start()) for c in CLAUSE_BREAK) + 1
+                lead = text[clause : match.start()]
+                denied = bool(RELATION_DENIED.search(between)) and not DOUBLE_DENIAL.search(between)
+                if denied and OUTER.search(
+                    lead + between[: RELATION_DENIED.search(between).start()]
+                ):
+                    denied = False
+                if denied and self.relation_reasserted(text, match.end(), word):
+                    denied = False
+                if denied == actual:
+                    found.append(
+                        f"“{match[0]}”：{subject}与本命{PILLAR_ZH[key]}{natal_gz}"
+                        + ("有" if actual else "没有")
+                        + f"{word.lstrip('相')}的关系"
+                    )
+        return found
+
+    @staticmethod
+    def relation_reasserted(text: str, end: int, word: str) -> bool:
+        """“流月丙子不冲月柱，但其实相冲”: a later clause of the sentence states the relation."""
+        stop = min(
+            (i for i in (text.find(c, end) for c in "。！？!?\n") if i != -1), default=len(text)
+        )
+        core = word.lstrip("相")[-1]
+        for clause in re.split(r"[，,；;]", text[end:stop])[1:]:
+            found = re.search(rf"相?{core}", clause)
+            if found and not RELATION_DENIED.search(clause[: found.start()]):
+                return True
+            if found and DOUBLE_DENIAL.search(clause[: found.start()]):
+                return True
+        return False
+
+    @staticmethod
+    def subjects(subject: str, periods: list[dict]) -> list[str]:
+        gz = GANZHI.search(subject)
+        if gz:
+            return [gz[0]]
+        key = FLOW_KEY.get(subject)
+        if not key:
+            return []
+        return list(dict.fromkeys(p["pillars"][key] for p in periods if key in p["pillars"]))
+
+    def reading_problems(self, args, facts, session):
+        """The summary's time words must name a span inside the computed range (as astro)."""
+        state = session.state
+        period = state.get("bazi_period_result") or {}
+        if state.get("bazi_question_type") != "timing" or not period or not session.calendar_anchor:
+            return []
+        start, end = date.fromisoformat(period["start"]), date.fromisoformat(period["end"])
+        today = date.fromisoformat(session.calendar_anchor)
+        first = re.split(r"[。！？!?]", args.get("summary") or "")[0]
+        found = []
+        for clause in re.split(r"[，,；;：:]", first):
+            if COMPARED.search(clause):
+                continue
+            for match in RELATIVE.finditer(clause):
+                low, high = relative_span(match[0], today)
+                if high < start or low > end:
+                    found.append(
+                        f"摘要第一句写成了“{match[0]}”，这次看的是{period['start']}至"
+                        f"{period['end']}；按用户说的时间写"
+                    )
+        return found
+
+    # ---- what code writes ----------------------------------------------------------------
+
+    def degraded(self, session, facts, question_type, risk_text, followup, *, safety_only):
+        state = session.state
+        period = state.get("bazi_period_result") or {}
+        safety = safety_for(risk_text)
+        evidence = [{"ref_id": fact.alias} for fact in facts]
+        what = (
+            f"{period['start']}至{period['end']}的八字流年流月计算"
+            if question_type == "timing" and period
+            else "八字原局的计算"
+        )
+        if safety_only:
+            args = {
+                "question_type": question_type,
+                "systems_used": ["bazi"],
+                "summary": f"这是{what}。这个问题牵涉重大的现实决定，这次不作解读。",
+                "sections": [],
+                "evidence": evidence,
+                "advice": ["先听专业意见：现实中的重要决定，请结合专业人士的意见。"],
+                "closing": "",
+                "confidence": {"level": "low", "reason": "这次没有给出八字解读。"},
+                "safety": safety if safety["flag"] else {"flag": True, "note": SAFETY_FALLBACK},
+            }
+            return args
+        meanings = {}
+        for key in ("bazi_result", "bazi_period_result"):
+            for item in (state.get(key) or {}).get("interpretations", []):
+                meanings[item["ref_id"]] = item.get("meaning") or {}
+        groups = {label: [] for label in SECTION_ORDER}
+        for fact in facts:
+            if fact.label != "约定":
+                groups.setdefault(fact.label, []).append(fact)
+        sections = []
+        for label, group in groups.items():
+            if not group:
+                continue
+            sentences = []
+            for fact in group:
+                keywords = "、".join(chinese(meanings.get(fact.ref, {}).get("keywords"))[:3])
+                sentences.append(
+                    f"{fact.text}，常和{keywords}联系在一起。" if keywords else f"{fact.text}。"
+                )
+            sections.append(
+                {
+                    "title": label,
+                    "body": "".join(sentences)[:1200],
+                    "ref_ids": [f.alias for f in group],
+                }
+            )
+        return {
+            "question_type": question_type,
+            "systems_used": ["bazi"],
+            "summary": f"这是{what}。下面先列出各项依据和一般说法，请当作提示参考。"[:200],
+            "sections": sections[:6],
+            "evidence": evidence,
+            "advice": ["当作提示：对照自己的安排，选一两件事多留意。"],
+            "closing": "",
+            "confidence": {"level": "low", "reason": "这次只给出了各项的一般说法。"},
+            "safety": safety,
+        }

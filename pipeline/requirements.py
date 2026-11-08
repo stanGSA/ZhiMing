@@ -33,6 +33,32 @@ REQUIREMENTS = {
         confirm=("出生时间未知时不解读宫位和四轴",),
         where="birth_ready（资料是否齐全）；compute_natal_chart 的 NeedsInput（时间、地点、新疆钟表时区）",
     ),
+    ("bazi", "trait"): dict(
+        required=(
+            "出生日期",
+            "出生地点（经度和出生钟表时区）",
+            "出生时间（未知时须说明，只排三柱）",
+        ),
+        confirm=(
+            "海外出生：日柱时柱按真太阳时还是固定UTC+8",
+            "新疆出生：钟表时间是北京时间还是新疆时间",
+            "农历生日：是不是闰月",
+            "时辰未知且出生当天交节：补时间，或确认展示候选",
+        ),
+        where="birth_ready / pipeline.birth（资料与文字出生资料）；compute_bazi 的 NeedsInput",
+    ),
+    ("bazi", "dayun"): dict(
+        required=("同原局", "性别"),
+        confirm=("真太阳时修正跨节气：确认按物理时刻起运",),
+        where="Bazi.compute（性别，未知时追问）；compute_bazi 的 NeedsInput",
+    ),
+    ("bazi", "timing"): dict(
+        required=("同原局", "时间范围（流月、流日 ≤ 366 天，流年 ≤ 3660 天）"),
+        confirm=(
+            "区间时区：说明了就用；北京时间出生默认北京时间；其余追问（不沿用星盘的出生地默认）",
+        ),
+        where="asked_range（时间范围）；compute_bazi_period 的 NeedsInput（区间时区）",
+    ),
     ("astro", "timing"): dict(
         required=("出生日期", "出生时间（未知时须说明）", "出生地点", "时间范围（≤ 3660 天）"),
         confirm=(
@@ -60,6 +86,9 @@ TIMING_WORDS = re.compile(
 )
 UNCLEAR_RANGE = "想看哪一段时间？可以说“下个月”“2026年12月”或“12月1日到12月15日”。"
 TOO_LONG = "时间范围太长了：行运最多按十年计算，请缩小到具体的年份或月份。"
+TOO_LONG_BAZI = "时间范围太长了：流年最多按十年计算，请缩小到具体的年份或月份。"
+# Bazi words that ask about a span of time on their own (流年 without a year is asked for one).
+BAZI_TIMING = re.compile(r"流年|流月|流日|今年运|明年运|运程")
 # Worded around common.tools.REASK: an ask may not name a birth field the profile holds.
 BIRTH_FORM = (
     "看星盘需要完整的出生资料：请在页面上的出生信息表里补全日期、时间和地点"
@@ -290,3 +319,19 @@ BIRTH_NOTE = re.compile(r"\n*我在出生信息表中填写的资料：[^\n]*")
 def strip_birth_note(text: str) -> str:
     """The web page appends the birth form; its place is the birth place, not a residence."""
     return BIRTH_NOTE.sub("", text or "")
+
+
+def bazi_question_type(question: str, text: str, anchor: str | None) -> str:
+    """“dayun” for a luck-cycle overview, “timing” for a range of dates, else “trait”.
+
+    ``text`` is the question and its answers with birth dates removed (pipeline.birth). A
+    luck-cycle question that also asks about a period is a timing question, as
+    plugins.bazi.intent.dayun_overview decides for the agent loop.
+    """
+    from plugins.bazi.intent import dayun_overview
+
+    if dayun_overview(question) and asked_range(text, anchor) is None:
+        return "dayun"
+    if asked_range(text, anchor) is not None or is_timing(question) or BAZI_TIMING.search(question):
+        return "timing"
+    return "trait"

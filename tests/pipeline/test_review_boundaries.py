@@ -80,7 +80,8 @@ async def test_another_system_after_tarot_goes_to_the_agent_loop(make):
     runtime, composer, events = make(good, reply)
     await runtime.turn(QUESTION)
     events.clear()
-    outcome = await runtime.turn("请用八字解释日主是什么意思？")
+    # Bazi and astro each have a pipeline since P3; a question for both is 问道's (P3.5).
+    outcome = await runtime.turn("请用八字和星盘一起解释日主和上升星座是什么意思？")
     assert outcome.status == "text"
     assert composer.seen[-1][1], "the agent loop offers its tools"
     assert not [e for e in events if e["event"] == "pipeline_stage"]

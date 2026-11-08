@@ -82,7 +82,7 @@ def p2_jobs(final: bool):
 
 
 # P3 (owner, 2026-11-07): one system per PR, each with its own pilot and final set, as in P2.
-P3_SYSTEMS = (("Astro", "astro"),)
+P3_SYSTEMS = (("Astro", "astro"), ("Bazi", "bazi"))
 
 
 def p3_jobs(label: str, system: str, final: bool):

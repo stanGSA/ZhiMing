@@ -53,8 +53,12 @@ def resolve_birth_location(args, session):
         args.location_id = next(iter(locations))
 
 
-def inferred_birth(session):
-    text = reading_text(session)
+def birth_date_mentions(text: str) -> set[tuple[str, str | None]]:
+    """(date, clock or None) of each date the text ties to a birth word (出生, 生于…).
+
+    A date counts when a birth word is in the same clause just before it or within 24
+    characters after it; a meeting or travel date in the same message does not.
+    """
     mentions = set()
     for clause in re.split(r"[。；;\n]", text):
         dates = list(re.finditer(DATE, clause))
@@ -70,6 +74,12 @@ def inferred_birth(session):
             ):
                 continue
             mentions.update(birth_mentions(clause[match.start() : right]))
+    return mentions
+
+
+def inferred_birth(session):
+    text = reading_text(session)
+    mentions = birth_date_mentions(text)
     # A range date without a clock must not be chosen as a birth date.
     if len({day for day, _ in mentions}) > 1:
         return None

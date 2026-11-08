@@ -7,9 +7,10 @@ run where it stopped. The planned calls are compute_natal_chart and, for a timin
 compute_transits, both through the Guard. The writer cites planets, signs, houses, aspects and
 transit dates by number only; what it writes by hand is checked against the chart (P3.4).
 
-Left with the agent loop in this first P3 step: follow-ups to a saved reading, corrections of
-birth data, birth data typed into the message instead of the birth form (resolving a place
-needs the location tool), techniques the calculator does not have (synastry, progressions…)
+Birth data typed into the message instead of the birth form is bound by code before the
+calculation (pipeline/birth.py, shared with bazi). Left with the agent loop: follow-ups to a
+saved reading, corrections of birth data (a typed birth that differs from the saved one), a birth
+stated without a full date, techniques the calculator does not have (synastry, progressions…)
 and questions that also name another system (问道's several systems are P3.5).
 """
 
@@ -24,7 +25,7 @@ from common.input_evidence import clock_in
 from common.time_utils import NeedsInput
 from harness.failures import failure
 from harness.refs import short
-from pipeline import compose, requirements
+from pipeline import birth, compose, requirements
 from pipeline.factsheet import CAVEAT, Fact, shorten
 from pipeline.intent import CONTINUE, Intent
 from pipeline.render import safety_for
@@ -60,7 +61,8 @@ BIRTH_CORRECTION = re.compile(
 )
 # A birth date or year in the message (“我1990年3月5日出生”“我是1990年3月出生的”“生日是1995年
 # 8月20日”). Its date is not a range to compute, yet the Guard's own question_range reads
-# “1990年3月” as one; such messages stay with the agent loop, whatever the profile holds.
+# “1990年3月” as one. A full birth date is bound by code (pipeline/birth.py) and removed before
+# a range is read; a mention without a full date stays with the agent loop.
 BIRTH_MENTION = re.compile(
     r"(?:出生|生于|生日)[^，,。；;？?！!]{0,12}?\d{4}|\d{4}\s*[年\-/.][^，,。；;？?！!]{0,12}?"
     r"(?:出生|生的|生人|生日|生(?=[，,。；;？?！!\s]|$))"
@@ -210,9 +212,30 @@ def zone_label(tz: str) -> str:
     return "北京时间" if tz == "Asia/Shanghai" else f"{tz}当地日期"
 
 
+def typed_birth_usable(question: str, session) -> bool:
+    """Whether code may bind the birth the message states (pipeline/birth.py).
+
+    It must be one full date tied to a birth word; it may repeat the saved birth but not change
+    it (a correction stays with the agent loop), and a request bound to the web page's birth
+    form uses the form alone.
+    """
+    if getattr(session, "birth_binding", None):
+        return False
+    stated = birth.typed(question)
+    if stated is None:
+        return False
+    saved = str(session.profile.get("birth_local_dt") or "")
+    if not saved:
+        return True
+    if saved[:10] != stated.day:
+        return False
+    return not (stated.clock and len(saved) > 10 and saved[11:16] != stated.clock)
+
+
 class Astro(System):
     name = "astro"
     kept = "星盘计算结果"
+    birth_form = requirements.BIRTH_FORM
 
     # ---- ① intent ------------------------------------------------------------------------
 
@@ -231,17 +254,20 @@ class Astro(System):
                 run = None
         if run and run["state"].get("system") == "astro":
             if run["stage"] == "awaiting_input":
+                needs = run["state"].get("needs")
                 handed = (
                     (selected is None and OTHER.search(question))
                     or (
                         clock_answer_changes_birth(question, session)
-                        if run["state"].get("needs") == "missing_birth_time"
+                        if needs == "missing_birth_time"
                         else BIRTH_MENTION.search(question)
+                        and not (needs == "birth" and typed_birth_usable(question, session))
                     )
                     or run["state"].get("asks", 0) >= MAX_ASKS
                     or (
-                        run["state"].get("needs") == "birth"
+                        needs == "birth"
                         and not requirements.birth_ready(session)
+                        and not typed_birth_usable(question, session)
                     )
                 )
                 if handed:
@@ -258,15 +284,17 @@ class Astro(System):
             return None
         if (
             UNSUPPORTED.search(question)
-            or BIRTH_MENTION.search(question)
             or REFERS_TO_READING.search(question)
             or BIRTH_CORRECTION.search(question)
         ):
             return None
+        if BIRTH_MENTION.search(question) and not typed_birth_usable(question, session):
+            return None  # a birth without a full date, or one that corrects the saved birth
         if not requirements.birth_ready(session) and (
             re.search(BIRTH_DATE, question) or re.search(r"出生|生于", question)
         ):
-            return None  # birth data in words: the agent loop resolves and saves it
+            if not typed_birth_usable(question, session):
+                return None
         return Intent("astro", "new")
 
     @staticmethod
@@ -319,13 +347,19 @@ class Astro(System):
             run.reading_id = session.state["active_reading_id"]
             state = session.state
         text = self.text(run, session)
+        ranged = birth.without_birth(text)
         if not state.get("astro_question_type"):
-            timing = requirements.asked_range(text, session.calendar_anchor) is not None
+            timing = requirements.asked_range(ranged, session.calendar_anchor) is not None
             state["astro_question_type"] = (
                 "timing" if timing or requirements.is_timing(run.question) else "trait"
             )
-        if not requirements.birth_ready(session):
-            return await self.ask(runner, run, requirements.BIRTH_FORM, "birth")
+        if not requirements.birth_ready(session) and not birth.bound(session):
+            stopped = await birth.bind(self, runner, run)
+            if stopped is not None:
+                return stopped
+            state = session.state
+            if not requirements.birth_ready(session) and not birth.bound(session):
+                return await self.ask(runner, run, requirements.BIRTH_FORM, "birth")
         if not state.get("natal_result"):
             arguments = {}
             if session.profile.get("time_known") is False or UNKNOWN_TIME.search(text):
@@ -333,9 +367,9 @@ class Astro(System):
             answer = session.user_messages[-1] if session.user_messages else ""
             if run.needs == "missing_birth_time":
                 clock = clock_in(answer)
-                birth = session.profile.get("birth_local_dt")
-                if clock and birth:
-                    arguments["birth_local"] = f"{birth[:10]} {clock}"
+                saved = session.profile.get("birth_local_dt")
+                if clock and saved:
+                    arguments["birth_local"] = f"{saved[:10]} {clock}"
             elif run.needs == "ambiguous_local_time":
                 fold = re.search(r"fold\s*=\s*([01])", answer)
                 if fold:
@@ -350,7 +384,7 @@ class Astro(System):
                 return stopped
         if state["astro_question_type"] != "timing" or state.get("transit_result"):
             return None
-        found = requirements.asked_range(text, session.calendar_anchor)
+        found = requirements.asked_range(ranged, session.calendar_anchor)
         if found is None:
             return await self.ask(runner, run, requirements.UNCLEAR_RANGE, "range")
         start, end = found
