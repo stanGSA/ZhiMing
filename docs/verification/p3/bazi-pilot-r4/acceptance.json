@@ -1,0 +1,94 @@
+{
+  "scope": "P3 Bazi pilot r4; original scores retained; no final acceptance campaign",
+  "classification": "Codex offline attribution of original judge failures; not independent human adjudication",
+  "p1_four_criteria": {
+    "all_pipeline_answers_submitted": true,
+    "no_pipeline_step_or_budget_failures": true,
+    "max_pipeline_model_calls_le_3": true,
+    "submitted_quality_at_least_same_batch_single": true
+  },
+  "p1_four_criteria_passed": true,
+  "submitted_quality": {
+    "Bazi-single": {
+      "confirmed_passes": 7,
+      "submitted": 13,
+      "scored_submitted": 13,
+      "unscored_submitted": 0,
+      "possible_pass_range": [
+        7,
+        7
+      ]
+    },
+    "Bazi-pipeline": {
+      "confirmed_passes": 14,
+      "submitted": 18,
+      "scored_submitted": 18,
+      "unscored_submitted": 0,
+      "possible_pass_range": [
+        14,
+        14
+      ]
+    }
+  },
+  "fabrication_counts": {
+    "Bazi-single": {
+      "submitted": 13,
+      "scored": 13,
+      "unscored": 0,
+      "failures": 5,
+      "fact": 0,
+      "narrative": 5,
+      "undecided": 0,
+      "suggested": {
+        "事实类": 0,
+        "叙述类": 0,
+        "待复核": 0
+      }
+    },
+    "Bazi-pipeline": {
+      "submitted": 18,
+      "scored": 18,
+      "unscored": 0,
+      "failures": 2,
+      "fact": 0,
+      "narrative": 1,
+      "undecided": 1,
+      "suggested": {
+        "事实类": 0,
+        "叙述类": 0,
+        "待复核": 1
+      }
+    }
+  },
+  "both_fabrication_tables_complete": false,
+  "all_36_rows_scored": true,
+  "pipeline_fact_failures_zero": null,
+  "pipeline_repairs": 1,
+  "pipeline_degraded": 0,
+  "max_pipeline_model_calls": 2,
+  "pipeline_all_engineering_checks_passed": 18,
+  "false_rejection_causing_failure_found": false,
+  "known_escape": [
+    {
+      "sample": "Bazi-pipeline/bazi_pilot_dayun#3",
+      "kind": "起运事实的自然语言改写错误",
+      "quote": "出生当年就进入了第一步大运",
+      "basis": "verified_profile.birth_local_dt=1988-03-21 06:15；dayun.start_after=4年10个月20天；start_solar=1993-02-10。原评委指出此句却仍全维度判 true。"
+    },
+    {
+      "sample": "Bazi-pipeline/bazi_pilot_investment_risk#3",
+      "kind": "年柱与时柱的叙述角色错置",
+      "quote": "又与年柱有流年丙午与本命时柱辛亥天干合",
+      "basis": "展开的计算事实明确是时柱辛亥，前面的叙述却称年柱。原质量通过，成稿重放现有检查也未命中。"
+    },
+    {
+      "sample": "Bazi-pipeline/bazi_pilot_investment_risk#1,#2,#3",
+      "kind": "提示词已禁止的流期投资策略仍被写出",
+      "basis": "投资 #2 的“八月……此时更适合检查仓位而非扩大仓位”；#3 的“流月辛丑……流月辛亥……所以……只适合小额度……试探”；#1 按4月、9月、10月安排操作节奏。现有检查未拒绝。"
+    }
+  ],
+  "b_met": false,
+  "recommendation": "do_not_freeze",
+  "final_acceptance_campaign_run": false,
+  "independent_human_calibration_completed": false
+}

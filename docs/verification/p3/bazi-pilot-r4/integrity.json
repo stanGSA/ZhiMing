@@ -1,0 +1,195 @@
+{
+  "status": "verified",
+  "source_commit": "73cb81437f6f6e60495d8fac78af41bd9dcb4b7d",
+  "source_fingerprint": "23f26a89f0cab29de77c805e29d749d465bb39b7ea83f92ecfa8dcf532e17b09",
+  "base_config_sha256": "248e6db07c2c5d82240d20beaa32bfe55a6d31301ca2d3f64a9b659dd57acb9c",
+  "config_sha256": "3dfa2e81873c876568582d1b3138e802aa7e1d7c59dd60e03a52c94a87557d1b",
+  "original_config_sha256": "d20f8ebd922f11bad6cda4b850ac66d17fcb50d0a656dd7800e89671cf243a24",
+  "config_restored": true,
+  "experiment_config_unchanged": true,
+  "total_rows": 36,
+  "all_groups_same_source_hashes": true,
+  "source_file_count": 183,
+  "nonconfig_file_count": 182,
+  "nonconfig_files_match_git_commit": true,
+  "raw_report_hashes_verified": true,
+  "trace_files_present": true,
+  "identical_pair_keys": true,
+  "all_results_scored": true,
+  "scored_rows": 36,
+  "groups": {
+    "Bazi-single": {
+      "run_id": "20261109T151255-5839af56",
+      "rows": 18,
+      "statuses": {
+        "submit_reading": 13,
+        "ask_user": 4,
+        "limit_reached": 1
+      },
+      "statistics": {
+        "run_id": "20261109T151255-5839af56",
+        "mode": "single",
+        "model": "deepseek-v4.1-flash",
+        "rubric_version": "v2-2026-10-24",
+        "cases": 18,
+        "task_success": 13,
+        "first_try_clean": 8,
+        "submitted": 13,
+        "quality_scored": 18,
+        "quality_unscored": 0,
+        "quality": 9,
+        "submitted_quality": 7,
+        "task_and_quality": 7,
+        "repaired": 0,
+        "degraded": 0,
+        "degraded_rate": 0.0,
+        "no_symbol": 0,
+        "no_symbol_rate": 0.0,
+        "degraded_without_no_symbol": 0,
+        "degraded_without_no_symbol_rate": 0.0,
+        "clean_success": 7,
+        "strict_v1": 4,
+        "tool_errors": 19,
+        "model_calls": 120,
+        "median_s": 36.333,
+        "p95_s": 79.509,
+        "input_tokens": 844175,
+        "output_tokens": 44833,
+        "cache_rate": 0.7291758225486422,
+        "categories": [
+          [
+            "E 事实与计算不符",
+            8,
+            4,
+            3
+          ],
+          [
+            "A 参数不是合法JSON",
+            3,
+            3,
+            0
+          ],
+          [
+            "G 释义查询未命中",
+            3,
+            3,
+            0
+          ],
+          [
+            "B 参数不符合schema",
+            2,
+            2,
+            1
+          ],
+          [
+            "Z 其他：同一reading各体系必须使用相同时间范围；不同区间请开始",
+            2,
+            1,
+            1
+          ],
+          [
+            "Z 其他：关联的记录不属于当前用户",
+            1,
+            1,
+            1
+          ]
+        ],
+        "outcomes": {
+          "结局为 ask_user，未通过：expected_status、expected_tools、saved、systems": 4,
+          "达到步数或预算上限": 1
+        },
+        "quality_failures": {
+          "no_fabricated_facts": 5,
+          "direct_answer": 2,
+          "supported_conclusion": 5,
+          "time_consistent": 3
+        }
+      },
+      "scored": 18,
+      "submitted_quality": 7,
+      "max_model_calls": 12,
+      "requested_model": "deepseek-v4.1-flash",
+      "judge_model": "deepseek-v4.1-flash",
+      "returned_models": [
+        "deepseek-v4.1-flash"
+      ],
+      "overseas_asks": [
+        null,
+        null,
+        null
+      ],
+      "typed_birth_asks": [
+        null,
+        null,
+        null
+      ],
+      "no_fabricated_facts_false": 5,
+      "submitted_no_fabricated_facts_false": 5
+    },
+    "Bazi-pipeline": {
+      "run_id": "20261109T152742-28d8b543",
+      "rows": 18,
+      "statuses": {
+        "submit_reading": 18
+      },
+      "statistics": {
+        "run_id": "20261109T152742-28d8b543",
+        "mode": "pipeline",
+        "model": "deepseek-v4.1-flash",
+        "rubric_version": "v2-2026-10-24",
+        "cases": 18,
+        "task_success": 18,
+        "first_try_clean": 18,
+        "submitted": 18,
+        "quality_scored": 18,
+        "quality_unscored": 0,
+        "quality": 14,
+        "submitted_quality": 14,
+        "task_and_quality": 14,
+        "repaired": 1,
+        "degraded": 0,
+        "degraded_rate": 0.0,
+        "no_symbol": 0,
+        "no_symbol_rate": 0.0,
+        "degraded_without_no_symbol": 0,
+        "degraded_without_no_symbol_rate": 0.0,
+        "clean_success": 17,
+        "strict_v1": 14,
+        "tool_errors": 0,
+        "model_calls": 19,
+        "median_s": 10.567499999999999,
+        "p95_s": 15.668,
+        "input_tokens": 81537,
+        "output_tokens": 12513,
+        "cache_rate": 0.6640420913205048,
+        "categories": [],
+        "outcomes": {},
+        "quality_failures": {
+          "supported_conclusion": 3,
+          "no_fabricated_facts": 2,
+          "time_consistent": 1
+        }
+      },
+      "scored": 18,
+      "submitted_quality": 14,
+      "max_model_calls": 2,
+      "requested_model": "deepseek-v4.1-flash",
+      "judge_model": "deepseek-v4.1-flash",
+      "returned_models": [
+        "deepseek-v4.1-flash"
+      ],
+      "overseas_asks": [
+        1,
+        1,
+        1
+      ],
+      "typed_birth_asks": [
+        0,
+        0,
+        0
+      ],
+      "no_fabricated_facts_false": 2,
+      "submitted_no_fabricated_facts_false": 2
+    }
+  }
+}
