@@ -249,6 +249,18 @@ TURNED_BACK = re.compile(
     r"不能说|不是说|并不是说|很难说|谈不上|说不上|不代表|不等于|并不意味|怎么会|岂"
 )
 SAFE_NEGATION = re.compile(r"不宜|不适合|不要|别|而不是|不是|不建议|避免|没有|不足以|并非|不能")
+# Owner decision 2026-11-10: a period may come with holding back (“八月不宜加仓”“最需要克制
+# 加仓冲动的阶段”). A clause holds back when it restrains the trade and recommends nothing; a
+# weakened or turned-back restraint (“不一定不适合”“不能说不宜”“并非不宜”) does not.
+RESTRAINT = re.compile(
+    r"不宜|不适合|不要|别|避免|克制|暂缓|不急于|不建议|尽量不|而非|而不是|勿|不做|少做|少碰|"
+    r"减少|不轻易|不贸然|不追|忌|延后|推迟|搁置|暂停"
+)
+ENCOURAGED = re.compile(
+    r"(?<!不)(?:更|最|较|比较|很|也|只|正)?适合|(?<![不适])宜(?!不)|可以|应该|应当|值得|不妨|最好|"
+    r"(?:不宜|不要|别|避免|不必|忌)再?(?:犹豫|迟疑|观望|错过|等待)"
+)
+WEAKENED = re.compile(r"不一定|未必|不完全|并不完全|不见得")
 CLAUSE_OR_TURN = re.compile(r"[，,；;：:]|但是?|不过|然而|可是")
 TRADE_PROBLEM = (
     "八字不能推出仓位、买卖时点或投入节奏：不要把流年、流月或某段时间写成适合或不适合"
@@ -1420,15 +1432,27 @@ class Bazi(System):
     @staticmethod
     def trade_problems(text: str) -> list[str]:
         for sentence in re.split(r"(?<=[。！？!?\n])", text):
-            if not PERIOD_WORD.search(sentence):
-                continue
+            # The period governs its own clause and the clauses after it, not those before
+            # (“每次操作前对照，尤其留意三月……这几个时段”).
+            timed = False
             for clause in CLAUSE_OR_TURN.split(sentence):
-                # An outer or a double negation turns a denial back (“不能说八字不能……”).
-                turned = TURNED_BACK.search(clause) or DOUBLE_DENIAL.search(clause)
-                if NOT_BY_BAZI.search(clause) and not turned:
+                timed = timed or bool(PERIOD_WORD.search(clause))
+                if not timed or not TRADE.search(clause):
+                    continue
+                # An outer, a double or a weakened negation turns a denial back
+                # (“不能说八字不能……”“并非不宜”“不一定不适合”).
+                turned = (
+                    TURNED_BACK.search(clause)
+                    or DOUBLE_DENIAL.search(clause)
+                    or WEAKENED.search(clause)
+                )
+                if turned:
+                    return [TRADE_PROBLEM]
+                if NOT_BY_BAZI.search(clause):
                     continue  # “别把八字符号当作买卖依据”
-                negated = SAFE_NEGATION.search(clause) and not turned
-                rest = ALL_IN.sub("", clause) if negated else clause
+                if RESTRAINT.search(clause) and not ENCOURAGED.search(clause):
+                    continue  # “八月不宜加仓”
+                rest = ALL_IN.sub("", clause) if SAFE_NEGATION.search(clause) else clause
                 if TRADE.search(rest):
                     return [TRADE_PROBLEM]
         return []

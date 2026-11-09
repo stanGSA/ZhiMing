@@ -51,10 +51,6 @@ TRADES = (
     "八月流月戊申与本命年柱丙寅地支冲（8月8日至9月8日）、流月戊申与本命日柱丁亥地支害"
     "（8月8日至9月8日）又是冲、刑、害集中的月份，内心纠结与外部干扰都多，此时更适合检查仓位"
     "而非扩大仓位。",
-    "五月到六月，流月乙巳与本命日柱丁亥地支冲（5月6日至6月6日）连续出现冲的信号，"
-    "是全年最需要克制加仓冲动的阶段之一。",
-    "- 写下来再执行：把买入理由、止损线、最大可承受亏损写在纸上，每次操作前对照，"
-    "尤其留意三月、五月到六月、八月这几个容易冲动的时段。",
     # investment #3
     "流月辛丑（十神偏财；2027年1月5日22:09至2027年2月4日09:46，北京时间）虽带偏财主题，"
     "所以即便感觉机会来了，也只适合小额度、可承受损失的试探，而不是全投。",
@@ -62,6 +58,15 @@ TRADES = (
     # investment #1
     "- 选窗口做功课：把4月、9月、10月当作整理预算、复盘和学习的时间，操作上保持节奏，"
     "不在情绪最紧的月份做大决定。",
+)
+# Owner decision 2026-11-10: holding back in a period passes. Saved r4 sentences (investment #2).
+HELD_BACK = (
+    "五月到六月，流月乙巳与本命日柱丁亥地支冲（5月6日至6月6日）连续出现冲的信号，"
+    "是全年最需要克制加仓冲动的阶段之一。",
+    # The period comes after the trades: it does not time them.
+    "- 写下来再执行：把买入理由、止损线、最大可承受亏损写在纸上，每次操作前对照，"
+    "尤其留意三月、五月到六月、八月这几个容易冲动的时段。",
+    "- 分批而非一次：把计划投入的金额拆成几批，避免在冲、合集中的月份凭情绪操作。",
 )
 
 
@@ -166,9 +171,7 @@ async def test_a_natal_pillar_named_as_a_luck_cycle(money):
 TRADE = "八字不能推出仓位、买卖时点或投入节奏"
 
 
-@pytest.mark.parametrize(
-    "sentence", TRADES, ids=["2-august", "2-may", "2-advice", "3-xinchou", "3-periods", "1-months"]
-)
+@pytest.mark.parametrize("sentence", TRADES, ids=["2-august", "3-xinchou", "3-periods", "1-months"])
 async def test_the_r4_trades_timed_by_months_are_refused(money, sentence):
     assert has(refused(money, sentence), TRADE)
 
@@ -179,9 +182,36 @@ async def test_trades_timed_by_a_period_are_still_refused(money):
         "八字不能决定一切但8月适合加仓。",  # the same without a comma
         "不能说八字不能决定8月要不要加仓。",  # an outer negation
         "八字并非不能决定8月是否加仓。",  # a double negation
-        "流月戊申冲刑集中，8月完全不适合加仓。",  # a degree word; not now is a timing too
         "明年不宜全仓，但其实可以在5月加仓。",  # again after a turn
         "流月辛丑带偏财，日主丁火，适合小额度试探。",  # another item in the sentence
+        "适合加仓的时候是8月。",  # the period after the trade, in the same clause
+    ):
+        assert has(refused(money, text), TRADE), text
+
+
+async def test_holding_back_passes_but_its_guards_are_refused(money):
+    """Owner decision 2026-11-10: “八月不宜加仓” passes; what only looks like it does not."""
+    for text in (
+        *HELD_BACK,
+        "八月不宜加仓。",
+        "流月戊申冲刑集中，8月完全不适合加仓。",  # a degree word strengthening it
+        "8月持有而不是加仓。",
+        "二、年初和年中几段波动较明显，最忌冲动加仓",  # r3 investment #2, a section title
+        "- 留出复核期：在波动明显的月份，把加仓决定延后几天再看。",  # r3 investment #1
+        "整年没有哪一段出现足以支持“把积蓄全部投入”的信号。",
+    ):
+        assert not has(refused(money, text), TRADE), text
+    for text in (
+        "8月不宜加仓，但适合小额度试探。",  # another trade recommended after a turn
+        "8月不宜加仓而适合买入。",  # another trade recommended in the same clause
+        "八月此时更适合检查仓位而非扩大仓位。",  # a recommendation beside the restraint
+        "不能说8月不宜加仓。",  # an outer negation
+        "8月并非不宜加仓。",  # a double negation
+        "流月戊申冲刑集中，8月不一定不适合加仓。",  # a degree word weakening it
+        "8月不宜犹豫，适合加仓。",  # hesitation held back, the trade recommended
+        "8月不宜犹豫地加仓。",
+        "8月别再观望加仓。",
+        "8月最忌错过加仓时机。",
     ):
         assert has(refused(money, text), TRADE), text
 
