@@ -120,6 +120,95 @@ async def test_what_still_passes(chart):
         assert refused(chart, text) == [], text
 
 
+async def test_elapsed_time_does_not_mean_the_cycle_has_finished(chart):
+    for text in (
+        "首步大运辛巳这个大运阶段已过去一半，剩下几年要稳住。",
+        "首步大运辛巳这个阶段已经过去了三年，接下来仍要注意沟通。",
+        "首步大运辛巳这个阶段过去的压力会在今年缓解。",
+    ):
+        assert misplaced(refused(chart, text)), text
+    for text in (
+        "首步大运辛巳这个阶段已经过去了。",
+        "首步大运辛巳这个阶段早已结束，眼下应关注癸未。",
+        "首步大运辛巳这一步已经走完。",
+    ):
+        assert refused(chart, text) == [], text
+
+
+async def test_explicit_years_must_belong_to_the_named_cycle(chart):
+    for text in (
+        "1997年进入首步大运辛巳这个阶段，2007年结束。",
+        "1997年至2007年的首步大运辛巳这个阶段重在学习。",
+        "1997年12月28日进入首步大运辛巳这个阶段。",
+        "2027年进入甲申这个大运阶段。",
+    ):
+        assert refused(chart, text) == [], text
+    for text in (
+        "2026年进入首步大运辛巳这个阶段，仍要注意沟通。",
+        "1997年至2026年的首步大运辛巳这个阶段重在学习。",
+        "1997年有些经历，首步大运辛巳这个阶段需要你留意节奏。",
+    ):
+        assert misplaced(refused(chart, text)), text
+
+
+async def test_the_actual_cycle_cannot_be_denied(chart):
+    for text in (
+        "现在不是癸未这个大运阶段。",
+        "现在并非大运癸未这个阶段。",
+        "现在不完全是癸未这个大运阶段。",
+    ):
+        assert refused(chart, text), text
+    for text in (
+        "现在不是辛巳这个大运阶段。",
+        "并不是癸未这个大运阶段就一定顺利。",
+        "不能说现在不是癸未这个大运阶段。",
+        "现在不是癸未这个大运阶段，但其实还是癸未这个大运阶段。",
+    ):
+        assert refused(chart, text) == [], text
+    natal = chart.state["bazi_result"]
+    handover = {"start": "2027-01-01", "end": "2027-12-31"}
+    for gz in ("癸未", "甲申"):
+        assert Bazi.dayun_problems(f"现在不是{gz}这个大运阶段。", natal, handover) == []
+    later = {"start": "2028-01-01", "end": "2028-12-31"}
+    assert Bazi.dayun_problems("现在不是甲申这个大运阶段。", natal, later)
+
+
+async def test_historical_years_do_not_trigger_repair_or_degradation(make):  # noqa: F811
+    def historical(messages):
+        return written(messages, extra="1997年进入首步大运辛巳这个阶段，2007年结束。")
+
+    runtime, _, _ = make(historical, historical, birth=None)
+    outcome = await runtime.turn(TYPED)
+    assert outcome.status == "submit_reading", outcome.text
+    info = outcome.data["pipeline"]
+    assert (info["model_calls"], info["repairs"], info["degraded"]) == (1, 0, None)
+    assert any(
+        "1997年进入首步大运辛巳这个阶段，2007年结束。" in section["body"]
+        for section in outcome.data["reading"]["sections"]
+    )
+
+
+@pytest.mark.parametrize(
+    "sentence",
+    (
+        "首步大运辛巳这个大运阶段已过去一半，剩下几年要稳住。",
+        "现在不是癸未这个大运阶段。",
+    ),
+)
+async def test_stage_errors_are_repaired_with_the_sentence_quoted(make, sentence):  # noqa: F811
+    def incorrect(messages):
+        return written(messages, extra=sentence)
+
+    runtime, composer, _ = make(incorrect, written, birth=None)
+    outcome = await runtime.turn(TYPED)
+    assert outcome.status == "submit_reading", outcome.text
+    info = outcome.data["pipeline"]
+    assert (info["model_calls"], info["repairs"], info["degraded"]) == (2, 1, None)
+    request = composer.seen[1][0][-1]["content"]
+    assert "出问题的句子：" in request and sentence in request
+    assert all(sentence not in section["body"] for section in outcome.data["reading"]["sections"])
+
+
 async def test_a_reading_that_is_not_about_a_range_keeps_its_cycles(make):  # noqa: F811
     runtime, _, _ = make(written, birth=SHANGHAI)
     outcome = await runtime.turn(DAYUN)

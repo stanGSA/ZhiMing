@@ -175,10 +175,18 @@ STAGE_HERE = re.compile(
 # What sets such a stage in another time, right after it (“这个阶段早已过去”“这一步之后”) or
 # right before it (“早在”“下一步”); anywhere else in the clause it does not (“别重复过去的模式”).
 OTHER_TIME_AFTER = re.compile(
-    r"\s*(?:(?:已经|早已|早就|已|都)?(?:过去|走完|结束|过完)|之后|以后|之前|以前|过后)"
+    r"\s*(?:(?:已经|早已|早就|已|都)?(?:过去|走完|结束|过完)(?:了)?"
+    r"(?=\s*(?:[，,。；;！!？?）)\n]|$))|之后|以后|之前|以前|过后)"
 )
 OTHER_TIME_BEFORE = re.compile(
     r"(?:早在|当年|那时|当时|回看|回顾|下一步|下步|往后|将来|未来|接下来|交运后|等到)的?$"
+)
+# A year directly governing this stage is a historical/future reference only when it
+# agrees with the calculated cycle. An unrelated year elsewhere is not an exemption.
+STAGE_TIME_BEFORE = re.compile(
+    r"(?P<first>\d{4})年(?:(?:至|到|[-—–~～])(?P<last>\d{4})年)?"
+    r"(?:\d{1,2}月(?:\d{1,2}日)?)?(?:时|期间|的)?"
+    r"(?:进入|开始|走进|走到|处于|处在|走|行)?\s*$"
 )
 ANY_DAYUN = re.compile(rf"(?P<gz>{JIAZI})大运|大运(?:是|为|：|:)?\s*(?P<after>{JIAZI})")
 HANDOVER = re.compile(r"(?P<year>\d{4})年(?:前后|左右)?(?:交运|换运|换大运|交大运|进入下一步大运)")
@@ -1261,7 +1269,7 @@ class Bazi(System):
         found = []
         for match in STAGE_HERE.finditer(text):
             stage = stages.get(match["gz"])
-            if stage is None or stage["ganzhi"] in covering:
+            if stage is None:
                 continue
             if not (match["label"] or match["suffix"] or "大运" in match["here"]):
                 continue  # 流年丙午这个阶段: not a luck cycle
@@ -1274,10 +1282,28 @@ class Bazi(System):
                 text, match.end(), stop
             ):
                 continue
-            # A negation stands before the label: “现在不是首步大运辛巳这个阶段”.
-            if kind_at(match.start(), match.end("gz"), match["gz"]) in (None, "denied"):
-                continue
             year = stage["start_year"]
+            explicit = STAGE_TIME_BEFORE.search(text[clause : match.start()])
+            if explicit:
+                start = int(explicit["first"])
+                end = int(explicit["last"] or explicit["first"])
+                if year <= start <= end <= year + 10:
+                    continue
+            # A negation stands before the label: “现在不是首步大运辛巳这个阶段”.
+            # Read the whole mention so “不是癸未这个阶段就一定顺利” denies an inference.
+            kind = kind_at(match.start(), match.end(), match["gz"])
+            actual = stage["ganzhi"] in covering
+            if not wrong(kind, actual):
+                continue
+            if kind == "denied" and actual:
+                # A handover year has two candidates; denying one is not provably wrong.
+                if len(covering) > 1:
+                    continue
+                found.append(
+                    f"这次看的是{period['start']}至{period['end']}，所在大运是{stage['ganzhi']}；"
+                    "正文不能否认这段时间所在的大运阶段"
+                )
+                continue
             found.append(
                 f"这次看的是{period['start']}至{period['end']}，所在大运是"
                 f"{'或'.join(covering) or '（没有排到）'}；{stage['ganzhi']}是{year}至{year + 10}年"
