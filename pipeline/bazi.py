@@ -157,14 +157,40 @@ FIRST_DAYUN = re.compile(
 NTH_DAYUN = re.compile(
     rf"第(?P<n>[一二三四五六七八九十\d]+)步大运\s*{DENIAL}(?:是|为|：|:|走)?\s*(?P<gz>{JIAZI})"
 )
+PRESENT = r"(?:当前|目前|现在|眼下|如今|当下)"
 CURRENT_DAYUN = re.compile(
-    rf"(?:当前|目前|现在|眼下|正在走)的?大运\s*{DENIAL}(?:是|为|：|:|走)?\s*(?P<gz>{JIAZI})|"
-    rf"(?:正在走|现在走|目前走|正走|走到了?)\s*(?P<walking>{JIAZI})大运"
+    rf"(?:{PRESENT}|正在走)(?:所处|所在|所走|走|行)?的?(?:这步|这一步)?大运\s*{DENIAL}"
+    rf"(?:是|为|：|:|走)?\s*(?P<gz>{JIAZI})|"
+    # “目前走的是辛巳大运”“当前处于辛巳大运”“如今正行辛巳运” (bazi pilot r3 probe).
+    rf"(?:{PRESENT}(?:正)?(?:走|行|处于|处在|进入|在)|正在走|正走|走到了?)(?:的是|的|着|了)?"
+    rf"\s*{DENIAL}(?:是)?\s*(?P<walking>{JIAZI})(?:这步|这一步)?(?:大运|运)(?![势气程])"
+)
+# A cycle taken as “this” stage (bazi pilot r3, typed birth #2: “首步大运辛巳（1997年交运）这个
+# 大运阶段需要你留意”, in a reading of 2026): in a timing reading it is the range's own cycle.
+STAGE_HERE = re.compile(
+    rf"(?P<label>首步大运|第一步大运|首运|第[一二三四五六七八九十\d]+步大运|大运)?的?"
+    rf"(?P<gz>{JIAZI})(?P<suffix>大运|运)?(?:（[^）]{{0,24}}）|\([^)]{{0,24}}\))?[，,]?\s*"
+    r"(?P<here>(?:这个|这一|这|此)(?:步|个)?(?:大运阶段|大运|阶段|运)|这一?步)"
+)
+# What sets such a stage in another time, right after it (“这个阶段早已过去”“这一步之后”) or
+# right before it (“早在”“下一步”); anywhere else in the clause it does not (“别重复过去的模式”).
+OTHER_TIME_AFTER = re.compile(
+    r"\s*(?:(?:已经|早已|早就|已|都)?(?:过去|走完|结束|过完)|之后|以后|之前|以前|过后)"
+)
+OTHER_TIME_BEFORE = re.compile(
+    r"(?:早在|当年|那时|当时|回看|回顾|下一步|下步|往后|将来|未来|接下来|交运后|等到)的?$"
 )
 ANY_DAYUN = re.compile(rf"(?P<gz>{JIAZI})大运|大运(?:是|为|：|:)?\s*(?P<after>{JIAZI})")
 HANDOVER = re.compile(r"(?P<year>\d{4})年(?:前后|左右)?(?:交运|换运|换大运|交大运|进入下一步大运)")
 START_DATE = re.compile(r"(?P<y>\d{4})年(?P<m>\d{1,2})月(?P<d>\d{1,2})日(?:前后)?起运")
 START_AGE = re.compile(r"(?P<age>\d{1,2})岁(?:起运|交运|上运)")
+# A number left as text after the placeholders were rendered (bazi pilot r3, typed birth #3:
+# “……引用：R7 R8 R4 R5” closed three section bodies). {{R99}} unknown is said elsewhere.
+LITERAL_ALIAS = re.compile(r"(?<![A-Za-z0-9{｛])R\d+(?![\d}｝])")
+LITERAL_ALIAS_PROBLEM = (
+    "正文里直接写了R加数字的编号，读者看不到编号对应的事实："
+    "要引用就写成{{编号}}由程序换成文字，或把编号写在【引用】行"
+)
 # 流月流月丙子: a placeholder already renders the label.
 REPEATED_LABEL = re.compile(r"(流年|流月|流日|日主|大运|年柱|月柱|日柱|时柱)的?\1")
 ASK_GENDER = "排大运需要知道性别（大运顺排还是逆排由性别和年干决定）：请告诉我是男还是女。"
@@ -812,7 +838,8 @@ class Bazi(System):
             y, m, d = map(int, dayun["start_solar"].split("-"))
             out[f"dayun:{dayun['start_solar']}:{first['ganzhi']}"] = (
                 "大运",
-                f"{y}年{m}月{d}日起运，首步大运{first['ganzhi']}（{first['start_year']}年交运）",
+                f"{y}年{m}月{d}日起运，首步大运{first['ganzhi']}"
+                f"（{first['start_year']}年交运，{first['start_year'] + 10}年换下一步）",
             )
             for index, stage in enumerate(dayun["sequence"]):
                 gz = stage["ganzhi"]
@@ -943,6 +970,24 @@ class Bazi(System):
                 lines.append(
                     f"按今年算，所在大运是{current}（交运年份只是年份标记，交运年可能前后两运并存）。"
                 )
+            if kind == "timing" and period:
+                # bazi pilot r3, typed birth #2: the only luck-cycle fact on a timing sheet is
+                # the first one, and it was written as the range's own stage.
+                first, last = int(period["start"][:4]), int(period["end"][:4])
+                covering = [
+                    s
+                    for s in dayun["sequence"]
+                    if s["start_year"] <= last and first <= s["start_year"] + 10
+                ]
+                if covering and dayun["sequence"][0] not in covering:
+                    listed = "或".join(
+                        f"{s['ganzhi']}（{s['start_year']}年交运）" for s in covering
+                    )
+                    lines.append(
+                        f"这段时间所在的大运是{listed}；事实表里的首步大运"
+                        f"{dayun['sequence'][0]['ganzhi']}只说明何时起运，不是这段时间的大运，"
+                        "不要把它写成“这个大运阶段”。"
+                    )
         elif natal:
             lines.append("没有性别资料，没有排大运；不要写大运。")
         if (natal.get("input") or {}).get("true_solar_time"):
@@ -967,11 +1012,19 @@ class Bazi(System):
                 f"“{m[0]}”把“{m[1]}”写了两遍：编号会替换成带“{m[1]}”的文字，编号前不要再写"
                 for m in REPEATED_LABEL.finditer(text)
             ]
+            if LITERAL_ALIAS.search(text):
+                found.append(LITERAL_ALIAS_PROBLEM)
             found += self.ganzhi_problems(text, state)
             found += self.pillar_problems(text, natal)
             found += self.day_master_problems(text, natal)
             found += self.ten_god_problems(text, state)
-            found += self.dayun_problems(text, natal)
+            found += self.dayun_problems(
+                text,
+                natal,
+                state.get("bazi_period_result")
+                if state.get("bazi_question_type") == "timing"
+                else None,
+            )
             found += self.relation_problems(text, state)
         found += self.wording_problems(texts, session)
         return list(dict.fromkeys(found))
@@ -1134,7 +1187,9 @@ class Bazi(System):
         return found
 
     @staticmethod
-    def dayun_problems(text: str, natal: dict) -> list[str]:
+    def dayun_problems(text: str, natal: dict, period: dict | None = None) -> list[str]:
+        """Luck cycles named as the first, n-th or current one; ``period``, a timing reading's
+        range, is the time a cycle taken as “this” stage must cover."""
         dayun = natal.get("dayun")
         if not dayun:
             if re.search(r"(?:首步|第.{1,2}步|当前|目前)大运|起运", text) and not re.search(
@@ -1148,11 +1203,14 @@ class Bazi(System):
         ages = {s["start_age"] for s in dayun["sequence"]}
         found = []
 
-        def kind_of(match, group):
-            kind = claim(text, match.start(group), match.end(group))
-            if kind == "denied" and reasserted(text, match.end(group), match[group]):
+        def kind_at(start, end, value):
+            kind = claim(text, start, end)
+            if kind == "denied" and reasserted(text, end, value):
                 return "asserted"
             return kind
+
+        def kind_of(match, group):
+            return kind_at(match.start(group), match.end(group), match[group])
 
         for match in FIRST_DAYUN.finditer(text):
             if wrong(kind_of(match, "gz"), match["gz"] == sequence[0]):
@@ -1166,6 +1224,8 @@ class Bazi(System):
             group = "gz" if match["gz"] else "walking"
             if current and wrong(kind_of(match, group), match[group] in current):
                 found.append(f"按今年算所在的大运是{'或'.join(current)}，正文写成了{match[group]}")
+        if period and period.get("start") and period.get("end"):
+            found += Bazi.stage_here_problems(text, dayun, period, kind_at)
         for match in ANY_DAYUN.finditer(text):
             group = "gz" if match["gz"] else "after"
             if match[group] not in sequence and claim(
@@ -1184,6 +1244,45 @@ class Bazi(System):
             expected = ages if "交运" in match[0] else {dayun["sequence"][0]["start_age"]}
             if int(match["age"]) not in expected:
                 found.append(f"“{match[0]}”与排出的交运岁数不符")
+        return found
+
+    @staticmethod
+    def stage_here_problems(text: str, dayun: dict, period: dict, kind_at) -> list[str]:
+        """A luck cycle taken as “this” stage in a timing reading must cover the range asked
+        about; one whose ten years lie outside it is a different stage of life."""
+        first, last = int(period["start"][:4]), int(period["end"][:4])
+        stages = {s["ganzhi"]: s for s in dayun["sequence"]}
+        # The handover year is a year label only: either cycle may hold it.
+        covering = [
+            s["ganzhi"]
+            for s in dayun["sequence"]
+            if s["start_year"] <= last and first <= s["start_year"] + 10
+        ]
+        found = []
+        for match in STAGE_HERE.finditer(text):
+            stage = stages.get(match["gz"])
+            if stage is None or stage["ganzhi"] in covering:
+                continue
+            if not (match["label"] or match["suffix"] or "大运" in match["here"]):
+                continue  # 流年丙午这个阶段: not a luck cycle
+            clause = max(text.rfind(c, 0, match.start("gz")) for c in CLAUSE_BREAK) + 1
+            stop = min(
+                (i for i in (text.find(c, match.end()) for c in CLAUSE_BREAK) if i != -1),
+                default=len(text),
+            )
+            if OTHER_TIME_BEFORE.search(text[clause : match.start()]) or OTHER_TIME_AFTER.match(
+                text, match.end(), stop
+            ):
+                continue
+            # A negation stands before the label: “现在不是首步大运辛巳这个阶段”.
+            if kind_at(match.start(), match.end("gz"), match["gz"]) in (None, "denied"):
+                continue
+            year = stage["start_year"]
+            found.append(
+                f"这次看的是{period['start']}至{period['end']}，所在大运是"
+                f"{'或'.join(covering) or '（没有排到）'}；{stage['ganzhi']}是{year}至{year + 10}年"
+                "的大运，不能当成这段时间的大运阶段"
+            )
         return found
 
     def relation_problems(self, text: str, state) -> list[str]:
