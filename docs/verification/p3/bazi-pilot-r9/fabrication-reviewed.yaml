@@ -1,0 +1,20 @@
+# Codex离线归因，非独立人工校准；原评分不变。类别指原评委失败指控，不等于已确认编造。
+Bazi-single:
+  bazi_pilot_trait#1:
+  - 事实类
+  - 叙述类
+  bazi_pilot_typed_birth#1:
+  - 事实类
+  - 叙述类
+  bazi_pilot_dayun#2:
+  - 叙述类
+  # 评委误读出生年份并忽略辰月月令；按原外推指控归为叙述类，不计事实类。
+  bazi_pilot_typed_birth#2:
+  - 叙述类
+  bazi_pilot_typed_birth#3:
+  - 叙述类
+Bazi-pipeline:
+  # 评委误读：已验证画像含15:05和time_known=true，戊申时柱有合法来源。
+  # 仅按原失败的事实类指控归因；不代表真实编造，详见fabrication-attribution.md。
+  bazi_pilot_next_month_career#2:
+  - 事实类

@@ -1,0 +1,263 @@
+{
+  "status": "verified",
+  "source_commit": "475adf2f6cf8c9e78941a5b6325bd7ec54e96ad2",
+  "source_fingerprint": "7f065d465cbb08d8f8501825b49b2b7eb2ae1d24290c7ad44a5ecb414bc73063",
+  "base_config_sha256": "248e6db07c2c5d82240d20beaa32bfe55a6d31301ca2d3f64a9b659dd57acb9c",
+  "config_sha256": "3dfa2e81873c876568582d1b3138e802aa7e1d7c59dd60e03a52c94a87557d1b",
+  "original_config_sha256": "d20f8ebd922f11bad6cda4b850ac66d17fcb50d0a656dd7800e89671cf243a24",
+  "config_restored": true,
+  "experiment_config_unchanged": true,
+  "total_rows": 36,
+  "all_groups_same_source_hashes": true,
+  "source_file_count": 183,
+  "nonconfig_file_count": 182,
+  "nonconfig_files_match_git_commit": true,
+  "raw_report_hashes_verified": true,
+  "trace_files_present": true,
+  "identical_pair_keys": true,
+  "all_results_scored": true,
+  "scored_rows": 36,
+  "groups": {
+    "Bazi-single": {
+      "run_id": "20261110T164927-6ccee585",
+      "rows": 18,
+      "statuses": {
+        "submit_reading": 13,
+        "retry_limit": 2,
+        "ask_user": 3
+      },
+      "statistics": {
+        "run_id": "20261110T164927-6ccee585",
+        "mode": "single",
+        "model": "deepseek-v4.1-flash",
+        "rubric_version": "v2-2026-10-24",
+        "cases": 18,
+        "task_success": 13,
+        "first_try_clean": 10,
+        "submitted": 13,
+        "quality_scored": 18,
+        "quality_unscored": 0,
+        "quality": 6,
+        "submitted_quality": 6,
+        "task_and_quality": 6,
+        "repaired": 0,
+        "degraded": 0,
+        "degraded_rate": 0.0,
+        "no_symbol": 0,
+        "no_symbol_rate": 0.0,
+        "degraded_without_no_symbol": 0,
+        "degraded_without_no_symbol_rate": 0.0,
+        "clean_success": 9,
+        "strict_v1": 4,
+        "tool_errors": 19,
+        "model_calls": 126,
+        "median_s": 36.7715,
+        "p95_s": 69.912,
+        "input_tokens": 793702,
+        "output_tokens": 50073,
+        "cache_rate": 0.686847204618358,
+        "categories": [
+          [
+            "I 表达策略",
+            6,
+            2,
+            2
+          ],
+          [
+            "E 事实与计算不符",
+            3,
+            3,
+            2
+          ],
+          [
+            "G 释义查询未命中",
+            3,
+            1,
+            0
+          ],
+          [
+            "B 参数不符合schema",
+            2,
+            2,
+            0
+          ],
+          [
+            "Z 其他：节气当天时辰未知请先追问，不能擅自确认候选",
+            2,
+            1,
+            1
+          ],
+          [
+            "C 资料来源/地点未确认就计算",
+            1,
+            1,
+            1
+          ],
+          [
+            "Z 其他：出生时间未知须由用户明确说明；请先追问",
+            1,
+            1,
+            1
+          ],
+          [
+            "Z 其他：时间范围问题需要相应行运或流期计算，不能只用原局",
+            1,
+            1,
+            0
+          ]
+        ],
+        "outcomes": {
+          "结局为 retry_limit，未通过：expected_status、expected_tools、saved、systems": 1,
+          "结局为 ask_user，未通过：expected_status、expected_tools、saved、systems": 3,
+          "结局为 retry_limit，未通过：expected_status、expected_tools、saved、systems、safety_flag": 1
+        },
+        "quality_failures": {
+          "supported_conclusion": 9,
+          "no_fabricated_facts": 5,
+          "direct_answer": 5,
+          "time_consistent": 1
+        }
+      },
+      "scored": 18,
+      "submitted_quality": 6,
+      "max_model_calls": 12,
+      "requested_model": "deepseek-v4.1-flash",
+      "judge_model": "deepseek-v4.1-flash",
+      "returned_models": [
+        "deepseek-v4.1-flash"
+      ],
+      "judge_requested_models": [
+        "deepseek-v4.1-flash"
+      ],
+      "judge_returned_models": [
+        "deepseek-v4.1-flash"
+      ],
+      "review_request_attempts": 18,
+      "review_parse_attempts": [
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "overseas_asks": [
+        null,
+        null,
+        null
+      ],
+      "typed_birth_asks": [
+        null,
+        null,
+        null
+      ],
+      "no_fabricated_facts_false": 5,
+      "submitted_no_fabricated_facts_false": 5
+    },
+    "Bazi-pipeline": {
+      "run_id": "20261110T170242-fd72c4b4",
+      "rows": 18,
+      "statuses": {
+        "submit_reading": 18
+      },
+      "statistics": {
+        "run_id": "20261110T170242-fd72c4b4",
+        "mode": "pipeline",
+        "model": "deepseek-v4.1-flash",
+        "rubric_version": "v2-2026-10-24",
+        "cases": 18,
+        "task_success": 18,
+        "first_try_clean": 18,
+        "submitted": 18,
+        "quality_scored": 18,
+        "quality_unscored": 0,
+        "quality": 14,
+        "submitted_quality": 14,
+        "task_and_quality": 14,
+        "repaired": 7,
+        "degraded": 3,
+        "degraded_rate": 0.16666666666666666,
+        "no_symbol": 0,
+        "no_symbol_rate": 0.0,
+        "degraded_without_no_symbol": 3,
+        "degraded_without_no_symbol_rate": 0.16666666666666666,
+        "clean_success": 11,
+        "strict_v1": 14,
+        "tool_errors": 0,
+        "model_calls": 25,
+        "median_s": 9.754999999999999,
+        "p95_s": 20.789,
+        "input_tokens": 136355,
+        "output_tokens": 17288,
+        "cache_rate": 0.5942136335301236,
+        "categories": [],
+        "outcomes": {},
+        "quality_failures": {
+          "time_consistent": 1,
+          "no_fabricated_facts": 1,
+          "direct_answer": 2,
+          "supported_conclusion": 2
+        }
+      },
+      "scored": 18,
+      "submitted_quality": 14,
+      "max_model_calls": 2,
+      "requested_model": "deepseek-v4.1-flash",
+      "judge_model": "deepseek-v4.1-flash",
+      "returned_models": [
+        "deepseek-v4.1-flash"
+      ],
+      "judge_requested_models": [
+        "deepseek-v4.1-flash"
+      ],
+      "judge_returned_models": [
+        "deepseek-v4.1-flash"
+      ],
+      "review_request_attempts": 18,
+      "review_parse_attempts": [
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "overseas_asks": [
+        1,
+        1,
+        1
+      ],
+      "typed_birth_asks": [
+        0,
+        0,
+        0
+      ],
+      "no_fabricated_facts_false": 1,
+      "submitted_no_fabricated_facts_false": 1
+    }
+  }
+}
