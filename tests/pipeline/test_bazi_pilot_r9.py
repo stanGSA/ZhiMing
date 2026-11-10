@@ -243,6 +243,8 @@ HELD_BACK = (
     "明年把全部积蓄押进股市不太合适。",
     "明年全投股市不适合你。",
     "8月加仓不划算。",
+    # Owner, 2026-11-10: r8 investment #1, a comparison replacing 全投, is no known escape.
+    "全年看，把“全投”换成“分批、留底、按预算”更稳妥。",
 )
 STILL_REFUSED = (
     "明年全投股市不适合，流月辛丑适合小额度试探。",  # another item in the sentence
