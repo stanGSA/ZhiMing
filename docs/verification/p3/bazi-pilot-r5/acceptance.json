@@ -1,0 +1,113 @@
+{
+  "scope": "P3 Bazi pilot r5; original scores retained; no final acceptance campaign",
+  "classification": "Codex offline attribution of original judge failures; not independent human adjudication",
+  "p1_four_criteria": {
+    "all_pipeline_answers_submitted": true,
+    "no_pipeline_step_or_budget_failures": true,
+    "max_pipeline_model_calls_le_3": true,
+    "submitted_quality_at_least_same_batch_single": true
+  },
+  "p1_four_criteria_passed": true,
+  "submitted_quality": {
+    "Bazi-single": {
+      "confirmed_passes": 7,
+      "submitted": 13,
+      "scored_submitted": 13,
+      "unscored_submitted": 0,
+      "possible_pass_range": [
+        7,
+        7
+      ]
+    },
+    "Bazi-pipeline": {
+      "confirmed_passes": 13,
+      "submitted": 18,
+      "scored_submitted": 18,
+      "unscored_submitted": 0,
+      "possible_pass_range": [
+        13,
+        13
+      ]
+    }
+  },
+  "fabrication_counts": {
+    "Bazi-single": {
+      "submitted": 13,
+      "scored": 13,
+      "unscored": 0,
+      "failures": 5,
+      "fact": 0,
+      "narrative": 4,
+      "undecided": 1,
+      "suggested": {
+        "事实类": 0,
+        "叙述类": 0,
+        "待复核": 1
+      }
+    },
+    "Bazi-pipeline": {
+      "submitted": 18,
+      "scored": 18,
+      "unscored": 0,
+      "failures": 3,
+      "fact": 0,
+      "narrative": 2,
+      "undecided": 1,
+      "suggested": {
+        "事实类": 0,
+        "叙述类": 0,
+        "待复核": 1
+      }
+    }
+  },
+  "both_fabrication_tables_complete": false,
+  "all_36_rows_scored": true,
+  "pipeline_fact_failures_zero": null,
+  "pipeline_repairs": 3,
+  "pipeline_degraded": 0,
+  "max_pipeline_model_calls": 2,
+  "pipeline_all_engineering_checks_passed": 18,
+  "false_rejection_causing_failure_found": false,
+  "known_escape": [
+    {
+      "id": "bazi_pilot_dayun",
+      "repeat": 1,
+      "quote": "日主为日主乙木乙木",
+      "kind": "presentation",
+      "explanation": "日主及乙木重复，既有重复标签检查未覆盖这种隔词组合。",
+      "original_quality_pass": true
+    },
+    {
+      "id": "bazi_pilot_dayun",
+      "repeat": 3,
+      "quote": "第一步第1步大运丙辰",
+      "kind": "presentation",
+      "explanation": "步数仍重复；首稿的第一步大运第1步大运已修，但第二稿变为第一步第1步大运，现有规则未命中。",
+      "original_quality_pass": true
+    },
+    {
+      "id": "bazi_pilot_overseas_solar",
+      "repeat": 3,
+      "quote": "按五行简单计数，这段时间木2、火4、土2、金0、水0",
+      "kind": "natal_period_scope",
+      "explanation": "这些数来自原局bazi_result.wuxing_count，不是12月的流期计数；把原局分布称为这段时间，重现r3观察过的范围混用。",
+      "original_quality_pass": true
+    }
+  ],
+  "b_met": false,
+  "recommendation": "do_not_freeze",
+  "final_acceptance_campaign_run": false,
+  "independent_human_calibration_completed": false,
+  "false_rejection_hits_found": 2,
+  "false_rejection_rows": 2,
+  "false_rejection_causing_failure_assessment": "No demonstrated causal chain; no counterfactual rerun. Both affected final answers fail an original judge dimension, but that does not establish causation.",
+  "known_escape_scope": "One natal/period scope error and two presentation repetitions; original no_fabricated_facts values unchanged.",
+  "unresolved_classification_keys": {
+    "Bazi-single": [
+      "bazi_pilot_next_month_career#1"
+    ],
+    "Bazi-pipeline": [
+      "bazi_pilot_investment_risk#2"
+    ]
+  }
+}
