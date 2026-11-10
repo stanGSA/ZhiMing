@@ -228,6 +228,23 @@ AGGREGATE_GOD = re.compile(
     rf"|都(?:是|为|带有?|属于?)(?P<both>{'|'.join(TEN_GODS)})"
 )
 AGGREGATE_DENIED = re.compile(r"(?:不|并不|并非|没有|未必|不一定)(?:都|全)?(?:是|为)?$")
+# Bazi pilot r8, investment #2: “春节之后，流年丁未（…2027年2月4日09:46…）”. A flow year begins
+# at 立春, not at 春节 (2027: 2月4日 and 2月6日); 春节 written as the change is refused however
+# close the two days are. Only where it opens or bounds a named flow year: “春节前后多陪家人”
+# names no flow year.
+FESTIVAL = r"(?:春节|农历新年|(?<!不)过年|大年初一|正月初一)"
+FESTIVAL_EDGE = r"(?:之后|以后|过后|后|一过|起|开始|之前|以前|前)"
+YEAR_AT_FESTIVAL = re.compile(
+    rf"(?P<at>(?:过了|过完){FESTIVAL}{FESTIVAL_EDGE}?|{FESTIVAL}{FESTIVAL_EDGE})[，,]?\s*(?:就|便|才|仍|还|都)?"
+    rf"(?:进入|转入|换成|换到|换为|迎来|来到|轮到|走到|是|为|属于?|在)?(?=流年{JIAZI})"
+    rf"|流年{JIAZI}(?:（[^（）]*）)?"
+    r"(?:并不是|不是|并非|而非|(?:不|没|并非|并不)(?:完全|全然|一定|绝对|根本|全)是?){0,2}"
+    rf"(?:要|才|就|会)?(?P<prep>从|自|于|在|到){FESTIVAL}(?:之后|以后|过后|后)?才?"
+    r"(?:开始|起|算起|交接)"
+)
+FESTIVAL_PROBLEM = (
+    "流年按立春换年，不是春节：写流年从何时开始时，用立春或事实表里的日期，不要写成春节前后"
+)
 COUNT_PROBLEM = (
     "五行计数是原局（出生八字）的，不是这段时间的：写成“原局五行计数……”，"
     "不要说成这个月、这段时间或流年流月的五行分布"
@@ -457,6 +474,47 @@ SCOPE_WEAKENED = re.compile(
 )
 
 
+# “明年把积蓄全部投入股市暂不适合”“明年把积蓄全押股市这件事，从盘面提示看暂不适合” (bazi pilot r1
+# and r2 final answers, refused when replayed on c6b1b26): the trade is the subject of a verdict
+# that denies it is suitable, so it holds back (owner, 2026-11-10). Read up to a turn or the end
+# of the sentence; another period, trade or recommendation before the verdict takes it over.
+VERDICT_DENIED = re.compile(
+    r"(?:不太|不大|不算|不够|不怎么|不|难称|算不上|谈不上|称不上)"
+    r"(?:适合|合适|适宜|明智|可取|稳妥|妥当|划算|值得|现实|理智|理性)"
+    # The verdict ends its clause: “不适合全投”“不适合犹豫” govern what follows instead.
+    r"(?=(?:你|您|自己)?[了的吧啊呢]?(?:[，,。；;！!？?\n）)”’]|$))"
+)
+VERDICT_TURN = re.compile(r"但|不过|然而|可是|却|而是|反而|只是|除非")
+# Between the trade and its verdict: the trade's object or topic (“股市这件事”), a viewpoint
+# (“从盘面提示看”) and adverbs only. “8月是加仓的好时机，错过就不划算” has its own subject.
+VERDICT_SUBJECT = re.compile(
+    r"[^，,]{0,10}?(?:这件事|这个(?:决定|想法|做法|选择)|这种做法|这一步)?"
+    r"(?:[，,]\s*(?:从|就|按)[^，,]{0,10}?(?:看|来看|而言|来说))?"
+    r"(?:暂时?|并|都|还|也|就|恐怕|显然|目前|现在|对你|完全|根本|实在|真的|确实|其实)*"
+)
+VERDICT_TAKEN_OVER = re.compile(r"时机|时点|窗口|机会|时候|错过|犹豫|迟疑|观望|等待|晚|迟")
+VERDICT_DENIAL_DENIED = re.compile(
+    r"(?:不是|并非|并不是|未必|不一定|不见得|不能说|很难说|说不上|谈不上|并不|不|"
+    r"(?:不|并不|并非)(?:完全|全然|全))$"
+)
+
+
+def denied_verdict(tail: str) -> bool:
+    """Whether the rest of the sentence after a trade denies, in so many words, that the trade
+    is suitable (“……暂不适合”“……并不明智”); “不是不适合” and “不完全适合” do not."""
+    turn = VERDICT_TURN.search(tail)
+    scope = re.split(r"[。！？!?\n]", tail[: turn.start()] if turn else tail)[0]
+    match = VERDICT_DENIED.search(scope)
+    if not match:
+        return False
+    between = scope[: match.start()]
+    if not VERDICT_SUBJECT.fullmatch(between) or VERDICT_TAKEN_OVER.search(between):
+        return False
+    if PERIOD_WORD.search(between) or TRADE_ACTION.search(between) or ENCOURAGED.search(between):
+        return False
+    return not VERDICT_DENIAL_DENIED.search(between)
+
+
 def restrains_trade(text: str) -> bool:
     """A bound on this action, not on another object before the action."""
     for match in RESTRAINT.finditer(text):
@@ -468,14 +526,19 @@ def restrains_trade(text: str) -> bool:
     return False
 
 
-def recommended_trade(clause: str, action: re.Match, before: str, after: str) -> bool:
+def recommended_trade(
+    clause: str, action: re.Match, before: str, after: str, tail: str | None = None
+) -> bool:
     """Whether this clause recommends the trade it names (see the owner decision above).
 
     ``before`` is the text since the previous action (a bare list shares its governor);
-    ``after`` runs to the next action.
+    ``after`` runs to the next action; ``tail`` is the rest of the sentence after the action.
     """
     prefix = clause[: action.start()]
     rest = clause[action.end() :]
+    if tail is not None and denied_verdict(tail):
+        # “不能说明年全投股市不适合” turns the verdict back; “明年全投股市暂不适合” holds back.
+        return bool(TURNED_BACK.search(prefix) or WEAKENED.search(prefix))
     # A denial turned back states the trade again (“不能说8月不宜加仓”“8月并非不宜加仓”).
     turned = TURNED_BACK.search(prefix)
     if turned and turned[0] not in ("岂", "怎么会"):
@@ -896,6 +959,59 @@ def title_scope_findings(
                 "或把这一段移到对应时段的那一层"
             ]
     return []
+
+
+# Bazi pilot r8: “好在下旬之后转向流月庚子（…2026年12月6日18:52…）” (overseas #3) and “7月中旬之后，
+# 流月乙未（…2026年7月7日09:56…）” (typed birth #1) passed every check; only titles were held to
+# the flow months. A body clause that names the part of a month a flow month begins in, by a
+# word for after or a turn (之后, 起, 转向…), is held to the title rule (owner, 2026-11-10): the
+# flow month's start more than two days outside that part is refused. Read leniently, as titles:
+# “9月上旬之后” over 9月7日 passes.
+STARTS_IN_PART = re.compile(
+    rf"(?:(?P<month>{MONTH_WORD})月(?P<mpart>{BARE_PART}|初|中|底|末)|(?P<part>{BARE_PART}))"
+    rf"(?P<after>{PART_AFTER})?[，,]?\s*(?:就|便|则|又|再|会|才)?"
+    r"(?P<verb>转向|转入|转到|转为|进入|换成|换到|换为|轮到|迎来|来到|交到)?"
+    rf"(?P<flow>流月(?P<gz>{JIAZI}))"
+)
+
+
+def start_findings(
+    body: str, start: date, end: date, starts: dict[str, list[date]]
+) -> list[tuple[str, str]]:
+    """(problem, sentence) for a flow month said to begin in a part of a month it does not
+    begin in. ``starts``: each flow month's local start days in the range (clipped to it)."""
+    single = start.year == end.year and start.month == end.month
+    years = range(start.year, end.year + 1)
+    found = []
+    for sentence in re.split(r"(?<=[。！？!?；;])|\n", body):
+        for match in STARTS_IN_PART.finditer(sentence):
+            if not (match["after"] or match["verb"]) or match["gz"] not in starts:
+                continue
+            marker = sentence[match.start() : match.start("flow")].rstrip("，, ")
+            if claim(sentence, match.start(), match.start("flow")) == "denied":
+                continue
+            part = match["mpart"] or match["part"]
+            if match["month"]:
+                months = [(year, month_number(match["month"])) for year in years]
+            elif single:
+                months = [(start.year, start.month)]
+            else:
+                continue  # 下旬 alone over several months names no month
+            slack = timedelta(days=SPAN_SLACK)
+            spans = [part_of(year, month, part) for year, month in months]
+            days = starts[match["gz"]]
+            if any(a - slack <= day <= b + slack for a, b in spans for day in days):
+                continue
+            day = days[0]
+            found.append(
+                (
+                    f"“{marker}”说流月{match['gz']}从这时开始，流月{match['gz']}实际从"
+                    f"{day.month}月{day.day}日开始；按流月的实际起始日写（如“{day.month}月"
+                    f"{day.day}日起”）",
+                    sentence.strip(),
+                )
+            )
+    return found
 
 
 def zone_label(tz: str) -> str:
@@ -1406,6 +1522,7 @@ class Bazi(System):
             if LITERAL_ALIAS.search(text):
                 found.append(LITERAL_ALIAS_PROBLEM)
             found += self.count_problems(text)
+            found += self.festival_problems(text)
             found += self.aggregate_problems(text)
             found += self.role_problems(text, state)
             found += self.ganzhi_problems(text, state)
@@ -1773,6 +1890,15 @@ class Bazi(System):
         return found
 
     @staticmethod
+    def festival_problems(text: str) -> list[str]:
+        """春节 written as where a flow year begins or ends (r8 investment #2), unless denied."""
+        for match in YEAR_AT_FESTIVAL.finditer(text):
+            at = match.start("at") if match["at"] else match.start("prep")
+            if claim(text, at, match.end()) != "denied":
+                return [FESTIVAL_PROBLEM]
+        return []
+
+    @staticmethod
     def count_problems(text: str) -> list[str]:
         """A five-element count is the natal chart's; a count said of a period is misplaced.
 
@@ -1823,8 +1949,10 @@ class Bazi(System):
         for sentence in re.split(r"(?<=[。！？!?\n])", text):
             # The period governs its own clause and the clauses after it, not those before
             # (“每次操作前对照，尤其留意三月……这几个时段”).
-            timed = False
+            timed, offset = False, 0
             for clause in CLAUSE_OR_TURN.split(sentence):
+                offset = sentence.find(clause, offset)
+                start, offset = offset, offset + len(clause)
                 timed = timed or bool(PERIOD_WORD.search(clause))
                 if not timed:
                     continue
@@ -1840,7 +1968,8 @@ class Bazi(System):
                         actions[index + 1].start() if index + 1 < len(actions) else len(clause)
                     )
                     after = clause[action.end() : next_start]
-                    if recommended_trade(clause, action, before, after):
+                    tail = sentence[start + action.end() :]
+                    if recommended_trade(clause, action, before, after, tail):
                         return [TRADE_PROBLEM]
                     governed, previous_end = before, action.end()
         return []
@@ -2003,6 +2132,11 @@ class Bazi(System):
             run = (key, gz, ":".join(parts[1:-offset]))
             if run in spans:
                 by_alias[fact.alias] = (spans[run], key, gz)
+        starts: dict[str, list[date]] = {}
+        for (key, gz, _), span in spans.items():
+            day = max(local_day(span["start_utc"], tz), start)
+            if key == "month" and day not in starts.setdefault(gz, []):
+                starts[gz].append(day)
         found = []
         for section in args.get("sections", []):
             title = section.get("title") or ""
@@ -2035,6 +2169,7 @@ class Bazi(System):
             )
             for problem in problems:
                 found.append((problem, title))
+            found += start_findings(body, start, end, starts)
         return found
 
     # ---- what code writes ----------------------------------------------------------------
