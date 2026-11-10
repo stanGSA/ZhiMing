@@ -237,7 +237,10 @@ ALL_IN = re.compile(
 PERIOD_WORD = re.compile(
     r"流年|流月|流日|大运|(?<![年月日时])(?:正|腊|十[一二]|[一二三四五六七八九十]|1[0-2]|[1-9])月(?!柱)|"
     r"月份|上半年|下半年|全年|整年|今年|明年|年初|年中|年底|年末|月初|月中|月底|"
-    r"这段时间|这段|此时|这时|这一时期|时期|时段|阶段|窗口|期间|这几个月"
+    r"这段时间|这段|此时|这时|这一时期|时期|时段|阶段|窗口|期间|这几个月|"
+    + RELATIVE.pattern
+    + r"|(?<!\d)\d{4}年|"
+    + BIRTH_DATE
 )
 # A clause that says bazi cannot decide this (“别把八字符号当作买卖依据”).
 NOT_BY_BAZI = re.compile(
@@ -245,26 +248,37 @@ NOT_BY_BAZI = re.compile(
     r"(?:不能|无法|不要|别|不据|不凭|不可|不该|不应|并非|而非)"
     r".{0,6}?(?:八字|命理|符号|排盘)"
 )
+BAZI_ABILITY_DENIAL = re.compile(
+    r"(?:八字|命理|符号|排盘).{0,10}?(?:不能|无法|不可|不该|不应|不足以)"
+)
 TURNED_BACK = re.compile(
     r"不能说|不是说|并不是说|很难说|谈不上|说不上|不代表|不等于|并不意味|怎么会|岂"
 )
-SAFE_NEGATION = re.compile(r"不宜|不适合|不要|别|而不是|不是|不建议|避免|没有|不足以|并非|不能")
 # Owner decision 2026-11-10: a period may come with holding back (“八月不宜加仓”“最需要克制
 # 加仓冲动的阶段”). A clause holds back when it restrains the trade and recommends nothing; a
 # weakened or turned-back restraint (“不一定不适合”“不能说不宜”“并非不宜”) does not.
 RESTRAINT = re.compile(
     r"不宜|不适合|不要|别|避免|克制|暂缓|不急于|不建议|尽量不|而非|而不是|勿|不做|少做|少碰|"
-    r"减少|不轻易|不贸然|不追|忌|延后|推迟|搁置|暂停"
+    r"减少|不轻易|不贸然|不追|忌|延后|推迟|搁置|暂停|不能"
 )
 ENCOURAGED = re.compile(
-    r"(?<!不)(?:更|最|较|比较|很|也|只|正)?适合|(?<![不适])宜(?!不)|可以|应该|应当|值得|不妨|最好|"
+    r"(?<!不)(?:更|最|较|比较|很|也|只|正)?适合|(?<![不适])宜(?!不)|可以|应该|应当|值得|不妨|最好|建议|"
     r"(?:不宜|不要|别|避免|不必|忌)再?(?:犹豫|迟疑|观望|错过|等待)"
 )
 WEAKENED = re.compile(r"不一定|未必|不完全|并不完全|不见得")
-CLAUSE_OR_TURN = re.compile(r"[，,；;：:]|但是?|不过|然而|可是")
+CLAUSE_OR_TURN = re.compile(
+    r"[，,；;：:]|但是?|不过|然而|可是|却|所以|因此|因而|而且|并且|同时|且|并(?!非|不|未|没)"
+)
+# Match all-in phrases as actions, never erase them merely because another action is denied.
+TRADE_ACTION = re.compile(ALL_IN.pattern + "|" + TRADE.pattern)
+TRADE_COORDINATION = re.compile(r"[\s、和或及与“”‘’\"']*(?:这种|以及|或者)?[\s“”‘’\"']*")
+DELAY_TRADE = re.compile(r"(?:的)?(?:决定|计划|冲动)?(?:都)?(?:先)?(?:延后|推迟|搁置|暂停)")
+NO_TRADE_SUPPORT = re.compile(r"(?:没有|无|不足以)[^，,。；;]{0,24}(?:支持|依据|说明)")
+FINANCIAL_REVIEW = re.compile(r"(?P<verb>核实|核对|评估|确认)[^，,。；;]{0,24}$")
+POSITIVE_BAZI_ABILITY = re.compile(r"(?:八字|命理|符号|排盘)(?:能|可以|可)(?:决定|判断|预测|推断)")
 TRADE_PROBLEM = (
-    "八字不能推出仓位、买卖时点或投入节奏：不要把流年、流月或某段时间写成适合或不适合"
-    "加仓、减仓、试探投入、调整操作的时机；只提醒核实财务状况和风险承受能力"
+    "八字不能推出仓位、买卖时点或投入节奏：不要按流年、流月或某段时间推荐"
+    "加仓、减仓、试探投入、调整操作；可提醒核实财务状况和风险承受能力，或只作克制冲动的提醒"
 )
 ASK_GENDER = "排大运需要知道性别（大运顺排还是逆排由性别和年干决定）：请告诉我是男还是女。"
 ASK_FORM_GENDER = "排大运需要性别：请在出生信息表中选择性别，填好后发送“继续”。"
@@ -339,6 +353,53 @@ def wrong(kind: str | None, actual: bool) -> bool:
     if kind == "hedged":
         return True
     return (kind == "asserted") != actual
+
+
+def trade_disclaimer(before: str) -> bool:
+    """A denial of bazi's ability governing this action, not a clause-wide exemption."""
+    if WEAKENED.search(before) or DOUBLE_DENIAL.search(before):
+        return False
+    ability = POSITIVE_BAZI_ABILITY.search(before)
+    if ability and TURNED_BACK.search(before[: ability.start()]):
+        return not ENCOURAGED.search(before[ability.end() :])
+    denial = BAZI_ABILITY_DENIAL.search(before) or NOT_BY_BAZI.search(before)
+    if denial:
+        # “不能说八字不能…” reaffirms the ability; a later recommendation starts a new claim.
+        return not (
+            TURNED_BACK.search(before[: denial.start()])
+            or ENCOURAGED.search(before[denial.end() :])
+        )
+    return False
+
+
+def trade_restrained(before: str, after: str) -> bool:
+    """The restraint must govern this action; denying an earlier trade is insufficient."""
+    if TURNED_BACK.search(before) or DOUBLE_DENIAL.search(before) or WEAKENED.search(before):
+        return False
+    if NO_TRADE_SUPPORT.search(before):
+        return True
+    restraints = list(RESTRAINT.finditer(before))
+    if restraints:
+        last = restraints[-1]
+        # Do not mistake “不要犹豫地加仓” for restraint of 加仓 itself.
+        return not (
+            ENCOURAGED.search(before[last.end() :])
+            or re.search(r"(?:犹豫|迟疑|观望|错过|等待)", before[last.end() :])
+        )
+    # “把加仓决定延后几天” restrains the preceding action, whereas “适合加仓后暂停” does not.
+    return bool(DELAY_TRADE.match(after) and not ENCOURAGED.search(before))
+
+
+def financial_review(before: str, action: str, after: str) -> bool:
+    """Reviewing available funds is not a recommendation to invest those funds."""
+    review = FINANCIAL_REVIEW.search(before)
+    if not review or re.search(r"后|再|接着|就", before[review.end("verb") :]):
+        return False
+    if ENCOURAGED.search(before[review.start() :]):
+        return False
+    if action == "投入":
+        return before.endswith("可") and bool(re.match(r"资金|金额|预算|额度", after))
+    return action == "额度"
 
 
 def local(instant: str, tz: str) -> datetime:
@@ -1437,24 +1498,27 @@ class Bazi(System):
             timed = False
             for clause in CLAUSE_OR_TURN.split(sentence):
                 timed = timed or bool(PERIOD_WORD.search(clause))
-                if not timed or not TRADE.search(clause):
+                if not timed:
                     continue
-                # An outer, a double or a weakened negation turns a denial back
-                # (“不能说八字不能……”“并非不宜”“不一定不适合”).
-                turned = (
-                    TURNED_BACK.search(clause)
-                    or DOUBLE_DENIAL.search(clause)
-                    or WEAKENED.search(clause)
-                )
-                if turned:
-                    return [TRADE_PROBLEM]
-                if NOT_BY_BAZI.search(clause):
-                    continue  # “别把八字符号当作买卖依据”
-                if RESTRAINT.search(clause) and not ENCOURAGED.search(clause):
-                    continue  # “八月不宜加仓”
-                rest = ALL_IN.sub("", clause) if SAFE_NEGATION.search(clause) else clause
-                if TRADE.search(rest):
-                    return [TRADE_PROBLEM]
+                actions = list(TRADE_ACTION.finditer(clause))
+                previous_end, governed = 0, ""
+                for index, action in enumerate(actions):
+                    before = clause[previous_end : action.start()]
+                    # Only a bare list shares its preceding governor (“不要加仓、买入”).
+                    # “不要追涨而要买入” starts a new predicate and cannot inherit 不要.
+                    if index and TRADE_COORDINATION.fullmatch(before):
+                        before = governed + before
+                    next_start = (
+                        actions[index + 1].start() if index + 1 < len(actions) else len(clause)
+                    )
+                    after = clause[action.end() : next_start]
+                    if not (
+                        financial_review(before, action[0], clause[action.end() :])
+                        or trade_disclaimer(before)
+                        or trade_restrained(before, after)
+                    ):
+                        return [TRADE_PROBLEM]
+                    governed, previous_end = before, action.end()
         return []
 
     def relation_problems(self, text: str, state) -> list[str]:

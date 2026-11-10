@@ -1,5 +1,7 @@
 # P3 八字调参集 r4 复核：不满足 B，r5 修复后重跑
 
+发布状态说明（2026-11-10）：本文 §3.3、§7 记录的是 PR #64 中的后续归类决定，不能视为原始发布文件已更新。`fabrication-counts.md`、`fabrication-reviewed.yaml` 和 `acceptance.json` 仍保留原有“待判定 1 条、不完整”的状态；本次修复不改评分、分类文件或 r4 验收结论。PR #64 合并后的代码修复与验证另见 [r5 后续记录](../bazi-pilot-r5/pr64-follow-up.md)。
+
 | 项目 | 内容 |
 | --- | --- |
 | 复核对象 | 负责人发布的 bazi-pilot-r4 结果（`70e57d8`）：[execution.md](execution.md)、[assessment.md](assessment.md)、[r4-observations.md](r4-observations.md)、[comparison.md](comparison.md)、[integrity.json](integrity.json)、[acceptance.json](acceptance.json)、两组 summary 与 source-hashes、[raw-manifest.json](raw-manifest.json)、[evidence-manifest.json](evidence-manifest.json)、[repair-attribution.md](repair-attribution.md)、[repair-quotes.json](repair-quotes.json)、[pipeline-problems-raw.md](pipeline-problems-raw.md)、[fabrication-counts.md](fabrication-counts.md)、[fabrication-attribution.md](fabrication-attribution.md)、[fabrication-reviewed.yaml](fabrication-reviewed.yaml)、[known-escape-probe.json](known-escape-probe.json)、[title-checks.json](title-checks.json)、[temporal-evidence.json](temporal-evidence.json)、[fallback-probe.json](fallback-probe.json)、[unscored-reviews.json](unscored-reviews.json) |
