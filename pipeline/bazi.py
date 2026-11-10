@@ -28,7 +28,7 @@ from common.facts import value_claim
 from common.input_evidence import DATE as BIRTH_DATE
 from common.input_evidence import clock_in, gender_evidence
 from common.time_utils import NeedsInput
-from common.validation import HIGH_RISK
+from common.validation import HIGH_RISK, RISKS
 from harness.failures import failure
 from harness.refs import short
 from pipeline import birth, compose, requirements
@@ -201,6 +201,71 @@ LITERAL_ALIAS_PROBLEM = (
 )
 # 流月流月丙子: a placeholder already renders the label.
 REPEATED_LABEL = re.compile(r"(流年|流月|流日|日主|大运|年柱|月柱|日柱|时柱)的?\1")
+# 第4步大运第4步大运己未, 第一步大运第1步大运丙辰 (bazi pilot r4, luck cycles #2), and the
+# fact's own note copied after it: （2023年交运，2033年换下一步）（2023年交运，2033年换下一步）.
+REPEATED_STAGE = re.compile(
+    r"(?:首步|第[一二三四五六七八九十\d]+步)大运的?(?:首步|第[一二三四五六七八九十\d]+步)大运"
+)
+REPEATED_NOTE = re.compile(r"（(?P<note>[^（）]{4,40})）\s*（(?P=note)）")
+# “出生当年就进入了第一步大运” for a start 4年10个月20天 after birth (bazi pilot r4, luck
+# cycles #3): when the chart starts its cycles, said as at or right after birth.
+AT_BIRTH = re.compile(
+    r"(?P<when>出生当年|出生那年|一出生|刚出生|出生时|出生后不久|出生不久)(?:就|便)?"
+    r"(?:开始)?(?:起运|交运|上运|进入了?(?:第一步|首步|第1步)?大运|走大运|行大运)"
+)
+# “又与年柱有流年丙午与本命时柱辛亥天干合” (bazi pilot r4, investment #3): a pillar named in
+# front of a relation fact that is about another pillar.
+LEAD_PILLAR = re.compile(
+    rf"(?P<lead>[年月日时])柱(?:之间)?(?:有|出现|形成|构成|是|的)?\s*"
+    rf"(?:流年|流月|流日){JIAZI}(?:天干|地支)?(?:与|和|跟)(?:本命|原局)(?P<natal>[年月日时])柱"
+)
+# “大运层面有年柱丙寅” (bazi pilot r4, investment #2): a natal pillar named as a luck cycle.
+NATAL_AS_DAYUN = re.compile(
+    rf"大运(?:层面|方面)?(?:上|里|中)?(?:有|是|带|出现)(?:本命|原局)?的?(?P<name>[年月日时])柱"
+    rf"(?P<gz>{JIAZI})"
+)
+# Positions, trades and amounts timed by a period (bazi pilot r4, investment #1–#3: “八月……此时
+# 更适合检查仓位而非扩大仓位”). The writing prompt forbids it; checked for an investment
+# question only.
+INVESTMENT = re.compile(RISKS[0][1] + "|股市|股|仓")
+TRADE = re.compile(
+    r"[加减建清满重轻全底调]仓|仓位|抄底|追涨|杀跌|止盈|止损|买入|卖出|买卖|交易|操作|投入|出手|进场|入场|离场|试探|额度"
+)
+ALL_IN = re.compile(
+    r"全部投入|全投|全押|押上全部|全仓|满仓|梭哈|一次性押上|集中投入|一次性投入|一次性建仓"
+)
+PERIOD_WORD = re.compile(
+    r"流年|流月|流日|大运|(?<![年月日时])(?:正|腊|十[一二]|[一二三四五六七八九十]|1[0-2]|[1-9])月(?!柱)|"
+    r"月份|上半年|下半年|全年|整年|今年|明年|年初|年中|年底|年末|月初|月中|月底|"
+    r"这段时间|这段|此时|这时|这一时期|时期|时段|阶段|窗口|期间|这几个月"
+)
+# A clause that says bazi cannot decide this (“别把八字符号当作买卖依据”).
+NOT_BY_BAZI = re.compile(
+    r"(?:八字|命理|符号|排盘).{0,10}?(?:不能|无法|不可|不该|不应|不足以)|"
+    r"(?:不能|无法|不要|别|不据|不凭|不可|不该|不应|并非|而非)"
+    r".{0,6}?(?:八字|命理|符号|排盘)"
+)
+TURNED_BACK = re.compile(
+    r"不能说|不是说|并不是说|很难说|谈不上|说不上|不代表|不等于|并不意味|怎么会|岂"
+)
+SAFE_NEGATION = re.compile(r"不宜|不适合|不要|别|而不是|不是|不建议|避免|没有|不足以|并非|不能")
+# Owner decision 2026-11-10: a period may come with holding back (“八月不宜加仓”“最需要克制
+# 加仓冲动的阶段”). A clause holds back when it restrains the trade and recommends nothing; a
+# weakened or turned-back restraint (“不一定不适合”“不能说不宜”“并非不宜”) does not.
+RESTRAINT = re.compile(
+    r"不宜|不适合|不要|别|避免|克制|暂缓|不急于|不建议|尽量不|而非|而不是|勿|不做|少做|少碰|"
+    r"减少|不轻易|不贸然|不追|忌|延后|推迟|搁置|暂停"
+)
+ENCOURAGED = re.compile(
+    r"(?<!不)(?:更|最|较|比较|很|也|只|正)?适合|(?<![不适])宜(?!不)|可以|应该|应当|值得|不妨|最好|"
+    r"(?:不宜|不要|别|避免|不必|忌)再?(?:犹豫|迟疑|观望|错过|等待)"
+)
+WEAKENED = re.compile(r"不一定|未必|不完全|并不完全|不见得")
+CLAUSE_OR_TURN = re.compile(r"[，,；;：:]|但是?|不过|然而|可是")
+TRADE_PROBLEM = (
+    "八字不能推出仓位、买卖时点或投入节奏：不要把流年、流月或某段时间写成适合或不适合"
+    "加仓、减仓、试探投入、调整操作的时机；只提醒核实财务状况和风险承受能力"
+)
 ASK_GENDER = "排大运需要知道性别（大运顺排还是逆排由性别和年干决定）：请告诉我是男还是女。"
 ASK_FORM_GENDER = "排大运需要性别：请在出生信息表中选择性别，填好后发送“继续”。"
 ASK_PHYSICAL = (
@@ -846,7 +911,9 @@ class Bazi(System):
             y, m, d = map(int, dayun["start_solar"].split("-"))
             out[f"dayun:{dayun['start_solar']}:{first['ganzhi']}"] = (
                 "大运",
-                f"{y}年{m}月{d}日起运，首步大运{first['ganzhi']}"
+                f"{y}年{m}月{d}日起运"
+                + (f"（出生后{dayun['start_after']}）" if dayun.get("start_after") else "")
+                + f"，首步大运{first['ganzhi']}"
                 f"（{first['start_year']}年交运，{first['start_year'] + 10}年换下一步）",
             )
             for index, stage in enumerate(dayun["sequence"]):
@@ -1020,8 +1087,17 @@ class Bazi(System):
                 f"“{m[0]}”把“{m[1]}”写了两遍：编号会替换成带“{m[1]}”的文字，编号前不要再写"
                 for m in REPEATED_LABEL.finditer(text)
             ]
+            found += [
+                f"“{m[0]}”把大运的步数写了两遍：编号会替换成带“第几步大运”的文字，编号前不要再写"
+                for m in REPEATED_STAGE.finditer(text)
+            ]
+            found += [
+                f"“（{m['note']}）”写了两遍：编号展开后已经带着这段说明，不要再抄一遍"
+                for m in REPEATED_NOTE.finditer(text)
+            ]
             if LITERAL_ALIAS.search(text):
                 found.append(LITERAL_ALIAS_PROBLEM)
+            found += self.role_problems(text, state)
             found += self.ganzhi_problems(text, state)
             found += self.pillar_problems(text, natal)
             found += self.day_master_problems(text, natal)
@@ -1310,6 +1386,76 @@ class Bazi(System):
                 "的大运，不能当成这段时间的大运阶段"
             )
         return found
+
+    @staticmethod
+    def role_problems(text: str, state) -> list[str]:
+        """Calculated facts put in another role by the words around them (bazi pilot r4): the
+        start of the cycles said as at birth, a relation fact led by another pillar, a natal
+        pillar named as a luck cycle, and positions timed by a period."""
+        natal = state.get("bazi_result") or {}
+        found = []
+        dayun = natal.get("dayun") or {}
+        years = re.match(r"(\d+)年", dayun.get("start_after") or "")
+        born = (natal.get("solar_date") or "")[:4]
+        for match in AT_BIRTH.finditer(text):
+            if not years or not born or not dayun.get("start_solar"):
+                break
+            when = match["when"]
+            if when in ("出生当年", "出生那年"):
+                actual = dayun["start_solar"][:4] == born
+            elif "不久" in when:
+                actual = int(years[1]) < 2
+            else:
+                actual = int(years[1]) == 0
+            kind = claim(text, match.start(), match.end())
+            if kind == "denied" and reasserted(text, match.end(), match["when"]):
+                kind = "asserted"
+            if wrong(kind, actual):
+                found.append(
+                    f"“{match[0]}”与计算不符：{dayun['start_solar']}起运，"
+                    f"是出生后{dayun['start_after']}"
+                )
+        for match in LEAD_PILLAR.finditer(text):
+            if match["lead"] != match["natal"]:
+                found.append(
+                    f"“{match[0]}”：前面写的是{match['lead']}柱，后面的事实是与"
+                    f"{match['natal']}柱的关系；按事实里的柱写"
+                )
+        pillars = natal.get("pillars") or {}
+        for match in NATAL_AS_DAYUN.finditer(text):
+            if pillars.get(PILLAR_KEY[match["name"]]) == match["gz"]:
+                found.append(f"“{match[0]}”：{match['name']}柱{match['gz']}是原局，不是大运")
+        if INVESTMENT.search(state.get("question") or ""):
+            found += Bazi.trade_problems(text)
+        return found
+
+    @staticmethod
+    def trade_problems(text: str) -> list[str]:
+        for sentence in re.split(r"(?<=[。！？!?\n])", text):
+            # The period governs its own clause and the clauses after it, not those before
+            # (“每次操作前对照，尤其留意三月……这几个时段”).
+            timed = False
+            for clause in CLAUSE_OR_TURN.split(sentence):
+                timed = timed or bool(PERIOD_WORD.search(clause))
+                if not timed or not TRADE.search(clause):
+                    continue
+                # An outer, a double or a weakened negation turns a denial back
+                # (“不能说八字不能……”“并非不宜”“不一定不适合”).
+                turned = (
+                    TURNED_BACK.search(clause)
+                    or DOUBLE_DENIAL.search(clause)
+                    or WEAKENED.search(clause)
+                )
+                if turned:
+                    return [TRADE_PROBLEM]
+                if NOT_BY_BAZI.search(clause):
+                    continue  # “别把八字符号当作买卖依据”
+                if RESTRAINT.search(clause) and not ENCOURAGED.search(clause):
+                    continue  # “八月不宜加仓”
+                rest = ALL_IN.sub("", clause) if SAFE_NEGATION.search(clause) else clause
+                if TRADE.search(rest):
+                    return [TRADE_PROBLEM]
+        return []
 
     def relation_problems(self, text: str, state) -> list[str]:
         natal = state.get("bazi_result") or {}
