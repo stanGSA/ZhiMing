@@ -215,6 +215,9 @@ REPEATED_NOTE = re.compile(r"（(?P<note>[^（）]{4,40})）\s*（(?P=note)）")
 ELEMENT_COUNT = re.compile(
     r"[木火土金水](?:有|为|是|：|:)?\s*[0-9一二三四五六七八](?!\d*[月日年号])"
 )
+ELEMENT_COUNT_LIST = re.compile(
+    rf"{ELEMENT_COUNT.pattern}(?:[、，, \t和及与]*{ELEMENT_COUNT.pattern}){{2,}}"
+)
 NATAL_SCOPE_WORD = re.compile(r"原局|命局|本命|八字|命盘|四柱|出生|天生|先天|命里|命中|生辰")
 NATAL_SCOPE_DENIED = re.compile(r"(?:不是|并非|而非|不属于|并不是)(?:看|按|用)?$")
 COUNT_PROBLEM = (
@@ -1530,29 +1533,46 @@ class Bazi(System):
     def count_problems(text: str) -> list[str]:
         """A five-element count is the natal chart's; a count said of a period is misplaced.
 
-        The scope is read in the count's own clause first (原局 or a period word there), then
-        from the nearest scope word before it in the sentence.
+        Commas within a count list do not end its clause. Each list takes the nearest preceding
+        scope, including whether that scope or the list itself is explicitly denied.
         """
+        text = ELEMENT_COUNT_LIST.sub(lambda m: m[0].replace("，", "、").replace(",", "、"), text)
         for sentence in re.split(r"(?<=[。！？!?\n])", text):
             scope = None
             for clause in CLAUSE_OR_TURN.split(sentence):
-                natal = any(
-                    not NATAL_SCOPE_DENIED.search(clause[: m.start()])
+                words = [
+                    (m, "natal")
                     for m in NATAL_SCOPE_WORD.finditer(clause)
-                )
-                period = bool(PERIOD_WORD.search(clause))
-                if len(ELEMENT_COUNT.findall(clause)) >= 3:
-                    if natal:
-                        scope = "natal"
-                    elif period or scope == "period":
-                        return [COUNT_PROBLEM]
-                if natal or period:
-                    # The later word in the clause sets the scope for the clauses after it.
-                    last_natal = max(
-                        (m.start() for m in NATAL_SCOPE_WORD.finditer(clause)), default=-1
-                    )
-                    last_period = max((m.start() for m in PERIOD_WORD.finditer(clause)), default=-1)
-                    scope = "natal" if natal and last_natal > last_period else "period"
+                    if not NATAL_SCOPE_DENIED.search(clause[: m.start()])
+                ] + [(m, "period") for m in PERIOD_WORD.finditer(clause)]
+                words.sort(key=lambda item: item[0].start())
+                groups = [(m.start(), m.end()) for m in ELEMENT_COUNT_LIST.finditer(clause)]
+                if not groups:
+                    # Keep recognizing prose-separated counts, e.g. “木2个、火4个、土2个”.
+                    items = list(ELEMENT_COUNT.finditer(clause))
+                    if len(items) >= 3:
+                        groups = [(items[0].start(), items[-1].end())]
+                for start, end in groups:
+                    current = scope
+                    for word, kind in words:
+                        if word.start() >= start:
+                            break
+                        current = (kind, claim(clause, word.start(), word.end()))
+                    if not current or current[0] != "period" or current[1] == "denied":
+                        continue
+                    if claim(clause, start, end) in (None, "denied"):
+                        continue
+                    # An explicit suffix also identifies a natal count: “木2、火4、土2是原局的”.
+                    tail = clause[end:]
+                    natal = NATAL_SCOPE_WORD.search(tail)
+                    if natal and re.fullmatch(
+                        r"\s*(?:是|为|属于|来自)(?:你的|你)?", tail[: natal.start()]
+                    ):
+                        continue
+                    return [COUNT_PROBLEM]
+                if words:
+                    word, kind = words[-1]
+                    scope = (kind, claim(clause, word.start(), word.end()))
         return []
 
     @staticmethod
