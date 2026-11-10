@@ -285,7 +285,9 @@ RESTRAINT = re.compile(
     r"不宜|不适合|不要|别|避免|克制|暂缓|不急于|不建议|尽量不|而非|而不是|勿|不做|少做|少碰|"
     r"减少|不轻易|不贸然|不追|忌|延后|推迟|搁置|暂停|不能|"
     # bazi pilot r6, investment #1–#3: “不构成买卖时点”“不算适合把积蓄全投”“不像是适合一把投入”.
-    r"不构成|不算|算不上|不像是?|不太|并不"
+    # These negations must deny suitability, not a need for caution (“并不需要谨慎加仓”).
+    r"不构成|(?:不算|算不上|不像是?|不太|并不)"
+    r"(?=(?:是)?(?:让人)?(?:很|太|那么)?(?:适合|宜|放心))"
 )
 # A recommendation right after a negation is denied (“不算适合”“谈不上是让人放心”).
 DENIED_BEFORE = re.compile(
@@ -296,8 +298,14 @@ DOUBLE_RESTRAINT = re.compile(r"(?:不算|算不上|谈不上|说不上|不像�
 # “涉及大额投入的事多找人复核”“合伙或跟风操作尤其要边界清楚” (bazi pilot r6, investment #2, #3).
 CAUTION_AFTER = re.compile(
     r"(?:的事|的决定|的计划|之前|前|时|上|中)?(?:都|也|先|多|尤其|更|一定|务必|最好)?"
-    r"(?:要|需要|得)?(?:找人|和家人)?"
-    r"(?:复核|核实|核对|评估|确认|商量|三思|想清楚|边界清楚|写清楚?|谨慎|小心|留意|慎重|冷静)"
+    r"(?:要|需要|需|得)?(?:找人|和家人)?"
+    # A review verb needs an object or a boundary, not an investment's name (“核实型基金”).
+    r"(?:(?:复核|核实|核对|评估|确认|商量|写清楚?|留意)"
+    r"(?=[\s。！？!?，,；;：:]|$|(?:你的|自己的|自身的?)?"
+    r"(?:财务|资金|金额|预算|风险|条件|边界|计划|承受能力|实际情况))|"
+    # A caution adjective must finish the reminder, not begin an investment's name.
+    r"(?:三思|想清楚|边界清楚|谨慎|小心|慎重|冷静)(?:一些|一点|些|点|一下)?"
+    r"(?=[\s。！？!?，,；;：:]|$))"
 )
 # “再谈投入多少”“设一个冷静期再决定任何投入”; not when a period sets the time (“8月再决定加仓”).
 DEFERRED = re.compile(r"(?:再|之后|以后)(?:谈|决定|考虑|定|说)(?:是否|要不要|任何|多少)?$")
@@ -427,10 +435,15 @@ def trade_restrained(before: str, after: str) -> bool:
         return False
     turned = TURNED_BACK.search(before)
     if turned:
+        # “岂能错过加仓机会”“怎么会错过买入机会” encourage the trade rhetorically.
+        if turned[0] in ("岂", "怎么会"):
+            return False
         # “不能说8月不宜加仓” states it again; “谈不上是让人放心全押” is itself the denial.
         rest = before[turned.end() :]
         # “不能说‘全投’超出八字能判断的范围” denies the disclaimer after it, not the trade.
-        return not (INNER_NEGATION.search(rest) or encouraged(rest) or OUT_OF_SCOPE.match(after))
+        return bool(re.search(r"(?:适合|宜|放心|安心)(?:地)?$", rest)) and not (
+            INNER_NEGATION.search(rest) or encouraged(rest) or OUT_OF_SCOPE.match(after)
+        )
     if NO_TRADE_SUPPORT.search(before):
         return True
     if not encouraged(before) and (
