@@ -224,7 +224,7 @@ NATAL_SCOPE_DENIED = re.compile(r"(?:不是|并非|而非|不属于|并不是)(?
 # #2): a summary of the ten gods just listed must agree with them.
 LISTED_GOD = re.compile(rf"天干[{STEMS}]为(?P<god>{'|'.join(TEN_GODS)})")
 AGGREGATE_GOD = re.compile(
-    rf"(?:两|二|三|四|几)(?:处|个|项|柱|条)(?:都是|都为|都带有?|都属于?|都|的)?(?P<god>{'|'.join(TEN_GODS)})"
+    rf"(?P<count>两|二|三|四|几)(?:处|个|项|柱|条)(?:都是|都为|都带有?|都属于?|都|的)?(?P<god>{'|'.join(TEN_GODS)})"
     rf"|都(?:是|为|带有?|属于?)(?P<both>{'|'.join(TEN_GODS)})"
 )
 AGGREGATE_DENIED = re.compile(r"(?:不|并不|并非|没有|未必|不一定)(?:都|全)?(?:是|为)?$")
@@ -436,7 +436,12 @@ TIMING_DENIED = re.compile(
     r"不构成|不是|并非|不能|无法|不作为|不当作|不当成|不代表|不等于|别把|不要把"
 )
 QUESTION_BEFORE = re.compile(r"(?:是否|要不要|该不该|能否|可否|何时|什么时候|能不能)$")
-CONDITION = re.compile(r"如果|若|假如|要是|即便|即使|万一")
+# A contemplated action in the condition is not an instruction in its consequent.
+CONSIDERED_CONDITION = re.compile(
+    r"(?:如果|若|假如|要是|即便|即使|万一)(?:你|您)?(?:正在|正|在|已经)?"
+    r"(?:考虑|打算|计划|准备|想|需要|要)(?:(?!就|则|那么|便|应该|建议|适合|可以).){0,12}$"
+)
+CONSEQUENT_BEFORE = re.compile(r"(?:就|则|那么|便)(?:先)?$")
 RHETORICAL = re.compile(r"(?:岂能|怎么会|怎能|岂可)[^，,。；;]{0,4}错过")
 HESITATION_DENIED = re.compile(r"(?:不宜|不要|别|避免|不必|忌)再?(?:犹豫|迟疑|观望|错过|等待)")
 OPENING = re.compile(r"[\s“”‘’\"'—\-·•*、]*(?:先|就|再|然后|接着|随后)?$")
@@ -450,6 +455,17 @@ COMPARED_BEFORE = re.compile(r"比[^，,。；;]{0,8}$")
 SCOPE_WEAKENED = re.compile(
     r"[”’」\"']?(?:本身)?(?:也|都)?(?:不一定|未必|并非|并不|不是|不见得)(?:超出|超过|不在|不属于)"
 )
+
+
+def restrains_trade(text: str) -> bool:
+    """A bound on this action, not on another object before the action."""
+    for match in RESTRAINT.finditer(text):
+        if match[0] in ("控制", "降低", "压低", "收紧", "守住"):
+            # “控制仓位” bounds 仓位; “控制情绪再加仓” does not bound 加仓.
+            if not re.fullmatch(r"(?:你|您|自己|自身)?的?", text[match.end() :]):
+                continue
+        return True
+    return False
 
 
 def recommended_trade(clause: str, action: re.Match, before: str, after: str) -> bool:
@@ -481,10 +497,14 @@ def recommended_trade(clause: str, action: re.Match, before: str, after: str) ->
         return False
     if NO_TRADE_SUPPORT.search(before) or QUESTION_BEFORE.search(before):
         return False
+    if CONSIDERED_CONDITION.search(prefix):
+        return False
     if CAUTION_AFTER.match(after) and not encouraged(before):
         return False
     if TIMING_NOUN_AFTER.match(after):
-        return not TIMING_DENIED.search(prefix)
+        return not (
+            TIMING_DENIED.search(prefix) or (restrains_trade(prefix) and not encouraged(prefix))
+        )
     if COMPARED_BEFORE.search(before) and not encouraged(before):
         return False  # 会比一次性全投从容得多
     manner = MANNER_BEFORE.search(before)
@@ -494,6 +514,10 @@ def recommended_trade(clause: str, action: re.Match, before: str, after: str) ->
             m
             for m in (*RESTRAINT.finditer(before), *TURNED_BACK.finditer(before))
             if m.start() < manner.start()
+            and (
+                m[0] not in ("控制", "降低", "压低", "收紧", "守住")
+                or restrains_trade(before[m.start() : manner.start()])
+            )
         ]
         if manner["word"] in ("要", "宜", "能", "可") and re.search(r"不$|别$|勿$", ahead):
             return False  # 不要加仓, 不宜加仓
@@ -501,7 +525,7 @@ def recommended_trade(clause: str, action: re.Match, before: str, after: str) ->
             # “8月要谨慎加仓” holds back as “加仓需要谨慎” does; denying the need does not.
             return bool(NEED_DENIED.search(ahead))
         if not governor:
-            return not CONDITION.search(prefix)
+            return True
         last = max(governor, key=lambda m: m.end())
         between = before[last.end() : manner.start()]
         # “不建议等待时机而要全仓”: the restraint ends at 而 and does not govern the trade.
@@ -517,17 +541,19 @@ def recommended_trade(clause: str, action: re.Match, before: str, after: str) ->
             last_encouraged = match
     if last_encouraged is not None:
         between = prefix[last_encouraged.end() :]
-        if RESTRAINT.search(between) or TIMING_DENIED.search(between):
+        if restrains_trade(between) or TIMING_DENIED.search(between):
             return False  # 适合克制加仓冲动
         governed = RESTRAINT.search(prefix) or TIMING_DENIED.search(prefix)
         if NOMINAL_AFTER.match(after) and (len(between) > 2 or governed):
             return False  # 适合把规则、凭证和止损条件想清楚
-        return not CONDITION.search(prefix[: last_encouraged.start()])
+        return True
     if NOMINAL_AFTER.match(after):
         return False
     if OPENING.fullmatch(prefix) and OBJECT_AFTER.match(after):
         return True  # ……并加仓
-    if RESTRAINT.search(prefix):
+    if CONSEQUENT_BEFORE.search(before) and OBJECT_AFTER.match(after):
+        return True  # 如果资金充足就加仓
+    if restrains_trade(prefix):
         return False  # 避免在冲、合集中的月份凭情绪操作
     period = None
     for match in PERIOD_WORD.finditer(prefix):
@@ -1721,7 +1747,19 @@ class Bazi(System):
             for match in AGGREGATE_GOD.finditer(sentence):
                 god = match["god"] or match["both"]
                 listed = [m["god"] for m in LISTED_GOD.finditer(sentence, 0, match.start())]
-                if len(listed) < 2 or all(g == god for g in listed):
+                if len(listed) < 2:
+                    continue
+                count = {"两": 2, "二": 2, "三": 3, "四": 4}.get(match["count"])
+                if count is not None and count < len(listed):
+                    before = sentence[: match.start()]
+                    if re.search(r"(?:后|末|最后)$", before):
+                        listed = listed[-count:]
+                    elif re.search(r"(?:前|最前)$", before):
+                        listed = listed[:count]
+                    elif sum(g == god for g in listed) >= count:
+                        # “其中两处偏财” need not include every preceding item.
+                        continue
+                if all(g == god for g in listed):
                     continue
                 lead = sentence[: match.start("god") if match["god"] else match.start("both")]
                 if AGGREGATE_DENIED.search(lead) or AGGREGATE_DENIED.search(
