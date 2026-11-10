@@ -283,8 +283,24 @@ TURNED_BACK = re.compile(
 # weakened or turned-back restraint (“不一定不适合”“不能说不宜”“并非不宜”) does not.
 RESTRAINT = re.compile(
     r"不宜|不适合|不要|别|避免|克制|暂缓|不急于|不建议|尽量不|而非|而不是|勿|不做|少做|少碰|"
-    r"减少|不轻易|不贸然|不追|忌|延后|推迟|搁置|暂停|不能"
+    r"减少|不轻易|不贸然|不追|忌|延后|推迟|搁置|暂停|不能|"
+    # bazi pilot r6, investment #1–#3: “不构成买卖时点”“不算适合把积蓄全投”“不像是适合一把投入”.
+    r"不构成|不算|算不上|不像是?|不太|并不"
 )
+# A recommendation right after a negation is denied (“不算适合”“谈不上是让人放心”).
+DENIED_BEFORE = re.compile(
+    r"(?:不|没|非|未|不算|算不上|谈不上|说不上|不像是?|并不|不太|不是|并非)(?:是)?(?:让人)?(?:很|太|那么)?$"
+)
+INNER_NEGATION = re.compile(r"不|没|非|无|别|未")
+DOUBLE_RESTRAINT = re.compile(r"(?:不算|算不上|谈不上|说不上|不像是?|不太)不")
+# “涉及大额投入的事多找人复核”“合伙或跟风操作尤其要边界清楚” (bazi pilot r6, investment #2, #3).
+CAUTION_AFTER = re.compile(
+    r"(?:的事|的决定|的计划|之前|前|时|上|中)?(?:都|也|先|多|尤其|更|一定|务必|最好)?"
+    r"(?:要|需要|得)?(?:找人|和家人)?"
+    r"(?:复核|核实|核对|评估|确认|商量|三思|想清楚|边界清楚|写清楚?|谨慎|小心|留意|慎重|冷静)"
+)
+# “再谈投入多少”“设一个冷静期再决定任何投入”; not when a period sets the time (“8月再决定加仓”).
+DEFERRED = re.compile(r"(?:再|之后|以后)(?:谈|决定|考虑|定|说)(?:是否|要不要|任何|多少)?$")
 ENCOURAGED = re.compile(
     r"(?<!不)(?:更|最|较|比较|很|也|只|正)?适合|(?<![不适])宜(?!不)|可以|应该|应当|值得|不妨|最好|建议|"
     r"(?:不宜|不要|别|避免|不必|忌)再?(?:犹豫|迟疑|观望|错过|等待)"
@@ -396,22 +412,41 @@ def trade_disclaimer(before: str) -> bool:
     return False
 
 
+def encouraged(text: str) -> bool:
+    """A recommendation that no negation right before it denies (“不算适合” is none)."""
+    return any(
+        not DENIED_BEFORE.search(text[: m.start()])
+        for m in ENCOURAGED.finditer(text)
+        if not m[0].startswith(("不宜", "不要", "别", "避免", "不必", "忌"))
+    ) or bool(re.search(r"(?:不宜|不要|别|避免|不必|忌)再?(?:犹豫|迟疑|观望|错过|等待)", text))
+
+
 def trade_restrained(before: str, after: str) -> bool:
     """The restraint must govern this action; denying an earlier trade is insufficient."""
-    if TURNED_BACK.search(before) or DOUBLE_DENIAL.search(before) or WEAKENED.search(before):
+    if DOUBLE_DENIAL.search(before) or DOUBLE_RESTRAINT.search(before) or WEAKENED.search(before):
         return False
+    turned = TURNED_BACK.search(before)
+    if turned:
+        # “不能说8月不宜加仓” states it again; “谈不上是让人放心全押” is itself the denial.
+        rest = before[turned.end() :]
+        # “不能说‘全投’超出八字能判断的范围” denies the disclaimer after it, not the trade.
+        return not (INNER_NEGATION.search(rest) or encouraged(rest) or OUT_OF_SCOPE.match(after))
     if NO_TRADE_SUPPORT.search(before):
+        return True
+    if not encouraged(before) and (
+        CAUTION_AFTER.match(after) or (DEFERRED.search(before) and not PERIOD_WORD.search(before))
+    ):
         return True
     restraints = list(RESTRAINT.finditer(before))
     if restraints:
         last = restraints[-1]
         # Do not mistake “不要犹豫地加仓” for restraint of 加仓 itself.
         return not (
-            ENCOURAGED.search(before[last.end() :])
+            encouraged(before[last.start() :])
             or re.search(r"(?:犹豫|迟疑|观望|错过|等待)", before[last.end() :])
         )
     # “把加仓决定延后几天” restrains the preceding action, whereas “适合加仓后暂停” does not.
-    return bool(DELAY_TRADE.match(after) and not ENCOURAGED.search(before))
+    return bool(DELAY_TRADE.match(after) and not encouraged(before))
 
 
 def out_of_scope(before: str, after: str) -> bool:
@@ -563,6 +598,27 @@ MONTH_SPAN = re.compile(
     rf"(?:(?:到|至|—|-|~|～)(?P<b>{MONTH_WORD})月(?P<pb>{MONTH_PART})?(?P<sb>{PART_AFTER})?)?"
 )
 PART_SPAN = re.compile(rf"(?P<part>{BARE_PART})(?P<after>{PART_AFTER})?")
+# “7到9月”, “七八月” (bazi pilot r3–r6 titles): the first month without 月 is written out.
+MONTH_PAIR = re.compile(
+    rf"(?<![\d一二三四五六七八九十月第])(?P<a>{MONTH_WORD})(?P<sep>到|至|—|-|~|～)(?={MONTH_WORD}月)"
+)
+ADJACENT_MONTHS = re.compile(
+    r"(?<![一二三四五六七八九十\d])(?P<a>[一二三四五六七八九])(?P<b>[二三四五六七八九十])月"
+)
+
+
+def written_months(title: str) -> str:
+    """“7到9月” → “7月到9月”; “七八月” → “七月到八月” for consecutive months only."""
+    title = MONTH_PAIR.sub(lambda m: f"{m['a']}月{m['sep']}", title)
+
+    def pair(m):
+        a, b = "一二三四五六七八九".index(m["a"]), "二三四五六七八九十".index(m["b"])
+        return f"{m['a']}月到{m['b']}月" if b == a else m[0]
+
+    title = re.sub(r"十一二月|十一、十二月", "十一月到十二月", title)
+    return ADJACENT_MONTHS.sub(pair, title)
+
+
 RELATIVE_PART = re.compile(rf"(?P<part>{MONTH_PART})(?P<after>{PART_AFTER})?")
 YEAR_PARTS = {
     "上半年": ((1, 1), (6, 30)),
@@ -611,6 +667,7 @@ def title_spans(title: str, start: date, end: date, today: date | None) -> list[
     “八月到九月”, “7月中到8月初”, “十月到年底”, “上半年”, “春季到夏季”; a part of a month alone
     (上旬, 月中之后…) only when the range is a single month; 下个月/这周… from today.
     """
+    title = written_months(title)
     years = list(range(start.year, end.year + 1))
     if today is not None and "明年" in title:
         years = [today.year + 1]
@@ -686,6 +743,42 @@ def title_findings(
             f"“{title}”这一层的标题说的是{named}，正文引用的流期却在{listed}；"
             "按流期的实际起止写标题，或把这些句子移到对应时段的那一层"
         ]
+    return []
+
+
+def title_scope_findings(
+    title: str,
+    start: date,
+    end: date,
+    cited: list[tuple[date, date, str]],
+    today: date | None,
+) -> list[str]:
+    """Stricter than title_findings for the flow months and days a section cites (bazi pilot
+    r6): one lying mostly outside the title's time, or, under a title naming part of a month
+    (中旬到月底), one starting or ending more than two days outside it. Flow years are left out:
+    they usually cover the whole range."""
+    spans = title_spans(title, start, end, today)
+    if not spans or not cited:
+        return []
+    first, last = min(a for a, _ in spans), max(b for _, b in spans)
+    named = "、".join(
+        f"{a.month}月{a.day}日至{b.month}月{b.day}日" if a.year == b.year else f"{a}至{b}"
+        for a, b in spans
+    )
+    part = bool(PART_SPAN.search(title))
+    for low, high, label in cited:
+        low, high = max(low, start), min(high, end)
+        if low > high:
+            continue
+        inside = sum(max(0, (min(high, b) - max(low, a)).days + 1) for a, b in spans)
+        mostly_outside = inside * 2 < (high - low).days + 1
+        slack = timedelta(days=2)
+        if mostly_outside or (part and (low < first - slack or high > last + slack)):
+            return [
+                f"“{title}”这一层的标题说的是{named}，正文里的{label}在{low.month}月{low.day}日至"
+                f"{high.month}月{high.day}日，与标题的时间对不上；按流期的实际起止写标题，"
+                "或把这一段移到对应时段的那一层"
+            ]
     return []
 
 
@@ -1764,7 +1857,7 @@ class Bazi(System):
             key, gz = parts[-offset], parts[-offset + 1]
             run = (key, gz, ":".join(parts[1:-offset]))
             if run in spans:
-                by_alias[fact.alias] = spans[run]
+                by_alias[fact.alias] = (spans[run], key, gz)
         found = []
         for section in args.get("sections", []):
             title = section.get("title") or ""
@@ -1773,16 +1866,29 @@ class Bazi(System):
             for match in re.finditer(rf"(流年|流月|流日)({JIAZI})", body):
                 key = FLOW_KEY[match[1]]
                 cited += [
-                    spans[(key, match[2], p["start_utc"])]
+                    (spans[(key, match[2], p["start_utc"])], key, match[2])
                     for p in periods
                     if p["pillars"].get(key) == match[2]
                     and (key, match[2], p["start_utc"]) in spans
                 ]
             local = [
-                (local_day(span["start_utc"], tz), local_day(span["end_utc"], tz, end=True))
-                for span in cited
+                (
+                    local_day(span["start_utc"], tz),
+                    local_day(span["end_utc"], tz, end=True),
+                    FLOW_ZH[key] + gz,
+                    key,
+                )
+                for span, key, gz in cited
             ]
-            for problem in title_findings(title, start, end, local, today):
+            problems = title_findings(title, start, end, [(a, b) for a, b, _, _ in local], today)
+            problems = problems or title_scope_findings(
+                title,
+                start,
+                end,
+                list(dict.fromkeys((a, b, label) for a, b, label, key in local if key != "year")),
+                today,
+            )
+            for problem in problems:
                 found.append((problem, title))
         return found
 
