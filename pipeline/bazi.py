@@ -220,6 +220,14 @@ ELEMENT_COUNT_LIST = re.compile(
 )
 NATAL_SCOPE_WORD = re.compile(r"原局|命局|本命|八字|命盘|四柱|出生|天生|先天|命里|命中|生辰")
 NATAL_SCOPE_DENIED = re.compile(r"(?:不是|并非|而非|不属于|并不是)(?:看|按|用)?$")
+# “年柱戊辰（天干戊为正财）、时柱己卯（天干己为偏财）这两处偏财线索” (bazi pilot r7, luck cycles
+# #2): a summary of the ten gods just listed must agree with them.
+LISTED_GOD = re.compile(rf"天干[{STEMS}]为(?P<god>{'|'.join(TEN_GODS)})")
+AGGREGATE_GOD = re.compile(
+    rf"(?:两|二|三|四|几)(?:处|个|项|柱|条)(?:都是|都为|都带有?|都属于?|都|的)?(?P<god>{'|'.join(TEN_GODS)})"
+    rf"|都(?:是|为|带有?|属于?)(?P<both>{'|'.join(TEN_GODS)})"
+)
+AGGREGATE_DENIED = re.compile(r"(?:不|并不|并非|没有|未必|不一定)(?:都|全)?(?:是|为)?$")
 COUNT_PROBLEM = (
     "五行计数是原局（出生八字）的，不是这段时间的：写成“原局五行计数……”，"
     "不要说成这个月、这段时间或流年流月的五行分布"
@@ -253,7 +261,9 @@ NATAL_AS_DAYUN = re.compile(
 # question only.
 INVESTMENT = re.compile(RISKS[0][1] + "|股市|股|仓")
 TRADE = re.compile(
-    r"[加减建清满重轻全底调]仓|仓位|抄底|追涨|杀跌|止盈|止损|买入|卖出|买卖|交易|操作|投入|出手|进场|入场|离场|试探|额度"
+    r"[加减建清满重轻全底调]仓|仓位|抄底|追涨|杀跌|止盈|止损|买入|卖出|买卖|交易|操作|投入|出手|进场|入场|离场|试探|额度|"
+    # bazi pilot r7, investment #2: “这几个月更适合小额验证、设好止损线”.
+    r"小额(?:验证|尝试|参与)"
 )
 ALL_IN = re.compile(
     r"全部投入|全投|全押|押上全部|全仓|满仓|梭哈|一次性押上|集中投入|一次性投入|一次性建仓"
@@ -266,15 +276,6 @@ PERIOD_WORD = re.compile(
     + r"|(?<!\d)\d{4}年|"
     + BIRTH_DATE
 )
-# A clause that says bazi cannot decide this (“别把八字符号当作买卖依据”).
-NOT_BY_BAZI = re.compile(
-    r"(?:八字|命理|符号|排盘).{0,10}?(?:不能|无法|不可|不该|不应|不足以)|"
-    r"(?:不能|无法|不要|别|不据|不凭|不可|不该|不应|并非|而非)"
-    r".{0,6}?(?:八字|命理|符号|排盘)"
-)
-BAZI_ABILITY_DENIAL = re.compile(
-    r"(?:八字|命理|符号|排盘).{0,10}?(?:不能|无法|不可|不该|不应|不足以)"
-)
 TURNED_BACK = re.compile(
     r"不能说|不是说|并不是说|很难说|谈不上|说不上|不代表|不等于|并不意味|怎么会|岂"
 )
@@ -286,6 +287,8 @@ RESTRAINT = re.compile(
     r"减少|不轻易|不贸然|不追|忌|延后|推迟|搁置|暂停|不能|"
     # bazi pilot r6, investment #1–#3: “不构成买卖时点”“不算适合把积蓄全投”“不像是适合一把投入”.
     # These negations must deny suitability, not a need for caution (“并不需要谨慎加仓”).
+    # bazi pilot r3 investment #3: “适合复盘预算、控制仓位的时段”.
+    r"控制|降低|压低|收紧|守住|"
     r"不构成|(?:不算|算不上|不像是?|不太|并不)"
     r"(?=(?:是)?(?:让人)?(?:很|太|那么)?(?:适合|宜|放心))"
 )
@@ -307,8 +310,6 @@ CAUTION_AFTER = re.compile(
     r"(?:三思|想清楚|边界清楚|谨慎|小心|慎重|冷静)(?:一些|一点|些|点|一下)?"
     r"(?=[\s。！？!?，,；;：:]|$))"
 )
-# “再谈投入多少”“设一个冷静期再决定任何投入”; not when a period sets the time (“8月再决定加仓”).
-DEFERRED = re.compile(r"(?:再|之后|以后)(?:谈|决定|考虑|定|说)(?:是否|要不要|任何|多少)?$")
 ENCOURAGED = re.compile(
     r"(?<!不)(?:更|最|较|比较|很|也|只|正)?适合|(?<![不适])宜(?!不)|可以|应该|应当|值得|不妨|最好|建议|"
     r"(?:不宜|不要|别|避免|不必|忌)再?(?:犹豫|迟疑|观望|错过|等待)"
@@ -320,10 +321,8 @@ CLAUSE_OR_TURN = re.compile(
 # Match all-in phrases as actions, never erase them merely because another action is denied.
 TRADE_ACTION = re.compile(ALL_IN.pattern + "|" + TRADE.pattern)
 TRADE_COORDINATION = re.compile(r"[\s、和或及与“”‘’\"']*(?:这种|以及|或者)?[\s“”‘’\"']*")
-DELAY_TRADE = re.compile(r"(?:的)?(?:决定|计划|冲动)?(?:都)?(?:先)?(?:延后|推迟|搁置|暂停)")
 NO_TRADE_SUPPORT = re.compile(r"(?:没有|无|不足以)[^，,。；;]{0,24}(?:支持|依据|说明)")
 FINANCIAL_REVIEW = re.compile(r"(?P<verb>核实|核对|评估|确认)[^，,。；;]{0,24}$")
-POSITIVE_BAZI_ABILITY = re.compile(r"(?:八字|命理|符号|排盘)(?:能|可以|可)(?:决定|判断|预测|推断)")
 TRADE_PROBLEM = (
     "八字不能推出仓位、买卖时点或投入节奏：不要按流年、流月或某段时间推荐"
     "加仓、减仓、试探投入、调整操作；可提醒核实财务状况和风险承受能力，或只作克制冲动的提醒"
@@ -403,23 +402,6 @@ def wrong(kind: str | None, actual: bool) -> bool:
     return (kind == "asserted") != actual
 
 
-def trade_disclaimer(before: str) -> bool:
-    """A denial of bazi's ability governing this action, not a clause-wide exemption."""
-    if WEAKENED.search(before) or DOUBLE_DENIAL.search(before):
-        return False
-    ability = POSITIVE_BAZI_ABILITY.search(before)
-    if ability and TURNED_BACK.search(before[: ability.start()]):
-        return not ENCOURAGED.search(before[ability.end() :])
-    denial = BAZI_ABILITY_DENIAL.search(before) or NOT_BY_BAZI.search(before)
-    if denial:
-        # “不能说八字不能…” reaffirms the ability; a later recommendation starts a new claim.
-        return not (
-            TURNED_BACK.search(before[: denial.start()])
-            or ENCOURAGED.search(before[denial.end() :])
-        )
-    return False
-
-
 def encouraged(text: str) -> bool:
     """A recommendation that no negation right before it denies (“不算适合” is none)."""
     return any(
@@ -429,37 +411,132 @@ def encouraged(text: str) -> bool:
     ) or bool(re.search(r"(?:不宜|不要|别|避免|不必|忌)再?(?:犹豫|迟疑|观望|错过|等待)", text))
 
 
-def trade_restrained(before: str, after: str) -> bool:
-    """The restraint must govern this action; denying an earlier trade is insufficient."""
-    if DOUBLE_DENIAL.search(before) or DOUBLE_RESTRAINT.search(before) or WEAKENED.search(before):
-        return False
-    turned = TURNED_BACK.search(before)
-    if turned:
-        # “岂能错过加仓机会”“怎么会错过买入机会” encourage the trade rhetorically.
-        if turned[0] in ("岂", "怎么会"):
-            return False
-        # “不能说8月不宜加仓” states it again; “谈不上是让人放心全押” is itself the denial.
-        rest = before[turned.end() :]
-        # “不能说‘全投’超出八字能判断的范围” denies the disclaimer after it, not the trade.
-        return bool(re.search(r"(?:适合|宜|放心|安心)(?:地)?$", rest)) and not (
-            INNER_NEGATION.search(rest) or encouraged(rest) or OUT_OF_SCOPE.match(after)
-        )
-    if NO_TRADE_SUPPORT.search(before):
-        return True
-    if not encouraged(before) and (
-        CAUTION_AFTER.match(after) or (DEFERRED.search(before) and not PERIOD_WORD.search(before))
+# Owner decision 2026-11-10 (r7 review): refuse only an explicit recommendation of a timed trade;
+# anything else that names a trade passes. The signals of a recommendation, per action:
+# a recommending word before it (适合/可以/建议…) with no restraint in between; a manner or modal
+# word right before it (分批/适度/谨慎/要/可…) that no restraint or denial governs; a period word
+# right before it (“8月加仓”); the action opening its clause (“……并加仓”); a timing noun after it
+# asserted (“8月是买入时点”); a denial turned back, a hesitation or a chance not to miss.
+MANNER_BEFORE = re.compile(
+    r"(?P<word>要|应该|应当|应|可以|可|能|宜|适度|分批|逢低|择机|大胆|放心|积极|果断|谨慎|小心|冷静|"
+    r"慎重|考虑|开始|着手|继续|适量|少量|小额|小幅|大额|一次性)(?:地)?(?:先)?$"
+)
+NEED_BEFORE = re.compile(r"需要|必要|必须|用得着")
+CAUTION_MANNER = ("谨慎", "小心", "冷静", "慎重")
+# “8月不太需要谨慎买入”“谈不上需要谨慎加仓”: the need for caution denied.
+NEED_DENIED = re.compile(
+    r"(?:不|并不|不太|谈不上|算不上|不算|不像是?|不能说|说不上)[^，,。；;]{0,3}(?:需要|必要|必须|用得着)$"
+)
+NOMINAL_AFTER = re.compile(
+    r"[”’」\"']*(?:的)?(?:念头|冲动|风险|条件|规则|线|计划|上限|理由|决定|方式|节奏|这类|这种|之类|类|"
+    r"依据|信号|方案|纪律|习惯|频率|比例|成本|逻辑|心态|欲望|年份|月份|一年|阶段|安排|判断)"
+)
+TIMING_NOUN_AFTER = re.compile(r"[”’」\"']*(?:的)?(?:好)?(?:时点|时机|窗口|机会|时候)")
+TIMING_DENIED = re.compile(
+    r"不构成|不是|并非|不能|无法|不作为|不当作|不当成|不代表|不等于|别把|不要把"
+)
+QUESTION_BEFORE = re.compile(r"(?:是否|要不要|该不该|能否|可否|何时|什么时候|能不能)$")
+CONDITION = re.compile(r"如果|若|假如|要是|即便|即使|万一")
+RHETORICAL = re.compile(r"(?:岂能|怎么会|怎能|岂可)[^，,。；;]{0,4}错过")
+HESITATION_DENIED = re.compile(r"(?:不宜|不要|别|避免|不必|忌)再?(?:犹豫|迟疑|观望|错过|等待)")
+OPENING = re.compile(r"[\s“”‘’\"'—\-·•*、]*(?:先|就|再|然后|接着|随后)?$")
+# An action opening its clause is an instruction when nothing but its object follows (“……并加仓”,
+# “并买入股票”), not a subject (“投入越多越容易……”“操作上宜留余地”).
+OBJECT_AFTER = re.compile(
+    r"[\s。！？!?]*$|(?:一些|一点|部分|少量|资金|积蓄|股票|基金|股市|标的|个股|指数)"
+)
+COMPARED_BEFORE = re.compile(r"比[^，,。；;]{0,8}$")
+# “‘全投’不一定超出八字能判断的范围” weakens the disclaimer: bazi might judge it after all.
+SCOPE_WEAKENED = re.compile(
+    r"[”’」\"']?(?:本身)?(?:也|都)?(?:不一定|未必|并非|并不|不是|不见得)(?:超出|超过|不在|不属于)"
+)
+
+
+def recommended_trade(clause: str, action: re.Match, before: str, after: str) -> bool:
+    """Whether this clause recommends the trade it names (see the owner decision above).
+
+    ``before`` is the text since the previous action (a bare list shares its governor);
+    ``after`` runs to the next action.
+    """
+    prefix = clause[: action.start()]
+    rest = clause[action.end() :]
+    # A denial turned back states the trade again (“不能说8月不宜加仓”“8月并非不宜加仓”).
+    turned = TURNED_BACK.search(prefix)
+    if turned and turned[0] not in ("岂", "怎么会"):
+        tail = prefix[turned.end() :]
+        if INNER_NEGATION.search(tail) or OUT_OF_SCOPE.match(rest):
+            return True
+    if (
+        DOUBLE_DENIAL.search(prefix)
+        or DOUBLE_RESTRAINT.search(prefix)
+        or SCOPE_WEAKENED.match(rest)
     ):
         return True
-    restraints = list(RESTRAINT.finditer(before))
-    if restraints:
-        last = restraints[-1]
-        # Do not mistake “不要犹豫地加仓” for restraint of 加仓 itself.
-        return not (
-            encouraged(before[last.start() :])
-            or re.search(r"(?:犹豫|迟疑|观望|错过|等待)", before[last.end() :])
-        )
-    # “把加仓决定延后几天” restrains the preceding action, whereas “适合加仓后暂停” does not.
-    return bool(DELAY_TRADE.match(after) and not encouraged(before))
+    if WEAKENED.search(prefix) and INNER_NEGATION.search(prefix[WEAKENED.search(prefix).end() :]):
+        return True
+    if RHETORICAL.search(prefix) or HESITATION_DENIED.search(prefix):
+        return True
+    # What only names, reviews or bounds the trade.
+    if financial_review(before, action[0], rest) or out_of_scope(before, rest):
+        return False
+    if NO_TRADE_SUPPORT.search(before) or QUESTION_BEFORE.search(before):
+        return False
+    if CAUTION_AFTER.match(after) and not encouraged(before):
+        return False
+    if TIMING_NOUN_AFTER.match(after):
+        return not TIMING_DENIED.search(prefix)
+    if COMPARED_BEFORE.search(before) and not encouraged(before):
+        return False  # 会比一次性全投从容得多
+    manner = MANNER_BEFORE.search(before)
+    if manner:
+        ahead = before[: manner.start()]
+        governor = [
+            m
+            for m in (*RESTRAINT.finditer(before), *TURNED_BACK.finditer(before))
+            if m.start() < manner.start()
+        ]
+        if manner["word"] in ("要", "宜", "能", "可") and re.search(r"不$|别$|勿$", ahead):
+            return False  # 不要加仓, 不宜加仓
+        if manner["word"] in CAUTION_MANNER:
+            # “8月要谨慎加仓” holds back as “加仓需要谨慎” does; denying the need does not.
+            return bool(NEED_DENIED.search(ahead))
+        if not governor:
+            return not CONDITION.search(prefix)
+        last = max(governor, key=lambda m: m.end())
+        between = before[last.end() : manner.start()]
+        # “不建议等待时机而要全仓”: the restraint ends at 而 and does not govern the trade.
+        if re.search(r"而|但|却|反而", between):
+            return True
+        # “谈不上是让人放心全押” denies the manner; “谈不上需要谨慎加仓” denies the need.
+        return bool(NEED_BEFORE.search(between))
+    last_encouraged = None
+    for match in ENCOURAGED.finditer(prefix):
+        if match[0] == "建议" and prefix[: match.start()].endswith("的"):
+            continue  # 别把某个朋友的建议当成全投理由
+        if not DENIED_BEFORE.search(prefix[: match.start()]):
+            last_encouraged = match
+    if last_encouraged is not None:
+        between = prefix[last_encouraged.end() :]
+        if RESTRAINT.search(between) or TIMING_DENIED.search(between):
+            return False  # 适合克制加仓冲动
+        governed = RESTRAINT.search(prefix) or TIMING_DENIED.search(prefix)
+        if NOMINAL_AFTER.match(after) and (len(between) > 2 or governed):
+            return False  # 适合把规则、凭证和止损条件想清楚
+        return not CONDITION.search(prefix[: last_encouraged.start()])
+    if NOMINAL_AFTER.match(after):
+        return False
+    if OPENING.fullmatch(prefix) and OBJECT_AFTER.match(after):
+        return True  # ……并加仓
+    if RESTRAINT.search(prefix):
+        return False  # 避免在冲、合集中的月份凭情绪操作
+    period = None
+    for match in PERIOD_WORD.finditer(prefix):
+        period = match
+    if period is not None:
+        gap = prefix[period.end() :]
+        if len(gap) <= 3 and not re.search(r"的|前|后|不|没|别|勿|非|无", gap):
+            return True  # 8月加仓, 8月买入谨慎型产品
+    return False
 
 
 def out_of_scope(before: str, after: str) -> bool:
@@ -1303,6 +1380,7 @@ class Bazi(System):
             if LITERAL_ALIAS.search(text):
                 found.append(LITERAL_ALIAS_PROBLEM)
             found += self.count_problems(text)
+            found += self.aggregate_problems(text)
             found += self.role_problems(text, state)
             found += self.ganzhi_problems(text, state)
             found += self.pillar_problems(text, natal)
@@ -1636,6 +1714,27 @@ class Bazi(System):
         return found
 
     @staticmethod
+    def aggregate_problems(text: str) -> list[str]:
+        """A summary (“这两处偏财”“都是正财”) of ten gods listed earlier in its sentence."""
+        found = []
+        for sentence in re.split(r"(?<=[。！？!?\n])", text):
+            for match in AGGREGATE_GOD.finditer(sentence):
+                god = match["god"] or match["both"]
+                listed = [m["god"] for m in LISTED_GOD.finditer(sentence, 0, match.start())]
+                if len(listed) < 2 or all(g == god for g in listed):
+                    continue
+                lead = sentence[: match.start("god") if match["god"] else match.start("both")]
+                if AGGREGATE_DENIED.search(lead) or AGGREGATE_DENIED.search(
+                    sentence[: match.start()]
+                ):
+                    continue
+                found.append(
+                    f"“{match[0]}”与前面写的十神不符：前面依次是{'、'.join(listed)}；"
+                    "分别写出各柱的十神，不要合并成一种"
+                )
+        return found
+
+    @staticmethod
     def count_problems(text: str) -> list[str]:
         """A five-element count is the natal chart's; a count said of a period is misplaced.
 
@@ -1703,12 +1802,7 @@ class Bazi(System):
                         actions[index + 1].start() if index + 1 < len(actions) else len(clause)
                     )
                     after = clause[action.end() : next_start]
-                    if not (
-                        financial_review(before, action[0], clause[action.end() :])
-                        or trade_disclaimer(before)
-                        or trade_restrained(before, after)
-                        or out_of_scope(before, clause[action.end() :])
-                    ):
+                    if recommended_trade(clause, action, before, after):
                         return [TRADE_PROBLEM]
                     governed, previous_end = before, action.end()
         return []

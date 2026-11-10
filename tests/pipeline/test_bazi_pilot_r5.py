@@ -54,10 +54,6 @@ TRADES = (
     # investment #3
     "流月辛丑（十神偏财；2027年1月5日22:09至2027年2月4日09:46，北京时间）虽带偏财主题，"
     "所以即便感觉机会来了，也只适合小额度、可承受损失的试探，而不是全投。",
-    "这些时段如果你正在考虑大额投入，更适合先做检查与修补，而不是一次性押上全部。",
-    # investment #1
-    "- 选窗口做功课：把4月、9月、10月当作整理预算、复盘和学习的时间，操作上保持节奏，"
-    "不在情绪最紧的月份做大决定。",
 )
 # Owner decision 2026-11-10: holding back in a period passes. Saved r4 sentences (investment #2).
 HELD_BACK = (
@@ -67,6 +63,12 @@ HELD_BACK = (
     "- 写下来再执行：把买入理由、止损线、最大可承受亏损写在纸上，每次操作前对照，"
     "尤其留意三月、五月到六月、八月这几个容易冲动的时段。",
     "- 分批而非一次：把计划投入的金额拆成几批，避免在冲、合集中的月份凭情绪操作。",
+    # Owner decision 2026-11-10 (r7 review): only an explicit recommendation is refused; a
+    # conditional that recommends checking first holds back (investment #3, refused until r7).
+    "这些时段如果你正在考虑大额投入，更适合先做检查与修补，而不是一次性押上全部。",
+    # investment #1, also refused until r7: “操作上保持节奏” holds back.
+    "- 选窗口做功课：把4月、9月、10月当作整理预算、复盘和学习的时间，操作上保持节奏，"
+    "不在情绪最紧的月份做大决定。",
 )
 
 
@@ -171,7 +173,7 @@ async def test_a_natal_pillar_named_as_a_luck_cycle(money):
 TRADE = "八字不能推出仓位、买卖时点或投入节奏"
 
 
-@pytest.mark.parametrize("sentence", TRADES, ids=["2-august", "3-xinchou", "3-periods", "1-months"])
+@pytest.mark.parametrize("sentence", TRADES, ids=["2-august", "3-xinchou"])
 async def test_the_r4_trades_timed_by_months_are_refused(money, sentence):
     assert has(refused(money, sentence), TRADE)
 
