@@ -1,0 +1,20 @@
+{
+  "group": "Bazi-single",
+  "id": "bazi_pilot_investment_risk",
+  "repeat": 3,
+  "usage": {
+    "input_tokens": 19580,
+    "output_tokens": 1000,
+    "usage_available": true,
+    "requested_model": "deepseek-v4.1-flash",
+    "returned_model": "deepseek-v4.1-flash",
+    "parse_attempts": 2
+  },
+  "review_request_attempts": 2,
+  "cause_known": "Built-in judge_answer retried after ValueError in JSON extraction or boolean-field validation.",
+  "exact_first_error_available": false,
+  "first_raw_reply_available": false,
+  "limitation": "judge_answer discards accumulated unparsed replies after a successful retry; neither live.json nor session trace retains the first failed reply. Exact parse error cannot be recovered. No offline rescoring was performed.",
+  "source": "scripts/live_week23.py:judge_answer",
+  "total_batch_review_requests": 37
+}

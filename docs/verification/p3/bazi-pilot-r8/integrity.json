@@ -1,0 +1,254 @@
+{
+  "status": "verified",
+  "source_commit": "c6b1b26968829a12a3048f461973f3a3e3b5b865",
+  "source_fingerprint": "275890369ddf2878c9a7f4531e0d978817110504b27885508d6e50003d5641c9",
+  "base_config_sha256": "248e6db07c2c5d82240d20beaa32bfe55a6d31301ca2d3f64a9b659dd57acb9c",
+  "config_sha256": "3dfa2e81873c876568582d1b3138e802aa7e1d7c59dd60e03a52c94a87557d1b",
+  "original_config_sha256": "d20f8ebd922f11bad6cda4b850ac66d17fcb50d0a656dd7800e89671cf243a24",
+  "config_restored": true,
+  "experiment_config_unchanged": true,
+  "total_rows": 36,
+  "all_groups_same_source_hashes": true,
+  "source_file_count": 183,
+  "nonconfig_file_count": 182,
+  "nonconfig_files_match_git_commit": true,
+  "raw_report_hashes_verified": true,
+  "trace_files_present": true,
+  "identical_pair_keys": true,
+  "all_results_scored": true,
+  "scored_rows": 36,
+  "groups": {
+    "Bazi-single": {
+      "run_id": "20261110T141324-749b8275",
+      "rows": 18,
+      "statuses": {
+        "submit_reading": 13,
+        "ask_user": 4,
+        "limit_reached": 1
+      },
+      "statistics": {
+        "run_id": "20261110T141324-749b8275",
+        "mode": "single",
+        "model": "deepseek-v4.1-flash",
+        "rubric_version": "v2-2026-10-24",
+        "cases": 18,
+        "task_success": 13,
+        "first_try_clean": 6,
+        "submitted": 13,
+        "quality_scored": 18,
+        "quality_unscored": 0,
+        "quality": 9,
+        "submitted_quality": 7,
+        "task_and_quality": 7,
+        "repaired": 0,
+        "degraded": 0,
+        "degraded_rate": 0.0,
+        "no_symbol": 0,
+        "no_symbol_rate": 0.0,
+        "degraded_without_no_symbol": 0,
+        "degraded_without_no_symbol_rate": 0.0,
+        "clean_success": 5,
+        "strict_v1": 1,
+        "tool_errors": 13,
+        "model_calls": 121,
+        "median_s": 36.376000000000005,
+        "p95_s": 67.295,
+        "input_tokens": 720922,
+        "output_tokens": 40727,
+        "cache_rate": 0.6965302765070285,
+        "categories": [
+          [
+            "E 事实与计算不符",
+            5,
+            5,
+            3
+          ],
+          [
+            "G 释义查询未命中",
+            2,
+            2,
+            0
+          ],
+          [
+            "Z 其他：时间范围问题需要相应行运或流期计算，不能只用原局",
+            2,
+            1,
+            0
+          ],
+          [
+            "A 参数不是合法JSON",
+            1,
+            1,
+            0
+          ],
+          [
+            "B 参数不符合schema",
+            1,
+            1,
+            1
+          ],
+          [
+            "C 资料来源/地点未确认就计算",
+            1,
+            1,
+            0
+          ],
+          [
+            "Z 其他：节气当天时辰未知请先追问，不能擅自确认候选",
+            1,
+            1,
+            0
+          ]
+        ],
+        "outcomes": {
+          "结局为 ask_user，未通过：expected_status、expected_tools、saved、systems": 4,
+          "达到步数或预算上限": 1
+        },
+        "quality_failures": {
+          "time_consistent": 5,
+          "no_fabricated_facts": 5,
+          "direct_answer": 3,
+          "supported_conclusion": 4
+        }
+      },
+      "scored": 18,
+      "submitted_quality": 7,
+      "max_model_calls": 12,
+      "requested_model": "deepseek-v4.1-flash",
+      "judge_model": "deepseek-v4.1-flash",
+      "returned_models": [
+        "deepseek-v4.1-flash"
+      ],
+      "judge_requested_models": [
+        "deepseek-v4.1-flash"
+      ],
+      "judge_returned_models": [
+        "deepseek-v4.1-flash"
+      ],
+      "review_request_attempts": 19,
+      "review_parse_attempts": [
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        2
+      ],
+      "overseas_asks": [
+        null,
+        null,
+        null
+      ],
+      "typed_birth_asks": [
+        null,
+        null,
+        null
+      ],
+      "no_fabricated_facts_false": 5,
+      "submitted_no_fabricated_facts_false": 5
+    },
+    "Bazi-pipeline": {
+      "run_id": "20261110T142706-5e35377d",
+      "rows": 18,
+      "statuses": {
+        "submit_reading": 18
+      },
+      "statistics": {
+        "run_id": "20261110T142706-5e35377d",
+        "mode": "pipeline",
+        "model": "deepseek-v4.1-flash",
+        "rubric_version": "v2-2026-10-24",
+        "cases": 18,
+        "task_success": 18,
+        "first_try_clean": 18,
+        "submitted": 18,
+        "quality_scored": 18,
+        "quality_unscored": 0,
+        "quality": 15,
+        "submitted_quality": 15,
+        "task_and_quality": 15,
+        "repaired": 3,
+        "degraded": 0,
+        "degraded_rate": 0.0,
+        "no_symbol": 0,
+        "no_symbol_rate": 0.0,
+        "degraded_without_no_symbol": 0,
+        "degraded_without_no_symbol_rate": 0.0,
+        "clean_success": 15,
+        "strict_v1": 15,
+        "tool_errors": 0,
+        "model_calls": 21,
+        "median_s": 9.7395,
+        "p95_s": 15.71,
+        "input_tokens": 91797,
+        "output_tokens": 13146,
+        "cache_rate": 0.6832467291959432,
+        "categories": [],
+        "outcomes": {},
+        "quality_failures": {
+          "no_fabricated_facts": 3,
+          "supported_conclusion": 1
+        }
+      },
+      "scored": 18,
+      "submitted_quality": 15,
+      "max_model_calls": 2,
+      "requested_model": "deepseek-v4.1-flash",
+      "judge_model": "deepseek-v4.1-flash",
+      "returned_models": [
+        "deepseek-v4.1-flash"
+      ],
+      "judge_requested_models": [
+        "deepseek-v4.1-flash"
+      ],
+      "judge_returned_models": [
+        "deepseek-v4.1-flash"
+      ],
+      "review_request_attempts": 18,
+      "review_parse_attempts": [
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "overseas_asks": [
+        1,
+        1,
+        1
+      ],
+      "typed_birth_asks": [
+        0,
+        0,
+        0
+      ],
+      "no_fabricated_facts_false": 3,
+      "submitted_no_fabricated_facts_false": 3
+    }
+  }
+}
