@@ -1,0 +1,95 @@
+{
+  "scope": "P3 Bazi pilot r6; original scores retained; no final acceptance campaign",
+  "classification": "Codex offline attribution of original judge failures; not independent human adjudication",
+  "p1_four_criteria": {
+    "all_pipeline_answers_submitted": true,
+    "no_pipeline_step_or_budget_failures": true,
+    "max_pipeline_model_calls_le_3": true,
+    "submitted_quality_at_least_same_batch_single": true
+  },
+  "p1_four_criteria_passed": true,
+  "submitted_quality": {
+    "Bazi-single": {
+      "confirmed_passes": 8,
+      "submitted": 14,
+      "scored_submitted": 14,
+      "unscored_submitted": 0,
+      "possible_pass_range": [
+        8,
+        8
+      ]
+    },
+    "Bazi-pipeline": {
+      "confirmed_passes": 11,
+      "submitted": 18,
+      "scored_submitted": 18,
+      "unscored_submitted": 0,
+      "possible_pass_range": [
+        11,
+        11
+      ]
+    }
+  },
+  "fabrication_counts": {
+    "Bazi-single": {
+      "submitted": 14,
+      "scored": 14,
+      "unscored": 0,
+      "failures": 5,
+      "fact": 2,
+      "narrative": 5,
+      "undecided": 0,
+      "suggested": {
+        "事实类": 0,
+        "叙述类": 0,
+        "待复核": 0
+      }
+    },
+    "Bazi-pipeline": {
+      "submitted": 18,
+      "scored": 18,
+      "unscored": 0,
+      "failures": 1,
+      "fact": 0,
+      "narrative": 1,
+      "undecided": 0,
+      "suggested": {
+        "事实类": 0,
+        "叙述类": 0,
+        "待复核": 0
+      }
+    }
+  },
+  "both_fabrication_tables_complete": true,
+  "all_36_rows_scored": true,
+  "pipeline_fact_failures_zero": true,
+  "pipeline_repairs": 7,
+  "pipeline_degraded": 1,
+  "max_pipeline_model_calls": 2,
+  "pipeline_all_engineering_checks_passed": 18,
+  "false_rejection_causing_failure_found": true,
+  "known_escape": [
+    {
+      "id": "bazi_pilot_overseas_solar",
+      "repeat": 3,
+      "title": "中旬到月底：联结增多，但要防隐性牵扯",
+      "problem": "标题把该层限定为中旬到月底，正文却明确从12月6日18:52开始；中旬从11日开始，范围不一致。原time_consistent为true，原分保留。"
+    },
+    {
+      "id": "bazi_pilot_typed_birth",
+      "repeat": 3,
+      "title": "年底两个月：先理顺自己，再谈关系",
+      "problem": "标题限定年底两个月（11、12月），正文第一段却讲10月8日至11月7日，包含10月。原time_consistent为true，原分保留。"
+    }
+  ],
+  "b_met": false,
+  "narrative_fabrication_share": {
+    "Bazi-single": 0.35714285714285715,
+    "Bazi-pipeline": 0.05555555555555555
+  },
+  "narrative_no_higher_than_single": true,
+  "narrative_aspirational_le_10_percent": true,
+  "recommendation": "do_not_freeze",
+  "final_acceptance_campaign_run": false,
+  "independent_human_calibration_completed": false
+}
