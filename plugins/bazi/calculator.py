@@ -44,6 +44,12 @@ def terms(year):
     return tuple(sorted(as_datetime(table[name]) for name in JIE))
 
 
+def month_start(instant: datetime) -> datetime:
+    """The physical Jie starting the flow month, independent of any requested date range."""
+    year = instant.astimezone(CST).year
+    return max(term for y in (year - 1, year) for term in terms(y) if term <= instant)
+
+
 def ten_god(day_stem, other_stem):
     d, x = GAN.index(day_stem), GAN.index(other_stem)
     relation, same = (GAN_WX[x] - GAN_WX[d]) % 5, (d % 2) == (x % 2)

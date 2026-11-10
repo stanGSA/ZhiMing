@@ -38,7 +38,7 @@ from pipeline.intent import CONTINUE, Intent
 from pipeline.render import safety_for
 from pipeline.state import RESUMABLE, snapshot
 from pipeline.system import System
-from plugins.bazi.calculator import relations, ten_god
+from plugins.bazi.calculator import month_start, relations, ten_god
 
 BAZI = re.compile(
     r"八字|四柱|命盘|命局|命理|排盘|日主|日元|十神|大运|流年|流月|起运|交运|首运|"
@@ -399,6 +399,15 @@ def claim(text: str, start: int, end: int) -> str | None:
     return "asserted" if OUTER.search(lead) else "denied"
 
 
+def boundary_claim(text: str, start: int, end: int) -> str | None:
+    """Read a boundary's governing denial before its preposition (不是在 / 并非要到…)."""
+    kind = claim(text, start, end)
+    if kind in ("denied", "hedged"):
+        return kind  # Preserve complete negations such as 不在 / 并不在 before peeling off 在.
+    preposition = re.search(r"(?:要|等|才|在|到|从|自|于)+\s*$", text[:start])
+    return claim(text, preposition.start(), end) if preposition else kind
+
+
 def reasserted(text: str, end: int, value: str) -> bool:
     """Whether a value denied before ``end`` is stated again later in the same sentence
     (“日主不是乙木，但其实是乙木”): the denial does not stand."""
@@ -488,14 +497,14 @@ VERDICT_TURN = re.compile(r"但|不过|然而|可是|却|而是|反而|只是|�
 # Between the trade and its verdict: the trade's object or topic (“股市这件事”), a viewpoint
 # (“从盘面提示看”) and adverbs only. “8月是加仓的好时机，错过就不划算” has its own subject.
 VERDICT_SUBJECT = re.compile(
-    r"[^，,]{0,10}?(?:这件事|这个(?:决定|想法|做法|选择)|这种做法|这一步)?"
-    r"(?:[，,]\s*(?:从|就|按)[^，,]{0,10}?(?:看|来看|而言|来说))?"
+    r"[^，,。；;！!？?\n]{0,10}?(?:这件事|这个(?:决定|想法|做法|选择)|这种做法|这一步)?"
+    r"(?:[，,]\s*(?:从|就|按)[^，,。；;！!？?\n]{0,10}?(?:看|来看|而言|来说))?"
     r"(?:暂时?|并|都|还|也|就|恐怕|显然|目前|现在|对你|完全|根本|实在|真的|确实|其实)*"
 )
 VERDICT_TAKEN_OVER = re.compile(r"时机|时点|窗口|机会|时候|错过|犹豫|迟疑|观望|等待|晚|迟")
 VERDICT_DENIAL_DENIED = re.compile(
-    r"(?:不是|并非|并不是|未必|不一定|不见得|不能说|很难说|说不上|谈不上|并不|不|"
-    r"(?:不|并不|并非)(?:完全|全然|全))$"
+    r"(?:不是|并非|并不是|未必|不一定|不见得|不能说|很难说|说不上|谈不上|算不上|不算|没有|没|并不|不)"
+    r"(?:完全|全然|一定|绝对|根本|全|那么|这么|多么|很|太|十分|特别|怎么|是)*\s*$"
 )
 
 
@@ -503,7 +512,7 @@ def denied_verdict(tail: str) -> bool:
     """Whether the rest of the sentence after a trade denies, in so many words, that the trade
     is suitable (“……暂不适合”“……并不明智”); “不是不适合” and “不完全适合” do not."""
     turn = VERDICT_TURN.search(tail)
-    scope = re.split(r"[。！？!?\n]", tail[: turn.start()] if turn else tail)[0]
+    scope = re.split(r"[。；;！？!?\n]", tail[: turn.start()] if turn else tail)[0]
     match = VERDICT_DENIED.search(scope)
     if not match:
         return False
@@ -979,7 +988,7 @@ def start_findings(
     body: str, start: date, end: date, starts: dict[str, list[date]]
 ) -> list[tuple[str, str]]:
     """(problem, sentence) for a flow month said to begin in a part of a month it does not
-    begin in. ``starts``: each flow month's local start days in the range (clipped to it)."""
+    begin in. ``starts``: each flow month's actual local start days, before range clipping."""
     single = start.year == end.year and start.month == end.month
     years = range(start.year, end.year + 1)
     found = []
@@ -988,18 +997,22 @@ def start_findings(
             if not (match["after"] or match["verb"]) or match["gz"] not in starts:
                 continue
             marker = sentence[match.start() : match.start("flow")].rstrip("，, ")
-            if claim(sentence, match.start(), match.start("flow")) == "denied":
+            if boundary_claim(sentence, match.start(), match.start("flow")) == "denied":
                 continue
             part = match["mpart"] or match["part"]
+            days = starts[match["gz"]]
             if match["month"]:
-                months = [(year, month_number(match["month"])) for year in years]
+                # Early January can still name the flow month that began in December.
+                months = [
+                    (year, month_number(match["month"]))
+                    for year in sorted({*years, *(day.year for day in days)})
+                ]
             elif single:
                 months = [(start.year, start.month)]
             else:
                 continue  # 下旬 alone over several months names no month
             slack = timedelta(days=SPAN_SLACK)
             spans = [part_of(year, month, part) for year, month in months]
-            days = starts[match["gz"]]
             if any(a - slack <= day <= b + slack for a, b in spans for day in days):
                 continue
             day = days[0]
@@ -1894,7 +1907,7 @@ class Bazi(System):
         """春节 written as where a flow year begins or ends (r8 investment #2), unless denied."""
         for match in YEAR_AT_FESTIVAL.finditer(text):
             at = match.start("at") if match["at"] else match.start("prep")
-            if claim(text, at, match.end()) != "denied":
+            if boundary_claim(text, at, match.end()) != "denied":
                 return [FESTIVAL_PROBLEM]
         return []
 
@@ -2134,8 +2147,12 @@ class Bazi(System):
                 by_alias[fact.alias] = (spans[run], key, gz)
         starts: dict[str, list[date]] = {}
         for (key, gz, _), span in spans.items():
-            day = max(local_day(span["start_utc"], tz), start)
-            if key == "month" and day not in starts.setdefault(gz, []):
+            if key != "month":
+                continue
+            # Period spans are clipped to the query; only the physical Jie is a month start.
+            instant = datetime.fromisoformat(span["start_utc"])
+            day = month_start(instant).astimezone(ZoneInfo(tz)).date()
+            if day not in starts.setdefault(gz, []):
                 starts[gz].append(day)
         found = []
         for section in args.get("sections", []):
