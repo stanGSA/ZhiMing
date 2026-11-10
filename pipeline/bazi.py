@@ -200,13 +200,34 @@ LITERAL_ALIAS_PROBLEM = (
     "要引用就写成{{编号}}由程序换成文字，或把编号写在【引用】行"
 )
 # 流月流月丙子: a placeholder already renders the label.
-REPEATED_LABEL = re.compile(r"(流年|流月|流日|日主|大运|年柱|月柱|日柱|时柱)的?\1")
+# “日主为日主乙木乙木” (bazi pilot r5, luck cycles #1): the label again after 为/是.
+REPEATED_LABEL = re.compile(r"(流年|流月|流日|日主|大运|年柱|月柱|日柱|时柱)(?:的|为|是)?\1")
+REPEATED_VALUE = re.compile(rf"(?P<value>{STEM}[木火土金水]|{JIAZI})(?P=value)")
 # 第4步大运第4步大运己未, 第一步大运第1步大运丙辰 (bazi pilot r4, luck cycles #2), and the
 # fact's own note copied after it: （2023年交运，2033年换下一步）（2023年交运，2033年换下一步）.
 REPEATED_STAGE = re.compile(
-    r"(?:首步|第[一二三四五六七八九十\d]+步)大运的?(?:首步|第[一二三四五六七八九十\d]+步)大运"
+    # r5 luck cycles #3: “第一步第1步大运丙辰”, without 大运 after the first.
+    r"(?:首步|第[一二三四五六七八九十\d]+步)(?:大运)?的?(?:首步|第[一二三四五六七八九十\d]+步)大运"
 )
 REPEATED_NOTE = re.compile(r"（(?P<note>[^（）]{4,40})）\s*（(?P=note)）")
+# The five-element count is the natal chart's (wuxing_count); no period has one (bazi pilot r5,
+# overseas #3: “按五行简单计数，这段时间木2、火4、土2、金0、水0”).
+ELEMENT_COUNT = re.compile(
+    r"[木火土金水](?:有|为|是|：|:)?\s*[0-9一二三四五六七八](?!\d*[月日年号])"
+)
+NATAL_SCOPE_WORD = re.compile(r"原局|命局|本命|八字|命盘|四柱|出生|天生|先天|命里|命中|生辰")
+NATAL_SCOPE_DENIED = re.compile(r"(?:不是|并非|而非|不属于|并不是)(?:看|按|用)?$")
+COUNT_PROBLEM = (
+    "五行计数是原局（出生八字）的，不是这段时间的：写成“原局五行计数……”，"
+    "不要说成这个月、这段时间或流年流月的五行分布"
+)
+# “‘全投’本身也超出八字能判断的范围” (bazi pilot r5, investment #1): a disclaimer after the
+# action, read right after it.
+OUT_OF_SCOPE = re.compile(
+    r"[”’」\"']?(?:本身)?(?:也|都)?"
+    r"(?:(?:超出|超过|不在|不属于)了?(?:八字|命理|排盘|传统命理)(?:所?能|可以)?(?:判断|决定|回答|推断)?的?范围"
+    r"|不是(?:八字|命理|排盘|传统命理)(?:所?能|可以)(?:判断|决定|推断)的)"
+)
 # “出生当年就进入了第一步大运” for a start 4年10个月20天 after birth (bazi pilot r4, luck
 # cycles #3): when the chart starts its cycles, said as at or right after birth.
 AT_BIRTH = re.compile(
@@ -388,6 +409,13 @@ def trade_restrained(before: str, after: str) -> bool:
         )
     # “把加仓决定延后几天” restrains the preceding action, whereas “适合加仓后暂停” does not.
     return bool(DELAY_TRADE.match(after) and not ENCOURAGED.search(before))
+
+
+def out_of_scope(before: str, after: str) -> bool:
+    """“‘全投’本身也超出八字能判断的范围”: the action itself said to be beyond bazi."""
+    if TURNED_BACK.search(before) or DOUBLE_DENIAL.search(before) or WEAKENED.search(before):
+        return False
+    return bool(OUT_OF_SCOPE.match(after))
 
 
 def financial_review(before: str, action: str, after: str) -> bool:
@@ -1096,7 +1124,10 @@ class Bazi(System):
         count = natal.get("wuxing_count")
         if count:
             listed = "、".join(f"{k}{v}" for k, v in count.items())
-            lines.append(f"五行简单计数（天干地支各算一个，不是旺衰权重）：{listed}")
+            lines.append(
+                f"原局五行简单计数（出生八字的天干地支各算一个，不是旺衰权重，也不是这段时间的分布）："
+                f"{listed}"
+            )
         if not natal.get("time_known", True):
             lines.append("出生时间未知：只有年、月、日三柱，没有时柱，不要写时柱或精确起运。")
         dayun = natal.get("dayun")
@@ -1156,8 +1187,13 @@ class Bazi(System):
                 f"“（{m['note']}）”写了两遍：编号展开后已经带着这段说明，不要再抄一遍"
                 for m in REPEATED_NOTE.finditer(text)
             ]
+            found += [
+                f"“{m[0]}”把“{m['value']}”写了两遍：编号展开后已经带着“{m['value']}”，不要再写"
+                for m in REPEATED_VALUE.finditer(text)
+            ]
             if LITERAL_ALIAS.search(text):
                 found.append(LITERAL_ALIAS_PROBLEM)
+            found += self.count_problems(text)
             found += self.role_problems(text, state)
             found += self.ganzhi_problems(text, state)
             found += self.pillar_problems(text, natal)
@@ -1491,6 +1527,35 @@ class Bazi(System):
         return found
 
     @staticmethod
+    def count_problems(text: str) -> list[str]:
+        """A five-element count is the natal chart's; a count said of a period is misplaced.
+
+        The scope is read in the count's own clause first (原局 or a period word there), then
+        from the nearest scope word before it in the sentence.
+        """
+        for sentence in re.split(r"(?<=[。！？!?\n])", text):
+            scope = None
+            for clause in CLAUSE_OR_TURN.split(sentence):
+                natal = any(
+                    not NATAL_SCOPE_DENIED.search(clause[: m.start()])
+                    for m in NATAL_SCOPE_WORD.finditer(clause)
+                )
+                period = bool(PERIOD_WORD.search(clause))
+                if len(ELEMENT_COUNT.findall(clause)) >= 3:
+                    if natal:
+                        scope = "natal"
+                    elif period or scope == "period":
+                        return [COUNT_PROBLEM]
+                if natal or period:
+                    # The later word in the clause sets the scope for the clauses after it.
+                    last_natal = max(
+                        (m.start() for m in NATAL_SCOPE_WORD.finditer(clause)), default=-1
+                    )
+                    last_period = max((m.start() for m in PERIOD_WORD.finditer(clause)), default=-1)
+                    scope = "natal" if natal and last_natal > last_period else "period"
+        return []
+
+    @staticmethod
     def trade_problems(text: str) -> list[str]:
         for sentence in re.split(r"(?<=[。！？!?\n])", text):
             # The period governs its own clause and the clauses after it, not those before
@@ -1516,6 +1581,7 @@ class Bazi(System):
                         financial_review(before, action[0], clause[action.end() :])
                         or trade_disclaimer(before)
                         or trade_restrained(before, after)
+                        or out_of_scope(before, clause[action.end() :])
                     ):
                         return [TRADE_PROBLEM]
                     governed, previous_end = before, action.end()
