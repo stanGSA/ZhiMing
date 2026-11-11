@@ -60,8 +60,11 @@ def session_at(project):
             clock=lambda: CLOCK,
         )
         runtimes.append(runtime)
-        if case.get("profile"):
-            runtime.store.update_profile_fields(f"r10-{case_id}", case["profile"], "合成测试资料")
+        profile = case.get("profile") or (
+            TYPED_PROFILE if case_id == "bazi_pilot_typed_birth" else None
+        )
+        if profile:
+            runtime.store.update_profile_fields(f"r10-{case_id}", profile, "合成测试资料")
             runtime.session.profile = runtime.store.get_profile(f"r10-{case_id}")
         runtime.session.refresh_calendar(CLOCK)
         outcome = await runtime.turn(case["question"])
