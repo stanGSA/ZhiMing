@@ -228,6 +228,8 @@ AGGREGATE_GOD = re.compile(
     rf"|都(?:是|为|带有?|属于?)(?P<both>{'|'.join(TEN_GODS)})"
 )
 AGGREGATE_DENIED = re.compile(r"(?:不|并不|并非|没有|未必|不一定)(?:都|全)?(?:是|为)?$")
+# “都带正财、偏财的标签” (bazi pilot r9, luck cycles #1) names each god listed, not one of them.
+AGGREGATE_MORE = re.compile(rf"(?:(?:、|和|与|及|以及|跟)(?P<god>{'|'.join(TEN_GODS)}))+")
 # Bazi pilot r8, investment #2: “春节之后，流年丁未（…2027年2月4日09:46…）”. A flow year begins
 # at 立春, not at 春节 (2027: 2月4日 and 2月6日); 春节 written as the change is refused however
 # close the two days are. Only where it opens or bounds a named flow year: “春节前后多陪家人”
@@ -696,6 +698,11 @@ def relevant_keywords(keywords, text: str) -> list[str]:
     marks = set(STEMS + BRANCHES)
     out = []
     for keyword in chinese(keywords):
+        # The ten gods' entries carry a pillar key (“七杀:year”); a reader sees only “七杀”
+        # (bazi pilot r2, r6, r7, r9 keyword readings: “常和七杀:year联系在一起”).
+        keyword = re.sub(r":[A-Za-z_]+$", "", keyword)
+        if keyword in out:
+            continue
         named = [c for c in keyword if c in marks]
         if len(named) >= 2 and not set(named) <= set(text):
             continue
@@ -781,9 +788,14 @@ MONTH_WORD = r"(?:十[一二]|[一二三四五六七八九十]|1[0-2]|[1-9])"
 BARE_PART = r"(?:上中旬|中下旬|上旬|中旬|下旬|月初|月中|月底|月末)"
 MONTH_PART = rf"(?:{BARE_PART}|初|中|底|末)"
 PART_AFTER = r"(?:以后|之后|后|起|开始)"
+# A day may follow each month (bazi pilot r9: “5月6日到7月7日” was read as May and July only,
+# and “7月7日起到10月初” as July and early October, so the months between were left out).
+DAY_WORD = r"(?:3[01]|[12]\d|0?[1-9])"
 MONTH_SPAN = re.compile(
-    rf"(?P<a>{MONTH_WORD})月(?P<pa>{MONTH_PART})?(?P<sa>{PART_AFTER})?"
-    rf"(?:(?:到|至|—|-|~|～)(?P<b>{MONTH_WORD})月(?P<pb>{MONTH_PART})?(?P<sb>{PART_AFTER})?)?"
+    rf"(?P<a>{MONTH_WORD})月(?:(?P<da>{DAY_WORD})[日号])?(?P<pa>{MONTH_PART})?(?P<sa>{PART_AFTER})?"
+    rf"(?:(?:到|至|—|-|~|～)(?=(?:{MONTH_WORD})月|{DAY_WORD}[日号]|{MONTH_PART})"
+    rf"(?:(?P<b>{MONTH_WORD})月)?(?:(?P<db>{DAY_WORD})[日号])?"
+    rf"(?P<pb>{MONTH_PART})?(?P<sb>{PART_AFTER})?)?"
 )
 PART_SPAN = re.compile(rf"(?P<part>{BARE_PART})(?P<after>{PART_AFTER})?")
 # “7到9月”, “七八月” (bazi pilot r3–r6 titles): the first month without 月 is written out.
@@ -830,6 +842,12 @@ def month_number(text: str) -> int:
     return int(text) if text.isdigit() else MONTH_NUMBER[text]
 
 
+def day_of(year: int, month: int, day: int) -> date:
+    import calendar as months
+
+    return date(year, month, min(day, months.monthrange(year, month)[1]))
+
+
 def part_of(year: int, month: int, part: str | None, after: str | None = None) -> tuple[date, date]:
     import calendar as months
 
@@ -868,11 +886,18 @@ def title_spans(title: str, start: date, end: date, today: date | None) -> list[
     for match in MONTH_SPAN.finditer(title):
         first = month_number(match["a"])
         last = month_number(match["b"]) if match["b"] else first
+        ranged = bool(match["b"] or match["db"] or match["pb"])
+        to_year_end = re.match(r"(?:到|至)(?:年底|年末)", title[match.end() :])
         for year in years:
             low, high = part_of(year, first, match["pa"], match["sa"])
-            if match["b"]:
+            if match["da"] and (ranged or match["sa"] or to_year_end):
+                # “7月7日起”, “5月6日到7月7日”; a day alone (“12月7日：收尾”) keeps the month.
+                low = day_of(year, first, int(match["da"]))
+            if ranged:
                 last_year = year if last >= first else year + 1
                 _, high = part_of(last_year, last, match["pb"], match["sb"])
+                if match["db"]:
+                    high = day_of(last_year, last, int(match["db"]))
             out.append((low, high))
     rest = MONTH_SPAN.sub("", title)
     for word, ((m1, d1), (m2, d2)) in YEAR_PARTS.items():
@@ -1879,6 +1904,11 @@ class Bazi(System):
                 listed = [m["god"] for m in LISTED_GOD.finditer(sentence, 0, match.start())]
                 if len(listed) < 2:
                     continue
+                more = AGGREGATE_MORE.match(sentence, match.end())
+                if more:
+                    named = {god, *re.findall("|".join(TEN_GODS), more[0])}
+                    if set(listed) == named:
+                        continue
                 count = {"两": 2, "二": 2, "三": 3, "四": 4}.get(match["count"])
                 if count is not None and count < len(listed):
                     before = sentence[: match.start()]
@@ -2231,12 +2261,16 @@ class Bazi(System):
             else "八字原局的计算"
         )
         if safety_only:
+            # Without sections the evidence is listed to the reader; give each item the fact
+            # sheet's text, not the calculation's key (bazi pilot r9, investment #2 listed 56
+            # lines such as “period:2026-12-31T16:00:00+00:00:年柱:丙午:劫财”; owner, 2026-11-11).
+            listed = [{"ref_id": fact.alias, "reading": fact.text[:500]} for fact in facts]
             args = {
                 "question_type": question_type,
                 "systems_used": ["bazi"],
                 "summary": f"这是{what}。这个问题牵涉重大的现实决定，这次不作解读。",
                 "sections": [],
-                "evidence": evidence,
+                "evidence": listed,
                 "advice": ["先听专业意见：现实中的重要决定，请结合专业人士的意见。"],
                 "closing": "",
                 "confidence": {"level": "low", "reason": "这次没有给出八字解读。"},
