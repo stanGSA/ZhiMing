@@ -1059,7 +1059,7 @@ def title_spans(title: str, start: date, end: date, today: date | None) -> list[
                 if match["db"]:
                     high = day_of(last_year, last, int(match["db"]))
             if link:
-                high = linked_end(year, link, high)
+                high = linked_end(year, first, link, high)
             out.append((low, high))
     rest = MONTH_SPAN.sub("", title)
     for link in linked:
@@ -1096,7 +1096,7 @@ def title_spans(title: str, start: date, end: date, today: date | None) -> list[
     return out
 
 
-def linked_end(year: int, link: re.Match, high: date) -> date:
+def linked_end(year: int, first_month: int, link: re.Match, high: date) -> date:
     """The end of the season or part of the year a month range runs to (LINKED_END)."""
     if link["season"]:
         m, d = SEASON_PARTS[link["season"]][1]
@@ -1104,7 +1104,8 @@ def linked_end(year: int, link: re.Match, high: date) -> date:
         m, d = ENTRY_PARTS[link["entry"]], 31  # the whole first month; day_of clamps it
     else:
         m, d = YEAR_PARTS[link["part"]][1]
-    end = day_of(year, m, d)
+    end_year = year + (m < first_month)
+    end = day_of(end_year, m, d)
     return end if end > high else high
 
 

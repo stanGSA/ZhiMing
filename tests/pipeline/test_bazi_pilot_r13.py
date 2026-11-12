@@ -197,6 +197,14 @@ def test_linked_titles_are_one_range(title, spans):
     assert title_spans(title, *YEAR) == spans
 
 
+def test_linked_title_crosses_into_the_next_calendar_year():
+    period = (date(2026, 11, 1), date(2027, 10, 31), date(2026, 11, 12))
+    assert title_spans("11月到年中：跨年安排", *period) == [
+        (date(2026, 11, 1), date(2027, 8, 31)),
+        (date(2027, 11, 1), date(2028, 8, 31)),
+    ]
+
+
 async def test_the_r12_investment_drafts(run_at):
     """#3's first draft is refused for its batch recommendation only (its title 2月到入夏 holds
     癸卯); #1's two drafts keep only their real error, 丁未 (7月7日–8月8日) under 秋季到年底 and
