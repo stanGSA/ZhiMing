@@ -157,6 +157,14 @@ FIRST_DAYUN = re.compile(
 NTH_DAYUN = re.compile(
     rf"第(?P<n>[一二三四五六七八九十\d]+)步大运\s*{DENIAL}(?:是|为|：|:|走)?\s*(?P<gz>{JIAZI})"
 )
+# Bazi pilot r11, luck cycles #3: “往前一步是第1步大运丙辰” beside the 4th cycle passed every check;
+# the sheet lists only the first and the current cycle. A cycle named as the one before or after
+# the current one must be its neighbour in the sequence.
+NEIGHBOUR_DAYUN = re.compile(
+    rf"(?P<side>往前|之前|前|上|往后|之后|后|下)一步(?:大运)?\s*{DENIAL}"
+    rf"(?:是|为|：|:|走的是|走|进入)?\s*(?:第(?P<n>[一二三四五六七八九十\d]+)步大运|首步大运)?"
+    rf"\s*(?P<gz>{JIAZI})"
+)
 PRESENT = r"(?:当前|目前|现在|眼下|如今|当下)"
 CURRENT_DAYUN = re.compile(
     rf"(?:{PRESENT}|正在走)(?:所处|所在|所走|走|行)?的?(?:这步|这一步)?大运\s*{DENIAL}"
@@ -192,6 +200,19 @@ ANY_DAYUN = re.compile(rf"(?P<gz>{JIAZI})大运|大运(?:是|为|：|:)?\s*(?P<a
 HANDOVER = re.compile(r"(?P<year>\d{4})年(?:前后|左右)?(?:交运|换运|换大运|交大运|进入下一步大运)")
 START_DATE = re.compile(r"(?P<y>\d{4})年(?P<m>\d{1,2})月(?P<d>\d{1,2})日(?:前后)?起运")
 START_AGE = re.compile(r"(?P<age>\d{1,2})岁(?:起运|交运|上运)")
+# Bazi pilot r11, luck cycles #3: “按虚岁习惯大约在4岁多到5岁之间进入第一步大运”; the traditional
+# age (start_age) of the first cycle is 6. Check ages of entering cycles, not ordinary ages.
+VIRTUAL_AGE = re.compile(r"虚岁[^。；;！？!?周]{0,12}?(?P<age>\d{1,2})岁")
+VIRTUAL_HANDOVER = re.compile(
+    r"(?:多?(?:到|至|[-—～])(?P<last>\d{1,2})岁)?"
+    r"(?:多|左右|前后|之间|时|就|会|才|开始)*"
+    r"(?P<action>起运|交运|上运|(?:进入|换到|换|走进|开始走)"
+    r"(?:首步大运|第(?P<n>[一二三四五六七八九十\d]+)步大运))"
+)
+VIRTUAL_STAGE_BEFORE = re.compile(
+    r"(?:首步大运|第(?P<n>[一二三四五六七八九十\d]+)步大运)"
+    r"(?:是|为|在|于|的交运年龄是|的交运年龄为)?$"
+)
 # Bazi pilot r10, luck cycles #1: “按出生到节令的时间来定，逆排从上一个‘节’数到出生” for a chart
 # counted forward passed every check. A direction said of this chart must be the computed one
 # (dayun.forward). Conditions and definitions describe the rule, not this chart's direction.
@@ -344,8 +365,10 @@ DOUBLE_RESTRAINT = re.compile(r"(?:不算|算不上|谈不上|说不上|不像�
 CAUTION_AFTER = re.compile(
     r"(?:的事|的决定|的计划|之前|前|时|上|中)?(?:都|也|先|多|尤其|更|一定|务必|最好)?"
     r"(?:要|需要|需|得)?(?:找人|和家人)?"
+    # bazi pilot r11, investment #3: “大额投入前先把风险承受能力和资金安排核实清楚”.
+    r"(?:先)?(?:把[^，,。；;]{1,20}?)?"
     # A review verb needs an object or a boundary, not an investment's name (“核实型基金”).
-    r"(?:(?:复核|核实|核对|评估|确认|商量|写清楚?|留意)"
+    r"(?:(?:复核|核实|核对|评估|确认|商量|写清楚?|留意)(?:清楚)?"
     r"(?=[\s。！？!?，,；;：:]|$|(?:你的|自己的|自身的?)?"
     r"(?:财务|资金|金额|预算|风险|条件|边界|计划|承受能力|实际情况))|"
     # A caution adjective must finish the reminder, not begin an investment's name.
@@ -482,6 +505,9 @@ NOMINAL_AFTER = re.compile(
     r"[”’」\"']*(?:的)?(?:念头|冲动|风险|条件|规则|线|计划|上限|理由|决定|方式|节奏|这类|这种|之类|类|"
     r"依据|信号|方案|纪律|习惯|频率|比例|成本|逻辑|心态|欲望|年份|月份|一年|阶段|安排|判断)"
 )
+# bazi pilot r11, investment #3: “面对大额投入的诱惑”“大额投入的念头”: the trade as a temptation
+# or a thought, not a manner of trading.
+HELD_NOUN_AFTER = re.compile(r"[”’」\"']*的?(?:诱惑|念头|想法|冲动|打算|欲望)")
 TIMING_NOUN_AFTER = re.compile(r"[”’」\"']*(?:的)?(?:好)?(?:时点|时机|窗口|机会|时候)")
 TIMING_DENIED = re.compile(
     r"不构成|不是|并非|不能|无法|不作为|不当作|不当成|不代表|不等于|别把|不要把"
@@ -605,6 +631,14 @@ def recommended_trade(
     if COMPARED_BEFORE.search(before) and not encouraged(before):
         return False  # 会比一次性全投从容得多
     manner = MANNER_BEFORE.search(before)
+    if (
+        manner
+        and HELD_NOUN_AFTER.match(after)
+        and not encouraged(before)
+        and not (TURNED_BACK.search(prefix) or WEAKENED.search(prefix))
+    ):
+        # A nominal subject may still be recommended by its following predicate.
+        return encouraged(after)  # 大额投入的想法可以执行
     if manner:
         ahead = before[: manner.start()]
         governor = [
@@ -941,6 +975,9 @@ def title_spans(title: str, start: date, end: date, today: date | None) -> list[
         out += [(date(year, m1, d1), date(year, m2, d2)) for year in years]
     if out and re.search(r"(?:到|至)(?:年底|年末)", title):
         out = [(out[0][0], date(out[0][0].year, 12, 31))]
+    # “立春后到年中” (bazi pilot r11, investment #1) starts at 立春, about 2月4日, not at 年中.
+    if out and re.search(r"立春(?:后|之后|以后|起|开始)?(?:到|至)", title):
+        out = [(date(out[0][0].year, 2, 4), max(b for _, b in out))]
     # Resolve a relative month before borrowing the calculation's month for a bare 上旬.
     if not out and today is not None:
         for match in RELATIVE.finditer(title):
@@ -1547,6 +1584,22 @@ class Bazi(System):
                 lines.append(
                     f"按今年算，所在大运是{current}（交运年份只是年份标记，交运年可能前后两运并存）。"
                 )
+            sequence = dayun.get("sequence", [])
+            if sequence and "start_age" in sequence[0]:
+                lines.append(
+                    f"按传统岁数（虚岁）算，第一步大运在{sequence[0]['start_age']}岁交运；"
+                    "要写虚岁就照这个写，不要自己从出生后几年几个月换算。"
+                )
+            here = [i for i, s in enumerate(sequence) if s in dayun.get("current_candidates", [])]
+            if len(here) == 1:
+                # Bazi pilot r11, luck cycles #3: the cycle before the 4th was written as the 1st.
+                near = [
+                    f"{word}是第{i + 1}步大运{sequence[i]['ganzhi']}（{sequence[i]['start_year']}年交运）"
+                    for word, i in (("前一步", here[0] - 1), ("下一步", here[0] + 1))
+                    if 0 <= i < len(sequence)
+                ]
+                if near:
+                    lines.append("相邻的大运：" + "；".join(near) + "。")
             if kind == "timing" and period:
                 # bazi pilot r3, typed birth #2: the only luck-cycle fact on a timing sheet is
                 # the first one, and it was written as the range's own stage.
@@ -1826,6 +1879,36 @@ class Bazi(System):
                 text, match.start(group), match.end(group)
             ) not in (None, "denied"):
                 found.append(f"{match[group]}不是这次排出的大运")
+        index = [i for i, s in enumerate(dayun["sequence"]) if s["ganzhi"] in current]
+        for match in NEIGHBOUR_DAYUN.finditer(text):
+            step = -1 if match["side"] in ("往前", "之前", "前", "上") else 1
+            # “第1步大运丙辰（……）的下一步” counts from the cycle named right before it.
+            base = re.search(
+                rf"(?P<gz>{JIAZI})(?:大运|运)?(?:（[^（）]*）)?的?\s*$", text[: match.start()]
+            )
+            if base is None:
+                sentence_start = max(text.rfind(c, 0, match.start()) for c in "。！？!?；;\n") + 1
+                base = re.search(
+                    rf"(?:首步大运|第[一二三四五六七八九十\d]+步大运|大运)"
+                    rf"(?:是|为)?\s*(?P<gz>{JIAZI})(?:（[^（）]*）)?"
+                    r"(?:之后|以后|后)?[，,]\s*$",
+                    text[sentence_start : match.start()],
+                )
+                if base and any(
+                    m.start() <= base.start() < m.end()
+                    for m in NEIGHBOUR_DAYUN.finditer(text[sentence_start : match.start()])
+                ):
+                    base = None  # “前一步是第3步戊午，下一步是第5步庚申” shares 当前.
+            origin = [sequence.index(base["gz"])] if base and base["gz"] in sequence else index
+            near = [i + step for i in origin if 0 <= i + step < len(sequence)]
+            if not near:
+                continue
+            named = number(match["n"]) - 1 if match["n"] else 0 if "首步" in match[0] else None
+            agrees = match["gz"] in {sequence[i] for i in near} and named in (None, *near)
+            if wrong(kind_of(match, "gz"), agrees):
+                listed = "或".join(f"第{i + 1}步{sequence[i]}" for i in near)
+                side = "前一步" if step < 0 else "后一步"
+                found.append(f"当前大运的{side}是{listed}，正文写成了“{match[0]}”")
         for match in HANDOVER.finditer(text):
             if int(match["year"]) not in years:
                 listed = "、".join(str(y) for y in sorted(years))
@@ -1834,6 +1917,39 @@ class Bazi(System):
             value = f"{int(match['y']):04d}-{int(match['m']):02d}-{int(match['d']):02d}"
             if value != dayun["start_solar"]:
                 found.append(f"起运日是{dayun['start_solar']}，正文写成了{value}")
+        for sentence in re.split(r"(?<=[。！？!?；;\n])", text):
+            for match in VIRTUAL_AGE.finditer(sentence):
+                handover = VIRTUAL_HANDOVER.match(sentence, match.end())
+                if handover is None:
+                    continue
+                n = number(handover["n"]) if handover["n"] else None
+                stage_before = VIRTUAL_STAGE_BEFORE.search(sentence[: match.start()])
+                if n is None and stage_before:
+                    n = number(stage_before["n"]) if stage_before["n"] else 1
+                if n is not None:
+                    expected = (
+                        {dayun["sequence"][n - 1]["start_age"]}
+                        if 1 <= n <= len(sequence)
+                        else set()
+                    )
+                elif handover["action"] == "交运":
+                    expected = ages
+                else:
+                    expected = {dayun["sequence"][0]["start_age"]}
+                stated = {int(match["age"])}
+                if handover["last"]:
+                    stated.add(int(handover["last"]))
+                if wrong(
+                    claim(sentence, match.start("age"), match.end("age")),
+                    stated <= expected,
+                ):
+                    label = f"第{n}步" if n not in (None, 1) else "第一步"
+                    actual = "或".join(str(age) for age in sorted(expected)) or "（没有排到）"
+                    found.append(
+                        f"按传统岁数（虚岁），{label}大运在{actual}岁交运，正文写成了“{match[0]}”；"
+                        "虚岁照事实写，不要自己换算"
+                    )
+                    break
         for match in START_AGE.finditer(text):
             expected = ages if "交运" in match[0] else {dayun["sequence"][0]["start_age"]}
             if int(match["age"]) not in expected:
