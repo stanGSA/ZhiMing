@@ -201,8 +201,14 @@ HANDOVER = re.compile(r"(?P<year>\d{4})年(?:前后|左右)?(?:交运|换运|换
 START_DATE = re.compile(r"(?P<y>\d{4})年(?P<m>\d{1,2})月(?P<d>\d{1,2})日(?:前后)?起运")
 START_AGE = re.compile(r"(?P<age>\d{1,2})岁(?:起运|交运|上运)")
 # Bazi pilot r11, luck cycles #3: “按虚岁习惯大约在4岁多到5岁之间进入第一步大运”; the traditional
-# age (start_age) of the first cycle is 6. An age given in 虚岁 must be a cycle's start_age.
+# age (start_age) of the first cycle is 6. Check ages of entering cycles, not ordinary ages.
 VIRTUAL_AGE = re.compile(r"虚岁[^。；;！？!?周]{0,12}?(?P<age>\d{1,2})岁")
+VIRTUAL_HANDOVER = re.compile(
+    r"(?:多?(?:到|至|[-—～])(?P<last>\d{1,2})岁)?"
+    r"(?:多|左右|前后|之间|时|就|会|才|开始)*"
+    r"(?P<action>起运|交运|上运|(?:进入|换到|换|走进|开始走)"
+    r"(?:首步大运|第(?P<n>[一二三四五六七八九十\d]+)步大运))"
+)
 # Bazi pilot r10, luck cycles #1: “按出生到节令的时间来定，逆排从上一个‘节’数到出生” for a chart
 # counted forward passed every check. A direction said of this chart must be the computed one
 # (dayun.forward). Conditions and definitions describe the rule, not this chart's direction.
@@ -627,7 +633,8 @@ def recommended_trade(
         and not encouraged(before)
         and not (TURNED_BACK.search(prefix) or WEAKENED.search(prefix))
     ):
-        return False  # 面对大额投入的诱惑, 大额投入的念头
+        # A nominal subject may still be recommended by its following predicate.
+        return encouraged(after)  # 大额投入的想法可以执行
     if manner:
         ahead = before[: manner.start()]
         governor = [
@@ -1875,6 +1882,19 @@ class Bazi(System):
             base = re.search(
                 rf"(?P<gz>{JIAZI})(?:大运|运)?(?:（[^（）]*）)?的?\s*$", text[: match.start()]
             )
+            if base is None:
+                sentence_start = max(text.rfind(c, 0, match.start()) for c in "。！？!?；;\n") + 1
+                base = re.search(
+                    rf"(?:首步大运|第[一二三四五六七八九十\d]+步大运|大运)"
+                    rf"(?:是|为)?\s*(?P<gz>{JIAZI})(?:（[^（）]*）)?"
+                    r"(?:之后|以后|后)?[，,]\s*$",
+                    text[sentence_start : match.start()],
+                )
+                if base and any(
+                    m.start() <= base.start() < m.end()
+                    for m in NEIGHBOUR_DAYUN.finditer(text[sentence_start : match.start()])
+                ):
+                    base = None  # “前一步是第3步戊午，下一步是第5步庚申” shares 当前.
             origin = [sequence.index(base["gz"])] if base and base["gz"] in sequence else index
             near = [i + step for i in origin if 0 <= i + step < len(sequence)]
             if not near:
@@ -1895,12 +1915,31 @@ class Bazi(System):
                 found.append(f"起运日是{dayun['start_solar']}，正文写成了{value}")
         for sentence in re.split(r"(?<=[。！？!?；;\n])", text):
             for match in VIRTUAL_AGE.finditer(sentence):
-                if int(match["age"]) not in ages and claim(
-                    sentence, match.start("age"), match.end("age")
-                ) not in (None, "denied"):
-                    first = dayun["sequence"][0]["start_age"]
+                handover = VIRTUAL_HANDOVER.match(sentence, match.end())
+                if handover is None:
+                    continue
+                n = number(handover["n"]) if handover["n"] else None
+                if n is not None:
+                    expected = (
+                        {dayun["sequence"][n - 1]["start_age"]}
+                        if 1 <= n <= len(sequence)
+                        else set()
+                    )
+                elif handover["action"] == "交运":
+                    expected = ages
+                else:
+                    expected = {dayun["sequence"][0]["start_age"]}
+                stated = {int(match["age"])}
+                if handover["last"]:
+                    stated.add(int(handover["last"]))
+                if wrong(
+                    claim(sentence, match.start("age"), match.end("age")),
+                    stated <= expected,
+                ):
+                    label = f"第{n}步" if n not in (None, 1) else "第一步"
+                    actual = "或".join(str(age) for age in sorted(expected)) or "（没有排到）"
                     found.append(
-                        f"按传统岁数（虚岁），第一步大运在{first}岁交运，正文写成了“{match[0]}”；"
+                        f"按传统岁数（虚岁），{label}大运在{actual}岁交运，正文写成了“{match[0]}”；"
                         "虚岁照事实写，不要自己换算"
                     )
                     break

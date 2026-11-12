@@ -364,7 +364,16 @@ GAIN_TEMPTED = re.compile(
     r"(?:如果|若|要是|万一|假如|一旦)(?:你|您)?(?:正在|正)?(?:被|受)(?:某个|某种|这类|任何|一些|所谓)*$"
 )
 GAIN_MOVED = re.compile(r"打动|吸引|诱惑|说动|带动|鼓动|触动")
-GAIN_RESTRAINED = re.compile(r"先|别|不要|不必|回到|核实|冷静|暂停|放一放|而不是|而非")
+# Read the consequent's first predicate, not a stray 先 or a denied 核实 later on.
+GAIN_RESTRAINED = re.compile(
+    r"\s*[，,：:]?\s*(?:就|则|那么|也|请)?(?:先|要先)?"
+    r"(?:回到(?:预算|规则)(?:和规则)?上?|冷静(?:下来|一下)?|"
+    r"暂停(?:决定|操作|投入)?|放一放|把(?:这个)?(?:念头|想法|决定)放一放|"
+    r"核实(?:风险|成本|预算|信息|说法|资金安排)?(?:清楚)?|"
+    r"(?:别|不要|不必)(?:急着|急于|马上|立即)?"
+    r"(?:动用(?:全部)?积蓄|投入|加码|加仓|行动|做决定))"
+    r"(?=\s*(?:[，,。；;！？!?\n]|$))"
+)
 GAIN_DOUBT_UNDONE = re.compile(r"(?:不用|不必|无需|无须|别|不要|没必要|用不着|不需要)$")
 GAIN_ADDRESSED = re.compile(r"对(?:待)?(?:任何|所有|这类|各种|一切|那些)?(?:所谓)?$")
 GAIN_DEMANDED = re.compile(
@@ -390,7 +399,7 @@ def quoted_gain_mention(text: str, start: int, end: int) -> bool:
     if tempted and not denial_negated(lead[: tempted.start()]):
         rest = re.split(r"[。！？!?\n]", text[noun.end() :])[0]
         moved = GAIN_MOVED.match(rest)
-        return bool(moved and GAIN_RESTRAINED.search(rest[moved.end() :]))
+        return bool(moved and GAIN_RESTRAINED.match(rest[moved.end() :]))
     addressed = GAIN_ADDRESSED.search(lead)
     if addressed:
         ahead = lead[: addressed.start()]
