@@ -192,6 +192,29 @@ ANY_DAYUN = re.compile(rf"(?P<gz>{JIAZI})大运|大运(?:是|为|：|:)?\s*(?P<a
 HANDOVER = re.compile(r"(?P<year>\d{4})年(?:前后|左右)?(?:交运|换运|换大运|交大运|进入下一步大运)")
 START_DATE = re.compile(r"(?P<y>\d{4})年(?P<m>\d{1,2})月(?P<d>\d{1,2})日(?:前后)?起运")
 START_AGE = re.compile(r"(?P<age>\d{1,2})岁(?:起运|交运|上运)")
+# Bazi pilot r10, luck cycles #1: “按出生到节令的时间来定，逆排从上一个‘节’数到出生” for a chart
+# counted forward passed every check. A direction said of this chart must be the computed one
+# (dayun.forward). Conditions and definitions describe the rule, not this chart's direction.
+DIRECTION = re.compile(r"顺排|顺行|顺推|顺数|逆排|逆行|逆推|逆数|倒排|倒推")
+DIRECTION_SUBJECT = re.compile(
+    r"你|您|这份|本命|命盘|命局|这一例|这里|此盘|此八字|这(?:个|份)?八字"
+)
+DIRECTION_CONDITION = re.compile(
+    r"(?:[阴阳](?:年|干)?(?:出生的)?[男女](?:命|性)?){1,2}(?:的)?(?:大运|起运)?"
+    r"(?:应当|应该|应|一律|通常|一般|采用|按|是|为|则|就|走|会|\s)*$"
+)
+DIRECTION_DEFINITION = re.compile(
+    r"(?:的(?:规则|定义|含义|意思|排法)(?:是|为|指|[：:])|(?:是|指)(?:从|由))"
+)
+DIRECTION_DEFINITION_LEAD = re.compile(r"(?:所谓|通常所说的|一般所说的|(?:传统)?规则[中里]?)?")
+DIRECTION_ALTERNATIVE = re.compile(r"则相反|(?:只是|仅是|仅作)?(?:另一种(?:排法|规则|方向)|举例)")
+DIRECTION_COUNTING = re.compile(r"从.+(?:节|节令)")
+
+
+def direction_word(forward: bool) -> str:
+    return "顺排" if forward else "逆排"
+
+
 # A number left as text after the placeholders were rendered (bazi pilot r3, typed birth #3:
 # “……引用：R7 R8 R4 R5” closed three section bodies). {{R99}} unknown is said elsewhere.
 LITERAL_ALIAS = re.compile(r"(?<![A-Za-z0-9{｛])R\d+(?![\d}｝])")
@@ -708,6 +731,15 @@ def relevant_keywords(keywords, text: str) -> list[str]:
             continue
         out.append(keyword)
     return out
+
+
+def direction_keywords(keywords: list[str], natal: dict) -> list[str]:
+    """The luck cycles' entry lists both 顺排 and 逆排; keep the one this chart uses."""
+    dayun = natal.get("dayun") or {}
+    if "forward" not in dayun:
+        return keywords
+    other = direction_word(not dayun["forward"])
+    return [k for k in keywords if k != other]
 
 
 def keyword_sections(rows: list[tuple[str, str, str]]) -> tuple[list[dict], int]:
@@ -1453,7 +1485,9 @@ class Bazi(System):
             label, text = texts[item["fact"]]
             alias = short(item["ref_id"], session)
             meaning = item.get("meaning") or {}
-            keywords = "、".join(relevant_keywords(meaning.get("keywords"), text)[:6])
+            keywords = "、".join(
+                direction_keywords(relevant_keywords(meaning.get("keywords"), text), natal)[:6]
+            )
             general = shorten(CAVEAT.sub("", meaning.get("text") or ""), 140)
             line = (
                 f"{alias}｜{label}｜{text}｜关键词：{keywords or '无'}｜一般含义：{general or '无'}"
@@ -1498,6 +1532,16 @@ class Bazi(System):
             lines.append("出生时间未知：只有年、月、日三柱，没有时柱，不要写时柱或精确起运。")
         dayun = natal.get("dayun")
         if dayun:
+            if "forward" in dayun:
+                lines.append(
+                    f"这份命盘的大运{direction_word(dayun['forward'])}："
+                    + (
+                        "起运时间从出生数到下一个“节”。"
+                        if dayun["forward"]
+                        else "起运时间从上一个“节”数到出生。"
+                    )
+                    + f"正文提到排法时只能写{direction_word(dayun['forward'])}。"
+                )
             current = "、".join(s["ganzhi"] for s in dayun.get("current_candidates", []))
             if current:
                 lines.append(
@@ -1567,6 +1611,7 @@ class Bazi(System):
             found += self.pillar_problems(text, natal)
             found += self.day_master_problems(text, natal)
             found += self.ten_god_problems(text, state)
+            found += self.direction_problems(text, natal)
             found += self.dayun_problems(
                 text,
                 natal,
@@ -1794,6 +1839,60 @@ class Bazi(System):
             if int(match["age"]) not in expected:
                 found.append(f"“{match[0]}”与排出的交运岁数不符")
         return found
+
+    @staticmethod
+    def direction_problems(text: str, natal: dict) -> list[str]:
+        """顺排/逆排 said of this chart must be the computed direction (dayun.forward)."""
+        dayun = natal.get("dayun") or {}
+        if "forward" not in dayun:
+            return []
+        forward = bool(dayun["forward"])
+        problem = (
+            f"这次排出的大运是{direction_word(forward)}，正文不能写成"
+            f"{direction_word(not forward)}；提到排法时按{direction_word(forward)}写"
+        )
+        for sentence in re.split(r"(?<=[。！？!?；;\n])", text):
+            mentions = []
+            for match in DIRECTION.finditer(sentence):
+                clause = max(sentence.rfind(c, 0, match.start()) for c in "，,、；;：:") + 1
+                stop = min(
+                    (i for i in (sentence.find(c, match.end()) for c in "，,、；;。") if i != -1),
+                    default=len(sentence),
+                )
+                mentions.append(
+                    (match, sentence[clause : match.start()].strip(), sentence[match.end() : stop])
+                )
+            # Bare “顺排从…，逆排从…” is a paired definition. Just naming the other
+            # direction (“大运采用逆排，顺排只是另一种排法”) cannot exempt the first claim.
+            definitions = {
+                match[0][0] == "顺"
+                for match, before, after in mentions
+                if not before and DIRECTION_COUNTING.match(after)
+            }
+            for match, before, after in mentions:
+                kind = claim(sentence, match.start(), match.end())
+                if kind == "denied" and reasserted(sentence, match.end(), match[0]):
+                    kind = "asserted"
+                if kind == "asserted" and not DIRECTION_SUBJECT.search(before):
+                    if (
+                        DIRECTION_CONDITION.search(before)
+                        or (
+                            DIRECTION_DEFINITION_LEAD.fullmatch(before)
+                            and (
+                                DIRECTION_DEFINITION.match(after)
+                                or DIRECTION_ALTERNATIVE.match(after)
+                            )
+                        )
+                        or (
+                            definitions == {True, False}
+                            and not before
+                            and DIRECTION_COUNTING.match(after)
+                        )
+                    ):
+                        continue
+                if wrong(kind, (match[0][0] == "顺") == forward):
+                    return [problem]
+        return []
 
     @staticmethod
     def stage_here_problems(text: str, dayun: dict, period: dict, kind_at) -> list[str]:
@@ -2290,7 +2389,10 @@ class Bazi(System):
         for label, group in groups.items():
             for fact in group:
                 keywords = "、".join(
-                    relevant_keywords(meanings.get(fact.ref, {}).get("keywords"), fact.text)[:3]
+                    direction_keywords(
+                        relevant_keywords(meanings.get(fact.ref, {}).get("keywords"), fact.text),
+                        state.get("bazi_result") or {},
+                    )[:3]
                 )
                 sentence = (
                     f"{fact.text}，常和{keywords}联系在一起。" if keywords else f"{fact.text}。"
