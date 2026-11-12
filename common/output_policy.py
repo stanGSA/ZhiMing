@@ -358,6 +358,13 @@ GAIN_DOUBTED = re.compile(
     r"(?:警惕|提防|当心|小心|怀疑|质疑|远离|别信|不要信|别轻信|不要轻信|不轻信|千万别信)"
     r"(?:任何|所有|这类|各种|一切|那些)?(?:所谓)?$"
 )
+# bazi pilot r11, investment #1: “如果你正被某个“稳赚”说法打动，先回到预算和规则上……而不是凭一时
+# 情绪加码”: someone's claim in a condition, answered with restraint in the same sentence.
+GAIN_TEMPTED = re.compile(
+    r"(?:如果|若|要是|万一|假如|一旦)(?:你|您)?(?:正在|正)?(?:被|受)(?:某个|某种|这类|任何|一些|所谓)*$"
+)
+GAIN_MOVED = re.compile(r"打动|吸引|诱惑|说动|带动|鼓动|触动")
+GAIN_RESTRAINED = re.compile(r"先|别|不要|不必|回到|核实|冷静|暂停|放一放|而不是|而非")
 GAIN_DOUBT_UNDONE = re.compile(r"(?:不用|不必|无需|无须|别|不要|没必要|用不着|不需要)$")
 GAIN_ADDRESSED = re.compile(r"对(?:待)?(?:任何|所有|这类|各种|一切|那些)?(?:所谓)?$")
 GAIN_DEMANDED = re.compile(
@@ -379,6 +386,11 @@ def quoted_gain_mention(text: str, start: int, end: int) -> bool:
     if doubted:
         ahead = lead[: doubted.start()]
         return not (GAIN_DOUBT_UNDONE.search(ahead) or denial_negated(ahead))
+    tempted = GAIN_TEMPTED.search(lead)
+    if tempted and not denial_negated(lead[: tempted.start()]):
+        rest = re.split(r"[。！？!?\n]", text[noun.end() :])[0]
+        moved = GAIN_MOVED.match(rest)
+        return bool(moved and GAIN_RESTRAINED.search(rest[moved.end() :]))
     addressed = GAIN_ADDRESSED.search(lead)
     if addressed:
         ahead = lead[: addressed.start()]
