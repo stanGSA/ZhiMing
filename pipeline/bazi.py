@@ -105,9 +105,31 @@ FUNCTION_TAIL = re.compile(
 )
 # The governing negations common.facts.NEGATED_VALUE reads, found anywhere in the clause.
 NEGATION = re.compile(r"不是|并不是|并非|而非|不再是|不在|并不在|没在|未在")
+# Bazi pilot r12, career #2: “流年与本命日柱之间有配合松动的迹象” (地支破's own gloss) was read as
+# a claim of 合 and refused twice. A relation character inside an ordinary word (配合, 适合, 突破,
+# 冲动, 害怕…) names no relation; the window after the natal side reads on to a real one.
+COMPOUND = {
+    "合": ("配结适组联整融符磨撮凑场离混综复迎汇聚巧", "作适理同规伙约并计成格法资"),
+    "冲": ("缓对首折俯", "动劲刺浪淡锋量泡洗抵"),
+    "刑": ("", "事法期罚警侦"),
+    "害": ("利厉要", "怕羞臊"),
+    "破": ("突打看识攻爆戳揭说点", "局冰产解例绽费"),
+}
+
+
+def relation_char(char: str) -> str:
+    before, after = COMPOUND[char]
+    return (rf"(?<![{before}])" if before else "") + char + rf"(?![{after}])"
+
+
 RELATION_WORD = (
-    r"天干五合|天干合|天干相冲|天干冲|地支六合|六合|相合|合|地支相冲|地支冲|相冲|冲|"
-    r"地支相刑|相刑|自刑|刑|地支相害|相害|害|地支相破|相破|破"
+    r"天干五合|天干合|天干相冲|天干冲|地支六合|六合|相合|地支相冲|地支冲|相冲|"
+    r"地支相刑|相刑|自刑|地支相害|相害|地支相破|相破|"
+    + "|".join(relation_char(c) for c in COMPOUND)
+)
+COMPOUND_WORD = "|".join(
+    [rf"[{before}]{c}" for c, (before, _) in COMPOUND.items() if before]
+    + [rf"{c}[{after}]" for c, (_, after) in COMPOUND.items()]
 )
 RELATION_KINDS = {
     "合": {"天干合", "地支六合"},
@@ -125,7 +147,16 @@ RELATION_AFTER = re.compile(
 )
 RELATION_BEFORE = re.compile(
     rf"(?P<subject>(?:流年|流月|流日|大运)?{JIAZI}|流年|流月|流日)(?P<between>[^，,。；;！!？?\n与和跟同]{{0,6}}?)"
-    rf"(?P<kind>合|冲|刑|害|破)(?:住|动|到|了)?" + NATAL_SIDE.format(JIAZI=JIAZI)
+    rf"(?P<kind>{'|'.join(relation_char(c) for c in COMPOUND)})(?:住|动|到|了)?"
+    + NATAL_SIDE.format(JIAZI=JIAZI)
+)
+# The same window ending in an ordinary word only (“之间不是配合松动，而是相合”): no relation is
+# claimed there, but a later clause of the sentence may state one.
+RELATION_LOOSE = re.compile(
+    rf"(?P<subject>(?:流年|流月|流日|大运)?{JIAZI}|流年|流月|流日)(?:的)?(?:天干|地支)?"
+    rf"(?:与|和|跟|同)"
+    + NATAL_SIDE.format(JIAZI=JIAZI)
+    + rf"(?:之间)?(?P<between>[^，,。；;！!？?\n]{{0,8}}?)(?P<kind>{COMPOUND_WORD})"
 )
 # “……，与日柱也相合”: a clause that names only the natal side keeps the sentence's subject.
 RELATION_CARRY = re.compile(
@@ -212,6 +243,31 @@ VIRTUAL_HANDOVER = re.compile(
 VIRTUAL_STAGE_BEFORE = re.compile(
     r"(?:首步大运|第(?P<n>[一二三四五六七八九十\d]+)步大运)"
     r"(?:是|为|在|于|的交运年龄是|的交运年龄为)?$"
+)
+# Bazi pilot r12, luck cycles #2: “你目前正走在这十年的中段偏后位置” in 2026, the 4th year of the
+# cycle from 2023, passed every check. Where in the current cycle today lies is checked against
+# the years since its handover; the ranges are lenient (a part of the ten years, as a fraction).
+POSITION_RANGES = {
+    "开头": (0, 0.4), "开端": (0, 0.4), "起步阶段": (0, 0.4), "头几年": (0, 0.4),
+    "前几年": (0, 0.4), "初期": (0, 0.4), "前期": (0, 0.4), "前段": (0, 0.4),
+    "前半段": (0, 0.5), "上半段": (0, 0.5), "前半程": (0, 0.5),
+    "中段偏前": (0.3, 0.5), "中前段": (0.3, 0.5), "中前期": (0.3, 0.5),
+    "中段偏后": (0.5, 0.8), "中后段": (0.5, 0.8), "中后期": (0.5, 0.8),
+    "中段": (0.3, 0.7), "中期": (0.3, 0.7), "中间": (0.3, 0.7), "中途": (0.3, 0.7),
+    "后半段": (0.5, 1), "下半段": (0.5, 1), "后半程": (0.5, 1),
+    "后段": (0.6, 1), "后期": (0.6, 1), "末期": (0.6, 1), "末段": (0.6, 1), "尾段": (0.6, 1),
+    "尾声": (0.6, 1), "收尾阶段": (0.6, 1), "收尾期": (0.6, 1), "最后几年": (0.6, 1),
+    "后几年": (0.6, 1),
+}  # fmt: skip
+STAGE_POSITION = re.compile(
+    r"(?:这十年|这个十年|这一个十年|这步大运|这一步大运|这步运|这一步|这个大运|这一运|这段大运|"
+    r"(?:当前|目前|现在)(?:的|这步|这一步)?大运|"
+    rf"(?P<gz>{JIAZI})(?:大运|运)(?:（[^（）]*）)?)"
+    r"(?:的|里的|中的|之中的|之中|里|中)?(?:大致|大约|约|差不多|基本)?"
+    r"(?:(?P<position>"
+    + "|".join(sorted(POSITION_RANGES, key=len, reverse=True))
+    # “这一步的后期规划”: a word for planning, not a part of the ten years.
+    + r")(?![规准工计安投维调])|第(?P<year>[一二三四五六七八九十\d]+)年)"
 )
 # Bazi pilot r10, luck cycles #1: “按出生到节令的时间来定，逆排从上一个‘节’数到出生” for a chart
 # counted forward passed every check. A direction said of this chart must be the computed one
@@ -495,6 +551,15 @@ MANNER_BEFORE = re.compile(
     r"(?P<word>要|应该|应当|应|可以|可|能|宜|适度|分批|逢低|择机|大胆|放心|积极|果断|谨慎|小心|冷静|"
     r"慎重|考虑|开始|着手|继续|适量|少量|小额|小幅|大额|一次性)(?:地)?(?:先)?$"
 )
+# Owner, 2026-11-12 (r12 review): investment #3's “如果你正在做资金安排，建议分批、留应急金”, in a
+# layer titled “4月5日起到8月8日前后”, recommends a pace of investing with its verb left out; a
+# known escape. Refused when a recommending word governs it in a timed clause or a dated layer;
+# “把‘全投’换成‘分批、留底、按预算’更稳妥” (r8, no recommending word) still passes.
+BATCH_RECOMMENDED = re.compile(
+    r"(?P<rec>(?:更|最|较|比较|也|还是)?(?:适合|可以|应该|应当|值得|不妨|最好|建议))"
+    r"(?:你|您)?(?:还是|尽量|最好|务必|一定|先|也|更|采用|采取|选择|用|做|走|考虑|改为|改成|换成)*"
+    r"(?P<list>[^，,。；;！？!?\n]{0,10}?[、和与及或])?(?P<batch>分批|分次|分几次|分几批|定投(?!资))"
+)
 NEED_BEFORE = re.compile(r"需要|必要|必须|用得着")
 CAUTION_MANNER = ("谨慎", "小心", "冷静", "慎重")
 # “8月不太需要谨慎买入”“谈不上需要谨慎加仓”: the need for caution denied.
@@ -532,6 +597,22 @@ COMPARED_BEFORE = re.compile(r"比[^，,。；;]{0,8}$")
 SCOPE_WEAKENED = re.compile(
     r"[”’」\"']?(?:本身)?(?:也|都)?(?:不一定|未必|并非|并不|不是|不见得)(?:超出|超过|不在|不属于)"
 )
+
+
+def batch_recommended(clause: str) -> bool:
+    """A recommended pace (“建议分批”) that no denial governs; a denial turned back (“不能说不
+    建议分批”“不是不建议分批”) recommends it again."""
+    for match in BATCH_RECOMMENDED.finditer(clause):
+        if match["list"] and RESTRAINT.search(match["list"]):
+            continue  # “建议别急着分批”
+        lead = clause[: match.start("rec")]
+        denied = DENIED_BEFORE.search(lead)
+        if denied:
+            ahead = lead[: denied.start()]
+            if not (TURNED_BACK.search(ahead) or re.search(r"(?:不是|并非|并不是)$", ahead)):
+                continue
+        return True
+    return False
 
 
 # “明年把积蓄全部投入股市暂不适合”“明年把积蓄全押股市这件事，从盘面提示看暂不适合” (bazi pilot r1
@@ -900,6 +981,15 @@ SEASON_PARTS = {
     "夏": ((5, 1), (8, 31)),
     "秋": ((8, 1), (11, 30)),
 }
+# “2月4日以后到夏季”, “2月到入夏” (bazi pilot r12, investment #1, #3): a month and a season or a
+# part of the year joined by 到 are one range, from the month to the end of the other; read as
+# two spans (or the month alone), the months between were left out. 入夏 is the first month of
+# summer (立夏 falls in early May).
+ENTRY_PARTS = {"春": 2, "夏": 5, "秋": 8, "冬": 11}
+LINKED_END = re.compile(
+    r"(?:到|至)(?:(?P<season>[春夏秋])(?:季|天)|(?:入|初)(?P<entry>[春夏秋冬])|"
+    r"(?P<part>上半年|下半年|年初|年中))"
+)
 MONTH_NUMBER = {"十一": 11, "十二": 12, **{c: i for i, c in enumerate("一二三四五六七八九十", 1)}}
 SPAN_SLACK = 2
 
@@ -949,14 +1039,18 @@ def title_spans(title: str, start: date, end: date, today: date | None) -> list[
     if stated:
         years = [int(stated[1])]
     out = []
+    linked = []
     for match in MONTH_SPAN.finditer(title):
         first = month_number(match["a"])
         last = month_number(match["b"]) if match["b"] else first
         ranged = bool(match["b"] or match["db"] or match["pb"])
         to_year_end = re.match(r"(?:到|至)(?:年底|年末)", title[match.end() :])
+        link = None if ranged else LINKED_END.match(title, match.end())
+        if link:
+            linked.append(link)
         for year in years:
             low, high = part_of(year, first, match["pa"], match["sa"])
-            if match["da"] and (ranged or match["sa"] or to_year_end):
+            if match["da"] and (ranged or match["sa"] or to_year_end or link):
                 # “7月7日起”, “5月6日到7月7日”; a day alone (“12月7日：收尾”) keeps the month.
                 low = day_of(year, first, int(match["da"]))
             if ranged:
@@ -964,8 +1058,12 @@ def title_spans(title: str, start: date, end: date, today: date | None) -> list[
                 _, high = part_of(last_year, last, match["pb"], match["sb"])
                 if match["db"]:
                     high = day_of(last_year, last, int(match["db"]))
+            if link:
+                high = linked_end(year, link, high)
             out.append((low, high))
     rest = MONTH_SPAN.sub("", title)
+    for link in linked:
+        rest = rest.replace(link[0], "", 1)
     for word, ((m1, d1), (m2, d2)) in YEAR_PARTS.items():
         if word in rest:
             out += [(date(year, m1, d1), date(year, m2, d2)) for year in years]
@@ -974,7 +1072,9 @@ def title_spans(title: str, start: date, end: date, today: date | None) -> list[
         (m1, d1), (m2, d2) = SEASON_PARTS[match["season"]]
         out += [(date(year, m1, d1), date(year, m2, d2)) for year in years]
     if out and re.search(r"(?:到|至)(?:年底|年末)", title):
-        out = [(out[0][0], date(out[0][0].year, 12, 31))]
+        # “秋季到年底” starts with autumn, not with 年底 (bazi pilot r12, investment #1).
+        low = min(a for a, _ in out)
+        out = [(low, date(low.year, 12, 31))]
     # “立春后到年中” (bazi pilot r11, investment #1) starts at 立春, about 2月4日, not at 年中.
     if out and re.search(r"立春(?:后|之后|以后|起|开始)?(?:到|至)", title):
         out = [(date(out[0][0].year, 2, 4), max(b for _, b in out))]
@@ -994,6 +1094,18 @@ def title_spans(title: str, start: date, end: date, today: date | None) -> list[
         if parts:
             out.append((min(p[0] for p in parts), max(p[1] for p in parts)))
     return out
+
+
+def linked_end(year: int, link: re.Match, high: date) -> date:
+    """The end of the season or part of the year a month range runs to (LINKED_END)."""
+    if link["season"]:
+        m, d = SEASON_PARTS[link["season"]][1]
+    elif link["entry"]:
+        m, d = ENTRY_PARTS[link["entry"]], 31  # the whole first month; day_of clamps it
+    else:
+        m, d = YEAR_PARTS[link["part"]][1]
+    end = day_of(year, m, d)
+    return end if end > high else high
 
 
 def overlaps(spans, low: date, high: date, slack: int = SPAN_SLACK) -> bool:
@@ -1600,6 +1712,16 @@ class Bazi(System):
                 ]
                 if near:
                     lines.append("相邻的大运：" + "；".join(near) + "。")
+                stage, as_of = sequence[here[0]], dayun.get("as_of")
+                elapsed = int(as_of[:4]) - stage["start_year"] if as_of else -1
+                if 0 <= elapsed < 10:
+                    # Bazi pilot r12, luck cycles #2: 2026 written as 中段偏后 of 2023–2033.
+                    lines.append(
+                        f"今天（{as_of}）在当前大运{stage['ganzhi']}的第{elapsed + 1}年"
+                        f"（{stage['start_year']}年交运，{stage['start_year'] + 10}年换下一步），"
+                        f"属于这十年的{'前半段' if elapsed < 5 else '后半段'}；"
+                        "写这步大运走到哪里时照这个写。"
+                    )
             if kind == "timing" and period:
                 # bazi pilot r3, typed birth #2: the only luck-cycle fact on a timing sheet is
                 # the first one, and it was written as the range's own stage.
@@ -1909,6 +2031,7 @@ class Bazi(System):
                 listed = "或".join(f"第{i + 1}步{sequence[i]}" for i in near)
                 side = "前一步" if step < 0 else "后一步"
                 found.append(f"当前大运的{side}是{listed}，正文写成了“{match[0]}”")
+        found += Bazi.position_problems(text, dayun)
         for match in HANDOVER.finditer(text):
             if int(match["year"]) not in years:
                 listed = "、".join(str(y) for y in sorted(years))
@@ -1954,6 +2077,39 @@ class Bazi(System):
             expected = ages if "交运" in match[0] else {dayun["sequence"][0]["start_age"]}
             if int(match["age"]) not in expected:
                 found.append(f"“{match[0]}”与排出的交运岁数不符")
+        return found
+
+    @staticmethod
+    def position_problems(text: str, dayun: dict) -> list[str]:
+        """Where in the current luck cycle today lies (STAGE_POSITION); a handover year, with
+        two candidates, is left alone."""
+        current = dayun.get("current_candidates", [])
+        if len(current) != 1 or not dayun.get("as_of"):
+            return []
+        stage = current[0]
+        elapsed = int(dayun["as_of"][:4]) - stage["start_year"]
+        if not 0 <= elapsed < 10:
+            return []
+        found = []
+        for match in STAGE_POSITION.finditer(text):
+            if match["gz"] and match["gz"] != stage["ganzhi"]:
+                continue  # another cycle's part (“第3步戊午的后半段”) is not where today lies
+            # The negation stands before the cycle, often with a preposition (“并不是在这十年的
+            # 后半段”), so the whole mention is read.
+            kind = boundary_claim(text, match.start(), match.end())
+            if kind == "denied" and reasserted(text, match.end(), match[0]):
+                kind = "asserted"
+            if match["position"]:
+                low, high = POSITION_RANGES[match["position"]]
+                agrees = low < (elapsed + 1) / 10 and elapsed / 10 < high
+            else:
+                agrees = number(match["year"]) in (elapsed, elapsed + 1)
+            if wrong(kind, agrees):
+                found.append(
+                    f"今天（{dayun['as_of']}）在当前大运{stage['ganzhi']}（{stage['start_year']}年"
+                    f"交运，{stage['start_year'] + 10}年换下一步）的第{elapsed + 1}年，正文写成了"
+                    f"“{match[0]}”；这步大运走到哪里照事实写"
+                )
         return found
 
     @staticmethod
@@ -2214,6 +2370,8 @@ class Bazi(System):
                 timed = timed or bool(PERIOD_WORD.search(clause))
                 if not timed:
                     continue
+                if batch_recommended(clause):
+                    return [TRADE_PROBLEM]
                 actions = list(TRADE_ACTION.finditer(clause))
                 previous_end, governed = 0, ""
                 for index, action in enumerate(actions):
@@ -2243,11 +2401,14 @@ class Bazi(System):
             for pattern in (RELATION_AFTER, RELATION_BEFORE)
             for m in pattern.finditer(text)
         )
-        for pattern in (RELATION_AFTER, RELATION_BEFORE, RELATION_CARRY):
+        strict = {start for start, _, _ in named}
+        for pattern in (RELATION_AFTER, RELATION_BEFORE, RELATION_CARRY, RELATION_LOOSE):
             for match in pattern.finditer(text):
                 if (match.start(), match["kind"]) in seen:
                     continue
                 seen.add((match.start(), match["kind"]))
+                if pattern is RELATION_LOOSE and match.start() in strict:
+                    continue
                 key = PILLAR_KEY[match["natal"]]
                 natal_gz = pillars.get(key)
                 if not natal_gz or (match["ngz"] and match["ngz"] != natal_gz):
@@ -2264,6 +2425,8 @@ class Bazi(System):
                 if not subjects:
                     continue
                 word = match["kind"]
+                if pattern is RELATION_LOOSE:
+                    word = next(c for c in COMPOUND if c in word)
                 kinds = next((v for k, v in RELATION_KINDS.items() if word.endswith(k)), {word})
                 if word.startswith("天干"):
                     kinds = {k for k in kinds if k.startswith("天干")}
@@ -2272,6 +2435,14 @@ class Bazi(System):
                 actual = any(
                     r["type"] in kinds for gz in subjects for r in relations(gz, {key: natal_gz})
                 )
+                if pattern is RELATION_LOOSE:
+                    # An ordinary word claims nothing; only a relation stated after it counts.
+                    if not actual and self.relation_reasserted(text, match.end(), word):
+                        found.append(
+                            f"“{match[0]}”：{subject}与本命{PILLAR_ZH[key]}{natal_gz}"
+                            f"没有{word}的关系"
+                        )
+                    continue
                 between = match["between"] or ""
                 clause = max(text.rfind(c, 0, match.start()) for c in CLAUSE_BREAK) + 1
                 lead = text[clause : match.start()]
@@ -2298,10 +2469,15 @@ class Bazi(System):
         )
         core = word.lstrip("相")[-1]
         for clause in re.split(r"[，,；;]", text[end:stop])[1:]:
-            found = re.search(rf"相?{core}", clause)
-            if found and not RELATION_DENIED.search(clause[: found.start()]):
+            found = re.search(rf"相?{relation_char(core) if core in COMPOUND else core}", clause)
+            if not found:
+                continue
+            denials = list(RELATION_DENIED.finditer(clause[: found.start()]))
+            denial = denials[-1] if denials else None
+            if not denial or DOUBLE_DENIAL.search(clause[: found.start()]):
                 return True
-            if found and DOUBLE_DENIAL.search(clause[: found.start()]):
+            # “不能说不相合” states the relation again (bazi pilot r12 guards).
+            if OUTER.search(clause[: denial.start()]):
                 return True
         return False
 
@@ -2432,6 +2608,13 @@ class Bazi(System):
             for problem in problems:
                 found.append((problem, title))
             found += start_findings(body, start, end, starts)
+            if INVESTMENT.search(state.get("question") or "") and (
+                PERIOD_WORD.search(title) or title_spans(title, start, end, today)
+            ):
+                # A dated layer times what its body recommends (BATCH_RECOMMENDED).
+                for sentence in re.split(r"(?<=[。！？!?\n])", body):
+                    if any(batch_recommended(c) for c in CLAUSE_OR_TURN.split(sentence)):
+                        found.append((TRADE_PROBLEM, sentence.strip()))
         return found
 
     # ---- what code writes ----------------------------------------------------------------
