@@ -1,0 +1,112 @@
+{
+  "scope": "P3 Bazi pilot r11; original scores retained; not final acceptance",
+  "p1_four_criteria": {
+    "all_pipeline_answers_submitted": true,
+    "no_pipeline_step_or_budget_failures": true,
+    "max_pipeline_model_calls_le_3": true,
+    "submitted_quality_at_least_same_batch_single": true
+  },
+  "p1_four_criteria_passed": true,
+  "submitted_quality": {
+    "Bazi-single": {
+      "submitted": 14,
+      "passed": 9,
+      "unscored": 0
+    },
+    "Bazi-pipeline": {
+      "submitted": 18,
+      "passed": 16,
+      "unscored": 0
+    }
+  },
+  "fabrication_counts": {
+    "Bazi-single": {
+      "submitted": 14,
+      "scored": 14,
+      "unscored": 0,
+      "failures": 4,
+      "fact": 0,
+      "narrative": 4,
+      "undecided": 0,
+      "suggested": {
+        "事实类": 0,
+        "叙述类": 0,
+        "待复核": 0
+      }
+    },
+    "Bazi-pipeline": {
+      "submitted": 18,
+      "scored": 18,
+      "unscored": 0,
+      "failures": 1,
+      "fact": 0,
+      "narrative": 1,
+      "undecided": 0,
+      "suggested": {
+        "事实类": 0,
+        "叙述类": 0,
+        "待复核": 0
+      }
+    }
+  },
+  "both_fabrication_tables_complete": true,
+  "all_36_rows_scored": true,
+  "pipeline_fact_failures_zero": false,
+  "original_judge_fact_failure_count": 0,
+  "manual_confirmed_fact_escapes": [
+    {
+      "group": "Bazi-pipeline",
+      "id": "bazi_pilot_dayun",
+      "repeat": 3,
+      "kind": "事实类",
+      "quote": "往前一步是第1步大运丙辰（1993年交运，2003年换下一步）",
+      "current": {
+        "step": 4,
+        "ganzhi": "己未",
+        "start_year": 2023
+      },
+      "actual_previous": {
+        "step": 3,
+        "ganzhi": "戊午",
+        "start_year": 2013,
+        "next_start_year": 2023
+      },
+      "explanation": "前后两步标题下，正文把第4步的前一步指为第1步；单个干支与年份正确，但相邻关系错误。自动检查和原评委均放过。",
+      "original_quality_pass": true,
+      "original_scores_unchanged": true
+    }
+  ],
+  "narrative_fabrication_share": {
+    "Bazi-single": 0.2857142857142857,
+    "Bazi-pipeline": 0.05555555555555555
+  },
+  "narrative_no_higher_than_single": true,
+  "false_rejection_causing_failure_found": true,
+  "known_escape": [
+    {
+      "group": "Bazi-pipeline",
+      "id": "bazi_pilot_dayun",
+      "repeat": 3,
+      "kind": "事实类",
+      "quote": "往前一步是第1步大运丙辰（1993年交运，2003年换下一步）",
+      "current": {
+        "step": 4,
+        "ganzhi": "己未",
+        "start_year": 2023
+      },
+      "actual_previous": {
+        "step": 3,
+        "ganzhi": "戊午",
+        "start_year": 2013,
+        "next_start_year": 2023
+      },
+      "explanation": "前后两步标题下，正文把第4步的前一步指为第1步；单个干支与年份正确，但相邻关系错误。自动检查和原评委均放过。",
+      "original_quality_pass": true,
+      "original_scores_unchanged": true
+    }
+  ],
+  "b_met": false,
+  "recommendation": "do_not_freeze",
+  "independent_human_calibration_completed": false,
+  "final_acceptance_campaign_run": false
+}

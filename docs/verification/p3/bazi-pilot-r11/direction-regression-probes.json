@@ -1,0 +1,41 @@
+{
+  "scope": "Offline deterministic probes on tested PR70 source; no new model request, no alteration of official rows or scores.",
+  "natal_from": "r10/Bazi-pipeline/bazi_pilot_dayun#1",
+  "computed_forward": true,
+  "probes": [
+    {
+      "label": "r10 original",
+      "text": "按出生到节令的时间来定，逆排从上一个“节”数到出生。",
+      "expected_reject": true,
+      "problems": [
+        "这次排出的大运是顺排，正文不能写成逆排；提到排法时按顺排写"
+      ]
+    },
+    {
+      "label": "both-directions incorrect claim",
+      "text": "大运采用逆排，顺排只是另一种排法。",
+      "expected_reject": true,
+      "problems": [
+        "这次排出的大运是顺排，正文不能写成逆排；提到排法时按顺排写"
+      ]
+    },
+    {
+      "label": "conditional general rule",
+      "text": "阴男阳女逆排。",
+      "expected_reject": false,
+      "problems": []
+    },
+    {
+      "label": "single definition",
+      "text": "逆排是从上一个节数到出生时刻。",
+      "expected_reject": false,
+      "problems": []
+    },
+    {
+      "label": "correct chart claim",
+      "text": "这份命盘的大运顺排，从出生数到下一个节。",
+      "expected_reject": false,
+      "problems": []
+    }
+  ]
+}

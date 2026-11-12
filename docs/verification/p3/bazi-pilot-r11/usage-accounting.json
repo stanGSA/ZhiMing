@@ -1,0 +1,59 @@
+{
+  "Bazi-single": {
+    "runtime_input_tokens": 802772,
+    "runtime_output_tokens": 49456,
+    "review_input_tokens": 211198,
+    "review_output_tokens": 6242,
+    "review_request_attempts": 18,
+    "parse_retries": [],
+    "cost": null,
+    "cost_reason": "Relay token rates unavailable"
+  },
+  "Bazi-pipeline": {
+    "runtime_input_tokens": 125337,
+    "runtime_output_tokens": 16190,
+    "review_input_tokens": 300792,
+    "review_output_tokens": 7448,
+    "review_request_attempts": 21,
+    "parse_retries": [
+      {
+        "id": "bazi_pilot_overseas_solar",
+        "repeat": 1,
+        "usage": {
+          "input_tokens": 21092,
+          "output_tokens": 776,
+          "usage_available": true,
+          "requested_model": "deepseek-v4.1-flash",
+          "returned_model": "deepseek-v4.1-flash",
+          "parse_attempts": 2
+        }
+      },
+      {
+        "id": "bazi_pilot_typed_birth",
+        "repeat": 1,
+        "usage": {
+          "input_tokens": 37352,
+          "output_tokens": 783,
+          "usage_available": true,
+          "requested_model": "deepseek-v4.1-flash",
+          "returned_model": "deepseek-v4.1-flash",
+          "parse_attempts": 2
+        }
+      },
+      {
+        "id": "bazi_pilot_typed_birth",
+        "repeat": 3,
+        "usage": {
+          "input_tokens": 38074,
+          "output_tokens": 703,
+          "usage_available": true,
+          "requested_model": "deepseek-v4.1-flash",
+          "returned_model": "deepseek-v4.1-flash",
+          "parse_attempts": 2
+        }
+      }
+    ],
+    "cost": null,
+    "cost_reason": "Relay token rates unavailable"
+  }
+}
