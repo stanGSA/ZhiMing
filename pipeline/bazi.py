@@ -209,6 +209,10 @@ VIRTUAL_HANDOVER = re.compile(
     r"(?P<action>起运|交运|上运|(?:进入|换到|换|走进|开始走)"
     r"(?:首步大运|第(?P<n>[一二三四五六七八九十\d]+)步大运))"
 )
+VIRTUAL_STAGE_BEFORE = re.compile(
+    r"(?:首步大运|第(?P<n>[一二三四五六七八九十\d]+)步大运)"
+    r"(?:是|为|在|于|的交运年龄是|的交运年龄为)?$"
+)
 # Bazi pilot r10, luck cycles #1: “按出生到节令的时间来定，逆排从上一个‘节’数到出生” for a chart
 # counted forward passed every check. A direction said of this chart must be the computed one
 # (dayun.forward). Conditions and definitions describe the rule, not this chart's direction.
@@ -1919,6 +1923,9 @@ class Bazi(System):
                 if handover is None:
                     continue
                 n = number(handover["n"]) if handover["n"] else None
+                stage_before = VIRTUAL_STAGE_BEFORE.search(sentence[: match.start()])
+                if n is None and stage_before:
+                    n = number(stage_before["n"]) if stage_before["n"] else 1
                 if n is not None:
                     expected = (
                         {dayun["sequence"][n - 1]["start_age"]}
