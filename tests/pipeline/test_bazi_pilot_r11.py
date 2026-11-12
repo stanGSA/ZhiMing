@@ -5,8 +5,8 @@ in r11.
   (dayun.forward = true) passed every check. The fact sheet gave the rule for both directions
   and its keywords listed both 顺排 and 逆排, but not which one this chart uses.
 
-A direction said of this chart must be the computed one. The rule itself (both directions set out
-in one sentence) passes; the relaxation carries its guards (still refused): another item in the
+A direction said of this chart must be the computed one. General conditions and definitions
+pass even when naming only one direction; the guards still refuse another item in the
 sentence, a denial then a statement, an outer negation, a degree word, a double negation, a
 statement again after a turn.
 """
@@ -16,6 +16,7 @@ from pathlib import Path
 
 import pytest
 
+from pipeline.bazi import Bazi
 from tests.pipeline.test_bazi_pilot_r5 import CASES, DAYUN_CASE, computed, has, refused
 from tests.pipeline.test_runner_bazi import facts_in, make, written  # noqa: F401
 
@@ -105,3 +106,77 @@ async def test_the_right_direction_is_submitted_without_repair(make):  # noqa: F
     assert outcome.status == "submit_reading", outcome.text
     info = outcome.data["pipeline"]
     assert (info["model_calls"], info["repairs"], info["degraded"]) == (1, 0, None)
+
+
+@pytest.mark.parametrize("forward", [True, False])
+@pytest.mark.parametrize(
+    "text",
+    [
+        "阳年男命顺排。",
+        "阴年男命逆排。",
+        "阴年女命顺排。",
+        "阳年女命逆排。",
+        "阳男阴女顺排、阴男阳女逆排。",
+        "一般来说，阳男阴女顺排。",
+        "顺排的规则是从出生数到下一个节。",
+        "逆排的规则是从上一个节数到出生。",
+        "顺排是从出生数到下一个节。",
+        "逆排是从上一个节数到出生。",
+        "所谓逆排的定义是从上一个节数到出生。",
+        "顺排从出生数到下一个节，逆排从上一个节数到出生。",
+    ],
+)
+def test_general_rules_do_not_assert_the_charts_direction(text, forward):
+    assert Bazi.direction_problems(text, {"dayun": {"forward": forward}}) == []
+
+
+@pytest.mark.parametrize("forward", [True, False])
+@pytest.mark.parametrize(
+    "template",
+    [
+        "大运采用{wrong}，{right}只是另一种排法。",
+        "此八字采用{wrong}，{right}则相反。",
+        "起运采用{wrong}，{right}只是举例。",
+        "你的大运{wrong}，阳年男命顺排。",
+        "阳年男命顺排，但这份命盘{wrong}。",
+        "阳年男命顺排，但大运采用{wrong}。",
+        "本命的{wrong}规则是从节令计算。",
+        "大运采用{wrong}是从节令计算。",
+    ],
+)
+def test_other_directions_do_not_hide_an_implicit_chart_claim(template, forward):
+    right, wrong = ("顺排", "逆排") if forward else ("逆排", "顺排")
+    text = template.format(right=right, wrong=wrong)
+    assert Bazi.direction_problems(text, {"dayun": {"forward": forward}}), text
+
+
+@pytest.mark.parametrize("case", [DAYUN_CASE, BACKWARD_CASE], ids=["forward", "backward"])
+async def test_an_implicit_wrong_direction_is_repaired(make, case):  # noqa: F811
+    right, wrong = ("顺排", "逆排") if case is DAYUN_CASE else ("逆排", "顺排")
+    sentence = f"大运采用{wrong}，{right}只是另一种排法。"
+    runtime, composer, _ = make(
+        lambda m: written(m, extra=sentence),
+        lambda m: written(m, extra=f"这份命盘的大运{right}。"),
+        birth=case["profile"],
+    )
+    outcome = await runtime.turn(DAYUN_CASE["question"])
+    assert outcome.status == "submit_reading", outcome.text
+    info = outcome.data["pipeline"]
+    assert (info["model_calls"], info["repairs"], info["degraded"]) == (2, 1, None)
+    assert f"出问题的句子：“{sentence}”" in composer.seen[1][0][-1]["content"]
+    assert sentence not in outcome.text
+
+
+@pytest.mark.parametrize("case", [DAYUN_CASE, BACKWARD_CASE], ids=["forward", "backward"])
+async def test_a_single_general_rule_does_not_cause_degradation(make, case):  # noqa: F811
+    sentence = "阴年男命逆排。" if case is DAYUN_CASE else "阳年男命顺排。"
+    runtime, _, _ = make(
+        lambda m: written(m, extra=sentence),
+        lambda m: written(m, extra=sentence),
+        birth=case["profile"],
+    )
+    outcome = await runtime.turn(DAYUN_CASE["question"])
+    assert outcome.status == "submit_reading", outcome.text
+    info = outcome.data["pipeline"]
+    assert (info["model_calls"], info["repairs"], info["degraded"]) == (1, 0, None)
+    assert sentence in outcome.text

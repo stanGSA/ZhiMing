@@ -194,9 +194,21 @@ START_DATE = re.compile(r"(?P<y>\d{4})年(?P<m>\d{1,2})月(?P<d>\d{1,2})日(?:�
 START_AGE = re.compile(r"(?P<age>\d{1,2})岁(?:起运|交运|上运)")
 # Bazi pilot r10, luck cycles #1: “按出生到节令的时间来定，逆排从上一个‘节’数到出生” for a chart
 # counted forward passed every check. A direction said of this chart must be the computed one
-# (dayun.forward); a sentence setting out both directions (the general rule) names neither.
+# (dayun.forward). Conditions and definitions describe the rule, not this chart's direction.
 DIRECTION = re.compile(r"顺排|顺行|顺推|顺数|逆排|逆行|逆推|逆数|倒排|倒推")
-DIRECTION_SUBJECT = re.compile(r"你|您|这份|本命|命盘|这一例|这里|此盘|你的大运|所以|因此")
+DIRECTION_SUBJECT = re.compile(
+    r"你|您|这份|本命|命盘|命局|这一例|这里|此盘|此八字|这(?:个|份)?八字"
+)
+DIRECTION_CONDITION = re.compile(
+    r"(?:[阴阳](?:年|干)?(?:出生的)?[男女](?:命|性)?){1,2}(?:的)?(?:大运|起运)?"
+    r"(?:应当|应该|应|一律|通常|一般|采用|按|是|为|则|就|走|会|\s)*$"
+)
+DIRECTION_DEFINITION = re.compile(
+    r"(?:的(?:规则|定义|含义|意思|排法)(?:是|为|指|[：:])|(?:是|指)(?:从|由))"
+)
+DIRECTION_DEFINITION_LEAD = re.compile(r"(?:所谓|通常所说的|一般所说的|(?:传统)?规则[中里]?)?")
+DIRECTION_ALTERNATIVE = re.compile(r"则相反|(?:只是|仅是|仅作)?(?:另一种(?:排法|规则|方向)|举例)")
+DIRECTION_COUNTING = re.compile(r"从.+(?:节|节令)")
 
 
 def direction_word(forward: bool) -> str:
@@ -1840,22 +1852,43 @@ class Bazi(System):
             f"{direction_word(not forward)}；提到排法时按{direction_word(forward)}写"
         )
         for sentence in re.split(r"(?<=[。！？!?；;\n])", text):
-            matches = list(DIRECTION.finditer(sentence))
-            both = {m[0][0] == "顺" for m in matches} == {True, False}
-            for match in matches:
-                kind = claim(sentence, match.start(), match.end())
-                if kind == "denied" and reasserted(sentence, match.end(), match[0]):
-                    kind = "asserted"
+            mentions = []
+            for match in DIRECTION.finditer(sentence):
                 clause = max(sentence.rfind(c, 0, match.start()) for c in "，,、；;：:") + 1
                 stop = min(
                     (i for i in (sentence.find(c, match.end()) for c in "，,、；;。") if i != -1),
                     default=len(sentence),
                 )
-                # Both directions in one sentence set out the rule (“顺排从出生数到下一个节，逆排
-                # 从上一个节数到出生”“你的大运逆排，顺排则相反”): only a clause tied to this chart
-                # or denying a direction says which one it uses.
-                if both and kind == "asserted":
-                    if not DIRECTION_SUBJECT.search(sentence[clause:stop]):
+                mentions.append(
+                    (match, sentence[clause : match.start()].strip(), sentence[match.end() : stop])
+                )
+            # Bare “顺排从…，逆排从…” is a paired definition. Just naming the other
+            # direction (“大运采用逆排，顺排只是另一种排法”) cannot exempt the first claim.
+            definitions = {
+                match[0][0] == "顺"
+                for match, before, after in mentions
+                if not before and DIRECTION_COUNTING.match(after)
+            }
+            for match, before, after in mentions:
+                kind = claim(sentence, match.start(), match.end())
+                if kind == "denied" and reasserted(sentence, match.end(), match[0]):
+                    kind = "asserted"
+                if kind == "asserted" and not DIRECTION_SUBJECT.search(before):
+                    if (
+                        DIRECTION_CONDITION.search(before)
+                        or (
+                            DIRECTION_DEFINITION_LEAD.fullmatch(before)
+                            and (
+                                DIRECTION_DEFINITION.match(after)
+                                or DIRECTION_ALTERNATIVE.match(after)
+                            )
+                        )
+                        or (
+                            definitions == {True, False}
+                            and not before
+                            and DIRECTION_COUNTING.match(after)
+                        )
+                    ):
                         continue
                 if wrong(kind, (match[0][0] == "顺") == forward):
                     return [problem]

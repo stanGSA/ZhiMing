@@ -70,8 +70,6 @@ execution.md 写明：本地工作区、提交历史和 stash 里都找不到 `3
 
 ### 2.2 评分完整性与缺失的证据
 
-| 组 | 行 | 原因 |
-| --- | --- | --- |
 三行都是两次评分尝试后仍解析失败（“评委回复中没有可解析的JSON对象”）。`judge_answer` 把两次请求的 usage 相加，单次输出上限是 8192，下表是两次的累计输出：
 
 | 组 | 行 | 保存的正文 | 两次累计输出 token |
@@ -132,15 +130,26 @@ execution.md 写明：本地工作区、提交历史和 stash 里都找不到 `3
 | [P3] 16,384 是两次请求的累计输出，单次上限 8192 | 同意。§1、§2.2 改为“两次评分尝试后仍解析失败”，分列正文和累计输出 |
 | 先补齐 r10 回答、评委理由、修复证据与 manifest 并完成分类 | 这些文件在负责人本机，需要负责人发布；本 PR 只能列出缺口（§2.2） |
 
+### 4.3 后续评审修复
+
+针对 `b38706a` 的后续评审发现两处边界问题，已补充守卫并修复：
+
+- 顺排命盘上的“大运采用逆排，顺排只是另一种排法”被当作一般规则，零修复提交；现在逐分句识别条件规则、定义和本命断言，省略主语的“大运采用……”以及“此八字……”照样核对。单纯提到另一种排法不能豁免错误断言。
+- 逆排女命上的“阳年男命顺排”是正确的一般规则，却在两稿后降级为关键词；现在单独介绍一种条件规则或定义也放行，不再要求一句里必须同时出现两种排法。
+
+两种命盘均补了端到端测试：错误断言修复一次后提交，一般规则一次提交且不降级。新增用例在修复前有 20 项断言失败；修复后本文件的顺逆排测试共 49 项通过。原有否定、双重否定、程度词和转折守卫保留。
+
+补充离线重放：读取本机 r1–r9 两组的最后完整批次，对含有大运方向计算事实的 320 份可用回答比较 `b38706a` 与修订后的方向检查，结果没有变化。该数包含 single 与 pipeline，与 §5 原复核的 204 份归档范围不同；没有重新调用模型或修改评分。
+
 ## 5. r11 的改动（本 PR）
 
 | 改动 | 内容 |
 | --- | --- |
-| 顺逆排检查（`Bazi.direction_problems`） | 正文说这份命盘顺排或逆排时，要与 `dayun.forward` 一致。否认错误的排法放行；否认正确的、含糊其辞的照拒。一句里两种排法都写到时，视为介绍规则（“顺排从出生数到下一个节，逆排从上一个节数到出生”“阳年男命顺排、阴年男命逆排”），只核对带“你 / 这份 / 本命”等指向本命盘的分句和带否定的分句。单句类问题，问题文字按命盘固定 |
+| 顺逆排检查（`Bazi.direction_problems`） | 正文描述本命排法时与 `dayun.forward` 核对，包括省略主语的“大运采用……”和“此八字……”；同句提到另一种方向不豁免。按分句识别“阳年男命顺排”这类条件规则、“逆排的规则是……”这类定义、“顺排从……，逆排从……”这类成对定义和“顺排则相反”这类对照说明；只介绍一种规则也放行。否认错误的排法放行；否认正确的、含糊其辞的照拒 |
 | 事实表写明方向（`Bazi.context`） | 上下文加一行“这份命盘的大运顺排：起运时间从出生数到下一个‘节’。正文提到排法时只能写顺排。”（逆排同理） |
 | 关键词（`direction_keywords`） | 大运释义的关键词只留这份命盘用的那一种，事实表和关键词降级稿都去掉另一种 |
 
-题集、rubric、评委配置、`*_final.yaml` 都没有改；既有测试一条没改。
+题集、rubric、评委配置、`*_final.yaml` 都没有改；既有断言保留，新增上述边界回归。
 
 **仍须拒的守卫**（`tests/pipeline/test_bazi_pilot_r11.py`，顺排命盘上）：
 
@@ -178,22 +187,25 @@ execution.md 写明：本地工作区、提交历史和 stash 里都找不到 `3
 
 在 r11 合并后的 `claude_modify_model` 上**用约定配置**重跑。`docs/verification/p3/bazi-pilot-r11/pricing.yaml` 已放好，与 r10 逐字节相同（`d6d6cb2c…`）。
 
-运行前备份个人配置，从 r9 的实验配置恢复约定配置，哈希不符就停止：
+先核对 r9 备份的哈希，再备份个人配置。用 `finally` 在运行结束或失败后按原字节恢复配置；备份已存在时停止，避免重跑覆盖：
 
 ```powershell
-Copy-Item config.yaml reports/config.personal.before-r11.yaml
-```
-
-```powershell
-Copy-Item reports/p3-bazi-r9/config.experiment.yaml config.yaml
-```
-
-```powershell
-if ((Get-FileHash config.yaml -Algorithm SHA256).Hash -ne '3DFA2E81873C876568582D1B3138E802AA7E1D7C59DD60E03A52C94A87557D1B') { throw 'config.yaml 不是约定配置 3dfa2e81' }
-```
-
-```powershell
-.venv\Scripts\python.exe -X utf8 -m scripts.p1_campaign --campaign p3-bazi --root reports/p3-bazi-r11 --snapshot . --baseline . --publish docs/verification/p3/bazi-pilot-r11
+$experimentConfig = 'reports/p3-bazi-r9/config.experiment.yaml'
+$expectedConfigHash = '3DFA2E81873C876568582D1B3138E802AA7E1D7C59DD60E03A52C94A87557D1B'
+if ((Get-FileHash -LiteralPath $experimentConfig -Algorithm SHA256 -ErrorAction Stop).Hash -ne $expectedConfigHash) { throw '实验配置不是约定配置 3dfa2e81' }
+$personalBackup = 'reports/config.personal.before-r11.yaml'
+if (Test-Path -LiteralPath $personalBackup) { throw '个人配置备份已存在，请先核对，不能覆盖' }
+$configPath = (Resolve-Path config.yaml).Path
+$personalConfigBytes = [System.IO.File]::ReadAllBytes($configPath)
+[System.IO.File]::WriteAllBytes((Join-Path (Get-Location).Path $personalBackup), $personalConfigBytes)
+try {
+    Copy-Item -LiteralPath $experimentConfig -Destination $configPath -ErrorAction Stop
+    if ((Get-FileHash -LiteralPath $configPath -Algorithm SHA256).Hash -ne $expectedConfigHash) { throw '运行配置哈希不符' }
+    .venv\Scripts\python.exe -X utf8 -m scripts.p1_campaign --campaign p3-bazi --root reports/p3-bazi-r11 --snapshot . --baseline . --publish docs/verification/p3/bazi-pilot-r11
+    if ($LASTEXITCODE -ne 0) { throw "Campaign 退出码：$LASTEXITCODE，请检查结果" }
+} finally {
+    [System.IO.File]::WriteAllBytes($configPath, $personalConfigBytes)
+}
 ```
 
 ```powershell
@@ -206,12 +218,6 @@ if ((Get-FileHash config.yaml -Algorithm SHA256).Hash -ne '3DFA2E81873C876568582
 
 ```powershell
 .venv\Scripts\python.exe -X utf8 -m scripts.pipeline_problems reports/p3-bazi-r11/Bazi-pipeline --output docs/verification/p3/bazi-pilot-r11/pipeline-problems-raw.md
-```
-
-运行结束后恢复个人配置：
-
-```powershell
-Copy-Item reports/config.personal.before-r11.yaml config.yaml
 ```
 
 execution.md 请记录：配置恢复来源和哈希、评委的 `thinking` 与 `reasoning_effort` 实际取值、源码指纹、被测提交。
