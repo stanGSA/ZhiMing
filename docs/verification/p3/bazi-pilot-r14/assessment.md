@@ -4,7 +4,7 @@
 
 The experiment ran against merge commit `e9b8e9071315904561ecfdf00eacfc9595fee7f4`. Its source fingerprint, unchanged experiment configuration, restored personal configuration, 36 raw rows, and trace files are verified in [integrity.json](integrity.json). Original answers and judge scores are preserved.
 
-**Do not freeze.** The pipeline submitted 18/18 and passed quality on 17/18 (94.4%); one overseas-birth answer failed `supported_conclusion` because it inferred “火偏旺” from element counts. The single baseline submitted 0/18, with 10 scored and 8 unscored outcomes, so the experiment cannot establish a valid answer-quality comparison against single. Neither group has a submitted `no_fabricated_facts=false` result; the single denominator is zero, not evidence of zero fabrication risk. The 17/18 pipeline rate is descriptive for this one batch, not an independent quality estimate.
+**Do not freeze.** The pipeline submitted 18/18 and passed quality on 17/18 (94.4%); one overseas-birth answer failed `supported_conclusion` because it inferred “火偏旺” from element counts. The original same-batch single baseline submitted 0/18, so that batch cannot establish an answer-quality comparison. A later, separate single rerun submitted 13/18; of 10 scored submissions, 4 passed and 6 failed, while 3 were unscored. This adds descriptive evidence but cannot be treated as a paired comparison with the original pipeline run. Neither group has a submitted `no_fabricated_facts=false` result in the original r14 batch; the single denominator is zero, not evidence of zero fabrication risk. The pipeline rate is descriptive, not an independent quality estimate.
 
 | Measure | Bazi-single | Bazi-pipeline |
 | --- | ---: | ---: |
@@ -29,3 +29,4 @@ Focused manual review found no actionable factual escape in the three investment
 - All 36 original final outputs, raw score rows, repair evidence, execution details, and integrity manifests are linked from [review.md](review.md).
 - All runs share the same 183-file source fingerprint. The personally customized `config.yaml` was restored byte-for-byte after the experiment.
 - Deterministic r14 regression tests: 35 passed in an isolated worktree at the measured commit. Running them in the main checkout uses the user-local config, which selects tarot only and causes Bazi-specific fixtures to return `model_error`; no model experiment was rerun to diagnose this.
+- The separate single rerun and its complete report and traces are documented in [r14 single rerun](../bazi-pilot-r14-single-retry/execution.md). It used the same model, config, dataset, and rubric, but ran later as a new set of stochastic requests; it does not replace the original rows or create same-batch pairs.

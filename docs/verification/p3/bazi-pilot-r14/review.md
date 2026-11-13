@@ -2,7 +2,7 @@
 
 ## Conclusion
 
-The r14 campaign completed on merge commit `e9b8e9071315904561ecfdf00eacfc9595fee7f4`. Raw reports, source fingerprint, restored configuration, paired rows, and trace files are verified. **Do not freeze:** pipeline quality was 17/18, with one unsupported five-element strength inference; the single baseline submitted 0/18, so a quality comparison is not valid. See [assessment.md](assessment.md).
+The r14 campaign completed on merge commit `e9b8e9071315904561ecfdf00eacfc9595fee7f4`. Raw reports, source fingerprint, restored configuration, paired rows, and trace files are verified. **Do not freeze:** pipeline quality was 17/18, with one unsupported five-element strength inference. The original single baseline submitted 0/18. A separately documented single rerun submitted 13/18 but had only 4/10 scored submissions pass quality and is not paired with the pipeline run. See [assessment.md](assessment.md) and [the rerun record](../bazi-pilot-r14-single-retry/execution.md).
 
 ## Evidence scope
 
