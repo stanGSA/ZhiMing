@@ -1265,12 +1265,6 @@ def start_findings(
             spans = [part_of(year, month, part) for year, month in months]
             if any(a - slack <= day <= b + slack for a, b in spans for day in days):
                 continue
-            # The flow month running when the range begins (“7月上旬到中旬，流月甲午” for 甲午 from
-            # 6月5日, a range from 7月1日) begins, for the reading, with the range.
-            if any(day < start for day in days) and any(
-                a - slack <= start <= b + slack for a, b in spans
-            ):
-                continue
             day = days[0]
             found.append(
                 (

@@ -143,17 +143,18 @@ async def test_the_r13_range_before_a_flow_month_is_refused(love):
         "7月中旬到8月初，流月乙未带来压力。",
         "中旬到8月初，流月乙未带来压力。",  # the month from the layer's title
         "7月上旬，流月甲午提示责任。中旬至8月初，流月乙未带来压力。",
+        # 甲午 began on 6月5日; the query's 7月1日 does not move it (PR68 review).
+        "7月上旬到中旬，流月甲午提示责任。",
     ],
 )
 async def test_ranges_against_the_flow_month_start(love, body):
-    assert has(findings(love, "7月：开头几天", body), START), body
+    assert has(findings(love, "7月：开头几天", body), "从这时开始"), body
 
 
 @pytest.mark.parametrize(
     "body",
     [
         "7月上旬，流月甲午提示责任。7月7日到8月初，流月乙未带来压力。",
-        "7月上旬到中旬，流月甲午提示责任。",  # 甲午 runs when the range begins (7月1日)
         "7月上旬，流月甲午提示责任。上旬之后，流月乙未带来压力。",  # 乙未 from 7月7日
         "不是中旬到8月初，流月乙未带来压力。",  # denied
     ],
