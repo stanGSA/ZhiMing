@@ -4,6 +4,7 @@ import json
 
 import pytest
 
+from harness.llm import RoleModelSpec
 from harness.models import ModelResponse, ToolCall
 from scripts import service_probe
 
@@ -26,6 +27,24 @@ def test_a_service_without_thinking_passes():
     assert service_probe.problems_of("reply", reply()) == []
     assert service_probe.problems_of("reply", reply("OK。", 2)) == []
     assert service_probe.problems_of("tool", call()) == []
+
+
+def test_judge_probe_uses_disabled_thinking_even_if_campaign_enables_it():
+    configured = {
+        "vendor": "deepseek",
+        "api": "openai",
+        "model": "deepseek-v4.1-flash",
+        "thinking": "enabled",
+        "reasoning_effort": "high",
+        "max_tokens": 8192,
+        "api_key_env": "DEEPSEEK_API_KEY",
+        "base_url_env": "DEEPSEEK_BASE_URL",
+    }
+    spec = service_probe.judge_probe_spec(configured)
+    assert isinstance(spec, RoleModelSpec)
+    assert spec.model == "deepseek-v4.1-flash"
+    assert spec.thinking == "disabled"
+    assert spec.reasoning_effort is None
 
 
 @pytest.mark.parametrize(

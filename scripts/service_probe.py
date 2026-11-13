@@ -44,6 +44,14 @@ MAX_REPLY_TOKENS = 3
 MAX_CALL_TOKENS = 40
 
 
+def judge_probe_spec(config: dict) -> RoleModelSpec:
+    """Probe the judge service's disabled-thinking path regardless of campaign settings."""
+    values = dict(config)
+    values["thinking"] = "disabled"
+    values.pop("reasoning_effort", None)
+    return RoleModelSpec(**values)
+
+
 def problems_of(kind: str, response) -> list[str]:
     found = []
     if response.reasoning_tokens:
@@ -116,7 +124,7 @@ async def main(judge: str | None, output: Path) -> int:
         records.append(await probe("runtime_reply", runtime, "reply"))
         records.append(await probe("runtime_tool_call", runtime, "tool"))
         if judge:
-            judge_model = role_model(RoleModelSpec(**config["eval_judges"][judge]), 120)
+            judge_model = role_model(judge_probe_spec(config["eval_judges"][judge]), 120)
             models.append(judge_model)
             records.append(await probe(f"judge_{judge}_reply", judge_model, "reply"))
     finally:
