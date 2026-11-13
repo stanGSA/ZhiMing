@@ -87,13 +87,6 @@ async def test_restraint_and_checks_in_a_dated_layer_pass(money, body):
     assert not refused(money, FIXTURE["batch_title"], body), body
 
 
-async def test_a_trial_is_reported_once(money):
-    """A sentence timed by its own words is reported by the sentence check, not the layer too."""
-    body = "这段时间适合试水。"
-    assert Bazi(None).problems([body], money).count(TRADE_PROBLEM) == 1
-    assert TRADE_PROBLEM not in findings(money, FIXTURE["batch_title"], body)
-
-
 # ---- a title's length after its numbers expand -----------------------------------------------
 
 

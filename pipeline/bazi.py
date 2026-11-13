@@ -2730,8 +2730,6 @@ class Bazi(System):
             ):
                 # A dated layer times what its body recommends (BATCH_RECOMMENDED).
                 for sentence in re.split(r"(?<=[。！？!?\n])", body):
-                    if Bazi.trade_problems(sentence):
-                        continue  # timed by its own words; the sentence check reports it
                     if any(batch_recommended(c) for c in CLAUSE_OR_TURN.split(sentence)):
                         found.append((TRADE_PROBLEM, sentence.strip()))
         return found
