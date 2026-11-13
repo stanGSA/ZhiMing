@@ -601,6 +601,9 @@ BATCH_PRINCIPLE = re.compile(
     r"(?P<rec>以)(?P<list>[^，,。；;！？!?\n]{0,12}?)"
     rf"(?P<batch>{BATCH})[^，,。；;！？!?\n]{{0,6}}?(?:为主|为宜|为好|为先|优先)"
 )
+PRINCIPLE_DENIED_BEFORE = re.compile(
+    r"(?:不|并不|不太|不是|并非|未必|不一定)(?:适合|建议|应该|应当|可以)$"
+)
 NEED_BEFORE = re.compile(r"需要|必要|必须|用得着")
 CAUTION_MANNER = ("谨慎", "小心", "冷静", "慎重")
 # “8月不太需要谨慎买入”“谈不上需要谨慎加仓”: the need for caution denied.
@@ -648,7 +651,9 @@ def batch_recommended(clause: str) -> bool:
         if match["list"] and RESTRAINT.search(match["list"]):
             continue  # “建议别急着分批”
         lead = clause[: match.start("rec")]
-        denied = DENIED_BEFORE.search(lead)
+        denied = DENIED_BEFORE.search(lead) or (
+            PRINCIPLE_DENIED_BEFORE.search(lead) if match.re is BATCH_PRINCIPLE else None
+        )
         if denied:
             ahead = lead[: denied.start()]
             if not (TURNED_BACK.search(ahead) or re.search(r"(?:不是|并非|并不是)$", ahead)):

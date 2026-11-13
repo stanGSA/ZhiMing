@@ -63,6 +63,7 @@ async def test_the_r14_batch_principle_is_refused(money):
         "适合拿来补基础、做小范围尝试。",
         "应对上，以预算和分批投入为主。",
         "应对上，以分批为宜。",
+        "应对上，不是不建议以固定预算和分批规划为主。",
         "不能说不适合小范围尝试。",  # an outer negation
         "不是不建议试水。",  # a double negation
         "不建议一次投入，但其实适合小范围验证。",  # a statement after a turn
@@ -77,6 +78,8 @@ async def test_trials_and_principles_in_a_dated_layer(money, body):
     [
         "这段时间不适合试水。",
         "应对上，不以分批规划为主。",
+        "应对上，不建议以固定预算和分批规划为主。",
+        "应对上，并不适合以固定预算和分批规划为主。",
         "应对上，以固定预算为主。",
         "流月乙巳提醒先用小范围验证检验新想法，不要一次下结论。",  # r14 #2, no recommending word
         "如果你正处在这样的节奏里，更稳妥的做法是把大额投入的事往后放，先用小步验证自己的判断。",
