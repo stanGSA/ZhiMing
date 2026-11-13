@@ -211,6 +211,15 @@ STAGE_HERE = re.compile(
     rf"(?P<gz>{JIAZI})(?P<suffix>大运|运)?(?:（[^）]{{0,24}}）|\([^)]{{0,24}}\))?[，,]?\s*"
     r"(?P<here>(?:这个|这一|这|此)(?:步|个)?(?:大运阶段|大运|阶段|运)|这一?步)"
 )
+# Bazi pilot r13, career #3: “首步大运己丑（1998年交运，2008年换下一步）显示你正走在这步十年大运
+# 的后半段” in 2026 (丁亥 from 2018). Owner, 2026-11-13: a known escape. A cycle given as what shows
+# where you are now is taken as the current one.
+STAGE_EVIDENCE = re.compile(
+    rf"(?P<label>首步大运|第一步大运|首运|第[一二三四五六七八九十\d]+步大运)的?(?P<gz>{JIAZI})"
+    r"(?:（[^）]{0,24}）|\([^)]{0,24}\))?\s*"
+    r"(?:显示|说明|表明|表示|意味着|可见|看出)(?:你|您)?(?:正|目前|现在|如今|眼下|当下)?"
+    r"(?:正在)?(?:走在|走到|处在|处于|在|走)?(?:这一?步|这个|当前|目前)(?:十年)?(?:大运|运)"
+)
 # What sets such a stage in another time, right after it (“这个阶段早已过去”“这一步之后”) or
 # right before it (“早在”“下一步”); anywhere else in the clause it does not (“别重复过去的模式”).
 OTHER_TIME_AFTER = re.compile(
@@ -260,7 +269,8 @@ POSITION_RANGES = {
     "后几年": (0.6, 1),
 }  # fmt: skip
 STAGE_POSITION = re.compile(
-    r"(?:这十年|这个十年|这一个十年|这步大运|这一步大运|这步运|这一步|这个大运|这一运|这段大运|"
+    r"(?:这十年|这个十年|这一个十年|这步十年大运|这个十年大运|这步大运|这一步大运|这步运|这一步|"
+    r"这个大运|这一运|这段大运|"
     r"(?:当前|目前|现在)(?:的|这步|这一步)?大运|"
     rf"(?P<gz>{JIAZI})(?:大运|运)(?:（[^（）]*）)?)"
     r"(?:的|里的|中的|之中的|之中|里|中)?(?:大致|大约|约|差不多|基本)?"
@@ -320,6 +330,25 @@ ELEMENT_COUNT_LIST = re.compile(
 )
 NATAL_SCOPE_WORD = re.compile(r"原局|命局|本命|八字|命盘|四柱|出生|天生|先天|命里|命中|生辰")
 NATAL_SCOPE_DENIED = re.compile(r"(?:不是|并非|而非|不属于|并不是)(?:看|按|用)?$")
+# Bazi pilot r13, luck cycles #3: after the right count 木4、火0、土3、金0、水1, “木水出现得多，火与
+# 金则一个也没有出现” passed (水 is 1, 土 3). Owner, 2026-11-13: a known escape. A summary of the
+# natal count, in a sentence about the chart's elements, must agree with it: 多 above the mean,
+# 少 below it, 缺 zero, 最多/最少 the extreme. Money words (资金, 现金…) are not elements.
+ELEMENT_SUMMARY = re.compile(
+    r"(?<![资现奖基租押薪定税黄美酬礼本佣赏罚五合])"
+    r"(?P<els>[木火土金水](?:(?:[、和与及跟]|以及)?[木火土金水]){0,4})"
+    r"(?:这?两类|这?三类|两行|两种)?(?:元素)?(?:都|也|则|就|明显|相对|比较|较为|更)?"
+    r"(?P<word>出现得最多|出现得最少|出现得多|出现得少|一个也没有(?:出现)?|没有出现|偏多|较多|"
+    r"最多|居多|偏少|较少|最少|缺位|缺失|空缺|为零|是零|多(?![少半种样么数])|少(?![量数许]))"
+)
+ELEMENT_SCOPE = re.compile(r"五行|计数|个数|原局|命局|命盘|盘中|盘里|八字|四柱")
+SUMMARY_KIND = {
+    "出现得最多": "max", "最多": "max", "出现得最少": "min", "最少": "min",
+    "一个也没有": "zero", "一个也没有出现": "zero", "没有出现": "zero", "缺位": "zero",
+    "缺失": "zero", "空缺": "zero", "为零": "zero", "是零": "zero",
+    "出现得多": "many", "偏多": "many", "较多": "many", "居多": "many", "多": "many",
+    "出现得少": "few", "偏少": "few", "较少": "few", "少": "few",
+}  # fmt: skip
 # “年柱戊辰（天干戊为正财）、时柱己卯（天干己为偏财）这两处偏财线索” (bazi pilot r7, luck cycles
 # #2): a summary of the ten gods just listed must agree with them.
 LISTED_GOD = re.compile(rf"天干[{STEMS}]为(?P<god>{'|'.join(TEN_GODS)})")
@@ -558,7 +587,7 @@ MANNER_BEFORE = re.compile(
 BATCH_RECOMMENDED = re.compile(
     r"(?P<rec>(?:更|最|较|比较|也|还是)?(?:适合|可以|应该|应当|值得|不妨|最好|建议))"
     r"(?:你|您)?(?:还是|尽量|最好|务必|一定|先|也|更|采用|采取|选择|用|做|走|考虑|改为|改成|换成)*"
-    r"(?P<list>[^，,。；;！？!?\n]{0,10}?[、和与及或])?(?P<batch>分批|分次|分几次|分几批|定投(?!资))"
+    r"(?P<list>[^，,。；;！？!?\n]{0,10}?[、和与及或])?(?P<batch>分批|分次|分几次|分几批|(?<!决)定投(?!资))"
 )
 NEED_BEFORE = re.compile(r"需要|必要|必须|用得着")
 CAUTION_MANNER = ("谨慎", "小心", "冷静", "慎重")
@@ -1183,25 +1212,33 @@ def title_scope_findings(
 # word for after or a turn (之后, 起, 转向…), is held to the title rule (owner, 2026-11-10): the
 # flow month's start more than two days outside that part is refused. Read leniently, as titles:
 # “9月上旬之后” over 9月7日 passes.
+# Owner, 2026-11-13 (bazi pilot r13, typed birth #1): a range from that part on (“中旬到8月初，
+# 流月乙未” for 乙未 from 7月7日) names where the flow month begins as well.
 STARTS_IN_PART = re.compile(
     rf"(?:(?P<month>{MONTH_WORD})月(?P<mpart>{BARE_PART}|初|中|底|末)|(?P<part>{BARE_PART}))"
-    rf"(?P<after>{PART_AFTER})?[，,]?\s*(?:就|便|则|又|再|会|才)?"
+    rf"(?P<after>{PART_AFTER})?"
+    rf"(?P<range>(?:到|至|—|~|～)(?:{MONTH_WORD}月)?(?:{BARE_PART}|初|中|底|末)?)?"
+    r"[，,]?\s*(?:就|便|则|又|再|会|才)?"
     r"(?P<verb>转向|转入|转到|转为|进入|换成|换到|换为|轮到|迎来|来到|交到)?"
     rf"(?P<flow>流月(?P<gz>{JIAZI}))"
 )
 
 
 def start_findings(
-    body: str, start: date, end: date, starts: dict[str, list[date]]
+    body: str, start: date, end: date, starts: dict[str, list[date]], title: str = ""
 ) -> list[tuple[str, str]]:
     """(problem, sentence) for a flow month said to begin in a part of a month it does not
     begin in. ``starts``: each flow month's actual local start days, before range clipping."""
     single = start.year == end.year and start.month == end.month
     years = range(start.year, end.year + 1)
     found = []
+    offset = 0
     for sentence in re.split(r"(?<=[。！？!?；;])|\n", body):
+        offset = body.find(sentence, offset)
         for match in STARTS_IN_PART.finditer(sentence):
-            if not (match["after"] or match["verb"]) or match["gz"] not in starts:
+            if not (match["after"] or match["verb"] or match["range"]):
+                continue
+            if match["gz"] not in starts:
                 continue
             marker = sentence[match.start() : match.start("flow")].rstrip("，, ")
             if boundary_claim(sentence, match.start(), match.start("flow")) == "denied":
@@ -1217,10 +1254,22 @@ def start_findings(
             elif single:
                 months = [(start.year, start.month)]
             else:
-                continue  # 下旬 alone over several months names no month
+                # 下旬 alone over several months takes the month named last before it in the
+                # layer (“7月上旬……。中旬到8月初，流月乙未”); with none it names no month.
+                named = re.findall(rf"({MONTH_WORD})月", body[: offset + match.start()])
+                named = named or re.findall(rf"({MONTH_WORD})月", written_months(title))[:1]
+                if not named:
+                    continue
+                months = [(year, month_number(named[-1])) for year in years]
             slack = timedelta(days=SPAN_SLACK)
             spans = [part_of(year, month, part) for year, month in months]
             if any(a - slack <= day <= b + slack for a, b in spans for day in days):
+                continue
+            # The flow month running when the range begins (“7月上旬到中旬，流月甲午” for 甲午 from
+            # 6月5日, a range from 7月1日) begins, for the reading, with the range.
+            if any(day < start for day in days) and any(
+                a - slack <= start <= b + slack for a, b in spans
+            ):
                 continue
             day = days[0]
             found.append(
@@ -1780,6 +1829,7 @@ class Bazi(System):
             if LITERAL_ALIAS.search(text):
                 found.append(LITERAL_ALIAS_PROBLEM)
             found += self.count_problems(text)
+            found += self.count_summary_problems(text, natal)
             found += self.festival_problems(text)
             found += self.aggregate_problems(text)
             found += self.role_problems(text, state)
@@ -1996,6 +2046,12 @@ class Bazi(System):
                 found.append(f"按今年算所在的大运是{'或'.join(current)}，正文写成了{match[group]}")
         if period and period.get("start") and period.get("end"):
             found += Bazi.stage_here_problems(text, dayun, period, kind_at)
+        for match in STAGE_EVIDENCE.finditer(text):
+            if current and wrong(kind_of(match, "gz"), match["gz"] in current):
+                found.append(
+                    f"按今年算所在的大运是{'或'.join(current)}；“{match[0]}”把{match['gz']}"
+                    "当成了现在这步大运"
+                )
         for match in ANY_DAYUN.finditer(text):
             group = "gz" if match["gz"] else "after"
             if match[group] not in sequence and claim(
@@ -2314,6 +2370,43 @@ class Bazi(System):
         return []
 
     @staticmethod
+    def count_summary_problems(text: str, natal: dict) -> list[str]:
+        """A summary of the natal five-element count (ELEMENT_SUMMARY) must agree with it."""
+        count = natal.get("wuxing_count") or {}
+        if not count:
+            return []
+        mean = sum(count.values()) / len(count)
+        found = []
+        for sentence in re.split(r"(?<=[。！？!?；;\n])", text):
+            if not ELEMENT_SCOPE.search(sentence):
+                continue
+            for match in ELEMENT_SUMMARY.finditer(sentence):
+                clause = max(sentence.rfind(c, 0, match.start()) for c in CLAUSE_BREAK) + 1
+                if re.search(r"流年|流月|流日|大运", sentence[clause : match.start()]):
+                    continue  # a period's elements, not the natal count
+                kind = SUMMARY_KIND[match["word"]]
+                values = [count[e] for e in re.findall(r"[木火土金水]", match["els"])]
+                agrees = all(
+                    {
+                        "max": v == max(count.values()),
+                        "min": v == min(count.values()),
+                        "zero": v == 0,
+                        "many": v > mean,
+                        "few": v < mean,
+                    }[kind]
+                    for v in values
+                )
+                stated = claim(sentence, match.start(), match.end())
+                if stated == "denied" and reasserted(sentence, match.end(), match[0]):
+                    stated = "asserted"
+                if wrong(stated, agrees):
+                    listed = "、".join(f"{k}{v}" for k, v in count.items())
+                    found.append(
+                        f"原局五行计数是{listed}，正文概括成了“{match[0]}”；概括计数时照数字写"
+                    )
+        return found
+
+    @staticmethod
     def count_problems(text: str) -> list[str]:
         """A five-element count is the natal chart's; a count said of a period is misplaced.
 
@@ -2608,7 +2701,7 @@ class Bazi(System):
             )
             for problem in problems:
                 found.append((problem, title))
-            found += start_findings(body, start, end, starts)
+            found += start_findings(body, start, end, starts, title)
             if INVESTMENT.search(state.get("question") or "") and (
                 PERIOD_WORD.search(title) or title_spans(title, start, end, today)
             ):
