@@ -1,0 +1,79 @@
+{
+  "campaign": "p3-bazi",
+  "source_branch": "claude_modify_model",
+  "source_commit": "e9b8e9071315904561ecfdf00eacfc9595fee7f4",
+  "pull_request_head": "0ccaaaf9b966cb45ad809fdb97a5029cb3fcb695",
+  "source_fingerprint": "2a974a96ed903255910bca94169680c088fd71a74ac4f735ccff4aad4af60b68",
+  "configuration": {
+    "source": "reports/p3-bazi-r9/config.experiment.yaml",
+    "sha256": "3dfa2e81873c876568582d1b3138e802aa7e1d7c59dd60e03a52c94a87557d1b",
+    "personal_before_and_after_sha256": "d20f8ebd922f11bad6cda4b850ac66d17fcb50d0a656dd7800e89671cf243a24"
+  },
+  "config_source": "reports/p3-bazi-r9/config.experiment.yaml",
+  "judge_settings": {
+    "vendor": "deepseek",
+    "api": "openai",
+    "model": "deepseek-v4.1-flash",
+    "thinking": "disabled",
+    "max_tokens": 8192
+  },
+  "reasoning_effort_present": false,
+  "base_config_sha256": "3dfa2e81873c876568582d1b3138e802aa7e1d7c59dd60e03a52c94a87557d1b",
+  "config_sha256": "3dfa2e81873c876568582d1b3138e802aa7e1d7c59dd60e03a52c94a87557d1b",
+  "original_config_sha256": "d20f8ebd922f11bad6cda4b850ac66d17fcb50d0a656dd7800e89671cf243a24",
+  "systems": [
+    "tarot",
+    "dream",
+    "name",
+    "daily",
+    "astro",
+    "bazi"
+  ],
+  "command": [
+    "D:\\知命\\.venv\\Scripts\\python.exe",
+    "-X",
+    "utf8",
+    "-m",
+    "scripts.p1_campaign",
+    "--campaign",
+    "p3-bazi",
+    "--root",
+    "reports/p3-bazi-r14",
+    "--snapshot",
+    ".",
+    "--baseline",
+    ".",
+    "--publish",
+    "docs/verification/p3/bazi-pilot-r14"
+  ],
+  "started": "2026-11-13T10:37:17.544353+00:00",
+  "started_utc": "2026-11-13T10:37:17Z",
+  "finished": "2026-11-13T11:24:35.595438+00:00",
+  "finished_utc": "2026-11-13T11:24:35Z",
+  "as_of_local_date": "2026-11-13",
+  "status": "complete",
+  "pid": 46372,
+  "classification": "Codex offline classification; original judge scores retained; not independent human adjudication",
+  "experiment_round": "r14",
+  "dataset_change": "Pilot cases, rubric and judge configuration unchanged from r13; no final acceptance campaign",
+  "pricing_sha256": "d6d6cb2c2c385d894d79cb6c054a330f79458e068ef6183744f58ea65c812ef6",
+  "campaign_exit_codes": {
+    "Bazi-single": 1,
+    "Bazi-pipeline": 1
+  },
+  "exit_code": 0,
+  "experiment_config_unchanged": true,
+  "config_restored": true,
+  "groups": {
+    "Bazi-single": {
+      "run_id": "20261113T103718-0f673755",
+      "rows": 18,
+      "repeats": 3
+    },
+    "Bazi-pipeline": {
+      "run_id": "20261113T105622-43845d42",
+      "rows": 18,
+      "repeats": 3
+    }
+  }
+}
