@@ -1,0 +1,37 @@
+{
+  "scope": "P3 Bazi pilot r13; original judge scores retained; not final acceptance",
+  "source_commit": "c49056cc7ef43c4f2d3bee228e5eaa2f9e7a312a",
+  "source_fingerprint": "a6cd1a6ecd0d3e992cc0e359d890fd14bbc9c405ecf9fc1a63d16cee444c7de8",
+  "p1_four_criteria": {
+    "all_pipeline_answers_submitted": true,
+    "no_pipeline_step_or_budget_failures": true,
+    "max_pipeline_model_calls_le_3": true,
+    "submitted_quality_at_least_same_batch_single": true
+  },
+  "p1_four_criteria_passed": true,
+  "submitted_quality": {
+    "Bazi-single": {"submitted": 12, "passed": 9, "unscored": 0},
+    "Bazi-pipeline": {"submitted": 18, "passed": 16, "unscored": 0}
+  },
+  "fabrication_counts": {
+    "Bazi-single": {"submitted": 12, "scored": 12, "unscored": 0, "failures": 3, "fact": 0, "narrative": 3, "undecided": 0},
+    "Bazi-pipeline": {"submitted": 18, "scored": 18, "unscored": 0, "failures": 2, "fact": 1, "narrative": 1, "undecided": 0}
+  },
+  "both_fabrication_tables_complete": true,
+  "all_36_rows_scored": true,
+  "pipeline_fact_failures_zero": false,
+  "narrative_fabrication_share": {"Bazi-single": 0.25, "Bazi-pipeline": 0.05555555555555555},
+  "narrative_no_higher_than_single": true,
+  "known_r13_checks": {
+    "ordinary_peihe_word_not_rejected_as_relation": true,
+    "current_dayun_position_checked": true,
+    "timed_batch_recommendation_repaired": true,
+    "cross_year_linked_title_unit_test_passed": true
+  },
+  "false_rejection_causing_quality_failure_found": false,
+  "b_met": false,
+  "b_reasons": ["One pipeline investment answer has an imprecise 2027-02-04 立春 boundary, manually attributed as 事实类."],
+  "recommendation": "do_not_freeze",
+  "independent_human_calibration_completed": false,
+  "final_acceptance_campaign_run": false
+}

@@ -1,0 +1,16 @@
+{
+  "offline_regression": {
+    "command": "pytest tests/pipeline/test_bazi_pilot_r13.py tests/pipeline/test_bazi_title_regressions.py -q",
+    "result": "86 passed",
+    "ruff_check": "passed",
+    "ruff_format_check": "passed",
+    "git_diff_check": "passed"
+  },
+  "live_review": {
+    "ordinary_peihe": "The three submitted pipeline career answers containing ordinary 配合 wording were not rejected as a 合 relation.",
+    "dayun_position": "Dayun #3 states the current cycle is in its first half; the other final answers do not state a contradictory within-cycle position.",
+    "trade_boundary": "Investment #3 first draft was refused for a timed trade recommendation and revised; the submitted answer passes.",
+    "previous_cycle": "Dayun #1 retained a genuine wrong previous-cycle claim and degraded to keywords after repair; counted as a real answer failure, not a false rejection.",
+    "known_fact_issue": "Investment #1 uses a date-only 2027-02-04 立春 boundary; counted as 事实类."
+  }
+}
