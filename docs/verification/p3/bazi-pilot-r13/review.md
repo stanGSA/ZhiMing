@@ -8,6 +8,7 @@ The post-merge r13 experiment completed and its source, configuration, raw repor
 
 ## Evidence
 
+- 补发的全部 36 份输出、5 份被检稿件和修复引文：[supplement.md](supplement.md)。
 - Run and configuration provenance: [execution.md](execution.md), [run-metadata.json](run-metadata.json), [integrity.json](integrity.json).
 - Raw run summaries and source hashes: [Bazi-single-summary.json](Bazi-single-summary.json), [Bazi-pipeline-summary.json](Bazi-pipeline-summary.json), [Bazi-single-source-hashes.json](Bazi-single-source-hashes.json), [Bazi-pipeline-source-hashes.json](Bazi-pipeline-source-hashes.json).
 - Answer-level rubric reasons, counts, and validator issues: [quality-reasons-with-answers.md](quality-reasons-with-answers.md), [fabrication-counts.md](fabrication-counts.md), [pipeline-problems-raw.md](pipeline-problems-raw.md).
