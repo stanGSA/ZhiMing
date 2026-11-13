@@ -494,6 +494,7 @@ SAFETY_FALLBACK = "这类问题牵涉重大的现实决定，请结合专业意�
 MAX_ASKS = 3
 MAX_PERIODS = 48
 BODY_LIMIT = 1200  # common.schemas.Reading: a section body
+TITLE_LIMIT = compose.LIMITS["title"]  # common.schemas.Reading: a section title
 SECTION_LIMIT = compose.LIMITS["sections"]
 SECTION_ORDER = ("日主", "四柱", "大运", "流年", "流月", "流日", "流期与原局", "约定")
 
@@ -584,10 +585,24 @@ MANNER_BEFORE = re.compile(
 # layer titled “4月5日起到8月8日前后”, recommends a pace of investing with its verb left out; a
 # known escape. Refused when a recommending word governs it in a timed clause or a dated layer;
 # “把‘全投’换成‘分批、留底、按预算’更稳妥” (r8, no recommending word) still passes.
+# Owner, 2026-11-13 (r14 review), known escapes in dated layers: investment #1's “适合拿来补基础、
+# 做小范围验证，而不是一次性押上全部” (a trial investment) and investment #3's “以固定预算和分批
+# 规划为主” (a pace, as the principle of the period).
+BATCH = r"(?:分批|分次|分几次|分几批|(?<!决)定投(?!资)|小范围(?:验证|尝试|试水|试)|试水)"
+BATCH_VERBS = (
+    r"(?:还是|尽量|最好|务必|一定|先|也|更|采用|采取|选择|用|做|走|考虑|改为|改成|换成|拿来)*"
+)
 BATCH_RECOMMENDED = re.compile(
     r"(?P<rec>(?:更|最|较|比较|也|还是)?(?:适合|可以|应该|应当|值得|不妨|最好|建议))"
-    r"(?:你|您)?(?:还是|尽量|最好|务必|一定|先|也|更|采用|采取|选择|用|做|走|考虑|改为|改成|换成)*"
-    r"(?P<list>[^，,。；;！？!?\n]{0,10}?[、和与及或])?(?P<batch>分批|分次|分几次|分几批|(?<!决)定投(?!资))"
+    rf"(?:你|您)?{BATCH_VERBS}"
+    rf"(?P<list>[^，,。；;！？!?\n]{{0,10}}?[、和与及或])?{BATCH_VERBS}(?P<batch>{BATCH})"
+)
+BATCH_PRINCIPLE = re.compile(
+    r"(?P<rec>以)(?P<list>[^，,。；;！？!?\n]{0,12}?)"
+    rf"(?P<batch>{BATCH})[^，,。；;！？!?\n]{{0,6}}?(?:为主|为宜|为好|为先|优先)"
+)
+PRINCIPLE_DENIED_BEFORE = re.compile(
+    r"(?:不|并不|不太|不是|并非|未必|不一定)(?:适合|建议|应该|应当|可以)$"
 )
 NEED_BEFORE = re.compile(r"需要|必要|必须|用得着")
 CAUTION_MANNER = ("谨慎", "小心", "冷静", "慎重")
@@ -631,11 +646,14 @@ SCOPE_WEAKENED = re.compile(
 def batch_recommended(clause: str) -> bool:
     """A recommended pace (“建议分批”) that no denial governs; a denial turned back (“不能说不
     建议分批”“不是不建议分批”) recommends it again."""
-    for match in BATCH_RECOMMENDED.finditer(clause):
+    matches = [*BATCH_RECOMMENDED.finditer(clause), *BATCH_PRINCIPLE.finditer(clause)]
+    for match in matches:
         if match["list"] and RESTRAINT.search(match["list"]):
             continue  # “建议别急着分批”
         lead = clause[: match.start("rec")]
-        denied = DENIED_BEFORE.search(lead)
+        denied = DENIED_BEFORE.search(lead) or (
+            PRINCIPLE_DENIED_BEFORE.search(lead) if match.re is BATCH_PRINCIPLE else None
+        )
         if denied:
             ahead = lead[: denied.start()]
             if not (TURNED_BACK.search(ahead) or re.search(r"(?:不是|并非|并不是)$", ahead)):
@@ -2618,11 +2636,27 @@ class Bazi(System):
                     f"第{index}层正文的编号展开成事实后有{len(body)}字，超过{BODY_LIMIT}字的上限："
                     "每个编号会展开成带日期的整句，把这一层拆成两层，或少引几个编号"
                 )
+            # Bazi pilot r14, career #1: “{{R11}}期间：……” was 23 characters as written and 63
+            # once 流月己亥 expanded with its dates; the submission's schema refused it.
+            found += Bazi.title_length_problems(index, section.get("title") or "")
         return found
+
+    @staticmethod
+    def title_length_problems(index: int, title: str) -> list[str]:
+        if len(title) <= TITLE_LIMIT:
+            return []
+        return [
+            f"第{index}层标题的编号展开成事实后有{len(title)}字，超过{TITLE_LIMIT}字的上限："
+            "标题里不要放编号，用日期或主题写标题，编号放进正文"
+        ]
 
     def reading_quotes(self, args, facts, session) -> dict[str, list[str]]:
         """problem → the title that raised it, for the repair request (as astro r4)."""
         quotes: dict[str, list[str]] = {}
+        for index, section in enumerate(args.get("sections", []), 1):
+            title = section.get("title") or ""
+            for problem in self.title_length_problems(index, title):
+                quotes[problem] = [title]
         for problem, sentence in self.section_findings(args, facts, session):
             if sentence not in quotes.setdefault(problem, []):
                 quotes[problem].append(sentence)
