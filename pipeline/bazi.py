@@ -309,6 +309,9 @@ DIRECTION = re.compile(r"顺排|顺行|顺推|顺数|逆排|逆行|逆推|逆数
 # These verbs name a direction of the luck cycles only in a sentence about them.
 DIRECTION_VERB = re.compile(r"顺行|顺推|顺数|逆行|逆推|逆数|倒推")
 DIRECTION_CONTEXT = re.compile(r"大运|起运|交运|行运|排法|排盘|排运|节令|[上下]一个?[“‘\"]?节")
+DIRECTION_CALCULATION_OBJECT = re.compile(
+    r"(?:参与比例|投资预算|预算|比例|成本|现金流|亏损|风险承受)"
+)
 DIRECTION_SUBJECT = re.compile(
     r"你|您|这份|本命|命盘|命局|这一例|这里|此盘|此八字|这(?:个|份)?八字"
 )
@@ -2282,8 +2285,11 @@ class Bazi(System):
         for sentence in re.split(r"(?<=[。！？!?；;\n])", text):
             mentions = []
             for match in DIRECTION.finditer(sentence):
-                if DIRECTION_VERB.fullmatch(match[0]) and not DIRECTION_CONTEXT.search(sentence):
-                    continue  # “倒推参与比例”
+                if DIRECTION_VERB.fullmatch(match[0]) and (
+                    not DIRECTION_CONTEXT.search(sentence)
+                    or DIRECTION_CALCULATION_OBJECT.search(sentence[match.end() : match.end() + 12])
+                ):
+                    continue  # “倒推参与比例 / 预算” is a calculation, even beside a dayun mention.
                 clause = max(sentence.rfind(c, 0, match.start()) for c in "，,、；;：:") + 1
                 stop = min(
                     (i for i in (sentence.find(c, match.end()) for c in "，,、；;。") if i != -1),

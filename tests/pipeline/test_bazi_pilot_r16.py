@@ -360,6 +360,13 @@ async def test_directions_of_the_cycles_are_still_refused(money, text):
     assert has(problems(money, text), DIRECTION), text
 
 
-@pytest.mark.parametrize("text", ["从目标倒推每月预算。", "把计划逆推回今天，先定最晚的节点。"])
+@pytest.mark.parametrize(
+    "text",
+    [
+        "从目标倒推每月预算。",
+        "把计划逆推回今天，先定最晚的节点。",
+        "从大运结构看，建议按可承受亏损倒推预算。",
+    ],
+)
 async def test_back_calculations_pass(money, text):
     assert not has(problems(money, text), DIRECTION), text
