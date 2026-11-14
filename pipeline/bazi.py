@@ -177,6 +177,7 @@ DAY_MASTER = re.compile(
     rf"(?:日主|日元|日干)\s*{DENIAL}(?:是|为|属于|属|：|:)?\s*(?P<stem>{STEM})|"
     rf"(?P<before>{STEM})[木火土金水]?(?:日主|日元)"
 )
+STEM_GOD_BEFORE = re.compile(rf"天干(?P<stem>[{STEMS}])(?P<neg>{DENIAL})(?:为|是)$")
 STEM_ELEMENT = re.compile(rf"(?P<stem>{STEM})(?P<element>[木火土金水])(?![日月年时柱])")
 SUBJECT = re.compile(
     rf"(?P<label>首步大运|第一步大运|首运|第[一二三四五六七八九十\d]+步大运|当前大运|目前大运|现在的大运|"
@@ -633,9 +634,11 @@ MANNER_BEFORE = re.compile(
 # 规划为主” (a pace, as the principle of the period).
 # Owner, 2026-11-14 (r15 review), a known escape in investment #1's layer “2月到5月”: “这段时间若考虑
 # 资金安排，更适合把‘先学清楚、再小步验证’放在前面”, a trial investment recommended for the period.
+# Owner, 2026-11-15 (r17 review), a known escape in investment #2's summary: “明年……更适合以保守、
+# 分散、先保生活底线的方式管理资金”, a manner of investing recommended for the year.
 BATCH = (
     r"(?:分批|分次|分几次|分几批|(?<!决)定投(?!资)|小范围(?:验证|尝试|试水|试)|"
-    r"小步(?:验证|尝试|试水|试|投入)|试水)"
+    r"小步(?:验证|尝试|试水|试|投入)|分散(?![注精心])|试水)"
 )
 BATCH_VERBS = (
     r"(?:还是|尽量|最好|务必|一定|先|再|也|更|采用|采取|选择|用|做|走|考虑|改为|改成|换成|拿来)*"
@@ -2069,6 +2072,20 @@ class Bazi(System):
                 kind = "asserted"
             clause = max(text.rfind(c, 0, match.start()) for c in CLAUSE_BREAK) + 1
             before = text[clause : match.start()]
+            # Bazi pilot r17, investment #3: “……地支冲（6月6日至7月7日）、与时柱辛亥（天干辛为偏财）”
+            # read the relation's 地支 as a hidden stem and refused the right 偏财 twice. A god
+            # right after “天干X为” is that stem's, whatever comes before it in the clause.
+            stem_god = STEM_GOD_BEFORE.search(before)
+            if stem_god and master:
+                actual = ten_god(master[0], stem_god["stem"])
+                if stem_god["neg"] and len(re.findall(r"不|非", stem_god["neg"])) % 2:
+                    kind = "asserted" if kind == "denied" else "denied"
+                if actual and wrong(kind, god == actual):
+                    found.append(
+                        f"“天干{stem_god['stem']}为{god}”与计算不符：天干{stem_god['stem']}"
+                        f"对日主{master[0]}是{actual}"
+                    )
+                continue
             if re.search(r"藏干|藏|地支", before):
                 if wrong(kind, god in hidden):
                     found.append(f"这次的地支藏干里没有{god}")
