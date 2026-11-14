@@ -196,6 +196,15 @@ NEIGHBOUR_DAYUN = re.compile(
     rf"(?:是|为|：|:|走的是|走|进入)?\s*(?:第(?P<n>[一二三四五六七八九十\d]+)步大运|首步大运)?"
     rf"\s*(?P<gz>{JIAZI})"
 )
+# Bazi pilot r16, luck cycles #1: the repair of “前一步是第1步大运丙辰” wrote “走到这一步之前的那
+# 十年，天干为第1步大运丙辰天干丙为伤官”, the 1st cycle again for the 3rd. The decade before or
+# after this one is its neighbour, as “前一步 / 下一步” is.
+NEIGHBOUR_DECADE = re.compile(
+    r"(?:(?:这一?步|这步大运|当前大运|现在这步大运?)(?P<side>之前|以前|之后|以后)的?(?:那|那个)?"
+    r"|(?P<near>上|前|下|后)一个)十年[，,]?\s*"
+    rf"(?:天干|主题|走的)?\s*(?P<neg>{DENIAL})(?:是|为|对应|在|走)?\s*"
+    rf"(?:第(?P<n>[一二三四五六七八九十\d]+)步大运|首步大运)\s*(?P<gz>{JIAZI})"
+)
 PRESENT = r"(?:当前|目前|现在|眼下|如今|当下)"
 CURRENT_DAYUN = re.compile(
     rf"(?:{PRESENT}|正在走)(?:所处|所在|所走|走|行)?的?(?:这步|这一步)?大运\s*{DENIAL}"
@@ -2161,8 +2170,10 @@ class Bazi(System):
             ) not in (None, "denied"):
                 found.append(f"{match[group]}不是这次排出的大运")
         index = [i for i, s in enumerate(dayun["sequence"]) if s["ganzhi"] in current]
-        for match in NEIGHBOUR_DAYUN.finditer(text):
-            step = -1 if match["side"] in ("往前", "之前", "前", "上") else 1
+
+        def neighbour_origin(match):
+            if match[0].startswith(("当前大运", "现在这步大运")):
+                return index
             # “第1步大运丙辰（……）的下一步” counts from the cycle named right before it.
             base = re.search(
                 rf"(?P<gz>{JIAZI})(?:大运|运)?(?:（[^（）]*）)?的?\s*$", text[: match.start()]
@@ -2177,10 +2188,15 @@ class Bazi(System):
                 )
                 if base and any(
                     m.start() <= base.start() < m.end()
-                    for m in NEIGHBOUR_DAYUN.finditer(text[sentence_start : match.start()])
+                    for pattern in (NEIGHBOUR_DAYUN, NEIGHBOUR_DECADE)
+                    for m in pattern.finditer(text[sentence_start : match.start()])
                 ):
                     base = None  # “前一步是第3步戊午，下一步是第5步庚申” shares 当前.
-            origin = [sequence.index(base["gz"])] if base and base["gz"] in sequence else index
+            return [sequence.index(base["gz"])] if base and base["gz"] in sequence else index
+
+        for match in NEIGHBOUR_DAYUN.finditer(text):
+            step = -1 if match["side"] in ("往前", "之前", "前", "上") else 1
+            origin = neighbour_origin(match)
             near = [i + step for i in origin if 0 <= i + step < len(sequence)]
             if not near:
                 continue
@@ -2190,6 +2206,23 @@ class Bazi(System):
                 listed = "或".join(f"第{i + 1}步{sequence[i]}" for i in near)
                 side = "前一步" if step < 0 else "后一步"
                 found.append(f"当前大运的{side}是{listed}，正文写成了“{match[0]}”")
+        for match in NEIGHBOUR_DECADE.finditer(text):
+            side = match["side"] or match["near"]
+            step = -1 if side in ("之前", "以前", "上", "前") else 1
+            origin = neighbour_origin(match)
+            near = [i + step for i in origin if 0 <= i + step < len(sequence)]
+            if not near:
+                continue
+            named = number(match["n"]) - 1 if match["n"] else 0
+            agrees = match["gz"] in {sequence[i] for i in near} and named in near
+            kind = "denied" if len(re.findall(r"不|非", match["neg"] or "")) % 2 else "asserted"
+            clause = max(text.rfind(c, 0, match.start()) for c in CLAUSE_BREAK) + 1
+            if OUTER.search(text[clause : match.start()]):
+                kind = "asserted" if kind == "denied" else "denied"
+            if wrong(kind, agrees):
+                listed = "或".join(f"第{i + 1}步{sequence[i]}" for i in near)
+                word = "前一步" if step < 0 else "后一步"
+                found.append(f"当前大运的{word}是{listed}，正文写成了“{match[0]}”")
         found += Bazi.position_problems(text, dayun)
         for match in HANDOVER.finditer(text):
             if int(match["year"]) not in years:
