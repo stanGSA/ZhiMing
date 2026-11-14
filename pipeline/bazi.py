@@ -2170,8 +2170,10 @@ class Bazi(System):
             ) not in (None, "denied"):
                 found.append(f"{match[group]}不是这次排出的大运")
         index = [i for i, s in enumerate(dayun["sequence"]) if s["ganzhi"] in current]
-        for match in NEIGHBOUR_DAYUN.finditer(text):
-            step = -1 if match["side"] in ("往前", "之前", "前", "上") else 1
+
+        def neighbour_origin(match):
+            if match[0].startswith(("当前大运", "现在这步大运")):
+                return index
             # “第1步大运丙辰（……）的下一步” counts from the cycle named right before it.
             base = re.search(
                 rf"(?P<gz>{JIAZI})(?:大运|运)?(?:（[^（）]*）)?的?\s*$", text[: match.start()]
@@ -2186,10 +2188,15 @@ class Bazi(System):
                 )
                 if base and any(
                     m.start() <= base.start() < m.end()
-                    for m in NEIGHBOUR_DAYUN.finditer(text[sentence_start : match.start()])
+                    for pattern in (NEIGHBOUR_DAYUN, NEIGHBOUR_DECADE)
+                    for m in pattern.finditer(text[sentence_start : match.start()])
                 ):
                     base = None  # “前一步是第3步戊午，下一步是第5步庚申” shares 当前.
-            origin = [sequence.index(base["gz"])] if base and base["gz"] in sequence else index
+            return [sequence.index(base["gz"])] if base and base["gz"] in sequence else index
+
+        for match in NEIGHBOUR_DAYUN.finditer(text):
+            step = -1 if match["side"] in ("往前", "之前", "前", "上") else 1
+            origin = neighbour_origin(match)
             near = [i + step for i in origin if 0 <= i + step < len(sequence)]
             if not near:
                 continue
@@ -2202,7 +2209,8 @@ class Bazi(System):
         for match in NEIGHBOUR_DECADE.finditer(text):
             side = match["side"] or match["near"]
             step = -1 if side in ("之前", "以前", "上", "前") else 1
-            near = [i + step for i in index if 0 <= i + step < len(sequence)]
+            origin = neighbour_origin(match)
+            near = [i + step for i in origin if 0 <= i + step < len(sequence)]
             if not near:
                 continue
             named = number(match["n"]) - 1 if match["n"] else 0

@@ -111,6 +111,35 @@ async def test_right_neighbouring_decades_pass(luck, text):
     assert not has(problems(luck, text), "当前大运的"), text
 
 
+@pytest.mark.parametrize(
+    "text",
+    [
+        "第2步大运丁巳（2003年交运，2013年换下一步）的上一个十年是第1步大运丙辰。",
+        "第2步大运丁巳（2003年交运，2013年换下一步），这一步之前的那十年是第1步大运丙辰。",
+        "第2步大运丁巳的下一个十年是第3步大运戊午。",
+        "第2步大运丁巳，当前大运之前的那十年是第3步大运戊午。",
+        "上一个十年是第3步大运戊午，下一个十年是第5步大运庚申。",
+        "前一步是第3步大运戊午，下一个十年是第5步大运庚申。",
+        "上一个十年是第3步大运戊午，下一步是第5步大运庚申。",
+    ],
+)
+async def test_decades_keep_the_named_cycle_as_reference(luck, text):
+    assert problems(luck, text) == [], text
+
+
+@pytest.mark.parametrize(
+    "text",
+    [
+        "第2步大运丁巳的上一个十年是第3步大运戊午。",
+        "第2步大运丁巳，下一个十年是第5步大运庚申。",
+        "第2步大运丁巳，当前大运之前的那十年是第1步大运丙辰。",
+        "上一个十年是第3步大运戊午，下一个十年是第4步大运己未。",
+    ],
+)
+async def test_wrong_decades_are_checked_against_the_named_cycle(luck, text):
+    assert has(problems(luck, text), "当前大运的"), text
+
+
 # ---- 稳赚 quoted, doubted or dismissed (shared hard_claim) -------------------------------------
 
 

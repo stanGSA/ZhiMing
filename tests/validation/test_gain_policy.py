@@ -15,6 +15,51 @@ from pipeline.verify import safety_rules
 @pytest.mark.parametrize(
     "text",
     [
+        "对“稳赚不赔”的承诺保持距离是不必要的，可以放心投入。",
+        "对“稳赚”的话术保持距离没有必要。",
+        "对“稳赚”的说法保持距离的做法完全没有意义。",
+        "对“稳赚”的言论保持距离只是多此一举。",
+        "对“稳赚”的说法保持距离并不值得。",
+        "对“稳赚”的说法保持距离不是必要的。",
+        "对“稳赚”的说法保持距离并非必要。",
+    ],
+)
+def test_a_caution_predicate_negated_afterwards_does_not_allow_gain_claims(text):
+    assert hard_claim([text]) == "稳赚"
+    assert "hard_claim" in safety_rules([text], "股票投资")
+
+
+@pytest.mark.parametrize(
+    "text",
+    [
+        "对“稳赚不赔”的承诺保持距离，核实风险，不要轻信。",
+        "面对“稳赚不赔”这类说辞，先问清依据和退出条件。",
+        "对“稳赚”的话术保持距离是必要的。",
+        "对“稳赚”的话术保持距离，没有必要急着做决定。",
+        "对“稳赚”的话术保持距离\n没有必要急着做决定。",
+        "对“稳赚”的话术保持距离并不是不必要的。",
+    ],
+)
+def test_a_later_clause_does_not_undo_a_genuine_caution_predicate(text):
+    assert hard_claim([text]) is None
+    assert safety_rules([text], "股票投资") == []
+
+
+@pytest.mark.parametrize("judge", [False, True])
+async def test_single_reading_refuses_a_caution_predicate_negated_afterwards(runtime, judge):
+    outcome = await runtime.turn("用塔罗看看最近心情")
+    draft = copy.deepcopy(outcome.data["reading"])
+    draft["summary"] = "对“稳赚不赔”的承诺保持距离是不必要的，可以放心投入。"
+    draft["safety"] = {"flag": True, "note": "涉及投资请谨慎考虑。"}
+    runtime.session.state["question"] = "股票投资"
+    if judge:
+        runtime.session.policy_judge = object()
+    assert validate_reading(Reading.model_validate(draft), runtime.session)
+
+
+@pytest.mark.parametrize(
+    "text",
+    [
         "有联结也有牵绊，别把配合当稳赚。",
         "别当稳赚。",
         "不要将投资看作稳赚。",

@@ -386,6 +386,13 @@ GAIN_DEMANDED = re.compile(
     r"(?:[，,]\s*)?(?:都|也|一律|一概)?(?:先|要|要求|需要|得|应|应该|必须)*(?:先)?"
     r"(?:看到|看清|核实|查清|核对|追问|问清|警惕|存疑|打个?问号|保持(?:警惕|怀疑|距离)|多问|多核实)"
 )
+# A predicate can be rejected after it is named: “保持距离是不必要的” does not
+# recommend caution. Check its own complement, not a negative in a later clause.
+GAIN_DEMAND_REVERSED = re.compile(
+    r"[ \t]*(?:的?(?:做法|要求|行为|建议))?(?:其实|根本|完全|也|都|并|只是|是)*"
+    r"(?:不(?:必|必要|需要|应该|应当|值得)|(?:不是|非)(?:必要|需要|值得|必须)|"
+    r"没(?:有)?(?:必要|意义|用)|无(?:需|须|意义)|多此一举)"
+)
 
 
 def quoted_gain_mention(text: str, start: int, end: int) -> bool:
@@ -411,7 +418,8 @@ def quoted_gain_mention(text: str, start: int, end: int) -> bool:
         ahead = lead[: addressed.start()]
         if GAIN_DOUBT_UNDONE.search(ahead) or denial_negated(ahead):
             return False
-        return bool(GAIN_DEMANDED.match(text, noun.end()))
+        demand = GAIN_DEMANDED.match(text, noun.end())
+        return bool(demand and not GAIN_DEMAND_REVERSED.match(text, demand.end()))
     return False
 
 
