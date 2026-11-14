@@ -347,3 +347,4 @@ Copy-Item reports/config.personal.before-r16.yaml config.yaml
 | 重复标签检查不认“地支X地支X” | 显示缺陷，留到主集前 |
 | 共用确定性检查 `certainty_claim` 的误拒 | 按负责人决定，留到主集前 |
 | 测试环境 | 离线测试未取得 de440s.bsp，11 项 Skyfield 测试和 `test_doctor_week1_required_checks` 失败；环境性失败，不是回归 |
+| `74acc5a` 改了入库的 `config.yaml` | `tests/knowledge/test_live_review_regressions.py` 有 3 项（`test_runtime_vendor_exception_is_scoped_to_exact_model`、`test_relay_address_is_read_from_the_environment`、`test_reviser_exception_is_bound_to_historical_reviewers`）在 `966eb22` 上就失败，在 `448c90d` 上通过，与本 PR 无关：它们断言旧的 kb_review 角色配置。是否改测试或配置由负责人决定，本 PR 不动 |
