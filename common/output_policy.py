@@ -57,7 +57,8 @@ DISMISS_ADVERBIAL = (
 )
 DISMISS_VERB_ADVERB = r"(?:直接|轻易|简单地?|随便|马上|就)?"
 GAIN_DISMISSAL = re.compile(
-    r"(?:别|不要|不能|不应(?:该|当)?|不|并不)"
+    # bazi pilot r16, investment #3: “创意与专长可以开源但不宜当作稳赚”.
+    r"(?:别|不要|不能|不宜|不应(?:该|当)?|不|并不)"
     rf"(?:{DISMISS_ADVERBIAL}(?:把|将){GAIN_OBJECT}{DISMISS_VERB_ADVERB})?"
     r"(?:当作|当成|当|视为|看成|看作|理解为|理解成|误解为|误认为|错当成)[“‘「\"']?$"
 )
@@ -351,8 +352,13 @@ def governing_denial(pattern: re.Pattern, before: str) -> re.Match | None:
 # 2026-11-11: only quoted mentions). The doubt is a frame before the quote (警惕, 别信) or a
 # demand after the noun (对……都要核实); a negated frame (不用警惕, 不必核实) is no doubt.
 QUOTED_GAIN = re.compile(r"[“‘「\"']$")
+# bazi pilot r16, investment #3: “对‘稳赚’‘错过就没有’的话术保持距离”“面对‘稳赚不赔’‘错过就没有’
+# 这类说辞，先问清依据和退出条件”: a quote may run on past 稳赚 (稳赚不赔) and others may follow it
+# before the noun.
 GAIN_CLAIM_NOUN = re.compile(
-    r"[”’」\"'](?:之类|一类|这类|这种)?的?(?:说法|话|承诺|宣传|消息|推荐|话术|论调|口号|许诺)"
+    r"[^”’」\"'，,。；;！？!?\n]{0,4}[”’」\"']"
+    r"(?:[、，,和与及或]?[“‘「\"'][^”’」\"'，,。；;！？!?\n]{1,12}[”’」\"'])*"
+    r"(?:之类|一类|这类|这种)?的?(?:说法|话术|说辞|话|承诺|宣传|消息|推荐|论调|口号|许诺|言论)"
 )
 GAIN_DOUBTED = re.compile(
     r"(?:警惕|提防|当心|小心|怀疑|质疑|远离|别信|不要信|别轻信|不要轻信|不轻信|千万别信)"
@@ -377,8 +383,8 @@ GAIN_RESTRAINED = re.compile(
 GAIN_DOUBT_UNDONE = re.compile(r"(?:不用|不必|无需|无须|别|不要|没必要|用不着|不需要)$")
 GAIN_ADDRESSED = re.compile(r"对(?:待)?(?:任何|所有|这类|各种|一切|那些)?(?:所谓)?$")
 GAIN_DEMANDED = re.compile(
-    r"(?:都|也|一律|一概)?(?:先|要|要求|需要|得|应|应该|必须)*(?:先)?"
-    r"(?:看到|看清|核实|查清|核对|追问|问清|警惕|存疑|打个?问号|保持(?:警惕|怀疑)|多问|多核实)"
+    r"(?:[，,]\s*)?(?:都|也|一律|一概)?(?:先|要|要求|需要|得|应|应该|必须)*(?:先)?"
+    r"(?:看到|看清|核实|查清|核对|追问|问清|警惕|存疑|打个?问号|保持(?:警惕|怀疑|距离)|多问|多核实)"
 )
 
 
