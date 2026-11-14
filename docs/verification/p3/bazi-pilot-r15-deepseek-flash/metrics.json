@@ -1,0 +1,133 @@
+{
+  "Bazi-single": {
+    "run_id": "20261113T232627-2aead556",
+    "mode": "single",
+    "model": "deepseek-flash",
+    "rubric_version": "v2-2026-10-24",
+    "cases": 18,
+    "task_success": 14,
+    "first_try_clean": 8,
+    "submitted": 14,
+    "quality_scored": 18,
+    "quality_unscored": 0,
+    "quality": 12,
+    "submitted_quality": 11,
+    "task_and_quality": 11,
+    "repaired": 0,
+    "degraded": 0,
+    "degraded_rate": 0.0,
+    "no_symbol": 0,
+    "no_symbol_rate": 0.0,
+    "degraded_without_no_symbol": 0,
+    "degraded_without_no_symbol_rate": 0.0,
+    "clean_success": 7,
+    "strict_v1": 6,
+    "tool_errors": 20,
+    "model_calls": 125,
+    "median_s": 13.8025,
+    "p95_s": 30.252,
+    "input_tokens": 779952,
+    "output_tokens": 45804,
+    "cache_rate": 0.7688678277637598,
+    "categories": [
+      [
+        "A 参数不是合法JSON",
+        5,
+        5,
+        2
+      ],
+      [
+        "G 释义查询未命中",
+        5,
+        2,
+        0
+      ],
+      [
+        "E 事实与计算不符",
+        4,
+        4,
+        2
+      ],
+      [
+        "I 表达策略",
+        4,
+        2,
+        1
+      ],
+      [
+        "B 参数不符合schema",
+        1,
+        1,
+        0
+      ],
+      [
+        "C 资料来源/地点未确认就计算",
+        1,
+        1,
+        0
+      ]
+    ],
+    "outcomes": {
+      "结局为 ask_user，未通过：expected_status、expected_tools、saved、systems": 3,
+      "结局为 retry_limit，未通过：expected_status、expected_tools、saved、systems": 1
+    },
+    "quality_failures": {
+      "supported_conclusion": 5,
+      "no_fabricated_facts": 4,
+      "direct_answer": 3,
+      "time_consistent": 2
+    },
+    "requested_model": "deepseek-flash",
+    "judge_model": "deepseek-flash",
+    "judge_output_tokens_p50": 356.0,
+    "runtime_output_tokens_per_call_p50": 137,
+    "runtime_max_model_calls": 11,
+    "runtime_reasoning_token_events": 0,
+    "submitted_no_fabricated_facts_false": 3
+  },
+  "Bazi-pipeline": {
+    "run_id": "20261113T233213-6a93d94d",
+    "mode": "pipeline",
+    "model": "deepseek-flash",
+    "rubric_version": "v2-2026-10-24",
+    "cases": 18,
+    "task_success": 18,
+    "first_try_clean": 18,
+    "submitted": 18,
+    "quality_scored": 18,
+    "quality_unscored": 0,
+    "quality": 14,
+    "submitted_quality": 14,
+    "task_and_quality": 14,
+    "repaired": 5,
+    "degraded": 2,
+    "degraded_rate": 0.1111111111111111,
+    "no_symbol": 0,
+    "no_symbol_rate": 0.0,
+    "degraded_without_no_symbol": 2,
+    "degraded_without_no_symbol_rate": 0.1111111111111111,
+    "clean_success": 13,
+    "strict_v1": 14,
+    "tool_errors": 0,
+    "model_calls": 23,
+    "median_s": 5.974,
+    "p95_s": 11.178,
+    "input_tokens": 116305,
+    "output_tokens": 16965,
+    "cache_rate": 0.7263488242122007,
+    "categories": [],
+    "outcomes": {},
+    "quality_failures": {
+      "no_fabricated_facts": 3,
+      "time_consistent": 1,
+      "supported_conclusion": 2
+    },
+    "requested_model": "deepseek-flash",
+    "judge_model": "deepseek-flash",
+    "judge_output_tokens_p50": 386.0,
+    "runtime_output_tokens_per_call_p50": 732,
+    "runtime_max_model_calls": 2,
+    "runtime_reasoning_token_events": 0,
+    "submitted_no_fabricated_facts_false": 3
+  }
+}
