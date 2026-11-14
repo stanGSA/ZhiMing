@@ -220,6 +220,28 @@ STAGE_EVIDENCE = re.compile(
     r"(?:显示|说明|表明|表示|意味着|可见|看出)(?:你|您)?(?:正|目前|现在|如今|眼下|当下)?"
     r"(?:正在)?(?:走在|走到|处在|处于|在|走)?(?:这一?步|这个|当前|目前)(?:十年)?(?:大运|运)"
 )
+# Bazi pilot r15, trait #1: “你现在处在1997年9月27日起运（出生后3年1个月10天），首步大运辛未（1997年
+# 交运，2007年换下一步）这一阶段” in 2026, when the cycle is 己巳 from 2017; the trait sheet's only
+# luck-cycle fact is the first one. Owner, 2026-11-14: a fact error. A cycle said to be where you
+# are now is taken as the current one; a denial before the verb (“现在并不处在”) is read.
+PRESENT_STAGE = re.compile(
+    rf"{PRESENT}(?P<neg>{DENIAL})(?:正|仍|还|已经|仍然|依然|完全|确实)*"
+    r"(?:处在|处于|走在|走到|位于|落在)\s*"
+    r"(?:\d{4}年\d{1,2}月\d{1,2}日(?:前后)?起运(?:（[^）]{0,24}）|\([^)]{0,24}\))?[，,、]?\s*)?"
+    rf"(?P<label>首步大运|第一步大运|首运|第[一二三四五六七八九十\d]+步大运)的?(?P<gz>{JIAZI})"
+    r"(?:（[^）]{0,24}）|\([^)]{0,24}\))?\s*的?"
+    r"(?:这个|这一|这|此)(?:步|个)?(?:大运阶段|大运|阶段|运|十年)"
+)
+# Bazi pilot r15, luck cycles #2 and trait #2: the convention fact written where a cycle belongs,
+# “前一步子时按23点换日已经过去”“下一步子时按23点换日要2033年才换”“目前走到子时按23点换日所指的
+# 当前大运后段”. Owner, 2026-11-14: a known escape, a fact in another role (as r4's natal pillar
+# named as a luck cycle). “……和子时按23点换日所说明的排盘口径” (r13) names the convention.
+CONVENTION = r"子时按(?:23|0)点换日"
+CONVENTION_AS_CYCLE = re.compile(
+    rf"(?:(?:往?前|往?后|上|下|这|当前这?)一步(?:大运)?(?:是|为|的)?|走到了?|处在|处于|进入了?|"
+    rf"换到|换成)\s*(?P<rule>{CONVENTION})|"
+    rf"(?P<named>{CONVENTION})(?:所指|所说|对应|代表)的?[^，,。；;！？!?\n]{{0,6}}?(?:大运|运)"
+)
 # What sets such a stage in another time, right after it (“这个阶段早已过去”“这一步之后”) or
 # right before it (“早在”“下一步”); anywhere else in the clause it does not (“别重复过去的模式”).
 OTHER_TIME_AFTER = re.compile(
@@ -283,6 +305,13 @@ STAGE_POSITION = re.compile(
 # counted forward passed every check. A direction said of this chart must be the computed one
 # (dayun.forward). Conditions and definitions describe the rule, not this chart's direction.
 DIRECTION = re.compile(r"顺排|顺行|顺推|顺数|逆排|逆行|逆推|逆数|倒排|倒推")
+# Bazi pilot r15, investment #3: “用‘最坏情况亏多少还能睡得着’来倒推参与比例” was refused as 逆排.
+# These verbs name a direction of the luck cycles only in a sentence about them.
+DIRECTION_VERB = re.compile(r"顺行|顺推|顺数|逆行|逆推|逆数|倒推")
+DIRECTION_CONTEXT = re.compile(r"大运|起运|交运|行运|排法|排盘|排运|节令|[上下]一个?[“‘\"]?节")
+DIRECTION_CALCULATION_OBJECT = re.compile(
+    r"(?:参与比例|投资预算|预算|比例|成本|现金流|亏损|风险承受)"
+)
 DIRECTION_SUBJECT = re.compile(
     r"你|您|这份|本命|命盘|命局|这一例|这里|此盘|此八字|这(?:个|份)?八字"
 )
@@ -337,7 +366,10 @@ NATAL_SCOPE_DENIED = re.compile(r"(?:不是|并非|而非|不属于|并不是)(?
 ELEMENT_SUMMARY = re.compile(
     r"(?<![资现奖基租押薪定税黄美酬礼本佣赏罚五合])"
     r"(?P<els>[木火土金水](?:(?:[、和与及跟]|以及)?[木火土金水]){0,4})"
-    r"(?:这?两类|这?三类|两行|两种)?(?:元素)?(?:都|也|则|就|明显|相对|比较|较为|更)?"
+    r"(?:这?两类|这?三类|两行|两种)?(?:元素)?"
+    # Bazi pilot r15, luck cycles #2: “木和水在数字上占得较多” after 木4、火0、土3、金0、水1.
+    r"(?:(?:在|的)?(?:数字|数量|个数|计数)上?)?"
+    r"(?:都|也|则|就|明显|相对|比较|较为|更)?(?:占得?)?"
     r"(?P<word>出现得最多|出现得最少|出现得多|出现得少|一个也没有(?:出现)?|没有出现|偏多|较多|"
     r"最多|居多|偏少|较少|最少|缺位|缺失|空缺|为零|是零|多(?![少半种样么数])|少(?![量数许]))"
 )
@@ -357,6 +389,8 @@ AGGREGATE_GOD = re.compile(
     rf"|都(?:是|为|带有?|属于?)(?P<both>{'|'.join(TEN_GODS)})"
 )
 AGGREGATE_DENIED = re.compile(r"(?:不|并不|并非|没有|未必|不一定)(?:都|全)?(?:是|为)?$")
+# The list a summary introduces, after a colon in its sentence.
+AGGREGATE_THEN_LIST = re.compile(r"[^，,。；;！？!?\n：:]{0,10}[：:]")
 # “都带正财、偏财的标签” (bazi pilot r9, luck cycles #1) names each god listed, not one of them.
 AGGREGATE_MORE = re.compile(rf"(?:(?:、|和|与|及|以及|跟)(?P<god>{'|'.join(TEN_GODS)}))+")
 # Bazi pilot r8, investment #2: “春节之后，流年丁未（…2027年2月4日09:46…）”. A flow year begins
@@ -588,9 +622,14 @@ MANNER_BEFORE = re.compile(
 # Owner, 2026-11-13 (r14 review), known escapes in dated layers: investment #1's “适合拿来补基础、
 # 做小范围验证，而不是一次性押上全部” (a trial investment) and investment #3's “以固定预算和分批
 # 规划为主” (a pace, as the principle of the period).
-BATCH = r"(?:分批|分次|分几次|分几批|(?<!决)定投(?!资)|小范围(?:验证|尝试|试水|试)|试水)"
+# Owner, 2026-11-14 (r15 review), a known escape in investment #1's layer “2月到5月”: “这段时间若考虑
+# 资金安排，更适合把‘先学清楚、再小步验证’放在前面”, a trial investment recommended for the period.
+BATCH = (
+    r"(?:分批|分次|分几次|分几批|(?<!决)定投(?!资)|小范围(?:验证|尝试|试水|试)|"
+    r"小步(?:验证|尝试|试水|试|投入)|试水)"
+)
 BATCH_VERBS = (
-    r"(?:还是|尽量|最好|务必|一定|先|也|更|采用|采取|选择|用|做|走|考虑|改为|改成|换成|拿来)*"
+    r"(?:还是|尽量|最好|务必|一定|先|再|也|更|采用|采取|选择|用|做|走|考虑|改为|改成|换成|拿来)*"
 )
 BATCH_RECOMMENDED = re.compile(
     r"(?P<rec>(?:更|最|较|比较|也|还是)?(?:适合|可以|应该|应当|值得|不妨|最好|建议))"
@@ -617,6 +656,17 @@ NOMINAL_AFTER = re.compile(
 # bazi pilot r11, investment #3: “面对大额投入的诱惑”“大额投入的念头”: the trade as a temptation
 # or a thought, not a manner of trading.
 HELD_NOUN_AFTER = re.compile(r"[”’」\"']*的?(?:诱惑|念头|想法|冲动|打算|欲望)")
+# Bazi pilot r15, investment #3, second draft: “明年更适合把‘全部投入’的念头先搁一搁，先守住财务
+# 安全，再谈机会” was refused and the reading degraded; the thought of the trade is held back.
+HELD_BACK_AFTER = re.compile(
+    HELD_NOUN_AFTER.pattern
+    + r"(?:先|暂时|暂且|都|也)*(?:搁一搁|放一放|缓一缓|压一压|按一按|停一停|放下|搁下|放到一边|"
+    r"搁置|暂缓|按住|压住|收起来?|打消)"
+)
+# “不必把‘全投’的念头搁一搁” denies holding back.
+HOLD_DENIED_BEFORE = re.compile(
+    r"(?:不必|不用|无需|无须|没必要|不需要|用不着|不该|不应|不要|别)[^，,。；;！？!?]{0,6}$"
+)
 TIMING_NOUN_AFTER = re.compile(r"[”’」\"']*(?:的)?(?:好)?(?:时点|时机|窗口|机会|时候)")
 TIMING_DENIED = re.compile(
     r"不构成|不是|并非|不能|无法|不作为|不当作|不当成|不代表|不等于|别把|不要把"
@@ -748,6 +798,13 @@ def recommended_trade(
         return False
     if NO_TRADE_SUPPORT.search(before) or QUESTION_BEFORE.search(before):
         return False
+    if HELD_BACK_AFTER.match(after):
+        # Held back unless the holding back is turned back or denied (“不能说……先搁一搁”).
+        return bool(
+            TURNED_BACK.search(prefix)
+            or WEAKENED.search(prefix)
+            or HOLD_DENIED_BEFORE.search(prefix)
+        )
     if CONSIDERED_CONDITION.search(prefix):
         return False
     if CAUTION_AFTER.match(after) and not encouraged(before):
@@ -1802,6 +1859,20 @@ class Bazi(System):
                         f"{dayun['sequence'][0]['ganzhi']}只说明何时起运，不是这段时间的大运，"
                         "不要把它写成“这个大运阶段”。"
                     )
+            elif kind != "dayun" and here and here[0] != 0:
+                # Bazi pilot r15, trait #1: the trait sheet's only luck-cycle fact is the first
+                # one, and it was written as where the reader is now.
+                lines.append(
+                    f"事实表里的首步大运{sequence[0]['ganzhi']}只说明何时起运，不是现在这步大运；"
+                    "写现在这步大运时按上面“所在大运”一行写，不要引用首步大运的编号。"
+                )
+            rule = (natal.get("input") or {}).get("zishi_rule")
+            if rule:
+                # Bazi pilot r15, luck cycles #2 and trait #2: “前一步子时按23点换日已经过去”.
+                lines.append(
+                    f"约定（{'子时按23点换日' if rule == 'next_day' else '子时按0点换日'}）"
+                    "的编号只说明排盘口径，不是某一步大运；不要写在“前一步”“下一步”“走到”后面。"
+                )
         elif natal:
             lines.append("没有性别资料，没有排大运；不要写大运。")
         if (natal.get("input") or {}).get("true_solar_time"):
@@ -2064,6 +2135,25 @@ class Bazi(System):
                     f"按今年算所在的大运是{'或'.join(current)}；“{match[0]}”把{match['gz']}"
                     "当成了现在这步大运"
                 )
+        for match in PRESENT_STAGE.finditer(text):
+            if not current:
+                break
+            stop = min(
+                (i for i in (text.find(c, match.end()) for c in CLAUSE_BREAK) if i != -1),
+                default=len(text),
+            )
+            if OTHER_TIME_AFTER.match(text, match.end(), stop):
+                continue  # 这一阶段早已过去
+            denials = len(re.findall(r"不|非", match["neg"] or ""))
+            kind = "denied" if denials % 2 else "asserted"
+            clause = max(text.rfind(c, 0, match.start()) for c in CLAUSE_BREAK) + 1
+            if OUTER.search(text[clause : match.start()]):
+                kind = "asserted" if kind == "denied" else "denied"
+            if wrong(kind, match["gz"] in current):
+                found.append(
+                    f"按今年算所在的大运是{'或'.join(current)}；“{match[0]}”把{match['gz']}"
+                    "当成了现在这步大运"
+                )
         for match in ANY_DAYUN.finditer(text):
             group = "gz" if match["gz"] else "after"
             if match[group] not in sequence and claim(
@@ -2195,6 +2285,11 @@ class Bazi(System):
         for sentence in re.split(r"(?<=[。！？!?；;\n])", text):
             mentions = []
             for match in DIRECTION.finditer(sentence):
+                if DIRECTION_VERB.fullmatch(match[0]) and (
+                    not DIRECTION_CONTEXT.search(sentence)
+                    or DIRECTION_CALCULATION_OBJECT.search(sentence[match.end() : match.end() + 12])
+                ):
+                    continue  # “倒推参与比例 / 预算” is a calculation, even beside a dayun mention.
                 clause = max(sentence.rfind(c, 0, match.start()) for c in "，,、；;：:") + 1
                 stop = min(
                     (i for i in (sentence.find(c, match.end()) for c in "，,、；;。") if i != -1),
@@ -2330,6 +2425,12 @@ class Bazi(System):
         for match in NATAL_AS_DAYUN.finditer(text):
             if pillars.get(PILLAR_KEY[match["name"]]) == match["gz"]:
                 found.append(f"“{match[0]}”：{match['name']}柱{match['gz']}是原局，不是大运")
+        for match in CONVENTION_AS_CYCLE.finditer(text):
+            rule = match["rule"] or match["named"]
+            found.append(
+                f"“{rule}”是排盘口径的约定，不是某一步大运：前一步、下一步和当前大运"
+                "按上下文写，不要用约定的编号"
+            )
         if INVESTMENT.search(state.get("question") or ""):
             found += Bazi.trade_problems(text)
         return found
@@ -2342,6 +2443,25 @@ class Bazi(System):
             for match in AGGREGATE_GOD.finditer(sentence):
                 god = match["god"] or match["both"]
                 listed = [m["god"] for m in LISTED_GOD.finditer(sentence, 0, match.start())]
+                after = AGGREGATE_THEN_LIST.match(sentence, match.end())
+                if len(listed) < 2 and after:
+                    # Bazi pilot r15, luck cycles #3: “两处偏财线索呼应：时柱己卯（天干己为偏财）与
+                    # 年柱戊辰（天干戊为正财）”, the summary before the list it sums up.
+                    stop = re.search(r"[；;]", sentence[after.end() :])
+                    end = after.end() + stop.start() if stop else len(sentence)
+                    listed = [m["god"] for m in LISTED_GOD.finditer(sentence, after.end(), end)]
+                    if len(listed) >= 2 and not all(g == god for g in listed):
+                        count = {"两": 2, "二": 2, "三": 3, "四": 4}.get(match["count"])
+                        lead = sentence[: match.start()]
+                        if not (
+                            (count is not None and sum(g == god for g in listed) >= count)
+                            or AGGREGATE_DENIED.search(lead)
+                        ):
+                            found.append(
+                                f"“{match[0]}”与后面写的十神不符：后面依次是{'、'.join(listed)}；"
+                                "分别写出各柱的十神，不要合并成一种"
+                            )
+                    continue
                 if len(listed) < 2:
                     continue
                 more = AGGREGATE_MORE.match(sentence, match.end())
