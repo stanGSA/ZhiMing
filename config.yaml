@@ -76,31 +76,32 @@ kb_review:                    # 知识库模型交叉审核（scripts.model_revi
       reviewer_a: {vendor: deepseek, model: deepseek-v4-pro}
       reviewer_b: {vendor: openai, model: gpt-6.1-sol}
     reason: 2026-10-21 项目负责人在知晓同厂商限制后明确要求第三方使用OpenAI
-  # 第三方中转站地址不入库：reviewer_a从本机 .env 的 DEEPSEEK_BASE_URL 读取，
-  # reviewer_b与reviser从 OPENAI_REVIEW_BASE_URL 读取；
-  # 未设置时拒绝调用，不回退到官方地址（密钥属于该中转站）。2026-10-21 批次实际为 codegoai.com。
+  # 2026-11-14 用户指定：所有后续模型调用使用官方 DeepSeek / deepseek-flash。
+  # 历史跨厂商例外仅留作记录；此配置不再满足旧 KB 双厂商审核条件，
+  # 不运行该独立审核流程；其校验会在调用模型前拒绝同厂商审核。
   roles:
     reviewer_a:
       vendor: deepseek
       api: openai
-      model: deepseek-v4-pro
-      thinking: enabled
-      reasoning_effort: high
+      model: deepseek-flash
+      thinking: disabled
       max_tokens: 16384
       api_key_env: DEEPSEEK_API_KEY
       base_url_env: DEEPSEEK_BASE_URL
     reviewer_b:
-      vendor: openai
+      vendor: deepseek
       api: openai
-      model: gpt-6.1-sol
-      api_key_env: OPENAI_REVIEW_API_KEY
-      base_url_env: OPENAI_REVIEW_BASE_URL
+      model: deepseek-flash
+      api_key_env: DEEPSEEK_API_KEY
+      base_url_env: DEEPSEEK_BASE_URL
+      thinking: disabled
     reviser:
-      vendor: openai
+      vendor: deepseek
       api: openai
-      model: gpt-6-astra
-      api_key_env: OPENAI_REVIEW_API_KEY
-      base_url_env: OPENAI_REVIEW_BASE_URL
+      model: deepseek-flash
+      api_key_env: DEEPSEEK_API_KEY
+      base_url_env: DEEPSEEK_BASE_URL
+      thinking: disabled
 kb:
   path: data/kb.sqlite
   dream_match_threshold: 0.75   # 解梦意象BM25候选的相似度阈值；首次评估后再调
@@ -112,7 +113,7 @@ eval_judges:
   pro:
     vendor: deepseek
     api: openai
-    model: deepseek-v4.1-flash
+    model: deepseek-flash
     thinking: disabled
     max_tokens: 8192
     api_key_env: DEEPSEEK_API_KEY
