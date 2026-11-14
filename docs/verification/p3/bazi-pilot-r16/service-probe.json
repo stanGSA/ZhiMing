@@ -1,0 +1,48 @@
+{
+  "ok": true,
+  "thresholds": {
+    "reply_tokens": 3,
+    "tool_call_tokens": 40
+  },
+  "probes": [
+    {
+      "probe": "runtime_reply",
+      "ok": true,
+      "problems": [],
+      "requested_model": "deepseek-flash",
+      "returned_model": "deepseek-flash",
+      "output_tokens": 1,
+      "reasoning_tokens": null,
+      "finish_reason": "stop",
+      "tool_calls": [],
+      "latency_s": 5.999
+    },
+    {
+      "probe": "runtime_tool_call",
+      "ok": true,
+      "problems": [],
+      "requested_model": "deepseek-flash",
+      "returned_model": "deepseek-flash",
+      "output_tokens": 21,
+      "reasoning_tokens": null,
+      "finish_reason": "tool_calls",
+      "tool_calls": [
+        "get_profile"
+      ],
+      "latency_s": 0.74
+    },
+    {
+      "probe": "judge_pro_reply",
+      "ok": true,
+      "problems": [],
+      "requested_model": "deepseek-flash",
+      "returned_model": "deepseek-flash",
+      "output_tokens": 1,
+      "reasoning_tokens": null,
+      "finish_reason": "stop",
+      "tool_calls": [],
+      "latency_s": 0.789
+    }
+  ],
+  "note": "Returned model names are service metadata, not independent identity evidence."
+}
