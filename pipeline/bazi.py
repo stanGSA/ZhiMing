@@ -234,13 +234,40 @@ STAGE_EVIDENCE = re.compile(
 # 交运，2007年换下一步）这一阶段” in 2026, when the cycle is 己巳 from 2017; the trait sheet's only
 # luck-cycle fact is the first one. Owner, 2026-11-14: a fact error. A cycle said to be where you
 # are now is taken as the current one; a denial before the verb (“现在并不处在”) is read.
+# Bazi pilot r18, trait #1: “你正处在……首步大运辛未（……）所说的这一步大运中” (owner, 2026-11-16: a
+# known escape): “正” alone marks now, and “所说 / 所指的” may stand before “这一步”.
 PRESENT_STAGE = re.compile(
-    rf"{PRESENT}(?P<neg>{DENIAL})(?:正|仍|还|已经|仍然|依然|完全|确实)*"
+    rf"(?:{PRESENT}(?P<neg>{DENIAL})(?:正|仍|还|已经|仍然|依然|完全|确实)*|(?P<bare_neg>{DENIAL})?正)"
     r"(?:处在|处于|走在|走到|位于|落在)\s*"
     r"(?:\d{4}年\d{1,2}月\d{1,2}日(?:前后)?起运(?:（[^）]{0,24}）|\([^)]{0,24}\))?[，,、]?\s*)?"
     rf"(?P<label>首步大运|第一步大运|首运|第[一二三四五六七八九十\d]+步大运)的?(?P<gz>{JIAZI})"
-    r"(?:（[^）]{0,24}）|\([^)]{0,24}\))?\s*的?"
+    r"(?:（[^）]{0,24}）|\([^)]{0,24}\))?\s*(?:(?:所说|所指|对应|代表)的?)?的?"
     r"(?:这个|这一|这|此)(?:步|个)?(?:大运阶段|大运|阶段|运|十年)"
+)
+# Bazi pilot r18, luck cycles #1: “第1步大运丙辰天干丙为伤官是上一步大运的主题” for the 4th cycle;
+# luck cycles #2: “前一步是日柱乙亥地支亥所在那一步”, a natal pillar as a cycle (owner, 2026-11-16:
+# known escapes).
+NEIGHBOUR_NAMED_FIRST = re.compile(
+    rf"(?:第(?P<n>[一二三四五六七八九十\d]+)步大运|首步大运)(?P<gz>{JIAZI})(?:（[^）]{{0,24}}）)?"
+    rf"(?:天干[{STEMS}]为(?:{'|'.join(TEN_GODS)}))?(?:的?主题)?\s*(?P<neg>{DENIAL})"
+    r"(?:是|为|属于|就是)\s*(?P<side>上|前|下|后)一步"
+)
+NATAL_AS_NEIGHBOUR = re.compile(
+    r"(?:往前|之前|前|上|往后|之后|后|下)一步(?:大运)?\s*(?:是|为|在)\s*(?:本命|原局)?的?"
+    rf"(?P<name>[年月日时])柱(?P<gz>{JIAZI})"
+)
+# Bazi pilot r18, luck cycles #3: “第5步大运庚申，主题会转向创新与质疑” (庚 is 正官 for 乙; 创新与质疑
+# is 伤官's theme, left from the refused “下一步第1步大运丙辰天干丙为伤官”). Owner, 2026-11-16: a
+# known escape. A cycle's theme is its stem's ten god's.
+GOD_THEMES = {
+    "压力与挑战": "七杀", "创新与质疑": "伤官", "探索与独特学习": "偏印", "机会与调配": "偏财",
+    "竞争与共享": "劫财", "学习与支持": "正印", "职责与规范": "正官", "秩序与资源": "正财",
+    "独立与同伴": "比肩", "表达与产出": "食神",
+}  # fmt: skip
+DAYUN_THEME = re.compile(
+    rf"(?:第(?P<n>[一二三四五六七八九十\d]+)步大运|首步大运)(?P<gz>{JIAZI})(?:（[^）]{{0,24}}）)?"
+    r"[，,]?\s*(?:的|这一步的|这十年的)?主题(?:会|将|就)?(?:转向|转为|是|为|落在)(?:了)?"
+    rf"(?P<theme>{'|'.join(GOD_THEMES)})"
 )
 # Bazi pilot r15, luck cycles #2 and trait #2: the convention fact written where a cycle belongs,
 # “前一步子时按23点换日已经过去”“下一步子时按23点换日要2033年才换”“目前走到子时按23点换日所指的
@@ -705,9 +732,33 @@ SCOPE_WEAKENED = re.compile(
 )
 
 
+# Owner, 2026-11-16 (r18 review), a known escape in investment #1's layer “5月到8月”: “更稳妥的是保留
+# 大部分现金和应急资金，只用小比例、可承受损失的部分去验证判断”, a trial with a small part of the
+# money, recommended for the period without a recommending word.
+TRIAL_FUNDS = re.compile(
+    r"(?:只用|只拿|拿出|动用|用|拿)(?:一)?(?:小比例|小部分|一小部分|少量|小额|很少一部分)"
+    r"[^，,。；;！？!?\n]{0,12}?(?:资金|钱|积蓄|部分)[^，,。；;！？!?\n]{0,4}?(?:去|来)?"
+    r"(?:验证|试水|试探|尝试|试|参与|投入|买入|买)"
+)
+TRIAL_DENIED = re.compile(
+    r"(?:不要|别|不必|不用|不建议|不宜|勿|避免|不该|不应)[^，,。；;！？!?]{0,4}$"
+)
+
+
 def batch_recommended(clause: str) -> bool:
     """A recommended pace (“建议分批”) that no denial governs; a denial turned back (“不能说不
     建议分批”“不是不建议分批”) recommends it again."""
+    for match in TRIAL_FUNDS.finditer(clause):
+        lead = clause[: match.start()]
+        denied = TRIAL_DENIED.search(lead)
+        if denied is None:
+            denied = re.search(r"(?:不能|不可|不|非)$", lead)
+        if denied and not (
+            TURNED_BACK.search(lead[: denied.start()])
+            or DOUBLE_DENIAL.search(lead + ("用" if lead.endswith(("不", "非")) else ""))
+        ):
+            continue
+        return True
     matches = [*BATCH_RECOMMENDED.finditer(clause), *BATCH_PRINCIPLE.finditer(clause)]
     for match in matches:
         if match["list"] and RESTRAINT.search(match["list"]):
@@ -1301,6 +1352,8 @@ def title_scope_findings(
 # “9月上旬之后” over 9月7日 passes.
 # Owner, 2026-11-13 (bazi pilot r13, typed birth #1): a range from that part on (“中旬到8月初，
 # 流月乙未” for 乙未 from 7月7日) names where the flow month begins as well.
+# Owner, 2026-11-16 (bazi pilot r18, typed birth #1): so does a bare part right before a flow
+# month, “9月上中旬流月丁酉与本命月柱庚辰地支六合（9月7日至10月8日）”.
 STARTS_IN_PART = re.compile(
     rf"(?:(?P<month>{MONTH_WORD})月(?P<mpart>{BARE_PART}|初|中|底|末)|(?P<part>{BARE_PART}))"
     rf"(?P<after>{PART_AFTER})?"
@@ -1312,10 +1365,17 @@ STARTS_IN_PART = re.compile(
 
 
 def start_findings(
-    body: str, start: date, end: date, starts: dict[str, list[date]], title: str = ""
+    body: str,
+    start: date,
+    end: date,
+    starts: dict[str, list[date]],
+    title: str = "",
+    flows: dict[str, list[tuple[date, date]]] | None = None,
 ) -> list[tuple[str, str]]:
     """(problem, sentence) for a flow month said to begin in a part of a month it does not
-    begin in. ``starts``: each flow month's actual local start days, before range clipping."""
+    begin in. ``starts``: each flow month's actual local start days, before range clipping;
+    ``flows``: each flow month's local days within the range, which a bare part of a month
+    right before it (“9月上中旬流月丁酉……”) is held to as a title is."""
     single = start.year == end.year and start.month == end.month
     years = range(start.year, end.year + 1)
     found = []
@@ -1323,8 +1383,6 @@ def start_findings(
     for sentence in re.split(r"(?<=[。！？!?；;])|\n", body):
         offset = body.find(sentence, offset)
         for match in STARTS_IN_PART.finditer(sentence):
-            if not (match["after"] or match["verb"] or match["range"]):
-                continue
             if match["gz"] not in starts:
                 continue
             marker = sentence[match.start() : match.start("flow")].rstrip("，, ")
@@ -1350,6 +1408,15 @@ def start_findings(
                 months = [(year, month_number(named[-1])) for year in years]
             slack = timedelta(days=SPAN_SLACK)
             spans = [part_of(year, month, part) for year, month in months]
+            if not (match["after"] or match["verb"] or match["range"]):
+                if not match["month"] or re.search(
+                    r"(?:到|至|—|~|～|-)\s*$", sentence[: match.start()]
+                ):
+                    continue  # “月初” names no month here; “7月7日到8月初” ends a range
+                found += bare_part_findings(
+                    marker, match["gz"], spans, (flows or {}).get(match["gz"], []), sentence
+                )
+                continue
             if any(a - slack <= day <= b + slack for a, b in spans for day in days):
                 continue
             day = days[0]
@@ -1362,6 +1429,31 @@ def start_findings(
                 )
             )
     return found
+
+
+def bare_part_findings(marker, gz, spans, flows, sentence) -> list[tuple[str, str]]:
+    """A bare part of a month with its month written, right before a flow month: the flow
+    month's days in the range lie in the part (as a title's), or the part lies in the flow
+    month (“十一月下旬，流月己亥……” for 己亥 from 11月7日), each within two days."""
+    slack = timedelta(days=SPAN_SLACK)
+
+    def fits(a, b, low, high):
+        inside = (min(b, high) - max(a, low)).days + 1
+        titled = inside * 2 >= (high - low).days + 1 and a - slack <= low and high <= b + slack
+        return titled or (low - slack <= a and b <= high + slack)
+
+    if not flows or any(fits(a, b, low, high) for a, b in spans for low, high in flows):
+        return []
+    near = [f for f in flows if any(f[0] <= b and a <= f[1] for a, b in spans)] or flows
+    (a, b), (low, high) = spans[0], near[0]
+    return [
+        (
+            f"“{marker}”说的是{a.month}月{a.day}日至{b.month}月{b.day}日，紧接的流月{gz}在"
+            f"{low.month}月{low.day}日至{high.month}月{high.day}日，时间对不上；按流月的实际起止写"
+            f"（如“{low.month}月{low.day}日起”）",
+            sentence.strip(),
+        )
+    ]
 
 
 def zone_label(tz: str) -> str:
@@ -2170,7 +2262,7 @@ class Bazi(System):
             )
             if OTHER_TIME_AFTER.match(text, match.end(), stop):
                 continue  # 这一阶段早已过去
-            denials = len(re.findall(r"不|非", match["neg"] or ""))
+            denials = len(re.findall(r"不|非", match["neg"] or match["bare_neg"] or ""))
             kind = "denied" if denials % 2 else "asserted"
             clause = max(text.rfind(c, 0, match.start()) for c in CLAUSE_BREAK) + 1
             if OUTER.search(text[clause : match.start()]):
@@ -2240,6 +2332,32 @@ class Bazi(System):
                 listed = "或".join(f"第{i + 1}步{sequence[i]}" for i in near)
                 word = "前一步" if step < 0 else "后一步"
                 found.append(f"当前大运的{word}是{listed}，正文写成了“{match[0]}”")
+        for match in NEIGHBOUR_NAMED_FIRST.finditer(text):
+            step = -1 if match["side"] in ("上", "前") else 1
+            near = [i + step for i in index if 0 <= i + step < len(sequence)]
+            if not near:
+                continue
+            named = number(match["n"]) - 1 if match["n"] else 0
+            agrees = match["gz"] in {sequence[i] for i in near} and named in near
+            kind = "denied" if len(re.findall(r"不|非", match["neg"] or "")) % 2 else "asserted"
+            clause = max(text.rfind(c, 0, match.start()) for c in CLAUSE_BREAK) + 1
+            if OUTER.search(text[clause : match.start()]):
+                kind = "asserted" if kind == "denied" else "denied"
+            if wrong(kind, agrees):
+                listed = "或".join(f"第{i + 1}步{sequence[i]}" for i in near)
+                word = "前一步" if step < 0 else "后一步"
+                found.append(f"当前大运的{word}是{listed}，正文写成了“{match[0]}”")
+        master = natal.get("day_master")
+        for match in DAYUN_THEME.finditer(text):
+            if match["gz"] not in sequence or not master:
+                continue
+            actual = ten_god(master[0], match["gz"][0])
+            if actual and GOD_THEMES[match["theme"]] != actual:
+                theme = next(t for t, g in GOD_THEMES.items() if g == actual)
+                found.append(
+                    f"大运{match['gz']}的天干{match['gz'][0]}对日主是{actual}，主题是{theme}；"
+                    f"正文写成了“{match['theme']}”"
+                )
         found += Bazi.position_problems(text, dayun)
         for match in HANDOVER.finditer(text):
             if int(match["year"]) not in years:
@@ -2475,6 +2593,11 @@ class Bazi(System):
         for match in NATAL_AS_DAYUN.finditer(text):
             if pillars.get(PILLAR_KEY[match["name"]]) == match["gz"]:
                 found.append(f"“{match[0]}”：{match['name']}柱{match['gz']}是原局，不是大运")
+        for match in NATAL_AS_NEIGHBOUR.finditer(text):
+            found.append(
+                f"“{match[0]}”：{match['name']}柱{match['gz']}是原局的柱，不是大运；"
+                "前一步、下一步按相邻大运写"
+            )
         for match in CONVENTION_AS_CYCLE.finditer(text):
             rule = match["rule"] or match["named"]
             found.append(
@@ -2859,6 +2982,7 @@ class Bazi(System):
             if run in spans:
                 by_alias[fact.alias] = (spans[run], key, gz)
         starts: dict[str, list[date]] = {}
+        flows: dict[str, list[tuple[date, date]]] = {}
         for (key, gz, _), span in spans.items():
             if key != "month":
                 continue
@@ -2867,6 +2991,9 @@ class Bazi(System):
             day = month_start(instant).astimezone(ZoneInfo(tz)).date()
             if day not in starts.setdefault(gz, []):
                 starts[gz].append(day)
+            local = (local_day(span["start_utc"], tz), local_day(span["end_utc"], tz, end=True))
+            if local not in flows.setdefault(gz, []):
+                flows[gz].append(local)
         found = []
         for section in args.get("sections", []):
             title = section.get("title") or ""
@@ -2899,7 +3026,7 @@ class Bazi(System):
             )
             for problem in problems:
                 found.append((problem, title))
-            found += start_findings(body, start, end, starts, title)
+            found += start_findings(body, start, end, starts, title, flows)
             if INVESTMENT.search(state.get("question") or "") and (
                 PERIOD_WORD.search(title) or title_spans(title, start, end, today)
             ):
