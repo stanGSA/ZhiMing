@@ -2,7 +2,7 @@
 
 北京时间 2026-11-16，在 PR #81 合并提交 `cc5a4b6996e33e07eafaf19c3a93aa34991692eb` 上运行。single 与 pipeline 各运行 18 题、每题重复 3 次。运行和评委均请求官方 DeepSeek 配置中的 `deepseek-flash`，评委别名 `pro`；探针的运行回复、工具调用和评委回复三项均通过，requested/returned model 都是 `deepseek-flash`。返回模型名是服务端元数据，不是独立身份验证。
 
-实验配置 SHA-256：`ca6e52b208b6697de7a7b8accc58604eb87e1a89eab582dbc4937c138624bab1`。`pricing.yaml` 沿用 r18 的费率范围；官方当前单价未核实，费用未知。运行提交使用合并后的 r19 代码，源码指纹 `f05c93db8ba32470b1d2a8c40035d0a4c22822e5cea17e4337364681813cec3a`；single 和 pipeline 的 source-hashes 相同。
+实验配置 SHA-256：`ca6e52b208b6697de7a7b8accc58604eb87e1a89eab582dbc4937c138624bab1`。r18 `run-metadata.json` 记录 `base_url` 为 `https://api.deepseek.com`，此字段作为 r18 接入地址的来源依据；补发的 r18 配置文件与该记录一并保留，探针与运行/评委的 requested/returned model 记录见对应 JSON。`pricing.yaml` 沿用 r18 的费率范围；官方当前单价未核实，费用未知。运行提交使用合并后的 r19 代码，源码指纹 `f05c93db8ba32470b1d2a8c40035d0a4c22822e5cea17e4337364681813cec3a`；single 和 pipeline 的 source-hashes 相同。
 
 | 指标 | Single | Pipeline |
 | --- | ---: | ---: |
