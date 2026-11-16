@@ -969,7 +969,7 @@ def recommended_trade(
         if (
             swapped
             and SWAP_OBJECT.fullmatch(between)
-            and not TRADE_LIKE.search(swapped["instead"])
+            and not replacement_trades(swapped["instead"])
             # “不能说适合把‘全投’改成‘先核实’” turns the replacement back.
             and not INNER_NEGATION.search(prefix[: last_encouraged.start()])
         ):
@@ -990,6 +990,28 @@ def recommended_trade(
         gap = prefix[period.end() :]
         if len(gap) <= 3 and not re.search(r"的|前|后|不|没|别|勿|非|无", gap):
             return True  # 8月加仓, 8月买入谨慎型产品
+    return False
+
+
+def replacement_trades(text: str) -> bool:
+    """A recommended replacement inherits its recommendation across commas, but not a denial.
+
+    “先核实，然后买入” trades; “先核实，然后不要买入” holds back. Reuse the action's
+    governors, including double negations, instead of treating every later trade word as advice.
+    """
+    for clause in re.split(CLAUSE_OR_TURN.pattern + r"|而是", text):
+        recommended = "建议" + clause
+        actions = list(TRADE_LIKE.finditer(recommended))
+        for index, action in enumerate(actions):
+            end = actions[index + 1].start() if index + 1 < len(actions) else len(recommended)
+            if recommended_trade(
+                recommended,
+                action,
+                recommended[: action.start()],
+                recommended[action.end() : end],
+                recommended[action.end() :],
+            ):
+                return True
     return False
 
 
