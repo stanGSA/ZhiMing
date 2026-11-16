@@ -153,6 +153,8 @@ async def test_the_r19_day_master_as_previous_is_refused(luck):
         "前一步是——第3步大运戊午（2013年交运），下一步是第5步大运庚申（2033年交运）。",
         "第3步大运戊午之后，下一步是第4步大运己未。",
         "第3步大运戊午（2013年交运），下一步是第4步大运己未。",
+        "前一步已解释过，另看第1步大运丙辰，下一步是第2步大运丁巳。",
+        "前一步已解释过，再看第1步大运丙辰之后，下一步是第2步大运丁巳。",
         "前一步不是日主乙木所对应的那一步，而是第3步大运戊午。",
         "日主乙木所对应的五行是木，前一步是第3步大运戊午。",
         "不能说下一步不是第5步大运庚申。",
@@ -176,6 +178,7 @@ async def test_named_neighbours_pass(luck, text):
         ("前一步是第3步大运戊午，下一步不是第5步大运庚申。", NEXT),
         ("前一步是——第3步大运戊午，下一步并非不是第6步大运辛酉。", NEXT),
         ("下一步是日元乙木所在的第5步大运庚申。", DAY_MASTER),
+        ("前一步已解释过，另看第1步大运丙辰，下一步是第5步大运庚申。", "后一步是第2步丁巳"),
     ],
 )
 async def test_wrong_named_neighbours_are_refused(luck, text, words):
@@ -198,6 +201,8 @@ async def test_the_r19_cycle_ten_god_is_refused(luck):
         # A double negation and an outer negation state it again.
         ("第3步大运戊午那时天干并非不带伤官主题。", STEM_GOD),
         ("不能说第3步大运戊午那时天干不带伤官主题。", STEM_GOD),
+        ("不能说第3步大运戊午天干带伤官就说明收入稳定。", STEM_GOD),
+        ("不能说第3步大运戊午天干带正财。", STEM_GOD),
     ],
 )
 async def test_wrong_cycle_ten_gods_are_refused(luck, text, words):
@@ -214,6 +219,9 @@ async def test_wrong_cycle_ten_gods_are_refused(luck, text, words):
         "第3步大运戊午，那时天干不是伤官，而是正财。",
         "第3步大运戊午那时天干并不带伤官主题。",
         "第4步大运己未天干己为偏财，主题是机会与调配。",
+        "不能说第3步大运戊午天干带正财就说明收入稳定。",
+        "不代表第3步大运戊午天干带正财就适合创业。",
+        "不能说第3步大运戊午天干带正财就代表收入稳定。",
     ],
 )
 async def test_right_or_denied_cycle_ten_gods_pass(luck, text):
@@ -281,6 +289,9 @@ async def test_the_r19_investment_draft_is_accepted_first(run_at):
         "全年看，适合把“全投”换成“先学清楚、再做计划”。",
         "全年看，适合把全投改为先核实、再规划。",
         "明年适合把积蓄全投改成先核实、再规划。",
+        "明年适合把“全投”改成“先核实，再规划”。",
+        "明年适合把“全投”改成“先核实，然后学习财务知识”。",
+        "明年适合把全投改成先核实，再规划。",
     ],
 )
 async def test_swaps_for_verifying_pass(money, text):
@@ -297,6 +308,11 @@ async def test_swaps_for_verifying_pass(money, text):
         "全年看，适合把“全投”改成“先核实”再全投。",
         "全年看，适合把“全投”改成“不是先核实而是分批买入”。",
         "全年看，适合把“全投”改成“先核实、再规划”，再分批买入。",
+        "明年适合把“全投”改成“先核实，然后买入”。",
+        "明年适合把“全投”改成“先核实，再小额验证”。",
+        "明年适合把“全投”改成“先核实，再参与股市”。",
+        "明年适合把全投改成先核实，然后买入。",
+        "明年适合把“全投”改成“先核实”再全投。",
         # An outer negation, a double negation, a turn that recommends the trade again.
         "全年看，不能说适合把“全投”改成“先核实、再规划”。",
         "全年看，不是不适合直接全投，把“全投”改成“先核实”也行。",
@@ -305,3 +321,23 @@ async def test_swaps_for_verifying_pass(money, text):
 )
 async def test_swaps_that_still_trade_are_refused(money, text):
     assert TRADE_PROBLEM in problems(money, text), text
+
+
+async def test_a_swap_that_still_trades_is_repaired_before_submission(run_at):
+    text = "明年适合把“全投”改成“先核实，然后买入”。"
+    _, outcome, composer = await run_at(
+        "bazi_pilot_investment_risk", lambda messages: written(messages, extra=text), written
+    )
+    assert len(composer.seen) == 2
+    assert outcome.data["pipeline"]["repairs"] == 1
+    assert text not in outcome.text
+
+
+async def test_a_denied_inference_with_a_correct_ten_god_is_submitted_without_repair(run_at):
+    text = "不能说第3步大运戊午天干带正财就说明收入稳定。"
+    _, outcome, composer = await run_at(
+        "bazi_pilot_dayun", lambda messages: written(messages, extra=text), written
+    )
+    assert len(composer.seen) == 1
+    assert outcome.data["pipeline"]["repairs"] == 0
+    assert text in outcome.text

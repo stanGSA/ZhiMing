@@ -770,7 +770,7 @@ TRIAL_DENIED = re.compile(
 # the recommendation is the replacement, which trades nothing. “明年更适合把‘全投’改成‘有边界地参与’”
 # (owner) and a replacement that trades, paces or tries are still refused.
 SWAPPED_AFTER = re.compile(
-    r"[”’」\"']*(?:改成|改为|换成|换为|变成|调整为|调整成|转为|转成)(?P<instead>[^，,。；;！？!?\n]*)"
+    r"[”’」\"']*(?:改成|改为|换成|换为|变成|调整为|调整成|转为|转成)(?P<instead>[^。；;！？!?\n]*)"
 )
 SWAP_OBJECT = re.compile(r"把(?:积蓄|存款|资金|钱|手里的钱)?[“‘「\"']*")
 TRADE_LIKE = re.compile(
@@ -881,8 +881,8 @@ def recommended_trade(
     # A denial turned back states the trade again (“不能说8月不宜加仓”“8月并非不宜加仓”).
     turned = TURNED_BACK.search(prefix)
     if turned and turned[0] not in ("岂", "怎么会"):
-        tail = prefix[turned.end() :]
-        if INNER_NEGATION.search(tail) or OUT_OF_SCOPE.match(rest):
+        turned_tail = prefix[turned.end() :]
+        if INNER_NEGATION.search(turned_tail) or OUT_OF_SCOPE.match(rest):
             return True
     if (
         DOUBLE_DENIAL.search(prefix)
@@ -963,7 +963,9 @@ def recommended_trade(
         governed = RESTRAINT.search(prefix) or TIMING_DENIED.search(prefix)
         if NOMINAL_AFTER.match(after) and (len(between) > 2 or governed):
             return False  # 适合把规则、凭证和止损条件想清楚
-        swapped = SWAPPED_AFTER.match(after)
+        # A comma or a turn can split the replacement itself: “先核实，然后买入” still trades.
+        # Inspect the sentence tail, including actions beyond the next action in this clause.
+        swapped = SWAPPED_AFTER.match(tail if tail is not None else rest)
         if (
             swapped
             and SWAP_OBJECT.fullmatch(between)
@@ -2335,7 +2337,11 @@ class Bazi(System):
                 rf"(?P<gz>{JIAZI})(?:大运|运)?(?:（[^（）]*）)?的?\s*$", text[: match.start()]
             )
             if base is None:
-                sentence_start = max(text.rfind(c, 0, match.start()) for c in "。！？!?；;\n") + 1
+                # A malformed reference can contain “?”; it is not a sentence boundary.
+                boundary_text = re.sub(
+                    r"\{\{[^{}\n]*\}\}", lambda m: " " * len(m[0]), text[: match.start()]
+                )
+                sentence_start = max(boundary_text.rfind(c) for c in "。！？!?；;\n") + 1
                 base = re.search(
                     rf"(?:首步大运|第[一二三四五六七八九十\d]+步大运|大运)"
                     rf"(?:是|为)?\s*(?P<gz>{JIAZI})(?:（[^（）]*）)?"
@@ -2352,11 +2358,16 @@ class Bazi(System):
                         )
                         # Bazi pilot r19, luck cycles #1 and #3, first drafts: “前一步是日主乙木所
                         # 对应的第3步大运戊午，下一步是第5步大运庚申” was refused as 戊午's next; the
-                        # cycle after “前一步” is the one before the current, whatever stands between.
+                        # named cycle belongs to “前一步” through a reference or the day master.
+                        # An unrelated earlier mention must not erase an explicit local origin.
                         or (
                             re.match(r"(?:往后|之后|后|下)一步", match[0])
                             and re.search(
-                                r"(?:往前|之前|前|上)一步", text[sentence_start:][: base.start()]
+                                r"(?:往前|之前|前|上)一步(?:大运)?\s*(?:是|为|：|:)?\s*"
+                                r"(?:\{\{[^{}\n]*\}\}\s*)?[—\-]*\s*"
+                                rf"(?:(?:日主|日元)[{STEMS}][木火土金水](?:所)?"
+                                r"(?:对应|所在|代表|所属)的?)?\s*$",
+                                text[sentence_start:][: base.start()],
                             )
                         )
                     )
@@ -2424,7 +2435,11 @@ class Bazi(System):
                 continue
             kind = "denied" if len(re.findall(r"不|非", match["neg"] or "")) % 2 else "asserted"
             clause = max(text.rfind(c, 0, match.start()) for c in CLAUSE_BREAK) + 1
-            if OUTER.search(text[clause : match.start()]):
+            # “不能说……天干带正财就说明收入稳定” denies the inference, not 正财.
+            # Keep checking its premise; an incorrect ten god cannot hide in that inference.
+            if OUTER.search(text[clause : match.start()]) and not INFERENCE.match(
+                text, match.end("god")
+            ):
                 kind = "asserted" if kind == "denied" else "denied"
             if wrong(kind, match["god"] == actual):
                 found.append(
