@@ -237,7 +237,7 @@ STAGE_EVIDENCE = re.compile(
 # Bazi pilot r18, trait #1: “你正处在……首步大运辛未（……）所说的这一步大运中” (owner, 2026-11-16: a
 # known escape): “正” alone marks now, and “所说 / 所指的” may stand before “这一步”.
 PRESENT_STAGE = re.compile(
-    rf"(?:{PRESENT}(?P<neg>{DENIAL})(?:正|仍|还|已经|仍然|依然|完全|确实)*|正)"
+    rf"(?:{PRESENT}(?P<neg>{DENIAL})(?:正|仍|还|已经|仍然|依然|完全|确实)*|(?P<bare_neg>{DENIAL})?正)"
     r"(?:处在|处于|走在|走到|位于|落在)\s*"
     r"(?:\d{4}年\d{1,2}月\d{1,2}日(?:前后)?起运(?:（[^）]{0,24}）|\([^)]{0,24}\))?[，,、]?\s*)?"
     rf"(?P<label>首步大运|第一步大运|首运|第[一二三四五六七八九十\d]+步大运)的?(?P<gz>{JIAZI})"
@@ -751,8 +751,11 @@ def batch_recommended(clause: str) -> bool:
     for match in TRIAL_FUNDS.finditer(clause):
         lead = clause[: match.start()]
         denied = TRIAL_DENIED.search(lead)
+        if denied is None:
+            denied = re.search(r"(?:不能|不可|不|非)$", lead)
         if denied and not (
-            TURNED_BACK.search(lead[: denied.start()]) or DOUBLE_DENIAL.search(lead)
+            TURNED_BACK.search(lead[: denied.start()])
+            or DOUBLE_DENIAL.search(lead + ("用" if lead.endswith(("不", "非")) else ""))
         ):
             continue
         return True
@@ -2259,7 +2262,7 @@ class Bazi(System):
             )
             if OTHER_TIME_AFTER.match(text, match.end(), stop):
                 continue  # 这一阶段早已过去
-            denials = len(re.findall(r"不|非", match["neg"] or ""))
+            denials = len(re.findall(r"不|非", match["neg"] or match["bare_neg"] or ""))
             kind = "denied" if denials % 2 else "asserted"
             clause = max(text.rfind(c, 0, match.start()) for c in CLAUSE_BREAK) + 1
             if OUTER.search(text[clause : match.start()]):

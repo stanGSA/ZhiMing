@@ -131,6 +131,17 @@ async def test_the_current_cycle_and_a_past_one_pass(trait, text):
     assert not has(problems(trait, text), STAGE), text
 
 
+@pytest.mark.parametrize(
+    "text",
+    [
+        f"你并非正处在{FIRST}所指的这一步大运中。",
+        f"你不是正处在{FIRST}所说的这个阶段。",
+    ],
+)
+async def test_a_denied_current_stage_passes(trait, text):
+    assert not has(problems(trait, text), STAGE), text
+
+
 # ---- a cycle named, then said to be the one before or after -----------------------------------
 
 
@@ -238,6 +249,8 @@ async def test_the_r18_small_trial_is_refused(money):
         "这段时间可以拿出一小部分积蓄去试水。",
         "这段时间不能说不要用小比例资金去验证。",  # an outer negation
         "这段时间不是不建议用小部分钱去试。",  # a double negation
+        "这段时间不能说不用小比例资金去试。",  # outer negation before “不用”
+        "这段时间不是不用小比例资金去试。",  # a double negation before “不用”
         "这段时间不要全投，但可以用小部分钱去试。",  # a statement after a turn
     ],
 )
@@ -249,6 +262,8 @@ async def test_small_trials_for_a_time_are_refused(money, text):
     "text",
     [
         "这段时间不要用小比例资金去试。",
+        "这段时间不用小比例资金去试。",
+        "这段时间不能用小比例资金去试。",
         "这段时间别只用小部分钱去验证，先把账算清楚。",
         "这段时间用小部分时间去验证想法。",
         "如果你正处在这样的节奏里，更稳妥的做法是把大额投入的事往后放，先用小步验证自己的判断。",
