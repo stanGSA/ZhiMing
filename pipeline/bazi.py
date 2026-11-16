@@ -193,7 +193,7 @@ NTH_DAYUN = re.compile(
 # the sheet lists only the first and the current cycle. A cycle named as the one before or after
 # the current one must be its neighbour in the sequence.
 NEIGHBOUR_DAYUN = re.compile(
-    rf"(?P<side>往前|之前|前|上|往后|之后|后|下)一步(?:大运)?\s*{DENIAL}"
+    rf"(?P<side>往前|之前|前|上|往后|之后|后|下)一步(?:大运)?\s*(?P<neg>{DENIAL})"
     rf"(?:是|为|：|:|走的是|走|进入)?\s*(?:第(?P<n>[一二三四五六七八九十\d]+)步大运|首步大运)?"
     rf"\s*(?P<gz>{JIAZI})"
 )
@@ -247,14 +247,32 @@ PRESENT_STAGE = re.compile(
 # Bazi pilot r18, luck cycles #1: “第1步大运丙辰天干丙为伤官是上一步大运的主题” for the 4th cycle;
 # luck cycles #2: “前一步是日柱乙亥地支亥所在那一步”, a natal pillar as a cycle (owner, 2026-11-16:
 # known escapes).
+# Bazi pilot r19, luck cycles #2: “第1步大运丙辰天干丙为伤官对应的是前一步第3步大运戊午” for the 4th
+# cycle (owner, 2026-11-16: a known escape); “对应 / 指” names the step as “是” does.
 NEIGHBOUR_NAMED_FIRST = re.compile(
     rf"(?:第(?P<n>[一二三四五六七八九十\d]+)步大运|首步大运)(?P<gz>{JIAZI})(?:（[^）]{{0,24}}）)?"
-    rf"(?:天干[{STEMS}]为(?:{'|'.join(TEN_GODS)}))?(?:的?主题)?\s*(?P<neg>{DENIAL})"
-    r"(?:是|为|属于|就是)\s*(?P<side>上|前|下|后)一步"
+    rf"(?:天干[{STEMS}]为(?:{'|'.join(TEN_GODS)}))?(?:所带)?(?:的?主题)?\s*(?P<neg>{DENIAL})"
+    r"(?:(?:对应|指)的?(?:就?是|为)?|是|为|属于|就是|即)\s*(?P<side>上|前|下|后)一步"
 )
 NATAL_AS_NEIGHBOUR = re.compile(
     r"(?:往前|之前|前|上|往后|之后|后|下)一步(?:大运)?\s*(?:是|为|在)\s*(?:本命|原局)?的?"
     rf"(?P<name>[年月日时])柱(?P<gz>{JIAZI})"
+)
+# Bazi pilot r19, luck cycles #3, first draft: “前一步是日主乙木所对应的第3步大运戊午”, the day master
+# fact written where the cycle's own name belongs (as a natal pillar above).
+DAY_MASTER_AS_NEIGHBOUR = re.compile(
+    r"(?:往前|之前|前|上|往后|之后|后|下)一步(?:大运)?\s*(?:是|为|在)\s*(?:你的|本命的?|原局的?)?"
+    rf"(?:日主|日元)(?P<dm>[{STEMS}][木火土金水])(?:所)?(?:对应|所在|代表|所属)的?"
+)
+# Bazi pilot r19, luck cycles #2, the same sentence: “前一步第3步大运戊午，2013年交运，那时天干带伤官
+# 主题” (戊 is 正财 for 乙; the 1st
+# cycle's 伤官 again). A cycle's stem has the ten god of that stem for the day master; “天干己为正官”
+# is left to the stem check of every sentence.
+CYCLE_STEM_GOD = re.compile(
+    rf"(?:第(?P<n>[一二三四五六七八九十\d]+)步大运|首步大运)(?P<gz>{JIAZI})(?:（[^）]{{0,24}}）)?"
+    r"(?:[，,]\s*\d{4}年(?:前后)?交运)?[，,]?\s*(?:那时|当时|这一?步|这十年)?的?"
+    rf"天干(?![{STEMS}]为)(?:[{STEMS}])?\s*(?P<neg>{DENIAL})(?:带有?|为|是|属于?|走)?的?\s*"
+    rf"(?P<god>{'|'.join(TEN_GODS)})"
 )
 # Bazi pilot r18, luck cycles #3: “第5步大运庚申，主题会转向创新与质疑” (庚 is 正官 for 乙; 创新与质疑
 # is 伤官's theme, left from the refused “下一步第1步大运丙辰天干丙为伤官”). Owner, 2026-11-16: a
@@ -670,8 +688,11 @@ BATCH = (
 BATCH_VERBS = (
     r"(?:还是|尽量|最好|务必|一定|先|再|也|更|采用|采取|选择|用|做|走|考虑|改为|改成|换成|拿来)*"
 )
+# Owner, 2026-11-16 (r19 review), a known escape in investment #3's layer “5月到年底”: “这段时间的
+# 波动更支持你保留余地、分批规划，而不是一次性押上”, a pace the period is said to favour.
 BATCH_RECOMMENDED = re.compile(
-    r"(?P<rec>(?:更|最|较|比较|也|还是)?(?:适合|可以|应该|应当|值得|不妨|最好|建议))"
+    r"(?P<rec>(?:更|最|较|比较|也|还是)?(?:适合|可以|应该|应当|值得|不妨|最好|建议)|"
+    r"(?:更加?|最|较|比较|也|还是)支持|支持(?=你|您))"
     rf"(?:你|您)?{BATCH_VERBS}"
     rf"(?P<list>[^，,。；;！？!?\n]{{0,10}}?[、和与及或])?{BATCH_VERBS}(?P<batch>{BATCH})"
 )
@@ -742,6 +763,23 @@ TRIAL_FUNDS = re.compile(
 )
 TRIAL_DENIED = re.compile(
     r"(?:不要|别|不必|不用|不建议|不宜|勿|避免|不该|不应)[^，,。；;！？!?]{0,4}$"
+)
+
+
+# Bazi pilot r19, investment #1, first draft: “全年看，适合把‘全投’改成‘先核实、再规划’” was refused;
+# the recommendation is the replacement, which trades nothing. “明年更适合把‘全投’改成‘有边界地参与’”
+# (owner) and a replacement that trades, paces or tries are still refused.
+SWAPPED_AFTER = re.compile(
+    r"[”’」\"']*(?:改成|改为|换成|换为|变成|调整为|调整成|转为|转成)(?P<instead>[^。；;！？!?\n]*)"
+)
+SWAP_OBJECT = re.compile(r"把(?:积蓄|存款|资金|钱|手里的钱)?[“‘「\"']*")
+TRADE_LIKE = re.compile(
+    BATCH
+    + "|"
+    + ALL_IN.pattern
+    + "|"
+    + TRADE.pattern
+    + r"|参与|入场|进场|建仓|买|卖|投|仓|配置|试|验证|下单|操作|押|上车"
 )
 
 
@@ -843,8 +881,8 @@ def recommended_trade(
     # A denial turned back states the trade again (“不能说8月不宜加仓”“8月并非不宜加仓”).
     turned = TURNED_BACK.search(prefix)
     if turned and turned[0] not in ("岂", "怎么会"):
-        tail = prefix[turned.end() :]
-        if INNER_NEGATION.search(tail) or OUT_OF_SCOPE.match(rest):
+        turned_tail = prefix[turned.end() :]
+        if INNER_NEGATION.search(turned_tail) or OUT_OF_SCOPE.match(rest):
             return True
     if (
         DOUBLE_DENIAL.search(prefix)
@@ -925,6 +963,17 @@ def recommended_trade(
         governed = RESTRAINT.search(prefix) or TIMING_DENIED.search(prefix)
         if NOMINAL_AFTER.match(after) and (len(between) > 2 or governed):
             return False  # 适合把规则、凭证和止损条件想清楚
+        # A comma or a turn can split the replacement itself: “先核实，然后买入” still trades.
+        # Inspect the sentence tail, including actions beyond the next action in this clause.
+        swapped = SWAPPED_AFTER.match(tail if tail is not None else rest)
+        if (
+            swapped
+            and SWAP_OBJECT.fullmatch(between)
+            and not replacement_trades(swapped["instead"])
+            # “不能说适合把‘全投’改成‘先核实’” turns the replacement back.
+            and not INNER_NEGATION.search(prefix[: last_encouraged.start()])
+        ):
+            return False  # 全年看，适合把“全投”改成“先核实、再规划”
         return True
     if NOMINAL_AFTER.match(after):
         return False
@@ -941,6 +990,28 @@ def recommended_trade(
         gap = prefix[period.end() :]
         if len(gap) <= 3 and not re.search(r"的|前|后|不|没|别|勿|非|无", gap):
             return True  # 8月加仓, 8月买入谨慎型产品
+    return False
+
+
+def replacement_trades(text: str) -> bool:
+    """A recommended replacement inherits its recommendation across commas, but not a denial.
+
+    “先核实，然后买入” trades; “先核实，然后不要买入” holds back. Reuse the action's
+    governors, including double negations, instead of treating every later trade word as advice.
+    """
+    for clause in re.split(CLAUSE_OR_TURN.pattern + r"|而是", text):
+        recommended = "建议" + clause
+        actions = list(TRADE_LIKE.finditer(recommended))
+        for index, action in enumerate(actions):
+            end = actions[index + 1].start() if index + 1 < len(actions) else len(recommended)
+            if recommended_trade(
+                recommended,
+                action,
+                recommended[: action.start()],
+                recommended[action.end() : end],
+                recommended[action.end() :],
+            ):
+                return True
     return False
 
 
@@ -2288,17 +2359,40 @@ class Bazi(System):
                 rf"(?P<gz>{JIAZI})(?:大运|运)?(?:（[^（）]*）)?的?\s*$", text[: match.start()]
             )
             if base is None:
-                sentence_start = max(text.rfind(c, 0, match.start()) for c in "。！？!?；;\n") + 1
+                # A malformed reference can contain “?”; it is not a sentence boundary.
+                boundary_text = re.sub(
+                    r"\{\{[^{}\n]*\}\}", lambda m: " " * len(m[0]), text[: match.start()]
+                )
+                sentence_start = max(boundary_text.rfind(c) for c in "。！？!?；;\n") + 1
                 base = re.search(
                     rf"(?:首步大运|第[一二三四五六七八九十\d]+步大运|大运)"
                     rf"(?:是|为)?\s*(?P<gz>{JIAZI})(?:（[^（）]*）)?"
                     r"(?:之后|以后|后)?[，,]\s*$",
                     text[sentence_start : match.start()],
                 )
-                if base and any(
-                    m.start() <= base.start() < m.end()
-                    for pattern in (NEIGHBOUR_DAYUN, NEIGHBOUR_DECADE)
-                    for m in pattern.finditer(text[sentence_start : match.start()])
+                if (
+                    base
+                    and (
+                        any(
+                            m.start() <= base.start() < m.end()
+                            for pattern in (NEIGHBOUR_DAYUN, NEIGHBOUR_DECADE)
+                            for m in pattern.finditer(text[sentence_start : match.start()])
+                        )
+                        # Bazi pilot r19, luck cycles #1 and #3, first drafts: “前一步是日主乙木所
+                        # 对应的第3步大运戊午，下一步是第5步大运庚申” was refused as 戊午's next; the
+                        # named cycle belongs to “前一步” through a reference or the day master.
+                        # An unrelated earlier mention must not erase an explicit local origin.
+                        or (
+                            re.match(r"(?:往后|之后|后|下)一步", match[0])
+                            and re.search(
+                                r"(?:往前|之前|前|上)一步(?:大运)?\s*(?:是|为|：|:)?\s*"
+                                r"(?:\{\{[^{}\n]*\}\}\s*)?[—\-]*\s*"
+                                rf"(?:(?:日主|日元)[{STEMS}][木火土金水](?:所)?"
+                                r"(?:对应|所在|代表|所属)的?)?\s*$",
+                                text[sentence_start:][: base.start()],
+                            )
+                        )
+                    )
                 ):
                     base = None  # “前一步是第3步戊午，下一步是第5步庚申” shares 当前.
             return [sequence.index(base["gz"])] if base and base["gz"] in sequence else index
@@ -2311,7 +2405,14 @@ class Bazi(System):
                 continue
             named = number(match["n"]) - 1 if match["n"] else 0 if "首步" in match[0] else None
             agrees = match["gz"] in {sequence[i] for i in near} and named in (None, *near)
-            if wrong(kind_of(match, "gz"), agrees):
+            kind = kind_of(match, "gz")
+            if kind == "asserted" and (match["n"] or "首步" in match[0]):
+                # “下一步不是第5步大运庚申”: the label stands between the denial and the value
+                # (bazi pilot r19 review), so the denial is counted here.
+                if len(re.findall(r"不|非", match["neg"] or "")) % 2:
+                    clause = max(text.rfind(c, 0, match.start()) for c in CLAUSE_BREAK) + 1
+                    kind = "asserted" if OUTER.search(text[clause : match.start()]) else "denied"
+            if wrong(kind, agrees):
                 listed = "或".join(f"第{i + 1}步{sequence[i]}" for i in near)
                 side = "前一步" if step < 0 else "后一步"
                 found.append(f"当前大运的{side}是{listed}，正文写成了“{match[0]}”")
@@ -2348,6 +2449,25 @@ class Bazi(System):
                 word = "前一步" if step < 0 else "后一步"
                 found.append(f"当前大运的{word}是{listed}，正文写成了“{match[0]}”")
         master = natal.get("day_master")
+        for match in CYCLE_STEM_GOD.finditer(text) if master else ():
+            if match["gz"] not in sequence:
+                continue
+            actual = ten_god(master[0], match["gz"][0])
+            if not actual:
+                continue
+            kind = "denied" if len(re.findall(r"不|非", match["neg"] or "")) % 2 else "asserted"
+            clause = max(text.rfind(c, 0, match.start()) for c in CLAUSE_BREAK) + 1
+            # “不能说……天干带正财就说明收入稳定” denies the inference, not 正财.
+            # Keep checking its premise; an incorrect ten god cannot hide in that inference.
+            if OUTER.search(text[clause : match.start()]) and not INFERENCE.match(
+                text, match.end("god")
+            ):
+                kind = "asserted" if kind == "denied" else "denied"
+            if wrong(kind, match["god"] == actual):
+                found.append(
+                    f"大运{match['gz']}的天干{match['gz'][0]}对日主是{actual}；"
+                    f"正文写成了“{match[0]}”"
+                )
         for match in DAYUN_THEME.finditer(text):
             if match["gz"] not in sequence or not master:
                 continue
@@ -2596,6 +2716,11 @@ class Bazi(System):
         for match in NATAL_AS_NEIGHBOUR.finditer(text):
             found.append(
                 f"“{match[0]}”：{match['name']}柱{match['gz']}是原局的柱，不是大运；"
+                "前一步、下一步按相邻大运写"
+            )
+        for match in DAY_MASTER_AS_NEIGHBOUR.finditer(text):
+            found.append(
+                f"“{match[0]}”：日主{match['dm']}是原局的日主，不对应哪一步大运；"
                 "前一步、下一步按相邻大运写"
             )
         for match in CONVENTION_AS_CYCLE.finditer(text):

@@ -30,6 +30,57 @@ def workspace(tmp_path, monkeypatch):
     return review.Workspace(tmp_path), config
 
 
+@pytest.fixture
+def historical_review_config():
+    """The approved cross-vendor setup; today's runtime config may use one vendor only."""
+    return {
+        "llm": {"provider": "deepseek"},
+        "kb_review": {
+            "drafter_vendors": ["anthropic"],
+            "runtime_vendor_exception": {
+                "vendor": "deepseek",
+                "model": "deepseek-v4-pro",
+                "reason": "Historical owner approval for this exact reviewer model",
+            },
+            "reviser_vendor_exception": {
+                "vendor": "openai",
+                "model": "gpt-6-astra",
+                "reviewers": {
+                    "reviewer_a": {"vendor": "deepseek", "model": "deepseek-v4-pro"},
+                    "reviewer_b": {"vendor": "openai", "model": "gpt-6.1-sol"},
+                },
+                "reason": "Historical owner approval bound to these reviewers",
+            },
+            "roles": {
+                "reviewer_a": {
+                    "vendor": "deepseek",
+                    "api": "openai",
+                    "model": "deepseek-v4-pro",
+                    "api_key_env": "DEEPSEEK_API_KEY",
+                    "base_url_env": "DEEPSEEK_BASE_URL",
+                    "thinking": "enabled",
+                    "reasoning_effort": "high",
+                    "max_tokens": 16384,
+                },
+                "reviewer_b": {
+                    "vendor": "openai",
+                    "api": "openai",
+                    "model": "gpt-6.1-sol",
+                    "api_key_env": "OPENAI_REVIEW_API_KEY",
+                    "base_url_env": "OPENAI_REVIEW_BASE_URL",
+                },
+                "reviser": {
+                    "vendor": "openai",
+                    "api": "openai",
+                    "model": "gpt-6-astra",
+                    "api_key_env": "OPENAI_REVIEW_API_KEY",
+                    "base_url_env": "OPENAI_REVIEW_BASE_URL",
+                },
+            },
+        },
+    }
+
+
 @pytest.mark.parametrize("system", ["astro", "bazi", "name", "dream", "daily"])
 def test_authoring_rerun_preserves_revised_source(tmp_path, system):
     path = next((review.ROOT / "knowledge/sources" / system).glob("*.yaml"))
@@ -144,16 +195,16 @@ def test_revision_apply_rejects_cross_entry_alias_collision_before_writes(
     assert all(p.read_bytes() == content for p, content in before.items())
 
 
-def test_runtime_vendor_exception_is_scoped_to_exact_model():
-    config = review.load_config(review.ROOT)
+def test_runtime_vendor_exception_is_scoped_to_exact_model(historical_review_config):
+    config = historical_review_config
     review.check_roles(review.load_roles(config), config, review.REVIEWERS)
     config["kb_review"]["roles"]["reviewer_a"]["model"] = "another-deepseek-model"
     with pytest.raises(ValueError, match="运行时模型"):
         review.check_roles(review.load_roles(config), config, review.REVIEWERS)
 
 
-async def test_relay_address_is_read_from_the_environment(monkeypatch):
-    roles = review.load_roles(review.load_config(review.ROOT))
+async def test_relay_address_is_read_from_the_environment(monkeypatch, historical_review_config):
+    roles = review.load_roles(historical_review_config)
     spec = roles["reviewer_b"]
     assert spec.base_url is None and spec.base_url_env == "OPENAI_REVIEW_BASE_URL"
     monkeypatch.delenv("OPENAI_REVIEW_BASE_URL", raising=False)
@@ -183,8 +234,8 @@ async def test_relay_address_is_read_from_the_environment(monkeypatch):
         )
 
 
-def test_reviser_exception_is_bound_to_historical_reviewers():
-    config = review.load_config(review.ROOT)
+def test_reviser_exception_is_bound_to_historical_reviewers(historical_review_config):
+    config = historical_review_config
     roles = review.load_roles(config)
     review.check_roles(roles, config, (*review.REVIEWERS, "reviser"))
     reviewers = {name: review.public_spec(roles[name]) for name in review.REVIEWERS}
@@ -192,6 +243,13 @@ def test_reviser_exception_is_bound_to_historical_reviewers():
     assert review.reviser_exception_matches(roles["reviser"], reviewers, exception)
     reviewers["reviewer_b"]["model"] = "different-historical-model"
     assert not review.reviser_exception_matches(roles["reviser"], reviewers, exception)
+
+
+def test_historical_exception_does_not_allow_same_vendor_reviewers(historical_review_config):
+    config = historical_review_config
+    config["kb_review"]["roles"]["reviewer_b"] = dict(config["kb_review"]["roles"]["reviewer_a"])
+    with pytest.raises(ValueError, match="两个审核模型必须来自不同厂商"):
+        review.check_roles(review.load_roles(config), config, review.REVIEWERS)
 
 
 @pytest.mark.parametrize(
