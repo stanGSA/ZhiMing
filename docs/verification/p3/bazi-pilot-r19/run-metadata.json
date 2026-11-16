@@ -1,5 +1,5 @@
 {
-  "measured_checkout_head": "41d3efd1039b2cd7aa605573177e5f616eb28161",
+  "measured_checkout_head": "cc5a4b6996e33e07eafaf19c3a93aa34991692eb",
   "campaign": "p3-bazi",
   "api": "official DeepSeek API",
   "base_url": "https://api.deepseek.com",
@@ -9,30 +9,40 @@
   "judge_thinking": "disabled",
   "judge_max_tokens": 8192,
   "config_sha256": "ca6e52b208b6697de7a7b8accc58604eb87e1a89eab582dbc4937c138624bab1",
-  "source_fingerprint": "aceae1461352546d9d3d53608204f52df536f412038f76c0e4d390755caf1a33",
+  "source_fingerprint": "f05c93db8ba32470b1d2a8c40035d0a4c22822e5cea17e4337364681813cec3a",
   "source_file_count": 184,
   "runs": {
     "Bazi-single": {
-      "run_id": "20261115T120450-0488944e",
+      "run_id": "20261116T103023-21983214",
       "mode": "single",
       "cases": 18,
       "passed": 6,
       "failed": 12,
-      "model_calls": 113,
-      "review_calls": 18
+      "submitted": 14,
+      "submitted_quality_passed": 12,
+      "model_calls": 116,
+      "review_calls": 18,
+      "repairs": 0,
+      "degraded": 0,
+      "quality_failures": 5
     },
     "Bazi-pipeline": {
-      "run_id": "20261115T121114-ff06bf22",
+      "run_id": "20261116T103654-75ec3c30",
       "mode": "pipeline",
       "cases": 18,
-      "passed": 15,
-      "failed": 3,
+      "passed": 16,
+      "failed": 2,
+      "submitted": 18,
+      "submitted_quality_passed": 16,
       "model_calls": 23,
-      "review_calls": 18
+      "review_calls": 18,
+      "repairs": 5,
+      "degraded": 0,
+      "quality_failures": 2
     }
   },
-  "started": "2026-11-15T12:04:49.193646+00:00",
-  "finished": "2026-11-15T12:14:32.006092+00:00",
+  "started": "2026-11-16T10:30:22.469490+00:00",
+  "finished": "2026-11-16T10:40:02.528246+00:00",
   "scope": "18 single + 18 pipeline synthetic pilot rows, each case repeated three times; no rescore and no answer edits.",
   "service_probe_ok": true,
   "campaign_status": "complete",
