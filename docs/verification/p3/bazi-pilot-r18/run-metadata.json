@@ -1,0 +1,45 @@
+{
+  "measured_checkout_head": "41d3efd1039b2cd7aa605573177e5f616eb28161",
+  "campaign": "p3-bazi",
+  "api": "official DeepSeek API",
+  "base_url": "https://api.deepseek.com",
+  "runtime_model": "deepseek-flash",
+  "judge_alias": "pro",
+  "judge_model": "deepseek-flash",
+  "judge_thinking": "disabled",
+  "judge_max_tokens": 8192,
+  "config_sha256": "ca6e52b208b6697de7a7b8accc58604eb87e1a89eab582dbc4937c138624bab1",
+  "source_fingerprint": "aceae1461352546d9d3d53608204f52df536f412038f76c0e4d390755caf1a33",
+  "source_file_count": 184,
+  "runs": {
+    "Bazi-single": {
+      "run_id": "20261115T120450-0488944e",
+      "mode": "single",
+      "cases": 18,
+      "passed": 6,
+      "failed": 12,
+      "model_calls": 113,
+      "review_calls": 18
+    },
+    "Bazi-pipeline": {
+      "run_id": "20261115T121114-ff06bf22",
+      "mode": "pipeline",
+      "cases": 18,
+      "passed": 15,
+      "failed": 3,
+      "model_calls": 23,
+      "review_calls": 18
+    }
+  },
+  "started": "2026-11-15T12:04:49.193646+00:00",
+  "finished": "2026-11-15T12:14:32.006092+00:00",
+  "scope": "18 single + 18 pipeline synthetic pilot rows, each case repeated three times; no rescore and no answer edits.",
+  "service_probe_ok": true,
+  "campaign_status": "complete",
+  "campaign_job_exit_codes": {
+    "Bazi-single": 1,
+    "Bazi-pipeline": 1
+  },
+  "pricing": "Unknown; current official rates were not verified.",
+  "credential_values_included": false
+}
