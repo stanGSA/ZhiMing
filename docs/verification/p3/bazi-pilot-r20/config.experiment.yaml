@@ -1,0 +1,119 @@
+mode: single
+pipeline:
+  systems:
+  - tarot
+  - dream
+  - name
+  - daily
+  - astro
+  - bazi
+llm:
+  provider: deepseek
+  model: deepseek-flash
+  timeout_s: 90
+  system_role: system
+  deepseek:
+    thinking: disabled
+models:
+  orchestrator: deepseek-flash
+  specialist: deepseek-flash
+  reviewer: deepseek-flash
+model_options:
+  orchestrator:
+    max_tokens: 8192
+  specialist:
+    max_tokens: 4096
+  reviewer:
+    max_tokens: 2048
+limits:
+  specialist_mode: agent
+  orchestrator_max_steps: 12
+  request_token_budget: 180000
+  request_timeout_s: 300
+  specialist_max_steps: 6
+  specialist_token_budget: 40000
+  specialist_timeout_s: 120
+  orchestrator_reserve_tokens: 30000
+  max_parallel_specialists: 3
+  reviewer_max_steps: 3
+  reviewer_token_budget: 12000
+  reviewer_timeout_s: 60
+reviewer:
+  enabled: true
+  strictness: lenient
+  max_rounds: 1
+safety:
+  region: null
+  emergency_contacts:
+    CN:
+    - 中国大陆急救120
+    - 中国大陆报警110
+    US:
+    - 美国紧急服务911
+  psychological_contacts:
+    CN:
+    - 中国大陆全国统一心理援助热线12356（各地服务时间可能不同）
+    US:
+    - 美国988自杀与危机生命线（拨打或发短信988）
+kb_review:
+  timeout_s: 120
+  budget:
+    unlimited: true
+    state_path: docs/verification/kb-model-review/20261021-live/budget.json
+  drafter_vendors:
+  - anthropic
+  runtime_vendor_exception:
+    vendor: deepseek
+    model: deepseek-v4-pro
+    reason: 2026-10-22 项目负责人明确批准审核A改用deepseek-v4-pro，沿用已批准的DeepSeek厂商例外
+  reviser_vendor_exception:
+    vendor: openai
+    model: gpt-6-astra
+    reviewers:
+      reviewer_a:
+        vendor: deepseek
+        model: deepseek-v4-pro
+      reviewer_b:
+        vendor: openai
+        model: gpt-6.1-sol
+    reason: 2026-10-21 项目负责人在知晓同厂商限制后明确要求第三方使用OpenAI
+  roles:
+    reviewer_a:
+      vendor: deepseek
+      api: openai
+      model: deepseek-v4-pro
+      thinking: enabled
+      reasoning_effort: high
+      max_tokens: 16384
+      api_key_env: DEEPSEEK_API_KEY
+      base_url_env: DEEPSEEK_BASE_URL
+    reviewer_b:
+      vendor: openai
+      api: openai
+      model: gpt-6.1-sol
+      api_key_env: OPENAI_REVIEW_API_KEY
+      base_url_env: OPENAI_REVIEW_BASE_URL
+    reviser:
+      vendor: openai
+      api: openai
+      model: gpt-6-astra
+      api_key_env: OPENAI_REVIEW_API_KEY
+      base_url_env: OPENAI_REVIEW_BASE_URL
+kb:
+  path: data/kb.sqlite
+  dream_match_threshold: 0.75
+paths:
+  app_db: data/app.db
+  runs: runs
+eval_judges:
+  pro:
+    vendor: deepseek
+    api: openai
+    model: deepseek-flash
+    thinking: disabled
+    max_tokens: 8192
+    api_key_env: DEEPSEEK_API_KEY
+    base_url_env: DEEPSEEK_BASE_URL
+policy_judge:
+  enabled: false
+  timeout_s: 30

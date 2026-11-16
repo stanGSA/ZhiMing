@@ -1,0 +1,163 @@
+{
+  "measured_checkout_head": "374d5855b4733fd87166d4474e7d9a7bb6ae0fe6",
+  "campaign": "p3-bazi",
+  "api": "official DeepSeek API",
+  "base_url": "https://api.deepseek.com",
+  "runtime_model": "deepseek-flash",
+  "judge_alias": "pro",
+  "judge_model": "deepseek-flash",
+  "judge_thinking": "disabled",
+  "judge_max_tokens": 8192,
+  "config_sha256": "ca6e52b208b6697de7a7b8accc58604eb87e1a89eab582dbc4937c138624bab1",
+  "source_fingerprint": "648b998b6ec4b8eed7a883852604f89c0d46b70d2004034d96ac1263e35eec35",
+  "source_file_count": 184,
+  "runs": {
+    "Bazi-single": {
+      "run_id": "20261116T163844-b9aafb89",
+      "mode": "single",
+      "rows": 18,
+      "submitted": 14,
+      "submitted_quality_pass": 10,
+      "strict_pass": 8,
+      "engineering_pass": 12,
+      "statuses": {
+        "submit_reading": 14,
+        "ask_user": 3,
+        "retry_limit": 1
+      },
+      "quality_dimensions_failed": {
+        "direct_answer": 3,
+        "time_consistent": 2,
+        "supported_conclusion": 6,
+        "no_fabricated_facts": 3
+      },
+      "runtime_model_calls": 107,
+      "judge_calls": 18,
+      "judge_request_attempts": 18,
+      "latency_median_s": 12.847,
+      "latency_p95_s": 27.3,
+      "runtime_input_median_per_row": 34745.0,
+      "judge_input_median_per_row": 8565.0,
+      "combined_input_median_per_row": 39574.5,
+      "judge_latency_median_s": 2.959,
+      "judge_output_median_per_row": 367.0,
+      "runtime_output_per_call_row_ratio_median": 395.225,
+      "runtime_output_median_per_response": 135,
+      "runtime_requested_models": [
+        "deepseek-flash"
+      ],
+      "runtime_returned_models": [
+        "deepseek-flash"
+      ],
+      "judge_requested_models": [
+        "deepseek-flash"
+      ],
+      "judge_returned_models": [
+        "deepseek-flash"
+      ],
+      "reasoning_tokens_values": [],
+      "runtime_usage_missing": 0,
+      "source_fingerprint": "648b998b6ec4b8eed7a883852604f89c0d46b70d2004034d96ac1263e35eec35",
+      "source_file_count": 184,
+      "raw_sha256": "5a7a073f4ab7cc2aa81eb4af3cea37fa2f6242886efcc947e9f7d9cf7be8abab",
+      "raw_bytes": 836415,
+      "input_tokens_runtime": 683779,
+      "output_tokens_runtime": 40328,
+      "input_tokens_judge": 187479,
+      "output_tokens_judge": 6311,
+      "max_model_calls_per_row": 9,
+      "repairs": 0,
+      "degraded": 0,
+      "all_rows_scored": true
+    },
+    "Bazi-pipeline": {
+      "run_id": "20261116T164415-7f575b38",
+      "mode": "pipeline",
+      "rows": 18,
+      "submitted": 18,
+      "submitted_quality_pass": 13,
+      "strict_pass": 13,
+      "engineering_pass": 18,
+      "statuses": {
+        "submit_reading": 18
+      },
+      "quality_dimensions_failed": {
+        "direct_answer": 0,
+        "time_consistent": 3,
+        "supported_conclusion": 4,
+        "no_fabricated_facts": 3
+      },
+      "runtime_model_calls": 21,
+      "judge_calls": 18,
+      "judge_request_attempts": 19,
+      "latency_median_s": 6.309,
+      "latency_p95_s": 10.285,
+      "runtime_input_median_per_row": 4871.5,
+      "judge_input_median_per_row": 10733.0,
+      "combined_input_median_per_row": 15280.5,
+      "judge_latency_median_s": 3.2359999999999998,
+      "judge_output_median_per_row": 375.0,
+      "runtime_output_per_call_row_ratio_median": 653.0,
+      "runtime_output_median_per_response": 643,
+      "runtime_requested_models": [
+        "deepseek-flash"
+      ],
+      "runtime_returned_models": [
+        "deepseek-flash"
+      ],
+      "judge_requested_models": [
+        "deepseek-flash"
+      ],
+      "judge_returned_models": [
+        "deepseek-flash"
+      ],
+      "reasoning_tokens_values": [],
+      "runtime_usage_missing": 0,
+      "source_fingerprint": "648b998b6ec4b8eed7a883852604f89c0d46b70d2004034d96ac1263e35eec35",
+      "source_file_count": 184,
+      "raw_sha256": "745e1acf81dd836feeac89d34ec97984f064d5957617c5157c0910f08485c2e7",
+      "raw_bytes": 991938,
+      "input_tokens_runtime": 97501,
+      "output_tokens_runtime": 14065,
+      "input_tokens_judge": 242361,
+      "output_tokens_judge": 7930,
+      "max_model_calls_per_row": 2,
+      "repairs": 3,
+      "degraded": 0,
+      "all_rows_scored": true
+    }
+  },
+  "started": "2026-11-16T16:38:42.532136+00:00",
+  "finished": "2026-11-16T16:47:16.151886+00:00",
+  "scope": "6 synthetic cases x 3 repeats per mode; 18 single + 18 pipeline. No rescore or answer edits.",
+  "service_probe_ok": true,
+  "campaign_status": "complete",
+  "campaign_job_exit_codes": {
+    "Bazi-single": 1,
+    "Bazi-pipeline": 1
+  },
+  "pricing": "Unknown; official current rates not verified.",
+  "credential_values_included": false,
+  "fabrication_classification": {
+    "author": "Codex AI offline review",
+    "status": "owner_confirmed",
+    "rows": 6,
+    "source": "fabrication-reviewed.yaml",
+    "rationale": "fabrication-attribution.md",
+    "not_human_calibration": true,
+    "confirmed_by": "user / project owner",
+    "owner_confirmation": {
+      "response": "确认上述分类",
+      "source": "User reply to classification question in this conversation",
+      "date_local": "2026-11-17",
+      "timezone": "Asia/Shanghai",
+      "recorded_at_utc": "2026-11-16T17:09:19.984771+00:00"
+    },
+    "counts_complete": true
+  },
+  "offline_review": "offline-review-checks.json",
+  "execution": "execution.md",
+  "assessment": "assessment.md",
+  "decision": "B not satisfied; no freeze; no p3-bazi-final",
+  "pricing_sha256": "15ea038e7fea208ee7d91cb0ffe01ebeb39694817fa1f200fa37ded6a56dbac9"
+}
