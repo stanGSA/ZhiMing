@@ -381,10 +381,13 @@ GAIN_RESTRAINED = re.compile(
     r"(?=\s*(?:[，,。；;！？!?\n]|$))"
 )
 GAIN_DOUBT_UNDONE = re.compile(r"(?:不用|不必|无需|无须|别|不要|没必要|用不着|不需要)$")
-GAIN_ADDRESSED = re.compile(r"对(?:待)?(?:任何|所有|这类|各种|一切|那些)?(?:所谓)?$")
+# bazi pilot r22, investment #2: “遇到“稳赚”说法多问几个为什么” meets the claim and doubts it.
+GAIN_ADDRESSED = re.compile(
+    r"(?:对(?:待)?|遇到|碰到|遇上|听到|面对)(?:任何|所有|这类|各种|一切|那些)?(?:所谓)?$"
+)
 GAIN_DEMANDED = re.compile(
     r"(?:[，,]\s*)?(?:都|也|一律|一概)?(?:先|要|要求|需要|得|应|应该|必须)*(?:先)?"
-    r"(?:看到|看清|核实|查清|核对|追问|问清|警惕|存疑|打个?问号|保持(?:警惕|怀疑|距离)|多问|多核实)"
+    r"(?:看到|看清|核实|查清|核对|追问|问清|警惕|存疑|打个?问号|保持(?:警惕|怀疑|距离)|多问(?:几个|一句|一下|几句)?(?:为什么|依据)?|多核实)"
 )
 # A predicate can be rejected after it is named: “保持距离是不必要的” does not
 # recommend caution. Check its own complement, not a negative in a later clause.
