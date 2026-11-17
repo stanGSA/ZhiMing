@@ -35,6 +35,8 @@ from tests.pipeline.test_runner_bazi import written
         "不能说不可以买一点基金。",
         "并非不能投资指数基金。",
         "少量参与不是好办法，但可以投资指数基金。",
+        "不能说明年把全部积蓄投入股市这件事，从八字看不适合作全投决定。",
+        "买一点基金这件事，从风险看不合适，但可以参与市场。",
     ],
 )
 def test_entry_advice_is_not_excused_by_its_condition_or_word_order(text):
@@ -54,6 +56,8 @@ def test_entry_advice_is_not_excused_by_its_condition_or_word_order(text):
         "如果你正想买一点基金，先停下来核实预算。",
         "如果你已经准备买入基金，先核对财务。",
         "少量参与不是好办法。",
+        "明年把全部积蓄投入股市这件事，从八字看不适合作全投决定。",
+        "买一点基金这件事，从风险看不合适。",
     ],
 )
 def test_learning_restraint_and_described_intentions_still_pass(text):

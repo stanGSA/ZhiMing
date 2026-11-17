@@ -922,7 +922,10 @@ def entry_offered(sentence: str) -> bool:
     """Whether a sentence of an investment reading's dated layer or summary offers money to the
     market (owner, 2026-11-17): any amount or pace counts unless a denial governs it."""
     described = False
+    offset = 0
     for clause in CLAUSE_OR_TURN.split(sentence):
+        start = sentence.find(clause, offset)
+        offset = start + len(clause)
         carried = described and bool(ENTRY_LIST_ON.match(clause))
         described = carried or entry_described(clause) or bool(ENTRY_IMPULSE.search(clause))
         if re.search(r"表现(?:为|成|就是|在)|典型", clause):
@@ -941,6 +944,12 @@ def entry_offered(sentence: str) -> bool:
                 ENTRY_LEARNING_AFTER.match(after)
                 or re.search(r"(?:学习|了解|研究|复盘)(?:如何|怎么|怎样)?$", lead)
             ):
+                continue
+            tail = sentence[start + match.end() :]
+            verdict_tail = re.sub(r"不适合作全投决定(?=[。；;！？!?\n]|$)", "不适合", tail)
+            if denied_verdict(verdict_tail):
+                if TURNED_BACK.search(lead) or WEAKENED.search(lead) or DOUBLE_DENIAL.search(lead):
+                    return True
                 continue
             if ENTRY_NOUN_AFTER.match(after) or ENTRY_HELD_AFTER.match(after):
                 continue
