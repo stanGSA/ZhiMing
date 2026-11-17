@@ -320,12 +320,15 @@ async def test_timing_and_trait_sheets_give_the_current_cycle(run_at, case_id, t
     assert len([a for a, label, _ in facts if label == "大运"]) == 1
 
 
-async def test_the_luck_cycle_sheet_labels_its_stages(run_at):
+async def test_the_luck_cycle_sheet_and_the_model_result_are_unchanged(run_at):
     _, _, composer = await run_at("bazi_pilot_dayun", written)
     labels = {t: label for _, label, t in facts_in(composer.seen[0][0])}
-    assert labels["第1步大运丙辰（1993年交运，2003年换下一步）"] == "首步大运"
-    assert labels["第4步大运己未（2023年交运，2033年换下一步）"] == "当前大运"
-    assert labels["第4步大运己未天干己为偏财"] == "当前大运"
+    assert labels["第4步大运己未（2023年交运，2033年换下一步）"] == "大运"
+    assert "当前大运" not in labels.values()
+    runtime, _, _ = await run_at("bazi_pilot_next_month_career", written)
+    # The chart result the model reads keeps its facts, so every R-number stays as it was.
+    tools = [m["content"] for m in runtime.session.messages if m.get("role") == "tool"]
+    assert tools and not any("dayun_current" in content for content in tools)
 
 
 def citing(label: str, extra: str):

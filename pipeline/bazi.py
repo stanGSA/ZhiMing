@@ -1988,25 +1988,23 @@ class Bazi(System):
                 f"（{first['start_year']}年交运，{first['start_year'] + 10}年换下一步）",
             )
             # Bazi pilot r20, career #3: “{{R3}}已走到后半段”, R3 the start and the first cycle, the
-            # only luck-cycle fact then. A stage fact is labelled with its role in the sheet.
+            # only luck-cycle fact then. A timing or trait sheet now lists the current cycle too
+            # (dayun_current, plugins.bazi.tools.chart_atoms), labelled as such.
             for index, stage in enumerate(dayun["sequence"]):
                 gz = stage["ganzhi"]
                 year = stage["start_year"]
-                label = (
-                    "当前大运"
-                    if stage in dayun.get("current_candidates", [])
-                    else "首步大运"
-                    if index == 0
-                    else "大运"
-                )
                 out[f"dayun_stage:{index + 1}:{gz}:{year}至{year + 10}交运年份标记"] = (
-                    label,
+                    "大运",
+                    f"第{index + 1}步大运{gz}（{year}年交运，{year + 10}年换下一步）",
+                )
+                out[f"dayun_current:{index + 1}:{gz}:{year}至{year + 10}交运年份标记"] = (
+                    "当前大运",
                     f"第{index + 1}步大运{gz}（{year}年交运，{year + 10}年换下一步）",
                 )
                 god = ten_god(master[0], gz[0]) if master else None
                 if god:
                     out[f"dayun_stem:{index + 1}:{gz}:{god}"] = (
-                        label,
+                        "大运",
                         f"第{index + 1}步大运{gz}天干{gz[0]}为{god}",
                     )
         if natal.get("alternatives"):
@@ -2072,6 +2070,9 @@ class Bazi(System):
         items += pillars[:MAX_PERIODS]
         items += relations_[: max(0, MAX_PERIODS - len(pillars))]
         facts = []
+        # The current cycle (r21) is numbered last, so every other fact keeps its number; it is
+        # listed right after the start of the cycles.
+        items.sort(key=lambda item: texts.get(item["fact"], ("",))[0] == "当前大运")
         for item in items:
             if item["ref_id"] not in allowed or item["fact"] not in texts:
                 continue
@@ -2086,6 +2087,11 @@ class Bazi(System):
                 f"{alias}｜{label}｜{text}｜关键词：{keywords or '无'}｜一般含义：{general or '无'}"
             )
             facts.append(Fact(alias, item["ref_id"], label, text, line))
+        current = [f for f in facts if f.label == "当前大运"]
+        if current:
+            facts = [f for f in facts if f.label != "当前大运"]
+            start = next((i + 1 for i, f in enumerate(facts) if f.label == "大运"), len(facts))
+            facts[start:start] = current
         return facts
 
     # ---- ⑤ compose -----------------------------------------------------------------------

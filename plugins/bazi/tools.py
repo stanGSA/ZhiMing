@@ -146,7 +146,10 @@ class BaziPlugin(MeaningPlugin):
                 meaning=meaning_view(i["meaning"]),
             )
             for i in data.get("interpretations", [])
-            if i["kind"] not in ("stem", "branch") or ":day:" in i["fact"]
+            if (i["kind"] not in ("stem", "branch") or ":day:" in i["fact"])
+            # The pipeline's own fact sheet lists the current cycle (bazi pilot r21); the
+            # result the model reads stays as before, so its R-numbers do not move.
+            and not i["fact"].startswith("dayun_current:")
         ]
         # Keep at least one grounded atom for three-pillar charts with no ten-god facts.
         if not result["interpretations"] and data.get("interpretations"):
@@ -404,7 +407,7 @@ def chart_atoms(result, *, include_dayun_stages=False):
                 if current and index != 0:
                     atoms.append(
                         (
-                            f"dayun_stage:{index + 1}:{gz}:{stage['start_year']}至{stage['start_year'] + 10}交运年份标记",
+                            f"dayun_current:{index + 1}:{gz}:{stage['start_year']}至{stage['start_year'] + 10}交运年份标记",
                             "convention",
                             "dayun",
                             "trait",
