@@ -25,6 +25,7 @@ import pytest
 
 from app import create_runtime
 from pipeline.bazi import TRADE_PROBLEM, Bazi
+from plugins.bazi.tools import BaziPlugin
 from tests.pipeline.drafts import Composer
 from tests.pipeline.test_bazi_pilot_r5 import CASES, has
 from tests.pipeline.test_bazi_pilot_r10 import TYPED_PROFILE
@@ -327,8 +328,10 @@ async def test_the_luck_cycle_sheet_and_the_model_result_are_unchanged(run_at):
     assert "当前大运" not in labels.values()
     runtime, _, _ = await run_at("bazi_pilot_next_month_career", written)
     # The chart result the model reads keeps its facts, so every R-number stays as it was.
-    tools = [m["content"] for m in runtime.session.messages if m.get("role") == "tool"]
-    assert tools and not any("dayun_current" in content for content in tools)
+    chart = runtime.session.state["bazi_result"]
+    assert any(i["fact"].startswith("dayun_current:") for i in chart["interpretations"])
+    shown = BaziPlugin.project(chart)["interpretations"]
+    assert shown and not any(i["fact"].startswith("dayun_current:") for i in shown)
 
 
 def citing(label: str, extra: str):
