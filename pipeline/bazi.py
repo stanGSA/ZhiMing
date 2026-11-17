@@ -851,7 +851,8 @@ def batch_recommended(clause: str) -> bool:
 # money of any amount or pace to the market is refused unless something denies it; only checking,
 # budgeting, an emergency fund, learning, waiting or not investing pass. r12–r20 refused eight
 # wordings one by one (分批, 以分批为主, 小范围验证, 小步验证, 分散, 小比例验证, 支持分批, and r20
-# investment #2's “只用亏得起的小部分去验证判断”); the default turns, so a ninth needs no new rule.
+# investment #2's “只用亏得起的小部分去验证判断”). Detection still depends on action patterns;
+# PR #83 review adds market objects and separates a condition from its recommended consequent.
 # r20 investment #2's “先补齐应急金……再谈是否小额参与” (owner: a known escape) defers an entry.
 ENTRY = re.compile(
     r"(?P<amount>(?:一)?(?:小比例|(?<![大这那此该])部分|少部分|小部分|一小部分|很少一部分|少量|小额|"
@@ -859,6 +860,8 @@ ENTRY = re.compile(
     r"[^，,。；;！？!?\n]{0,10}?(?:去|来)?"
     r"(?:验证|试水|试探|尝试|试|参与|投入|投|买入|买|入场|进场|配置|操作|上车)"
     rf"|{BATCH}"
+    r"|(?P<market>(?:买(?:入)?|投资|投入|配置)[^，,。；;！？!?\n]{0,12}?"
+    r"(?:基金|股票|股市|债券|证券|期货|加密货币|比特币|黄金|市场))"
     r"|(?:参与(?!讨论|沟通|决策|学习|培训|课程|规划|进来|变多|度|感|的人|者|其中)|入场|进场|建仓|加仓|"
     r"加码|补仓|抄底|上车|买入)"
     r"|(?P<later>(?:再|才|然后|之后|以后|接着)(?:谈|考虑|决定|看|说|评估)(?:是否|要不要|能否|该不该)?"
@@ -895,12 +898,24 @@ ENTRY_HELD_AFTER = re.compile(
 ENTRY_LIST_ON = re.compile(r"\s*(?:或者|或是|或|以及|甚至|还有|又)")
 ENTRY_VERDICT_AFTER = re.compile(
     r"[^，,。；;！？!?\n]{0,8}?(?:也|都|并|同样|仍然|仍)?(?:不合适|不适合|不可取|不明智|不稳妥|不划算|"
-    r"不现实|风险(?:很|较|太)?大|(?:要|需|需要|得)?(?:谨慎|慎重)|并不安全)"
+    r"不现实|不是好办法|风险(?:很|较|太)?大|(?:要|需|需要|得)?(?:谨慎|慎重)|并不安全)"
 )
 ENTRY_PREFERRED_AFTER = re.compile(
     r"[^，,。；;！？!?\n]{0,16}?(?:更重要|更稳|更要紧|更关键|更实在|更合适|更值得)"
 )
 ENTRY_QUESTION = re.compile(r"(?:是否|要不要|该不该|能否|可否|能不能)$")
+# The object can have modifiers: participating in investment training is still learning.
+ENTRY_LEARNING_AFTER = re.compile(
+    r"(?:的|投资|理财|股票|基金|基础|相关|线上|线下|风险管理|知识){0,5}"
+    r"(?:学习|培训|课程|讨论|沟通|知识)"
+)
+ENTRY_CONSEQUENT = re.compile(r"就|则|那么|便|可以|建议|不妨|适合")
+
+
+def entry_described(lead: str) -> bool:
+    """A described condition does not excuse advice in its consequent."""
+    described = ENTRY_DESCRIBED.search(lead)
+    return bool(described and not ENTRY_CONSEQUENT.search(lead[described.end() :]))
 
 
 def entry_offered(sentence: str) -> bool:
@@ -909,14 +924,23 @@ def entry_offered(sentence: str) -> bool:
     described = False
     for clause in CLAUSE_OR_TURN.split(sentence):
         carried = described and bool(ENTRY_LIST_ON.match(clause))
-        described = carried or bool(ENTRY_DESCRIBED.search(clause) or ENTRY_IMPULSE.search(clause))
+        described = carried or entry_described(clause) or bool(ENTRY_IMPULSE.search(clause))
         if re.search(r"表现(?:为|成|就是|在)|典型", clause):
             described = True  # 最典型的表现就是：听朋友一句推荐就加仓
         for match in ENTRY.finditer(clause):
             lead, after = clause[: match.start()], clause[match.end() :]
             if not match["later"] and ENTRY_QUESTION.search(lead):
                 continue  # 要不要分批，取决于你的承受能力
-            if carried or ENTRY_DESCRIBED.search(lead) or ENTRY_IMPULSE.search(lead):
+            if (
+                (carried and not ENTRY_CONSEQUENT.search(lead))
+                or entry_described(lead)
+                or ENTRY_IMPULSE.search(lead)
+            ):
+                continue
+            if (match["market"] or match[0] == "参与") and (
+                ENTRY_LEARNING_AFTER.match(after)
+                or re.search(r"(?:学习|了解|研究|复盘)(?:如何|怎么|怎样)?$", lead)
+            ):
                 continue
             if ENTRY_NOUN_AFTER.match(after) or ENTRY_HELD_AFTER.match(after):
                 continue
@@ -2729,11 +2753,26 @@ class Bazi(System):
             if not role or OTHER_TIME_IN_CLAUSE.search(clause):
                 continue
             index, match, gz = stages[0]
+            # A dated historical description (outside the masked handoff notes) is not now.
+            years = re.findall(r"(?<!\d)(\d{4})年", clause[: role.start()])
+            as_of = dayun.get("as_of", "")[:4]
+            if (
+                years
+                and as_of
+                and years[-1] != as_of
+                and not re.search(r"现在|目前|眼下|如今|当下", clause)
+            ):
+                continue
             kind = claim(text, start + match.start(), start + match.end())
             if kind == "denied" and not reasserted(text, start + match.end(), gz):
                 continue
             if kind is None:
                 continue
+            if role.start() >= match.end() and all(
+                claim(text, start + r.start(), start + r.end()) == "denied"
+                for r in PRESENT_ROLE.finditer(clause, match.end())
+            ):
+                continue  # 首步大运己丑并非现在所处的大运
             now = "或".join(names[i] for i in sorted(current))
             found.append(
                 f"按今年算所在的大运是{now}；“{text[start : start + len(clause)].strip()}”"
