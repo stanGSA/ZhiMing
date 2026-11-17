@@ -1,0 +1,55 @@
+{
+  "ok": false,
+  "thresholds": {
+    "reply_tokens": 3,
+    "tool_call_tokens": 40
+  },
+  "probes": [
+    {
+      "probe": "runtime_reply",
+      "ok": true,
+      "problems": [],
+      "requested_model": "deepseek-v4.1-flash",
+      "returned_model": "deepseek-v4.1-flash",
+      "output_tokens": 2,
+      "reasoning_tokens": null,
+      "finish_reason": "stop",
+      "tool_calls": [],
+      "latency_s": 14.902
+    },
+    {
+      "probe": "runtime_tool_call",
+      "ok": false,
+      "problems": [
+        "reasoning_tokens=14",
+        "reasoning_content 有 62 字"
+      ],
+      "requested_model": "deepseek-v4.1-flash",
+      "returned_model": "deepseek-v4.1-flash",
+      "output_tokens": 36,
+      "reasoning_tokens": 14,
+      "finish_reason": "tool_calls",
+      "tool_calls": [
+        "get_profile"
+      ],
+      "latency_s": 9.062
+    },
+    {
+      "probe": "judge_pro_reply",
+      "ok": false,
+      "problems": [
+        "reasoning_tokens=15",
+        "reasoning_content 有 58 字",
+        "output_tokens=17 > 3"
+      ],
+      "requested_model": "deepseek-v4.1-flash",
+      "returned_model": "deepseek-v4.1-flash",
+      "output_tokens": 17,
+      "reasoning_tokens": 15,
+      "finish_reason": "stop",
+      "tool_calls": [],
+      "latency_s": 2.782
+    }
+  ],
+  "note": "Returned model names are service metadata, not independent identity evidence."
+}
