@@ -1701,6 +1701,7 @@ def start_findings(
 # lying wholly before that point is refused (owner, 2026-11-17). Bracketed notes are not read as
 # time words, and a flow said to be over (接替, 走完, 结束……) is not placed after the point.
 AFTER_POINT = re.compile(
+    r"(?:(?P<year>\d{4})年)?"
     rf"(?:(?P<lichun>立春)|(?P<month>{MONTH_WORD})月(?:(?P<day>\d{{1,2}})日)?)"
     r"(?:之后|以后|过后|后|起)(?!的|前)"
 )
@@ -1710,6 +1711,34 @@ TIME_WORD = re.compile(
 )
 FLOW_NAMED = re.compile(rf"(?P<label>流年|流月)(?P<gz>{JIAZI})")
 FLOW_OVER = re.compile(r"接替|取代|告别|走完|结束|延续|承接|余波|收尾|过去|已过|退场|不再")
+FLOW_OVER_DENIED = re.compile(
+    r"(?:(?:并非|不是|并不|没有|不|没|未|非)(?:已经|曾|再|会|被|完全|真正|彻底|就|是)*)+$"
+)
+FLOW_OVER_UNCERTAIN = re.compile(r"(?:不一定|未必|不能说|不代表|不等于|并不意味着)(?:已经|就|是)*$")
+
+
+def ending_asserted(before: str) -> bool:
+    before = FLOW_NAMED.sub("流期", before)
+    if FLOW_OVER_UNCERTAIN.search(before):
+        return False
+    denial = FLOW_OVER_DENIED.search(before)
+    return not denial or len(re.findall(r"并非|不是|并不|没有|不|没|未|非", denial[0])) % 2 == 0
+
+
+def flow_said_over(scope: str, flow: re.Match) -> bool:
+    """An affirmative ending/carry-over predicate in this flow's own clause.
+
+    An ending before a comma/turn cannot excuse a later assertion, and “并未结束”
+    does not say the flow is over.
+    """
+    cuts = list(CLAUSE_OR_TURN.finditer(scope))
+    clause_start = max((m.end() for m in cuts if m.end() <= flow.start()), default=0)
+    high = min((m.start() for m in cuts if m.start() >= flow.end()), default=len(scope))
+    low, high = max(clause_start, flow.start() - 6), min(high, flow.end() + 8)
+    return any(
+        ending_asserted(scope[clause_start : marker.start()])
+        for marker in FLOW_OVER.finditer(scope, low, high)
+    )
 
 
 def after_point_findings(
@@ -1729,7 +1758,7 @@ def after_point_findings(
             if lead and lead[-1] not in "，,：: ":
                 continue  # “流月乙未从7月7日起把压力感带进来” is no opening point
             if point["lichun"]:
-                if lichun is None:
+                if lichun is None or (point["year"] and int(point["year"]) != lichun.year):
                     continue
                 day, strict = lichun, False
             else:
@@ -1737,6 +1766,7 @@ def after_point_findings(
                 days = [
                     day_of(year, month, int(point["day"] or 1))
                     for year in range(start.year, end.year + 1)
+                    if not point["year"] or int(point["year"]) == year
                     if start <= day_of(year, month, int(point["day"] or 1)) <= end
                 ]
                 if not days:
@@ -1756,8 +1786,7 @@ def after_point_findings(
                     continue
                 if not all((b < day) if strict else (b <= day and a < day) for a, b in spans):
                     continue
-                around = scope[max(0, flow.start() - 6) : flow.end() + 8]
-                if FLOW_OVER.search(around):
+                if flow_said_over(scope, flow):
                     continue
                 at = base + point.end() + flow.start()
                 if claim(body, at, at + len(flow[0])) == "denied":
@@ -1782,7 +1811,8 @@ PAST_PHRASE = re.compile(
     rf"(?:(?:到|至)(?:{MONTH_WORD})月)?)"
 )
 LOOKED_BACK = re.compile(
-    r"回看|回顾|复盘|回想|已经|过去|曾|那时|当时|此前|之前|以前|以来|发生|经历|走过|刚过|已"
+    r"回看|回顾|复盘|回想|已经|过去|曾(?:经|发生|经历|出现|在|有)|那时|当时|此前|之前|以前|以来|"
+    r"(?:发生|经历|走)过|刚过|已(?:完成|结束|发生|经历)"
 )
 
 
@@ -2889,6 +2919,12 @@ class Bazi(System):
             quoted = text[match.start() : match.end()]
             if match["n"]:
                 index = number(match["n"]) - 1
+                if not 0 <= index < len(sequence):
+                    found.append(
+                        f"“{quoted}”：第{index + 1}步大运没有排到，已排出的序列共{len(sequence)}步；"
+                        "按计算结果写换运目标"
+                    )
+                    continue
             elif match["year"]:
                 index = next(
                     (i for i, s in enumerate(sequence) if s["start_year"] == int(match["year"])),

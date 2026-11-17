@@ -169,6 +169,9 @@ async def test_the_r22_natal_pillar_as_the_next_cycle_is_refused(luck):
         ("2033年交运到辛酉。", "换运后的是第5步大运庚申，不是辛酉"),
         ("之后换到第5步大运辛酉。", "换运后的是第5步大运庚申，不是辛酉"),
         ("2033年并非不换成月柱乙卯。", HANDOFF),  # double negation
+        ("换到第99步月柱乙卯。", "第99步大运没有排到"),
+        ("换到第0步月柱乙卯。", "第0步大运没有排到"),
+        ("换到第99步大运庚申。", "第99步大运没有排到"),
     ],
 )
 async def test_a_handover_to_something_else_is_refused(luck, sentence, words):
@@ -214,6 +217,17 @@ async def test_the_r22_flow_year_after_lichun_is_refused(money):
         "7月起，流月乙巳（十神偏印）提醒补齐预算。",  # 乙巳 ends 6月6日
         "立春之后，流年丁未和流年丙午都很明显。",  # another item first
         "立春之后，流年丙午并非不在。",  # double negation
+        "立春之后，流年丙午并未结束，仍带竞争与同伴主题。",
+        "立春之后，流年丙午没有结束。",
+        "立春之后，流年丙午尚未完全结束。",
+        "立春之后，流年丙午未必已经结束。",
+        "立春之后，流年丙午并非不再存在。",
+        "立春之后，流年丙午不能说已经结束。",
+        "立春之后，流年丙午已经结束，但流年丙午仍主导全年。",
+        "立春之后，流年丁未开始，流年丙午仍未退场。",
+        "2027年2月4日起，流年丙午仍带竞争与同伴主题。",
+        "从2027年2月4日起，流年丙午仍带竞争与同伴主题。",
+        "2027年立春之后，流年丙午仍带竞争与同伴主题。",
     ],
 )
 async def test_flows_before_the_point_are_refused(money, body):
@@ -226,6 +240,10 @@ async def test_flows_before_the_point_are_refused(money, body):
         "立春之后进入流年丁未，主题转向独立与同伴。",
         "立春之后，流年丁未接替流年丙午，主题转向同伴。",
         "立春之后不再是流年丙午，转为流年丁未。",
+        "立春之后，流年丙午已经结束，转为流年丁未。",
+        "立春之后，流年丙午并非没有结束。",
+        "2027年2月4日起，流年丁未提示独立与同伴。",
+        "2027年立春之后，流年丁未接替流年丙午。",
         "1月5日起，流月辛丑偏向机会与调配。",
         "6月起流月丙午提示冲动花费。",  # 丙午 from 6月6日
         "立春之后流年丁未开始；1月流年丙午还在。",  # a later time word ends the scope
@@ -250,6 +268,9 @@ async def test_the_r22_past_half_year_in_the_advice_is_refused(money):
         {"summary": "今年上半年适合先学习风险规则。"},
         {"advice": ["盘点：今年3月先把账目列清楚。"]},
         {"closing": "今年春天先把应急金留足。"},
+        {"advice": ["用今年上半年系统学习已知风险和资产配置常识。"]},
+        {"advice": ["用今年上半年系统学习如何避免发生投资损失。"]},
+        {"advice": ["今年3月先积累投资经历。"]},
     ],
 )
 async def test_a_past_time_anywhere_is_refused(money, field):
@@ -264,11 +285,38 @@ async def test_a_past_time_anywhere_is_refused(money, field):
         "盘点：今年3月以来的支出已经偏高，先记下来。",
         "学习：明年上半年系统学习风险规则。",
         "预算：今年12月把明年的预算写下来。",  # still ahead
+        "今年上半年曾经出现额外支出。",
+        "今年3月发生过额外支出。",
+        "今年3月已完成预算调整。",
+        "今年3月曾出现额外支出。",
     ],
 )
 async def test_a_look_back_or_a_time_ahead_passes(money, advice):
     answer = {"summary": "整体平稳。", "sections": [{"title": "全年", "body": "先核实。"}]}
     assert not has(reading(money, answer | {"advice": [advice]}), PAST)
+
+
+async def test_an_invalid_handover_step_enters_the_repair_loop(project):
+    case = CASES["bazi_pilot_dayun"]
+    composer = Composer(lambda messages: written(messages, extra="换到第99步月柱乙卯。"), written)
+    runtime = create_runtime(
+        root=project,
+        user_id="r23-invalid-handoff",
+        seed=7,
+        model=composer,
+        mode="pipeline",
+        clock=lambda: CLOCK,
+    )
+    try:
+        runtime.store.update_profile_fields("r23-invalid-handoff", case["profile"], "合成测试资料")
+        runtime.session.profile = runtime.store.get_profile("r23-invalid-handoff")
+        outcome = await runtime.turn(case["question"])
+        assert outcome.status == "submit_reading", outcome.text
+        assert outcome.data["pipeline"]["repairs"] == 1
+        assert len(composer.seen) == 2
+        assert "第99步大运没有排到" in str(composer.seen[1])
+    finally:
+        runtime.close()
 
 
 # ---- the r22 answers ---------------------------------------------------------------------------
