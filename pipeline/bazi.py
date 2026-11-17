@@ -332,6 +332,16 @@ EQUATED_STEP = re.compile(
     rf"第(?P<a>[一二三四五六七八九十\d]+)步大运(?:{JIAZI})?(?:（[^）]*）)?\s*"
     r"(?:就|也就|便|即|正|则)?(?:是|为|即|算)\s*第(?P<b>[一二三四五六七八九十\d]+)步"
 )
+# Bazi pilot r22, luck cycles #2: “第4步大运己未……走到2033年换月柱乙卯所属的更长时间框架之前”, a
+# natal pillar written as what the cycle hands over to. What a handover year or step hands over to
+# is read against the sequence too (owner, 2026-11-17).
+HANDOFF_TARGET = re.compile(
+    r"(?:(?P<year>\d{4})年(?:前后|左右)?)?"
+    r"(?:(?:换运|交运|换大运|交大运|交接|交到|换成|换到|换入|换为|换)(?:到|成|入|为|进)?"
+    r"|(?:进入|转入|走入|迈入)(?=下一步|第[一二三四五六七八九十\d]+步|本命|原局|[年月日时]柱))"
+    r"(?:下一步(?:大运)?|第(?P<n>[一二三四五六七八九十\d]+)步(?:大运)?)?(?:是|为)?"
+    rf"(?:本命|原局)?的?(?P<pillar>[年月日时]柱)?(?P<gz>{JIAZI})(?!年|流年|月|流月|日|时)"
+)
 ANY_DAYUN = re.compile(rf"(?P<gz>{JIAZI})大运|大运(?:是|为|：|:)?\s*(?P<after>{JIAZI})")
 HANDOVER = re.compile(r"(?P<year>\d{4})年(?:前后|左右)?(?:交运|换运|换大运|交大运|进入下一步大运)")
 START_DATE = re.compile(r"(?P<y>\d{4})年(?P<m>\d{1,2})月(?P<d>\d{1,2})日(?:前后)?起运")
@@ -573,6 +583,11 @@ ENCOURAGED = re.compile(
     r"(?:不宜|不要|别|避免|不必|忌)再?(?:犹豫|迟疑|观望|错过|等待)"
 )
 WEAKENED = re.compile(r"不一定|未必|不完全|并不完全|不见得")
+# Bazi pilot r22, investment #1: “创意和专长可以开源但不等于适合重仓” denies that the trade suits;
+# the turn word must sit right before the suitability, with nothing turned back in between.
+SUITABILITY_DENIED = re.compile(
+    r"(?:并)?(?:不等于|不代表|不意味着)(?:就|是)?(?:很|太|那么)?(?:适合|宜|值得|该|应该)"
+)
 CLAUSE_OR_TURN = re.compile(
     r"[，,；;：:]|但是?|不过|然而|可是|却|所以|因此|因而|而且|并且|同时|且|并(?!非|不|未|没)"
 )
@@ -1058,6 +1073,10 @@ def recommended_trade(
         turned_tail = prefix[turned.end() :]
         if INNER_NEGATION.search(turned_tail) or OUT_OF_SCOPE.match(rest):
             return True
+        if SUITABILITY_DENIED.fullmatch(prefix[turned.start() :]) and not INNER_NEGATION.search(
+            prefix[: turned.start()]
+        ):
+            return False  # 创意和专长可以开源但不等于适合重仓
     if (
         DOUBLE_DENIAL.search(prefix)
         or DOUBLE_RESTRAINT.search(prefix)
@@ -1673,6 +1692,118 @@ def start_findings(
                     sentence.strip(),
                 )
             )
+    return found
+
+
+# Bazi pilot r22, investment #2: “立春之后，流年丁未（……2月4日起）和流年丙午（……1月1日至2月4日）都带
+# 竞争与同伴主题” put a flow year that ends at 立春 after it. A clause opened by a point in time
+# (立春之后, 2月4日起, 5月起) governs the flow years and months named until the next time word; one
+# lying wholly before that point is refused (owner, 2026-11-17). Bracketed notes are not read as
+# time words, and a flow said to be over (接替, 走完, 结束……) is not placed after the point.
+AFTER_POINT = re.compile(
+    rf"(?:(?P<lichun>立春)|(?P<month>{MONTH_WORD})月(?:(?P<day>\d{{1,2}})日)?)"
+    r"(?:之后|以后|过后|后|起)(?!的|前)"
+)
+TIME_WORD = re.compile(
+    rf"(?:{MONTH_WORD})月|立春|年初|年中|年底|年末|月初|月中|月底|上旬|中旬|下旬|上半年|下半年"
+    r"|此前|之前|以前|先前|在这之前"
+)
+FLOW_NAMED = re.compile(rf"(?P<label>流年|流月)(?P<gz>{JIAZI})")
+FLOW_OVER = re.compile(r"接替|取代|告别|走完|结束|延续|承接|余波|收尾|过去|已过|退场|不再")
+
+
+def after_point_findings(
+    body: str,
+    start: date,
+    end: date,
+    local_flows: dict[tuple[str, str], list[tuple[date, date]]],
+    lichun: date | None,
+) -> list[tuple[str, str]]:
+    """(problem, sentence) for a flow named after a point in time it lies wholly before."""
+    masked = re.sub(r"（[^（）]*）|\([^()]*\)", lambda m: "（" + "·" * (len(m[0]) - 2) + "）", body)
+    found = []
+    for piece in re.finditer(r"[^。！？!?；;\n]+", masked):
+        sentence, base = piece[0], piece.start()
+        for point in AFTER_POINT.finditer(sentence):
+            lead = re.sub(r"[从自]$", "", sentence[: point.start()])
+            if lead and lead[-1] not in "，,：: ":
+                continue  # “流月乙未从7月7日起把压力感带进来” is no opening point
+            if point["lichun"]:
+                if lichun is None:
+                    continue
+                day, strict = lichun, False
+            else:
+                month = month_number(point["month"])
+                days = [
+                    day_of(year, month, int(point["day"] or 1))
+                    for year in range(start.year, end.year + 1)
+                    if start <= day_of(year, month, int(point["day"] or 1)) <= end
+                ]
+                if not days:
+                    continue
+                day, strict = days[0], not point["day"]
+            scope = sentence[point.end() :]
+            stop = TIME_WORD.search(scope)
+            scope = scope[: stop.start()] if stop else scope
+            for flow in FLOW_NAMED.finditer(scope):
+                key = "year" if flow["label"] == "流年" else "month"
+                spans = [
+                    (a, b)
+                    for a, b in local_flows.get((key, flow["gz"]), [])
+                    if a <= end and b >= start
+                ]
+                if not spans:
+                    continue
+                if not all((b < day) if strict else (b <= day and a < day) for a, b in spans):
+                    continue
+                around = scope[max(0, flow.start() - 6) : flow.end() + 8]
+                if FLOW_OVER.search(around):
+                    continue
+                at = base + point.end() + flow.start()
+                if claim(body, at, at + len(flow[0])) == "denied":
+                    continue
+                a, b = spans[0]
+                marker = body[base + point.start() : base + point.end()]
+                found.append(
+                    (
+                        f"“{marker}”说的是{day.month}月{day.day}日以后，{flow[0]}在{a.month}月{a.day}日"
+                        f"至{b.month}月{b.day}日，整段都在这之前；把它写回它所在时段的句子或那一层",
+                        body[base : base + len(sentence)].strip(),
+                    )
+                )
+    return found
+
+
+# Bazi pilot r22, investment #3 (asked on 2026-11-17 about 明年): “用今年上半年系统学习风险规则”
+# names a time already over, outside the range asked about. Refused in the summary, the layers, the
+# advice and the closing unless the clause looks back (owner, 2026-11-17).
+PAST_PHRASE = re.compile(
+    rf"今年(?:的)?(?:上半年|下半年|年初|年中|春天|春季|夏天|夏季|(?:{MONTH_WORD})月"
+    rf"(?:(?:到|至)(?:{MONTH_WORD})月)?)"
+)
+LOOKED_BACK = re.compile(
+    r"回看|回顾|复盘|回想|已经|过去|曾|那时|当时|此前|之前|以前|以来|发生|经历|走过|刚过|已"
+)
+
+
+def past_time_findings(texts, start: date, end: date, today: date | None) -> list[tuple[str, str]]:
+    if today is None:
+        return []
+    found = []
+    for text in texts:
+        for clause in re.split(f"[{CLAUSE_BREAK}]", text or ""):
+            if LOOKED_BACK.search(clause):
+                continue
+            for match in PAST_PHRASE.finditer(clause):
+                spans = title_spans(match[0], start, end, today)
+                if spans and all(b < today and b < start for _, b in spans):
+                    found.append(
+                        (
+                            f"“{match[0]}”已经过去（今天是{today.month}月{today.day}日），也不在这次看的"
+                            f"{start}至{end}里；按这次的时间写，或写成“接下来”",
+                            clause.strip(),
+                        )
+                    )
     return found
 
 
@@ -2746,6 +2877,33 @@ class Bazi(System):
                     f"“{text[match.start() : match.end()]}”：第{a}步大运是{names[a - 1]}，"
                     f"不是第{b}步；第{b}步是{names[b - 1] if 1 <= b <= len(sequence) else '（没有排到）'}"
                 )
+        for match in HANDOFF_TARGET.finditer(masked):
+            gz = match["gz"]
+            if not (match["pillar"] or match["year"] or match["n"]):
+                continue
+            # The denial may govern the handover verb: “不是换月柱乙卯”.
+            verb = match.end("year") + 1 if match["year"] else match.start()
+            kind = claim(text, verb, match.end("gz"))
+            if kind == "denied" and not reasserted(text, match.end("gz"), gz):
+                continue
+            quoted = text[match.start() : match.end()]
+            if match["n"]:
+                index = number(match["n"]) - 1
+            elif match["year"]:
+                index = next(
+                    (i for i, s in enumerate(sequence) if s["start_year"] == int(match["year"])),
+                    None,
+                )
+            else:
+                index = None
+            if match["pillar"]:
+                target = f"；那一步是第{index + 1}步大运{names[index]}" if index is not None else ""
+                found.append(
+                    f"“{quoted}”把出生四柱的{match['pillar']}{gz}写成了换运后的大运："
+                    f"年、月、日、时柱不随换运改变{target}"
+                )
+            elif index is not None and 0 <= index < len(sequence) and gz != names[index]:
+                found.append(f"“{quoted}”：换运后的是第{index + 1}步大运{names[index]}，不是{gz}")
         offset = 0
         for clause in re.split(f"[{CLAUSE_BREAK}]", masked):
             start, offset = offset, offset + len(clause) + 1
@@ -3382,6 +3540,22 @@ class Bazi(System):
             local = (local_day(span["start_utc"], tz), local_day(span["end_utc"], tz, end=True))
             if local not in flows.setdefault(gz, []):
                 flows[gz].append(local)
+        local_flows: dict[tuple[str, str], list[tuple[date, date]]] = {}
+        for (key, gz, _), span in spans.items():
+            local = (local_day(span["start_utc"], tz), local_day(span["end_utc"], tz, end=True))
+            if local not in local_flows.setdefault((key, gz), []):
+                local_flows[(key, gz)].append(local)
+        # 立春 begins the 寅 month; only one inside the range is a point a layer can name.
+        lichun = next(
+            (
+                day
+                for gz, days in starts.items()
+                if gz.endswith("寅")
+                for day in days
+                if start <= day <= end
+            ),
+            None,
+        )
         found = []
         for section in args.get("sections", []):
             title = section.get("title") or ""
@@ -3415,6 +3589,7 @@ class Bazi(System):
             for problem in problems:
                 found.append((problem, title))
             found += start_findings(body, start, end, starts, title, flows)
+            found += after_point_findings(body, start, end, local_flows, lichun)
             if INVESTMENT.search(state.get("question") or "") and (
                 PERIOD_WORD.search(title) or title_spans(title, start, end, today)
             ):
@@ -3424,6 +3599,17 @@ class Bazi(System):
                         found.append((TRADE_PROBLEM, sentence.strip()))
                     elif entry_offered(sentence):
                         found.append((ENTRY_PROBLEM, sentence.strip()))
+        found += past_time_findings(
+            [
+                args.get("summary"),
+                *(section.get("body") for section in args.get("sections", [])),
+                *(args.get("advice") or []),
+                args.get("closing"),
+            ],
+            start,
+            end,
+            today,
+        )
         if INVESTMENT.search(state.get("question") or ""):
             # The summary speaks for the whole range (owner, 2026-11-17).
             for sentence in re.split(r"(?<=[。！？!?\n])", args.get("summary") or ""):
