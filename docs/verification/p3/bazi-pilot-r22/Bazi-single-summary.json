@@ -1,0 +1,1137 @@
+{
+  "run_id": "20261117T115815-e9fee030",
+  "rubric_version": "v2-2026-10-24",
+  "judge_name": "pro",
+  "judge_model": "deepseek-flash",
+  "repeats": 3,
+  "mode": "single",
+  "requested_model": "deepseek-flash",
+  "source_fingerprint": "9ad34f3678d943d9a0206887ba9a029c73a63d03619dc85e293aaa8da3331586",
+  "cases": 18,
+  "passed": 4,
+  "failed": 14,
+  "multi_agent": null,
+  "reviewer_agent": null,
+  "model_calls": 116,
+  "model_request_attempts": 116,
+  "review_calls": 18,
+  "review_request_attempts": 18,
+  "input_tokens": 1016856,
+  "output_tokens": 60997,
+  "scope": "Synthetic data; judge identity and rubric recorded. Automated review is not human calibration or independent verification of service identity.",
+  "raw_sha256": "515d35c5ebbd1b2636dad19a28d81d792d481527e5b376e4c3196db6235f5d65",
+  "results": [
+    {
+      "id": "bazi_pilot_trait",
+      "repeat": 0,
+      "status": "submit_reading",
+      "checks": {
+        "expected_status": true,
+        "expected_tools": true,
+        "zero_tool_errors": true,
+        "no_model_error": true,
+        "saved": true,
+        "systems": true,
+        "valid_refs": true
+      },
+      "engineering_pass": true,
+      "quality_review": {
+        "direct_answer": true,
+        "time_consistent": true,
+        "supported_conclusion": false,
+        "no_fabricated_facts": false
+      },
+      "quality_pass": false,
+      "passed": false,
+      "tools": [
+        "compute_bazi",
+        "start_reading",
+        "submit_reading"
+      ],
+      "tool_errors": [],
+      "latency_s": 12.449,
+      "review_latency_s": 5.937,
+      "model_calls": 3,
+      "model_request_attempts": 3,
+      "input_tokens": 13256,
+      "output_tokens": 1414,
+      "usage_missing_calls": 0,
+      "cached_input_tokens": 10240,
+      "cached_usage_complete": true,
+      "returned_models": [
+        "deepseek-flash"
+      ],
+      "review_usage": {
+        "input_tokens": 5847,
+        "output_tokens": 757,
+        "usage_available": true,
+        "requested_model": "deepseek-flash",
+        "returned_model": "deepseek-flash",
+        "parse_attempts": 1
+      },
+      "review_request_attempts": 1,
+      "multi_agent": null,
+      "reviewer_agent": null,
+      "pipeline": null
+    },
+    {
+      "id": "bazi_pilot_dayun",
+      "repeat": 0,
+      "status": "retry_limit",
+      "checks": {
+        "expected_status": false,
+        "expected_tools": false,
+        "zero_tool_errors": false,
+        "no_model_error": true,
+        "saved": false,
+        "systems": false,
+        "valid_refs": true
+      },
+      "engineering_pass": false,
+      "quality_review": {
+        "direct_answer": false,
+        "time_consistent": true,
+        "supported_conclusion": false,
+        "no_fabricated_facts": true
+      },
+      "quality_pass": false,
+      "passed": false,
+      "tools": [
+        "compute_bazi",
+        "start_reading"
+      ],
+      "tool_errors": [
+        {
+          "tool": "submit_reading",
+          "code": "invalid_arguments",
+          "error": "工具参数必须是合法JSON对象（Expecting ',' delimiter，第 297 个字符附近：…\"按你1988年3月21日卯时出生，排盘算出从出生到下一个\"节\"（惊蛰之后的白露…；字符串正文里的英文双引号须写成\\\"，或改用中文引号“”），请修正后重试"
+        },
+        {
+          "tool": "submit_reading",
+          "code": "validation_failed",
+          "error": "免责声明由应用统一添加，正文不要重复"
+        },
+        {
+          "tool": "submit_reading",
+          "code": "validation_failed",
+          "error": "免责声明由应用统一添加，正文不要重复"
+        },
+        {
+          "tool": "submit_reading",
+          "code": "validation_failed",
+          "error": "免责声明由应用统一添加，正文不要重复"
+        }
+      ],
+      "latency_s": 25.968,
+      "review_latency_s": 1.697,
+      "model_calls": 6,
+      "model_request_attempts": 6,
+      "input_tokens": 46133,
+      "output_tokens": 5300,
+      "usage_missing_calls": 0,
+      "cached_input_tokens": 40064,
+      "cached_usage_complete": true,
+      "returned_models": [
+        "deepseek-flash"
+      ],
+      "review_usage": {
+        "input_tokens": 1710,
+        "output_tokens": 161,
+        "usage_available": true,
+        "requested_model": "deepseek-flash",
+        "returned_model": "deepseek-flash",
+        "parse_attempts": 1
+      },
+      "review_request_attempts": 1,
+      "multi_agent": null,
+      "reviewer_agent": null,
+      "pipeline": null
+    },
+    {
+      "id": "bazi_pilot_next_month_career",
+      "repeat": 0,
+      "status": "submit_reading",
+      "checks": {
+        "expected_status": true,
+        "expected_tools": true,
+        "zero_tool_errors": false,
+        "no_model_error": true,
+        "saved": true,
+        "systems": true,
+        "valid_refs": true
+      },
+      "engineering_pass": false,
+      "quality_review": {
+        "direct_answer": true,
+        "time_consistent": true,
+        "supported_conclusion": true,
+        "no_fabricated_facts": true
+      },
+      "quality_pass": true,
+      "passed": false,
+      "tools": [
+        "compute_bazi",
+        "compute_bazi_period",
+        "start_reading",
+        "submit_reading"
+      ],
+      "tool_errors": [
+        {
+          "tool": "compute_bazi_period",
+          "code": "validation_failed",
+          "error": "计算日期范围必须与用户明确指定范围一致"
+        },
+        {
+          "tool": "submit_reading",
+          "code": "invalid_arguments",
+          "error": "参数不符合 schema：sections.0.ref_id：Extra inputs are not permitted；sections.1.ref_id：Extra inputs are not permitted；sections.2.ref_id：Extra inputs are not permitted"
+        },
+        {
+          "tool": "submit_reading",
+          "code": "validation_failed",
+          "error": "免责声明由应用统一添加，正文不要重复"
+        },
+        {
+          "tool": "submit_reading",
+          "code": "validation_failed",
+          "error": "免责声明由应用统一添加，正文不要重复"
+        }
+      ],
+      "latency_s": 38.736,
+      "review_latency_s": 3.548,
+      "model_calls": 8,
+      "model_request_attempts": 8,
+      "input_tokens": 82952,
+      "output_tokens": 8181,
+      "usage_missing_calls": 0,
+      "cached_input_tokens": 71680,
+      "cached_usage_complete": true,
+      "returned_models": [
+        "deepseek-flash"
+      ],
+      "review_usage": {
+        "input_tokens": 14407,
+        "output_tokens": 372,
+        "usage_available": true,
+        "requested_model": "deepseek-flash",
+        "returned_model": "deepseek-flash",
+        "parse_attempts": 1
+      },
+      "review_request_attempts": 1,
+      "multi_agent": null,
+      "reviewer_agent": null,
+      "pipeline": null
+    },
+    {
+      "id": "bazi_pilot_overseas_solar",
+      "repeat": 0,
+      "status": "ask_user",
+      "checks": {
+        "expected_status": false,
+        "expected_tools": false,
+        "zero_tool_errors": true,
+        "no_model_error": true,
+        "saved": false,
+        "systems": false,
+        "valid_refs": true
+      },
+      "engineering_pass": false,
+      "quality_review": {
+        "direct_answer": false,
+        "time_consistent": true,
+        "supported_conclusion": false,
+        "no_fabricated_facts": true
+      },
+      "quality_pass": false,
+      "passed": false,
+      "tools": [
+        "ask_user",
+        "compute_bazi",
+        "compute_bazi_period",
+        "get_profile",
+        "resolve_location",
+        "start_reading"
+      ],
+      "tool_errors": [],
+      "latency_s": 12.411,
+      "review_latency_s": 3.295,
+      "model_calls": 10,
+      "model_request_attempts": 10,
+      "input_tokens": 58805,
+      "output_tokens": 1278,
+      "usage_missing_calls": 0,
+      "cached_input_tokens": 52608,
+      "cached_usage_complete": true,
+      "returned_models": [
+        "deepseek-flash"
+      ],
+      "review_usage": {
+        "input_tokens": 1849,
+        "output_tokens": 178,
+        "usage_available": true,
+        "requested_model": "deepseek-flash",
+        "returned_model": "deepseek-flash",
+        "parse_attempts": 1
+      },
+      "review_request_attempts": 1,
+      "multi_agent": null,
+      "reviewer_agent": null,
+      "pipeline": null
+    },
+    {
+      "id": "bazi_pilot_typed_birth",
+      "repeat": 0,
+      "status": "submit_reading",
+      "checks": {
+        "expected_status": true,
+        "expected_tools": true,
+        "zero_tool_errors": false,
+        "no_model_error": true,
+        "saved": true,
+        "systems": true,
+        "valid_refs": true
+      },
+      "engineering_pass": false,
+      "quality_review": {
+        "direct_answer": true,
+        "time_consistent": false,
+        "supported_conclusion": false,
+        "no_fabricated_facts": false
+      },
+      "quality_pass": false,
+      "passed": false,
+      "tools": [
+        "compute_bazi",
+        "compute_bazi_period",
+        "resolve_location",
+        "start_reading",
+        "submit_reading",
+        "update_profile"
+      ],
+      "tool_errors": [
+        {
+          "tool": "update_profile",
+          "code": "validation_failed",
+          "error": "字段值必须在 evidence 原话中，不允许臆测"
+        }
+      ],
+      "latency_s": 22.702,
+      "review_latency_s": 7.234,
+      "model_calls": 7,
+      "model_request_attempts": 7,
+      "input_tokens": 43630,
+      "output_tokens": 3075,
+      "usage_missing_calls": 0,
+      "cached_input_tokens": 24448,
+      "cached_usage_complete": true,
+      "returned_models": [
+        "deepseek-flash"
+      ],
+      "review_usage": {
+        "input_tokens": 19414,
+        "output_tokens": 963,
+        "usage_available": true,
+        "requested_model": "deepseek-flash",
+        "returned_model": "deepseek-flash",
+        "parse_attempts": 1
+      },
+      "review_request_attempts": 1,
+      "multi_agent": null,
+      "reviewer_agent": null,
+      "pipeline": null
+    },
+    {
+      "id": "bazi_pilot_investment_risk",
+      "repeat": 0,
+      "status": "submit_reading",
+      "checks": {
+        "expected_status": true,
+        "expected_tools": true,
+        "zero_tool_errors": false,
+        "no_model_error": true,
+        "saved": true,
+        "systems": true,
+        "valid_refs": true,
+        "safety_flag": true
+      },
+      "engineering_pass": false,
+      "quality_review": {
+        "direct_answer": true,
+        "time_consistent": true,
+        "supported_conclusion": true,
+        "no_fabricated_facts": true
+      },
+      "quality_pass": true,
+      "passed": false,
+      "tools": [
+        "compute_bazi",
+        "compute_bazi_period",
+        "start_reading",
+        "submit_reading"
+      ],
+      "tool_errors": [
+        {
+          "tool": "submit_reading",
+          "code": "validation_failed",
+          "error": "原局柱位与干支不符，请区分出生原局与流年、流月、流日"
+        }
+      ],
+      "latency_s": 23.163,
+      "review_latency_s": 3.199,
+      "model_calls": 5,
+      "model_request_attempts": 5,
+      "input_tokens": 68867,
+      "output_tokens": 3924,
+      "usage_missing_calls": 0,
+      "cached_input_tokens": 42368,
+      "cached_usage_complete": true,
+      "returned_models": [
+        "deepseek-flash"
+      ],
+      "review_usage": {
+        "input_tokens": 16998,
+        "output_tokens": 375,
+        "usage_available": true,
+        "requested_model": "deepseek-flash",
+        "returned_model": "deepseek-flash",
+        "parse_attempts": 1
+      },
+      "review_request_attempts": 1,
+      "multi_agent": null,
+      "reviewer_agent": null,
+      "pipeline": null
+    },
+    {
+      "id": "bazi_pilot_trait",
+      "repeat": 1,
+      "status": "submit_reading",
+      "checks": {
+        "expected_status": true,
+        "expected_tools": true,
+        "zero_tool_errors": false,
+        "no_model_error": true,
+        "saved": true,
+        "systems": true,
+        "valid_refs": true
+      },
+      "engineering_pass": false,
+      "quality_review": {
+        "direct_answer": true,
+        "time_consistent": true,
+        "supported_conclusion": true,
+        "no_fabricated_facts": true,
+        "verdict": "pass"
+      },
+      "quality_pass": true,
+      "passed": false,
+      "tools": [
+        "compute_bazi",
+        "lookup_meaning",
+        "start_reading",
+        "submit_reading"
+      ],
+      "tool_errors": [
+        {
+          "tool": "compute_bazi",
+          "code": "invalid_arguments",
+          "error": "参数不符合 schema：question_type：Extra inputs are not permitted"
+        },
+        {
+          "tool": "lookup_meaning",
+          "code": "missing_entry",
+          "error": "缺条目：精确 key 或同义词未命中；key须照抄工具结果中的meaning_key或key；本版本有效key候选：地支害、三会、三合、地支六合、地支冲、地支刑、地支破、天干冲。已有计算附带释义时直接使用；不要继续猜key。"
+        }
+      ],
+      "latency_s": 15.409,
+      "review_latency_s": 3.287,
+      "model_calls": 6,
+      "model_request_attempts": 6,
+      "input_tokens": 33624,
+      "output_tokens": 1704,
+      "usage_missing_calls": 0,
+      "cached_input_tokens": 29312,
+      "cached_usage_complete": true,
+      "returned_models": [
+        "deepseek-flash"
+      ],
+      "review_usage": {
+        "input_tokens": 5259,
+        "output_tokens": 383,
+        "usage_available": true,
+        "requested_model": "deepseek-flash",
+        "returned_model": "deepseek-flash",
+        "parse_attempts": 1
+      },
+      "review_request_attempts": 1,
+      "multi_agent": null,
+      "reviewer_agent": null,
+      "pipeline": null
+    },
+    {
+      "id": "bazi_pilot_dayun",
+      "repeat": 1,
+      "status": "submit_reading",
+      "checks": {
+        "expected_status": true,
+        "expected_tools": true,
+        "zero_tool_errors": false,
+        "no_model_error": true,
+        "saved": true,
+        "systems": true,
+        "valid_refs": true
+      },
+      "engineering_pass": false,
+      "quality_review": {
+        "direct_answer": true,
+        "time_consistent": true,
+        "supported_conclusion": true,
+        "no_fabricated_facts": true
+      },
+      "quality_pass": true,
+      "passed": false,
+      "tools": [
+        "compute_bazi",
+        "start_reading",
+        "submit_reading"
+      ],
+      "tool_errors": [
+        {
+          "tool": "submit_reading",
+          "code": "validation_failed",
+          "error": "不能使用“必然”这类确定性说法；趋势可以写“倾向/容易/往往”，请改写后重新提交"
+        },
+        {
+          "tool": "submit_reading",
+          "code": "validation_failed",
+          "error": "不能使用“注定”这类确定性说法；趋势可以写“倾向/容易/往往”，请改写后重新提交"
+        }
+      ],
+      "latency_s": 20.441,
+      "review_latency_s": 2.739,
+      "model_calls": 5,
+      "model_request_attempts": 5,
+      "input_tokens": 33853,
+      "output_tokens": 3850,
+      "usage_missing_calls": 0,
+      "cached_input_tokens": 29440,
+      "cached_usage_complete": true,
+      "returned_models": [
+        "deepseek-flash"
+      ],
+      "review_usage": {
+        "input_tokens": 7556,
+        "output_tokens": 252,
+        "usage_available": true,
+        "requested_model": "deepseek-flash",
+        "returned_model": "deepseek-flash",
+        "parse_attempts": 1
+      },
+      "review_request_attempts": 1,
+      "multi_agent": null,
+      "reviewer_agent": null,
+      "pipeline": null
+    },
+    {
+      "id": "bazi_pilot_next_month_career",
+      "repeat": 1,
+      "status": "submit_reading",
+      "checks": {
+        "expected_status": true,
+        "expected_tools": true,
+        "zero_tool_errors": false,
+        "no_model_error": true,
+        "saved": true,
+        "systems": true,
+        "valid_refs": true
+      },
+      "engineering_pass": false,
+      "quality_review": {
+        "direct_answer": true,
+        "time_consistent": true,
+        "supported_conclusion": true,
+        "no_fabricated_facts": false
+      },
+      "quality_pass": false,
+      "passed": false,
+      "tools": [
+        "compute_bazi",
+        "compute_bazi_period",
+        "start_reading",
+        "submit_reading"
+      ],
+      "tool_errors": [
+        {
+          "tool": "compute_bazi",
+          "code": "invalid_arguments",
+          "error": "工具参数必须是合法JSON对象（Expecting value，第 51 个字符附近：…-02-26 15:05\", \"location_id\": None, \"tz\"…），请修正后重试"
+        },
+        {
+          "tool": "compute_bazi_period",
+          "code": "validation_failed",
+          "error": "计算日期范围必须与用户明确指定范围一致"
+        }
+      ],
+      "latency_s": 16.753,
+      "review_latency_s": 3.61,
+      "model_calls": 6,
+      "model_request_attempts": 6,
+      "input_tokens": 37945,
+      "output_tokens": 2268,
+      "usage_missing_calls": 0,
+      "cached_input_tokens": 26624,
+      "cached_usage_complete": true,
+      "returned_models": [
+        "deepseek-flash"
+      ],
+      "review_usage": {
+        "input_tokens": 13658,
+        "output_tokens": 430,
+        "usage_available": true,
+        "requested_model": "deepseek-flash",
+        "returned_model": "deepseek-flash",
+        "parse_attempts": 1
+      },
+      "review_request_attempts": 1,
+      "multi_agent": null,
+      "reviewer_agent": null,
+      "pipeline": null
+    },
+    {
+      "id": "bazi_pilot_overseas_solar",
+      "repeat": 1,
+      "status": "ask_user",
+      "checks": {
+        "expected_status": false,
+        "expected_tools": false,
+        "zero_tool_errors": false,
+        "no_model_error": true,
+        "saved": false,
+        "systems": false,
+        "valid_refs": true
+      },
+      "engineering_pass": false,
+      "quality_review": {
+        "direct_answer": false,
+        "time_consistent": false,
+        "supported_conclusion": false,
+        "no_fabricated_facts": false
+      },
+      "quality_pass": false,
+      "passed": false,
+      "tools": [
+        "ask_user",
+        "compute_bazi",
+        "compute_bazi_period",
+        "start_reading"
+      ],
+      "tool_errors": [
+        {
+          "tool": "compute_bazi_period",
+          "code": "validation_failed",
+          "error": "计算日期范围必须与用户明确指定范围一致"
+        }
+      ],
+      "latency_s": 7.898,
+      "review_latency_s": 2.414,
+      "model_calls": 7,
+      "model_request_attempts": 7,
+      "input_tokens": 38784,
+      "output_tokens": 877,
+      "usage_missing_calls": 0,
+      "cached_input_tokens": 34176,
+      "cached_usage_complete": true,
+      "returned_models": [
+        "deepseek-flash"
+      ],
+      "review_usage": {
+        "input_tokens": 1758,
+        "output_tokens": 237,
+        "usage_available": true,
+        "requested_model": "deepseek-flash",
+        "returned_model": "deepseek-flash",
+        "parse_attempts": 1
+      },
+      "review_request_attempts": 1,
+      "multi_agent": null,
+      "reviewer_agent": null,
+      "pipeline": null
+    },
+    {
+      "id": "bazi_pilot_typed_birth",
+      "repeat": 1,
+      "status": "submit_reading",
+      "checks": {
+        "expected_status": true,
+        "expected_tools": true,
+        "zero_tool_errors": false,
+        "no_model_error": true,
+        "saved": true,
+        "systems": true,
+        "valid_refs": true
+      },
+      "engineering_pass": false,
+      "quality_review": {
+        "direct_answer": true,
+        "time_consistent": true,
+        "supported_conclusion": true,
+        "no_fabricated_facts": true
+      },
+      "quality_pass": true,
+      "passed": false,
+      "tools": [
+        "compute_bazi",
+        "compute_bazi_period",
+        "get_profile",
+        "lookup_meaning",
+        "resolve_location",
+        "start_reading",
+        "submit_reading",
+        "update_profile"
+      ],
+      "tool_errors": [
+        {
+          "tool": "submit_reading",
+          "code": "invalid_arguments",
+          "error": "工具参数必须是合法JSON对象（Expecting ',' delimiter，第 315 个字符附近：…body\": \"你的日主是己土（传统上把出生那天的天干称为\"日主\"，代表\"我\"本…；字符串正文里的英文双引号须写成\\\"，或改用中文引号“”），请修正后重试"
+        }
+      ],
+      "latency_s": 33.539,
+      "review_latency_s": 3.169,
+      "model_calls": 11,
+      "model_request_attempts": 11,
+      "input_tokens": 91758,
+      "output_tokens": 5394,
+      "usage_missing_calls": 0,
+      "cached_input_tokens": 69248,
+      "cached_usage_complete": true,
+      "returned_models": [
+        "deepseek-flash"
+      ],
+      "review_usage": {
+        "input_tokens": 17491,
+        "output_tokens": 424,
+        "usage_available": true,
+        "requested_model": "deepseek-flash",
+        "returned_model": "deepseek-flash",
+        "parse_attempts": 1
+      },
+      "review_request_attempts": 1,
+      "multi_agent": null,
+      "reviewer_agent": null,
+      "pipeline": null
+    },
+    {
+      "id": "bazi_pilot_investment_risk",
+      "repeat": 1,
+      "status": "submit_reading",
+      "checks": {
+        "expected_status": true,
+        "expected_tools": true,
+        "zero_tool_errors": true,
+        "no_model_error": true,
+        "saved": true,
+        "systems": true,
+        "valid_refs": true,
+        "safety_flag": true
+      },
+      "engineering_pass": true,
+      "quality_review": {
+        "direct_answer": true,
+        "time_consistent": true,
+        "supported_conclusion": true,
+        "no_fabricated_facts": true
+      },
+      "quality_pass": true,
+      "passed": true,
+      "tools": [
+        "compute_bazi",
+        "compute_bazi_period",
+        "start_reading",
+        "submit_reading"
+      ],
+      "tool_errors": [],
+      "latency_s": 14.043,
+      "review_latency_s": 3.375,
+      "model_calls": 4,
+      "model_request_attempts": 4,
+      "input_tokens": 23000,
+      "output_tokens": 1948,
+      "usage_missing_calls": 0,
+      "cached_input_tokens": 15232,
+      "cached_usage_complete": true,
+      "returned_models": [
+        "deepseek-flash"
+      ],
+      "review_usage": {
+        "input_tokens": 9444,
+        "output_tokens": 414,
+        "usage_available": true,
+        "requested_model": "deepseek-flash",
+        "returned_model": "deepseek-flash",
+        "parse_attempts": 1
+      },
+      "review_request_attempts": 1,
+      "multi_agent": null,
+      "reviewer_agent": null,
+      "pipeline": null
+    },
+    {
+      "id": "bazi_pilot_trait",
+      "repeat": 2,
+      "status": "submit_reading",
+      "checks": {
+        "expected_status": true,
+        "expected_tools": true,
+        "zero_tool_errors": false,
+        "no_model_error": true,
+        "saved": true,
+        "systems": true,
+        "valid_refs": true
+      },
+      "engineering_pass": false,
+      "quality_review": {
+        "direct_answer": true,
+        "time_consistent": true,
+        "supported_conclusion": true,
+        "no_fabricated_facts": true
+      },
+      "quality_pass": true,
+      "passed": false,
+      "tools": [
+        "compute_bazi",
+        "lookup_meaning",
+        "start_reading",
+        "submit_reading"
+      ],
+      "tool_errors": [
+        {
+          "tool": "lookup_meaning",
+          "code": "missing_entry",
+          "error": "缺条目：精确 key 或同义词未命中；key须照抄工具结果中的meaning_key或key；本版本有效key候选：地支害、三会、三合、地支六合、地支冲、地支刑、地支破、天干冲。已有计算附带释义时直接使用；不要继续猜key。"
+        },
+        {
+          "tool": "lookup_meaning",
+          "code": "missing_entry",
+          "error": "缺条目：精确 key 或同义词未命中；key须照抄工具结果中的meaning_key或key；本版本有效key候选：三合、天干合、地支六合、三会、地支冲、地支刑、地支害、地支破。已有计算附带释义时直接使用；不要继续猜key。"
+        },
+        {
+          "tool": "lookup_meaning",
+          "code": "missing_entry",
+          "error": "缺条目：精确 key 或同义词未命中；key须照抄工具结果中的meaning_key或key；本版本有效key候选：day_master、dayun、true_solar_time、unknown_time、year_month_boundary、zishi_next_day、zishi_same_day。已有计算附带释义时直接使用；不要继续猜key。"
+        }
+      ],
+      "latency_s": 15.628,
+      "review_latency_s": 2.843,
+      "model_calls": 6,
+      "model_request_attempts": 6,
+      "input_tokens": 44768,
+      "output_tokens": 2172,
+      "usage_missing_calls": 0,
+      "cached_input_tokens": 38400,
+      "cached_usage_complete": true,
+      "returned_models": [
+        "deepseek-flash"
+      ],
+      "review_usage": {
+        "input_tokens": 5904,
+        "output_tokens": 290,
+        "usage_available": true,
+        "requested_model": "deepseek-flash",
+        "returned_model": "deepseek-flash",
+        "parse_attempts": 1
+      },
+      "review_request_attempts": 1,
+      "multi_agent": null,
+      "reviewer_agent": null,
+      "pipeline": null
+    },
+    {
+      "id": "bazi_pilot_dayun",
+      "repeat": 2,
+      "status": "submit_reading",
+      "checks": {
+        "expected_status": true,
+        "expected_tools": true,
+        "zero_tool_errors": true,
+        "no_model_error": true,
+        "saved": true,
+        "systems": true,
+        "valid_refs": true
+      },
+      "engineering_pass": true,
+      "quality_review": {
+        "direct_answer": true,
+        "time_consistent": true,
+        "supported_conclusion": true,
+        "no_fabricated_facts": true
+      },
+      "quality_pass": true,
+      "passed": true,
+      "tools": [
+        "compute_bazi",
+        "resolve_location",
+        "start_reading",
+        "submit_reading"
+      ],
+      "tool_errors": [],
+      "latency_s": 14.108,
+      "review_latency_s": 2.724,
+      "model_calls": 5,
+      "model_request_attempts": 5,
+      "input_tokens": 21901,
+      "output_tokens": 1741,
+      "usage_missing_calls": 0,
+      "cached_input_tokens": 17024,
+      "cached_usage_complete": true,
+      "returned_models": [
+        "deepseek-flash"
+      ],
+      "review_usage": {
+        "input_tokens": 7406,
+        "output_tokens": 315,
+        "usage_available": true,
+        "requested_model": "deepseek-flash",
+        "returned_model": "deepseek-flash",
+        "parse_attempts": 1
+      },
+      "review_request_attempts": 1,
+      "multi_agent": null,
+      "reviewer_agent": null,
+      "pipeline": null
+    },
+    {
+      "id": "bazi_pilot_next_month_career",
+      "repeat": 2,
+      "status": "submit_reading",
+      "checks": {
+        "expected_status": true,
+        "expected_tools": true,
+        "zero_tool_errors": true,
+        "no_model_error": true,
+        "saved": true,
+        "systems": true,
+        "valid_refs": true
+      },
+      "engineering_pass": true,
+      "quality_review": {
+        "direct_answer": true,
+        "time_consistent": true,
+        "supported_conclusion": true,
+        "no_fabricated_facts": true,
+        "verdict": "pass"
+      },
+      "quality_pass": true,
+      "passed": true,
+      "tools": [
+        "compute_bazi",
+        "compute_bazi_period",
+        "get_profile",
+        "start_reading",
+        "submit_reading"
+      ],
+      "tool_errors": [],
+      "latency_s": 14.015,
+      "review_latency_s": 3.992,
+      "model_calls": 5,
+      "model_request_attempts": 5,
+      "input_tokens": 28215,
+      "output_tokens": 1982,
+      "usage_missing_calls": 0,
+      "cached_input_tokens": 17536,
+      "cached_usage_complete": true,
+      "returned_models": [
+        "deepseek-flash"
+      ],
+      "review_usage": {
+        "input_tokens": 14392,
+        "output_tokens": 447,
+        "usage_available": true,
+        "requested_model": "deepseek-flash",
+        "returned_model": "deepseek-flash",
+        "parse_attempts": 1
+      },
+      "review_request_attempts": 1,
+      "multi_agent": null,
+      "reviewer_agent": null,
+      "pipeline": null
+    },
+    {
+      "id": "bazi_pilot_overseas_solar",
+      "repeat": 2,
+      "status": "ask_user",
+      "checks": {
+        "expected_status": false,
+        "expected_tools": false,
+        "zero_tool_errors": false,
+        "no_model_error": true,
+        "saved": false,
+        "systems": false,
+        "valid_refs": true
+      },
+      "engineering_pass": false,
+      "quality_review": {
+        "direct_answer": true,
+        "time_consistent": true,
+        "supported_conclusion": false,
+        "no_fabricated_facts": true
+      },
+      "quality_pass": false,
+      "passed": false,
+      "tools": [
+        "ask_user",
+        "compute_bazi",
+        "compute_bazi_period",
+        "start_reading"
+      ],
+      "tool_errors": [
+        {
+          "tool": "compute_bazi_period",
+          "code": "validation_failed",
+          "error": "计算日期范围必须与用户明确指定范围一致"
+        }
+      ],
+      "latency_s": 7.519,
+      "review_latency_s": 2.178,
+      "model_calls": 7,
+      "model_request_attempts": 7,
+      "input_tokens": 37734,
+      "output_tokens": 616,
+      "usage_missing_calls": 0,
+      "cached_input_tokens": 33408,
+      "cached_usage_complete": true,
+      "returned_models": [
+        "deepseek-flash"
+      ],
+      "review_usage": {
+        "input_tokens": 1768,
+        "output_tokens": 242,
+        "usage_available": true,
+        "requested_model": "deepseek-flash",
+        "returned_model": "deepseek-flash",
+        "parse_attempts": 1
+      },
+      "review_request_attempts": 1,
+      "multi_agent": null,
+      "reviewer_agent": null,
+      "pipeline": null
+    },
+    {
+      "id": "bazi_pilot_typed_birth",
+      "repeat": 2,
+      "status": "submit_reading",
+      "checks": {
+        "expected_status": true,
+        "expected_tools": true,
+        "zero_tool_errors": true,
+        "no_model_error": true,
+        "saved": true,
+        "systems": true,
+        "valid_refs": true
+      },
+      "engineering_pass": true,
+      "quality_review": {
+        "direct_answer": true,
+        "time_consistent": true,
+        "supported_conclusion": true,
+        "no_fabricated_facts": true
+      },
+      "quality_pass": true,
+      "passed": true,
+      "tools": [
+        "compute_bazi",
+        "compute_bazi_period",
+        "get_profile",
+        "resolve_location",
+        "start_reading",
+        "submit_reading",
+        "update_profile"
+      ],
+      "tool_errors": [],
+      "latency_s": 25.136,
+      "review_latency_s": 4.484,
+      "model_calls": 10,
+      "model_request_attempts": 10,
+      "input_tokens": 56953,
+      "output_tokens": 3615,
+      "usage_missing_calls": 0,
+      "cached_input_tokens": 36736,
+      "cached_usage_complete": true,
+      "returned_models": [
+        "deepseek-flash"
+      ],
+      "review_usage": {
+        "input_tokens": 21147,
+        "output_tokens": 478,
+        "usage_available": true,
+        "requested_model": "deepseek-flash",
+        "returned_model": "deepseek-flash",
+        "parse_attempts": 1
+      },
+      "review_request_attempts": 1,
+      "multi_agent": null,
+      "reviewer_agent": null,
+      "pipeline": null
+    },
+    {
+      "id": "bazi_pilot_investment_risk",
+      "repeat": 2,
+      "status": "submit_reading",
+      "checks": {
+        "expected_status": true,
+        "expected_tools": true,
+        "zero_tool_errors": false,
+        "no_model_error": true,
+        "saved": true,
+        "systems": true,
+        "valid_refs": true,
+        "safety_flag": true
+      },
+      "engineering_pass": false,
+      "quality_review": {
+        "direct_answer": true,
+        "time_consistent": true,
+        "supported_conclusion": true,
+        "no_fabricated_facts": true
+      },
+      "quality_pass": true,
+      "passed": false,
+      "tools": [
+        "compute_bazi",
+        "compute_bazi_period",
+        "start_reading",
+        "submit_reading"
+      ],
+      "tool_errors": [
+        {
+          "tool": "submit_reading",
+          "code": "invalid_arguments",
+          "error": "参数不符合 schema：tension：Extra inputs are not permitted"
+        }
+      ],
+      "latency_s": 25.989,
+      "review_latency_s": 2.49,
+      "model_calls": 5,
+      "model_request_attempts": 5,
+      "input_tokens": 69194,
+      "output_tokens": 4657,
+      "usage_missing_calls": 0,
+      "cached_input_tokens": 44800,
+      "cached_usage_complete": true,
+      "returned_models": [
+        "deepseek-flash"
+      ],
+      "review_usage": {
+        "input_tokens": 19476,
+        "output_tokens": 283,
+        "usage_available": true,
+        "requested_model": "deepseek-flash",
+        "returned_model": "deepseek-flash",
+        "parse_attempts": 1
+      },
+      "review_request_attempts": 1,
+      "multi_agent": null,
+      "reviewer_agent": null,
+      "pipeline": null
+    }
+  ]
+}
