@@ -313,6 +313,25 @@ STAGE_TIME_BEFORE = re.compile(
     r"(?:\d{1,2}月(?:\d{1,2}日)?)?(?:时|期间|的)?"
     r"(?:进入|开始|走进|走到|处于|处在|走|行)?\s*$"
 )
+# Owner, 2026-11-17 (r20 review): a cycle named in a clause is read as a stage of the sequence.
+# Bazi pilot r20, career #3: “首步大运己丑（1998年交运，2008年换下一步）已走到后半段” in 2026 (丁亥).
+CYCLE_NAMED = re.compile(
+    rf"(?:第(?P<n>[一二三四五六七八九十\d]+)步大运|(?P<first>首步大运|第一步大运|首运))(?P<gz>{JIAZI})?"
+    rf"|(?P<gz2>{JIAZI})(?:大运|运)(?![势气程道])|大运(?P<gz3>{JIAZI})"
+)
+PRESENT_ROLE = re.compile(
+    r"(?:现在|目前|眼下|如今|当下)(?!之前|以前|回看|回头)|正(?:在)?(?:走|处|行|位于)|"
+    r"(?:已经?|正)走到|走到了?(?:这一?步的?|这十年的?)?(?:前半段|后半段|中段|第[一二三四五六七八九十\d]+年)"
+)
+OTHER_TIME_IN_CLAUSE = re.compile(
+    r"已经?过去|早已|早就|走完|结束|当年|那时|当时|早年|小时候|曾经?|回看|回顾|之前|以前|之后|以后|"
+    r"将来|未来|往后|再往后|下一步|上一步|前一步|后一步|还没到|未到|尚未|起运时|交运时|那十年"
+)
+# Bazi pilot r20, luck cycles #3: “再往后到第4步大运己未（2023年交运，2033年换下一步）就是第5步大运”.
+EQUATED_STEP = re.compile(
+    rf"第(?P<a>[一二三四五六七八九十\d]+)步大运(?:{JIAZI})?(?:（[^）]*）)?\s*"
+    r"(?:就|也就|便|即|正|则)?(?:是|为|即|算)\s*第(?P<b>[一二三四五六七八九十\d]+)步"
+)
 ANY_DAYUN = re.compile(rf"(?P<gz>{JIAZI})大运|大运(?:是|为|：|:)?\s*(?P<after>{JIAZI})")
 HANDOVER = re.compile(r"(?P<year>\d{4})年(?:前后|左右)?(?:交运|换运|换大运|交大运|进入下一步大运)")
 START_DATE = re.compile(r"(?P<y>\d{4})年(?P<m>\d{1,2})月(?P<d>\d{1,2})日(?:前后)?起运")
@@ -566,6 +585,10 @@ TRADE_PROBLEM = (
     "八字不能推出仓位、买卖时点或投入节奏：不要按流年、流月或某段时间推荐"
     "加仓、减仓、试探投入、调整操作；可提醒核实财务状况和风险承受能力，或只作克制冲动的提醒"
 )
+ENTRY_PROBLEM = (
+    "投资问题里有日期的一层和摘要不能建议投入任何数额：少量、小额、一部分、试水、验证、分批、分散、"
+    "参与、“再谈投入”都算；只写核实财务、做预算、留应急金、学习、暂缓或不投入这类做法"
+)
 ASK_GENDER = "排大运需要知道性别（大运顺排还是逆排由性别和年干决定）：请告诉我是男还是女。"
 ASK_FORM_GENDER = "排大运需要性别：请在出生信息表中选择性别，填好后发送“继续”。"
 ASK_PHYSICAL = (
@@ -585,7 +608,18 @@ MAX_PERIODS = 48
 BODY_LIMIT = 1200  # common.schemas.Reading: a section body
 TITLE_LIMIT = compose.LIMITS["title"]  # common.schemas.Reading: a section title
 SECTION_LIMIT = compose.LIMITS["sections"]
-SECTION_ORDER = ("日主", "四柱", "大运", "流年", "流月", "流日", "流期与原局", "约定")
+SECTION_ORDER = (
+    "日主",
+    "四柱",
+    "大运",
+    "首步大运",
+    "当前大运",
+    "流年",
+    "流月",
+    "流日",
+    "流期与原局",
+    "约定",
+)
 
 
 def number(text: str) -> int:
@@ -810,6 +844,113 @@ def batch_recommended(clause: str) -> bool:
             if not (TURNED_BACK.search(ahead) or re.search(r"(?:不是|并非|并不是)$", ahead)):
                 continue
         return True
+    return False
+
+
+# Owner, 2026-11-17 (r20 review): in an investment reading's dated layers and summary, offering
+# money of any amount or pace to the market is refused unless something denies it; only checking,
+# budgeting, an emergency fund, learning, waiting or not investing pass. r12–r20 refused eight
+# wordings one by one (分批, 以分批为主, 小范围验证, 小步验证, 分散, 小比例验证, 支持分批, and r20
+# investment #2's “只用亏得起的小部分去验证判断”); the default turns, so a ninth needs no new rule.
+# r20 investment #2's “先补齐应急金……再谈是否小额参与” (owner: a known escape) defers an entry.
+ENTRY = re.compile(
+    r"(?P<amount>(?:一)?(?:小比例|(?<![大这那此该])部分|少部分|小部分|一小部分|很少一部分|少量|小额|"
+    r"一点|小仓位|轻仓|小钱)(?:的)?(?:资金|钱|积蓄|存款|仓位)?)"
+    r"[^，,。；;！？!?\n]{0,10}?(?:去|来)?"
+    r"(?:验证|试水|试探|尝试|试|参与|投入|投|买入|买|入场|进场|配置|操作|上车)"
+    rf"|{BATCH}"
+    r"|(?:参与(?!讨论|沟通|决策|学习|培训|课程|规划|进来|变多|度|感|的人|者|其中)|入场|进场|建仓|加仓|"
+    r"加码|补仓|抄底|上车|买入)"
+    r"|(?P<later>(?:再|才|然后|之后|以后|接着)(?:谈|考虑|决定|看|说|评估)(?:是否|要不要|能否|该不该)?"
+    r"[^，,。；;！？!?\n]{0,6}?(?:投入|参与|入场|进场|买入|买|投资|操作|出手))"
+)
+ENTRY_DENIAL = re.compile(
+    r"不要|不想|别|不宜|不适合|不太适合|不建议|避免|不该|不应该?|不必|不用|无需|不能|勿|暂缓|暂不|暂时不|"
+    r"先不|不急于|不急着|不着急|不是|并非|而非|而不是|不再|没必要|不去|不可|切忌|忌|不轻易|不贸然|与其|"
+    r"克制|远离|停止|放弃|搁置|推迟|延后"
+)
+# A denial taken back after it (“不是不能分批”“不要只分批而要全投”) does not govern the entry.
+ENTRY_TAKEN_BACK = re.compile(r"而是|而要|反而|只是|但|却|不过|可是|然而")
+# What describes the reader, a temptation or someone else's claim, not advice (“如果你正想分批买入”
+# “容易被人拉着一同加码”“别人说小额试水没关系”).
+ENTRY_DESCRIBED = re.compile(
+    r"(?:如果|若|假如|要是|即使|即便|就算|万一|一旦)(?:你|您)?[^，,。；;！？!?]{0,8}?"
+    r"(?:想|打算|考虑|准备|计划|正在|正|在|已经|已|被|要)|"
+    r"容易|可能会|会被|被人|被[^，,。；;]{0,8}?(?:拉着|推着|带着)|(?:冲动|情绪|跟风)(?:之下|推着|驱使|带着)|"
+    r"一冲动|误以为|以为|(?:别人|朋友|他人|有人|身边的人)(?:说|劝|推荐|都在)"
+)
+# An impulse described (“手一快就加仓”“听朋友一句推荐就加仓”“想加仓、想抄底”“冲动加仓”).
+ENTRY_IMPULSE = re.compile(
+    r"(?:一|听|看到|看见|见)[^，,。；;！？!?]{0,10}?就(?:想|会|去|要)?$|"
+    r"(?:想|想要|就想|急着想|会想|冲动|盲目|跟风|追高|情绪)(?:地)?$"
+)
+ENTRY_NOUN_AFTER = re.compile(
+    r"[”’」\"']*(?:的[^，,。；;！？!?\n]{0,4}?)?(?:念头|冲动|诱惑|想法|打算|欲望|说法|话术|劝说|宣传|感觉|心态)"
+)
+# Held back after it (“把重大加仓动作往后放一放”“任何加码决定都推迟几天”).
+ENTRY_HELD_AFTER = re.compile(
+    r"[^，,。；;！？!?\n]{0,6}?(?:往后放|放一放|缓一缓|搁一搁|推迟|延后|暂缓|放下|搁置|先停)"
+)
+# What carries a description into the next clause (“容易表现成……，或者把钱分散到……”).
+ENTRY_LIST_ON = re.compile(r"\s*(?:或者|或是|或|以及|甚至|还有|又)")
+ENTRY_VERDICT_AFTER = re.compile(
+    r"[^，,。；;！？!?\n]{0,8}?(?:也|都|并|同样|仍然|仍)?(?:不合适|不适合|不可取|不明智|不稳妥|不划算|"
+    r"不现实|风险(?:很|较|太)?大|(?:要|需|需要|得)?(?:谨慎|慎重)|并不安全)"
+)
+ENTRY_PREFERRED_AFTER = re.compile(
+    r"[^，,。；;！？!?\n]{0,16}?(?:更重要|更稳|更要紧|更关键|更实在|更合适|更值得)"
+)
+ENTRY_QUESTION = re.compile(r"(?:是否|要不要|该不该|能否|可否|能不能)$")
+
+
+def entry_offered(sentence: str) -> bool:
+    """Whether a sentence of an investment reading's dated layer or summary offers money to the
+    market (owner, 2026-11-17): any amount or pace counts unless a denial governs it."""
+    described = False
+    for clause in CLAUSE_OR_TURN.split(sentence):
+        carried = described and bool(ENTRY_LIST_ON.match(clause))
+        described = carried or bool(ENTRY_DESCRIBED.search(clause) or ENTRY_IMPULSE.search(clause))
+        if re.search(r"表现(?:为|成|就是|在)|典型", clause):
+            described = True  # 最典型的表现就是：听朋友一句推荐就加仓
+        for match in ENTRY.finditer(clause):
+            lead, after = clause[: match.start()], clause[match.end() :]
+            if not match["later"] and ENTRY_QUESTION.search(lead):
+                continue  # 要不要分批，取决于你的承受能力
+            if carried or ENTRY_DESCRIBED.search(lead) or ENTRY_IMPULSE.search(lead):
+                continue
+            if ENTRY_NOUN_AFTER.match(after) or ENTRY_HELD_AFTER.match(after):
+                continue
+            if lead.count("“") > lead.count("”") and ENTRY_NOUN_AFTER.match(
+                after[after.find("”") :] if "”" in after else ""
+            ):
+                continue  # 那种“再不上车就晚了”的感觉
+            if COMPARED_BEFORE.search(lead) and ENTRY_PREFERRED_AFTER.match(after):
+                continue  # 比小额试水更重要的是……
+            if ENTRY_VERDICT_AFTER.match(after) and not (
+                TURNED_BACK.search(lead) or WEAKENED.search(lead) or DOUBLE_DENIAL.search(lead)
+            ):
+                continue  # 小额参与也不合适
+            plain = re.search(r"(?:不|没有?|未)(?:会|再|去|想|能|要)?$", lead)
+            if plain:
+                ahead = lead[: plain.start()]
+                if re.search(r"(?:不是|并非|并不是)$", ahead) or TURNED_BACK.search(ahead):
+                    return True  # 不能说不参与, 不是说你不能参与
+                if not WEAKENED.search(ahead):
+                    continue  # 它不参与任何行情
+            denials = list(ENTRY_DENIAL.finditer(lead))
+            if denials:
+                last = denials[-1]
+                ahead, between = lead[: last.start()], lead[last.end() :]
+                turned = (
+                    ENTRY_TAKEN_BACK.search(between)
+                    or DOUBLE_DENIAL.search(lead[last.start() :] + match[0])
+                    or TURNED_BACK.search(ahead)
+                    or WEAKENED.search(ahead)
+                    or re.search(r"(?:不是|并非|并不是)$", ahead)
+                )
+                if not turned:
+                    continue
+            return True
     return False
 
 
@@ -1846,17 +1987,26 @@ class Bazi(System):
                 + f"，首步大运{first['ganzhi']}"
                 f"（{first['start_year']}年交运，{first['start_year'] + 10}年换下一步）",
             )
+            # Bazi pilot r20, career #3: “{{R3}}已走到后半段”, R3 the start and the first cycle, the
+            # only luck-cycle fact then. A stage fact is labelled with its role in the sheet.
             for index, stage in enumerate(dayun["sequence"]):
                 gz = stage["ganzhi"]
                 year = stage["start_year"]
+                label = (
+                    "当前大运"
+                    if stage in dayun.get("current_candidates", [])
+                    else "首步大运"
+                    if index == 0
+                    else "大运"
+                )
                 out[f"dayun_stage:{index + 1}:{gz}:{year}至{year + 10}交运年份标记"] = (
-                    "大运",
+                    label,
                     f"第{index + 1}步大运{gz}（{year}年交运，{year + 10}年换下一步）",
                 )
                 god = ten_god(master[0], gz[0]) if master else None
                 if god:
                     out[f"dayun_stem:{index + 1}:{gz}:{god}"] = (
-                        "大运",
+                        label,
                         f"第{index + 1}步大运{gz}天干{gz[0]}为{god}",
                     )
         if natal.get("alternatives"):
@@ -2053,6 +2203,13 @@ class Bazi(System):
         if (natal.get("input") or {}).get("true_solar_time"):
             lines.append("日柱和时柱按出生地真太阳时排。")
         lines.append("喜用神程序不计算；要谈喜用倾向，只能据月令和五行计数推断，并写明依据。")
+        if INVESTMENT.search(state.get("question") or "") and period:
+            # Owner, 2026-11-17 (r20 review): the dated layers and the summary offer no entry.
+            lines.append(
+                "投资问题：摘要和写了时间的每一层都不建议投入任何数额，少量、小额、一部分、试水、"
+                "验证判断、分批、分散、参与、“再谈投入”都不写；只写核实财务、做预算、留应急金、"
+                "学习、暂缓或不投入。"
+            )
         return lines
 
     def messages(self, run, facts, session, *, prior=None, extra=""):
@@ -2524,6 +2681,58 @@ class Bazi(System):
             expected = ages if "交运" in match[0] else {dayun["sequence"][0]["start_age"]}
             if int(match["age"]) not in expected:
                 found.append(f"“{match[0]}”与排出的交运岁数不符")
+        found += Bazi.cycle_role_problems(text, dayun)
+        return found
+
+    @staticmethod
+    def cycle_role_problems(text: str, dayun: dict) -> list[str]:
+        """Each luck cycle a clause names is read as a stage of the computed sequence; the
+        clause's “现在 / 已走到 / 后半段” must then be the current stage's, and a step equated
+        with another number (“第4步大运己未……就是第5步大运”) must be that number (owner,
+        2026-11-17, r20 review: checked against the stages, not wording by wording)."""
+        sequence = dayun.get("sequence", [])
+        current = {i for i, s in enumerate(sequence) if s in dayun.get("current_candidates", [])}
+        if not sequence or not current:
+            return []
+        names = [s["ganzhi"] for s in sequence]
+        # Notes in brackets (“（1998年交运，2008年换下一步）”) stay inside their clause.
+        masked = re.sub(
+            r"（[^（）]*）|\([^()]*\)", lambda m: "（" + "·" * (len(m[0]) - 2) + "）", text
+        )
+        found = []
+        for match in EQUATED_STEP.finditer(masked):
+            a, b = number(match["a"]), number(match["b"])
+            if a != b and 1 <= a <= len(sequence):
+                found.append(
+                    f"“{text[match.start() : match.end()]}”：第{a}步大运是{names[a - 1]}，"
+                    f"不是第{b}步；第{b}步是{names[b - 1] if 1 <= b <= len(sequence) else '（没有排到）'}"
+                )
+        offset = 0
+        for clause in re.split(f"[{CLAUSE_BREAK}]", masked):
+            start, offset = offset, offset + len(clause) + 1
+            stages = []
+            for match in CYCLE_NAMED.finditer(clause):
+                n = number(match["n"]) if match["n"] else 1 if match["first"] else None
+                gz = match["gz"] or match["gz2"] or match["gz3"]
+                index = names.index(gz) if gz in names else (n - 1 if n else None)
+                if index is not None and 0 <= index < len(sequence):
+                    stages.append((index, match, gz or names[index]))
+            if not stages or any(index in current for index, _, _ in stages):
+                continue  # the present word may be the current cycle's
+            role = PRESENT_ROLE.search(clause)
+            if not role or OTHER_TIME_IN_CLAUSE.search(clause):
+                continue
+            index, match, gz = stages[0]
+            kind = claim(text, start + match.start(), start + match.end())
+            if kind == "denied" and not reasserted(text, start + match.end(), gz):
+                continue
+            if kind is None:
+                continue
+            now = "或".join(names[i] for i in sorted(current))
+            found.append(
+                f"按今年算所在的大运是{now}；“{text[start : start + len(clause)].strip()}”"
+                f"把第{index + 1}步大运{gz}写成了现在所处的大运"
+            )
         return found
 
     @staticmethod
@@ -3159,6 +3368,13 @@ class Bazi(System):
                 for sentence in re.split(r"(?<=[。！？!?\n])", body):
                     if any(batch_recommended(c) for c in CLAUSE_OR_TURN.split(sentence)):
                         found.append((TRADE_PROBLEM, sentence.strip()))
+                    elif entry_offered(sentence):
+                        found.append((ENTRY_PROBLEM, sentence.strip()))
+        if INVESTMENT.search(state.get("question") or ""):
+            # The summary speaks for the whole range (owner, 2026-11-17).
+            for sentence in re.split(r"(?<=[。！？!?\n])", args.get("summary") or ""):
+                if entry_offered(sentence):
+                    found.append((ENTRY_PROBLEM, sentence.strip()))
         return found
 
     # ---- what code writes ----------------------------------------------------------------
