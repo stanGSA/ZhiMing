@@ -540,3 +540,39 @@ body {
     transform: scale(0.3);
   }
 }
+
+/* ---------- 推演轨 · 星轨: a star runs a fine orbit ---------- */
+.track-now > i {
+  position: relative;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: transparent;
+  border: 1px solid rgba(169, 193, 234, 0.55);
+  animation: nw-orbit 1.6s linear infinite;
+}
+.track-now > i::after {
+  content: "";
+  position: absolute;
+  top: -3px;
+  left: 50%;
+  width: 5px;
+  height: 5px;
+  margin-left: -2.5px;
+  border-radius: 50%;
+  background: var(--accent-2);
+  box-shadow: 0 0 6px var(--accent-2);
+}
+@keyframes nw-orbit {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* An undrawn wheel turns slowly, at the pace of the entrance compass. */
+.natal-wheel.is-idle .nw-tick,
+.natal-wheel.is-idle .nw-sign-sep {
+  transform-box: view-box;
+  transform-origin: 320px 320px;
+  animation: nw-orbit 240s linear infinite;
+}

@@ -1146,6 +1146,7 @@ function applyState(next, first = false, background = false) {
   const status = $("#connection");
   if (status) {
     status.classList.remove("offline");
+    status.classList.add("ready");
     status.textContent = next.provider === "demo" ? "离线演示" : "真实模型";
   }
   $$("[data-live]").forEach((live) => {
@@ -1750,6 +1751,16 @@ const PILLARS = [
   ["time", "时柱"],
 ];
 
+const REDUCED_MOTION = matchMedia("(prefers-reduced-motion: reduce)");
+
+// Re-adding a class restarts its CSS animation even when the element already has it.
+function replay(element, className) {
+  if (!element || REDUCED_MOTION.matches) return;
+  element.classList.remove(className);
+  void element.offsetWidth;
+  element.classList.add(className);
+}
+
 const chartKeys = {};
 function freshChart(name, key) {
   const before = chartKeys[name];
@@ -1926,6 +1937,7 @@ function natalWheel(result) {
   svg.append(svgNode("circle", { cx: c, cy: c, r: 120, class: "nw-core" }));
   if (!result) {
     svg.append(svgNode("text", { x: c, y: c + 6, class: "nw-empty" }, "待绘制"));
+    svg.classList.add("is-idle");
     return svg;
   }
   const planets = result.planets;
@@ -2356,10 +2368,53 @@ function flipCard(index) {
   flip.setAttribute("aria-label", `${card.label}：${card.name}，${card.reversed ? "逆位" : "正位"}`);
   $$("#tarot-spread .tarot-orientation")[index].textContent = card.reversed ? "逆位" : "正位";
   if (flipped.size === drawnCards().length) {
+    linkSpread();
     tarotPhase = "done";
     toast("牌面已全部翻开，牌意整理在下方。");
   }
   updateTarot();
+}
+
+// The spread is joined by gold lines once every card is face up: a moment, not a fixture.
+function linkSpread() {
+  const box = $("#tarot-spread");
+  const cards = $$("#tarot-spread .flip-card");
+  if (!box || cards.length < 2 || REDUCED_MOTION.matches) return;
+  $("#spread-links")?.remove();
+  const frame = box.getBoundingClientRect();
+  // Knots sit just above each arched frame; arcs rise between them, so no card face is crossed.
+  const points = cards.map((card) => {
+    const r = card.getBoundingClientRect();
+    return [r.left - frame.left + r.width / 2, r.top - frame.top - 8];
+  });
+  const svg = svgNode("svg", {
+    id: "spread-links",
+    class: "spread-links",
+    viewBox: `0 0 ${frame.width.toFixed(0)} ${frame.height.toFixed(0)}`,
+    "aria-hidden": "true",
+  });
+  points.slice(1).forEach(([x, y], index) => {
+    const [x0, y0] = points[index];
+    const lift = Math.min(22, Math.abs(x - x0) * 0.12);
+    const arc = svgNode("path", {
+      class: "spread-arc",
+      d: `M${x0.toFixed(1)} ${y0.toFixed(1)} Q${((x0 + x) / 2).toFixed(1)} ${(Math.min(y0, y) - lift).toFixed(1)} ${x.toFixed(1)} ${y.toFixed(1)}`,
+    });
+    arc.style.setProperty("--i", String(index));
+    svg.append(arc);
+  });
+  points.forEach(([x, y], index) => {
+    const knot = svgNode("path", {
+      class: "spread-knot",
+      d: `M${x} ${y - 6} L${x + 6} ${y} L${x} ${y + 6} L${x - 6} ${y} Z`,
+    });
+    knot.style.setProperty("--i", String(index));
+    svg.append(knot);
+  });
+  box.append(svg);
+  svg.querySelectorAll(".spread-arc").forEach((arc) =>
+    arc.style.setProperty("--len", String(Math.ceil(arc.getTotalLength()))));
+  setTimeout(() => svg.remove(), 4200);
 }
 
 // Called on every render of the reading: this round's draw waits face down; a record shown
@@ -2527,7 +2582,7 @@ function renderWuge(result) {
   box.append(placeInGrid(total, String(cells.length * 2 + 1), "1 / -1"));
 }
 
-function renderName(result) {
+function renderName(result, fresh = false) {
   nameResult = result;
   $("#name-empty").hidden = Boolean(result);
   $("#name-board").hidden = !result;
@@ -2574,6 +2629,16 @@ function renderName(result) {
   });
   $("#sancai-note").textContent = result.conventions?.school || "";
   renderNameChoices();
+  if (fresh && !REDUCED_MOTION.matches) {
+    $$("#name-chars .stele").forEach((stele, index) => stele.style.setProperty("--i", String(index)));
+    // The count-up is drawn by CSS over the real number, which never changes in the DOM.
+    $$("#wuge .wuge-number").forEach((number, index) => {
+      number.style.setProperty("--target", number.textContent);
+      number.style.setProperty("--i", String(index));
+    });
+    $$("#sancai-flow > *").forEach((item, index) => item.style.setProperty("--i", String(index)));
+    replay($("#name-board"), "is-revealing");
+  } else $("#name-board").classList.remove("is-revealing");
 }
 
 function renderNameChoices() {
@@ -2628,7 +2693,7 @@ async function runName(fresh = true) {
     if (fresh) nameChoices = data.result.ambiguities;
     state.name_analysis = { result: data.result, forms: { ...nameForms }, choices: nameChoices };
     $("#name-feedback").textContent = `“${surname}${given}”已按康熙笔画推演。`;
-    renderName(data.result);
+    renderName(data.result, true);
   } catch (error) {
     $("#name-feedback").textContent = error.message;
     toast(error.message);
@@ -2638,6 +2703,7 @@ async function runName(fresh = true) {
 /* ---------- 解梦 ---------- */
 
 function renderDream(reading) {
+  const fresh = freshReading;
   const results = calculations(reading, "dream_result:");
   const list = $("#dream-symbols");
   list.replaceChildren();
@@ -2665,6 +2731,11 @@ function renderDream(reading) {
   }
   if (misses.length)
     list.append(node("p", "symbols-miss", `未收录的意象：${misses.join("、")}。词典外的内容不作解读。`));
+  if (fresh) {
+    $$("#dream-symbols .symbol").forEach((item, index) => item.style.setProperty("--i", String(index)));
+    replay(list, "is-arriving");
+    replay($(".butterfly"), "is-beating");
+  }
 }
 
 function renderDiary(history) {
@@ -2715,6 +2786,10 @@ async function loadAlmanac(date, birth = birthForAlmanac()) {
 }
 
 function renderAlmanac(data) {
+  const turning = almanacDay !== null && almanacDay !== data.date;
+  // Not on the first render of the page: only a new day, or a ten god that just became known.
+  const stamping = Boolean(data.ten_god) && almanacDay !== null
+    && (turning || $("#day-god").textContent !== data.ten_god);
   almanacDay = data.date;
   const [year, month, day] = data.date.split("-").map(Number);
   $("#day-num").textContent = String(day);
@@ -2747,6 +2822,8 @@ function renderAlmanac(data) {
     cell.addEventListener("click", () => loadAlmanac(item.date));
     week.append(cell);
   }
+  if (turning) replay($(".almanac-center"), "is-turning");
+  if (stamping) replay($("#day-god"), "is-stamped");
 }
 
 function renderDaily(reading) {

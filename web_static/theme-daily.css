@@ -437,3 +437,51 @@
     gap: 120px;
   }
 }
+
+/* ---------- 推演轨 · 撕页: a calendar leaf turns over ---------- */
+.track-now > i {
+  width: 11px;
+  height: 13px;
+  border-radius: 0;
+  background: var(--surface);
+  border: 1px solid var(--line-strong);
+  border-top: 3px solid var(--accent);
+  transform-origin: top;
+  animation: dy-leaf 1.3s ease-in infinite;
+}
+.track-node {
+  transform: scale(0.72);
+}
+@keyframes dy-leaf {
+  0%,
+  35% {
+    transform: perspective(60px) rotateX(0);
+    opacity: 1;
+  }
+  100% {
+    transform: perspective(60px) rotateX(-110deg);
+    opacity: 0;
+  }
+}
+
+/* ---------- 翻页与盖印: another day drops in; the day's ten god is stamped ---------- */
+.almanac-center.is-turning {
+  transform-origin: top center;
+  animation: dy-turn 0.7s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+#day-god.is-stamped {
+  display: inline-block;
+  animation: dy-stamp 0.55s cubic-bezier(0.2, 1.6, 0.4, 1) 0.25s both;
+}
+@keyframes dy-turn {
+  from {
+    opacity: 0;
+    transform: perspective(900px) rotateX(-60deg);
+  }
+}
+@keyframes dy-stamp {
+  from {
+    opacity: 0;
+    transform: scale(1.9) rotate(-6deg);
+  }
+}

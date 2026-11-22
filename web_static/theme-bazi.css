@@ -526,3 +526,23 @@
     transform: translateX(-14px);
   }
 }
+
+/* ---------- 推演轨 · 拨珠: beads slide along a rod while the request runs ---------- */
+.track-now > i {
+  width: 27px;
+  height: 9px;
+  border-radius: 0;
+  background: radial-gradient(circle, var(--accent-2) 3px, transparent 3.6px) 0 50% / 9px 9px repeat-x;
+  border-top: 1px solid rgba(207, 165, 91, 0.35);
+  border-bottom: 1px solid rgba(207, 165, 91, 0.35);
+  animation: bz-abacus 1.2s steps(3) infinite;
+}
+.track-node {
+  border-radius: 50%;
+  transform: scale(0.72);
+}
+@keyframes bz-abacus {
+  to {
+    background-position: 27px 50%;
+  }
+}

@@ -1757,6 +1757,11 @@ body:has(.birth-fold[open]) .ask-fab {
   }
 }
 
+/* The connection dot breathes until the first session state arrives. */
+.zm-status:not(.ready):not(.offline)::before {
+  animation: zm-pulse 1.2s infinite ease-in-out;
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
