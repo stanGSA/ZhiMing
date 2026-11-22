@@ -575,3 +575,114 @@ def test_safe_denials_keep_their_own_object_and_clause_scope(text):
 )
 def test_a_certainty_claim_beside_such_a_negation_is_still_refused(text):
     assert certainty_error([text])
+
+
+@pytest.mark.parametrize(
+    "text",
+    [
+        # Exact 3 consecutive rejected drafts on production server (2026-11-17 09:48Z).
+        "凡是说“你命里注定能进某校”的说法，都是越界。",
+        "凡是说“你命里必定能进某校”的说法，都是越界。",
+        "凡是说“你命里一定能进某校”的说法，都是越界。",
+        "凡是说“你命里注定能进某校”，都是越界。",
+        # Post-quote refutations without a comma or with other refutation predicates.
+        "“命里必定考上”这类说法本身就站不住脚。",
+        "所谓“今年一定会暴富”的论调毫无依据。",
+        "把八字当成“注定能成”的宿命论是错的。",
+        "凡是说“命里注定”、“必定考上”的说法，都是迷信。",
+        # Pre-quote doubt and caution-demand frames.
+        "别信“你命里注定失败”的说法。",
+        "警惕任何“今年一定会翻倍”的承诺。",
+        "遇到“必定考上”的说法多问几个为什么。",
+        "对所谓“注定成功”的话术保持警惕。",
+    ],
+)
+def test_quoted_fatalism_refutations_are_allowed(text):
+    assert certainty_claim([text]) is None
+    assert certainty_error([text]) is None
+
+
+@pytest.mark.parametrize(
+    ("text", "expected_word"),
+    [
+        # Unquoted fatalism or scare-quoted word without claim noun + refutation.
+        ("凡是说你命里注定能进某校的说法，都是越界。", "注定"),
+        ("你“注定”能进某校。", "注定"),
+        ("“你命里注定能进某校”的说法很有道理。", "注定"),
+        # Negated or reversed refutation / outer negation / rhetorical question.
+        ("“你命里注定能进某校”的说法并不是越界。", "注定"),
+        ("“你命里注定能进某校”的说法不是不可信。", "注定"),
+        ("不能说“你命里注定能进某校”的说法是越界。", "注定"),
+        ("不用警惕“今年一定会翻倍”的承诺。", "一定会"),
+        ("别信“你命里注定失败”的说法是错的。", "注定"),
+        ("“你命里注定能进某校”的说法是越界吗？", "注定"),
+        ("“你命里注定能进某校”的说法是越界的反面。", "注定"),
+        ("对“注定成功”的话术保持警惕是多此一举。", "注定"),
+        # Exempting a refuted quote never covers a real affirmative claim later in the sentence.
+        ("凡是说“你命里注定能进某校”的说法都是越界，但你明年一定会考上。", "一定会"),
+    ],
+)
+def test_quoted_fatalism_guards_still_refuse_escapes(text, expected_word):
+    assert certainty_claim([text]) == expected_word
+    err = certainty_error([text], include_quote=True)
+    assert err and f"“{expected_word}”" in err
+    assert "冲突句子：" in err
+    assert getattr(err, "retry_key", None) == "certainty_claim"
+
+
+async def test_agent_submission_quotes_offending_sentence_and_caps_synonym_retries(
+    runtime, scripted_model
+):
+    from harness.loop import run_turn
+    from harness.models import ModelResponse, ToolCall
+
+    draft = await tarot_draft(runtime)
+    # First verify quoted fatalism refutation passes end-to-end in validate_reading.
+    draft_ok = dict(draft)
+    draft_ok["sections"] = [
+        dict(draft["sections"][0], body="凡是说“你命里注定能进某校”的说法，都是越界。")
+    ]
+    error_ok, _ = check(runtime, draft_ok)
+    assert error_ok is None
+
+    # Next verify true violations return offending sentence + stable retry_key across synonyms.
+    bad_sentences = [
+        "这与你的画像不符，明年你注定顺利上岸。",
+        "这与你的画像不符，明年你必定顺利上岸。",
+        "这与你的画像不符，明年你一定能顺利上岸。",
+    ]
+    calls = []
+    for idx, bad in enumerate(bad_sentences):
+        d = json.loads(json.dumps(draft))
+        d["sections"][0]["body"] = bad
+        error_bad, _ = check(runtime, d)
+        assert error_bad is not None
+        assert f"冲突句子：“{bad}”" in error_bad
+        assert getattr(error_bad, "retry_key", None) == "certainty_claim"
+        assert (
+            rejection_category({"code": "validation_failed", "error": str(error_bad)})
+            == "expression"
+        )
+        calls.append(
+            ModelResponse(
+                input_tokens=100,
+                output_tokens=20,
+                tool_calls=[ToolCall(id=f"sub-{idx}", name="submit_reading", arguments=d)],
+            )
+        )
+    model = scripted_model(calls)
+    outcome = await run_turn(runtime.session, "继续提交", model, runtime.registry, runtime.tracer)
+    assert outcome.status == "retry_limit"
+    assert len(model.seen_messages) == 3
+
+
+async def test_high_risk_agent_submission_quotes_offending_hard_claim(runtime):
+    draft = await high_risk_draft(
+        runtime, "2027是比肩年，尽量不借钱炒股；别人推荐的“稳赚机会”先放几天再决定。"
+    )
+    error, _ = check(runtime, draft)
+    assert error is not None
+    assert "不能给出健康、投资或生死的确定性结论" in error
+    assert "命中“稳赚”" in error
+    assert "别人推荐的“稳赚机会”先放几天再决定。" in error
+    assert getattr(error, "retry_key", None) == "high_risk_claim"

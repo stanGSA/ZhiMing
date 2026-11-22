@@ -171,7 +171,11 @@ def validate_report(args: ReportInput, session) -> str | None:
         if not any(s["horizon"] == "timing" for s in own):
             return "子问题指定了时间范围，须计算本体系行运或流期，不能只用原局"
     texts = [args.answer, args.analysis, *(p.text for p in args.points)]
-    return medication_error(texts) or certainty_error(texts) or care_error(texts)
+    return (
+        medication_error(texts, include_quote=True)
+        or certainty_error(texts, include_quote=True)
+        or care_error(texts, include_quote=True)
+    )
 
 
 def submit_report(args: ReportInput, session) -> dict:

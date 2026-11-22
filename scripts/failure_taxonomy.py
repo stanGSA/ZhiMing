@@ -78,10 +78,11 @@ def quality_score(row: dict) -> bool | None:
 
 def category(tool: str, code: str | None, error: str | None) -> str:
     error = error or ""
+    rule_error = error.split("（冲突句子：", 1)[0].split("（命中“", 1)[0]
     for name, matches in CATEGORIES:
-        if matches(tool, code, error):
+        if matches(tool, code, rule_error):
             return name
-    return f"Z 其他：{(error or code or '')[:30]}"
+    return f"Z 其他：{(rule_error or code or '')[:30]}"
 
 
 def task_success(row: dict) -> bool:

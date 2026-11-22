@@ -6,11 +6,13 @@ from common.facts import validate_calculation_facts
 from common.output_policy import (
     authored_texts,
     care_error,
-    certainty_claim,
     certainty_error,
+    certainty_violation,
     hard_claim,
+    hard_claim_violation,
     medication_error,
     normalize_reading,
+    sentence_around,
     warn,
 )
 from common.safety import CRISIS as CRISIS  # Backwards-compatible public import.
@@ -212,19 +214,22 @@ def validate_reading(reading, session) -> str | None:
     error = validate_calculation_facts(reading, state)
     if error:
         return error
-    error = medication_error(authored_texts(reading))
+    in_pipeline = "pipeline_run" in state
+    texts = authored_texts(reading)
+    error = medication_error(texts, include_quote=not in_pipeline)
     if error:
         return error
     if session.policy_judge is not None:
         from common.policy_judge import candidates
 
-        texts = authored_texts(reading)
         if hard_claim(texts):
             return "不能给出确定性结果或停药建议，请改写"
         state["policy_candidates"] = candidates(texts)
         error = None
     else:
-        error = certainty_error(authored_texts(reading)) or care_error(authored_texts(reading))
+        error = certainty_error(texts, include_quote=not in_pipeline) or care_error(
+            texts, include_quote=not in_pipeline
+        )
     if error:
         return error
     current_question = session.user_messages[-1] if session.user_messages else ""
@@ -233,10 +238,22 @@ def validate_reading(reading, session) -> str | None:
             return "涉及健康、投资、法律或生死，必须标注安全说明"
         # 一定会 counts only where no negation governs it, as everywhere else: "不一定会" and
         # "这不代表这只股票一定会涨" are the hedges these answers are asked to write.
-        if (
-            certainty_claim(authored_texts(reading))
-            or hard_claim(authored_texts(reading))
-            or HIGH_RISK_CLAIM.search(text)
-        ):
-            return "不能给出健康、投资或生死的确定性结论"
+        found = certainty_violation(texts) or hard_claim_violation(texts)
+        if found is None:
+            for part in texts:
+                if part and (claim_match := HIGH_RISK_CLAIM.search(part)):
+                    found = (
+                        claim_match.group(),
+                        sentence_around(part, claim_match.start(), claim_match.end()),
+                    )
+                    break
+        if found or HIGH_RISK_CLAIM.search(text):
+            if in_pipeline or session.policy_judge is not None or found is None:
+                return "不能给出健康、投资或生死的确定性结论"
+            hit_word, hit_snippet = found
+            return ValidationMessage(
+                f"不能给出健康、投资或生死的确定性结论（命中“{hit_word}”，冲突句子：“{hit_snippet}”）；"
+                "请删除或改写该冲突句子为谨慎核实风险的表述后重新提交",
+                retry_key="high_risk_claim",
+            )
     return None

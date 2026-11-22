@@ -20,6 +20,7 @@ from __future__ import annotations
 import re
 
 from common.facts import rendered_texts
+from harness.models import ValidationMessage
 from knowledge.review import lowest, review_status
 
 DISCLAIMER = re.compile(r"仅供参考|仅供娱乐|仅供[^。！？!?\n]{0,10}反思")
@@ -288,13 +289,167 @@ def clause_before(text: str, start: int, width: int = 16) -> str:
 
 
 OPEN_QUOTE = re.compile(r"[“‘「『\"']+\s*$")
+QUOTE_PAIRS = {"“": "”", "‘": "’", "「": "」", "『": "』", '"': '"', "'": "'"}
+CERTAINTY_DOUBTED = re.compile(
+    r"(?:警惕|提防|当心|小心|怀疑|质疑|远离|拒绝|摒弃|抛开|放下|"
+    r"别信|不要信|别轻信|不要轻信|不轻信|千万别信|不信)"
+    r"(?:任何|所有|这类|各种|一切|那些|那种|所谓|什么)*$"
+)
+CERTAINTY_CLAIM_NOUN = re.compile(
+    r"(?:[、，,和与及或]?\s*[“‘「『\"'][^”’」』\"'。！？!?；;\n]{1,24}[”’」』\"'])*"
+    r"(?:之类|一类|这类|这种|那套|那种|这样)?的?"
+    r"(?:说法|话术|说辞|话|论调|断言|定论|预言|承诺|保证|宿命论|命定论|观念|想法|讲法|判断|结论)"
+)
+CHAINED_QUOTES_BEFORE = re.compile(
+    r"(?:[“‘「『\"'][^”’」』\"'。！？!?；;\n]{1,24}[”’」』\"']\s*[、和与及或]?\s*)+$"
+)
+REFUTED_QUOTE_LEAD = re.compile(
+    r"(?:"
+    r"(?:凡是|任何|一切|所有|无论谁|不管谁)?(?:有人|别人|外人|外界)?"
+    r"(?:跟你说|对你说|说|讲|声称|宣称|鼓吹|断言|号称)?(?:什么|所谓|那种|这类|这种|那些)?"
+    r"|(?:这(?:种|类|套|句)|那(?:种|类|套|句)|所谓)"
+    r"|(?:把(?:命盘|八字|星盘|塔罗|牌面|卦象|数理|梦境|运势|它))?"
+    r"(?:当成|当作|视为|看成|看作|理解成|理解为)(?:什么|所谓|一种)?"
+    r")"
+)
+SPEECH_QUOTE_LEAD = re.compile(
+    r"(?:凡是|任何|有人|别人)(?:跟你说|对你说|说|讲|声称|宣称|鼓吹|断言)$"
+)
+REFUTATION_BRIDGE = re.compile(
+    r"(?:\s*[，,]\s*)?"
+    r"(?:其实|本身|本来|从来|向来|压根|往往|通通|统统|全|都|一律|一概|根本|完全|纯属|只是|皆|多半|自然|显然|就|也|更)*"
+)
+CERTAINTY_REFUTATION = re.compile(
+    r"(?:"
+    r"(?:是|属于|纯属|皆属|都属|皆是|都是|皆为|算|算是)"
+    r"(?:越界|迷信|噱头|误导|伪命题|无稽之谈|空话|瞎话|骗人的?|错误的?|错的|假的|"
+    r"站不住脚的?|靠不住的?|不可信的?|不成立的?|不靠谱的?|没有依据的?)"
+    r"|(?:越界|迷信|站不住脚|靠不住|当不得真|算不得数|不值一信)"
+    r"|(?:并)?不(?:成立|可信|靠谱|准确|客观|真实|存在|能信|能当真|值得信|可采纳|可取|合理|科学|负责任)"
+    r"|(?:毫无|没有(?:任何|事实|命理|现实)?|无|缺乏)(?:依据|根据|道理|意义|支撑)"
+    r")"
+)
+REFUTATION_TAIL_UNDONE = re.compile(r"不对|不真|不实|错的|假的|不成立|站不住脚")
 
 
-def certainty_claim(texts) -> str | None:
-    """The first certainty word that no negation in its clause governs."""
-    for text in texts:
-        text = NEGATED_DISCLAIMER.sub(" ", text or "")
+def sentence_around(text: str, start: int, end: int, limit: int = 90) -> str:
+    """Extract the single sentence around ``start:end`` for actionable validator errors."""
+    sentence = text
+    offset = start
+    for match in re.finditer(r"[^。！？!?\n]+(?:[。！？!?]+|$)", text):
+        if match.start() <= start < match.end() or (start == len(text) and match.end() == start):
+            sentence = match.group()
+            offset = start - match.start()
+            break
+    compact = re.sub(r"\s+", " ", sentence).strip()
+    if len(compact) <= limit:
+        return compact
+    half = max(16, (limit - (end - start)) // 2)
+    left = max(0, min(offset, len(compact) - 1) - half)
+    right = min(len(compact), left + limit)
+    prefix = "…" if left > 0 else ""
+    suffix = "…" if right < len(compact) else ""
+    return f"{prefix}{compact[left:right].strip()}{suffix}"
+
+
+def _enclosing_quote(text: str, start: int, end: int) -> tuple[int, int] | None:
+    """Return ``(open_idx, close_idx)`` when ``start:end`` sits inside one short closed quote."""
+    open_idx = -1
+    close_ch = ""
+    for i in range(start - 1, max(-1, start - 37), -1):
+        ch = text[i]
+        if ch in "。！？!?；;\n”’」』":
+            return None
+        if ch in QUOTE_PAIRS:
+            if ch in ('"', "'"):
+                prior = re.split(r"[。！？!?；;\n]", text[:i])[-1]
+                if prior.count(ch) % 2 == 1:
+                    return None
+            open_idx = i
+            close_ch = QUOTE_PAIRS[ch]
+            break
+    if open_idx < 0:
+        return None
+    for j in range(end, min(len(text), end + 37)):
+        ch = text[j]
+        if ch == close_ch:
+            if j - open_idx - 1 > 36:
+                return None
+            return open_idx, j
+        if ch in "。！？!?；;\n“‘「『":
+            return None
+    return None
+
+
+def quoted_certainty_refuted(text: str, start: int, end: int) -> bool:
+    """Whether ``start:end`` is inside a quoted fatalistic claim that the sentence doubts/refutes."""
+    span = _enclosing_quote(text, start, end)
+    if span is None:
+        return False
+    open_idx, close_idx = span
+    raw_before = CHAINED_QUOTES_BEFORE.sub("", text[max(0, open_idx - 48) : open_idx])
+    before_quote = CLAUSE_START.sub("", raw_before)
+    lead = re.split(r"但是|然而|不过|反而|而是|可是|却|但", before_quote)[-1].strip()
+    after_quote = text[close_idx + 1 :]
+    noun = CERTAINTY_CLAIM_NOUN.match(after_quote)
+
+    doubted = CERTAINTY_DOUBTED.search(lead)
+    if doubted and noun:
+        ahead = lead[: doubted.start()]
+        if GAIN_DOUBT_UNDONE.search(ahead) or denial_negated(ahead):
+            return False
+        return bool(re.match(r"\s*(?:[，,。；;！!\n—…]|$)", after_quote[noun.end() :]))
+
+    addressed = GAIN_ADDRESSED.search(lead)
+    if addressed and noun:
+        ahead = lead[: addressed.start()]
+        if GAIN_DOUBT_UNDONE.search(ahead) or denial_negated(ahead):
+            return False
+        demand = GAIN_DEMANDED.match(after_quote, noun.end())
+        if not demand or GAIN_DEMAND_REVERSED.match(after_quote, demand.end()):
+            return False
+        clause_end = re.match(
+            r"([^，,。；;：:！!？?\n]*)([，,。；;：:！!？?\n]?)", after_quote[demand.end() :]
+        )
+        tail, punct = clause_end[1], clause_end[2]
+        return punct not in ("？", "?") and not re.search(r"[吗么]\s*$", tail)
+
+    if not REFUTED_QUOTE_LEAD.fullmatch(lead):
+        return False
+    if noun is not None:
+        after_subject = after_quote[noun.end() :]
+    elif SPEECH_QUOTE_LEAD.search(lead):
+        after_subject = after_quote
+    else:
+        return False
+    bridge = REFUTATION_BRIDGE.match(after_subject)
+    refuted = CERTAINTY_REFUTATION.match(after_subject, bridge.end())
+    if not refuted:
+        return False
+    clause_end = re.match(
+        r"([^，,。；;：:！!？?\n]*)([，,。；;：:！!？?\n]?)", after_subject[refuted.end() :]
+    )
+    tail, punct = clause_end[1], clause_end[2]
+    if (
+        punct in ("？", "?")
+        or re.search(r"[吗么]\s*$", tail)
+        or DENIAL_REVERSAL.search(tail)
+        or GAIN_DEMAND_REVERSED.match(tail)
+        or REFUTATION_TAIL_UNDONE.search(tail)
+    ):
+        return False
+    return True
+
+
+def certainty_violation(texts) -> tuple[str, str] | None:
+    """``(word, offending_sentence)`` for the first ungoverned certainty claim, else None."""
+    for raw in texts:
+        if not raw:
+            continue
+        text = NEGATED_DISCLAIMER.sub(lambda m: " " * len(m[0]), raw)
         for match in CERTAINTY.finditer(text):
+            if quoted_certainty_refuted(text, match.start(), match.end()):
+                continue
             # An opening quotation mark between a negation and the word (不是“必然发财”, bazi
             # pilot r1) is punctuation, not a new clause: the words are read as without it.
             before = OPEN_QUOTE.sub("", clause_before(text, match.start(), 40))
@@ -305,8 +460,14 @@ def certainty_claim(texts) -> str | None:
                 text[match.end() :]
             ):
                 continue
-            return match.group()
+            return match.group(), sentence_around(raw, match.start(), match.end())
     return None
+
+
+def certainty_claim(texts) -> str | None:
+    """The first certainty word that no negation in its clause governs."""
+    found = certainty_violation(texts)
+    return found[0] if found else None
 
 
 def negated_head(text: str, match: re.Match, before: str) -> bool:
@@ -426,12 +587,8 @@ def quoted_gain_mention(text: str, start: int, end: int) -> bool:
     return False
 
 
-def hard_claim(texts) -> str | None:
-    """Hard words, except a governing denial of 稳赚 (owner decision for P2 r7).
-
-    Each occurrence and field has its own scope: 别把配合当稳赚 does not authorise
-    a later 这笔投资稳赚. Double negatives must not be read as disclaimers either.
-    """
+def hard_claim_violation(texts) -> tuple[str, str] | None:
+    """``(word, offending_sentence)`` for the first ungoverned hard claim, else None."""
     for text in texts:
         for match in HARD.finditer(text or ""):
             if match[0] == "稳赚":
@@ -441,14 +598,24 @@ def hard_claim(texts) -> str | None:
                 before = re.split(r"但是|然而|不过|反而|而是|可是|却|但", before)[-1]
                 denial = GAIN_DISMISSAL.search(before) or DIRECT_NEGATION.search(before)
                 if denial and denial_negated(before[: denial.start()]):
-                    return match[0]
+                    return match[0], sentence_around(text, match.start(), match.end())
                 rest = text[match.end() :]
                 if (governing_denial(GAIN_DISMISSAL, before) or negates_claim(before)) and (
                     GAIN_DISMISSED_REST.match(rest)
                 ):
                     continue
-            return match[0]
+            return match[0], sentence_around(text, match.start(), match.end())
     return None
+
+
+def hard_claim(texts) -> str | None:
+    """Hard words, except a governing denial of 稳赚 (owner decision for P2 r7).
+
+    Each occurrence and field has its own scope: 别把配合当稳赚 does not authorise
+    a later 这笔投资稳赚. Double negatives must not be read as disclaimers either.
+    """
+    found = hard_claim_violation(texts)
+    return found[0] if found else None
 
 
 def negates_claim(before: str) -> bool:
@@ -488,11 +655,19 @@ def claim_subject(phrase: str) -> bool:
     return not LATER_SUBJECT.search(LEADING.sub("", phrase, count=1))
 
 
-def certainty_error(texts) -> str | None:
-    word = certainty_claim(texts)
-    if word:
+def certainty_error(texts, *, include_quote: bool = False) -> str | None:
+    found = certainty_violation(texts)
+    if not found:
+        return None
+    word, snippet = found
+    if not include_quote:
         return f"不能使用“{word}”这类确定性说法；趋势可以写“倾向/容易/往往”，请改写后重新提交"
-    return None
+    return ValidationMessage(
+        f"不能使用“{word}”这类确定性说法（冲突句子：“{snippet}”）；"
+        "请直接改写该句：表达趋势改用“倾向/容易/往往”，反驳宿命论请直接用否定句（如“命理不能决定……”），"
+        "切勿仅替换为“必定/一定/必然/肯定会”等同义词后重复提交",
+        retry_key="certainty_claim",
+    )
 
 
 def clean_reading(reading) -> None:
@@ -554,9 +729,9 @@ def a_not_a(before: str, negative: re.Match) -> bool:
     return False
 
 
-def care_advice(texts) -> tuple[bool, str | None]:
-    """(an affirmative "see a doctor" advice is present, the first discouraging phrase)."""
-    advised, discouraged = False, None
+def care_advice_detail(texts) -> tuple[bool, str | None, str | None]:
+    """(affirmative care advice present, first discouraging phrase, its offending sentence)."""
+    advised, discouraged, snippet = False, None, None
     for text in texts:
         for match in CARE_ACTION.finditer(text or ""):
             before = clause_before(text, match.start(), 40)
@@ -577,14 +752,21 @@ def care_advice(texts) -> tuple[bool, str | None]:
                 # “不要以为不必就医” negates the discouragement; “不建议就医” does not.
                 if CARE_DIRECT_NEGATION.search(prefix) or CARE_NEGATED_BELIEF.search(prefix):
                     advised = True
-                else:
-                    discouraged = discouraged or (negative.group() + match.group())
+                elif discouraged is None:
+                    discouraged = negative.group() + match.group()
+                    snippet = sentence_around(text, match.start(), match.end())
             elif ADVISE.search(before):
                 advised = True
+    return advised, discouraged, snippet
+
+
+def care_advice(texts) -> tuple[bool, str | None]:
+    """(an affirmative "see a doctor" advice is present, the first discouraging phrase)."""
+    advised, discouraged, _ = care_advice_detail(texts)
     return advised, discouraged
 
 
-def medication_error(texts) -> str | None:
+def medication_error(texts, *, include_quote: bool = False) -> str | None:
     """Reject affirmative medication instructions, keeping negations and clinician referrals."""
     for text in texts:
         for match in STOP_MEDICATION.finditer(text or ""):
@@ -601,16 +783,28 @@ def medication_error(texts) -> str | None:
                 or match.group().startswith("不")
                 or re.match(r"(?:吧|即可|就好|就行)", after)
             ):
-                return "不能给出停药建议；是否调整用药须由医生评估，请改写后重新提交"
+                if not include_quote:
+                    return "不能给出停药建议；是否调整用药须由医生评估，请改写后重新提交"
+                snippet = sentence_around(text, match.start(), match.end())
+                return ValidationMessage(
+                    f"不能给出停药建议（冲突句子：“{snippet}”）；是否调整用药须由医生评估，请改写后重新提交",
+                    retry_key="stop_medication",
+                )
     return None
 
 
-def care_error(texts) -> str | None:
-    _, discouraged = care_advice(texts)
+def care_error(texts, *, include_quote: bool = False) -> str | None:
+    _, discouraged, snippet = care_advice_detail(texts)
     if discouraged:
-        return (
-            f"不能劝阻就医（“{discouraged}”）；谈到身体时保留“如有不适请及时就医”的建议，"
-            "请改写后重新提交"
+        if not include_quote:
+            return (
+                f"不能劝阻就医（“{discouraged}”）；谈到身体时保留“如有不适请及时就医”的建议，"
+                "请改写后重新提交"
+            )
+        return ValidationMessage(
+            f"不能劝阻就医（“{discouraged}”，冲突句子：“{snippet}”）；"
+            "谈到身体时保留“如有不适请及时就医”的建议，请改写后重新提交",
+            retry_key="discourage_care",
         )
     return None
 
