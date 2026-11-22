@@ -638,11 +638,11 @@
   inherits: false;
   initial-value: 0;
 }
-#name-board.is-revealing .wuge-number {
+#name-board.is-revealing #wuge.is-counting .wuge-number {
   position: relative;
   -webkit-text-fill-color: transparent;
 }
-#name-board.is-revealing .wuge-number::after {
+#name-board.is-revealing #wuge.is-counting .wuge-number::after {
   content: counter(wg);
   counter-reset: wg var(--wg);
   position: absolute;

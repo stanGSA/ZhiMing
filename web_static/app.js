@@ -27,7 +27,6 @@ const CN_DIGITS = "〇一二三四五六七八九";
 
 let state = null;
 let busy = false;
-let freshReading = false; // set by send(): the next reading rendered just arrived
 let currentReading = null;
 let followupReadingId = null;
 let toastTimer;
@@ -586,8 +585,21 @@ function showMessage(message) {
       more.setAttribute("aria-expanded", String(open));
     });
     const jump = button(`完整解读见「${$("#reading-title")?.textContent || "解读"}」`, "msg-more");
-    jump.addEventListener("click", () =>
-      $("#reading").scrollIntoView({ behavior: "smooth", block: "start" }));
+    jump.addEventListener("click", () => {
+      const responses = $("#reading .reading-responses");
+      const isFollowup = Boolean(
+        responses
+        && currentReading?.responses?.some(
+          (item) => item.output?.summary && message.text.includes(item.output.summary),
+        ),
+      );
+      if (isFollowup) {
+        responses.open = true;
+        responses.scrollIntoView({ behavior: "smooth", block: "start" });
+      } else {
+        $("#reading").scrollIntoView({ behavior: "smooth", block: "start" });
+      }
+    });
     const row = node("div", "msg-more-row");
     row.append(more, jump);
     body.append(row);
@@ -629,6 +641,7 @@ function showThinking() {
   const body = node("div", "thinking");
   const now = node("div", "track-now");
   const clock = node("time", "track-clock", "0.0 s");
+  clock.setAttribute("aria-hidden", "true");
   now.append(node("i"), node("span", "", page.thinking || "正在观照你的问题……"), clock);
   const track = node("ol", "track");
   TRACK_STAGES.forEach(([id, name, optional]) => {
@@ -661,10 +674,13 @@ function advanceTrack(label) {
   if (index < 0) return;
   const redo = /改写/.test(label);
   steps.forEach((step, i) => {
-    if (i >= index) return;
-    if (step.classList.contains("active")) step.classList.replace("active", "done");
-    else if (step.classList.contains("pending") && !("optional" in step.dataset))
-      step.className = "done";
+    if (i < index) {
+      if (step.classList.contains("active")) step.classList.replace("active", "done");
+      else if (step.classList.contains("pending") && !("optional" in step.dataset))
+        step.className = "done";
+    } else if (i > index && step.classList.contains("active")) {
+      step.classList.replace("active", "done");
+    }
   });
   const step = steps[index];
   const keep = step.classList.contains("redo");
@@ -736,11 +752,11 @@ async function send({ message, extra = {} }, birth) {
     if (["auto", "bazi", "astro", "daily"].includes(SYSTEM) && !followupReadingId
       && next.messages.at(-1)?.status !== "crisis_support")
       acceptBirthVersion(next.birth_version);
-    freshReading = next.messages.at(-1)?.status === "submit_reading";
-    applyState(next);
+    const fresh = next.messages.at(-1)?.status === "submit_reading";
+    applyState(next, false, false, fresh);
     // A page may take over what happens next (塔罗 turns the view to its face-down cards).
-    handled = next.messages.at(-1)?.status === "submit_reading" && Boolean(page.onAnswered?.());
-    if (next.messages.at(-1)?.status === "submit_reading" && !handled) {
+    handled = fresh && Boolean(page.onAnswered?.());
+    if (fresh && !handled) {
       toast("解读已整理好。");
       // The reading spans the page below the dialogue window: bring it into view, and keep it
       // there when the composer takes focus again.
@@ -749,6 +765,7 @@ async function send({ message, extra = {} }, birth) {
     }
   } catch (error) {
     $("#thinking")?.remove();
+    clearInterval(trackClock);
     showMessage({ role: "assistant", text: error.message, status: "error" });
     $("#message").value = unsent;
     fitComposer();
@@ -799,13 +816,15 @@ function addList(parent, title, values) {
   parent.append(list);
 }
 
-function renderReading(reading) {
+function renderReading(reading, fresh = false) {
   currentReading = reading;
-  page.onReading?.(reading);
+  page.onReading?.(reading, fresh);
   const content = $("#reading-content");
   if (!content) return;
+  delete content.dataset.pendingFresh;
   $("#copy-reading").hidden = !reading;
   if (!reading) {
+    content.classList.remove("is-fresh");
     content.replaceChildren(...Array.from(emptyReading.cloneNode(true).childNodes));
     return;
   }
@@ -815,9 +834,10 @@ function renderReading(reading) {
     tags.append(node("span", "", SYSTEM_NAMES[value] || value)),
   );
   content.replaceChildren(tags, node("p", "reading-summary", output.summary));
-  const fresh = freshReading;
-  freshReading = false;
-  content.classList.toggle("is-fresh", fresh);
+  const veiled = Boolean($("#tarot-lower")?.classList.contains("veiled"));
+  const animate = fresh && !REDUCED_MOTION.matches;
+  content.classList.toggle("is-fresh", animate && !veiled);
+  if (animate && veiled) content.dataset.pendingFresh = "1";
   if (reading.birth_context?.birth) {
     const birth = reading.birth_context.birth;
     content.insertBefore(node("p", "reading-confidence",
@@ -872,7 +892,7 @@ function renderReading(reading) {
     seal.setAttribute("aria-label", seal.title);
     content.prepend(seal);
   }
-  if (fresh)
+  if (animate)
     Array.from(content.children).forEach((child, index) =>
       child.style.setProperty("--i", String(Math.min(index, 14))));
   if (output.followups?.length) {
@@ -886,7 +906,7 @@ function renderReading(reading) {
     content.append(followups);
   }
   if (reading.responses?.length) {
-    const details = node("details", "reading-details");
+    const details = node("details", "reading-details reading-responses");
     details.append(node("summary", "", `历次追问（${reading.responses.length} 次）`));
     for (const response of reading.responses) {
       details.append(node("h4", "reading-subheading", response.question.split("\n")[0]),
@@ -1123,7 +1143,7 @@ async function clearReadings() {
 
 /* ---------- Session ---------- */
 
-function applyState(next, first = false, background = false) {
+function applyState(next, first = false, background = false, fresh = false) {
   if (next.system && next.system !== SYSTEM) return;
   // A restarted service numbers its revisions afresh: take its state as a first load.
   const restarted = Boolean(state?.instance && next.instance && state.instance !== next.instance);
@@ -1154,9 +1174,17 @@ function applyState(next, first = false, background = false) {
     live.classList.toggle("demo", next.provider === "demo");
   });
   renderTranscript();
-  renderReading(preview ? { ...preview,
-    stale: Boolean(preview.birth_context) && preview.birth_context.version !== next.birth_version,
-  } : next.reading && (next.reading.view || "auto") === SYSTEM ? next.reading : null);
+  renderReading(
+    preview
+      ? {
+          ...preview,
+          stale: Boolean(preview.birth_context) && preview.birth_context.version !== next.birth_version,
+        }
+      : next.reading && (next.reading.view || "auto") === SYSTEM
+        ? next.reading
+        : null,
+    fresh && !preview,
+  );
   renderHistory(next.history);
   const birthChanged = oldVersion !== next.birth_version;
   if ((first || (birthChanged && !birthDirty)) && $("#birth-form")) {
@@ -1166,7 +1194,7 @@ function applyState(next, first = false, background = false) {
   if (first) foldBirth(next.birth, !next.birth?.date && PAGE !== "daily");
   else if (birthChanged && !birthDirty)
     foldBirth(next.birth, Boolean($("[data-birth-fold]")?.open));
-  page.onState?.(next, first);
+  page.onState?.(next, first, background);
   setBusy(next.busy);
   if (next.busy) {
     showThinking();
@@ -1701,7 +1729,7 @@ async function restoreLocation(identity) {
   if (state?.birth.clock_tz) $("#birth-clock").value = state.birth.clock_tz;
   if (state && restoredChart && restoredChart.birth_version === state.birth_version) {
     state.chart = restoredChart;
-    page.onChart?.(restoredChart);
+    page.onChart?.(restoredChart, true);
   }
 }
 
@@ -1752,6 +1780,11 @@ const PILLARS = [
 ];
 
 const REDUCED_MOTION = matchMedia("(prefers-reduced-motion: reduce)");
+REDUCED_MOTION.addEventListener?.("change", () => {
+  if (!REDUCED_MOTION.matches) return;
+  $("#name-board")?.classList.remove("is-revealing");
+  $("#wuge")?.classList.remove("is-counting");
+});
 
 // Re-adding a class restarts its CSS animation even when the element already has it.
 function replay(element, className) {
@@ -1762,13 +1795,13 @@ function replay(element, className) {
 }
 
 const chartKeys = {};
-function freshChart(name, key) {
+function freshChart(name, key, silent = false) {
   const before = chartKeys[name];
   chartKeys[name] = key;
-  return before !== undefined && before !== key && key !== "null";
+  return !silent && !REDUCED_MOTION.matches && before !== undefined && before !== key && key !== "null";
 }
 
-function renderBazi(chart) {
+function renderBazi(chart, silent = false) {
   const result = chart?.system === "bazi" ? chart.result : null;
   $("#bazi-empty").hidden = Boolean(result);
   const pillars = $("#pillars");
@@ -1817,9 +1850,15 @@ function renderBazi(chart) {
     wuxing.append(row);
   }
 
-  const revealing = freshChart("bazi", JSON.stringify(result?.pillars ?? null));
-  for (const box of [pillars, wuxing, $("#dayun"), $(".dm-panel")])
+  const revealing = freshChart(
+    "bazi",
+    JSON.stringify(result ? [result.pillars, result.dayun?.start_solar ?? null] : null),
+    silent,
+  );
+  for (const box of [pillars, wuxing, $("#dayun")])
     box?.classList.toggle("is-revealing", revealing);
+  if (revealing) replay($(".dm-panel"), "is-revealing");
+  else $(".dm-panel")?.classList.remove("is-revealing");
 
   const master = result?.day_master;
   $("#dm-name").textContent = master || "—";
@@ -1977,12 +2016,12 @@ function natalWheel(result) {
   return svg;
 }
 
-function renderAstro(chart) {
+function renderAstro(chart, silent = false) {
   const result = chart?.system === "astro" ? chart.result : null;
   $("#astro-empty").hidden = Boolean(result);
   const wheel = natalWheel(result);
   $("#astro-wheel").replaceChildren(wheel);
-  if (freshChart("astro", JSON.stringify(result?.planets?.map((p) => p.lon) ?? null))) {
+  if (freshChart("astro", JSON.stringify(result?.planets?.map((p) => p.lon) ?? null), silent)) {
     wheel.querySelectorAll(".nw-asp-soft, .nw-asp-hard").forEach((item, index) =>
       item.style.setProperty("--i", String(index)));
     const marks = [".nw-pdot", ".nw-planet", ".nw-pmark"].map((name) => wheel.querySelectorAll(name));
@@ -2368,11 +2407,19 @@ function flipCard(index) {
   flip.setAttribute("aria-label", `${card.label}：${card.name}，${card.reversed ? "逆位" : "正位"}`);
   $$("#tarot-spread .tarot-orientation")[index].textContent = card.reversed ? "逆位" : "正位";
   if (flipped.size === drawnCards().length) {
-    linkSpread();
     tarotPhase = "done";
     toast("牌面已全部翻开，牌意整理在下方。");
+    const round = tarotRound;
+    setTimeout(() => {
+      if (round === tarotRound && tarotPhase === "done") linkSpread();
+    }, 280);
   }
   updateTarot();
+  const content = $("#reading-content");
+  if (tarotPhase === "done" && content?.dataset.pendingFresh) {
+    delete content.dataset.pendingFresh;
+    replay(content, "is-fresh");
+  }
 }
 
 // The spread is joined by gold lines once every card is face up: a moment, not a fixture.
@@ -2393,14 +2440,17 @@ function linkSpread() {
     viewBox: `0 0 ${frame.width.toFixed(0)} ${frame.height.toFixed(0)}`,
     "aria-hidden": "true",
   });
+  let arcIndex = 0;
   points.slice(1).forEach(([x, y], index) => {
     const [x0, y0] = points[index];
+    // On narrow screens where cards wrap to another row, skip cross-row arcs so no card face is crossed.
+    if (Math.abs(y - y0) > 24) return;
     const lift = Math.min(22, Math.abs(x - x0) * 0.12);
     const arc = svgNode("path", {
       class: "spread-arc",
       d: `M${x0.toFixed(1)} ${y0.toFixed(1)} Q${((x0 + x) / 2).toFixed(1)} ${(Math.min(y0, y) - lift).toFixed(1)} ${x.toFixed(1)} ${y.toFixed(1)}`,
     });
-    arc.style.setProperty("--i", String(index));
+    arc.style.setProperty("--i", String(arcIndex++));
     svg.append(arc);
   });
   points.forEach(([x, y], index) => {
@@ -2496,6 +2546,7 @@ function renderSpread(reading) {
 let nameResult = null;
 let nameForms = {};
 let nameChoices = [];
+let nameRevealTimer = null;
 
 function restoreName(saved) {
   nameForms = saved?.forms || {};
@@ -2629,16 +2680,30 @@ function renderName(result, fresh = false) {
   });
   $("#sancai-note").textContent = result.conventions?.school || "";
   renderNameChoices();
+  clearTimeout(nameRevealTimer);
+  const board = $("#name-board");
+  const wuge = $("#wuge");
   if (fresh && !REDUCED_MOTION.matches) {
     $$("#name-chars .stele").forEach((stele, index) => stele.style.setProperty("--i", String(index)));
     // The count-up is drawn by CSS over the real number, which never changes in the DOM.
-    $$("#wuge .wuge-number").forEach((number, index) => {
-      number.style.setProperty("--target", number.textContent);
-      number.style.setProperty("--i", String(index));
-    });
+    const canCount = typeof CSS !== "undefined" && typeof CSS.registerProperty === "function";
+    wuge.classList.toggle("is-counting", canCount);
+    if (canCount) {
+      $$("#wuge .wuge-number").forEach((number, index) => {
+        number.style.setProperty("--target", number.textContent);
+        number.style.setProperty("--i", String(index));
+      });
+    }
     $$("#sancai-flow > *").forEach((item, index) => item.style.setProperty("--i", String(index)));
-    replay($("#name-board"), "is-revealing");
-  } else $("#name-board").classList.remove("is-revealing");
+    replay(board, "is-revealing");
+    nameRevealTimer = setTimeout(() => {
+      board.classList.remove("is-revealing");
+      wuge.classList.remove("is-counting");
+    }, 2500);
+  } else {
+    board.classList.remove("is-revealing");
+    wuge.classList.remove("is-counting");
+  }
 }
 
 function renderNameChoices() {
@@ -2702,8 +2767,7 @@ async function runName(fresh = true) {
 
 /* ---------- 解梦 ---------- */
 
-function renderDream(reading) {
-  const fresh = freshReading;
+function renderDream(reading, fresh = false) {
   const results = calculations(reading, "dream_result:");
   const list = $("#dream-symbols");
   list.replaceChildren();
@@ -2896,22 +2960,26 @@ const PAGES = {
   },
   bazi: {
     thinking: "正在依四柱推演……",
-    onState(next) {
-      renderBazi(next.chart);
+    onState(next, first, background) {
+      renderBazi(next.chart, first || background);
     },
-    onChart: renderBazi,
+    onChart(chart, silent = false) {
+      renderBazi(chart, silent);
+    },
     init() {
-      renderBazi(null);
+      renderBazi(null, true);
     },
   },
   astro: {
     thinking: "正在仰观星图……",
-    onState(next) {
-      renderAstro(next.chart);
+    onState(next, first, background) {
+      renderAstro(next.chart, first || background);
     },
-    onChart: renderAstro,
+    onChart(chart, silent = false) {
+      renderAstro(chart, silent);
+    },
     init() {
-      renderAstro(null);
+      renderAstro(null, true);
     },
   },
   tarot: {

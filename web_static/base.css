@@ -476,29 +476,6 @@ main {
 .msg-error .msg-text {
   color: var(--danger);
 }
-.thinking {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  color: var(--muted);
-  font-size: 14px;
-}
-.thinking i {
-  width: 5px;
-  height: 5px;
-  border-radius: 50%;
-  background: var(--accent-2);
-  animation: zm-pulse 1.2s infinite ease-in-out;
-}
-.thinking i:nth-child(2) {
-  animation-delay: 0.2s;
-}
-.thinking i:nth-child(3) {
-  animation-delay: 0.4s;
-}
-.thinking span {
-  margin-left: 8px;
-}
 @keyframes zm-pulse {
   0%,
   100% {
@@ -1667,7 +1644,8 @@ main {
   opacity: 0.88;
   pointer-events: auto;
 }
-.fact-seal + .reading-tags,
+.fact-seal + .reading-confidence,
+.fact-seal ~ .reading-tags,
 .fact-seal ~ .reading-summary {
   padding-right: 76px;
 }
@@ -1741,8 +1719,9 @@ body:has(.birth-fold[open]) .ask-fab {
     height: 50px;
     font-size: 12px;
   }
-  .fact-seal ~ .reading-summary,
-  .fact-seal + .reading-tags {
+  .fact-seal + .reading-confidence,
+  .fact-seal ~ .reading-tags,
+  .fact-seal ~ .reading-summary {
     padding-right: 60px;
   }
   /* On a phone the shortcut becomes a bar along the foot of the screen. */
@@ -1752,7 +1731,7 @@ body:has(.birth-fold[open]) .ask-fab {
     bottom: max(12px, env(safe-area-inset-bottom, 0px));
     justify-content: center;
   }
-  main {
+  body:has(.ask-fab) main {
     padding-bottom: 72px;
   }
 }
