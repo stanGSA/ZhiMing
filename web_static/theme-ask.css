@@ -44,15 +44,24 @@
   align-items: flex-start;
 }
 .hero-title h1 {
-  writing-mode: vertical-rl;
-  height: 330px;
+  display: flex;
+  flex-direction: row-reverse;
+  align-items: flex-start;
+  min-height: 320px; /* leaves the foot of the title clear of the mountains */
+  gap: 0.28em;
   font-size: 64px;
-  line-height: 1.25;
+  line-height: 1.18;
   font-weight: 900;
-  letter-spacing: 0.18em;
+}
+.hero-title .v-col {
+  display: block;
+  width: 1em;
+  word-break: break-all;
+  overflow-wrap: anywhere;
+  text-align: center;
 }
 .hero-seal {
-  margin-top: 150px;
+  margin-top: 170px;
   width: 52px;
   height: 52px;
   border: 2px solid var(--cinnabar);
@@ -74,7 +83,7 @@
 .hero-date {
   font-family: var(--font-sans);
   font-size: 13px;
-  letter-spacing: 0.3em;
+  letter-spacing: 0.16em;
   color: var(--malachite);
 }
 .hero-copy p {
@@ -163,7 +172,7 @@
 .enroll-step {
   font-family: var(--font-sans);
   font-size: 13px;
-  letter-spacing: 0.3em;
+  letter-spacing: 0.16em;
   color: var(--cinnabar);
 }
 .enroll-title {
@@ -449,11 +458,11 @@
     gap: 20px;
   }
   .hero-title h1 {
-    height: 250px;
+    min-height: 230px;
     font-size: 48px;
   }
   .hero-seal {
-    margin-top: 110px;
+    margin-top: 128px;
   }
   .hero-mountains {
     height: 200px;

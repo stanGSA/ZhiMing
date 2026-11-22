@@ -62,7 +62,7 @@ body {
 .btn-primary {
   border-color: var(--accent-2);
   color: var(--accent-ink);
-  letter-spacing: 0.35em;
+  letter-spacing: 0.16em;
 }
 .btn-primary:not(:disabled):hover {
   background: var(--accent-hover);
@@ -122,7 +122,7 @@ body {
 .astro-board {
   display: flex;
   flex-direction: column;
-  gap: 48px;
+  gap: 32px;
 }
 .plate {
   min-width: 0;
@@ -256,11 +256,19 @@ body {
 }
 
 /* ---------- Data ---------- */
+/* Planets and aspects sit side by side under the 太阳·月亮·上升 strip: the two lists are read
+   together, and the column stays short enough for the reading to follow. */
 .astro-data {
   min-width: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 32px;
+  display: grid;
+  grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr);
+  gap: 28px 36px;
+  align-items: start;
+}
+.astro-data > .trio,
+.astro-data > .astro-empty,
+.astro-data > .astro-notes {
+  grid-column: 1 / -1;
 }
 .trio {
   display: grid;
@@ -281,7 +289,7 @@ body {
 }
 .trio-label {
   font-size: 13px;
-  letter-spacing: 0.3em;
+  letter-spacing: 0.2em;
   color: var(--muted);
 }
 .trio-sign {
@@ -332,9 +340,12 @@ body {
 }
 .aspect-list {
   display: flex;
-  flex-wrap: wrap;
-  gap: 8px 22px;
+  flex-direction: column;
   font-size: 14px;
+}
+.aspect-list li {
+  padding: 7px 0;
+  border-bottom: 1px solid var(--line);
 }
 .aspect-list b {
   font-weight: 400;
@@ -359,7 +370,8 @@ body {
 
 /* ---------- Birth fold and dialogue ---------- */
 .astro-hero {
-  padding-bottom: 32px;
+  padding-top: 44px;
+  padding-bottom: 28px;
 }
 .glass {
   border: 1px solid rgba(169, 193, 234, 0.2);
@@ -452,6 +464,9 @@ body {
 }
 
 @media (max-width: 760px) {
+  .astro-data {
+    grid-template-columns: minmax(0, 1fr);
+  }
   .astro-heading h1 {
     font-size: 34px;
   }
@@ -469,4 +484,95 @@ body {
     padding-left: 0;
     border-left: 0;
   }
+}
+
+/* ---------- 描线入轨: a newly drawn chart traces its rings, then the planets, then aspects ---------- */
+.natal-wheel.is-revealing .nw-ring-o,
+.natal-wheel.is-revealing .nw-ring {
+  stroke-dasharray: var(--len);
+  animation: nw-draw 1.1s ease-out both;
+}
+.natal-wheel.is-revealing .nw-tick,
+.natal-wheel.is-revealing .nw-sign-sep,
+.natal-wheel.is-revealing .nw-sign,
+.natal-wheel.is-revealing .nw-cusp,
+.natal-wheel.is-revealing .nw-house,
+.natal-wheel.is-revealing .nw-core {
+  animation: nw-fade 0.6s ease-out 0.7s both;
+}
+.natal-wheel.is-revealing .nw-axis {
+  stroke-dasharray: var(--len);
+  animation: nw-draw 0.6s ease-out 1s both;
+}
+.natal-wheel.is-revealing .nw-axislbl {
+  animation: nw-fade 0.4s ease-out 1.4s both;
+}
+.natal-wheel.is-revealing .nw-pdot,
+.natal-wheel.is-revealing .nw-planet,
+.natal-wheel.is-revealing .nw-pmark {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: nw-pop 0.5s cubic-bezier(0.3, 1.5, 0.5, 1) both;
+  animation-delay: calc(1.3s + var(--i, 0) * 90ms);
+}
+.natal-wheel.is-revealing .nw-asp-soft,
+.natal-wheel.is-revealing .nw-asp-hard {
+  stroke-dasharray: var(--len);
+  animation: nw-draw 0.7s ease-out both;
+  animation-delay: calc(2.4s + var(--i, 0) * 80ms);
+}
+@keyframes nw-draw {
+  from {
+    stroke-dashoffset: var(--len);
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+@keyframes nw-fade {
+  from {
+    opacity: 0;
+  }
+}
+@keyframes nw-pop {
+  from {
+    opacity: 0;
+    transform: scale(0.3);
+  }
+}
+
+/* ---------- 推演轨 · 星轨: a star runs a fine orbit ---------- */
+.track-now > i {
+  position: relative;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: transparent;
+  border: 1px solid rgba(169, 193, 234, 0.55);
+  animation: nw-orbit 1.6s linear infinite;
+}
+.track-now > i::after {
+  content: "";
+  position: absolute;
+  top: -3px;
+  left: 50%;
+  width: 5px;
+  height: 5px;
+  margin-left: -2.5px;
+  border-radius: 50%;
+  background: var(--accent-2);
+  box-shadow: 0 0 6px var(--accent-2);
+}
+@keyframes nw-orbit {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* An undrawn wheel turns slowly, at the pace of the entrance compass. */
+.natal-wheel.is-idle .nw-tick,
+.natal-wheel.is-idle .nw-sign-sep {
+  transform-box: view-box;
+  transform-origin: 320px 320px;
+  animation: nw-orbit 240s linear infinite;
 }
