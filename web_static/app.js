@@ -27,6 +27,7 @@ const CN_DIGITS = "〇一二三四五六七八九";
 
 let state = null;
 let busy = false;
+let freshReading = false; // set by send(): the next reading rendered just arrived
 let currentReading = null;
 let followupReadingId = null;
 let toastTimer;
@@ -574,21 +575,107 @@ function showMessage(message) {
   const body = node("div", "msg-body");
   if (message.stale) body.append(node("p", "reading-confidence", "旧生辰记录"));
   body.append(node("p", "msg-text", message.text));
+  if (message.role === "assistant" && message.status === "submit_reading" && $("#reading")
+    && message.text.length > 140) {
+    body.classList.add("msg-long");
+    const more = button("展开全文", "msg-more");
+    more.setAttribute("aria-expanded", "false");
+    more.addEventListener("click", () => {
+      const open = body.classList.toggle("msg-open");
+      more.textContent = open ? "收起" : "展开全文";
+      more.setAttribute("aria-expanded", String(open));
+    });
+    const jump = button(`完整解读见「${$("#reading-title")?.textContent || "解读"}」`, "msg-more");
+    jump.addEventListener("click", () =>
+      $("#reading").scrollIntoView({ behavior: "smooth", block: "start" }));
+    const row = node("div", "msg-more-row");
+    row.append(more, jump);
+    body.append(row);
+  }
   item.append(body);
   $("#messages").append(item);
 }
 
+/* The thinking bubble is a 推演轨: six fixed stages; each progress label from the server is
+   filed under its stage and kept, so the person sees the path taken, including a fact check
+   that sent the draft back. The current label stays in the one span the tests read. */
+const TRACK_STAGES = [
+  ["ask", "问意"],
+  ["calc", "排盘"],
+  ["expert", "专家", true],
+  ["merge", "合参", true],
+  ["check", "核验"],
+  ["write", "成文"],
+];
+let trackClock = null;
+
+function stageOf(label) {
+  if (/理解/.test(label)) return "ask";
+  if (/专家/.test(label)) return "expert";
+  if (/比对|呼应|分歧/.test(label)) return "merge";
+  if (/核对|审校|改写/.test(label)) return "check";
+  if (/解读已完成/.test(label)) return "write";
+  return "calc";
+}
+
 function showThinking() {
   $("#thinking")?.remove();
+  clearInterval(trackClock);
   const box = $("#messages");
   if (!box) return;
   const item = node("article", "msg msg-assistant");
   item.id = "thinking";
   item.append(node("span", "msg-label", "答"));
-  const dots = node("div", "thinking");
-  dots.append(node("i"), node("i"), node("i"), node("span", "", page.thinking || "正在观照你的问题……"));
-  item.append(dots);
+  const body = node("div", "thinking");
+  const now = node("div", "track-now");
+  const clock = node("time", "track-clock", "0.0 s");
+  now.append(node("i"), node("span", "", page.thinking || "正在观照你的问题……"), clock);
+  const track = node("ol", "track");
+  TRACK_STAGES.forEach(([id, name, optional]) => {
+    const step = node("li", "pending");
+    step.dataset.stage = id;
+    if (optional) step.dataset.optional = "";
+    const text = node("div", "track-text");
+    text.append(node("b", "", name), node("div", "track-lines"));
+    step.append(node("i", "track-node"), text);
+    track.append(step);
+  });
+  track.firstElementChild.className = "active";
+  body.append(now, track);
+  item.append(body);
   box.append(item);
+  const start = performance.now();
+  trackClock = setInterval(() => {
+    if (!clock.isConnected) return clearInterval(trackClock);
+    clock.textContent = `${((performance.now() - start) / 1000).toFixed(1)} s`;
+  }, 100);
+  scrollTranscript();
+}
+
+function advanceTrack(label) {
+  const text = $("#thinking .thinking span");
+  if (!text) return;
+  text.textContent = label;
+  const steps = $$("#thinking .track li");
+  const index = steps.findIndex((step) => step.dataset.stage === stageOf(label));
+  if (index < 0) return;
+  const redo = /改写/.test(label);
+  steps.forEach((step, i) => {
+    if (i >= index) return;
+    if (step.classList.contains("active")) step.classList.replace("active", "done");
+    else if (step.classList.contains("pending") && !("optional" in step.dataset))
+      step.className = "done";
+  });
+  const step = steps[index];
+  const keep = step.classList.contains("redo");
+  step.className = /解读已完成/.test(label) ? "done seen" : "active seen";
+  if (redo || keep) step.classList.add("redo");
+  const lines = step.querySelector(".track-lines");
+  if (lines.lastElementChild?.dataset.label === label) return;
+  const line = node("small", redo ? "track-bad" : "", label);
+  line.dataset.label = label;
+  if (redo) line.append(node("em", "track-stamp", "退"));
+  lines.append(line);
   scrollTranscript();
 }
 
@@ -636,8 +723,7 @@ async function send({ message, extra = {} }, birth) {
   const progress = new EventSource(`/api/progress?request_id=${progressId}&system=${SYSTEM}`);
   progress.onmessage = (event) => {
     const label = JSON.parse(event.data).label;
-    const text = $("#thinking .thinking span");
-    if (text && typeof label === "string") text.textContent = label;
+    if (typeof label === "string") advanceTrack(label);
   };
   progress.addEventListener("done", () => progress.close());
   try {
@@ -650,6 +736,7 @@ async function send({ message, extra = {} }, birth) {
     if (["auto", "bazi", "astro", "daily"].includes(SYSTEM) && !followupReadingId
       && next.messages.at(-1)?.status !== "crisis_support")
       acceptBirthVersion(next.birth_version);
+    freshReading = next.messages.at(-1)?.status === "submit_reading";
     applyState(next);
     // A page may take over what happens next (塔罗 turns the view to its face-down cards).
     handled = next.messages.at(-1)?.status === "submit_reading" && Boolean(page.onAnswered?.());
@@ -728,6 +815,9 @@ function renderReading(reading) {
     tags.append(node("span", "", SYSTEM_NAMES[value] || value)),
   );
   content.replaceChildren(tags, node("p", "reading-summary", output.summary));
+  const fresh = freshReading;
+  freshReading = false;
+  content.classList.toggle("is-fresh", fresh);
   if (reading.birth_context?.birth) {
     const birth = reading.birth_context.birth;
     content.insertBefore(node("p", "reading-confidence",
@@ -774,6 +864,17 @@ function renderReading(reading) {
   if (output.safety?.flag && output.safety.note)
     confidence.append(node("span", "", " " + output.safety.note));
   content.append(confidence);
+  // Every fact the reading cites was checked by code before it was accepted: say so with a seal.
+  if (output.evidence?.length) {
+    const seal = node("span", "fact-seal");
+    seal.append(node("b", "", "事实"), node("b", "", "已核"));
+    seal.title = `引用的 ${output.evidence.length} 条事实均由代码逐项核对`;
+    seal.setAttribute("aria-label", seal.title);
+    content.prepend(seal);
+  }
+  if (fresh)
+    Array.from(content.children).forEach((child, index) =>
+      child.style.setProperty("--i", String(Math.min(index, 14))));
   if (output.followups?.length) {
     const followups = node("div", "reading-followups");
     for (const question of output.followups) {
@@ -1649,6 +1750,13 @@ const PILLARS = [
   ["time", "时柱"],
 ];
 
+const chartKeys = {};
+function freshChart(name, key) {
+  const before = chartKeys[name];
+  chartKeys[name] = key;
+  return before !== undefined && before !== key && key !== "null";
+}
+
 function renderBazi(chart) {
   const result = chart?.system === "bazi" ? chart.result : null;
   $("#bazi-empty").hidden = Boolean(result);
@@ -1676,6 +1784,7 @@ function renderBazi(chart) {
       node("dd", "", result?.nayin?.[key] || "—"),
     );
     plaque.append(facts);
+    plaque.style.setProperty("--i", String(pillars.childElementCount));
     pillars.append(plaque);
   }
 
@@ -1688,6 +1797,7 @@ function renderBazi(chart) {
     for (let i = 0; i < 8; i++) {
       const bead = node("i", i < count ? "bead on" : "bead");
       bead.dataset.element = element;
+      if (i < count) bead.style.setProperty("--b", String(wuxing.querySelectorAll(".bead.on").length + beads.querySelectorAll(".on").length));
       beads.append(bead);
     }
     const row = node("div", "wuxing-row");
@@ -1695,6 +1805,10 @@ function renderBazi(chart) {
     row.append(elementTag(element, "el-badge"), beads, node("span", "wuxing-count", result ? String(count) : "—"));
     wuxing.append(row);
   }
+
+  const revealing = freshChart("bazi", JSON.stringify(result?.pillars ?? null));
+  for (const box of [pillars, wuxing, $("#dayun"), $(".dm-panel")])
+    box?.classList.toggle("is-revealing", revealing);
 
   const master = result?.day_master;
   $("#dm-name").textContent = master || "—";
@@ -1722,6 +1836,7 @@ function renderBazi(chart) {
       node("span", "dayun-gz", item.ganzhi),
       node("span", "dayun-years", `${item.start_year}–${item.start_year + 9}`),
     );
+    step.style.setProperty("--i", String(index));
     dayun.append(step);
   });
   $("#dayun-start").textContent = result?.dayun
@@ -1853,7 +1968,17 @@ function natalWheel(result) {
 function renderAstro(chart) {
   const result = chart?.system === "astro" ? chart.result : null;
   $("#astro-empty").hidden = Boolean(result);
-  $("#astro-wheel").replaceChildren(natalWheel(result));
+  const wheel = natalWheel(result);
+  $("#astro-wheel").replaceChildren(wheel);
+  if (freshChart("astro", JSON.stringify(result?.planets?.map((p) => p.lon) ?? null))) {
+    wheel.querySelectorAll(".nw-asp-soft, .nw-asp-hard").forEach((item, index) =>
+      item.style.setProperty("--i", String(index)));
+    const marks = [".nw-pdot", ".nw-planet", ".nw-pmark"].map((name) => wheel.querySelectorAll(name));
+    marks.forEach((list) => list.forEach((item, index) => item.style.setProperty("--i", String(index))));
+    wheel.querySelectorAll(".nw-ring-o, .nw-ring, .nw-axis, .nw-asp-soft, .nw-asp-hard").forEach((item) =>
+      item.style.setProperty("--len", String(Math.ceil(item.getTotalLength?.() || 2000))));
+    wheel.classList.add("is-revealing");
+  }
   $("#astro-meta").textContent = result
     ? `${result.input.birth_local.replace("T", " ")} · ${chart.location.display_name} · ${result.house_system ? result.house_system + " 宫制" : "未知时刻 · 不分宫"} · 回归黄道`
     : "填写出生时空，绘出你的本命星图。";

@@ -39,7 +39,7 @@
   min-height: 56px;
   padding: 0 42px;
   font-weight: 600;
-  letter-spacing: 0.45em;
+  letter-spacing: 0.16em;
   box-shadow:
     inset 0 0 0 3px var(--accent),
     inset 0 0 0 4px rgba(30, 16, 36, 0.45);
@@ -62,9 +62,11 @@
   color: #dccfc0;
 }
 
+/* clip, not hidden: hidden would make <main> a scroll container and stop the dialogue window
+   from staying pinned beside the reading. */
 main {
   position: relative;
-  overflow: hidden;
+  overflow: clip;
 }
 .rose-window {
   position: absolute;
@@ -202,7 +204,7 @@ main {
 .spread b {
   font-size: 16px;
   font-weight: 400;
-  letter-spacing: 0.3em;
+  letter-spacing: 0.16em;
 }
 .spread small {
   font-size: 12px;
@@ -381,7 +383,7 @@ main {
 }
 .tarot-position {
   font-size: 15px;
-  letter-spacing: 0.3em;
+  letter-spacing: 0.16em;
   color: var(--accent-2);
 }
 .tarot-orientation {
@@ -608,7 +610,7 @@ main {
   min-height: 44px;
   padding: 0 20px;
   border-radius: 20px 20px 4px 4px;
-  letter-spacing: 0.3em;
+  letter-spacing: 0.14em;
   box-shadow: none;
 }
 .tarot-lower .reading {
@@ -618,7 +620,7 @@ main {
 }
 .panel-title {
   font-size: 18px;
-  letter-spacing: 0.3em;
+  letter-spacing: 0.16em;
   font-weight: 600;
   margin-bottom: 16px;
 }

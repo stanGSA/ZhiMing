@@ -35,14 +35,20 @@
     </header>
 
     <main class="wrap daily-main">
-      <div class="day-nav" role="group" aria-label="选择日期">
-        <button class="btn btn-ghost step" id="day-prev" type="button" aria-label="前一日" data-lock>‹</button>
-        <label class="day-picker"
-          ><span class="sr-only">选择日期</span
-          ><input id="day-pick" type="date" min="1901-01-01" max="2099-12-31" data-lock
-        /></label>
-        <button class="btn btn-ghost step" id="day-next" type="button" aria-label="后一日" data-lock>›</button>
-      </div>
+      <header class="page-head daily-head">
+        <div>
+          <span class="kicker">今日黄历 · 流日干支</span>
+          <h1>一日一页，顺时而行</h1>
+        </div>
+        <div class="day-nav" role="group" aria-label="选择日期">
+          <button class="btn btn-ghost step" id="day-prev" type="button" aria-label="前一日" data-lock>‹</button>
+          <label class="day-picker"
+            ><span class="sr-only">选择日期</span
+            ><input id="day-pick" type="date" min="1901-01-01" max="2099-12-31" data-lock
+          /></label>
+          <button class="btn btn-ghost step" id="day-next" type="button" aria-label="后一日" data-lock>›</button>
+        </div>
+      </header>
 
       <div class="birth-bar">
         <details class="birth-fold paper-panel" id="daily-birth" data-birth-fold>
@@ -91,6 +97,15 @@
               </div>
             </div>
           </section>
+          <section class="week-panel" aria-labelledby="week-title">
+            <div class="section-title">
+              <h2 id="week-title">本周流日</h2>
+            </div>
+            <div class="week-scroll">
+              <div class="week" id="week"></div>
+            </div>
+            <p class="week-note">十神以你的日主推算；流日取当地正午所在日柱。点某一天可查看那天。</p>
+          </section>
         </div>
 
         <aside class="band-ask" aria-label="问今天的一件事">
@@ -138,15 +153,6 @@
         </section>
       </div>
 
-      <section class="week-panel section" aria-labelledby="week-title">
-        <div class="section-title">
-          <h2 id="week-title">本周流日</h2>
-        </div>
-        <div class="week-scroll">
-          <div class="week" id="week"></div>
-        </div>
-        <p class="week-note">十神以你的日主推算；流日取当地正午所在日柱。点某一天可查看那天。</p>
-      </section>
     </main>
 
     <footer class="zm-footer">
