@@ -55,7 +55,7 @@
 /* Seal-stamp buttons: vermilion with a cut-in paper frame. */
 .btn-primary {
   font-weight: 600;
-  letter-spacing: 0.45em;
+  letter-spacing: 0.16em;
   box-shadow:
     inset 0 0 0 4px var(--accent),
     inset 0 0 0 5px rgba(243, 233, 218, 0.8);
@@ -148,7 +148,7 @@
 }
 .mi-field > span {
   font-size: 13px;
-  letter-spacing: 0.4em;
+  letter-spacing: 0.2em;
   text-indent: 0.4em;
   color: var(--muted);
 }
@@ -181,7 +181,7 @@
 
 /* ---------- Characters: the left of the band, each stele a glyph over its strokes ---------- */
 .name-empty {
-  min-height: var(--dialog-height);
+  min-height: 320px;
   padding: 40px;
   border: 1px dashed rgba(236, 232, 222, 0.3);
   display: flex;
@@ -245,7 +245,7 @@
 }
 .stele-role {
   font-size: 13px;
-  letter-spacing: 0.3em;
+  letter-spacing: 0.16em;
   color: var(--muted);
 }
 .stele-strokes {
@@ -297,7 +297,7 @@
 .panel-head h2,
 .panel-title {
   font-size: 22px;
-  letter-spacing: 0.4em;
+  letter-spacing: 0.16em;
   font-weight: 600;
   margin-bottom: 24px;
 }
@@ -365,7 +365,7 @@
 }
 .wuge-name {
   font-size: 13px;
-  letter-spacing: 0.3em;
+  letter-spacing: 0.16em;
   color: var(--muted);
 }
 .wuge-number {
@@ -571,5 +571,108 @@
   }
   .stone {
     padding: 22px 18px;
+  }
+}
+
+/* ---------- 推演轨 · 描红: a red stroke is written across a grid square ---------- */
+.track-now > i {
+  position: relative;
+  width: 13px;
+  height: 13px;
+  border-radius: 0;
+  background: transparent;
+  border: 1px solid var(--line-strong);
+  animation: none;
+}
+.track-now > i::after {
+  content: "";
+  position: absolute;
+  left: 2px;
+  right: 2px;
+  top: 5px;
+  height: 2px;
+  background: var(--accent);
+  transform-origin: left;
+  animation: nm-write 1.3s ease-in-out infinite;
+}
+.track-node {
+  transform: scale(0.72);
+}
+@keyframes nm-write {
+  0% {
+    transform: scaleX(0);
+  }
+  55%,
+  85% {
+    transform: scaleX(1);
+  }
+  100% {
+    transform: scaleX(1);
+    opacity: 0;
+  }
+}
+
+/* ---------- 推演: rubbings ink in, numbers count up, brackets are drawn ---------- */
+#name-board.is-revealing .stele {
+  animation: nm-rub 0.9s ease-out both;
+  animation-delay: calc(var(--i, 0) * 160ms);
+}
+#name-board.is-revealing .wuge-cell {
+  animation: nm-fade 0.5s ease-out 0.3s both;
+}
+#name-board.is-revealing .wuge-bracket {
+  clip-path: inset(0 0 100% 0);
+  animation: nm-draw 0.7s ease-out 0.6s forwards;
+}
+#name-board.is-revealing .wuge-label,
+#name-board.is-revealing .wuge-total {
+  animation: nm-fade 0.5s ease-out 0.5s both;
+}
+#name-board.is-revealing #sancai-flow > * {
+  animation: nm-fade 0.5s ease-out both;
+  animation-delay: calc(1.2s + var(--i, 0) * 150ms);
+}
+/* Numbers count up from zero on an overlay; the text underneath stays the real value. */
+@property --wg {
+  syntax: "<integer>";
+  inherits: false;
+  initial-value: 0;
+}
+#name-board.is-revealing #wuge.is-counting .wuge-number {
+  position: relative;
+  -webkit-text-fill-color: transparent;
+}
+#name-board.is-revealing #wuge.is-counting .wuge-number::after {
+  content: counter(wg);
+  counter-reset: wg var(--wg);
+  position: absolute;
+  inset: 0;
+  -webkit-text-fill-color: currentColor;
+  animation: nm-count 0.9s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+  animation-delay: calc(0.5s + var(--i, 0) * 120ms);
+}
+@keyframes nm-count {
+  from {
+    --wg: 0;
+  }
+  to {
+    --wg: var(--target);
+  }
+}
+@keyframes nm-rub {
+  from {
+    opacity: 0;
+    filter: blur(6px) grayscale(1);
+    transform: translateY(8px);
+  }
+}
+@keyframes nm-fade {
+  from {
+    opacity: 0;
+  }
+}
+@keyframes nm-draw {
+  to {
+    clip-path: inset(0 0 0 0);
   }
 }

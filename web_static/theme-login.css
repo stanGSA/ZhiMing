@@ -88,22 +88,31 @@
   gap: 22px;
   align-items: flex-start;
 }
-.gate-title h1 {
-  writing-mode: vertical-rl;
-  font-size: 112px;
-  line-height: 1;
-  font-weight: 900;
-  letter-spacing: 0.14em;
+/* Vertical titles are built from one-character-wide columns rather than writing-mode, so the
+   characters never overlap when the system font has no vertical metrics. */
+.v-col {
+  display: block;
+  width: 1em;
+  word-break: break-all;
+  overflow-wrap: anywhere;
+  text-align: center;
 }
-.gate-title h1 span {
+.gate-title h1 {
+  font-size: 104px;
+  line-height: 1.12;
+  font-weight: 900;
+}
+.gate-title h1 em {
+  font-style: normal;
   color: var(--accent);
 }
 .gate-title p {
   margin-top: 6px;
-  writing-mode: vertical-rl;
+  display: flex;
+  flex-direction: row-reverse;
+  gap: 10px;
   font-size: 15px;
-  line-height: 2;
-  letter-spacing: 0.5em;
+  line-height: 1.9;
   color: var(--muted);
 }
 .gate-luopan {
@@ -386,7 +395,7 @@
 .gate-foot {
   margin-top: 44px;
   font-size: 12px;
-  letter-spacing: 0.2em;
+  letter-spacing: 0.12em;
   color: #8f8574;
   text-align: center;
 }
@@ -408,11 +417,14 @@
     align-self: flex-start;
   }
   .gate-title h1 {
-    writing-mode: horizontal-tb;
     font-size: 64px;
   }
+  .gate-title .v-col {
+    width: auto;
+  }
   .gate-title p {
-    writing-mode: horizontal-tb;
+    flex-direction: row;
+    gap: 1em;
     letter-spacing: 0.3em;
   }
   .gate-title {
@@ -474,6 +486,7 @@
 .gate-check a,
 .gate-foot a {
   color: var(--accent-2);
+  white-space: nowrap;
 }
 .gate-error {
   border-left: 2px solid #d26a5c;
