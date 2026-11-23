@@ -168,6 +168,7 @@ class Runtime:
             self.max_steps,
             self.token_budget,
             admission=self.mode == "multi",
+            repair_steps=2 if self.max_steps >= 6 else 0,
         )
         if deadline is None:
             return await turn

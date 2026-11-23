@@ -80,9 +80,14 @@ def constrain(schema: dict, session) -> dict:
         single = properties.get("ref_id")
         if isinstance(single, dict) and single.get("type") == "string":
             single["enum"] = citable
-        items = (properties.get("ref_ids") or {}).get("items")
+        ref_ids_prop = properties.get("ref_ids") or {}
+        items = ref_ids_prop.get("items")
         if isinstance(items, dict) and items.get("type") == "string":
             items["enum"] = citable
+        for variant in ref_ids_prop.get("anyOf") or ():
+            var_items = variant.get("items") if isinstance(variant, dict) else None
+            if isinstance(var_items, dict) and var_items.get("type") == "string":
+                var_items["enum"] = citable
         for value in node.values():
             walk(value)
 

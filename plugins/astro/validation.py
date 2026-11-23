@@ -4,6 +4,7 @@ import re
 
 from common.facts import section_texts
 from common.input_evidence import chinese_number
+from harness.models import ValidationMessage
 from plugins.astro.calculator import BODY_ZH, SIGN_ZH
 
 ASPECT_WORDS = {
@@ -183,14 +184,29 @@ def validate_output(reading, state):
             is_transit = kind != "本命" and bool(cited or temporal or when or "行运" in text)
             if not is_transit:
                 if not natal_aspect(natal, source, target, aspect):
-                    return "本命行星相位与本次计算不符"
+                    matched_tr = matching_transit_any_order(events, source, target, aspect)
+                    hint = (
+                        f"；该相位属于本次行运事件，若陈述行运请写明“行运{BODY_ZH[matched_tr[0]['transit_body']]}”"
+                        if matched_tr
+                        else ""
+                    )
+                    return ValidationMessage(
+                        f"本命行星相位与本次计算不符（冲突片段：“{clause[:80]}”{hint}）",
+                        retry_key=f"natal_aspect:{source}:{target}:{aspect}",
+                    )
                 matching = []
                 continue
             matching = same_event([cited] if cited else events, source, target, aspect)
             if not matching:
-                return "行运星、本命星与相位须匹配同一计算事件"
+                return ValidationMessage(
+                    f"行运星、本命星与相位须匹配同一计算事件（冲突片段：“{clause[:80]}”）",
+                    retry_key=f"transit_event:{source}:{target}:{aspect}",
+                )
             if when and not on_date(matching, when):
-                return "行运日期与所述相位不符，不能编造或混用UTC与当地日期"
+                return ValidationMessage(
+                    f"行运日期与所述相位不符，不能编造或混用UTC与当地日期（冲突片段：“{clause[:80]}”）",
+                    retry_key=f"transit_date:{source}:{target}:{aspect}",
+                )
         if cited and not assertions:
             when = preceding_event_date(text, len(text))
             if when and not on_date([cited], when):
@@ -258,6 +274,14 @@ def same_event(events, source, target, aspect):
         e
         for e in events
         if e["transit_body"] == source and e["natal_body"] == target and e["aspect"] == aspect
+    ]
+
+
+def matching_transit_any_order(events, source, target, aspect):
+    return [
+        e
+        for e in events
+        if {e["transit_body"], e["natal_body"]} == {source, target} and e["aspect"] == aspect
     ]
 
 
@@ -347,7 +371,16 @@ def check_section(title, body, refs, event_refs, events, natal):
                 natal_ok = natal_aspect(natal, source, target, aspect)
                 if kind == "本命" or not (explicit or transit_layer):
                     if not natal_ok:
-                        return "本命行星相位与本次计算不符"
+                        matched_tr = matching_transit_any_order(events, source, target, aspect)
+                        hint = (
+                            f"；该相位属于本次行运事件，若陈述行运请写明“行运{BODY_ZH[matched_tr[0]['transit_body']]}”并在本段ref_ids引用该事件"
+                            if matched_tr
+                            else ""
+                        )
+                        return ValidationMessage(
+                            f"本命行星相位与本次计算不符（冲突片段：“{clause[:80]}”{hint}）",
+                            retry_key=f"natal_aspect:{source}:{target}:{aspect}",
+                        )
                     current, current_kind = [], "本命"
                     continue
                 found = same_event(pool, source, target, aspect)
@@ -357,13 +390,20 @@ def check_section(title, body, refs, event_refs, events, natal):
                     if natal_ok and not explicit:
                         current, current_kind = [], "本命"
                         continue
-                    return (
+                    prefix = (
                         "段落中的行运相位须匹配本段ref_ids引用的计算事件"
                         if cited
                         else "行运星、本命星与相位须匹配同一计算事件"
                     )
+                    return ValidationMessage(
+                        f"{prefix}（冲突片段：“{clause[:80]}”）",
+                        retry_key=f"section_transit:{source}:{target}:{aspect}",
+                    )
                 if not influence_onset(clause) and any(not on_date(found, when) for when in dates):
-                    return "行运日期与所述相位不符，不能编造或混用UTC与当地日期"
+                    return ValidationMessage(
+                        f"行运日期与所述相位不符，不能编造或混用UTC与当地日期（冲突片段：“{clause[:80]}”）",
+                        retry_key=f"transit_date:{source}:{target}:{aspect}",
+                    )
                 current, current_kind = found, "行运"
             if assertions:
                 pending_dates = []

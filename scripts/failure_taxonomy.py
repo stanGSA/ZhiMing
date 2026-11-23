@@ -77,7 +77,7 @@ def quality_score(row: dict) -> bool | None:
 
 
 def category(tool: str, code: str | None, error: str | None) -> str:
-    error = error or ""
+    error = re.sub(r"（(?:冲突(?:原句|片段)|命中“).*?(?:）|$)", "", error or "")
     for name, matches in CATEGORIES:
         if matches(tool, code, error):
             return name

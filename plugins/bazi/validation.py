@@ -10,10 +10,14 @@ import re
 from common.evidence import calculation_evidence_texts
 from common.facts import section_texts
 from common.output_policy import warn
+from harness.models import ValidationMessage
 
 PILLAR_KEYS = {"年": "year", "月": "month", "日": "day", "时": "time"}
 PILLAR_CLAIM = re.compile(
     r"(?:(?P<flow>流[年月日时])(?:的?(?P<flow_name>[年月日时])?柱)?|"
+    r"(?:(?:今年|明年|去年|当年|该年)的?(?P<temporal_y>年)柱|"
+    r"(?:本月|下月|这个月|下个月|当月|该月)的?(?P<temporal_m>月)柱|"
+    r"(?:今天|今日|明天|明日|当日|当天)的?(?P<temporal_d>日)柱)|"
     r"(?P<scope>候选|原局|本命|出生|流期)?(?:的)?(?P<name>[年月日时])柱)"
     r"\s*(?:是|为|：|:)?\s*(?P<value>[甲乙丙丁戊己庚辛壬癸][子丑寅卯辰巳午未申酉戌亥])"
 )
@@ -87,7 +91,10 @@ def validate_output(reading, state):
     gz.update(segment["pillar"] for segment in (daily.get("day") or {}).get("segments", []))
     for value in re.findall(r"[甲乙丙丁戊己庚辛壬癸][子丑寅卯辰巳午未申酉戌亥]", text):
         if value not in gz:
-            return "本次工具结果没有该干支，不能编造"
+            return ValidationMessage(
+                f"本次工具结果没有该干支，不能编造（冲突片段：“{value}”）",
+                retry_key=f"unknown_ganzhi:{value}",
+            )
     # The daily fortune's day pillars are flow days as well.
     flows = [
         *periods,
@@ -95,21 +102,32 @@ def validate_output(reading, state):
     ]
     for passage in claims:
         for match in PILLAR_CLAIM.finditer(passage):
-            flow, scope, name, value = match.group("flow", "scope", "name", "value")
-            key = PILLAR_KEYS[flow[-1] if flow else name]
-            if flow or scope == "流期":
+            flow = match.group("flow")
+            temporal = (
+                match.group("temporal_y") or match.group("temporal_m") or match.group("temporal_d")
+            )
+            scope, name, value = match.group("scope", "name", "value")
+            pillar_char = flow[-1] if flow else (temporal or name)
+            key = PILLAR_KEYS[pillar_char]
+            if flow or temporal or scope == "流期":
                 if (flow and match["flow_name"] not in (None, flow[-1])) or not any(
                     p["pillars"].get(key) == value for p in flows
                 ):
-                    return "流期柱位与干支不符，请使用本次对应流年、流月或流日的计算结果"
+                    return ValidationMessage(
+                        f"流期柱位与干支不符，请使用本次对应流年、流月或流日的计算结果（冲突片段：“{match.group(0)}”）",
+                        retry_key=f"flow_pillar:{key}:{value}",
+                    )
             elif scope == "候选" and any(c.get(key) == value for c in bazi.get("alternatives", [])):
                 continue
             elif bazi.get("pillars", {}).get(key) != value:
-                return "原局柱位与干支不符，请区分出生原局与流年、流月、流日"
+                return ValidationMessage(
+                    f"原局柱位与干支不符，请区分出生原局与流年、流月、流日（冲突片段：“{match.group(0)}”）",
+                    retry_key=f"natal_pillar:{key}:{value}",
+                )
     if (
         bazi
         and not bazi.get("time_known")
         and any(re.search(r"时柱(?:是|为|：|:|\s*[甲乙丙丁戊己庚辛壬癸])", p) for p in claims)
     ):
-        return "出生时辰未知，禁止编造时柱"
+        return ValidationMessage("出生时辰未知，禁止编造时柱", retry_key="unknown_time_pillar")
     return None

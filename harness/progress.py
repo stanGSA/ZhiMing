@@ -35,7 +35,7 @@ def progress_label(record):
         return "正在确认出生地"
     if name == "merge_signals" and result.get("ok"):
         return "正在比对各体系的呼应与分歧"
-    if name == "submit_reading":
+    if name in ("submit_reading", "patch_reading"):
         if result.get("ok"):
             return "解读已完成"
         if result.get("code") == "validation_failed":
