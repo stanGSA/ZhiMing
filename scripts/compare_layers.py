@@ -218,7 +218,7 @@ def rejection_category(result) -> str:
     diagnostics; retain unrecognized failures as 'other' together with their original code.
     """
     code, raw_message = result.get("code"), result.get("error") or ""
-    message = raw_message.split("（冲突句子：", 1)[0].split("（命中“", 1)[0]
+    message = re.sub(r"(?:（冲突句子：|（命中“|，冲突句子：).*", "", raw_message)
     if code == "review_revise":
         return "review"
     if code == "invalid_arguments":

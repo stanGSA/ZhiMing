@@ -330,6 +330,17 @@ CERTAINTY_REFUTATION = re.compile(
     r")"
 )
 REFUTATION_TAIL_UNDONE = re.compile(r"不对|不真|不实|错的|假的|不成立|站不住脚")
+QUOTE_PRE_NEGATED = re.compile(r"[不没非无未别勿莫错误假反岂难何谁]|虽|尽管|看似|表面")
+QUOTE_TAIL_UNDONE = re.compile(r"[不没非无未别勿莫错误假反]|多余|多此一举|以外|之外")
+QUOTE_POST_CLAUSE_UNDONE = re.compile(
+    r"^\s*(?:反而|而是|相反|反之)"
+    r"|(?:但是|然而|不过|可是|其实|事实上|实际上|但|却)[^，,。！？!?；;\n]*"
+    r"(?:有道理|很准|挺准|真准|是真的|真的准|可信|靠谱|成立|没错|没毛病|不假|不虚|应验|兑现)"
+    r"|不对|不真|不实|不妥|不当|不合理|不可取|不成立|不准确|不客观|不科学|不可信|不靠谱"
+    r"|没(?:有)?(?:道理|必要|意义|用)|毫无(?:道理|意义)|不(?:必|必要|需要|应该|应当|值得)"
+    r"|大可不必|多此一举|站不住脚|错的|错误的|假的|荒谬|可笑|多余"
+    r"|反面|对立面|反义|相反|以外|之外"
+)
 
 
 def sentence_around(text: str, start: int, end: int, limit: int = 90) -> str:
@@ -381,64 +392,92 @@ def _enclosing_quote(text: str, start: int, end: int) -> tuple[int, int] | None:
     return None
 
 
+def _valid_post_clauses(after_pred: str) -> bool:
+    """Ensure neither the predicate's own tail nor a comma-joined clause reverses it."""
+    match = re.match(r"([^，,：:—…]*)([，,：:—…]?)(.*)", after_pred)
+    tail, sep, later = match[1], match[2], match[3]
+    if (
+        QUOTE_TAIL_UNDONE.search(tail)
+        or DENIAL_REVERSAL.search(tail)
+        or GAIN_DEMAND_REVERSED.match(tail)
+    ):
+        return False
+    if sep in ("：", ":"):
+        return False
+    if later and QUOTE_POST_CLAUSE_UNDONE.search(later):
+        return False
+    return True
+
+
 def quoted_certainty_refuted(text: str, start: int, end: int) -> bool:
     """Whether ``start:end`` is inside a quoted fatalistic claim that the sentence doubts/refutes."""
     span = _enclosing_quote(text, start, end)
     if span is None:
         return False
     open_idx, close_idx = span
-    raw_before = CHAINED_QUOTES_BEFORE.sub("", text[max(0, open_idx - 48) : open_idx])
-    before_quote = CLAUSE_START.sub("", raw_before)
-    lead = re.split(r"但是|然而|不过|反而|而是|可是|却|但", before_quote)[-1].strip()
+    sentence_before = CHAINED_QUOTES_BEFORE.sub(
+        "", re.split(r"[。！？!?；;\n]", text[:open_idx])[-1]
+    )
+    parts_before = re.split(r"[，,：:]", sentence_before)
+    earlier_before = "，".join(parts_before[:-1])
+    if earlier_before and QUOTE_PRE_NEGATED.search(earlier_before):
+        return False
+    before_quote = parts_before[-1]
+    lead = re.sub(
+        r"^\s*(?:所以|因此|总之|不过|但是|然而|可是|而且|并且|同时|此外|另外|其实|但|却)\s*",
+        "",
+        before_quote,
+    ).strip()
     after_quote = text[close_idx + 1 :]
-    noun = CERTAINTY_CLAIM_NOUN.match(after_quote)
+    sent_match = re.match(r"([^。！？!?；;\n]*)([。！？!?；;\n]?)", after_quote)
+    sent_rest, end_punct = sent_match[1], sent_match[2]
+    if end_punct in ("？", "?") or re.search(r"(?:吗|(?<!什)么|呢)\s*(?:[，,]|$)", sent_rest):
+        return False
+    noun = CERTAINTY_CLAIM_NOUN.match(sent_rest)
 
     doubted = CERTAINTY_DOUBTED.search(lead)
     if doubted and noun:
         ahead = lead[: doubted.start()]
-        if GAIN_DOUBT_UNDONE.search(ahead) or denial_negated(ahead):
+        if (
+            QUOTE_PRE_NEGATED.search(ahead)
+            or GAIN_DOUBT_UNDONE.search(ahead)
+            or denial_negated(ahead)
+        ):
             return False
-        return bool(re.match(r"\s*(?:[，,。；;！!\n—…]|$)", after_quote[noun.end() :]))
+        after_noun = sent_rest[noun.end() :]
+        if not re.match(r"\s*(?:[，,—…]|$)", after_noun):
+            return False
+        return _valid_post_clauses(after_noun)
 
     addressed = GAIN_ADDRESSED.search(lead)
     if addressed and noun:
         ahead = lead[: addressed.start()]
-        if GAIN_DOUBT_UNDONE.search(ahead) or denial_negated(ahead):
+        if (
+            QUOTE_PRE_NEGATED.search(ahead)
+            or GAIN_DOUBT_UNDONE.search(ahead)
+            or denial_negated(ahead)
+        ):
             return False
-        demand = GAIN_DEMANDED.match(after_quote, noun.end())
-        if not demand or GAIN_DEMAND_REVERSED.match(after_quote, demand.end()):
+        demand = GAIN_DEMANDED.match(sent_rest, noun.end())
+        if not demand or GAIN_DEMAND_REVERSED.match(sent_rest, demand.end()):
             return False
-        clause_end = re.match(
-            r"([^，,。；;：:！!？?\n]*)([，,。；;：:！!？?\n]?)", after_quote[demand.end() :]
-        )
-        tail, punct = clause_end[1], clause_end[2]
-        return punct not in ("？", "?") and not re.search(r"[吗么]\s*$", tail)
+        return _valid_post_clauses(sent_rest[demand.end() :])
 
     if not REFUTED_QUOTE_LEAD.fullmatch(lead):
         return False
+    if QUOTE_PRE_NEGATED.search(re.sub(r"^(?:无论谁|不管谁)", "", lead)):
+        return False
     if noun is not None:
-        after_subject = after_quote[noun.end() :]
+        after_subject = sent_rest[noun.end() :]
     elif SPEECH_QUOTE_LEAD.search(lead):
-        after_subject = after_quote
+        after_subject = sent_rest
     else:
         return False
     bridge = REFUTATION_BRIDGE.match(after_subject)
     refuted = CERTAINTY_REFUTATION.match(after_subject, bridge.end())
     if not refuted:
         return False
-    clause_end = re.match(
-        r"([^，,。；;：:！!？?\n]*)([，,。；;：:！!？?\n]?)", after_subject[refuted.end() :]
-    )
-    tail, punct = clause_end[1], clause_end[2]
-    if (
-        punct in ("？", "?")
-        or re.search(r"[吗么]\s*$", tail)
-        or DENIAL_REVERSAL.search(tail)
-        or GAIN_DEMAND_REVERSED.match(tail)
-        or REFUTATION_TAIL_UNDONE.search(tail)
-    ):
-        return False
-    return True
+    return _valid_post_clauses(after_subject[refuted.end() :])
 
 
 def certainty_violation(texts) -> tuple[str, str] | None:
@@ -553,9 +592,12 @@ GAIN_DEMANDED = re.compile(
 # A predicate can be rejected after it is named: “保持距离是不必要的” does not
 # recommend caution. Check its own complement, not a negative in a later clause.
 GAIN_DEMAND_REVERSED = re.compile(
-    r"[ \t]*(?:的?(?:做法|要求|行为|建议))?(?:其实|根本|完全|也|都|并|只是|是)*"
-    r"(?:不(?:必|必要|需要|应该|应当|值得)|(?:不是|非)(?:必要|需要|值得|必须)|"
-    r"没(?:有)?(?:必要|意义|用)|无(?:需|须|意义)|多此一举)"
+    r"[ \t]*(?:的?(?:做法|要求|行为|建议|态度|想法))?(?:其实|根本|完全|也|都|并|只是|是)*"
+    r"(?:不(?:必|必要|需要|应该|应当|值得|对|妥|当|合理|可取|成立|正确)|"
+    r"(?:不是|非)(?:必要|需要|值得|必须|好事|明智|正确)|"
+    r"没(?:有)?(?:必要|意义|用|道理)|无(?:需|须|意义|道理)|"
+    r"错(?:的|误的?)|假的|荒谬的?|多余的?|多此一举)"
+    r"|[ \t]*的?(?:反面|对立面|相反)"
 )
 
 
@@ -802,7 +844,7 @@ def care_error(texts, *, include_quote: bool = False) -> str | None:
                 "请改写后重新提交"
             )
         return ValidationMessage(
-            f"不能劝阻就医（“{discouraged}”，冲突句子：“{snippet}”）；"
+            f"不能劝阻就医（“{discouraged}”）（冲突句子：“{snippet}”）；"
             "谈到身体时保留“如有不适请及时就医”的建议，请改写后重新提交",
             retry_key="discourage_care",
         )

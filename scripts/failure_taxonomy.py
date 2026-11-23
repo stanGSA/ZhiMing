@@ -76,9 +76,12 @@ def quality_score(row: dict) -> bool | None:
     return all(review[key] for key in QUALITY)
 
 
+QUOTE_DETAIL = re.compile(r"(?:（冲突句子：|（命中“|，冲突句子：).*")
+
+
 def category(tool: str, code: str | None, error: str | None) -> str:
     error = error or ""
-    rule_error = error.split("（冲突句子：", 1)[0].split("（命中“", 1)[0]
+    rule_error = QUOTE_DETAIL.sub("", error)
     for name, matches in CATEGORIES:
         if matches(tool, code, rule_error):
             return name

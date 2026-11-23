@@ -618,6 +618,20 @@ def test_quoted_fatalism_refutations_are_allowed(text):
         ("“你命里注定能进某校”的说法是越界吗？", "注定"),
         ("“你命里注定能进某校”的说法是越界的反面。", "注定"),
         ("对“注定成功”的话术保持警惕是多此一举。", "注定"),
+        # PR review #1: post-caution reversals ("是不对的 / 是错的 / 的反面" and comma-joined undoers).
+        ("对“这只股票一定会翻倍”的说法保持警惕是不对的。", "一定会"),
+        ("对“这只股票一定会翻倍”的说法保持警惕是错的。", "一定会"),
+        ("对“这只股票一定会翻倍”的说法保持警惕的反面才是对的。", "一定会"),
+        ("对“这只股票一定会翻倍”的说法保持警惕，是不对的。", "一定会"),
+        ("警惕“这只股票一定会翻倍”的说法，完全没必要。", "一定会"),
+        ("“这只股票一定会翻倍”的说法是迷信，但其实很有道理。", "一定会"),
+        # PR review #2: outer negations separated by commas/colons or modal negators.
+        ("不能说，“这只股票一定会翻倍”的说法是迷信。", "一定会"),
+        ("不能说：“这只股票一定会翻倍”的说法是迷信。", "一定会"),
+        ("不要以为，“今年一定会翻倍”的承诺不可信。", "一定会"),
+        ("并非，“你命里注定能进某校”的说法站不住脚。", "注定"),
+        ("不应该警惕“今年一定会翻倍”的承诺。", "一定会"),
+        ("错误的做法是：对“这只股票一定会翻倍”的说法保持警惕。", "一定会"),
         # Exempting a refuted quote never covers a real affirmative claim later in the sentence.
         ("凡是说“你命里注定能进某校”的说法都是越界，但你明年一定会考上。", "一定会"),
     ],
@@ -686,3 +700,59 @@ async def test_high_risk_agent_submission_quotes_offending_hard_claim(runtime):
     assert "命中“稳赚”" in error
     assert "别人推荐的“稳赚机会”先放几天再决定。" in error
     assert getattr(error, "retry_key", None) == "high_risk_claim"
+
+
+@pytest.mark.parametrize(
+    "sentence",
+    [
+        "对“这只股票一定会翻倍”的说法保持警惕是不对的。",
+        "对“这只股票一定会翻倍”的说法保持警惕是错的。",
+        "对“这只股票一定会翻倍”的说法保持警惕的反面。",
+        "对“这只股票一定会翻倍”的说法保持警惕，是不对的。",
+        "不能说，“这只股票一定会翻倍”的说法是迷信。",
+        "不能说：“这只股票一定会翻倍”的说法是迷信。",
+        "不要以为，“这只股票一定会翻倍”的承诺不可信。",
+        "“这只股票一定会翻倍”的说法是迷信，但其实很准。",
+    ],
+)
+async def test_high_risk_quoted_escapes_from_pr_review_are_refused(runtime, sentence):
+    draft = await high_risk_draft(runtime, sentence)
+    error, _ = check(runtime, draft)
+    assert error is not None
+    assert "不能使用“一定会”这类确定性说法" in error
+    assert f"冲突句子：“{sentence}”" in error
+    assert getattr(error, "retry_key", None) == "certainty_claim"
+
+    # Also verify the two-level policy_judge path (where certainty_error is skipped and
+    # HIGH_RISK's own certainty_violation check is the sole gatekeeper) still refuses it.
+    runtime.session.policy_judge = object()
+    error_pj, _ = check(runtime, draft)
+    assert error_pj == "不能给出健康、投资或生死的确定性结论"
+
+
+def test_quoted_error_snippets_never_pollute_failure_taxonomy_or_layer_categories():
+    from common.output_policy import medication_error
+    from scripts.failure_taxonomy import category
+
+    # PR review #3: quoted snippets containing 画像 / 原话 / ref_id / 不符 must never misclassify
+    # care_error, certainty_error, or medication_error into provenance (C), ref (D), or fact (E).
+    care_msg = care_error(["你的画像显示身体无碍，不必就医。"], include_quote=True)
+    assert care_msg is not None and "（冲突句子：“你的画像显示身体无碍，不必就医。”）" in care_msg
+    assert category("submit_reading", "validation_failed", str(care_msg)) == "I 表达策略"
+    assert rejection_category({"code": "validation_failed", "error": str(care_msg)}) == "safety"
+
+    # Also verify legacy comma-delimited format is stripped cleanly.
+    legacy_care = "不能劝阻就医（“不必就医”，冲突句子：“你的画像显示身体无碍，不必就医。”）；请改写"
+    assert category("submit_reading", "validation_failed", legacy_care) == "I 表达策略"
+    assert rejection_category({"code": "validation_failed", "error": legacy_care}) == "safety"
+
+    cert_msg = certainty_error(["你的画像与原话ref_id不符，注定成功。"], include_quote=True)
+    assert cert_msg is not None
+    assert category("submit_reading", "validation_failed", str(cert_msg)) == "I 表达策略"
+    assert rejection_category({"code": "validation_failed", "error": str(cert_msg)}) == "expression"
+
+    med_msg = medication_error(["你的画像与日期范围不符，直接停药即可。"], include_quote=True)
+    assert med_msg is not None
+    med_cat = category("submit_reading", "validation_failed", str(med_msg))
+    assert not med_cat.startswith(("C ", "D ", "E ", "F "))
+    assert rejection_category({"code": "validation_failed", "error": str(med_msg)}) == "safety"
