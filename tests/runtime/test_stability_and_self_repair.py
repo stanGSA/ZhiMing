@@ -138,7 +138,9 @@ async def test_openai_model_repairs_prose_quotes_for_patch_reading(monkeypatch):
     "text",
     [
         "别轻信“命里注定发大财”的说法，先把眼前项目落地。",
+        "别相信“今年一定会暴富”的说法。",
         "所谓“包过、一定会升职”的话术往往是迷信。",
+        "推进不顺时，所谓“命里注定失败”的说法往往是迷信。",
         "听到「今年必然翻倍」的承诺，要保持清醒。",
         "不要迷信『铁定稳赚』的论调。",
     ],
@@ -150,6 +152,12 @@ def test_certainty_error_allows_explicitly_refuted_short_quotes(text):
 @pytest.mark.parametrize(
     "text",
     [
+        "“谨慎行事”，今年一定会升职，“失败预言”的说法是迷信。",
+        "“谨慎行事，今年一定会升职，“失败预言”的说法是迷信。",
+        "我不认为“你今年一定会升职”的说法是迷信。",
+        "我并不觉得，“你今年一定会升职”的说法是迷信。",
+        "不必警惕“你今年一定会升职”的说法。",
+        "别相信“你今年一定会升职”的说法是迷信。",
         "不能说，“今年一定会翻倍”的说法是迷信。",
         "难道“今年一定会升职”是迷信吗？",
         "“今年一定会升职”的说法听起来像迷信，但其实很准。",
@@ -186,10 +194,10 @@ def test_tarot_hypothetical_orientation_contrast_allowed_only_when_anchored():
         },
     }
 
-    def make_reading(body: str) -> Reading:
+    def make_reading(body: str, summary: str = "僵局正在松动。") -> Reading:
         return Reading(
             question_type="tarot",
-            summary="僵局正在松动。",
+            summary=summary,
             sections=[Section(title="现状梳理", body=body, ref_ids=["r1"])],
             evidence=[Evidence(ref_id="r1", reading="现状：【宝剑二】（逆位）")],
         )
@@ -219,6 +227,23 @@ def test_tarot_hypothetical_orientation_contrast_allowed_only_when_anchored():
         state,
     )
     assert unanchored is not None and "冲突片段" in unanchored
+    # Correct orientation in summary must NOT exempt a wrong assertion or bare definition in body.
+    cross_section_possessive = validate_tarot_facts(
+        make_reading(
+            "你手里的宝剑二正位表示双方仍在僵持，建议继续观望。",
+            summary="宝剑二逆位提示局面松动。",
+        ),
+        state,
+    )
+    assert cross_section_possessive is not None and "方向错误" in cross_section_possessive
+    cross_section_def = validate_tarot_facts(
+        make_reading(
+            "宝剑二正位表示双方仍在僵持，建议继续观望。",
+            summary="宝剑二逆位提示局面松动。",
+        ),
+        state,
+    )
+    assert cross_section_def is not None and "方向错误" in cross_section_def
     # Claiming the hypothetical orientation was drawn is rejected.
     draw_claim = validate_tarot_facts(
         make_reading("宝剑二逆位提示变化；这次抽到了如果是宝剑二正位也一样。"),
@@ -229,6 +254,8 @@ def test_tarot_hypothetical_orientation_contrast_allowed_only_when_anchored():
 
 def test_bazi_temporal_flow_pillar_prefixes_distinguished_from_natal_pillars():
     state = {
+        "calendar_anchor": "2026-02-10",
+        "calendar_timezone": "Asia/Shanghai",
         "bazi_result": {
             "pillars": {
                 "year": "辛巳",
@@ -240,9 +267,29 @@ def test_bazi_temporal_flow_pillar_prefixes_distinguished_from_natal_pillars():
             "time_known": True,
         },
         "bazi_period_result": {
+            "tz": "Asia/Shanghai",
             "periods": [
-                {"pillars": {"year": "丙午", "month": "庚寅", "day": "甲子"}},
-            ]
+                {
+                    "start_utc": "2026-02-09T16:00:00+00:00",
+                    "end_utc": "2026-02-10T16:00:00+00:00",
+                    "pillars": {"year": "丙午", "month": "庚寅", "day": "甲子"},
+                },
+                {
+                    "start_utc": "2026-02-10T16:00:00+00:00",
+                    "end_utc": "2026-03-05T16:00:00+00:00",
+                    "pillars": {"year": "丙午", "month": "庚寅", "day": "乙丑"},
+                },
+                {
+                    "start_utc": "2026-03-05T16:00:00+00:00",
+                    "end_utc": "2027-02-03T19:00:00+00:00",
+                    "pillars": {"year": "丙午", "month": "辛卯", "day": "丙寅"},
+                },
+                {
+                    "start_utc": "2027-02-03T19:00:00+00:00",
+                    "end_utc": "2027-10-01T16:00:00+00:00",
+                    "pillars": {"year": "丁未", "month": "壬寅", "day": "丁卯"},
+                },
+            ],
         },
     }
 
@@ -255,11 +302,32 @@ def test_bazi_temporal_flow_pillar_prefixes_distinguished_from_natal_pillars():
 
     assert (
         validate_bazi_facts(
-            make_reading("今年年柱丙午火势偏旺，本月月柱庚寅木金交战，今日日柱甲子宜稳步推进。"),
+            make_reading(
+                "今年年柱丙午火势偏旺，明年年柱丁未承接转化；本月月柱庚寅木金交战，下月月柱辛卯更讲条理，今日日柱甲子宜稳步推进。"
+            ),
             state,
         )
         is None
     )
+    # Swapping 2026 (今年) and 2027 (明年) pillars must fail even though both exist in periods.
+    swapped_years = validate_bazi_facts(
+        make_reading("今年年柱丁未，明年年柱丙午。"),
+        state,
+    )
+    assert swapped_years is not None and "流期柱位与对应日期干支不符" in swapped_years
+    # Swapping 本月 and 下月 pillars must fail.
+    swapped_months = validate_bazi_facts(
+        make_reading("本月月柱辛卯，下月月柱庚寅。"),
+        state,
+    )
+    assert swapped_months is not None and "流期柱位与对应日期干支不符" in swapped_months
+    # Claiming 去年 (2025, not computed) with a computed pillar must fail.
+    uncomputed_year = validate_bazi_facts(
+        make_reading("去年年柱丙午火旺。"),
+        state,
+    )
+    assert uncomputed_year is not None and "流期柱位与对应日期干支不符" in uncomputed_year
+    # Natal pillar mismatch still fails.
     err = validate_bazi_facts(make_reading("原局年柱丙午火旺，做事容易急躁。"), state)
     assert err is not None
     assert "原局柱位与干支不符" in err

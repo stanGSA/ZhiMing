@@ -236,6 +236,11 @@ def validate_reading(reading, session) -> str | None:
         for report in (state.get("specialist_reports") or {}).values():
             if report["status"] == "ok" and not report_matches_profile(report, session.profile):
                 errors.append(f"{report['label']}所需画像已更正，须重新咨询该专家后再提交")
+    if getattr(session, "calendar_anchor", None) and not state.get("calendar_anchor"):
+        state["calendar_anchor"] = session.calendar_anchor
+        state.setdefault(
+            "calendar_timezone", getattr(session, "calendar_timezone", "Asia/Shanghai")
+        )
     for validator in session.output_validators.values():
         dom_err = validator(reading, state)
         if dom_err:

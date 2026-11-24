@@ -164,17 +164,23 @@ QUOTE_PAIRS = {
     "「": "」",
     "『": "』",
 }
+ALL_QUOTE_CHARS = frozenset((*QUOTE_PAIRS.keys(), *QUOTE_PAIRS.values()))
 OUTER_NEGATION = re.compile(
-    r"(?:不能|不可|不要|别|切勿|并非|并不是|不是|没法|无法)"
-    r"(?:说|认为|以为|觉得|把|将|当成|当作|断定)?"
-    r"[，,：:\s]*$"
+    r"(?:(?:不|没|未|非|别|勿|难|未必|何必|无须|无需|不必|不用)"
+    r"[^。！？!?；;\n“「『]{0,8}"
+    r"(?:说|认为|以为|觉得|相信|认同|同意|赞同|断定|断言|代表|意味着?|说明|表示|等于|算|"
+    r"当成|当作|归为|视为|看作|称不上|算不上|警惕|远离|拒绝|摒弃|破除)|"
+    r"(?:不能|不可|不要|别|切勿|并非|并不是|不是|没法|无法|很难|未必)[，,：:\s]*$)"
 )
+CLAUSE_NEGATION = re.compile(r"不|没|未|非|别|勿|难|未必|何必|岂|难道|如果|假如|倘若|要是")
 REFUTE_PREFIX = re.compile(
-    r"(?:(?:不要|别|切勿|不必|无需)(?:轻信|相信|迷信|听信|当真)|"
+    r"^(?:[请大家我们你您平时日常凡事千万务必要应当该时刻学会保持\s])*"
+    r"(?:(?:不要|别|切勿|不必|无需|无须|不用)(?:再|去|轻易|盲目)?(?:轻信|相信|迷信|听信|当真|采信)|"
     r"(?:警惕|远离|拒绝|摒弃|破除))(?:任何|所谓|那些|这类|这种)?\s*$"
 )
 CAUTION_PREFIX = re.compile(r"(?:遇到|听到|面对|看到|碰到|对于|对)(?:所谓|那些|这类|这种)?\s*$")
 QUOTE_NOUN = r"(?:的说法|的话术|的承诺|的断言|的论调|的宣传|的念头|的想法)?"
+AFTER_REFUTE_NOUN = re.compile(rf"^\s*(?:这类|这种|那些)?{QUOTE_NOUN}\s*(?:[，,。！？!?；;\n]|$)")
 CAUTION_PREDICATE = re.compile(
     rf"^\s*{QUOTE_NOUN}[，,]?\s*(?:要|应|应当|应该|请|务必|宜|先|多)?"
     r"(?:保持(?:理性|清醒|警惕)|多留个?心眼|先核实|擦亮眼睛|提高警惕|留心核实)"
@@ -186,8 +192,8 @@ REFUTE_PREDICATE = re.compile(
     r"(?:迷信|越界|站不住脚|不可信|不靠谱|没有依据|毫无依据|伪命题|夸大其词|骗人的|误导)"
 )
 TRAILING_REVERSAL = re.compile(
-    r"(?:是不对的|是错的|是错误的|的反面|完全没必要|大可不必|没必要|不必|"
-    r"[，,]\s*(?:但|不过|然而|其实|实际上)(?!是迷信|不可信))"
+    r"(?:是不对的|是错的|是错误的|并非如此|不是这样|的反面|完全没必要|大可不必|没必要|不必|"
+    r"[，,]\s*(?:但|不过|然而|其实|实际上)(?!是迷信|不可信|没有依据|不靠谱|站不住脚))"
 )
 
 
@@ -201,15 +207,33 @@ def sentence_around(text: str, start: int, end: int, limit: int = 120) -> str:
 
 
 def _enclosing_quote(text: str, start: int, end: int, max_len: int = 40) -> tuple[int, int] | None:
-    """Return ``(open_idx, close_idx)`` if ``[start, end)`` sits inside a short closed quote."""
-    for open_idx in range(start - 1, max(-1, start - max_len - 2), -1):
-        ch = text[open_idx]
-        close_ch = QUOTE_PAIRS.get(ch)
+    """Return ``(open_idx, close_idx)`` only when ``[start, end)`` lies inside one true quote pair."""
+    sent_left = max((m.end() for m in SENTENCE_BOUNDARY.finditer(text, 0, start)), default=0)
+    sent_right_match = SENTENCE_BOUNDARY.search(text, end)
+    sent_right = sent_right_match.start() if sent_right_match else len(text)
+    idx = sent_left
+    while idx < sent_right:
+        close_ch = QUOTE_PAIRS.get(text[idx])
         if not close_ch:
+            idx += 1
             continue
-        close_idx = text.find(close_ch, end, open_idx + max_len + 2)
-        if close_idx != -1 and "\n" not in text[open_idx : close_idx + 1]:
-            return open_idx, close_idx
+        close_idx = text.find(close_ch, idx + 1, sent_right)
+        if close_idx == -1:
+            idx += 1
+            continue
+        inner = text[idx + 1 : close_idx]
+        # Never span across an already closed quote or an unclosed nested quote.
+        if any(ch in ALL_QUOTE_CHARS for ch in inner):
+            idx += 1
+            continue
+        if (
+            close_idx - idx - 1 <= max_len
+            and "\n" not in inner
+            and idx < start
+            and end <= close_idx
+        ):
+            return idx, close_idx
+        idx = close_idx + 1
     return None
 
 
@@ -227,14 +251,18 @@ def quoted_certainty_refuted(text: str, start: int, end: int) -> bool:
         return False
     before_quote = text[sent_left:open_idx]
     after_quote = text[close_idx + 1 : sent_right]
-    # Reject outer negation across comma/colon, e.g. "不能说，“……一定会翻倍”的说法是迷信。"
-    if OUTER_NEGATION.search(before_quote):
-        return False
     if TRAILING_REVERSAL.search(after_quote):
         return False
-    clause_prefix = CLAUSE_START.sub("", before_quote)
-    if REFUTE_PREFIX.search(clause_prefix):
+    raw_clause_prefix = CLAUSE_START.sub("", before_quote)
+    prior_clauses = before_quote[: len(before_quote) - len(raw_clause_prefix)]
+    if OUTER_NEGATION.search(prior_clauses):
+        return False
+    clause_prefix = raw_clause_prefix.strip()
+    if REFUTE_PREFIX.match(clause_prefix) and AFTER_REFUTE_NOUN.match(after_quote):
         return True
+    # Reject outer negation across or within clauses, e.g. "我不认为“……”的说法是迷信。"
+    if CLAUSE_NEGATION.search(clause_prefix) or OUTER_NEGATION.search(before_quote):
+        return False
     if CAUTION_PREFIX.search(clause_prefix) and CAUTION_PREDICATE.search(after_quote):
         return True
     if REFUTE_PREDICATE.search(after_quote):

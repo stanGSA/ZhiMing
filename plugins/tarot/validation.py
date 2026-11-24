@@ -7,7 +7,9 @@ from plugins.tarot.catalogue import DECK
 ORIENTATION_GAP = r"[\s【】「」《》“”\"'（）()]*"
 CLAUSE = re.compile(r"[。！？；;\n]")
 DRAW_CONTEXT = re.compile(
-    r"本次|此次|这次|本轮|今天|今日|每日一牌|这张|抽到|抽出|抽中|翻出|翻到|结果|提示牌|位置"
+    r"本次|此次|这次|本轮|今天|今日|每日一牌|这张|当前这张|眼前的?|面前的?|"
+    r"你手里的?|手中的?|手头(?:上|的|这张)?|牌阵[中里]|牌面上|落出的?|翻开的?|"
+    r"抽到|抽出|抽中|翻出|翻到|结果|提示牌|位置"
 )
 DEFINITION = re.compile(
     ORIENTATION_GAP
@@ -20,10 +22,10 @@ HYPOTHETICAL_AFTER = re.compile(ORIENTATION_GAP + r"(?:的话|的情况下)")
 
 
 def orientation_error(
-    text: str, name: str, expected: set[str], *, anchored: bool = False
+    text: str, name: str, expected: set[str], *, counterfactual_anchored: bool = False
 ) -> str | None:
     mentions = list(re.finditer(rf"{re.escape(name)}{ORIENTATION_GAP}(正位|逆位)", text))
-    has_expected = anchored or any(m[1] in expected for m in mentions)
+    local_has_expected = any(m[1] in expected for m in mentions)
     for mention in mentions:
         if mention[1] in expected:
             continue
@@ -35,13 +37,12 @@ def orientation_error(
         is_counterfactual = bool(
             HYPOTHETICAL_BEFORE.search(sub_prefix) or HYPOTHETICAL_AFTER.match(text, mention.end())
         )
-        # A named, correct orientation must accompany a general definition or explicit
-        # counterfactual comparison of the other orientation. Current-draw assertions remain errors.
-        if (
-            has_expected
-            and (DEFINITION.match(text, mention.end()) or is_counterfactual)
-            and not DRAW_CONTEXT.search(clause)
-        ):
+        # Definitions ("正位表示…") require the actual orientation in the same field; cross-field
+        # narrative anchoring is restricted strictly to explicit counterfactual clauses.
+        allowed_comparison = (
+            local_has_expected and bool(DEFINITION.match(text, mention.end()))
+        ) or ((local_has_expected or counterfactual_anchored) and is_counterfactual)
+        if allowed_comparison and not DRAW_CONTEXT.search(clause):
             continue
         wanted = "、".join(sorted(expected))
         return ValidationMessage(
@@ -104,7 +105,10 @@ def validate_output(reading, state):
         is_evidence = any(part == e.reading for e in reading.evidence)
         for name, found in orientations.items():
             error = orientation_error(
-                part, name, found, anchored=(not is_evidence and name in anchored_names)
+                part,
+                name,
+                found,
+                counterfactual_anchored=(not is_evidence and name in anchored_names),
             )
             if error:
                 return error

@@ -165,6 +165,11 @@ def validate_report(args: ReportInput, session) -> str | None:
         errors.append("报告不要写免责声明")
     validator = session.output_validators.get(session.role)
     if validator:
+        if getattr(session, "calendar_anchor", None) and not state.get("calendar_anchor"):
+            state["calendar_anchor"] = session.calendar_anchor
+            state.setdefault(
+                "calendar_timezone", getattr(session, "calendar_timezone", "Asia/Shanghai")
+            )
         dom_err = validator(as_reading(args, session.role), state)
         if dom_err:
             errors.append(dom_err)
