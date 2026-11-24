@@ -452,6 +452,7 @@ class ConsultService:
                             self.token_budget,
                             as_evidence=False,
                             admission=True,
+                            repair_steps=1 if self.max_steps >= 4 else 0,
                             on_tool_result=on_result,
                         ),
                         self.timeout,

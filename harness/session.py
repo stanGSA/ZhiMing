@@ -110,6 +110,8 @@ class Session:
         self.calendar_anchor = instant.astimezone(ZoneInfo(timezone)).date().isoformat()
         self.calendar_timezone = timezone
         self.calendar_instant = instant
+        self.state["calendar_anchor"] = self.calendar_anchor
+        self.state["calendar_timezone"] = self.calendar_timezone
         prefix = "本轮日历基准（"
         self.messages[:] = [
             m
@@ -167,6 +169,9 @@ class Session:
             "asked_this_turn": self.state.get("asked_this_turn", False),
             "complete": False,
         }
+        if self.calendar_anchor:
+            self.state["calendar_anchor"] = self.calendar_anchor
+            self.state["calendar_timezone"] = self.calendar_timezone
         if self.birth_binding and self.birth_binding.get("location"):
             location = self.birth_binding["location"]
             self.state["locations"] = {location["location_id"]: dict(location)}

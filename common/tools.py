@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import copy
 import json
 import re
 
@@ -19,13 +20,14 @@ from common.schemas import (
     AskInput,
     EmptyInput,
     LookupInput,
+    PatchReadingInput,
     ProfileInput,
     Reading,
     ReadInput,
     StartInput,
 )
 from common.validation import validate_reading
-from harness.models import ToolResult
+from harness.models import ToolResult, ValidationMessage
 from harness.registry import Tool
 from harness.session import valid_timezone
 from knowledge.kb import KnowledgeBase
@@ -450,16 +452,31 @@ def common_tools(store, kb: KnowledgeBase, mode: str = "single", reviewer=None) 
             candidates = (
                 lookup_kb.suggested_keys(args.system, args.kind, args.key) if entry is None else []
             )
+            if entry is None and not candidates and args.kind in LOOKUP_KINDS.get(args.system, ()):
+                candidates = [
+                    row[0]
+                    for row in lookup_kb.db.execute(
+                        "SELECT key FROM entries WHERE system=? AND kind=? ORDER BY key LIMIT 8",
+                        (args.system, args.kind),
+                    ).fetchall()
+                ]
         finally:
             if lookup_kb is not kb:
                 lookup_kb.close()
         if entry is None:
+            misses = session.state.get("lookup_misses", 0) + 1
+            session.state["lookup_misses"] = misses
+            stop_note = (
+                "；本轮缺条目已达上限，请直接依据计算结果自带释义完成解读，勿再调用lookup_meaning。"
+                if misses >= 2
+                else "。已有计算附带释义时直接使用；不要继续猜key。"
+            )
             return ToolResult.failure(
                 "missing_entry",
                 "缺条目：精确 key 或同义词未命中"
                 + lookup_hint(args, session)
                 + ("；本版本有效key候选：" + "、".join(candidates) if candidates else "")
-                + "。已有计算附带释义时直接使用；不要继续猜key。",
+                + stop_note,
             )
         session.state.setdefault("kb_refs", set()).add(entry["ref_id"])
         # The model sees the review level, not who reviewed it.
@@ -639,8 +656,16 @@ def common_tools(store, kb: KnowledgeBase, mode: str = "single", reviewer=None) 
         result["merge"] = model_view(stored) if "tensions" in stored else None
         return {"reading": result}
 
-    def validate_submit(args, session):
+    def validate_submit(args, session, *, raw_draft: dict | None = None):
+        if raw_draft is None and (
+            session.state.get("tarot_result")
+            or session.state.get("calculations")
+            or session.state.get("signals")
+        ):
+            raw_draft = args.model_dump(mode="json")
         error = validate_reading(args, session)
+        if raw_draft is not None:
+            session.state["last_reading_draft"] = raw_draft
         if error or mode != "multi":
             return error
         state = session.state
@@ -656,8 +681,93 @@ def common_tools(store, kb: KnowledgeBase, mode: str = "single", reviewer=None) 
             )
         missing = undisclosed(table, args) if table else []
         if missing:
-            return where + "；".join(describe(t) for t in missing)
+            return ValidationMessage(
+                where
+                + "；".join(describe(t) for t in missing)
+                + "（可调用 patch_reading 仅补写 tensions 字段）",
+                retry_key="undisclosed_tensions:" + ",".join(sorted(t["id"] for t in missing)),
+            )
         return None
+
+    def apply_reading_patch(draft: dict, patch: PatchReadingInput, allowed_refs=()) -> Reading:
+        merged = copy.deepcopy(draft)
+        dumped = patch.model_dump(mode="json")
+        for field_name in (
+            "verdict",
+            "question_type",
+            "systems_used",
+            "summary",
+            "sections",
+            "evidence",
+            "resonances",
+            "tensions",
+            "timeline",
+            "advice",
+            "closing",
+            "confidence",
+            "safety",
+            "followups",
+        ):
+            if field_name in patch.model_fields_set and (
+                field_name == "verdict" or getattr(patch, field_name) is not None
+            ):
+                merged[field_name] = dumped[field_name]
+        sections = list(merged.get("sections") or [])
+        for sp in patch.section_patches:
+            if sp.index >= len(sections):
+                raise ValueError(
+                    f"section_patches.index={sp.index} 超出原草稿段落范围（共 {len(sections)} 段）"
+                )
+            sec = dict(sections[sp.index])
+            if sp.title is not None:
+                sec["title"] = sp.title
+            if sp.body is not None:
+                sec["body"] = sp.body
+            if sp.ref_ids is not None:
+                sec["ref_ids"] = list(sp.ref_ids)
+            sections[sp.index] = sec
+        if patch.section_patches:
+            merged["sections"] = sections
+        # When section refs are patched without explicit evidence, drop stale unauthored bad refs
+        # and append newly cited section refs so the appendix stays in sync.
+        if (
+            "evidence" not in patch.model_fields_set
+            and (patch.section_patches or "sections" in patch.model_fields_set)
+            and merged.get("evidence")
+        ):
+            sec_refs = dict.fromkeys(
+                r for sec in (merged.get("sections") or []) for r in (sec.get("ref_ids") or []) if r
+            )
+            allowed = set(allowed_refs or ())
+            kept = [
+                item
+                for item in merged["evidence"]
+                if item.get("reading")
+                or item.get("ref_id") in allowed
+                or item.get("ref_id") in sec_refs
+            ]
+            existing = {item.get("ref_id") for item in kept}
+            for ref in sec_refs:
+                if ref not in existing:
+                    kept.append({"ref_id": ref, "reading": ""})
+            merged["evidence"] = kept
+        return Reading.model_validate(merged)
+
+    def validate_patch(args, session):
+        draft = session.state.get("last_reading_draft")
+        if not draft:
+            return "当前没有待修改的已提交草稿，请先调用 submit_reading"
+        if not args.model_fields_set:
+            return "patch_reading 至少需要提供一个待修改字段或 section_patches"
+        try:
+            reading = apply_reading_patch(draft, args, session.state.get("allowed_refs") or ())
+        except Exception as exc:
+            return f"局部补丁合并失败：{exc}"
+        next_raw = reading.model_dump(mode="json")
+        error = validate_submit(reading, session, raw_draft=next_raw)
+        if error is None:
+            session.state["_patched_reading"] = reading
+        return error
 
     def describe(tension) -> str:
         windows = [w["window"] for w in tension["windows"] if w["window"]]
@@ -701,8 +811,11 @@ def common_tools(store, kb: KnowledgeBase, mode: str = "single", reviewer=None) 
                 review = await reviewer.review(session, packet, len(notes) + 1)
                 notes.append(review)
                 if review["verdict"] == "revise":
+                    state["last_reading_draft"] = args.model_dump(mode="json")
                     return ToolResult.failure(
-                        "review_revise", revise_message(review, reviewer.max_rounds)
+                        "review_revise",
+                        revise_message(review, reviewer.max_rounds)
+                        + "\n（可调用 patch_reading 仅修改审校指出的字段或段落，无需重写全文）",
                     )
             try:
                 store.save_reading(
@@ -717,6 +830,8 @@ def common_tools(store, kb: KnowledgeBase, mode: str = "single", reviewer=None) 
                 return ToolResult.failure("birth_version_conflict", str(exc))
         state["complete"] = True
         state["output"] = output
+        state.pop("last_reading_draft", None)
+        state.pop("_patched_reading", None)
         return {
             "text": render_reading(output),
             "reading_id": state["active_reading_id"],
@@ -728,6 +843,17 @@ def common_tools(store, kb: KnowledgeBase, mode: str = "single", reviewer=None) 
             # Style and completeness findings recorded instead of rejected (kept in the trace).
             "warnings": list(state.get("output_warnings") or []),
         }
+
+    async def patch_submit(args, session):
+        reading = session.state.pop("_patched_reading", None)
+        if reading is None:
+            reading = apply_reading_patch(
+                session.state["last_reading_draft"], args, session.state.get("allowed_refs") or ()
+            )
+        result = await submit(reading, session)
+        if isinstance(result, ToolResult):
+            return result
+        return {**result, "outcome_status": "submit_reading"}
 
     all_roles = frozenset({"orchestrator", "tarot", "astro", "bazi", "name", "dream"})
     tools = [
@@ -806,12 +932,24 @@ def common_tools(store, kb: KnowledgeBase, mode: str = "single", reviewer=None) 
         Tool(
             "submit_reading",
             "提交完整解读或保存原牌追问：summary定调并直接回答，sections分层推演，advice行动建议，"
-            "closing收尾；evidence仅填ref_id即可由代码渲染事实附录；verdict须与summary第一句一致。",
+            "closing收尾；evidence仅填ref_id（或由sections.ref_ids自动汇总）即可由代码渲染事实附录；verdict须与summary第一句一致。",
             Reading,
             submit,
             terminal=True,
             dependency="active_reading_id",
             validator=validate_submit,
+        ),
+        Tool(
+            "patch_reading",
+            "当submit_reading因局部措辞、引用或张力遗漏被打回时，仅提交需要修改的顶层字段或section_patches指定下标段落，"
+            "其余已合规段落原样保留，避免重写全文引入新错误。",
+            PatchReadingInput,
+            patch_submit,
+            roles=frozenset({"orchestrator"}),
+            terminal=True,
+            idempotent=False,
+            dependency="active_reading_id",
+            validator=validate_patch,
         ),
     ]
     if mode == "multi":

@@ -17,6 +17,9 @@ class ChatModel(Protocol):
     ) -> ModelResponse: ...
 
 
+AUTHORED_REPORT_TOOLS = frozenset({"submit_reading", "patch_reading", "submit_report"})
+
+
 def _transient(exc: BaseException) -> bool:
     return (
         getattr(exc, "status_code", None) in (408, 429, 500, 502, 503, 504)
@@ -118,12 +121,13 @@ class OpenAIModel:
         for call in message.tool_calls or []:
             raw = call.function.arguments
             try:
-                if call.function.name in ("submit_reading", "submit_report"):
+                if call.function.name in AUTHORED_REPORT_TOOLS:
                     arguments, repaired = parse_arguments(raw)
                 else:
-                    arguments, repaired = json.loads(raw), False
+                    arguments = json.loads(raw)
                     if not isinstance(arguments, dict):
-                        raise ValueError("object required")
+                        raise ValueError("tool arguments must be a JSON object")
+                    repaired = False
                 calls.append(
                     ToolCall(
                         id=call.id,

@@ -217,7 +217,8 @@ def rejection_category(result) -> str:
     Legacy validators return prose rather than typed fact errors. Classify only known
     diagnostics; retain unrecognized failures as 'other' together with their original code.
     """
-    code, message = result.get("code"), result.get("error") or ""
+    code, raw_message = result.get("code"), result.get("error") or ""
+    message = re.sub(r"（(?:冲突(?:原句|片段)|命中“).*?(?:）|$)", "", raw_message)
     if code == "review_revise":
         return "review"
     if code == "invalid_arguments":
@@ -233,14 +234,14 @@ def rejection_category(result) -> str:
     ):
         return "fact"
     if re.search(
-        r"确定性说法|免责声明|内部状态|审核|confidence.level|summary第一句|二选一", message
-    ):
-        return "expression"
-    if re.search(
         r"相位|干支|柱位|落座|宫位|四轴|行运日期|容许度|牌面|未抽出的牌|ref_ids?|笔画|三才|格.*不符",
         message,
     ):
         return "fact"
+    if re.search(
+        r"确定性说法|免责声明|内部状态|审核|confidence.level|summary第一句|二选一", message
+    ):
+        return "expression"
     return "other"
 
 
@@ -266,7 +267,11 @@ def repository_metadata(root: Path) -> dict:
 def turn_row(scenario, index, question, outcome, events, runtime, latency) -> dict:
     own = runtime.session.id
     calls = [r for r in events if r["event"] == "tool_result"]
-    submits = [r for r in calls if r["session_id"] == own and r["call"]["name"] == "submit_reading"]
+    submits = [
+        r
+        for r in calls
+        if r["session_id"] == own and r["call"]["name"] in ("submit_reading", "patch_reading")
+    ]
     reports = [r for r in calls if r["call"]["name"] == "submit_report"]
     usage = [r for r in events if r["event"] == "model_response"]
     output = outcome.data.get("reading") or {}

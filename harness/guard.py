@@ -61,6 +61,7 @@ class Guard:
             "read_reading",
             "lookup_meaning",
             "submit_reading",
+            "patch_reading",
             "get_profile",
             "ask_user",
         }:

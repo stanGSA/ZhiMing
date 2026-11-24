@@ -142,7 +142,9 @@ class Reading(StrictInput):
         | None
     ) = Field(default=None, description="summary第一句的表态，须与首句一致")
     question_type: Literal["timing", "decision", "trait", "tarot", "daily", "name", "dream"]
-    systems_used: list[str] = Field(min_length=1)
+    systems_used: list[str] = Field(
+        default_factory=list, description="可省略，由代码按本次实际调用的体系自动填入"
+    )
     summary: str = Field(
         min_length=1,
         max_length=200,
@@ -152,12 +154,64 @@ class Reading(StrictInput):
     sections: list[Section] = Field(
         default_factory=list, max_length=6, description="分层分析正文，通常2-3层，每层约150-250字"
     )
-    evidence: list[Evidence] = Field(min_length=1)
+    evidence: list[Evidence] = Field(
+        default_factory=list,
+        description="本次引用的计算事实ref_id列表；若sections已填ref_ids也可省略由代码自动汇总",
+    )
     resonances: list[str] = Field(default_factory=list)
     tensions: list[Tension] = Field(default_factory=list)
     timeline: list[Timeline] = Field(default_factory=list)
     advice: list[str] = Field(default_factory=list)
     closing: str = Field(default="", max_length=200, description="收尾一句")
-    confidence: Confidence
-    safety: Safety
+    confidence: Confidence = Field(
+        default_factory=lambda: Confidence(level="medium", reason="基于本次确定性计算结果整理。"),
+        description="可省略，由代码按释义审核等级自动校准",
+    )
+    safety: Safety = Field(default_factory=lambda: Safety(flag=False, note=""))
     followups: list[str] = Field(default_factory=list)
+
+
+class SectionPatch(StrictInput):
+    index: int = Field(ge=0, lt=6, description="要修改的原草稿sections下标（从0开始）")
+    title: str | None = Field(default=None, min_length=1, max_length=60)
+    body: str | None = Field(default=None, min_length=1, max_length=1200)
+    ref_ids: list[str] | None = None
+
+
+class PatchReadingInput(StrictInput):
+    verdict: (
+        Literal[
+            "favorable",
+            "steady",
+            "pressured",
+            "volatile",
+            "suitable",
+            "not_now",
+            "conditional",
+            "prefer_a",
+            "prefer_b",
+            "describe",
+        ]
+        | None
+    ) = None
+    question_type: (
+        Literal["timing", "decision", "trait", "tarot", "daily", "name", "dream"] | None
+    ) = None
+    systems_used: list[str] | None = None
+    summary: str | None = Field(default=None, min_length=1, max_length=200)
+    section_patches: list[SectionPatch] = Field(
+        default_factory=list,
+        description="按index局部修改指定段落的title/body/ref_ids，其余已合规段落保持不变",
+    )
+    sections: list[Section] | None = Field(
+        default=None, description="仅在需增删整组段落时提供；局部改某段优先用section_patches"
+    )
+    evidence: list[Evidence] | None = None
+    resonances: list[str] | None = None
+    tensions: list[Tension] | None = None
+    timeline: list[Timeline] | None = None
+    advice: list[str] | None = None
+    closing: str | None = Field(default=None, max_length=200)
+    confidence: Confidence | None = None
+    safety: Safety | None = None
+    followups: list[str] | None = None

@@ -8,7 +8,7 @@ from common.evidence import calculation_evidence_texts
 from common.output_policy import care_error, certainty_error, normalize_report
 from common.schemas import Evidence, Reading, Safety, Section
 from common.stages import install
-from common.validation import citation_error
+from common.validation import citation_error, combine_validation_errors
 from harness.registry import Registry, Tool
 
 SHARED_RULES = """你在隔离的子会话中工作：只看得到编排者给的子问题（JSON）和本体系需要的画像字段，看不到其它专家的结果，也不能直接询问用户。
@@ -150,28 +150,40 @@ def validate_report(args: ReportInput, session) -> str | None:
     own = [s for s in state.get("signals", []) if s["system"] == session.role]
     if not own:
         return "须先调用本体系的计算或抽牌工具，再提交报告"
+    errors: list[str] = []
     refs = {s["ref_id"] for s in own}
     cited = [(f"points.{i}.ref_id", point.ref_id, False) for i, point in enumerate(args.points)]
-    error = citation_error(session, cited, refs, calculation_evidence_texts(state))
-    if error:
-        return error
+    cite_err = citation_error(session, cited, refs, calculation_evidence_texts(state))
+    if cite_err:
+        errors.append(cite_err)
     # Disclaimers, internal words and confidence are repaired; only leftovers are rejected.
     normalize_report(args, own)
     text = " ".join([args.answer, args.analysis, *(p.text for p in args.points), *args.missing])
     if INTERNAL.search(text):
-        return "报告不能包含内部状态、审核或存储信息"
+        errors.append("报告不能包含内部状态、审核或存储信息")
     if re.search(r"仅供参考|仅供娱乐|仅供.*反思", text):
-        return "报告不要写免责声明"
+        errors.append("报告不要写免责声明")
     validator = session.output_validators.get(session.role)
     if validator:
-        error = validator(as_reading(args, session.role), state)
-        if error:
-            return error
+        if getattr(session, "calendar_anchor", None) and not state.get("calendar_anchor"):
+            state["calendar_anchor"] = session.calendar_anchor
+            state.setdefault(
+                "calendar_timezone", getattr(session, "calendar_timezone", "Asia/Shanghai")
+            )
+        dom_err = validator(as_reading(args, session.role), state)
+        if dom_err:
+            errors.append(dom_err)
     if state.get("timeframe_required") and SPEC_CONFIG[session.role]["temporal"]:
         if not any(s["horizon"] == "timing" for s in own):
-            return "子问题指定了时间范围，须计算本体系行运或流期，不能只用原局"
+            errors.append("子问题指定了时间范围，须计算本体系行运或流期，不能只用原局")
     texts = [args.answer, args.analysis, *(p.text for p in args.points)]
-    return certainty_error(texts) or care_error(texts)
+    cert_err = certainty_error(texts)
+    if cert_err:
+        errors.append(cert_err)
+    med_err = care_error(texts)
+    if med_err:
+        errors.append(med_err)
+    return combine_validation_errors(errors)
 
 
 def submit_report(args: ReportInput, session) -> dict:
