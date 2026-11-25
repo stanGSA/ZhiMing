@@ -10,7 +10,9 @@ prophecies, and a dream-only reading has no event timeline.
 
 import re
 
-from common.facts import public_texts
+from common.facts import labeled_public_texts
+from common.output_policy import sentence_around
+from harness.models import ValidationMessage
 
 PROPHECY = re.compile(r"预示|预兆|征兆|兆头|预言|将会发生|会发生|一定会|必定|必然会|注定")
 NEGATION = re.compile(r"不|非|没有|无|并未|别")
@@ -51,7 +53,7 @@ def excluded_mention(clause, start, end, boundary):
     )
 
 
-def ungrounded(clause, matcher, hits, misses):
+def ungrounded(clause, matcher, hits, misses, *, field: str = ""):
     """Return a bad mention, preserving its ownership when clauses contain many objects."""
     mentions = [(a, b, alias, key) for a, b, alias, key in matcher.spans(clause)]
     for quote in QUOTED.finditer(clause):
@@ -67,12 +69,18 @@ def ungrounded(clause, matcher, hits, misses):
             mentions = [m for m in mentions if not (match.start() <= m[0] < match.end())]
             mentions.append((match.start(), match.end(), miss, None))
     mentions.sort(key=lambda item: item[0])
+    snippet = clause.strip()[:80]
+    where = f"；位于 {field}" if field else ""
     for index, (start, end, alias, key) in enumerate(mentions):
         boundary = mentions[index + 1][0] if index + 1 < len(mentions) else len(clause)
         if excluded_mention(clause, start, end, boundary):
             continue
         if key is None:
-            return f"意象“{alias}”未在词典中命中，只能说明未收录，不能解读"
+            return ValidationMessage(
+                f"意象“{alias}”未在词典中命中，只能说明未收录，不能解读"
+                f"（冲突片段：“{snippet}”{where}；请直接在紧邻“{alias}”的同一短句内写明“{alias}未收录/不作解读”，勿用逗号隔开，或删去多余提及）",
+                retry_key=f"dream_unmatched:{alias}",
+            )
         if key not in hits:
             quoted = (
                 start > 0
@@ -81,7 +89,11 @@ def ungrounded(clause, matcher, hits, misses):
                 and clause[end] in "」”】》"
             )
             if quoted or INTERPRETS.match(clause, end) or DREAMED.search(clause[:start]):
-                return f"“{key}”不是本次命中的意象，不能解读"
+                return ValidationMessage(
+                    f"“{key}”不是本次命中的意象，不能解读"
+                    f"（冲突片段：“{snippet}”{where}；请删去该未命中意象或在同一短句内紧邻写明“不是本次命中意象/不作解读”）",
+                    retry_key=f"dream_unhit:{key}",
+                )
     return None
 
 
@@ -89,17 +101,25 @@ def validate_output(reading, state, matcher):
     found = results(state)
     if not found:
         return None
-    texts = public_texts(reading)
     if reading.systems_used == ["dream"] and reading.timeline:
-        return "解梦只提供心理层面的线索，不安排事件时间表；请删去timeline"
+        return ValidationMessage(
+            "解梦只提供心理层面的线索，不安排事件时间表；请删去timeline",
+            retry_key="dream_timeline",
+        )
     hits = {h["key"] for r in found for h in r["hits"]}
     misses = {m for r in found for m in r["misses"]}
-    for text in texts:
+    for field, text in labeled_public_texts(reading):
+        if not text:
+            continue
         for match in PROPHECY.finditer(text):
             if not NEGATION.search(text[max(0, match.start() - 6) : match.start()]):
-                return "解梦只提供心理层面的线索，不能把梦境说成现实事件的预兆"
+                snippet = sentence_around(text, match.start(), match.end())
+                return ValidationMessage(
+                    f"解梦只提供心理层面的线索，不能把梦境说成现实事件的预兆（冲突原句：“{snippet}”；位于 {field}）",
+                    retry_key="dream_prophecy",
+                )
         for clause in CLAUSES.split(text):
-            error = ungrounded(clause, matcher, hits, misses)
+            error = ungrounded(clause, matcher, hits, misses, field=field)
             if error:
                 return error
     return None

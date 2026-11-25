@@ -386,12 +386,15 @@ def xinjiang_birth_clock(session, location_id: str) -> str | None:
 def location_tool(gazetteer: Gazetteer, store=None):
     def resolve(args, session):
         result = gazetteer.resolve(args)
+        if result.get("candidates"):
+            session.state["location_turn_index"] = len(session.user_messages)
         for candidate in result.get("candidates", []):
             session.state.setdefault("location_candidates", {})[candidate["location_id"]] = (
                 candidate
             )
         if result["status"] == "resolved":
             location = result["location"]
+            session.state["location_turn_index"] = len(session.user_messages)
             session.state.setdefault("locations", {})[location["location_id"]] = location
             session.state.setdefault("location_aliases", {})[location["location_id"]] = sorted(
                 gazetteer.names[location["location_id"]] | {args.query}

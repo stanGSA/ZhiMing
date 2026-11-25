@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import copy
 import secrets
 import uuid
 from dataclasses import dataclass, field
@@ -151,8 +152,26 @@ class Session:
         selection = {
             k: self.state[k] for k in ("selected_systems", "selected_spread") if k in self.state
         }
+        same_turn_locations = not (
+            self.birth_binding and self.birth_binding.get("location")
+        ) and self.state.get("location_turn_index") == len(self.user_messages)
+        preserved_locations = (
+            {
+                k: copy.deepcopy(self.state[k])
+                for k in (
+                    "locations",
+                    "location_aliases",
+                    "location_candidates",
+                    "location_turn_index",
+                )
+                if k in self.state
+            }
+            if same_turn_locations
+            else {}
+        )
         self.state = {
             **selection,
+            **preserved_locations,
             # Tool messages from earlier readings remain in this model conversation.
             # Never reassign their aliases to a different calculation.
             "ref_alias": self.state.get("ref_alias", {}),

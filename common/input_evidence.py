@@ -4,7 +4,17 @@ import calendar
 import re
 from datetime import date, datetime
 
-DATE = r"(?<!\d)(\d{4})[-年/.](\d{1,2})[-月/.](\d{1,2})日?(?!\d)"
+DATE = r"(?<!\d)(\d{4})[-年/.](\d{1,2})[-月/.](\d{1,2})[日号]?(?!\d)"
+RANGE_SEP = r"\s*(?:至|到|—|~|～|–)\s*"
+RANGE_EXPR = re.compile(
+    DATE
+    + RANGE_SEP
+    + r"(?:"
+    + DATE
+    + r"|(\d{1,2})[-月/.](\d{1,2})[日号]?(?!\d|[-年/.]\d|[点时分秒:：])"
+    + r"|(\d{1,2})[日号](?!\d)"
+    + r")"
+)
 NUMBER = r"[零〇一二两三四五六七八九十\d]+"
 
 
@@ -110,11 +120,23 @@ def solar_time_choice(text):
 
 def question_range(text, anchor=None):
     """Only linked dates are a range; an unrelated birth date never becomes an endpoint."""
-    match = re.search(DATE + r"\s*(?:至|到|—|~|～|–)\s*" + DATE, text)
+    match = RANGE_EXPR.search(text)
     if match:
+        y1, m1, d1 = map(int, match.group(1, 2, 3))
         try:
-            values = list(map(int, match.groups()))
-            return date(*values[:3]).isoformat(), date(*values[3:]).isoformat()
+            start = date(y1, m1, d1)
+            if match.group(4) is not None:
+                end = date(*map(int, match.group(4, 5, 6)))
+            elif match.group(7) is not None:
+                m2, d2 = int(match.group(7)), int(match.group(8))
+                end_year = y1 + (1 if (m2, d2) < (m1, d1) else 0)
+                end = date(end_year, m2, d2)
+            else:
+                d2 = int(match.group(9))
+                if d2 < d1:
+                    return None
+                end = date(y1, m1, d2)
+            return start.isoformat(), end.isoformat()
         except ValueError:
             return None
     # Remove birth dates before looking for a month request.
