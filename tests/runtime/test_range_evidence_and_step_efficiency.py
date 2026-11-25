@@ -623,3 +623,50 @@ async def test_consultation_datetime_does_not_trigger_premature_dst_ask_gate(run
         dict(question="请补充您的具体出生时刻，如涉及夏令时也请注明。"),
     )
     assert ask_missing_clock.ok
+
+
+def test_default_gazetteer_singleton_and_lightweight_geo_record(monkeypatch, project):
+    import common.location as loc_mod
+    from agents.demo import DemoModel
+    from app import create_runtime
+    from plugins.context import _geo_location
+
+    monkeypatch.setattr(loc_mod, "_DEFAULT_GAZETTEER", None)
+    monkeypatch.setattr(loc_mod, "_GEO_RECORDS", None)
+
+    # 1. GeoNames city ID (e.g. Urumqi 1529102, not in GB/T region_data) uses lightweight
+    # _GEO_RECORDS without loading full Gazetteer search indexes.
+    urumqi = _geo_location("1529102")
+    assert urumqi is not None
+    assert urumqi["location_id"] == "1529102"
+    assert urumqi["tz"] == "Asia/Urumqi"
+    assert loc_mod._GEO_RECORDS is not None
+    assert loc_mod._DEFAULT_GAZETTEER is None
+
+    # Returned dicts must be isolated copies.
+    urumqi["tz"] = "MUTATED"
+    assert _geo_location("1529102")["tz"] == "Asia/Urumqi"
+
+    # 2. Multiple create_runtime() calls share the same process-wide lazy Gazetteer singleton.
+    r1 = create_runtime(project, user_id="gaz-u1", model=DemoModel())
+    r2 = create_runtime(project, user_id="gaz-u2", model=DemoModel())
+    try:
+        g1 = r1.registry.tools["resolve_location"].handler.__closure__
+        g2 = r2.registry.tools["resolve_location"].handler.__closure__
+        gaz1 = next(c.cell_contents for c in g1 if isinstance(c.cell_contents, loc_mod.Gazetteer))
+        gaz2 = next(c.cell_contents for c in g2 if isinstance(c.cell_contents, loc_mod.Gazetteer))
+        assert gaz1 is gaz2 is loc_mod.default_gazetteer()
+        assert not gaz1.records  # Still lazy before first resolve.
+
+        # 3. Once default_gazetteer loads, lightweight _GEO_RECORDS is released and copies stay isolated.
+        resolved = gaz1.resolve(loc_mod.LocationInput(query="乌鲁木齐", country="CN"))
+        assert resolved["status"] == "resolved"
+        assert resolved["location"]["location_id"] == "1529102"
+        assert loc_mod._GEO_RECORDS is None
+        resolved["location"]["tz"] = "MUTATED"
+        assert gaz1.records["1529102"]["tz"] == "Asia/Urumqi"
+        assert _geo_location("1529102")["tz"] == "Asia/Urumqi"
+        assert loc_mod._GEO_RECORDS is None
+    finally:
+        r1.close()
+        r2.close()

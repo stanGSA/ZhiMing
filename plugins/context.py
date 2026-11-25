@@ -1,7 +1,6 @@
 """Shared deterministic plugin binding. No model-created profile or signals."""
 
 import re
-from functools import lru_cache
 
 from pydantic import Field
 
@@ -29,15 +28,6 @@ class BirthInput(StrictInput):
     fold: int | None = Field(default=None, ge=0, le=1)
 
 
-@lru_cache(maxsize=1)
-def _cached_gazetteer():
-    from common.location import Gazetteer
-
-    gazetteer = Gazetteer()
-    gazetteer.load()
-    return gazetteer
-
-
 def _geo_location(location_id):
     if not location_id:
         return None
@@ -46,11 +36,12 @@ def _geo_location(location_id):
     node = region_data()["nodes"].get(location_id)
     if node and node.get("location"):
         return dict(node["location"])
+    from common.location import geo_record
+
     try:
-        record = _cached_gazetteer().records.get(location_id)
+        return geo_record(location_id)
     except OSError:
         return None
-    return dict(record) if record else None
 
 
 def _resolved_location(session, location_id):
