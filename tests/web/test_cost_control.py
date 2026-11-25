@@ -1,6 +1,7 @@
 """Site-wide cost control, the admin console API and the monitor's endpoints, without paid calls."""
 
 import asyncio
+import json
 
 import httpx
 import pytest
@@ -459,3 +460,152 @@ async def test_budget_refusal_below_100_percent_is_reported_until_raised_or_midn
     now[0] = store.costs.next_day(now[0]) + 1
     assert site_snapshot(store, gate, now[0])["today"]["budget_refused_at"] is None
     store.close()
+
+
+@pytest.mark.parametrize("exc_cls", [QuotaExceeded, SiteBudgetExhausted])
+async def test_quota_refusal_never_activates_repair_steps(project, exc_cls):
+    from harness.loop import run_turn
+    from harness.models import ToolCall
+
+    class QuotaOnLastStepModel:
+        def __init__(self):
+            self.calls = 0
+
+        async def chat(self, messages, tools):
+            self.calls += 1
+            if self.calls == 1:
+                return ModelResponse(
+                    input_tokens=100,
+                    output_tokens=20,
+                    tool_calls=[
+                        ToolCall(
+                            id="c1",
+                            name="start_reading",
+                            arguments={"question": "近期工作趋势", "systems": ["tarot"]},
+                        )
+                    ],
+                )
+            if self.calls == 2:
+                return ModelResponse(
+                    input_tokens=100,
+                    output_tokens=20,
+                    tool_calls=[
+                        ToolCall(
+                            id="c2",
+                            name="draw_tarot",
+                            arguments={"spread": "single", "question": "近期工作趋势"},
+                        )
+                    ],
+                )
+            raise exc_cls()
+
+    model = QuotaOnLastStepModel()
+    runtime = create_runtime(project, user_id="quota-repair-check", model=model)
+    try:
+        outcome = await run_turn(
+            runtime.session,
+            "近期工作趋势",
+            model,
+            runtime.registry,
+            runtime.tracer,
+            max_steps=3,
+            token_budget=50_000,
+            repair_steps=2,
+        )
+        assert outcome.status == "quota_exhausted"
+        assert model.calls == 3
+        assert not runtime.session.state.get("repair_only")
+        trace_file = (
+            runtime.tracer.user_dir(runtime.session.user_id) / f"{runtime.session.id}.jsonl"
+        )
+        events = [
+            json.loads(line)["event"]
+            for line in trace_file.read_text(encoding="utf-8").splitlines()
+        ]
+        assert "repair_reserve_activated" not in events
+    finally:
+        runtime.close()
+
+
+async def test_repair_step_respects_site_budget_refusal(project):
+    from agents.demo import DemoModel
+    from harness.loop import run_turn
+    from harness.models import ToolCall
+
+    class QuotaDuringRepairModel:
+        def __init__(self, runtime):
+            self.runtime = runtime
+            self.calls = 0
+
+        async def chat(self, messages, tools):
+            self.calls += 1
+            if self.calls == 1:
+                return ModelResponse(
+                    input_tokens=100,
+                    output_tokens=20,
+                    tool_calls=[
+                        ToolCall(
+                            id="c1",
+                            name="start_reading",
+                            arguments={"question": "近期工作趋势", "systems": ["tarot"]},
+                        )
+                    ],
+                )
+            if self.calls == 2:
+                return ModelResponse(
+                    input_tokens=100,
+                    output_tokens=20,
+                    tool_calls=[
+                        ToolCall(
+                            id="c2",
+                            name="draw_tarot",
+                            arguments={"spread": "single", "question": "近期工作趋势"},
+                        )
+                    ],
+                )
+            if self.calls == 3:
+                ref = next(iter(self.runtime.session.state["allowed_refs"]))
+                return ModelResponse(
+                    input_tokens=100,
+                    output_tokens=20,
+                    tool_calls=[
+                        ToolCall(
+                            id="c3",
+                            name="submit_reading",
+                            arguments={
+                                "question_type": "tarot",
+                                "summary": "这件事必定成功。",
+                                "evidence": [{"ref_id": ref}],
+                            },
+                        )
+                    ],
+                )
+            raise SiteBudgetExhausted()
+
+    runtime = create_runtime(project, user_id="quota-during-repair", model=DemoModel())
+    model = QuotaDuringRepairModel(runtime)
+    runtime.model = model
+    try:
+        outcome = await run_turn(
+            runtime.session,
+            "近期工作趋势",
+            model,
+            runtime.registry,
+            runtime.tracer,
+            max_steps=3,
+            token_budget=50_000,
+            repair_steps=2,
+        )
+        assert outcome.status == "quota_exhausted"
+        assert model.calls == 4
+        assert not runtime.session.state.get("repair_only")
+        trace_file = (
+            runtime.tracer.user_dir(runtime.session.user_id) / f"{runtime.session.id}.jsonl"
+        )
+        events = [
+            json.loads(line)["event"]
+            for line in trace_file.read_text(encoding="utf-8").splitlines()
+        ]
+        assert "repair_reserve_activated" in events
+    finally:
+        runtime.close()

@@ -640,3 +640,169 @@ def test_home_defaults_to_account_and_guests_only_use_demo(site, chromium, tmp_p
     )
     assert not errors
     page.close()
+
+
+def test_track_nodes_keep_shape_and_rollback_clears_previous_active(site, chromium):
+    base, _ = site
+    page, _ = open_tarot(chromium, base, reduced_motion=False)
+    page.route(
+        "**/api/progress?*",
+        lambda route: route.fulfill(
+            status=200,
+            content_type="text/event-stream",
+            body=('data: {"label":"事实核对未通过，正在改写"}\n\ndata: {"label":"正在抽牌"}\n\n'),
+        ),
+    )
+    page.evaluate(
+        """() => {
+          const realFetch = window.fetch;
+          window.fetch = async (input, options) => {
+            if (new URL(String(input), location.origin).pathname === '/api/chat')
+              await new Promise((resolve) => setTimeout(resolve, 1400));
+            return realFetch(input, options);
+          };
+        }"""
+    )
+    draw(page, "看近期状态", 0, 1, 2)
+    expect(page.locator("#thinking .thinking span")).to_have_text("正在抽牌")
+    expect(page.locator("#thinking .track-clock")).to_have_attribute("aria-hidden", "true")
+    node_style = page.locator("#thinking .track-node").first.evaluate(
+        "el => { const s = getComputedStyle(el); return { w: s.width, h: s.height, r: s.borderRadius }; }"
+    )
+    assert node_style == {"w": "13px", "h": "13px", "r": "0px"}
+    expect(page.locator("#thinking .track li.active")).to_have_count(1)
+    expect(page.locator("#thinking .track li.active")).to_have_attribute("data-stage", "calc")
+    check_step = page.locator("#thinking .track li[data-stage='check']")
+    expect(check_step).to_have_class("done seen redo")
+    expect(check_step.locator(".track-stamp")).to_have_text("退")
+    expect(page.locator("#thinking")).to_have_count(0, timeout=20000)
+    page.close()
+
+
+@pytest.mark.parametrize("slug", ["bazi", "astro"])
+def test_chart_reveal_plays_on_draw_not_on_reload(site, chromium, slug):
+    base, _ = site
+    context = chromium.new_context(
+        viewport={"width": 1280, "height": 844},
+        reduced_motion="no-preference",
+    )
+    page = open_saved_birth(chromium, base, slug, context=context)
+    if slug == "bazi":
+        page.locator("[data-birth-fold] > summary").click()
+    with page.expect_response(lambda r: r.url.endswith("/api/chart")) as response:
+        page.locator(
+            "#draw-chart" if slug == "astro" else "#birth-form button[type=submit]"
+        ).click()
+    assert response.value.ok, response.value.text()
+    target = page.locator("#pillars" if slug == "bazi" else "#astro-wheel .natal-wheel")
+    expect(target).to_have_class(
+        "pillars is-revealing" if slug == "bazi" else "natal-wheel is-revealing"
+    )
+    page.reload()
+    expect(page.locator("#birth-district")).to_have_value("1803361")
+    expect(page.locator("#bazi-empty" if slug == "bazi" else "#astro-empty")).to_be_hidden()
+    expect(target).not_to_have_class(
+        "pillars is-revealing" if slug == "bazi" else "natal-wheel is-revealing"
+    )
+    context.close()
+
+
+def test_fact_seal_reserves_padding_for_birth_context_and_long_bubble_expands(site, chromium):
+    from tests.web.test_birth_versions import ReadingModel
+
+    class LongReadingModel(ReadingModel):
+        async def chat(self, messages, tools):
+            reply_msg = await super().chat(messages, tools)
+            for tc in reply_msg.tool_calls or ():
+                if tc.name == "submit_reading":
+                    tc.arguments["sections"] = [
+                        {"title": "阶段观察", "body": "详细推演说明与阶段性建议。" * 16}
+                    ]
+            return reply_msg
+
+    base, runtimes = site
+    context = chromium.new_context(
+        viewport={"width": 1280, "height": 900},
+        reduced_motion="no-preference",
+    )
+    page = context.new_page()
+    # Server branch restricts /bazi model readings to signed-in accounts (guests return chart_only).
+    register_from_entrance(page, base, "解读留白测试")
+    page.goto(f"{base}/bazi")
+    expect(page.locator("#birth-country")).to_be_enabled()
+    saved = page.request.put(
+        f"{base}/api/birth",
+        data={
+            "date": "2001-11-25",
+            "time": "10:11",
+            "unknown_time": False,
+            "location_id": "1803361",
+            "gender": "male",
+        },
+        headers={"X-Zhiming-Client": "web", "Origin": base},
+    )
+    assert saved.ok, saved.text()
+    page.reload()
+    expect(page.locator("#birth-district")).to_have_value("1803361")
+    runtimes[-1].model = LongReadingModel(runtimes[-1])
+    answered(page, lambda: reply(page, "请结合我的八字看看近期重心"))
+    expect(page.locator("#reading-content .fact-seal")).to_be_visible()
+    paddings = page.evaluate(
+        """() => ({
+          birth: getComputedStyle(document.querySelector('#reading-content .fact-seal + .reading-confidence')).paddingRight,
+          tags: getComputedStyle(document.querySelector('#reading-content .reading-tags')).paddingRight,
+        })"""
+    )
+    assert paddings == {"birth": "76px", "tags": "76px"}
+    long_bubble = page.locator("#messages .msg-body.msg-long").last
+    expect(long_bubble).to_be_visible()
+    toggle = long_bubble.locator(".msg-more").first
+    expect(toggle).to_have_attribute("aria-expanded", "false")
+    toggle.click()
+    expect(toggle).to_have_attribute("aria-expanded", "true")
+    expect(long_bubble).to_have_class("msg-body msg-long msg-open")
+    context.close()
+
+
+def test_name_reveal_cleans_up_counting_overlay(site, chromium):
+    base, _ = site
+    page = chromium.new_page(
+        viewport={"width": 1280, "height": 900},
+        reduced_motion="no-preference",
+    )
+    page.goto(f"{base}/name?provider=demo")
+    expect(page.locator("#name-surname")).to_be_enabled()
+    page.fill("#name-surname", "赵")
+    page.fill("#name-given", "杰")
+    with page.expect_response(lambda r: r.url.endswith("/api/name")):
+        page.get_by_role("button", name="推演五格").click()
+    expect(page.locator("#name-board")).to_have_class("is-revealing")
+    expect(page.locator("#wuge")).to_have_class("wuge is-counting")
+    expect(page.locator("#name-board")).not_to_have_class("is-revealing", timeout=5000)
+    expect(page.locator("#wuge")).not_to_have_class("wuge is-counting")
+    page.close()
+
+
+def test_tarot_reading_waits_for_cards_to_flip_before_fresh_reveal(site, chromium):
+    base, _ = site
+    page, _ = open_tarot(chromium, base, reduced_motion=False)
+    answered(page, lambda: draw(page, "近期的重心", 0, 1, 2))
+    expect(page.locator("#tarot-lower")).to_have_class("dialog-band tarot-lower veiled")
+    expect(page.locator("#reading-content")).not_to_have_class("reading-content is-fresh")
+    expect(page.locator("#reading-content")).to_have_attribute("data-pending-fresh", "1")
+    for idx in range(3):
+        page.locator("#tarot-spread .flip-card").nth(idx).click()
+    expect(page.locator("#tarot-lower")).not_to_have_class("dialog-band tarot-lower veiled")
+    expect(page.locator("#reading-content")).to_have_class("reading-content is-fresh")
+    expect(page.locator("#reading-content")).not_to_have_attribute("data-pending-fresh", "1")
+    page.close()
+
+
+def test_daily_page_has_single_h1(site, chromium):
+    base, _ = site
+    page = chromium.new_page(viewport={"width": 1280, "height": 900})
+    page.goto(f"{base}/daily?provider=demo")
+    expect(page.locator("#day-num")).not_to_have_text("—")
+    expect(page.locator("h1")).to_have_count(1)
+    expect(page.locator("#day-num")).to_be_visible()
+    page.close()

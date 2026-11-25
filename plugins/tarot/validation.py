@@ -1,22 +1,31 @@
 import re
 
 from common.facts import public_texts
+from harness.models import ValidationMessage
 from plugins.tarot.catalogue import DECK
 
 ORIENTATION_GAP = r"[\s【】「」《》“”\"'（）()]*"
 CLAUSE = re.compile(r"[。！？；;\n]")
 DRAW_CONTEXT = re.compile(
-    r"本次|此次|这次|本轮|今天|今日|每日一牌|这张|抽到|抽出|抽中|翻出|翻到|结果|提示牌|位置"
+    r"本次|此次|这次|本轮|今天|今日|每日一牌|这张|当前这张|眼前的?|面前的?|"
+    r"你手里的?|手中的?|手头(?:上|的|这张)?|牌阵[中里]|牌面上|落出的?|翻开的?|"
+    r"抽到|抽出|抽中|翻出|翻到|结果|提示牌|位置"
 )
 DEFINITION = re.compile(
     ORIENTATION_GAP
     + r"(?:一般|通常|往往|常常)?(?:是|表示|象征|代表|意味着|的(?:牌义|含义|意思)(?:是|为))"
 )
+HYPOTHETICAL_BEFORE = re.compile(
+    r"(?:如果|假如|倘若|若是?|要是|换成|设想)(?:是|为|遇到|出现)?[\s【】「」《》“”\"'（）()]*$"
+)
+HYPOTHETICAL_AFTER = re.compile(ORIENTATION_GAP + r"(?:的话|的情况下)")
 
 
-def orientation_error(text: str, name: str, expected: set[str]) -> str | None:
+def orientation_error(
+    text: str, name: str, expected: set[str], *, counterfactual_anchored: bool = False
+) -> str | None:
     mentions = list(re.finditer(rf"{re.escape(name)}{ORIENTATION_GAP}(正位|逆位)", text))
-    has_expected = any(m[1] in expected for m in mentions)
+    local_has_expected = any(m[1] in expected for m in mentions)
     for mention in mentions:
         if mention[1] in expected:
             continue
@@ -24,18 +33,22 @@ def orientation_error(text: str, name: str, expected: set[str]) -> str | None:
         end = CLAUSE.search(text, mention.end())
         end = end.start() if end else len(text)
         clause = text[start:end]
-        # A named, correct orientation must accompany a general definition of the other
-        # orientation. Current-draw assertions remain errors even when phrased as definitions.
-        if (
-            has_expected
-            and DEFINITION.match(text, mention.end())
-            and not DRAW_CONTEXT.search(clause)
-        ):
+        sub_prefix = re.split(r"[，,：:]", text[start : mention.start()])[-1]
+        is_counterfactual = bool(
+            HYPOTHETICAL_BEFORE.search(sub_prefix) or HYPOTHETICAL_AFTER.match(text, mention.end())
+        )
+        # Definitions ("正位表示…") require the actual orientation in the same field; cross-field
+        # narrative anchoring is restricted strictly to explicit counterfactual clauses.
+        allowed_comparison = (
+            local_has_expected and bool(DEFINITION.match(text, mention.end()))
+        ) or ((local_has_expected or counterfactual_anchored) and is_counterfactual)
+        if allowed_comparison and not DRAW_CONTEXT.search(clause):
             continue
         wanted = "、".join(sorted(expected))
-        return (
+        return ValidationMessage(
             f"牌面方向错误：{name}本次应为{wanted}；冲突片段“{clause[:120]}”。"
-            "请修正该片段中的本次牌面断言；对照释义须明确为一般牌义，勿重新抽牌。"
+            "请修正该片段中的本次牌面断言；对照释义须明确为一般牌义，勿重新抽牌。",
+            retry_key=f"tarot_orientation:{name}",
         )
     return None
 
@@ -60,7 +73,9 @@ def validate_output(reading, state):
         if (
             explicit or (name.startswith(("权杖", "圣杯", "宝剑", "星币")) and name in text)
         ) and name not in actual:
-            return f"正文提到未抽出的牌：{name}"
+            return ValidationMessage(
+                f"正文提到未抽出的牌：{name}", retry_key=f"undrawn_card:{name}"
+            )
     cards = drawn_cards(state)
     orientations = {}
     for card in cards:
@@ -74,10 +89,27 @@ def validate_output(reading, state):
         error = orientation_error(evidence.reading, card["name"], {orientation})
         if error:
             return error
-    # Check every public field, allowing explicit definitions alongside the actual draw.
+    # Check every public field, allowing explicit definitions or counterfactuals when the
+    # authored narrative (summary/sections, never code-filled evidence) anchored the draw.
+    narrative = [reading.summary, *(s.body for s in reading.sections)]
+    anchored_names = {
+        name
+        for name, found in orientations.items()
+        if any(
+            m[1] in found
+            for part in narrative
+            for m in re.finditer(rf"{re.escape(name)}{ORIENTATION_GAP}(正位|逆位)", part)
+        )
+    }
     for part in public_texts(reading):
+        is_evidence = any(part == e.reading for e in reading.evidence)
         for name, found in orientations.items():
-            error = orientation_error(part, name, found)
+            error = orientation_error(
+                part,
+                name,
+                found,
+                counterfactual_anchored=(not is_evidence and name in anchored_names),
+            )
             if error:
                 return error
     return None

@@ -8,6 +8,7 @@ from common.output_policy import (
     care_error,
     certainty_error,
     normalize_reading,
+    sentence_around,
     warn,
 )
 from common.safety import CRISIS as CRISIS  # Backwards-compatible public import.
@@ -15,6 +16,9 @@ from harness.models import ValidationMessage
 from harness.refs import short
 
 HIGH_RISK = re.compile(r"疾病|癌|诊断|停药|治疗|健康|投资|股票|基金|借贷|法律|诉讼|判刑|死亡|寿命")
+HARD_HIGH_RISK = re.compile(
+    r"(?<!不)(?<!不能)(?<!无法)保证收益|一定会|稳赚|必死|(?<!不)可以停药|必然确诊"
+)
 # Questions that ask whether or when to act; only these call for "适合/暂不适合" as an answer.
 SUITABILITY = re.compile(
     r"是否|适合|适宜|适不适|要不要|该不该|能不能|可不可以|可以.{0,12}[吗么]|什么时候|何时|时机"
@@ -101,12 +105,66 @@ def citation_error(session, cited, allowed, rendered=None) -> str | None:
     return ValidationMessage(message, retry_key="invalid_citation:" + json.dumps(identity))
 
 
+def combine_validation_errors(errors: list[str], *, allow_patch: bool = False) -> str | None:
+    """Return a single error verbatim, or bundle multiple errors into one actionable list."""
+    if not errors:
+        return None
+    if len(errors) == 1:
+        return errors[0]
+    keys = sorted(
+        {
+            getattr(err, "retry_key", None) or re.sub(r"（冲突(?:原句|片段)：.*", "", str(err))
+            for err in errors
+        }
+    )
+    hint = "（可调用 patch_reading 仅修改问题字段/段落，无需重写整篇）" if allow_patch else ""
+    joined = (
+        f"提交内容存在 {len(errors)} 处校验问题，请一次性全部修正后重新提交{hint}：\n"
+        + "\n".join(f"{idx}. {err}" for idx, err in enumerate(errors, 1))
+    )
+    return ValidationMessage(joined, retry_key="multi:" + "|".join(keys))
+
+
+def _high_risk_hard_error(reading) -> str | None:
+    for part in authored_texts(reading):
+        if not part:
+            continue
+        match = HARD_HIGH_RISK.search(part)
+        if match:
+            snippet = sentence_around(part, match.start(), match.end())
+            return ValidationMessage(
+                f"不能给出健康、投资或生死的确定性结论（命中“{match.group()}”，冲突原句：“{snippet}”）",
+                retry_key="high_risk_certainty",
+            )
+    text = reading.model_dump_json()
+    match = HARD_HIGH_RISK.search(text)
+    if match:
+        return ValidationMessage(
+            f"不能给出健康、投资或生死的确定性结论（命中“{match.group()}”）",
+            retry_key="high_risk_certainty",
+        )
+    return None
+
+
 def validate_reading(reading, session) -> str | None:
     """Hard checks on facts and safety; wording is repaired first, style is only recorded."""
     state = session.state
     if not state.get("tarot_result") and not state.get("calculations"):
         return "必须先调用确定性计算工具"
+    if not reading.evidence and reading.sections:
+        seen_refs = dict.fromkeys(ref for s in reading.sections for ref in s.ref_ids if ref)
+        if seen_refs:
+            from common.schemas import Evidence
+
+            reading.evidence = [Evidence(ref_id=ref) for ref in seen_refs]
     fill_evidence(reading, state)
+    errors: list[str] = []
+    if not reading.evidence:
+        errors.append(
+            ValidationMessage(
+                "evidence 至少需要引用一条本次计算事实的 ref_id", retry_key="empty_evidence"
+            )
+        )
     cited = [
         (f"evidence.{i}.ref_id", item.ref_id, not item.reading)
         for i, item in enumerate(reading.evidence)
@@ -116,28 +174,33 @@ def validate_reading(reading, session) -> str | None:
         for i, section in enumerate(reading.sections)
         for j, ref in enumerate(section.ref_ids)
     ]
-    error = citation_error(session, cited, state["allowed_refs"], calculation_evidence_texts(state))
-    if error:
-        return error
+    cite_err = citation_error(
+        session, cited, state.get("allowed_refs") or set(), calculation_evidence_texts(state)
+    )
+    if cite_err:
+        errors.append(cite_err)
     normalize_reading(reading, state)
-    actual_systems = {s["system"] for s in state["signals"]}
-    if set(reading.systems_used) != actual_systems or len(reading.systems_used) != len(
-        actual_systems
+    signals = state.get("signals") or []
+    actual_systems = {s["system"] for s in signals}
+    if (
+        not reading.systems_used
+        or set(reading.systems_used) != actual_systems
+        or len(reading.systems_used) != len(actual_systems)
     ):
-        return "systems_used 必须恰好等于本次调用的体系，不能声称使用未调用的体系"
-    text = reading.model_dump_json()
+        errors.append("systems_used 必须恰好等于本次调用的体系，不能声称使用未调用的体系")
     public_text = " ".join(authored_texts(reading))
     # Normalization already removed such sentences; whatever is left is a field made only of them.
     if re.search(
         r"active_reading_id|missing_dependency|submit_reading|存储错误|保存失败|未能保存|知识库|未人工审核",
         public_text,
     ):
-        return "正文不能包含内部状态、审核或存储错误信息"
+        errors.append("正文不能包含内部状态、审核或存储错误信息")
     if re.search(r"仅供参考|仅供娱乐|仅供.*反思", public_text):
-        return "免责声明由应用统一添加，正文不要重复"
+        errors.append("免责声明由应用统一添加，正文不要重复")
     first = reading.summary.split("。")[0]
     decision = (state.get("tarot_result") or {}).get("spread") == "decision"
-    asked = state["question"] + " " + (session.user_messages[-1] if session.user_messages else "")
+    question_str = state.get("question", "")
+    asked = question_str + " " + (session.user_messages[-1] if session.user_messages else "")
     if state.get("response_mode") != "followup":
         # Recorded only: a verdict hedged in its first sentence reads as no answer at all.
         if "前提" in first:
@@ -150,7 +213,7 @@ def validate_reading(reading, session) -> str | None:
         if not re.search(r"前提|条件|如果|若|先核实|待.*确认", reading.summary):
             warn(state, "二选一宜说明暂定建议的现实条件")
     if state.get("response_mode") != "followup" and reading.question_type == "timing":
-        if re.search(r"是否|适合|适宜|什么时候|何时|时机", state["question"]):
+        if re.search(r"是否|适合|适宜|什么时候|何时|时机", question_str):
             if reading.verdict not in ("suitable", "not_now", "conditional"):
                 warn(state, "时机问题summary第一句宜直接回答行动倾向并说明现实前提")
     # Recorded only: the verdict, layer titles and actions are read first and must not need
@@ -172,32 +235,40 @@ def validate_reading(reading, session) -> str | None:
     if state.get("response_mode") != "followup":
         for report in (state.get("specialist_reports") or {}).values():
             if report["status"] == "ok" and not report_matches_profile(report, session.profile):
-                return f"{report['label']}所需画像已更正，须重新咨询该专家后再提交"
+                errors.append(f"{report['label']}所需画像已更正，须重新咨询该专家后再提交")
+    if getattr(session, "calendar_anchor", None) and not state.get("calendar_anchor"):
+        state["calendar_anchor"] = session.calendar_anchor
+        state.setdefault(
+            "calendar_timezone", getattr(session, "calendar_timezone", "Asia/Shanghai")
+        )
     for validator in session.output_validators.values():
-        error = validator(reading, state)
-        if error:
-            return error
-    error = validate_calculation_facts(reading, state)
-    if error:
-        return error
+        dom_err = validator(reading, state)
+        if dom_err:
+            errors.append(dom_err)
+    calc_err = validate_calculation_facts(reading, state)
+    if calc_err:
+        errors.append(calc_err)
     if session.policy_judge is not None:
         from common.policy_judge import HARD, candidates
 
         texts = authored_texts(reading)
-        if any(HARD.search(text) for text in texts):
-            return "不能给出确定性结果或停药建议，请改写"
-        state["policy_candidates"] = candidates(texts)
-        error = None
+        if any(HARD.search(t) for t in texts):
+            errors.append("不能给出确定性结果或停药建议，请改写")
+        else:
+            state["policy_candidates"] = candidates(texts)
     else:
-        error = certainty_error(authored_texts(reading)) or care_error(authored_texts(reading))
-    if error:
-        return error
+        authored = authored_texts(reading)
+        cert_err = certainty_error(authored)
+        if cert_err:
+            errors.append(cert_err)
+        med_err = care_error(authored)
+        if med_err:
+            errors.append(med_err)
     current_question = session.user_messages[-1] if session.user_messages else ""
-    if HIGH_RISK.search(state["question"] + current_question):
+    if HIGH_RISK.search(question_str + current_question):
         if not reading.safety.flag or not reading.safety.note:
-            return "涉及健康、投资、法律或生死，必须标注安全说明"
-        if re.search(
-            r"(?<!不)(?<!不能)(?<!无法)保证收益|一定会|稳赚|必死|(?<!不)可以停药|必然确诊", text
-        ):
-            return "不能给出健康、投资或生死的确定性结论"
-    return None
+            errors.append("涉及健康、投资、法律或生死，必须标注安全说明")
+        risk_err = _high_risk_hard_error(reading)
+        if risk_err:
+            errors.append(risk_err)
+    return combine_validation_errors(errors, allow_patch=True)

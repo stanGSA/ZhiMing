@@ -8,6 +8,18 @@ def available(tool, session):
     name = tool.name
     if session.role == "reviewer":
         return True
+    if state.get("repair_only") and not state.get("complete"):
+        if session.role == "orchestrator":
+            return name == "submit_reading" or (
+                name == "patch_reading" and bool(state.get("last_reading_draft"))
+            )
+        return name == "submit_report"
+    if name == "patch_reading":
+        return (
+            session.role == "orchestrator"
+            and bool(state.get("last_reading_draft"))
+            and not state.get("complete")
+        )
     if state.get("response_mode") == "followup" and not state.get("complete"):
         return name in {"read_reading", "lookup_meaning", "submit_reading"}
     if name in {
@@ -27,15 +39,19 @@ def available(tool, session):
     if tool.partition and systems and tool.partition not in systems:
         return False
     if name in {"submit_reading", "submit_report", "lookup_meaning"}:
-        if name == "lookup_meaning" and state.get("bazi_result"):
-            from plugins.bazi.intent import dayun_overview_state
-
-            if dayun_overview_state(state) and {s["system"] for s in state.get("signals", [])} == {
-                "bazi"
-            }:
-                # All cycle facts and their meanings are already present. Free-form
-                # lookup caused the production request to spend four rounds guessing keys.
+        if name == "lookup_meaning":
+            if state.get("lookup_misses", 0) >= 2:
                 return False
+            signal_systems = {s["system"] for s in state.get("signals", [])}
+            if signal_systems == {"daily"}:
+                return False
+            if state.get("bazi_result"):
+                from plugins.bazi.intent import dayun_overview_state
+
+                if dayun_overview_state(state) and signal_systems == {"bazi"}:
+                    # All cycle facts and their meanings are already present. Free-form
+                    # lookup caused the production request to spend four rounds guessing keys.
+                    return False
         return bool(state.get("signals"))
     if name == "merge_signals":
         return len({s["system"] for s in state.get("signals", [])}) >= 2

@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import copy
 import json
 import re
 
@@ -10,26 +11,29 @@ from common.input_evidence import (
     clock_in,
     gender_evidence,
     normalized_gender,
+    reading_text,
     solar_time_choice,
     supported_birth,
 )
-from common.location import consultation_timezone_evidence
+from common.location import birth_place_mentioned, consultation_timezone_evidence, normalize
 from common.schemas import (
     LOOKUP_KINDS,
     AskInput,
     EmptyInput,
     LookupInput,
+    PatchReadingInput,
     ProfileInput,
     Reading,
     ReadInput,
     StartInput,
 )
 from common.validation import validate_reading
-from harness.models import ToolResult
+from harness.models import ToolResult, ValidationMessage
 from harness.registry import Tool
 from harness.session import valid_timezone
 from knowledge.kb import KnowledgeBase
 from plugins.base import MEANING_FIELDS
+from plugins.context import inferred_birth
 from signals.merge import fingerprint, merge_signals, model_view, undisclosed
 
 SYSTEM_NAMES = {"astro": r"占星|星盘|星座", "bazi": r"八字|命理|四柱", "tarot": r"塔罗|牌"}
@@ -48,6 +52,71 @@ REASK = {
     "birth_place": r"出生地|在哪(?:里|儿)?出生|出生(?:的)?城市",
 }
 CORRECTION = re.compile(r"记错|更正|改一下|改成|不对|搞错|纠正|重新确认")
+PREMATURE_CALENDAR_ASK = re.compile(
+    r"夏令时|回拨|跳时|跳变|拨快|拨慢|\bfold\b|"
+    r"(?:时间|时刻|钟表).{0,8}(?:不存在|是否存在|重复|出现两次)|"
+    r"(?:不存在|重复出现).{0,8}(?:时间|时刻|钟表)|"
+    r"真太阳时.{0,8}(?:交节|节气)|(?:交节|节气).{0,8}真太阳时|"
+    r"交节(?:时刻|时间|前后|边界)",
+    re.I,
+)
+UNKNOWN_BIRTH_TIME_TEXT = re.compile(
+    r"(?:不知道|不知|未知|不确定).{0,6}(?:时间|时辰)|(?:时间|时辰).{0,6}(?:不知道|不知|未知|不确定)"
+)
+PROFILE_AUTOSAVE_HINT = (
+    "已解析地点的地理信息与排盘口径会在计算成功时自动保存，无需重复调用 update_profile 猜测写入"
+)
+
+
+def _resolved_birth_place_alias(value: str, evidence: str, session) -> bool:
+    """Allow a canonical alias of an already-resolved birthplace grounded in evidence."""
+    norm_value = normalize(value)
+    norm_evidence = normalize(evidence)
+    matching_messages = [m for m in session.user_messages if evidence in m]
+    for loc_id, loc in session.state.get("locations", {}).items():
+        aliases = set(session.state.get("location_aliases", {}).get(loc_id, ()))
+        if loc.get("name"):
+            aliases.add(loc["name"])
+        if norm_value not in {normalize(alias) for alias in aliases}:
+            continue
+        for alias in aliases:
+            if len(alias) < 2 or normalize(alias) not in norm_evidence:
+                continue
+            if session.profile.get("location_id") == loc_id or any(
+                birth_place_mentioned(message, alias) for message in matching_messages
+            ):
+                return True
+    return False
+
+
+def _has_complete_gregorian_birth_for_calc(session) -> bool:
+    """True when session/profile already holds explicit Gregorian date, clock time, and birthplace."""
+    if session.state.get("bazi_result") or session.state.get("natal_result"):
+        return False
+    profile = session.profile
+    if profile.get("calendar_input") == "lunar" or profile.get("time_known") is False:
+        return False
+    text = reading_text(session)
+    if re.search(r"农历|阴历", text) or UNKNOWN_BIRTH_TIME_TEXT.search(text):
+        return False
+    inferred = inferred_birth(session)
+    has_birth_time = (
+        isinstance(profile.get("birth_local_dt"), str)
+        and len(profile["birth_local_dt"].strip()) > 10
+    ) or bool(inferred and len(inferred.strip()) > 10)
+    if not has_birth_time:
+        return False
+    locations = session.state.get("locations", {})
+    if len(locations) == 1:
+        return True
+    loc_id = profile.get("location_id")
+    return bool(
+        loc_id
+        and (
+            loc_id in locations
+            or (profile.get("lat") is not None and profile.get("lon") is not None)
+        )
+    )
 
 
 def pending_input(session) -> bool:
@@ -392,15 +461,9 @@ def common_tools(store, kb: KnowledgeBase, mode: str = "single", reviewer=None) 
             ):
                 return "经纬度无效"
             return None
-        if isinstance(args.value, str) and args.value not in args.evidence:
-            return "字段值必须在 evidence 原话中，不允许臆测"
-        if args.field == "name" and (
-            not isinstance(args.value, str) or not 1 <= len(args.value) <= 100
-        ):
-            return "姓名字段需要有效字符串"
         if args.field in ("time_known", "true_solar_time"):
             if type(args.value) is not bool:
-                return "该字段必须是布尔值"
+                return f"该字段必须是布尔值（请传 JSON 布尔值 true/false，不要传字符串）；{PROFILE_AUTOSAVE_HINT}"
             if args.field == "true_solar_time":
                 if solar_time_choice(args.evidence) is not args.value:
                     return "真太阳时开关须由肯定或否定的完整原话确认"
@@ -424,6 +487,21 @@ def common_tools(store, kb: KnowledgeBase, mode: str = "single", reviewer=None) 
             )
             if not explicit_clock and not any(word in args.evidence for word in confirmations):
                 return "布尔字段需要用户原话明确确认"
+            return None
+        if args.field == "birth_place":
+            if not isinstance(args.value, str) or not 1 <= len(args.value.strip()) <= 200:
+                return "出生地字段需要有效字符串"
+            if args.value in args.evidence or _resolved_birth_place_alias(
+                args.value, args.evidence, session
+            ):
+                return None
+            return f"出生地字段值必须在 evidence 原话中或与已解析出生地一致，不允许臆测；{PROFILE_AUTOSAVE_HINT}"
+        if isinstance(args.value, str) and args.value not in args.evidence:
+            return f"字段值必须在 evidence 原话中，不允许臆测；{PROFILE_AUTOSAVE_HINT}"
+        if args.field == "name" and (
+            not isinstance(args.value, str) or not 1 <= len(args.value) <= 100
+        ):
+            return "姓名字段需要有效字符串"
         if not isinstance(args.value, (str, bool)):
             return "第一周画像写入仅支持有直接原话依据的字符串或布尔值"
         return None
@@ -450,16 +528,31 @@ def common_tools(store, kb: KnowledgeBase, mode: str = "single", reviewer=None) 
             candidates = (
                 lookup_kb.suggested_keys(args.system, args.kind, args.key) if entry is None else []
             )
+            if entry is None and not candidates and args.kind in LOOKUP_KINDS.get(args.system, ()):
+                candidates = [
+                    row[0]
+                    for row in lookup_kb.db.execute(
+                        "SELECT key FROM entries WHERE system=? AND kind=? ORDER BY key LIMIT 8",
+                        (args.system, args.kind),
+                    ).fetchall()
+                ]
         finally:
             if lookup_kb is not kb:
                 lookup_kb.close()
         if entry is None:
+            misses = session.state.get("lookup_misses", 0) + 1
+            session.state["lookup_misses"] = misses
+            stop_note = (
+                "；本轮缺条目已达上限，请直接依据计算结果自带释义完成解读，勿再调用lookup_meaning。"
+                if misses >= 2
+                else "。已有计算附带释义时直接使用；不要继续猜key。"
+            )
             return ToolResult.failure(
                 "missing_entry",
                 "缺条目：精确 key 或同义词未命中"
                 + lookup_hint(args, session)
                 + ("；本版本有效key候选：" + "、".join(candidates) if candidates else "")
-                + "。已有计算附带释义时直接使用；不要继续猜key。",
+                + stop_note,
             )
         session.state.setdefault("kb_refs", set()).add(entry["ref_id"])
         # The model sees the review level, not who reviewed it.
@@ -481,6 +574,33 @@ def common_tools(store, kb: KnowledgeBase, mode: str = "single", reviewer=None) 
             return "每轮最多追问一次"
         if pending_input(session) or CORRECTION.search(" ".join(session.user_messages[-1:])):
             return None
+        if _has_complete_gregorian_birth_for_calc(session) and PREMATURE_CALENDAR_ASK.search(
+            args.question
+        ):
+            systems = set(session.state.get("systems") or ())
+            if not systems or systems & {"bazi", "astro"}:
+                q_text = (
+                    " ".join(session.user_messages[-1:])
+                    + " "
+                    + (session.state.get("question") or "")
+                )
+                if "bazi" in systems or (
+                    "astro" not in systems and re.search(r"八字|四柱|大运", q_text)
+                ):
+                    tool_hint = "compute_bazi"
+                elif "astro" in systems or re.search(r"占星|星盘|本命盘|行运", q_text):
+                    tool_hint = "compute_natal_chart"
+                else:
+                    tool_hint = "compute_bazi 或 compute_natal_chart"
+                step_hint = (
+                    f"请先调用 start_reading 再调用 {tool_hint}"
+                    if not session.state.get("active_reading_id")
+                    else f"请先调用 {tool_hint}"
+                )
+                return (
+                    "夏令时、回拨、跳变、时间是否存在或真太阳时交节等历法边界必须由确定性排盘代码核验，"
+                    f"不能凭记忆直接追问；{step_hint}，待工具返回 needs_input 后再使用 ask_user 向用户追问"
+                )
         known = known_fields(session.profile)
         repeated = [
             field
@@ -639,8 +759,16 @@ def common_tools(store, kb: KnowledgeBase, mode: str = "single", reviewer=None) 
         result["merge"] = model_view(stored) if "tensions" in stored else None
         return {"reading": result}
 
-    def validate_submit(args, session):
+    def validate_submit(args, session, *, raw_draft: dict | None = None):
+        if raw_draft is None and (
+            session.state.get("tarot_result")
+            or session.state.get("calculations")
+            or session.state.get("signals")
+        ):
+            raw_draft = args.model_dump(mode="json")
         error = validate_reading(args, session)
+        if raw_draft is not None:
+            session.state["last_reading_draft"] = raw_draft
         if error or mode != "multi":
             return error
         state = session.state
@@ -656,8 +784,93 @@ def common_tools(store, kb: KnowledgeBase, mode: str = "single", reviewer=None) 
             )
         missing = undisclosed(table, args) if table else []
         if missing:
-            return where + "；".join(describe(t) for t in missing)
+            return ValidationMessage(
+                where
+                + "；".join(describe(t) for t in missing)
+                + "（可调用 patch_reading 仅补写 tensions 字段）",
+                retry_key="undisclosed_tensions:" + ",".join(sorted(t["id"] for t in missing)),
+            )
         return None
+
+    def apply_reading_patch(draft: dict, patch: PatchReadingInput, allowed_refs=()) -> Reading:
+        merged = copy.deepcopy(draft)
+        dumped = patch.model_dump(mode="json")
+        for field_name in (
+            "verdict",
+            "question_type",
+            "systems_used",
+            "summary",
+            "sections",
+            "evidence",
+            "resonances",
+            "tensions",
+            "timeline",
+            "advice",
+            "closing",
+            "confidence",
+            "safety",
+            "followups",
+        ):
+            if field_name in patch.model_fields_set and (
+                field_name == "verdict" or getattr(patch, field_name) is not None
+            ):
+                merged[field_name] = dumped[field_name]
+        sections = list(merged.get("sections") or [])
+        for sp in patch.section_patches:
+            if sp.index >= len(sections):
+                raise ValueError(
+                    f"section_patches.index={sp.index} 超出原草稿段落范围（共 {len(sections)} 段）"
+                )
+            sec = dict(sections[sp.index])
+            if sp.title is not None:
+                sec["title"] = sp.title
+            if sp.body is not None:
+                sec["body"] = sp.body
+            if sp.ref_ids is not None:
+                sec["ref_ids"] = list(sp.ref_ids)
+            sections[sp.index] = sec
+        if patch.section_patches:
+            merged["sections"] = sections
+        # When section refs are patched without explicit evidence, drop stale unauthored bad refs
+        # and append newly cited section refs so the appendix stays in sync.
+        if (
+            "evidence" not in patch.model_fields_set
+            and (patch.section_patches or "sections" in patch.model_fields_set)
+            and merged.get("evidence")
+        ):
+            sec_refs = dict.fromkeys(
+                r for sec in (merged.get("sections") or []) for r in (sec.get("ref_ids") or []) if r
+            )
+            allowed = set(allowed_refs or ())
+            kept = [
+                item
+                for item in merged["evidence"]
+                if item.get("reading")
+                or item.get("ref_id") in allowed
+                or item.get("ref_id") in sec_refs
+            ]
+            existing = {item.get("ref_id") for item in kept}
+            for ref in sec_refs:
+                if ref not in existing:
+                    kept.append({"ref_id": ref, "reading": ""})
+            merged["evidence"] = kept
+        return Reading.model_validate(merged)
+
+    def validate_patch(args, session):
+        draft = session.state.get("last_reading_draft")
+        if not draft:
+            return "当前没有待修改的已提交草稿，请先调用 submit_reading"
+        if not args.model_fields_set:
+            return "patch_reading 至少需要提供一个待修改字段或 section_patches"
+        try:
+            reading = apply_reading_patch(draft, args, session.state.get("allowed_refs") or ())
+        except Exception as exc:
+            return f"局部补丁合并失败：{exc}"
+        next_raw = reading.model_dump(mode="json")
+        error = validate_submit(reading, session, raw_draft=next_raw)
+        if error is None:
+            session.state["_patched_reading"] = reading
+        return error
 
     def describe(tension) -> str:
         windows = [w["window"] for w in tension["windows"] if w["window"]]
@@ -701,8 +914,11 @@ def common_tools(store, kb: KnowledgeBase, mode: str = "single", reviewer=None) 
                 review = await reviewer.review(session, packet, len(notes) + 1)
                 notes.append(review)
                 if review["verdict"] == "revise":
+                    state["last_reading_draft"] = args.model_dump(mode="json")
                     return ToolResult.failure(
-                        "review_revise", revise_message(review, reviewer.max_rounds)
+                        "review_revise",
+                        revise_message(review, reviewer.max_rounds)
+                        + "\n（可调用 patch_reading 仅修改审校指出的字段或段落，无需重写全文）",
                     )
             try:
                 store.save_reading(
@@ -717,6 +933,8 @@ def common_tools(store, kb: KnowledgeBase, mode: str = "single", reviewer=None) 
                 return ToolResult.failure("birth_version_conflict", str(exc))
         state["complete"] = True
         state["output"] = output
+        state.pop("last_reading_draft", None)
+        state.pop("_patched_reading", None)
         return {
             "text": render_reading(output),
             "reading_id": state["active_reading_id"],
@@ -728,6 +946,17 @@ def common_tools(store, kb: KnowledgeBase, mode: str = "single", reviewer=None) 
             # Style and completeness findings recorded instead of rejected (kept in the trace).
             "warnings": list(state.get("output_warnings") or []),
         }
+
+    async def patch_submit(args, session):
+        reading = session.state.pop("_patched_reading", None)
+        if reading is None:
+            reading = apply_reading_patch(
+                session.state["last_reading_draft"], args, session.state.get("allowed_refs") or ()
+            )
+        result = await submit(reading, session)
+        if isinstance(result, ToolResult):
+            return result
+        return {**result, "outcome_status": "submit_reading"}
 
     all_roles = frozenset({"orchestrator", "tarot", "astro", "bazi", "name", "dream"})
     tools = [
@@ -806,12 +1035,24 @@ def common_tools(store, kb: KnowledgeBase, mode: str = "single", reviewer=None) 
         Tool(
             "submit_reading",
             "提交完整解读或保存原牌追问：summary定调并直接回答，sections分层推演，advice行动建议，"
-            "closing收尾；evidence仅填ref_id即可由代码渲染事实附录；verdict须与summary第一句一致。",
+            "closing收尾；evidence仅填ref_id（或由sections.ref_ids自动汇总）即可由代码渲染事实附录；verdict须与summary第一句一致。",
             Reading,
             submit,
             terminal=True,
             dependency="active_reading_id",
             validator=validate_submit,
+        ),
+        Tool(
+            "patch_reading",
+            "当submit_reading因局部措辞、引用或张力遗漏被打回时，仅提交需要修改的顶层字段或section_patches指定下标段落，"
+            "其余已合规段落原样保留，避免重写全文引入新错误。",
+            PatchReadingInput,
+            patch_submit,
+            roles=frozenset({"orchestrator"}),
+            terminal=True,
+            idempotent=False,
+            dependency="active_reading_id",
+            validator=validate_patch,
         ),
     ]
     if mode == "multi":

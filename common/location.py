@@ -1,6 +1,7 @@
 import io
 import json
 import re
+import threading
 import unicodedata
 import zipfile
 from pathlib import Path
@@ -11,6 +12,10 @@ from harness.models import StrictInput
 from harness.registry import Tool
 
 ROOT = Path(__file__).resolve().parents[1]
+DEFAULT_GAZETTEER_PATH = ROOT / "data/geo/geonamescache-3.0.2.whl"
+_GAZETTEER_LOCK = threading.Lock()
+_DEFAULT_GAZETTEER: "Gazetteer | None" = None
+_GEO_RECORDS: dict[str, dict] | None = None
 COUNTRY_ALIASES = {
     "中国": "CN",
     "中國": "CN",
@@ -177,111 +182,128 @@ class LocationInput(StrictInput):
 
 
 class Gazetteer:
-    def __init__(self, path: Path = ROOT / "data/geo/geonamescache-3.0.2.whl"):
+    def __init__(self, path: Path = DEFAULT_GAZETTEER_PATH):
         self.path = path
         self.records, self.index, self.names = {}, {}, {}
 
     def load(self):
+        global _GEO_RECORDS
         if self.records:
             return
-        with zipfile.ZipFile(self.path) as archive:
-            if "geonamescache/data/cities15000.json" in archive.namelist():
-                data = json.loads(archive.read("geonamescache/data/cities15000.json"))
-                rows = [
-                    (
-                        str(c["geonameid"]),
-                        c["name"],
-                        c["countrycode"],
-                        c["admin1code"],
-                        c["latitude"],
-                        c["longitude"],
-                        c["timezone"],
-                        c["population"],
-                        {c["name"], *c["alternatenames"]},
+        with _GAZETTEER_LOCK:
+            if self.records:
+                return
+            records, index, names_map = {}, {}, {}
+            with zipfile.ZipFile(self.path) as archive:
+                if "geonamescache/data/cities15000.json" in archive.namelist():
+                    rows = [
+                        (
+                            str(c["geonameid"]),
+                            c["name"],
+                            c["countrycode"],
+                            c["admin1code"],
+                            c["latitude"],
+                            c["longitude"],
+                            c["timezone"],
+                            c["population"],
+                            {c["name"], *c["alternatenames"]},
+                        )
+                        for c in json.loads(
+                            archive.read("geonamescache/data/cities15000.json")
+                        ).values()
+                    ]
+                else:
+                    # Retain support for historical GeoNames snapshots and caller fixtures.
+                    with io.TextIOWrapper(
+                        archive.open("cities15000.txt"), encoding="utf-8"
+                    ) as stream:
+                        fields = [line.rstrip("\n").split("\t") for line in stream]
+                    rows = [
+                        (
+                            f[0],
+                            f[1],
+                            f[8],
+                            f[10],
+                            float(f[4]),
+                            float(f[5]),
+                            f[17],
+                            int(f[14]),
+                            {f[1], f[2], *f[3].split(",")},
+                        )
+                        for f in fields
+                    ]
+                for identity, name, country, admin, lat, lon, tz, population, names in rows:
+                    records[identity] = dict(
+                        location_id=identity,
+                        name=name,
+                        country=country,
+                        admin1=admin,
+                        lat=lat,
+                        lon=lon,
+                        tz=tz,
+                        population=population,
+                        source="GeoNames",
+                        precision="city centroid",
                     )
-                    for c in data.values()
-                ]
-            else:
-                # Retain support for historical GeoNames snapshots and caller fixtures.
-                with io.TextIOWrapper(archive.open("cities15000.txt"), encoding="utf-8") as stream:
-                    fields = [line.rstrip("\n").split("\t") for line in stream]
-                rows = [
-                    (
-                        f[0],
-                        f[1],
-                        f[8],
-                        f[10],
-                        float(f[4]),
-                        float(f[5]),
-                        f[17],
-                        int(f[14]),
-                        {f[1], f[2], *f[3].split(",")},
-                    )
-                    for f in fields
-                ]
-            for identity, name, country, admin, lat, lon, tz, population, names in rows:
-                self.records[identity] = dict(
-                    location_id=identity,
-                    name=name,
-                    country=country,
-                    admin1=admin,
-                    lat=lat,
-                    lon=lon,
-                    tz=tz,
-                    population=population,
-                    source="GeoNames",
-                    precision="city centroid",
-                )
-                for alias in names:
-                    if alias:
-                        self.index.setdefault(normalize(alias), set()).add(identity)
-                        self.names.setdefault(identity, set()).add(alias)
-        # Administrative suffixes and traditional spellings of common Chinese cities.
-        aliases = {
-            "北京": "1816670",
-            "上海": "1796236",
-            "广州": "1809858",
-            "廣州": "1809858",
-            "乌鲁木齐": "1529102",
-            "烏魯木齊": "1529102",
-            "纽约": "5128581",
-            "紐約": "5128581",
-            "伦敦": "2643743",
-            "倫敦": "2643743",
-        }
-        for name, identity in aliases.items():
-            if identity in self.records:
-                self.index.setdefault(normalize(name), set()).add(identity)
-                self.names.setdefault(identity, set()).add(name)
-                if self.records[identity]["country"] == "CN":
-                    self.index.setdefault(normalize(name + "市"), set()).add(identity)
-                    self.names[identity].add(name + "市")
-        for name in ("纽约市", "紐約市", "New York City"):
-            self.index.setdefault(normalize(name), set()).add("5128581")
-            self.names["5128581"].add(name)
-        if self.path == ROOT / "data/geo/geonamescache-3.0.2.whl":
-            # Extend the city-only snapshot with real county coordinates and full paths.
-            # Keep existing city aliases stable; an explicit administrative name/path
-            # or ID identifies the finer location without substituting a nearby city.
-            from common.regions import region_data
+                    for alias in names:
+                        if alias:
+                            index.setdefault(normalize(alias), set()).add(identity)
+                            names_map.setdefault(identity, set()).add(alias)
+            # Administrative suffixes and traditional spellings of common Chinese cities.
+            aliases = {
+                "北京": "1816670",
+                "上海": "1796236",
+                "广州": "1809858",
+                "廣州": "1809858",
+                "乌鲁木齐": "1529102",
+                "烏魯木齊": "1529102",
+                "纽约": "5128581",
+                "紐約": "5128581",
+                "伦敦": "2643743",
+                "倫敦": "2643743",
+            }
+            for name, identity in aliases.items():
+                if identity in records:
+                    index.setdefault(normalize(name), set()).add(identity)
+                    names_map.setdefault(identity, set()).add(name)
+                    if records[identity]["country"] == "CN":
+                        index.setdefault(normalize(name + "市"), set()).add(identity)
+                        names_map[identity].add(name + "市")
+            for name in ("纽约市", "紐約市", "New York City"):
+                if "5128581" in records:
+                    index.setdefault(normalize(name), set()).add("5128581")
+                    names_map["5128581"].add(name)
+            if self.path == DEFAULT_GAZETTEER_PATH:
+                # Extend the city-only snapshot with real county coordinates and full paths.
+                # Keep existing city aliases stable; an explicit administrative name/path
+                # or ID identifies the finer location without substituting a nearby city.
+                from common.regions import region_data
 
-            for node in region_data()["nodes"].values():
-                location = node.get("location")
-                if not location or location["country"] != "CN":
-                    continue
-                identity = location["location_id"]
-                self.records.setdefault(identity, location)
-                aliases = {*node.get("aliases", []), node["path"], node["path"].replace(" · ", "")}
-                for alias in aliases:
-                    key = normalize(alias)
-                    if (
-                        key not in self.index
-                        or (node["level"] == "district" and alias == node["name"])
-                        or alias == node["path"]
-                    ):
-                        self.index.setdefault(key, set()).add(identity)
-                        self.names.setdefault(identity, set()).add(alias)
-                self.names.setdefault(identity, set()).add(node["name"])
+                for node in region_data()["nodes"].values():
+                    location = node.get("location")
+                    if not location or location["country"] != "CN":
+                        continue
+                    identity = location["location_id"]
+                    records.setdefault(identity, location)
+                    node_aliases = {
+                        *node.get("aliases", []),
+                        node["path"],
+                        node["path"].replace(" · ", ""),
+                    }
+                    for alias in node_aliases:
+                        key = normalize(alias)
+                        if (
+                            key not in index
+                            or (node["level"] == "district" and alias == node["name"])
+                            or alias == node["path"]
+                        ):
+                            index.setdefault(key, set()).add(identity)
+                            names_map.setdefault(identity, set()).add(alias)
+                    names_map.setdefault(identity, set()).add(node["name"])
+            self.index, self.names = index, names_map
+            self.records = records
+            if self is _DEFAULT_GAZETTEER:
+                _GEO_RECORDS = None
 
     def resolve(self, args: LocationInput):
         self.load()
@@ -312,9 +334,77 @@ class Gazetteer:
                 status="needs_input",
                 code="ambiguous_location" if matches else "missing_location",
                 question="请确认出生地的国家/省州，或提供准确的城市及经纬度、IANA时区。",
-                candidates=matches,
+                candidates=[dict(m) for m in matches],
             )
-        return dict(status="resolved", location=matches[0])
+        return dict(status="resolved", location=dict(matches[0]))
+
+
+def default_gazetteer() -> Gazetteer:
+    """Return the process-wide lazy read-only Gazetteer for the default dataset."""
+    global _DEFAULT_GAZETTEER
+    if _DEFAULT_GAZETTEER is None:
+        with _GAZETTEER_LOCK:
+            if _DEFAULT_GAZETTEER is None:
+                _DEFAULT_GAZETTEER = Gazetteer()
+    return _DEFAULT_GAZETTEER
+
+
+def _load_geo_records(path: Path = DEFAULT_GAZETTEER_PATH) -> dict[str, dict]:
+    records: dict[str, dict] = {}
+    with zipfile.ZipFile(path) as archive:
+        if "geonamescache/data/cities15000.json" in archive.namelist():
+            for c in json.loads(archive.read("geonamescache/data/cities15000.json")).values():
+                identity = str(c["geonameid"])
+                records[identity] = dict(
+                    location_id=identity,
+                    name=c["name"],
+                    country=c["countrycode"],
+                    admin1=c["admin1code"],
+                    lat=c["latitude"],
+                    lon=c["longitude"],
+                    tz=c["timezone"],
+                    population=c["population"],
+                    source="GeoNames",
+                    precision="city centroid",
+                )
+        else:
+            with io.TextIOWrapper(archive.open("cities15000.txt"), encoding="utf-8") as stream:
+                for line in stream:
+                    f = line.rstrip("\n").split("\t")
+                    identity = f[0]
+                    records[identity] = dict(
+                        location_id=identity,
+                        name=f[1],
+                        country=f[8],
+                        admin1=f[10],
+                        lat=float(f[4]),
+                        lon=float(f[5]),
+                        tz=f[17],
+                        population=int(f[14]),
+                        source="GeoNames",
+                        precision="city centroid",
+                    )
+    return records
+
+
+def geo_record(location_id: str) -> dict | None:
+    """Look up a GeoNames city record by ID without building full search indexes."""
+    global _GEO_RECORDS
+    if not location_id:
+        return None
+    default = _DEFAULT_GAZETTEER
+    if default is not None and default.records:
+        record = default.records.get(location_id)
+        return dict(record) if record else None
+    with _GAZETTEER_LOCK:
+        default = _DEFAULT_GAZETTEER
+        if default is not None and default.records:
+            record = default.records.get(location_id)
+            return dict(record) if record else None
+        if _GEO_RECORDS is None:
+            _GEO_RECORDS = _load_geo_records()
+        record = _GEO_RECORDS.get(location_id)
+        return dict(record) if record else None
 
 
 BIRTH_WORD = re.compile(r"出生|生于|老家")
@@ -386,12 +476,15 @@ def xinjiang_birth_clock(session, location_id: str) -> str | None:
 def location_tool(gazetteer: Gazetteer, store=None):
     def resolve(args, session):
         result = gazetteer.resolve(args)
+        if result.get("candidates"):
+            session.state["location_turn_index"] = len(session.user_messages)
         for candidate in result.get("candidates", []):
             session.state.setdefault("location_candidates", {})[candidate["location_id"]] = (
                 candidate
             )
         if result["status"] == "resolved":
             location = result["location"]
+            session.state["location_turn_index"] = len(session.user_messages)
             session.state.setdefault("locations", {})[location["location_id"]] = location
             session.state.setdefault("location_aliases", {})[location["location_id"]] = sorted(
                 gazetteer.names[location["location_id"]] | {args.query}

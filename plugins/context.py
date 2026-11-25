@@ -28,17 +28,46 @@ class BirthInput(StrictInput):
     fold: int | None = Field(default=None, ge=0, le=1)
 
 
-def location_choices(session):
+def _geo_location(location_id):
+    if not location_id:
+        return None
+    from common.regions import region_data
+
+    node = region_data()["nodes"].get(location_id)
+    if node and node.get("location"):
+        return dict(node["location"])
+    from common.location import geo_record
+
+    try:
+        return geo_record(location_id)
+    except OSError:
+        return None
+
+
+def _resolved_location(session, location_id):
+    """Return the geographic location record (never conflate saved birth clock tz with geo tz)."""
     locations = session.state.get("locations", {})
+    if location_id in locations:
+        return locations[location_id]
+    if location_id and location_id == session.profile.get("location_id"):
+        return _geo_location(location_id)
+    return None
+
+
+def location_choices(session, requested_id=None):
+    locations = session.state.get("locations", {})
+    candidates = session.state.get("location_candidates", {})
+    if requested_id and requested_id in candidates and requested_id not in locations:
+        return "该候选 location_id 尚未经用户确认，请先调用 ask_user 让用户确认候选编号（location_id）或国家省州，不要重复排盘"
     choices = "、".join(
         f"{key}（{value.get('display_name') or value.get('name') or value.get('tz')}）"
         for key, value in locations.items()
     )
-    return (
-        "可用的 location_id：" + choices
-        if choices
-        else '请先调用 resolve_location(query="出生地原话")，如有同名候选用 ask_user 确认'
-    )
+    if choices:
+        return "可用的 location_id：" + choices
+    if candidates:
+        return "resolve_location 返回了多个待确认的候选地名，请先调用 ask_user 让用户确认候选编号（location_id）或国家省州，不要重复排盘"
+    return '请先调用 resolve_location(query="出生地原话")，如有同名候选用 ask_user 确认'
 
 
 def resolve_birth_location(args, session):
@@ -50,6 +79,8 @@ def resolve_birth_location(args, session):
         args.location_id = confirmed
     elif len(locations) == 1:
         args.location_id = next(iter(locations))
+    elif confirmed and _geo_location(confirmed):
+        args.location_id = confirmed
 
 
 def inferred_birth(session):
@@ -110,9 +141,9 @@ def birth_values(args, session):
         )
         if not bound["location_id"] or not bound["tz"]:
             raise NeedsInput("missing_birth_location", "请在出生表单中选择地点及出生钟表时间制。")
-    location = session.state.get("locations", {}).get(args.location_id)
+    location = _resolved_location(session, args.location_id)
     if args.location_id and location is None:
-        raise NeedsInput("unresolved_location", location_choices(session))
+        raise NeedsInput("unresolved_location", location_choices(session, args.location_id))
     if location:
         values.update({k: location[k] for k in ("tz", "lat", "lon")})
         clock_tz = args.tz or profile.get("tz")
@@ -126,6 +157,11 @@ def birth_values(args, session):
         if clock_tz:
             values["tz"] = clock_tz
     if any(values[k] is None for k in ("tz", "lon")):
+        if not session.state.get("locations") and session.state.get("location_candidates"):
+            raise NeedsInput(
+                "ambiguous_location",
+                "resolve_location 返回了多个待确认的候选地名，请先调用 ask_user 让用户确认候选编号（location_id）或国家省州。",
+            )
         raise NeedsInput(
             "missing_birth_location", "请补充出生地点，先用resolve_location解析经纬度和时区。"
         )
@@ -190,7 +226,34 @@ def birth_provenance(args, session):
         rf"fold\s*=\s*{args.fold}|{'回拨前' if args.fold == 0 else '回拨后'}", text
     ):
         return "重复本地时间的fold必须由用户明确确认"
-    location = session.state.get("locations", {}).get(args.location_id, {})
+    locations = session.state.get("locations", {})
+    candidates = session.state.get("location_candidates", {})
+    pending_candidates = {k: v for k, v in candidates.items() if k not in locations}
+    location = _resolved_location(session, args.location_id) or {}
+    aliases = {"Asia/Shanghai": "北京时间", "Asia/Urumqi": "新疆时间", "Etc/GMT-8": "UTC+8"}
+    manual_geo = any(
+        (value := getattr(args, field, None)) is not None
+        and value != session.profile.get(field)
+        and str(value) not in text
+        and (field != "tz" or aliases.get(value, value) not in text)
+        for field in ("tz", "lat", "lon")
+    )
+    if not location and manual_geo:
+        if pending_candidates:
+            return (
+                "resolve_location 返回了多个待确认的候选地名，请先调用 ask_user "
+                "让用户确认同名候选地点编号（location_id）或国家省州，不要手动填写 tz/lat/lon"
+            )
+        if locations:
+            return (
+                "出生地未绑定已解析的 location_id，请传入已解析编号（"
+                + location_choices(session)
+                + "），不要手动填写 tz/lat/lon"
+            )
+        return (
+            '出生地尚未通过 resolve_location 解析确认，请先调用 resolve_location(query="出生地原话") '
+            "获取 location_id，不要手动填写 tz/lat/lon"
+        )
     if (
         location.get("tz") == "Asia/Urumqi"
         and args.tz
@@ -198,8 +261,6 @@ def birth_provenance(args, session):
     ):
         return "新疆出生钟表时区须由当前出生资料的用户确认，不能沿用旧出生地的选择"
     if args.tz and args.tz != session.profile.get("tz"):
-        aliases = {"Asia/Shanghai": "北京时间", "Asia/Urumqi": "新疆时间", "Etc/GMT-8": "UTC+8"}
-        location = session.state.get("locations", {}).get(args.location_id, {})
         if (
             args.tz not in text
             and aliases.get(args.tz, args.tz) not in text

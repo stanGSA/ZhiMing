@@ -17,7 +17,7 @@ from agents.demo import DemoModel
 from agents.orchestrator import MULTI_SYSTEM_PROMPT, SYSTEM_PROMPT
 from agents.reviewer import ReviewerService
 from agents.specialists import build_specialists
-from common.location import Gazetteer, location_tool
+from common.location import default_gazetteer, location_tool
 from common.safety import (
     AMBIGUOUS_DISTRESS,
     CRISIS,
@@ -171,6 +171,7 @@ class Runtime:
             self.max_steps,
             self.token_budget,
             admission=self.mode == "multi",
+            repair_steps=2 if self.max_steps >= 6 else 0,
         )
         if deadline is None:
             return await turn
@@ -356,7 +357,7 @@ def create_runtime(
         else None
     )
     shared = common_tools(store, kb, mode, reviewer)
-    tools = [*shared, location_tool(Gazetteer(), store), *daily.tools]
+    tools = [*shared, location_tool(default_gazetteer(), store), *daily.tools]
     if mode == "single":
         tools.extend(tool for plugin in plugins for tool in plugin.tools)
     else:

@@ -2,8 +2,8 @@
 
 import re
 
-from common.facts import section_texts
 from common.input_evidence import chinese_number
+from harness.models import ValidationMessage
 from plugins.astro.calculator import BODY_ZH, SIGN_ZH
 
 ASPECT_WORDS = {
@@ -100,20 +100,32 @@ def preceding_event_date(text, position):
     return date_value(text, dates[-1], position) if dates else None
 
 
+def labeled_public_parts(reading):
+    items = [("summary", reading.summary)]
+    for idx, section in enumerate(getattr(reading, "sections", [])):
+        items.append((f"sections[{idx}].title", section.title))
+        items.append((f"sections[{idx}].body", section.body))
+    for idx, item in enumerate(reading.evidence):
+        items.append((f"evidence[{idx}]", item.reading))
+    for item in reading.advice:
+        items.append(("advice", item))
+    items.append(("closing", reading.closing))
+    for item in reading.resonances:
+        items.append(("resonances", item))
+    for item in reading.tensions:
+        items.append(("tensions", item.how_to_read))
+        for side in item.sides:
+            items.append(("tensions", side))
+    for item in reading.timeline:
+        items.append(("timeline", item.period + " " + item.note))
+    for item in reading.followups:
+        items.append(("followups", item))
+    items.append(("safety.note", reading.safety.note))
+    return items
+
+
 def public_parts(reading):
-    return [
-        reading.summary,
-        *section_texts(reading),
-        *[e.reading for e in reading.evidence],
-        *reading.advice,
-        reading.closing,
-        *reading.resonances,
-        *[t.how_to_read for t in reading.tensions],
-        *[side for t in reading.tensions for side in t.sides],
-        *[t.period + " " + t.note for t in reading.timeline],
-        *reading.followups,
-        reading.safety.note,
-    ]
+    return [text for _, text in labeled_public_parts(reading)]
 
 
 def validate_output(reading, state):
@@ -132,9 +144,14 @@ def validate_output(reading, state):
             if item["fact"] == key:
                 event_refs[item["ref_id"]] = event
 
-    for text in public_parts(reading):
+    for field, text in labeled_public_parts(reading):
         # Negative statements explain uncertainty and are not affirmative axis claims.
-        for sentence in re.split(r"[。；;\n]", normalize_positions(text)):
+        # Split on the un-normalized prose first so error snippets point to the author's exact sentence.
+        for raw_sentence in re.split(r"[。；;\n]", text):
+            if not raw_sentence.strip():
+                continue
+            snippet = raw_sentence.strip()[:100]
+            sentence = normalize_positions(raw_sentence)
             negative = bool(
                 re.search(r"无法|不能|不使用|不解读|不确定|未知|不提供|不可用", sentence)
             )
@@ -143,7 +160,10 @@ def validate_output(reading, state):
                     r"上升(?!期|空间|趋势|通道|机会|幅度|潜力)|天顶|下降点|天底|(?:第)?[一二三四五六七八九十\d]+宫",
                     sentence,
                 ):
-                    return "出生时间未知，不能使用宫位或四轴解读"
+                    return ValidationMessage(
+                        f"出生时间未知，不能使用宫位或四轴解读（冲突原句：“{snippet}”；位于 {field}）",
+                        retry_key="astro_unknown_time_house_axis",
+                    )
             matches = list(re.finditer(BODY_PATTERN, sentence))
             for i, body in enumerate(matches):
                 tail = sentence[
@@ -153,18 +173,38 @@ def validate_output(reading, state):
                 transit_context = bool(re.search(r"行运\s*$", sentence[: body.start()]))
                 sign = re.search("|".join(SIGN_ZH), tail[:24])
                 houses = re.findall(r"(?:第)?([零一二三四五六七八九十\d]+)宫", tail[:30])
-                if transit_context and (sign or houses):
-                    return "行运星落座宫位未作为本次事实提供，请仅陈述已计算相位"
                 name = body.group()
+                if transit_context and (sign or houses):
+                    return ValidationMessage(
+                        f"行运星落座宫位未作为本次事实提供，请仅陈述已计算相位（冲突原句：“{snippet}”；位于 {field}）",
+                        retry_key=f"astro_transit_position:{name}",
+                    )
                 if sign:
                     actual = positions.get(name, {}).get("sign_zh")
                     if name in AXES and natal.get("axes"):
                         actual = SIGN_ZH[int(natal["axes"][AXES[name]] // 30)]
                     if actual != sign.group():
-                        return "行星落座或四轴与本次计算不符"
+                        actual_hint = (
+                            f"；本次计算{name}实际落座为{actual}座"
+                            if actual
+                            else f"；本次计算未提供{name}落座"
+                        )
+                        return ValidationMessage(
+                            f"行星落座或四轴与本次计算不符（冲突原句：“{snippet}”；位于 {field}{actual_hint}）",
+                            retry_key=f"astro_sign:{name}",
+                        )
                 for house in houses:
-                    if positions.get(name, {}).get("house") != chinese_number(house):
-                        return "宫位不可用或与本次计算不符"
+                    actual_house = positions.get(name, {}).get("house")
+                    if actual_house != chinese_number(house):
+                        actual_hint = (
+                            f"；本次计算{name}实际位于第{actual_house}宫"
+                            if actual_house is not None
+                            else f"；本次计算{name}宫位不可用"
+                        )
+                        return ValidationMessage(
+                            f"宫位不可用或与本次计算不符（冲突原句：“{snippet}”；位于 {field}{actual_hint}）",
+                            retry_key=f"astro_house:{name}",
+                        )
 
     # Bind each relation independently; a timeline may legitimately contain several events.
     claims = [(e.reading, event_refs.get(e.ref_id), False) for e in reading.evidence]
@@ -183,22 +223,43 @@ def validate_output(reading, state):
             is_transit = kind != "本命" and bool(cited or temporal or when or "行运" in text)
             if not is_transit:
                 if not natal_aspect(natal, source, target, aspect):
-                    return "本命行星相位与本次计算不符"
+                    matched_tr = matching_transit_any_order(events, source, target, aspect)
+                    hint = (
+                        f"；该相位属于本次行运事件，若陈述行运请写明“行运{BODY_ZH[matched_tr[0]['transit_body']]}”"
+                        if matched_tr
+                        else ""
+                    )
+                    return ValidationMessage(
+                        f"本命行星相位与本次计算不符（冲突片段：“{clause[:80]}”{hint}）",
+                        retry_key=f"natal_aspect:{source}:{target}:{aspect}",
+                    )
                 matching = []
                 continue
             matching = same_event([cited] if cited else events, source, target, aspect)
             if not matching:
-                return "行运星、本命星与相位须匹配同一计算事件"
+                return ValidationMessage(
+                    f"行运星、本命星与相位须匹配同一计算事件（冲突片段：“{clause[:80]}”）",
+                    retry_key=f"transit_event:{source}:{target}:{aspect}",
+                )
             if when and not on_date(matching, when):
-                return "行运日期与所述相位不符，不能编造或混用UTC与当地日期"
+                return ValidationMessage(
+                    f"行运日期与所述相位不符，不能编造或混用UTC与当地日期（冲突片段：“{clause[:80]}”）",
+                    retry_key=f"transit_date:{source}:{target}:{aspect}",
+                )
         if cited and not assertions:
             when = preceding_event_date(text, len(text))
             if when and not on_date([cited], when):
-                return "行运日期与引用事件不符"
+                return ValidationMessage(
+                    f"行运日期与引用事件不符（冲突片段：“{original.strip()[:80]}”）",
+                    retry_key="transit_cited_date",
+                )
         when = trailing_event_date(text, assertions)
         if when and matching and not on_date(matching, when):
-            return "行运日期与所述相位不符，不能编造或混用UTC与当地日期"
-        error = orb_error(text, matching)
+            return ValidationMessage(
+                f"行运日期与所述相位不符，不能编造或混用UTC与当地日期（冲突片段：“{original.strip()[:80]}”）",
+                retry_key="transit_trailing_date",
+            )
+        error = orb_error(text, matching, original=original)
         if error:
             return error
     for title, body, refs in section_parts(reading):
@@ -261,19 +322,31 @@ def same_event(events, source, target, aspect):
     ]
 
 
+def matching_transit_any_order(events, source, target, aspect):
+    return [
+        e
+        for e in events
+        if {e["transit_body"], e["natal_body"]} == {source, target} and e["aspect"] == aspect
+    ]
+
+
 def on_date(events, when) -> bool:
     day, utc = when
     key = "exact_utc" if utc else "exact_date"
     return any(e[key][:10].endswith(day) for e in events)
 
 
-def orb_error(text, matching):
+def orb_error(text, matching, *, original=None):
     for orb in re.findall(r"(?:容许度|残差)\s*(?:为|是|约|:|：)?\s*(\d+(?:\.\d+)?)", text):
         if matching and not any(
             abs(float(orb) - e["orb_deg"]) <= 0.01 or abs(float(orb) - e["allowed_orb_deg"]) <= 0.01
             for e in matching
         ):
-            return "行运容许度与本次计算不符"
+            snippet = (original if original is not None else text).strip()[:80]
+            return ValidationMessage(
+                f"行运容许度与本次计算不符（冲突片段：“{snippet}”）",
+                retry_key="transit_orb",
+            )
     return None
 
 
@@ -347,7 +420,16 @@ def check_section(title, body, refs, event_refs, events, natal):
                 natal_ok = natal_aspect(natal, source, target, aspect)
                 if kind == "本命" or not (explicit or transit_layer):
                     if not natal_ok:
-                        return "本命行星相位与本次计算不符"
+                        matched_tr = matching_transit_any_order(events, source, target, aspect)
+                        hint = (
+                            f"；该相位属于本次行运事件，若陈述行运请写明“行运{BODY_ZH[matched_tr[0]['transit_body']]}”并在本段ref_ids引用该事件"
+                            if matched_tr
+                            else ""
+                        )
+                        return ValidationMessage(
+                            f"本命行星相位与本次计算不符（冲突片段：“{clause[:80]}”{hint}）",
+                            retry_key=f"natal_aspect:{source}:{target}:{aspect}",
+                        )
                     current, current_kind = [], "本命"
                     continue
                 found = same_event(pool, source, target, aspect)
@@ -357,13 +439,20 @@ def check_section(title, body, refs, event_refs, events, natal):
                     if natal_ok and not explicit:
                         current, current_kind = [], "本命"
                         continue
-                    return (
+                    prefix = (
                         "段落中的行运相位须匹配本段ref_ids引用的计算事件"
                         if cited
                         else "行运星、本命星与相位须匹配同一计算事件"
                     )
+                    return ValidationMessage(
+                        f"{prefix}（冲突片段：“{clause[:80]}”）",
+                        retry_key=f"section_transit:{source}:{target}:{aspect}",
+                    )
                 if not influence_onset(clause) and any(not on_date(found, when) for when in dates):
-                    return "行运日期与所述相位不符，不能编造或混用UTC与当地日期"
+                    return ValidationMessage(
+                        f"行运日期与所述相位不符，不能编造或混用UTC与当地日期（冲突片段：“{clause[:80]}”）",
+                        retry_key=f"transit_date:{source}:{target}:{aspect}",
+                    )
                 current, current_kind = found, "行运"
             if assertions:
                 pending_dates = []
@@ -386,7 +475,10 @@ def check_section(title, body, refs, event_refs, events, natal):
                         )
                     ):
                         if any(not on_date(bound, when) for when in dates):
-                            return "行运日期与引用事件不符"
+                            return ValidationMessage(
+                                f"行运日期与引用事件不符（冲突片段：“{clause.strip()[:80]}”）",
+                                retry_key="section_transit_date",
+                            )
             bound = current or (cited if current_kind != "本命" else [])
             error = orb_error(clause, bound)
             if error:
