@@ -8,7 +8,6 @@ from agents.reviewer import packet_from_reading, revise_message
 from common.domain_rules import rules_for
 from common.evidence import calculation_evidence_texts
 from common.input_evidence import (
-    birth_mentions,
     clock_in,
     gender_evidence,
     normalized_gender,
@@ -34,6 +33,7 @@ from harness.registry import Tool
 from harness.session import valid_timezone
 from knowledge.kb import KnowledgeBase
 from plugins.base import MEANING_FIELDS
+from plugins.context import inferred_birth
 from signals.merge import fingerprint, merge_signals, model_view, undisclosed
 
 SYSTEM_NAMES = {"astro": r"占星|星盘|星座", "bazi": r"八字|命理|四柱", "tarot": r"塔罗|牌"}
@@ -99,10 +99,11 @@ def _has_complete_gregorian_birth_for_calc(session) -> bool:
     text = reading_text(session)
     if re.search(r"农历|阴历", text) or UNKNOWN_BIRTH_TIME_TEXT.search(text):
         return False
+    inferred = inferred_birth(session)
     has_birth_time = (
         isinstance(profile.get("birth_local_dt"), str)
         and len(profile["birth_local_dt"].strip()) > 10
-    ) or any(clock is not None for _, clock in birth_mentions(text))
+    ) or bool(inferred and len(inferred.strip()) > 10)
     if not has_birth_time:
         return False
     locations = session.state.get("locations", {})

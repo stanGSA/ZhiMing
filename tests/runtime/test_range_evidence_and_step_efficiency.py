@@ -17,12 +17,15 @@ from types import SimpleNamespace as NS
 
 import pytest
 
+from common.facts import labeled_public_texts, public_texts
 from common.input_evidence import question_range
-from common.schemas import Evidence, Reading, Section, Timeline
+from common.schemas import Confidence, Evidence, Reading, Section, Tension, Timeline
+from common.time_utils import NeedsInput
 from harness.loop import run_turn
 from harness.models import ModelResponse, ToolCall, ValidationMessage
+from harness.session import Session
 from plugins.astro.validation import validate_output as validate_astro_facts
-from plugins.context import BirthInput, birth_provenance, range_provenance
+from plugins.context import BirthInput, birth_provenance, birth_values, range_provenance
 from plugins.dream.match import DreamMatcher
 from plugins.dream.validation import validate_output as validate_dream_facts
 from scripts.compare_layers import rejection_category
@@ -486,3 +489,137 @@ async def test_premature_ask_gate_blocks_solar_term_and_allows_lunar_and_xinjian
         dict(question="乌鲁木齐出生请确认钟表时间使用的是北京时间还是新疆时间？"),
     )
     assert xj_ask.ok
+
+
+# ---------------------------------------------------------------------------
+# 5. PR #89 review regressions: Xinjiang reuse, dream field coverage, consult datetime
+# ---------------------------------------------------------------------------
+
+
+@pytest.mark.asyncio
+async def test_xinjiang_profile_reuse_preserves_geo_tz_and_rechecks_clock_confirmation(project):
+    from app import create_runtime
+
+    first = create_runtime(project, user_id="xj-reuse-review", provider="demo")
+    try:
+        first.session.append_user(
+            "合成资料：男性，公历2000-01-01 10:00，乌鲁木齐出生，出生钟表用北京时间。"
+        )
+        assert (await invoke(first, "resolve_location", dict(query="乌鲁木齐", country="CN"))).ok
+        assert (
+            await invoke(
+                first,
+                "update_profile",
+                dict(field="birth_local_dt", value="2000-01-01 10:00", evidence="2000-01-01 10:00"),
+            )
+        ).ok
+        assert (
+            await invoke(
+                first,
+                "update_profile",
+                dict(field="gender", value="male", evidence="男性"),
+            )
+        ).ok
+        saved_profile = first.store.get_profile("xj-reuse-review")
+        assert saved_profile["location_id"] == "1529102"
+        assert saved_profile["tz"] == "Asia/Shanghai"
+    finally:
+        first.close()
+
+    # New session without calling resolve_location again: switching to Xinjiang time must take effect.
+    switched = create_runtime(project, user_id="xj-reuse-review", provider="demo")
+    try:
+        switched.session.append_user("用保存的资料排八字，这次改用新疆时间。")
+        assert "locations" not in switched.session.state
+        assert birth_values(BirthInput(), switched.session)["tz"] == "Asia/Urumqi"
+        assert birth_provenance(BirthInput(tz="Asia/Shanghai"), switched.session) is not None
+        with pytest.raises(NeedsInput) as stale:
+            birth_values(BirthInput(tz="Asia/Shanghai"), switched.session)
+        assert stale.value.code == "confirm_clock_timezone"
+        assert birth_provenance(BirthInput(tz="Asia/Urumqi"), switched.session) is None
+        assert (
+            await invoke(switched, "start_reading", dict(question="八字排盘", systems=["bazi"]))
+        ).ok
+        computed = await invoke(switched, "compute_bazi", dict())
+        assert computed.ok and computed.data["input"]["tz"] == "Asia/Urumqi"
+    finally:
+        switched.close()
+
+    # Ambiguous clock wording in a new session must force re-confirmation.
+    ambiguous = Session(user_id="xj-reuse-review", profile=dict(saved_profile))
+    ambiguous.append_user("我不确定以前用的是北京时间还是新疆时间，帮我排八字。")
+    with pytest.raises(NeedsInput) as unclear:
+        birth_values(BirthInput(), ambiguous)
+    assert unclear.value.code == "confirm_clock_timezone"
+
+    # Without a new clock statement, the previously confirmed Beijing clock still applies.
+    steady = Session(user_id="xj-reuse-review", profile=dict(saved_profile))
+    steady.append_user("用保存的出生资料帮我看看工作方向。")
+    assert birth_values(BirthInput(), steady)["tz"] == "Asia/Shanghai"
+
+
+@pytest.mark.asyncio
+async def test_dream_validation_covers_tensions_theme_and_confidence_reason(runtime):
+    runtime.session.append_user("梦见一条大狗，帮我解梦。")
+    assert (await invoke(runtime, "start_reading", dict(question="解梦", systems=["dream"]))).ok
+    lookup = await invoke(
+        runtime, "lookup_dream_symbols", dict(symbols=[dict(phrase="大狗", symbol="狗")])
+    )
+    assert lookup.ok
+    ref = lookup.data["interpretations"][0]["ref_id"]
+
+    # Ensure labeled_public_texts stays in exact 1-to-1 parity with public_texts.
+    probe = Reading(
+        question_type="dream",
+        systems_used=["dream"],
+        summary="梦境反映情绪。",
+        evidence=[Evidence(ref_id=ref, reading="命中意象：狗")],
+        tensions=[Tension(theme="情绪张力", sides=["一边想放松"], how_to_read="结合近况看")],
+        confidence=Confidence(level="low", reason="草稿释义"),
+    )
+    assert public_texts(probe) == [text for _, text in labeled_public_texts(probe)]
+
+    prophecy = "梦里的狗预示你下周会遇到贵人"
+
+    in_theme = probe.model_copy(
+        update={
+            "tensions": [Tension(theme=prophecy, sides=["一边想放松"], how_to_read="结合近况看")]
+        }
+    )
+    res_theme = await invoke(runtime, "submit_reading", in_theme.model_dump(mode="json"))
+    assert not res_theme.ok
+    assert "预兆" in res_theme.error
+    assert "位于 tensions[0].theme" in res_theme.error
+
+    in_reason = probe.model_copy(
+        update={"confidence": Confidence(level="low", reason=f"草稿释义；{prophecy}")}
+    )
+    res_reason = await invoke(runtime, "submit_reading", in_reason.model_dump(mode="json"))
+    assert not res_reason.ok
+    assert "预兆" in res_reason.error
+    assert "位于 confidence.reason" in res_reason.error
+
+
+@pytest.mark.asyncio
+async def test_consultation_datetime_does_not_trigger_premature_dst_ask_gate(runtime):
+    # Consultation datetime without birth date must NOT be treated as a complete birth time.
+    runtime.session.append_user("北京出生，想看2026-11-25 10:00之后的运势。")
+    assert (await invoke(runtime, "resolve_location", dict(query="北京", country="CN"))).ok
+    ask_missing_birth = await invoke(
+        runtime,
+        "ask_user",
+        dict(
+            question="请提供您的公历出生年月日和具体时间（若出生在1986-1991年夏令时期间请一并说明）。"
+        ),
+    )
+    assert ask_missing_birth.ok
+
+    # Birth date WITHOUT clock time + consultation datetime WITH clock time must also stay allowed.
+    runtime.session.append_user("我1990-05-01出生在北京，想看2026-11-25 10:00之后的运势。")
+    runtime.session.state["asked_this_turn"] = False
+    ask_missing_clock = await invoke(
+        runtime,
+        "ask_user",
+        dict(question="请补充您的具体出生时刻，如涉及夏令时也请注明。"),
+    )
+    assert ask_missing_clock.ok

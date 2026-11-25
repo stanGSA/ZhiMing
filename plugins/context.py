@@ -1,6 +1,7 @@
 """Shared deterministic plugin binding. No model-created profile or signals."""
 
 import re
+from functools import lru_cache
 
 from pydantic import Field
 
@@ -28,24 +29,37 @@ class BirthInput(StrictInput):
     fold: int | None = Field(default=None, ge=0, le=1)
 
 
+@lru_cache(maxsize=1)
+def _cached_gazetteer():
+    from common.location import Gazetteer
+
+    gazetteer = Gazetteer()
+    gazetteer.load()
+    return gazetteer
+
+
+def _geo_location(location_id):
+    if not location_id:
+        return None
+    from common.regions import region_data
+
+    node = region_data()["nodes"].get(location_id)
+    if node and node.get("location"):
+        return dict(node["location"])
+    try:
+        record = _cached_gazetteer().records.get(location_id)
+    except OSError:
+        return None
+    return dict(record) if record else None
+
+
 def _resolved_location(session, location_id):
+    """Return the geographic location record (never conflate saved birth clock tz with geo tz)."""
     locations = session.state.get("locations", {})
     if location_id in locations:
         return locations[location_id]
-    profile = session.profile
-    if (
-        location_id
-        and location_id == profile.get("location_id")
-        and profile.get("tz")
-        and profile.get("lat") is not None
-        and profile.get("lon") is not None
-    ):
-        return {
-            "location_id": location_id,
-            "tz": profile["tz"],
-            "lat": profile["lat"],
-            "lon": profile["lon"],
-        }
+    if location_id and location_id == session.profile.get("location_id"):
+        return _geo_location(location_id)
     return None
 
 
@@ -74,12 +88,7 @@ def resolve_birth_location(args, session):
         args.location_id = confirmed
     elif len(locations) == 1:
         args.location_id = next(iter(locations))
-    elif (
-        confirmed
-        and session.profile.get("tz")
-        and session.profile.get("lat") is not None
-        and session.profile.get("lon") is not None
-    ):
+    elif confirmed and _geo_location(confirmed):
         args.location_id = confirmed
 
 

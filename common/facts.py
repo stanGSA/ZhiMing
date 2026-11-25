@@ -38,21 +38,37 @@ def validate_calculation_facts(reading, state):
     return None
 
 
+def labeled_public_texts(reading) -> list[tuple[str, str]]:
+    """All authored text with field labels, including metadata that is not always rendered."""
+    items: list[tuple[str, str]] = [("summary", reading.summary)]
+    for idx, section in enumerate(getattr(reading, "sections", [])):
+        items.append((f"sections[{idx}].title", section.title))
+        items.append((f"sections[{idx}].body", section.body))
+    for idx, item in enumerate(reading.evidence):
+        items.append((f"evidence[{idx}]", item.reading))
+    for item in reading.advice:
+        items.append(("advice", item))
+    items.append(("closing", reading.closing))
+    for item in reading.resonances:
+        items.append(("resonances", item))
+    for idx, item in enumerate(reading.tensions):
+        items.append((f"tensions[{idx}].theme", item.theme))
+        for side in item.sides:
+            items.append((f"tensions[{idx}].sides", side))
+        items.append((f"tensions[{idx}].how_to_read", item.how_to_read))
+    for idx, item in enumerate(reading.timeline):
+        items.append((f"timeline[{idx}].period", item.period))
+        items.append((f"timeline[{idx}].note", item.note))
+    for item in reading.followups:
+        items.append(("followups", item))
+    items.append(("confidence.reason", reading.confidence.reason))
+    items.append(("safety.note", reading.safety.note))
+    return items
+
+
 def public_texts(reading) -> list[str]:
     """All authored text to validate, including metadata that is not always rendered."""
-    return [
-        reading.summary,
-        *section_texts(reading),
-        *[e.reading for e in reading.evidence],
-        *reading.advice,
-        reading.closing,
-        *reading.resonances,
-        *[part for t in reading.tensions for part in (t.theme, *t.sides, t.how_to_read)],
-        *[part for t in reading.timeline for part in (t.period, t.note)],
-        *reading.followups,
-        reading.confidence.reason,
-        reading.safety.note,
-    ]
+    return [text for _, text in labeled_public_texts(reading)]
 
 
 def rendered_texts(reading) -> list[str]:

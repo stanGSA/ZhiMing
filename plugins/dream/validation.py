@@ -10,6 +10,7 @@ prophecies, and a dream-only reading has no event timeline.
 
 import re
 
+from common.facts import labeled_public_texts
 from common.output_policy import sentence_around
 from harness.models import ValidationMessage
 
@@ -50,32 +51,6 @@ def excluded_mention(clause, start, end, boundary):
         re.search(r"(?:未收录|未命中|不解读|不作解读)(?:的)?\s*[「“【《]?$", prefix)
         or re.search(r"(?:没有|并未|未)(?:梦见|梦到)\s*[「“【《]?$", prefix)
     )
-
-
-def labeled_texts(reading):
-    items = [("summary", reading.summary)]
-    for idx, section in enumerate(reading.sections):
-        items.append((f"sections[{idx}].title", section.title))
-        items.append((f"sections[{idx}].body", section.body))
-    for idx, item in enumerate(reading.evidence):
-        items.append((f"evidence[{idx}]", item.reading))
-    for item in reading.advice:
-        items.append(("advice", item))
-    if reading.closing:
-        items.append(("closing", reading.closing))
-    for item in reading.resonances:
-        items.append(("resonances", item))
-    for item in reading.tensions:
-        items.append(("tensions", item.how_to_read))
-        for side in item.sides:
-            items.append(("tensions", side))
-    for item in reading.timeline:
-        items.append(("timeline", item.period + " " + item.note))
-    for item in reading.followups:
-        items.append(("followups", item))
-    if reading.safety.note:
-        items.append(("safety.note", reading.safety.note))
-    return items
 
 
 def ungrounded(clause, matcher, hits, misses, *, field: str = ""):
@@ -133,7 +108,9 @@ def validate_output(reading, state, matcher):
         )
     hits = {h["key"] for r in found for h in r["hits"]}
     misses = {m for r in found for m in r["misses"]}
-    for field, text in labeled_texts(reading):
+    for field, text in labeled_public_texts(reading):
+        if not text:
+            continue
         for match in PROPHECY.finditer(text):
             if not NEGATION.search(text[max(0, match.start() - 6) : match.start()]):
                 snippet = sentence_around(text, match.start(), match.end())
