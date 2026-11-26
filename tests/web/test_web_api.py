@@ -96,11 +96,13 @@ async def test_birth_is_passed_as_user_evidence(browser):
     assert response.status_code == 200
     actual = runtimes[-1].session.user_messages[-1]
     assert "公历 1995-03-21" in actual
-    assert "出生时间不确定" in actual
-    assert "14:30" not in actual
+    assert "出生时间确定" in actual
     assert "中国浙江杭州" in actual
     assert "性别为女" in actual
-    assert response.json()["birth"]["time"] == ""
+    public_birth = response.json()["birth"]
+    assert public_birth["time"] == ""
+    assert public_birth["unknown_time"] is True
+    assert public_birth["time_period"] == "unknown"
 
 
 async def test_validation_and_local_origin(browser):
@@ -235,8 +237,13 @@ async def test_region_cascade_and_deterministic_birth_chart(browser):
             },
         )
     ).json()
-    assert astro["chart"]["result"]["asc"] is None
-    assert astro["chart"]["result"]["cusps"] is None
+    assert astro["chart"]["result"]["asc"] is not None
+    assert astro["chart"]["result"]["cusps"] is not None
+    assert astro["chart"]["result"]["input"]["birth_local"] == "2001-11-25"
+    assert astro["chart"]["result"]["utc"] is None
+    assert astro["chart"]["result"]["jd_tt"] is None
+    assert astro["chart"]["birth"]["time"] == ""
+    assert astro["chart"]["birth"]["time_period"] == "unknown"
     assert (
         await client.post(
             "/api/chart", json={"system": "bazi", "birth": {"location_id": "not-a-place"}}
@@ -552,3 +559,217 @@ async def test_birth_profile_is_saved_for_every_page(browser):
     assert changed["chart"] is None
     assert (await client.get("/api/session")).json()["birth"]["time"] == "09:30"
     assert (await client.put("/api/birth", json={"time": "09:30"})).status_code == 422
+
+
+async def test_empty_time_defaults_to_unknown_period_and_reuses_sample_across_pages(
+    browser, monkeypatch
+):
+    client, _, runtimes = browser
+    sampled_calls = []
+
+    def fake_sample(birth_date, period, tz=None):
+        hhmm = {"unknown": "10:25", "forenoon": "09:37", "afternoon": "15:42"}[period]
+        sampled_calls.append((birth_date.isoformat(), period, hhmm))
+        return hhmm
+
+    monkeypatch.setattr("web.sample_birth_time", fake_sample)
+    await client.get("/api/session")
+
+    # Empty time with unknown_time=False auto-normalizes to unknown_time=True, time_period="unknown".
+    birth = {
+        "date": "2001-11-25",
+        "time": "",
+        "unknown_time": False,
+        "gender": "male",
+        "location_id": "1803361",
+    }
+    bazi = (await client.post("/api/chart", json={"system": "bazi", "birth": birth})).json()
+    assert bazi["birth"]["unknown_time"] is True
+    assert bazi["birth"]["time"] == ""
+    assert bazi["birth"]["time_period"] == "unknown"
+    assert "time" in bazi["chart"]["result"]["pillars"]
+    assert bazi["chart"]["result"]["dayun"] is not None
+    assert "10:25" not in str(bazi)
+    assert len(sampled_calls) == 1
+
+    # Same birth on astro page reuses the exact same sampled time without re-sampling.
+    astro = (
+        await client.post(
+            "/api/chart",
+            json={
+                "system": "astro",
+                "birth": {**birth, "unknown_time": True, "time_period": "unknown"},
+                "expected_birth_version": bazi["birth_version"],
+            },
+        )
+    ).json()
+    assert astro["chart"]["result"]["asc"] is not None
+    assert "10:25" not in str(astro)
+    assert len(sampled_calls) == 1
+
+    # Switching period to forenoon samples in forenoon and advances birth_version.
+    forenoon = (
+        await client.post(
+            "/api/chart",
+            json={
+                "system": "bazi",
+                "birth": {**birth, "unknown_time": True, "time_period": "forenoon"},
+                "expected_birth_version": astro["birth_version"],
+            },
+        )
+    ).json()
+    assert forenoon["birth"]["time_period"] == "forenoon"
+    assert forenoon["birth_version"] == astro["birth_version"] + 1
+    assert "09:37" not in str(forenoon)
+    assert len(sampled_calls) == 2
+
+    # Updating gender alone keeps the existing forenoon sampled time.
+    female = (
+        await client.put(
+            "/api/birth",
+            json={**birth, "unknown_time": True, "time_period": "forenoon", "gender": "female"},
+            headers={"X-Zhiming-Birth-Version": str(forenoon["birth_version"])},
+        )
+    ).json()
+    assert female["birth"]["gender"] == "female"
+    assert len(sampled_calls) == 2
+
+    # Switching to afternoon re-samples in afternoon.
+    afternoon = (
+        await client.post(
+            "/api/chart",
+            json={
+                "system": "bazi",
+                "birth": {
+                    **birth,
+                    "unknown_time": True,
+                    "time_period": "afternoon",
+                    "gender": "female",
+                },
+                "expected_birth_version": female["birth_version"],
+            },
+        )
+    ).json()
+    assert afternoon["birth"]["time_period"] == "afternoon"
+    assert "15:42" not in str(afternoon)
+    assert len(sampled_calls) == 3
+    assert (
+        runtimes[-1].store.get_resolved_birth(runtimes[-1].session.user_id)["resolved_time"]
+        == "15:42"
+    )
+
+
+async def test_sampled_birth_time_never_leaks_in_chat_reading_history_or_export(
+    browser, monkeypatch
+):
+    from tests.plugins.test_astro_bazi_integration import draft
+
+    client, _, runtimes = browser
+    monkeypatch.setattr("web.sample_birth_time", lambda *args, **kwargs: "09:37")
+    await client.get("/api/session?system=bazi")
+    runtime = runtimes[-1]
+
+    class EchoTimeModel:
+        def __init__(self, rt):
+            self.rt = rt
+            self.step = 0
+
+        async def chat(self, messages, tools):
+            step = self.step
+            self.step += 1
+            if step == 0:
+                return ModelResponse(
+                    tool_calls=[
+                        ToolCall(id="s1", name="start_reading", arguments={"question": "看看性格"})
+                    ]
+                )
+            if step == 1:
+                return ModelResponse(
+                    tool_calls=[ToolCall(id="c1", name="compute_bazi", arguments={})]
+                )
+            payload = draft(self.rt)
+            payload["summary"] = "你生于2001年11月25日上午09:37，整体偏稳，细节上宜循序渐进。"
+            payload["sections"] = [
+                {
+                    "title": "性格观察",
+                    "body": "结合9点37分与09时37分对应的命局结构，偏向踏实细致、重视准备与沟通。",
+                    "ref_ids": [e["ref_id"] for e in payload["evidence"]],
+                }
+            ]
+            payload["advice"] = ["结合09:37节奏，先稳住核心目标。"]
+            payload["closing"] = "按上午09:37的底色稳步推进即可。"
+            return ModelResponse(
+                tool_calls=[ToolCall(id="r1", name="submit_reading", arguments=payload)]
+            )
+
+    runtime.model = EchoTimeModel(runtime)
+    birth = {
+        "date": "2001-11-25",
+        "time": "",
+        "unknown_time": True,
+        "time_period": "forenoon",
+        "gender": "male",
+        "location_id": "1803361",
+    }
+    chat_resp = (
+        await client.post(
+            "/api/chat", json={"message": "看看性格", "system": "bazi", "birth": birth}
+        )
+    ).json()
+    assert chat_resp["messages"][-1]["status"] == "submit_reading"
+    # Agent internally received the concrete sampled time with time_known=True.
+    assert "2001-11-25 09:37" in runtime.session.user_messages[-1]
+    assert "出生时间确定" in runtime.session.user_messages[-1]
+
+    reading_id = chat_resp["reading"]["reading_id"]
+
+    # Follow-up turn also echoes the sampled time; verify it is redacted too.
+    saved = runtime.store.get_reading(runtime.session.user_id, reading_id)
+    followup_output = {
+        **saved["output_json"],
+        "summary": "复核09:37与上午9点37分的结果，节奏保持平稳。",
+    }
+    from tests.conftest import ScriptedModel
+
+    runtime.model = ScriptedModel(
+        [
+            ModelResponse(
+                tool_calls=[ToolCall(id="f1", name="submit_reading", arguments=followup_output)]
+            )
+        ]
+    )
+    followup_resp = (
+        await client.post(
+            "/api/chat",
+            json={
+                "message": "再解释一下",
+                "system": "bazi",
+                "reading_id": reading_id,
+                "birth": birth,
+                "expected_birth_version": chat_resp["birth_version"],
+            },
+        )
+    ).json()
+
+    session_resp = (await client.get("/api/session?system=bazi")).json()
+    history_resp = (await client.get("/api/history")).json()
+    detail_resp = (await client.get(f"/api/readings/{reading_id}")).json()
+    export_resp = (await client.get("/api/export")).json()
+
+    for surface in (chat_resp, followup_resp, session_resp, history_resp, detail_resp, export_resp):
+        dumped = str(surface)
+        assert "09:37" not in dumped
+        assert "9:37" not in dumped
+        assert "9点37" not in dumped
+        assert "09时37" not in dumped
+        assert "_sampled_time" not in dumped
+
+    # User-selected period name is preserved across UI payloads and export.
+    assert chat_resp["birth"]["time_period"] == "forenoon"
+    assert "上午" in chat_resp["reading"]["output"]["summary"]
+    assert export_resp["birth"]["time_period"] == "forenoon"
+    assert export_resp["birth"]["time_period_label"] == "上午"
+    assert export_resp["profile"]["birth_local_dt"] == "2001-11-25"
+    assert export_resp["profile"]["time_period_label"] == "上午"
+    assert export_resp["profile_history"][0]["profile"]["birth_local_dt"] == "2001-11-25"
+    assert "上午" in export_resp["profile_history"][0]["evidence"]

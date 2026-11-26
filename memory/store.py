@@ -11,6 +11,9 @@ class StaleBirthError(ValueError):
     """A browser result no longer belongs to the current birth revision."""
 
 
+_UNSET = object()
+
+
 class Store:
     def __init__(self, path: Path):
         path.parent.mkdir(parents=True, exist_ok=True)
@@ -57,6 +60,7 @@ class Store:
         PRAGMA user_version=2;
         """)
         columns = {row[1] for row in self.db.execute("PRAGMA table_info(readings)")}
+        web_birth_columns = {row[1] for row in self.db.execute("PRAGMA table_info(web_births)")}
         with self.db:
             for name, definition in (
                 ("chart_id", "TEXT"),
@@ -69,7 +73,11 @@ class Store:
             ):
                 if name not in columns:
                     self.db.execute(f"ALTER TABLE readings ADD COLUMN {name} {definition}")
-            self.db.execute("PRAGMA user_version=5")
+            if "resolved_birth_json" not in web_birth_columns:
+                self.db.execute(
+                    "ALTER TABLE web_births ADD COLUMN resolved_birth_json TEXT NOT NULL DEFAULT '{}'"
+                )
+            self.db.execute("PRAGMA user_version=6")
 
     def cached_calculation(self, system, user_id, inputs, calculate):
         import hashlib
@@ -437,19 +445,39 @@ class Store:
         ).fetchone()
         return (json.loads(row["birth_json"]), row["version"]) if row else None
 
-    def save_web_birth(self, user_id: str, birth: dict, version: int) -> None:
+    def get_resolved_birth(self, user_id: str) -> dict | None:
+        """Server-private resolved birth time for fuzzy periods; never exposed to clients."""
+        row = self.db.execute(
+            "SELECT resolved_birth_json FROM web_births WHERE user_id=?", (user_id,)
+        ).fetchone()
+        if not row:
+            return None
+        data = json.loads(row["resolved_birth_json"] or "{}")
+        return data or None
+
+    def save_web_birth(
+        self, user_id: str, birth: dict, version: int, resolved: dict | None | object = _UNSET
+    ) -> None:
+        now = datetime.now(UTC).isoformat()
+        birth_encoded = json.dumps(birth, ensure_ascii=False)
         with self.db:
-            self.db.execute(
-                "INSERT INTO web_births VALUES(?,?,?,?) ON CONFLICT(user_id) DO UPDATE SET "
-                "birth_json=excluded.birth_json,version=excluded.version,"
-                "updated_at=excluded.updated_at",
-                (
-                    user_id,
-                    json.dumps(birth, ensure_ascii=False),
-                    version,
-                    datetime.now(UTC).isoformat(),
-                ),
-            )
+            if resolved is _UNSET:
+                self.db.execute(
+                    "INSERT INTO web_births(user_id, birth_json, version, updated_at, resolved_birth_json) "
+                    "VALUES(?,?,?,?,?) ON CONFLICT(user_id) DO UPDATE SET "
+                    "birth_json=excluded.birth_json,version=excluded.version,"
+                    "updated_at=excluded.updated_at",
+                    (user_id, birth_encoded, version, now, "{}"),
+                )
+            else:
+                resolved_encoded = json.dumps(resolved or {}, ensure_ascii=False)
+                self.db.execute(
+                    "INSERT INTO web_births(user_id, birth_json, version, updated_at, resolved_birth_json) "
+                    "VALUES(?,?,?,?,?) ON CONFLICT(user_id) DO UPDATE SET "
+                    "birth_json=excluded.birth_json,version=excluded.version,"
+                    "updated_at=excluded.updated_at,resolved_birth_json=excluded.resolved_birth_json",
+                    (user_id, birth_encoded, version, now, resolved_encoded),
+                )
 
     def reading_page(
         self, user_id: str, system: str | None = None, query: str = "", offset=0, limit=20
@@ -596,6 +624,7 @@ class Store:
         birth forms. Daily results are a cache keyed by date and are recomputed instead."""
         target_birth = self.get_web_birth(target)
         source_birth = self.get_web_birth(source)
+        source_resolved = self.get_resolved_birth(source)
         adopt = bool(source_birth and source_birth[0].get("date")) and not (
             target_birth and target_birth[0].get("date")
         )
@@ -633,14 +662,16 @@ class Store:
                     )
             if adopt:
                 self.db.execute(
-                    "INSERT INTO web_births VALUES(?,?,?,?) ON CONFLICT(user_id) DO UPDATE SET "
+                    "INSERT INTO web_births(user_id, birth_json, version, updated_at, resolved_birth_json) "
+                    "VALUES(?,?,?,?,?) ON CONFLICT(user_id) DO UPDATE SET "
                     "birth_json=excluded.birth_json,version=excluded.version,"
-                    "updated_at=excluded.updated_at",
+                    "updated_at=excluded.updated_at,resolved_birth_json=excluded.resolved_birth_json",
                     (
                         target,
                         json.dumps(current, ensure_ascii=False),
                         version,
                         datetime.now(UTC).isoformat(),
+                        json.dumps(source_resolved or {}, ensure_ascii=False),
                     ),
                 )
             for table in ("daily", "web_births", "web_identities"):

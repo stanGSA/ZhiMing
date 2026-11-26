@@ -100,13 +100,16 @@ async def test_unknown_time_and_missing_location_never_reuse_previous_birth(
     await client.post(
         "/api/chat",
         json={
-            "message": "未知时辰看三柱",
+            "message": "未知时辰看命盘",
             "system": "bazi",
             "birth": {**BIRTH, "unknown_time": True},
         },
     )
     computed = results(runtime, "compute_bazi")[-1]
-    assert computed["ok"] and "time" not in computed["data"]["pillars"]
+    assert computed["ok"] and "time" in computed["data"]["pillars"]
+    assert computed["data"]["solar_date"] == BIRTH["date"]
+    assert runtime.session.profile["birth_local_dt"].startswith(BIRTH["date"] + " ")
+    assert runtime.session.profile["birth_local_dt"] != "1996-05-10 08:30"
     runtime.model = scripted_model(
         [
             call("start_reading", question="地点还没选择"),

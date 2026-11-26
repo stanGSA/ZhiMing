@@ -619,3 +619,120 @@ async def test_export_states_its_scope_and_the_consent(site):
     (reading,) = data["readings"]
     for key in ("signals", "merge", "specialist_reports", "review_notes", "responses"):
         assert key in reading
+
+
+async def test_guest_fuzzy_birth_resolved_time_survives_merge_and_relogin(site, monkeypatch):
+    client, _, _ = site
+    monkeypatch.setattr("web.sample_birth_time", lambda *args, **kwargs: "09:37")
+    await client.get("/api/session?system=bazi")
+    fuzzy_birth = {
+        "date": "2001-11-25",
+        "time": "",
+        "unknown_time": True,
+        "time_period": "forenoon",
+        "gender": "male",
+        "location_id": "1803361",
+    }
+    before = (await client.post("/api/chart", json={"system": "bazi", "birth": fuzzy_birth})).json()
+    assert "time" in before["chart"]["result"]["pillars"]
+    assert "09:37" not in str(before)
+
+    # Register and adopt guest records; then sign out and sign back in.
+    await register(client, keep_guest_records=True)
+    await client.post("/api/account/logout", json={})
+    await login(client)
+
+    restored = (await client.get("/api/session?system=bazi")).json()
+    assert restored["birth"]["time"] == ""
+    assert restored["birth"]["unknown_time"] is True
+    assert restored["birth"]["time_period"] == "forenoon"
+
+    # Re-charting after re-login must reuse the migrated sampled time without re-sampling.
+    monkeypatch.setattr(
+        "web.sample_birth_time",
+        lambda *args, **kwargs: (_ for _ in ()).throw(AssertionError("should not resample")),
+    )
+    after = (
+        await client.post(
+            "/api/chart",
+            json={
+                "system": "bazi",
+                "birth": restored["birth"],
+                "expected_birth_version": restored["birth_version"],
+            },
+        )
+    ).json()
+    assert after["chart"]["result"]["pillars"] == before["chart"]["result"]["pillars"]
+    assert after["chart"]["result"]["dayun"] == before["chart"]["result"]["dayun"]
+    exported = (await client.get("/api/export")).json()
+    assert "09:37" not in str(exported)
+    assert exported["birth"]["time_period_label"] == "上午"
+
+
+async def test_legacy_fuzzy_birth_almanac_persists_resolved_time_consistently(
+    site, project, monkeypatch
+):
+    client, _, runtimes = site
+    await register(client, keep_guest_records=False)
+    await client.get("/api/session")
+    user_id = runtimes[-1].session.user_id
+    await client.post("/api/account/logout", json={})
+
+    # Seed a pre-upgrade web_births row with unknown_time=True and no resolved_birth_json.
+    legacy_birth = {
+        "date": "2001-11-25",
+        "time": "",
+        "unknown_time": True,
+        "gender": "male",
+        "location_id": "1803361",
+        "place": "中国 · 辽宁省 · 鞍山市",
+        "zishi_rule": "next_day",
+    }
+    store = database(project)
+    try:
+        store.save_web_birth(user_id, legacy_birth, 1, resolved={})
+    finally:
+        store.close()
+
+    sampled = []
+
+    def fake_sample(*args, **kwargs):
+        sampled.append(args)
+        return "23:30" if len(sampled) == 1 else "12:00"
+
+    monkeypatch.setattr("web.sample_birth_time", fake_sample)
+    await login(client)
+    daily_state = (await client.get("/api/session?system=daily")).json()
+    assert daily_state["birth_version"] == 1
+    assert daily_state["birth"]["time_period"] == "unknown"
+
+    almanac_resp = (
+        await client.post(
+            "/api/almanac",
+            json={"date": "2026-11-26", "birth": daily_state["birth"]},
+        )
+    ).json()
+    assert len(sampled) == 1
+    assert "23:30" not in str(almanac_resp)
+    assert almanac_resp["ten_god"] is not None
+
+    # Subsequent /api/chart reuses the exact same persisted 23:30 sample without jumping day_master.
+    bazi_resp = (
+        await client.post(
+            "/api/chart",
+            json={
+                "system": "bazi",
+                "birth": daily_state["birth"],
+                "expected_birth_version": daily_state["birth_version"],
+            },
+        )
+    ).json()
+    assert len(sampled) == 1
+    assert bazi_resp["birth_version"] == 1
+    assert bazi_resp["chart"]["result"]["day_master"] == almanac_resp["day_master"]
+    assert "23:30" not in str(bazi_resp)
+    store = database(project)
+    try:
+        assert store.get_resolved_birth(user_id)["resolved_time"] == "23:30"
+    finally:
+        store.close()

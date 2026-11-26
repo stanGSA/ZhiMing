@@ -33,6 +33,16 @@ from starlette.exceptions import HTTPException as StarletteHTTPException
 from starlette.middleware.trustedhost import TrustedHostMiddleware
 
 from app import MEMORY_NOTE, ROOT, Runtime, create_runtime, memory_note
+from common.birth_sampling import (
+    TimePeriod,
+    is_valid_clock_minute,
+    period_label,
+    redact_sampled_time_text,
+    sample_birth_time,
+    sanitize_chart_for_client,
+    sanitize_export_for_client,
+    sanitize_reading_for_client,
+)
 from common.regions import region_options, selected_region
 from common.schemas import ReadInput
 from common.time_utils import NeedsInput
@@ -99,6 +109,7 @@ class BirthInfo(BaseModel):
     date: CalendarDate | None = None
     time: str = ""
     unknown_time: bool = False
+    time_period: TimePeriod = ""
     place: str = Field(default="", max_length=100)
     gender: Literal["", "male", "female"] = ""
     location_id: str = Field(default="", max_length=30)
@@ -132,6 +143,14 @@ class BirthInfo(BaseModel):
             raise ValueError("填写出生时刻前请先填写日期")
         if self.unknown_time:
             self.time = ""
+            if not self.time_period:
+                self.time_period = "unknown"
+        elif self.date and not self.time:
+            # No clock time entered and checkbox left off -> treat as "完全不记得".
+            self.unknown_time = True
+            self.time_period = self.time_period or "unknown"
+        else:
+            self.time_period = ""
         if self.location_id:
             location = selected_region(self.location_id)
             self.place = location["display_name"]
@@ -141,10 +160,15 @@ class BirthInfo(BaseModel):
 
     def canonical(self):
         values = self.model_dump(mode="json")
-        values["unknown_time"] = not bool(self.time)
+        if self.date and not self.time:
+            values["unknown_time"] = True
+            values["time_period"] = self.time_period or "unknown"
+        else:
+            values["unknown_time"] = False
+            values["time_period"] = ""
         return values
 
-    def evidence(self) -> str:
+    def _evidence_parts(self, *, public: bool = False) -> list[str]:
         parts = []
         if self.date:
             parts.append(f"我的出生日期是公历 {self.date.isoformat()}")
@@ -152,6 +176,8 @@ class BirthInfo(BaseModel):
                 # Keep the date and its clock time in the same sentence: the evidence
                 # parser deliberately refuses to associate a later sentence's time.
                 parts[-1] += f" {self.time}（出生时间确定）"
+            elif public:
+                parts[-1] += f" {period_label(self.time_period)}"
             else:
                 parts.append("出生时间不确定，请不要假定出生时刻")
         if self.place.strip():
@@ -169,7 +195,13 @@ class BirthInfo(BaseModel):
                 parts.append(f"出生钟表时区为{self.clock_tz or location['tz']}")
             parts.append("使用真太阳时" if self.true_solar_time else "不用真太阳时")
             parts.append("23点换日" if self.zishi_rule == "next_day" else "0点换日")
-        return "；".join(parts)
+        return parts
+
+    def evidence(self) -> str:
+        return "；".join(self._evidence_parts(public=False))
+
+    def public_evidence(self) -> str:
+        return "；".join(self._evidence_parts(public=True))
 
     def chart(self, system):
         if not self.date or not self.location_id:
@@ -315,6 +347,7 @@ FIELD_LABELS = {
     "message": "问题",
     "date": "日期",
     "time": "时间",
+    "time_period": "出生时段",
     "place": "出生地点",
     "location_id": "出生地点",
     "gender": "性别",
@@ -512,6 +545,8 @@ class BrowserSession:
     session_revision: int = 0
     # The signed-in account ({"username", "created_at"}); None for a guest. Root sessions only.
     account: dict | None = None
+    # Server-private sampled HH:MM when the user chose a fuzzy time period. Root sessions only.
+    resolved_birth: dict | None = None
 
 
 def create_web_app(
@@ -923,6 +958,7 @@ def create_web_app(
     def restore_birth(root_session):
         saved = root_session.runtime.store.get_web_birth(root_session.user_id)
         if saved is None:
+            root_session.resolved_birth = None
             return
         try:
             root_session.birth = BirthInfo.model_validate(saved[0])
@@ -930,6 +966,92 @@ def create_web_app(
             # A saved place may have left the region data; keep the revision, ask again.
             root_session.birth = BirthInfo()
         root_session.birth_version = saved[1]
+        root_session.resolved_birth = root_session.runtime.store.get_resolved_birth(
+            root_session.user_id
+        )
+
+    def birth_clock_tz(birth: BirthInfo) -> str:
+        if birth.location_id:
+            location = selected_region(birth.location_id)
+            if location["tz"] == "Asia/Urumqi":
+                return birth.clock_tz or "Asia/Shanghai"
+            return birth.clock_tz or location["tz"]
+        return "Asia/Shanghai"
+
+    def ensure_resolved_birth(owner: BrowserSession, birth: BirthInfo) -> dict | None:
+        """Resolve and reuse a single server-private HH:MM per (date, time_period, tz)."""
+        if not birth.date or not birth.unknown_time:
+            return None
+        period = birth.time_period or "unknown"
+        tz = birth_clock_tz(birth)
+        existing = owner.resolved_birth
+        if existing is None:
+            existing = owner.runtime.store.get_resolved_birth(owner.user_id)
+        if (
+            isinstance(existing, dict)
+            and existing.get("date") == birth.date.isoformat()
+            and existing.get("time_period") == period
+            and isinstance(existing.get("resolved_time"), str)
+            and is_valid_clock_minute(birth.date, existing["resolved_time"], tz)
+        ):
+            return {**existing, "tz": tz}
+        return {
+            "date": birth.date.isoformat(),
+            "time_period": period,
+            "tz": tz,
+            "resolved_time": sample_birth_time(birth.date, period, tz),
+        }
+
+    def effective_birth_of(birth: BirthInfo, resolved: dict | None) -> BirthInfo:
+        """Concrete birth passed to calculators and agents; never returned to clients."""
+        if (
+            birth.date
+            and birth.unknown_time
+            and isinstance(resolved, dict)
+            and resolved.get("resolved_time")
+        ):
+            return birth.model_copy(
+                update={
+                    "time": resolved["resolved_time"],
+                    "unknown_time": False,
+                    "time_period": "",
+                }
+            )
+        return birth
+
+    def sanitize_history_items(store: Store, user_id: str, items: list[dict]) -> list[dict]:
+        if not items:
+            return items
+        ids = [item["reading_id"] for item in items if item.get("reading_id")]
+        if not ids:
+            return items
+        placeholders = ",".join("?" for _ in ids)
+        rows = store.db.execute(
+            f"SELECT reading_id, birth_context_json FROM readings WHERE user_id=? "
+            f"AND reading_id IN ({placeholders})",
+            [user_id, *ids],
+        ).fetchall()
+        contexts = {
+            row["reading_id"]: json.loads(row["birth_context_json"] or "{}") for row in rows
+        }
+        result = []
+        for item in items:
+            ctx = contexts.get(item.get("reading_id")) or {}
+            sampled = ctx.get("_sampled_time")
+            public_birth = ctx.get("birth") if isinstance(ctx.get("birth"), dict) else {}
+            if sampled and public_birth.get("unknown_time"):
+                period = str(public_birth.get("time_period") or "unknown")
+                cleaned = dict(item)
+                cleaned["question"] = redact_sampled_time_text(
+                    str(cleaned.get("question") or ""), sampled, period
+                )
+                cleaned["summary"] = redact_sampled_time_text(
+                    str(cleaned.get("summary") or ""), sampled, period
+                )
+                result.append(cleaned)
+            else:
+                result.append(item)
+        return result
 
     def get_session(request: Request, system: str | None = None):
         session = resolve(request.cookies.get(COOKIE, ""))
@@ -977,23 +1099,48 @@ def create_web_app(
                 birth_conflict("birth_version_required", "修改出生资料前请先同步当前资料版本。")
             if owner.active_birth_requests:
                 birth_conflict("birth_in_use", "正在按当前生辰解读，请等待完成后再修改出生资料。")
+            resolved = ensure_resolved_birth(owner, birth)
+            effective = effective_birth_of(birth, resolved)
             # A database failure must not advance the in-memory birth revision.
-            values, _ = birth_profile(birth)
+            values, _ = birth_profile(effective)
             profile = session.runtime.store.get_profile(session.user_id)
             if any(profile.get(k) != v for k, v in values.items()):
                 session.runtime.store.update_profile_fields(
-                    session.user_id, values, birth.evidence()
+                    session.user_id,
+                    values,
+                    birth.public_evidence() if birth.unknown_time else effective.evidence(),
                 )
             # Saved with its revision, so an account restores both on its next login.
             session.runtime.store.save_web_birth(
-                session.user_id, birth.model_dump(mode="json"), owner.birth_version + 1
+                session.user_id,
+                birth.model_dump(mode="json"),
+                owner.birth_version + 1,
+                resolved=resolved or {},
             )
             owner.birth = birth.model_copy(deep=True)
+            owner.resolved_birth = resolved
             owner.birth_version += 1
             for context in family(owner):
                 context.chart = None
                 if not context.runtime.session.pinned_reading_id:
                     invalidate_birth(context)
+        elif birth.date and birth.unknown_time and owner.resolved_birth is None:
+            # Lazy upgrade for pre-existing saved fuzzy births that predate sampling.
+            resolved = ensure_resolved_birth(owner, birth)
+            effective = effective_birth_of(birth, resolved)
+            values, _ = birth_profile(effective)
+            profile = session.runtime.store.get_profile(session.user_id)
+            if any(profile.get(k) != v for k, v in values.items()):
+                session.runtime.store.update_profile_fields(
+                    session.user_id, values, birth.public_evidence()
+                )
+            session.runtime.store.save_web_birth(
+                session.user_id,
+                owner.birth.model_dump(mode="json"),
+                owner.birth_version,
+                resolved=resolved or {},
+            )
+            owner.resolved_birth = resolved
 
     def birth_profile(birth):
         location = selected_region(birth.location_id) if birth.location_id else None
@@ -1087,7 +1234,7 @@ def create_web_app(
         target.birth_version_valid = None
         session.bound_birth = None
 
-    def bind_birth(session, birth, *, authoritative=False):
+    def bind_birth(session, birth, public_birth=None, *, authoritative=False):
         runtime = session.runtime
         target = runtime.session
         target.profile = runtime.store.get_profile(session.user_id)
@@ -1099,8 +1246,13 @@ def create_web_app(
         if session.bound_birth is not None and session.bound_birth.canonical() != birth.canonical():
             invalidate_birth(session)
         if changed:
+            evidence_text = (
+                public_birth.public_evidence()
+                if public_birth is not None and public_birth.unknown_time
+                else birth.evidence()
+            )
             target.profile = runtime.store.update_profile_fields(
-                session.user_id, values, birth.evidence()
+                session.user_id, values, evidence_text
             )
         target.birth_binding = {"profile": values, "location": location}
         session.bound_birth = birth.model_copy(deep=True)
@@ -1120,15 +1272,18 @@ def create_web_app(
     def state(session):
         reading = session.reading
         if reading:
-            reading = {
-                **reading,
-                "responses": session.runtime.store.reading_responses(
-                    session.user_id, reading["reading_id"]
-                ),
-                "stale": reading_is_stale(session, reading.get("birth_context")),
-            }
+            reading = sanitize_reading_for_client(
+                {
+                    **reading,
+                    "responses": session.runtime.store.reading_responses(
+                        session.user_id, reading["reading_id"]
+                    ),
+                    "stale": reading_is_stale(session, reading.get("birth_context")),
+                }
+            )
         owner = session.owner or session
         history, total = session.runtime.store.reading_page(session.user_id, limit=30)
+        history = sanitize_history_items(session.runtime.store, session.user_id, history)
         return {
             "system": session.system,
             "instance": instance,
@@ -1296,6 +1451,8 @@ def create_web_app(
                     )
                     return {**state(session), "busy": False}
                 chart_question = None
+                effective_birth = body.birth
+                resolved_birth = None
                 if not saved_target:
                     session.runtime.session.pinned_reading_id = None
                 if body.system in BIRTH_SYSTEMS and not saved_target:
@@ -1308,17 +1465,32 @@ def create_web_app(
                             )
                         else:
                             body.birth = owner.birth.model_copy(deep=True)
+                            if (
+                                body.birth.date
+                                and body.birth.unknown_time
+                                and owner.resolved_birth is None
+                            ):
+                                share_birth(session, body.birth, owner.birth_version)
+                        resolved_birth = (
+                            dict(owner.resolved_birth)
+                            if body.birth.unknown_time and owner.resolved_birth
+                            else None
+                        )
+                        effective_birth = effective_birth_of(body.birth, resolved_birth)
                         birth_version = owner.birth_version
                         owner.active_birth_requests.add(session.system)
                         uses_birth = True
                 if body.system in ("bazi", "astro") and not saved_target:
                     try:
-                        session.chart = body.birth.chart(body.system)
-                        session.chart["birth_version"] = birth_version
+                        raw_chart = effective_birth.chart(body.system)
+                        raw_chart["birth_version"] = birth_version
+                        session.chart = sanitize_chart_for_client(
+                            raw_chart, body.birth.model_dump(mode="json")
+                        )
                     except NeedsInput as exc:
                         session.chart = None
                         chart_question = exc.question
-                evidence = body.birth.evidence()
+                evidence = effective_birth.evidence()
                 message = body.message
                 if evidence and body.system in BIRTH_SYSTEMS and not saved_target:
                     message += "\n\n我在出生信息表中填写的资料：" + evidence + "。"
@@ -1370,11 +1542,19 @@ def create_web_app(
                     session.runtime.session.birth_version_valid = None
                     message += f"\n本次只追问历史解读 {body.reading_id}；请先read_reading读取该记录，不要重新计算。"
                 elif body.system in BIRTH_SYSTEMS:
-                    bind_birth(session, body.birth, authoritative=body.system in ("bazi", "astro"))
-                    session.runtime.session.birth_context = {
+                    bind_birth(
+                        session,
+                        effective_birth,
+                        public_birth=body.birth,
+                        authoritative=body.system in ("bazi", "astro"),
+                    )
+                    birth_context = {
                         "version": birth_version,
                         "birth": body.birth.model_dump(mode="json"),
                     }
+                    if resolved_birth and resolved_birth.get("resolved_time"):
+                        birth_context["_sampled_time"] = resolved_birth["resolved_time"]
+                    session.runtime.session.birth_context = birth_context
                     session.runtime.session.birth_version_valid = lambda: (
                         owner.birth_version == birth_version
                     )
@@ -1460,6 +1640,23 @@ def create_web_app(
                     answer = "这次解读暂时未能完成。请检查模型连接，或切换离线演示后重试。"
                 if outcome:
                     answer = outcome.text or "本轮未形成解读，你可以补充信息后继续。"
+                    redact_hhmm: str | None = None
+                    redact_period = "unknown"
+                    if saved_target:
+                        saved_ctx = saved_target.get("birth_context_json") or {}
+                        saved_birth = (
+                            saved_ctx.get("birth") if isinstance(saved_ctx, dict) else None
+                        ) or {}
+                        if saved_birth.get("unknown_time"):
+                            redact_hhmm = saved_ctx.get("_sampled_time")
+                            redact_period = str(saved_birth.get("time_period") or "unknown")
+                    elif (
+                        body.system in BIRTH_SYSTEMS and body.birth.unknown_time and resolved_birth
+                    ):
+                        redact_hhmm = resolved_birth.get("resolved_time")
+                        redact_period = str(body.birth.time_period or "unknown")
+                    if redact_hhmm:
+                        answer = redact_sampled_time_text(answer, redact_hhmm, redact_period)
                     if outcome.data.get("reading"):
                         session.tarot_round = None
                         saved = session.runtime.store.get_reading(
@@ -1528,17 +1725,19 @@ def create_web_app(
         saved = session.runtime.store.get_reading(session.user_id, reading_id)
         if not saved:
             raise HTTPException(404, "找不到这份解读。")
-        return {
-            "reading_id": reading_id,
-            "question": saved["question"],
-            "output": saved["output_json"],
-            "tarot": saved["tarot_json"],
-            "calculations": saved.get("calculations_json"),
-            "birth_context": saved.get("birth_context_json"),
-            "historical": True,
-            "stale": reading_is_stale(session, saved.get("birth_context_json")),
-            "responses": session.runtime.store.reading_responses(session.user_id, reading_id),
-        }
+        return sanitize_reading_for_client(
+            {
+                "reading_id": reading_id,
+                "question": saved["question"],
+                "output": saved["output_json"],
+                "tarot": saved["tarot_json"],
+                "calculations": saved.get("calculations_json"),
+                "birth_context": saved.get("birth_context_json"),
+                "historical": True,
+                "stale": reading_is_stale(session, saved.get("birth_context_json")),
+                "responses": session.runtime.store.reading_responses(session.user_id, reading_id),
+            }
+        )
 
     @app.delete("/api/session")
     async def forget(request: Request):
@@ -1573,10 +1772,14 @@ def create_web_app(
                 context.reading = context.chart = context.tarot_round = context.name_analysis = None
             owner = session.owner or session
             owner.birth = BirthInfo()
+            owner.resolved_birth = None
             owner.birth_version += 1
             # Keep the revision moving forward for pages that reload after a restart.
             session.runtime.store.save_web_birth(
-                session.user_id, owner.birth.model_dump(mode="json"), owner.birth_version
+                session.user_id,
+                owner.birth.model_dump(mode="json"),
+                owner.birth_version,
+                resolved={},
             )
         return state(session)
 
@@ -1595,6 +1798,7 @@ def create_web_app(
         items, total = session.runtime.store.reading_page(
             session.user_id, system or None, q, offset, limit
         )
+        items = sanitize_history_items(session.runtime.store, session.user_id, items)
         return {"items": items, "total": total, "offset": offset, "limit": limit}
 
     @app.delete("/api/readings/{reading_id}")
@@ -1705,13 +1909,17 @@ def create_web_app(
         session = get_session(request, "auto")
         owner = session.owner or session
         account = accounts().get(owner.user_id) if owner.account else None
+        exported = sanitize_export_for_client(
+            session.runtime.store.export_user(session.user_id),
+            owner.resolved_birth,
+        )
         payload = {
             "format": "zhiming-export",
             "format_version": 2,
             "exported_at": datetime.now(ZoneInfo("Asia/Shanghai")).isoformat(timespec="seconds"),
             "scope": EXPORT_SCOPE,
             "account": {k: v for k, v in account.items() if k != "user_id"} if account else None,
-            **session.runtime.store.export_user(session.user_id),
+            **exported,
         }
         day = datetime.now(ZoneInfo("Asia/Shanghai")).date().isoformat()
         return Response(
@@ -2058,16 +2266,21 @@ def create_web_app(
                     "question": "请先在对话中确认此刻安全，再继续排盘。",
                     "code": "safety_confirmation_required",
                 }
-            async with (session.owner or session).birth_lock:
+            owner = session.owner or session
+            async with owner.birth_lock:
                 share_birth(
                     session,
                     body.birth,
                     expected_birth_version(request, body.expected_birth_version),
                 )
+                effective = effective_birth_of(body.birth, owner.resolved_birth)
                 session.chart = None
                 try:
-                    session.chart = body.birth.chart(body.system)
-                    session.chart["birth_version"] = (session.owner or session).birth_version
+                    raw_chart = effective.chart(body.system)
+                    raw_chart["birth_version"] = owner.birth_version
+                    session.chart = sanitize_chart_for_client(
+                        raw_chart, body.birth.model_dump(mode="json")
+                    )
                 except NeedsInput as exc:
                     return {
                         **state(session),
@@ -2129,7 +2342,30 @@ def create_web_app(
                 question = "请先在对话中确认此刻安全，再查看个人流日。"
             else:
                 try:
-                    day_master = body.birth.chart("bazi")["result"]["day_master"] or None
+                    owner = session.owner or session
+                    if body.birth.unknown_time:
+                        almanac_resolved = None
+                        if body.birth.canonical() == owner.birth.canonical():
+                            if owner.resolved_birth is not None:
+                                almanac_resolved = owner.resolved_birth
+                            else:
+                                async with owner.birth_lock:
+                                    if body.birth.canonical() == owner.birth.canonical():
+                                        if owner.resolved_birth is None:
+                                            share_birth(session, owner.birth, owner.birth_version)
+                                        almanac_resolved = owner.resolved_birth
+                        if almanac_resolved is None:
+                            almanac_resolved = {
+                                "resolved_time": sample_birth_time(
+                                    body.birth.date,
+                                    body.birth.time_period or "unknown",
+                                    birth_clock_tz(body.birth),
+                                )
+                            }
+                        effective = effective_birth_of(body.birth, almanac_resolved)
+                    else:
+                        effective = body.birth
+                    day_master = effective.chart("bazi")["result"]["day_master"] or None
                 except NeedsInput as exc:
                     question = exc.question
         return {**almanac(day, day_master, session.runtime.kb), "question": question}

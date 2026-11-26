@@ -24,6 +24,24 @@ const ZHI = "子丑寅卯辰巳午未申酉戌亥";
 const GAN_ELEMENT = "木木火火土土金金水水";
 const ZHI_ELEMENT = "水土木木土火火土金金土水";
 const CN_DIGITS = "〇一二三四五六七八九";
+const TIME_PERIODS = [
+  ["early_morning", "凌晨"],
+  ["morning_early", "早晨"],
+  ["forenoon", "上午"],
+  ["noon", "中午"],
+  ["afternoon", "下午"],
+  ["dusk", "傍晚"],
+  ["evening", "晚间"],
+  ["late_night", "深夜"],
+  ["unknown", "完全不记得"],
+];
+const TIME_PERIOD_LABELS = Object.fromEntries(TIME_PERIODS);
+
+function formatBirthTime(birth) {
+  if (!birth) return "完全不记得";
+  if (!birth.unknown_time && birth.time) return birth.time;
+  return TIME_PERIOD_LABELS[birth.time_period] || "完全不记得";
+}
 
 let state = null;
 let busy = false;
@@ -550,7 +568,7 @@ function setBusy(value) {
     element.disabled = locked;
   });
   if ($("#message")) $("#message").disabled = locked;
-  if ($("#birth-time")) $("#birth-time").disabled = locked || $("#unknown-time").checked;
+  syncTimeControl();
   if ($("#input-hint"))
     $("#input-hint").textContent = value
       ? "正在整理线索，请稍候……"
@@ -841,7 +859,7 @@ function renderReading(reading, fresh = false) {
   if (reading.birth_context?.birth) {
     const birth = reading.birth_context.birth;
     content.insertBefore(node("p", "reading-confidence",
-      `${reading.stale ? "旧生辰解读" : reading.historical ? "历史解读" : "解读依据"}：公历 ${birth.date || "日期未填"} ${birth.time || "时辰不详"} · ${birth.place || "地点未填"}`), tags);
+      `${reading.stale ? "旧生辰解读" : reading.historical ? "历史解读" : "解读依据"}：公历 ${birth.date || "日期未填"} ${formatBirthTime(birth)} · ${birth.place || "地点未填"}`), tags);
   }
   (output.sections || []).forEach((section, index) => {
     content.append(
@@ -1331,6 +1349,25 @@ function inputBox(id, type) {
   return input;
 }
 
+function syncTimeControl() {
+  const unknown = Boolean($("#unknown-time")?.checked);
+  const locked = busy || !state;
+  const time = $("#birth-time");
+  const period = $("#birth-time-period");
+  const label = $("#birth-time-label");
+  if (label) label.htmlFor = unknown ? "birth-time-period" : "birth-time";
+  if (time) {
+    time.hidden = unknown;
+    time.disabled = locked || unknown;
+    if (unknown) time.value = "";
+  }
+  if (period) {
+    period.hidden = !unknown;
+    period.disabled = locked || !unknown;
+    if (unknown && !period.value) period.value = "unknown";
+  }
+}
+
 function buildBirthForm(host, mode) {
   const options = BIRTH_MODES[mode] || BIRTH_MODES.save;
   birthMode = mode;
@@ -1341,15 +1378,20 @@ function buildBirthForm(host, mode) {
   date.min = "1850-01-01";
   date.max = shanghaiToday();
   const time = inputBox("birth-time", "time");
+  const period = selectBox("birth-time-period", TIME_PERIODS);
+  period.value = "unknown";
+  period.hidden = true;
+  period.disabled = true;
   const timeField = node("div", "field");
   const timeHead = node("div", "birth-time-head");
   const timeLabel = node("label", "field-label", "出生时间");
+  timeLabel.id = "birth-time-label";
   timeLabel.htmlFor = "birth-time";
   const unknown = node("label", "check");
   const unknownBox = inputBox("unknown-time", "checkbox");
-  unknown.append(unknownBox, document.createTextNode("时辰不详"));
+  unknown.append(unknownBox, document.createTextNode("不知道确切时间"));
   timeHead.append(timeLabel, unknown);
-  timeField.append(timeHead, time);
+  timeField.append(timeHead, time, period);
   const firstRow = node("div", "birth-row");
   firstRow.append(labelled("出生日期 · 公历", date), timeField);
 
@@ -1442,8 +1484,7 @@ function buildBirthForm(host, mode) {
   host.replaceChildren(form);
 
   unknownBox.addEventListener("change", () => {
-    time.disabled = unknownBox.checked;
-    if (unknownBox.checked) time.value = "";
+    syncTimeControl();
   });
   form.addEventListener("input", () => {
     birthDirty = true;
@@ -1510,7 +1551,7 @@ async function submitBirth(mode) {
       setBirthFeedback(result.question || "已排盘，可以就此发问。", !result.question);
       toast(result.question || (mode === "bazi" ? "四柱已排出。" : "本命星图已绘出。"));
       if (!result.question) {
-        foldBirth(birth, false);
+        foldBirth(result.birth, false);
         $(".band-work")?.scrollIntoView({ behavior: "smooth", block: "start" });
       }
     } else {
@@ -1537,6 +1578,7 @@ function birthInfo() {
     date: $("#birth-date").value || null,
     time: unknown ? "" : $("#birth-time").value,
     unknown_time: unknown,
+    time_period: unknown ? ($("#birth-time-period")?.value || "unknown") : "",
     location_id: selectedLocation?.location_id || "",
     place: selectedLocation?.display_name || "",
     gender: $("#birth-gender") ? $("#birth-gender").value : saved.gender || "",
@@ -1578,7 +1620,7 @@ function foldBirth(birth, open) {
   summary.classList.toggle("filled", filled);
   summary.textContent = filled
     ? [
-        `公历 ${birth.date} ${birth.unknown_time ? "时辰不详" : birth.time || "时辰不详"}`,
+        `公历 ${birth.date} ${formatBirthTime(birth)}`,
         birth.place || "地点待补充",
         ...(birth.gender ? [birth.gender === "female" ? "女" : "男"] : []),
       ].join(" · ")
@@ -1608,7 +1650,9 @@ function submitBirthFromBar() {
 function fillBirthForm(birth) {
   $("#birth-date").value = birth.date || "";
   $("#birth-time").value = birth.time || "";
-  $("#unknown-time").checked = birth.unknown_time;
+  $("#unknown-time").checked = Boolean(birth.unknown_time);
+  if ($("#birth-time-period")) $("#birth-time-period").value = birth.time_period || "unknown";
+  syncTimeControl();
   if ($("#birth-gender")) $("#birth-gender").value = birth.gender || "";
   if ($("#solar-time")) $("#solar-time").value = String(birth.true_solar_time || false);
   if ($("#zishi-rule")) $("#zishi-rule").value = birth.zishi_rule || "next_day";
@@ -1749,7 +1793,7 @@ function renderProfile(birth, editing = false) {
   list.replaceChildren();
   if (!filled) return;
   const rows = [
-    ["公历", `${birth.date} ${birth.time || "时辰不详"}`],
+    ["公历", `${birth.date} ${formatBirthTime(birth)}`],
     ["出生地", birth.place || "地点待补充"],
     ["口径", `${birth.true_solar_time ? "出生地真太阳时" : "不用真太阳时"} · ${birth.zishi_rule === "same_day" ? "0:00 换日" : "23:00 换日"}`],
   ];
@@ -1870,7 +1914,8 @@ function renderBazi(chart, silent = false) {
   const meta = $("#bazi-meta");
   if (result) {
     const gender = { female: "坤造", male: "乾造" }[chart.birth.gender] || "未填性别";
-    meta.textContent = `${gender} · 公历 ${result.input.birth_local.replace("T", " ")} · ${chart.location.display_name} · 农历${result.lunar_date}`;
+    const displayDate = chart.birth?.date || (result.input?.birth_local || "").slice(0, 10);
+    meta.textContent = `${gender} · 公历 ${displayDate} ${formatBirthTime(chart.birth)} · ${chart.location.display_name} · 农历${result.lunar_date}`;
   } else meta.textContent = "填写公历生辰与出生地，排出属于你的四柱。";
 
   const dayun = $("#dayun");
@@ -1892,7 +1937,7 @@ function renderBazi(chart, silent = false) {
   $("#dayun-start").textContent = result?.dayun
     ? `起运：${result.dayun.start_solar}（出生后 ${result.dayun.start_after}）· ${result.dayun.forward ? "顺行" : "逆行"}`
     : result
-      ? "大运需要性别与确定的出生时间。"
+      ? "填写性别后即可排出十年大运。"
       : "排盘并填写性别后显示十年大运。";
 
   const notes = $("#bazi-notes");
@@ -2030,8 +2075,9 @@ function renderAstro(chart, silent = false) {
       item.style.setProperty("--len", String(Math.ceil(item.getTotalLength?.() || 2000))));
     wheel.classList.add("is-revealing");
   }
+  const astroDate = chart?.birth?.date || (result?.input?.birth_local || "").slice(0, 10);
   $("#astro-meta").textContent = result
-    ? `${result.input.birth_local.replace("T", " ")} · ${chart.location.display_name} · ${result.house_system ? result.house_system + " 宫制" : "未知时刻 · 不分宫"} · 回归黄道`
+    ? `公历 ${astroDate} ${formatBirthTime(chart.birth)} · ${chart.location.display_name} · ${result.house_system ? result.house_system + " 宫制" : "不分宫"} · 回归黄道`
     : "填写出生时空，绘出你的本命星图。";
 
   const trio = $("#astro-trio");

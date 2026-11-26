@@ -767,3 +767,76 @@ def test_daily_page_has_single_h1(site, chromium):
     expect(page.locator("h1")).to_have_count(1)
     expect(page.locator("#day-num")).to_be_visible()
     page.close()
+
+
+def test_fuzzy_time_period_form_shows_pure_labels_and_full_charts(site, chromium):
+    import re
+
+    base, _ = site
+    context = chromium.new_context(viewport={"width": 1280, "height": 900}, reduced_motion="reduce")
+    page = context.new_page()
+    page.goto(f"{base}/bazi?provider=demo")
+    expect(page.locator("#birth-country")).to_be_enabled()
+    expect(page.locator("#birth-time")).to_be_visible()
+    expect(page.locator("#birth-time-period")).to_be_hidden()
+
+    page.check("#unknown-time")
+    expect(page.locator("#birth-time")).to_be_hidden()
+    expect(page.locator("#birth-time-period")).to_be_visible()
+
+    labels = page.locator("#birth-time-period option").all_text_contents()
+    assert labels == [
+        "凌晨",
+        "早晨",
+        "上午",
+        "中午",
+        "下午",
+        "傍晚",
+        "晚间",
+        "深夜",
+        "完全不记得",
+    ]
+    assert all(not re.search(r"\d", label) for label in labels)
+
+    # Save fuzzy birth via API + form selection and verify full 4-pillar & dayun chart without HH:MM.
+    saved = page.request.put(
+        f"{base}/api/birth",
+        data={
+            "date": "2001-11-25",
+            "time": "",
+            "unknown_time": True,
+            "time_period": "forenoon",
+            "location_id": "1803361",
+            "gender": "male",
+        },
+        headers={"X-Zhiming-Client": "web", "Origin": base},
+    )
+    assert saved.ok, saved.text()
+    page.reload()
+    expect(page.locator("#birth-district")).to_have_value("1803361")
+    expect(page.locator("#unknown-time")).to_be_checked()
+    expect(page.locator("#birth-time-period")).to_have_value("forenoon")
+
+    with page.expect_response(lambda r: r.url.endswith("/api/chart")) as resp:
+        page.click("#draw-chart")
+    assert resp.value.status == 200
+    expect(page.locator("#pillars .plaque-empty")).to_have_count(0)
+    expect(page.locator("#dayun li")).to_have_count(8)
+    meta = page.locator("#bazi-meta").text_content() or ""
+    summary = page.locator("[data-birth-summary]").text_content() or ""
+    assert "上午" in meta and "上午" in summary
+    assert not re.search(r"\b\d{2}:\d{2}\b", meta)
+    assert not re.search(r"\b\d{2}:\d{2}\b", summary)
+
+    # Navigate to astro page and verify full rising sign & cusps with no leaked HH:MM.
+    page.goto(f"{base}/astro?provider=demo")
+    expect(page.locator("#birth-district")).to_have_value("1803361")
+    with page.expect_response(lambda r: r.url.endswith("/api/chart")) as resp:
+        page.click("#draw-chart")
+    assert resp.value.status == 200
+    trio_text = page.locator("#astro-trio").text_content() or ""
+    astro_meta = page.locator("#astro-meta").text_content() or ""
+    assert "时刻不详" not in trio_text
+    assert "上午" in astro_meta
+    assert not re.search(r"\b\d{2}:\d{2}\b", astro_meta)
+    context.close()
