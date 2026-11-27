@@ -15,10 +15,12 @@ def test_saved_home_profile_follows_feature_navigation(site, chromium):
     errors = []
     page.on("pageerror", lambda error: errors.append(str(error)))
     page.goto(f"{base}/ask?provider=demo")
-    expect(page.locator("#birth-date")).to_be_enabled()
-    page.fill("#birth-date", "1994-03-18")
+    expect(page.locator("#birth-year")).to_be_enabled()
+    page.select_option("#birth-year", "1994")
+    page.select_option("#birth-month", "3")
+    page.select_option("#birth-day", "18")
     page.fill("#birth-time", "08:30")
-    page.select_option("#birth-gender", "female")
+    page.locator('#gender-seg button[data-val="female"]').click()
     page.select_option("#birth-province", "1818058")
     expect(page.locator("#birth-city")).to_be_enabled()
     page.select_option("#birth-city", "1810843")
@@ -30,6 +32,9 @@ def test_saved_home_profile_follows_feature_navigation(site, chromium):
     assert saved.value.status == 200
     expected_birth = saved.value.json()["birth"]
     expect(page.locator("#profile-status")).to_have_text("已保存")
+    expect(page.locator("#mini-pillars.filled")).to_be_visible()
+    expect(page.locator('#mini-pillars [data-pillar="year"]')).to_contain_text("甲")
+    expect(page.locator('#mini-pillars [data-pillar="day"]')).to_contain_text("癸")
     page.locator('.enroll-next[href="/bazi"]').click()
     for system in ("bazi", "astro", "daily"):
         if system != "bazi":

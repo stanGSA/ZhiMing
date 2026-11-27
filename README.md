@@ -2,6 +2,7 @@
 
 [![deterministic-tests](https://github.com/stanGSA/ZhiMing/actions/workflows/ci.yml/badge.svg)](https://github.com/stanGSA/ZhiMing/actions/workflows/ci.yml)
 ![Python 3.11](https://img.shields.io/badge/python-3.11-blue)
+[![爱发电](https://img.shields.io/badge/爱发电-支持知命-946ce6)](https://afdian.com/a/zhiming_ai)
 
 一个不依赖 LangChain、LangGraph 等框架、从循环写起的 Agent Harness，以塔罗、西方占星、八字、姓名五格、解梦和每日运势六个体系为应用场景。**排盘、抽牌、流日等事实全部由确定性代码计算，模型只负责解读；回答里引用的每一条事实都由代码逐项核对，写错就退回重写。**
 
@@ -172,3 +173,7 @@ uv run python -m scripts.doctor         # 环境、数据与知识库自检
 - 真实模型端到端质量未达到验收关口，默认使用单 Agent。
 - 网页版采用单进程服务，只监听 `127.0.0.1`；本机可通过临时隧道供朋友访问，VPS 已部署并可经固定域名 HTTPS 使用。访客记录闲置 12 小时后自动清除；当前代码支持注册账号，将生辰档案与解读记录保存在服务电脑上，换设备或服务重启后登录即可恢复。账号只支持账号名加密码，忘记密码无法找回；进行中的对话窗口内容不跨重启保存。服务器实际运行版本见上方部署状态。
 - 所有解读仅供参考与自我反思，不是决策依据。
+
+## 支持项目
+
+「知命」已入驻爱发电，欢迎支持服务器与大模型算力维护：https://afdian.com/a/zhiming_ai

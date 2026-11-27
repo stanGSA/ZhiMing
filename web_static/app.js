@@ -1638,7 +1638,7 @@ const BIRTH_MODES = {
   bazi: { submit: "排出我的八字", gender: true, settings: true },
   astro: { submit: "绘制本命星图", gender: false, settings: false },
   daily: { submit: "确认生辰，查看流日", gender: false, settings: true },
-  save: { submit: "保存生辰档案", gender: true, settings: true },
+  save: { submit: "保存生辰档案", gender: true, settings: false },
 };
 
 function labelled(text, control, className = "field") {
@@ -1661,28 +1661,537 @@ function inputBox(id, type) {
   return input;
 }
 
+const SHICHEN_SPECS = [
+  ["zi", "子时（23:00–01:00）", "00:00"],
+  ["chou", "丑时（01:00–03:00）", "02:00"],
+  ["yin", "寅时（03:00–05:00）", "04:00"],
+  ["mao", "卯时（05:00–07:00）", "06:00"],
+  ["chen", "辰时（07:00–09:00）", "08:00"],
+  ["si", "巳时（09:00–11:00）", "10:00"],
+  ["wu", "午时（11:00–13:00）", "12:00"],
+  ["wei", "未时（13:00–15:00）", "14:00"],
+  ["shen", "申时（15:00–17:00）", "16:00"],
+  ["you", "酉时（17:00–19:00）", "18:00"],
+  ["xu", "戌时（19:00–21:00）", "20:00"],
+  ["hai", "亥时（21:00–23:00）", "22:00"],
+];
+const LUNAR_DAY_LABELS = [
+  "",
+  "初一", "初二", "初三", "初四", "初五", "初六", "初七", "初八", "初九", "初十",
+  "十一", "十二", "十三", "十四", "十五", "十六", "十七", "十八", "十九", "二十",
+  "廿一", "廿二", "廿三", "廿四", "廿五", "廿六", "廿七", "廿八", "廿九", "三十",
+];
+let calendarMode = "solar";
+let lunarConverting = false;
+let lunarReqVersion = 0;
+const lunarYearCache = new Map();
+
+function shichenOfClock(hhmm) {
+  if (!hhmm || !/^\d{2}:\d{2}$/.test(hhmm)) return "";
+  const hour = Number(hhmm.slice(0, 2));
+  const index = Math.floor(((hour + 1) % 24) / 2);
+  return SHICHEN_SPECS[index]?.[0] || "";
+}
+
+function shichenMidpoint(key) {
+  return SHICHEN_SPECS.find(([id]) => id === key)?.[2] || "";
+}
+
+function updateBirthProgress() {
+  const dots = $("#birth-dots");
+  const text = $("#birth-dots-text");
+  if (!dots || !text) return;
+  const hasDate = Boolean($("#birth-date")?.value);
+  const hasTime = Boolean($("#unknown-time")?.checked || $("#birth-time")?.value);
+  const hasPlace = Boolean(selectedLocation);
+  const done = [hasDate, hasTime, hasPlace].filter(Boolean).length;
+  dots.querySelectorAll("i").forEach((bar, idx) => bar.classList.toggle("on", idx < done));
+  text.textContent = `${done} / 3 已填`;
+  scheduleDraftPreview();
+}
+
+function syncGenderSeg(value) {
+  const seg = $("#gender-seg");
+  if (!seg) return;
+  seg.querySelectorAll("button").forEach((btn) => {
+    btn.setAttribute("aria-pressed", String((btn.dataset.val || "") === (value || "")));
+  });
+}
+
+function setCalendarButtons(mode) {
+  calendarMode = mode;
+  const seg = $("#calendar-seg");
+  if (!seg) return;
+  seg.querySelectorAll("button").forEach((btn) => {
+    btn.setAttribute("aria-pressed", String(btn.dataset.cal === mode));
+  });
+}
+
+function populateSolarMonths(year, selectedMonth) {
+  const mSel = $("#birth-month");
+  if (!mSel) return;
+  const today = shanghaiToday().split("-").map(Number);
+  const maxMonth = year === today[0] ? today[1] : 12;
+  mSel.replaceChildren(new Option("月", ""));
+  for (let m = 1; m <= maxMonth; m++) mSel.append(new Option(`${m} 月`, String(m)));
+  if (selectedMonth && Number(selectedMonth) <= maxMonth) mSel.value = String(selectedMonth);
+}
+
+function populateSolarDays(year, month, selectedDay) {
+  const dSel = $("#birth-day");
+  if (!dSel) return;
+  const today = shanghaiToday().split("-").map(Number);
+  let maxDay = year && month ? new Date(year, month, 0).getDate() : 31;
+  if (year === today[0] && month === today[1]) maxDay = Math.min(maxDay, today[2]);
+  dSel.replaceChildren(new Option("日", ""));
+  for (let d = 1; d <= maxDay; d++) dSel.append(new Option(`${d} 日`, String(d)));
+  if (selectedDay && Number(selectedDay) <= maxDay) dSel.value = String(selectedDay);
+}
+
+async function getLunarMonths(year) {
+  if (lunarYearCache.has(year)) return lunarYearCache.get(year);
+  const data = await api(`/api/calendar/lunar-year?year=${encodeURIComponent(year)}`);
+  lunarYearCache.set(year, data.months);
+  return data.months;
+}
+
+function populateLunarDays(maxDays, selectedDay) {
+  const dSel = $("#birth-day");
+  if (!dSel) return;
+  dSel.replaceChildren(new Option("日", ""));
+  for (let d = 1; d <= maxDays; d++) {
+    dSel.append(new Option(LUNAR_DAY_LABELS[d] || `${d} 日`, String(d)));
+  }
+  if (selectedDay && Number(selectedDay) <= maxDays) dSel.value = String(selectedDay);
+}
+
+function setLunarHint(text) {
+  const hint = $("#lunar-conversion");
+  if (!hint) return;
+  hint.textContent = text || "";
+  hint.hidden = !text;
+}
+
+async function syncAskDateFromDropdowns({ markDirty = true } = {}) {
+  const ySel = $("#birth-year");
+  const mSel = $("#birth-month");
+  const dSel = $("#birth-day");
+  const dateInput = $("#birth-date");
+  if (!ySel || !mSel || !dSel || !dateInput) return;
+  const y = Number(ySel.value);
+  const m = Number(mSel.value);
+  const d = Number(dSel.value);
+  if (calendarMode === "solar") {
+    setLunarHint("");
+    if (y && m && d) {
+      dateInput.value = `${String(y).padStart(4, "0")}-${String(m).padStart(2, "0")}-${String(d).padStart(2, "0")}`;
+    } else {
+      dateInput.value = "";
+    }
+    if (markDirty) {
+      birthDirty = true;
+      ++restoringBirth;
+      setBirthFeedback("资料已修改，确认后生效。", false);
+    }
+    updateBirthProgress();
+    return;
+  }
+  if (!y || !m || !d) {
+    dateInput.value = "";
+    setLunarHint("");
+    updateBirthProgress();
+    return;
+  }
+  const version = ++lunarReqVersion;
+  lunarConverting = true;
+  setLunarHint("正在换算公历日期…");
+  try {
+    const res = await api(
+      `/api/calendar/lunar-to-solar?year=${encodeURIComponent(y)}&month=${encodeURIComponent(m)}&day=${encodeURIComponent(d)}`,
+    );
+    if (version !== lunarReqVersion) return;
+    dateInput.value = res.solar;
+    setLunarHint(`已换算为公历 ${res.solar}（${res.lunar_label}）`);
+    if (markDirty) {
+      birthDirty = true;
+      ++restoringBirth;
+      setBirthFeedback("资料已修改，确认后生效。", false);
+    }
+  } catch (error) {
+    if (version !== lunarReqVersion) return;
+    dateInput.value = "";
+    setLunarHint(error.message || "该农历日期超出有效范围。");
+  } finally {
+    if (version === lunarReqVersion) {
+      lunarConverting = false;
+      updateBirthProgress();
+    }
+  }
+}
+
+function syncAskDropdownsFromSolar(iso) {
+  const ySel = $("#birth-year");
+  const mSel = $("#birth-month");
+  const dSel = $("#birth-day");
+  if (!ySel || !mSel || !dSel) return;
+  setCalendarButtons("solar");
+  setLunarHint("");
+  if (!iso || !/^\d{4}-\d{2}-\d{2}$/.test(iso)) {
+    ySel.value = "";
+    populateSolarMonths(0, "");
+    populateSolarDays(0, 0, "");
+    return;
+  }
+  const [y, m, d] = iso.split("-").map(Number);
+  ySel.value = String(y);
+  populateSolarMonths(y, m);
+  populateSolarDays(y, m, d);
+}
+
+async function switchCalendarMode(nextMode) {
+  if (calendarMode === nextMode) return;
+  const ySel = $("#birth-year");
+  const mSel = $("#birth-month");
+  const dSel = $("#birth-day");
+  const dateInput = $("#birth-date");
+  if (!ySel || !mSel || !dSel || !dateInput) return;
+  const currentSolar = dateInput.value;
+  setCalendarButtons(nextMode);
+  if (nextMode === "solar") {
+    syncAskDropdownsFromSolar(currentSolar);
+    updateBirthProgress();
+    return;
+  }
+  // Switching to lunar: if a valid solar date is present, convert it to lunar first.
+  const version = ++lunarReqVersion;
+  if (currentSolar && /^\d{4}-\d{2}-\d{2}$/.test(currentSolar)) {
+    lunarConverting = true;
+    setLunarHint("正在换算为农历…");
+    try {
+      const res = await api(`/api/calendar/solar-to-lunar?date=${encodeURIComponent(currentSolar)}`);
+      if (version !== lunarReqVersion || calendarMode !== "lunar") return;
+      const months = await getLunarMonths(res.year);
+      if (version !== lunarReqVersion || calendarMode !== "lunar") return;
+      ySel.value = String(res.year);
+      mSel.replaceChildren(new Option("农历月", ""));
+      months.forEach((item) => mSel.append(new Option(item.label, String(item.month))));
+      mSel.value = String(res.month);
+      const spec = months.find((item) => item.month === res.month);
+      populateLunarDays(spec ? spec.days : 30, res.day);
+      setLunarHint(`对应公历 ${currentSolar}（${res.lunar_label}）`);
+    } catch {
+      if (version !== lunarReqVersion) return;
+      setLunarHint("请选择农历出生年月日，系统将自动换算公历。");
+    } finally {
+      if (version === lunarReqVersion) lunarConverting = false;
+    }
+    return;
+  }
+  const y = Number(ySel.value);
+  mSel.replaceChildren(new Option("农历月", ""));
+  populateLunarDays(30, "");
+  setLunarHint("请选择农历出生年月日，系统将自动换算公历。");
+  if (y) {
+    try {
+      const months = await getLunarMonths(y);
+      if (version !== lunarReqVersion || calendarMode !== "lunar") return;
+      months.forEach((item) => mSel.append(new Option(item.label, String(item.month))));
+    } catch {
+      // Ignore transient errors while browsing empty years.
+    }
+  }
+}
+
 function syncTimeControl() {
   const unknown = Boolean($("#unknown-time")?.checked);
   const locked = busy || !state;
   const time = $("#birth-time");
+  const shichen = $("#birth-shichen");
+  const knownWrap = $("#birth-time-known");
+  const unknownWrap = $("#birth-time-unknown");
   const period = $("#birth-time-period");
   const label = $("#birth-time-label");
   if (label) label.htmlFor = unknown ? "birth-time-period" : "birth-time";
+  if (knownWrap) knownWrap.hidden = unknown;
+  if (unknownWrap) unknownWrap.hidden = !unknown;
+  if (shichen) {
+    shichen.disabled = locked || unknown;
+    if (unknown) shichen.value = "";
+  }
   if (time) {
-    time.hidden = unknown;
+    if (!knownWrap) time.hidden = unknown;
     time.disabled = locked || unknown;
     if (unknown) time.value = "";
   }
   if (period) {
-    period.hidden = !unknown;
+    if (!unknownWrap) period.hidden = !unknown;
     period.disabled = locked || !unknown;
     if (unknown && !period.value) period.value = "unknown";
   }
+  updateBirthProgress();
+}
+
+function buildAskBirthForm(host, options) {
+  const form = node("form", "birth-form");
+  form.id = "birth-form";
+
+  const hiddenDate = inputBox("birth-date", "hidden");
+  form.append(hiddenDate);
+
+  // 01 出生日期（公历 / 农历 + 动态联动年月日）
+  const g1 = node("fieldset", "b-group");
+  const g1Head = node("div", "b-group-head");
+  const g1Leg = node("legend");
+  g1Leg.append(node("span", "num", "01"), document.createTextNode("出生日期"));
+  const calSeg = node("div", "seg");
+  calSeg.id = "calendar-seg";
+  calSeg.setAttribute("role", "group");
+  calSeg.setAttribute("aria-label", "历法");
+  const btnSolar = button("公历");
+  btnSolar.dataset.cal = "solar";
+  btnSolar.setAttribute("aria-pressed", "true");
+  const btnLunar = button("农历");
+  btnLunar.dataset.cal = "lunar";
+  btnLunar.setAttribute("aria-pressed", "false");
+  calSeg.append(btnSolar, btnLunar);
+  g1Head.append(g1Leg, calSeg);
+
+  const todayYear = Number(shanghaiToday().slice(0, 4));
+  const yearOpts = [["", "选择年份"]];
+  for (let y = todayYear; y >= 1850; y--) yearOpts.push([String(y), `${y} 年`]);
+  const ySel = selectBox("birth-year", yearOpts);
+  const mSel = selectBox("birth-month", [["", "月"]]);
+  const dSel = selectBox("birth-day", [["", "日"]]);
+  const dateRow = node("div", "b-row c3");
+  dateRow.append(labelled("年", ySel), labelled("月", mSel), labelled("日", dSel));
+  const lunarConv = node("p", "hint lunar-conv", "");
+  lunarConv.id = "lunar-conversion";
+  lunarConv.setAttribute("role", "status");
+  lunarConv.hidden = true;
+  g1.append(g1Head, dateRow, lunarConv);
+
+  // 02 出生时间（时辰快选 + 精确时间，或不确定时段）
+  const g2 = node("fieldset", "b-group");
+  const g2Head = node("div", "b-group-head");
+  const g2Leg = node("legend");
+  g2Leg.append(node("span", "num", "02"), document.createTextNode("出生时间"));
+  const unknown = node("label", "check");
+  const unknownBox = inputBox("unknown-time", "checkbox");
+  unknown.append(unknownBox, document.createTextNode("不知道具体时间"));
+  g2Head.append(g2Leg, unknown);
+
+  const shichen = selectBox("birth-shichen", [
+    ["", "选择时辰"],
+    ...SHICHEN_SPECS.map(([id, label]) => [id, label]),
+  ]);
+  const time = inputBox("birth-time", "time");
+  const knownWrap = node("div", "b-row c2");
+  knownWrap.id = "birth-time-known";
+  knownWrap.append(labelled("时辰", shichen), labelled("精确时间（可选，星盘更准）", time));
+
+  const period = selectBox("birth-time-period", TIME_PERIODS);
+  period.value = "unknown";
+  period.disabled = true;
+  const unknownWrap = node("div", "birth-time-unknown");
+  unknownWrap.id = "birth-time-unknown";
+  unknownWrap.hidden = true;
+  unknownWrap.append(labelled("大致出生时段", period));
+
+  const timeHint = node("p", "hint");
+  timeHint.append(
+    document.createTextNode("选时辰会自动填入该时辰正点，也可微调右侧精确分钟；若只记得大概时段，请勾选"),
+    node("b", "", "「不知道具体时间」"),
+    document.createTextNode("。"),
+  );
+  g2.append(g2Head, knownWrap, unknownWrap, timeHint);
+
+  // 03 出生地点（4 级联动 + 新疆时间制）
+  const g3 = node("fieldset", "b-group");
+  const g3Head = node("div", "b-group-head");
+  const g3Leg = node("legend");
+  g3Leg.append(node("span", "num", "03"), document.createTextNode("出生地点"));
+  g3Head.append(g3Leg, node("span", "hint", "用于真太阳时校正与星盘宫位"));
+  const placeRow = node("div", "b-row c4");
+  placeRow.append(
+    labelled("国家 / 地区", selectBox("birth-country", [["", "正在加载…"]])),
+    labelled("省 / 州", selectBox("birth-province", [["", "请先选择国家"]])),
+    labelled("城市", selectBox("birth-city", [["", "请先选择省份"]])),
+    labelled("县 / 区", selectBox("birth-district", [["", "请先选择城市"]])),
+  );
+  const locationFeedback = node(
+    "p",
+    "location-feedback",
+    "逐级选择，自动匹配出生地经纬度与时区。",
+  );
+  locationFeedback.id = "location-feedback";
+  locationFeedback.setAttribute("role", "status");
+  const clock = labelled(
+    "出生钟表时间制",
+    selectBox("birth-clock", [
+      ["", "请选择时间制"],
+      ["Asia/Shanghai", "北京时间（UTC+8）"],
+      ["Asia/Urumqi", "新疆时间（UTC+6）"],
+    ]),
+  );
+  clock.id = "clock-settings";
+  clock.hidden = true;
+  g3.append(g3Head, placeRow, locationFeedback, clock);
+
+  // 04 性别（默认不预选男/女，避免误提交）
+  const g4 = node("fieldset", "b-group");
+  const g4Head = node("div", "b-group-head");
+  const g4Leg = node("span", "b-legend");
+  g4Leg.append(
+    document.createTextNode("性别"),
+    node("span", "b-legend-sub", "（可选，用于八字大运顺逆）"),
+  );
+  const genderSelect = selectBox("birth-gender", [
+    ["", "暂不填写"],
+    ["male", "男"],
+    ["female", "女"],
+  ]);
+  genderSelect.hidden = true;
+  const genderSeg = node("div", "seg lg");
+  genderSeg.id = "gender-seg";
+  genderSeg.setAttribute("role", "group");
+  genderSeg.setAttribute("aria-label", "性别");
+  [
+    ["", "暂不填写"],
+    ["male", "男"],
+    ["female", "女"],
+  ].forEach(([val, label]) => {
+    const b = button(label);
+    b.dataset.val = val;
+    b.setAttribute("aria-pressed", String(val === ""));
+    b.addEventListener("click", () => {
+      if (busy || !state) return;
+      genderSelect.value = val;
+      syncGenderSeg(val);
+      birthDirty = true;
+      ++restoringBirth;
+      setBirthFeedback("资料已修改，确认后生效。", false);
+    });
+    genderSeg.append(b);
+  });
+  g4Head.append(g4Leg, genderSeg, genderSelect);
+  g4.append(g4Head);
+
+  // 提交与冲突恢复
+  const submit = button(options.submit, "btn btn-primary", "submit");
+  const sync = button("载入最新生辰", "btn btn-tag");
+  sync.id = "birth-sync";
+  sync.hidden = true;
+  sync.addEventListener("click", async () => {
+    if (!(await refresh())) return;
+    acceptBirthVersion(state.birth_version);
+    fillBirthForm(state.birth);
+    foldBirth(state.birth, true);
+  });
+  const keep = button("保留本页修改并重新确认", "btn btn-tag");
+  keep.id = "birth-keep";
+  keep.hidden = true;
+  keep.addEventListener("click", () => {
+    formBirthVersion = state.birth_version ?? 0;
+    sync.hidden = keep.hidden = true;
+    setBirthFeedback("已保留本页修改，请核对后再次提交。", false);
+  });
+  const feedback = node("p", "birth-feedback", birthDefaultText());
+  feedback.id = "birth-feedback";
+  feedback.setAttribute("role", "status");
+  const submitRow = node("div", "submit-row");
+  submitRow.append(submit, feedback, sync, keep);
+
+  form.append(g1, g2, g3, g4, submitRow);
+  host.replaceChildren(form);
+  populateSolarMonths(0, "");
+  populateSolarDays(0, 0, "");
+
+  // 历法与年月日动态联动
+  calSeg.addEventListener("click", (event) => {
+    const b = event.target.closest("button[data-cal]");
+    if (!b || busy || !state) return;
+    switchCalendarMode(b.dataset.cal);
+  });
+  ySel.addEventListener("change", async () => {
+    const y = Number(ySel.value);
+    if (calendarMode === "solar") {
+      populateSolarMonths(y, mSel.value);
+      populateSolarDays(y, Number(mSel.value), dSel.value);
+      await syncAskDateFromDropdowns();
+    } else {
+      const prevM = mSel.value;
+      const prevD = dSel.value;
+      mSel.replaceChildren(new Option("农历月", ""));
+      if (y) {
+        try {
+          const months = await getLunarMonths(y);
+          if (calendarMode !== "lunar" || Number(ySel.value) !== y) return;
+          months.forEach((item) => mSel.append(new Option(item.label, String(item.month))));
+          if (months.some((item) => String(item.month) === prevM)) mSel.value = prevM;
+          const spec = months.find((item) => String(item.month) === mSel.value);
+          populateLunarDays(spec ? spec.days : 30, prevD);
+        } catch (error) {
+          setLunarHint(error.message || "无法获取该年农历月份。");
+        }
+      } else {
+        populateLunarDays(30, "");
+      }
+      await syncAskDateFromDropdowns();
+    }
+  });
+  mSel.addEventListener("change", async () => {
+    const y = Number(ySel.value);
+    const m = Number(mSel.value);
+    if (calendarMode === "solar") {
+      populateSolarDays(y, m, dSel.value);
+    } else if (y && m) {
+      const months = lunarYearCache.get(y) || (await getLunarMonths(y).catch(() => []));
+      const spec = months.find((item) => item.month === m);
+      populateLunarDays(spec ? spec.days : 30, dSel.value);
+    }
+    await syncAskDateFromDropdowns();
+  });
+  dSel.addEventListener("change", () => syncAskDateFromDropdowns());
+
+  // 时辰与精确时间双向同步
+  shichen.addEventListener("change", () => {
+    const mid = shichenMidpoint(shichen.value);
+    if (mid) time.value = mid;
+    else time.value = "";
+    birthDirty = true;
+    ++restoringBirth;
+    setBirthFeedback("资料已修改，确认后生效。", false);
+    updateBirthProgress();
+  });
+  time.addEventListener("input", () => {
+    shichen.value = shichenOfClock(time.value);
+    updateBirthProgress();
+  });
+  unknownBox.addEventListener("change", () => syncTimeControl());
+  form.addEventListener("input", () => {
+    birthDirty = true;
+    ++restoringBirth;
+    time.setCustomValidity("");
+    setBirthFeedback("资料已修改，确认后生效。", false);
+    updateBirthProgress();
+  });
+  form.addEventListener("submit", (event) => {
+    event.preventDefault();
+    submitBirth("save");
+  });
+  LOCATION_FIELDS.forEach((field, index) =>
+    $(`#birth-${field}`).addEventListener("change", () => locationChanged(index)),
+  );
+  updateBirthProgress();
 }
 
 function buildBirthForm(host, mode) {
   const options = BIRTH_MODES[mode] || BIRTH_MODES.save;
   birthMode = mode;
+  if (mode === "save") {
+    buildAskBirthForm(host, options);
+    return;
+  }
   const form = node("form", "birth-form");
   form.id = "birth-form";
 
@@ -1850,6 +2359,7 @@ async function submitBirth(mode) {
   if (busy || !state || !validateBirth()) return;
   ++localStateEpoch;
   clearTimeout(refreshTimer);
+  clearTimeout(draftPreviewTimer);
   setBusy(true);
   try {
     const birth = birthInfo();
@@ -1907,6 +2417,17 @@ function validateBirth() {
     toast("地点正在加载，请稍候。");
     return false;
   }
+  if (lunarConverting) {
+    toast("农历日期正在换算，请稍候。");
+    return false;
+  }
+  if ($("#birth-year")) {
+    const partial = [$("#birth-year").value, $("#birth-month").value, $("#birth-day").value].filter(Boolean).length;
+    if (partial > 0 && !$("#birth-date").value) {
+      toast(calendarMode === "lunar" ? "请选齐有效的农历年、月、日。" : "请选齐出生年、月、日。");
+      return false;
+    }
+  }
   if ($("#birth-province").value && !selectedLocation) {
     toast("请继续选择城市和县区，以确定出生地点。");
     return false;
@@ -1961,17 +2482,21 @@ function submitBirthFromBar() {
 
 function fillBirthForm(birth) {
   $("#birth-date").value = birth.date || "";
+  if ($("#birth-year")) syncAskDropdownsFromSolar(birth.date || "");
   $("#birth-time").value = birth.time || "";
+  if ($("#birth-shichen")) $("#birth-shichen").value = shichenOfClock(birth.time || "");
   $("#unknown-time").checked = Boolean(birth.unknown_time);
   if ($("#birth-time-period")) $("#birth-time-period").value = birth.time_period || "unknown";
   syncTimeControl();
   if ($("#birth-gender")) $("#birth-gender").value = birth.gender || "";
+  syncGenderSeg(birth.gender || "");
   if ($("#solar-time")) $("#solar-time").value = String(birth.true_solar_time || false);
   if ($("#zishi-rule")) $("#zishi-rule").value = birth.zishi_rule || "next_day";
   $("#birth-clock").value = birth.clock_tz || "";
   if (birth.date) setBirthFeedback("已载入保存的生辰。", true);
   if (selectedLocation?.location_id !== birth.location_id)
     restoreLocation(birth.location_id || "").catch((error) => toast(error.message));
+  updateBirthProgress();
 }
 
 function updateLocationDisabled() {
@@ -2001,6 +2526,7 @@ function resetLocationBelow(index) {
   $("#birth-clock").value = "";
   $("#location-feedback").textContent = "逐级选择，自动匹配出生地经纬度与时区。";
   if (birthMode === "bazi" || birthMode === "astro") invalidateChart();
+  updateBirthProgress();
 }
 
 async function acceptLocation(identity, version) {
@@ -2013,6 +2539,7 @@ async function acceptLocation(identity, version) {
       ? "当前采用城市中心；该地区未收录区县层级。"
       : "采用所选行政区中心坐标。"
   }`;
+  updateBirthProgress();
 }
 
 async function locationChanged(index) {
@@ -2091,6 +2618,313 @@ async function restoreLocation(identity) {
 
 /* ---------- 问道 · 首页 ---------- */
 
+function spreadAngles(items, minGap = 13) {
+  if (items.length <= 1) return items.map((item) => ({ ...item, drawLon: item.lon }));
+  const sorted = items
+    .map((item, idx) => ({ ...item, idx, drawLon: ((item.lon % 360) + 360) % 360 }))
+    .sort((a, b) => a.drawLon - b.drawLon);
+  for (let pass = 0; pass < 8; pass++) {
+    for (let i = 0; i < sorted.length; i++) {
+      const a = sorted[i];
+      const b = sorted[(i + 1) % sorted.length];
+      const diff = (b.drawLon - a.drawLon + 360) % 360;
+      if (diff < minGap) {
+        const push = (minGap - diff) / 2;
+        a.drawLon = (a.drawLon - push + 360) % 360;
+        b.drawLon = (b.drawLon + push) % 360;
+      }
+    }
+  }
+  return sorted.sort((a, b) => a.idx - b.idx);
+}
+
+function renderMiniChart(astro) {
+  const mini = $("#mini-chart");
+  if (!mini) return;
+  const filled = Boolean(astro && astro.planets?.length);
+  const asc = filled ? Number(astro.asc_lon) || 0 : 0;
+  const pointAt = (lon, r) => {
+    const rad = ((180 - (lon - asc)) * Math.PI) / 180;
+    return [r * Math.cos(rad), r * Math.sin(rad)];
+  };
+
+  // 1) 纯白铜版表盘底 + 极细外环与刻度
+  let m = `<circle r="48" fill="#ffffff" stroke="rgba(22,22,20,.14)" stroke-width="0.7"/>`;
+  m += `<path fill="rgba(37,50,76,.035)" fill-rule="evenodd" d="M0 -48A48 48 0 1 1 0 48A48 48 0 1 1 0 -48ZM0 -40A40 40 0 1 0 0 40A40 40 0 1 0 0 -40Z"/>`;
+  m += `<circle r="48" fill="none" stroke="rgba(155,122,67,.48)" stroke-width="0.7"/>`;
+  m += `<circle r="40" fill="none" stroke="rgba(22,22,20,.16)" stroke-width="0.55"/>`;
+
+  // 36 格黄道精密刻度（按真实上升点旋转）
+  for (let deg = 0; deg < 360; deg += 10) {
+    const major = deg % 30 === 0;
+    const [x1, y1] = pointAt(deg, 48);
+    const [x2, y2] = pointAt(deg, major ? 40 : 45.2);
+    m += `<line x1="${x1.toFixed(1)}" y1="${y1.toFixed(1)}" x2="${x2.toFixed(1)}" y2="${y2.toFixed(1)}" stroke="${major ? "rgba(155,122,67,.52)" : "rgba(22,22,20,.16)"}" stroke-width="${major ? 0.65 : 0.45}"/>`;
+  }
+
+  // 十二宫极细分隔线与地平/子午轴
+  for (let i = 0; i < 12; i++) {
+    const rad = (i * 30 * Math.PI) / 180;
+    const axis = i % 3 === 0;
+    const x1 = (24.5 * Math.cos(rad)).toFixed(1);
+    const y1 = (24.5 * Math.sin(rad)).toFixed(1);
+    const x2 = (40 * Math.cos(rad)).toFixed(1);
+    const y2 = (40 * Math.sin(rad)).toFixed(1);
+    m += `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="${axis ? "rgba(155,122,67,.42)" : "rgba(22,22,20,.09)"}" stroke-width="${axis ? 0.6 : 0.45}"/>`;
+  }
+
+  // 内相位盘（留白通透，不放遮挡文字的大圆）
+  m += `<circle r="24.5" fill="#fbf9f5" stroke="rgba(155,122,67,.42)" stroke-width="0.65"/>`;
+
+  if (!filled) {
+    m += `<path d="M0 -21 L18.2 10.5 L-18.2 10.5 Z" fill="none" stroke="rgba(155,122,67,.45)" stroke-width="0.65" stroke-dasharray="1.8 2"/>`;
+    m += `<text text-anchor="middle" dominant-baseline="central" font-family="Noto Serif SC,serif" font-size="11" fill="rgba(22,22,20,.24)">？</text>`;
+    mini.innerHTML = m;
+    return;
+  }
+
+  // 真实地平线微标（左侧上升点 ASC 菱形指针）
+  m += `<line x1="-48" y1="0" x2="-40" y2="0" stroke="#a83228" stroke-width="0.9"/>`;
+  m += `<polygon points="-48,0 -45.5,-1.8 -43,0 -45.5,1.8" fill="#a83228"/>`;
+
+  // 相位几何网（过滤掉合相短桩，取最精确的 6 条主相位，精准落在内环 r=24.5 上）
+  const byBody = new Map(astro.planets.map((p) => [p.body, p]));
+  const chordAspects = (astro.aspects || [])
+    .filter((asp) => asp.type !== "conjunction")
+    .slice(0, 6);
+  const aspectStroke = (type) => {
+    if (type === "square" || type === "opposition") return "rgba(168,50,40,.48)";
+    return "rgba(37,50,76,.44)";
+  };
+  chordAspects.forEach((asp) => {
+    const pa = byBody.get(asp.a);
+    const pb = byBody.get(asp.b);
+    if (!pa || !pb) return;
+    const [x1, y1] = pointAt(pa.lon, 24.2);
+    const [x2, y2] = pointAt(pb.lon, 24.2);
+    m += `<line x1="${x1.toFixed(1)}" y1="${y1.toFixed(1)}" x2="${x2.toFixed(1)}" y2="${y2.toFixed(1)}" stroke="${aspectStroke(asp.type)}" stroke-width="0.7" stroke-linecap="round"/>`;
+  });
+  m += `<circle r="1.4" fill="#fbf9f5" stroke="rgba(155,122,67,.6)" stroke-width="0.55"/>`;
+
+  // 行星精准刻度指针 + 避让散开后的星点（太阳双环☉、月亮弯月☽、其余精雕微点）
+  const spread = spreadAngles(astro.planets, 13);
+  spread.forEach((p) => {
+    const [tx1, ty1] = pointAt(p.lon, 24.5);
+    const [tx2, ty2] = pointAt(p.lon, 27.6);
+    m += `<line x1="${tx1.toFixed(1)}" y1="${ty1.toFixed(1)}" x2="${tx2.toFixed(1)}" y2="${ty2.toFixed(1)}" stroke="rgba(22,22,20,.28)" stroke-width="0.5"/>`;
+
+    const [x, y] = pointAt(p.drawLon, 33.2);
+    const cx = x.toFixed(1);
+    const cy = y.toFixed(1);
+    if (p.body === "Sun") {
+      m += `<circle cx="${cx}" cy="${cy}" r="3.1" fill="#ffffff" stroke="#a83228" stroke-width="0.9"/>`;
+      m += `<circle cx="${cx}" cy="${cy}" r="1.15" fill="#a83228"/>`;
+    } else if (p.body === "Moon") {
+      m += `<circle cx="${cx}" cy="${cy}" r="2.7" fill="#25324c" stroke="#ffffff" stroke-width="0.6"/>`;
+      m += `<circle cx="${(x + 1.05).toFixed(1)}" cy="${(y - 0.35).toFixed(1)}" r="1.75" fill="#ffffff"/>`;
+    } else {
+      const inner = ["Mercury", "Venus", "Mars"].includes(p.body);
+      m += `<circle cx="${cx}" cy="${cy}" r="${inner ? 1.85 : 1.55}" fill="${inner ? "#25324c" : "#9b7a43"}" stroke="#ffffff" stroke-width="0.65"/>`;
+    }
+  });
+
+  mini.innerHTML = m;
+}
+
+function renderBirthPreview(preview) {
+  const pillarsEl = $("#mini-pillars");
+  const labelEl = $("#preview-label");
+  const capBazi = $("#preview-cap-bazi");
+  const capAstro = $("#preview-cap-astro");
+  if (!pillarsEl) return;
+  const bazi = preview?.bazi;
+  const astro = preview?.astro;
+  const hasBazi = Boolean(bazi?.pillars?.year && bazi?.pillars?.day);
+  pillarsEl.classList.toggle("filled", hasBazi);
+  if (labelEl) {
+    labelEl.textContent = hasBazi ? "— 你的命盘预览 —" : "— 填好后你将看到 —";
+  }
+  const keys = ["year", "month", "day", "time"];
+  keys.forEach((key) => {
+    const box = pillarsEl.querySelector(`[data-pillar="${key}"]`);
+    if (!box) return;
+    const bs = box.querySelectorAll("b");
+    const gz = hasBazi ? bazi.pillars[key] || "" : "";
+    box.classList.toggle("is-uncertain", Boolean(hasBazi && key === "time" && bazi.unknown_time));
+    if (bs.length >= 2) {
+      bs[0].textContent = gz.length >= 1 ? gz[0] : "？";
+      bs[1].textContent = gz.length >= 2 ? gz[1] : "？";
+    }
+  });
+  if (capBazi) {
+    capBazi.textContent = hasBazi
+      ? `日主 ${bazi.day_master || "—"} · 四柱已排`
+      : "四柱八字 · 五行 · 大运";
+  }
+  renderMiniChart(astro);
+  if (capAstro) {
+    if (astro?.sun_sign_zh) {
+      capAstro.textContent = astro.asc_sign_zh
+        ? `日${astro.sun_sign_zh.replace("座", "")} · 升${astro.asc_sign_zh.replace("座", "")}`
+        : `太阳${astro.sun_sign_zh}`;
+    } else {
+      capAstro.textContent = "本命星盘";
+    }
+  }
+}
+
+let draftPreviewTimer = null;
+
+function scheduleDraftPreview() {
+  if (PAGE !== "ask" || !state || !$("#birth-form")) return;
+  clearTimeout(draftPreviewTimer);
+  const draft = birthInfo();
+  if (!draft.date || !draft.location_id) {
+    if (!state.birth?.date) renderBirthPreview(null);
+    return;
+  }
+  draftPreviewTimer = setTimeout(() => {
+    if (!state || busy) return;
+    const current = birthInfo();
+    if (current.date && current.location_id) {
+      refreshAskAlmanac(current);
+    }
+  }, 260);
+}
+
+function renderAskVisuals() {
+  const horizon = $("#horizon");
+  if (horizon) {
+    const W = 1440;
+    const H = 250;
+    const curve = (pts, close) => {
+      let d = close ? `M0 ${H} L${pts[0][0]} ${pts[0][1]}` : `M${pts[0][0]} ${pts[0][1]}`;
+      for (let i = 0; i < pts.length - 1; i++) {
+        const p0 = pts[i - 1] || pts[i];
+        const p1 = pts[i];
+        const p2 = pts[i + 1];
+        const p3 = pts[i + 2] || p2;
+        const t = 0.22;
+        const c1 = [p1[0] + (p2[0] - p0[0]) * t, p1[1] + (p2[1] - p0[1]) * t];
+        const c2 = [p2[0] - (p3[0] - p1[0]) * t, p2[1] - (p3[1] - p1[1]) * t];
+        d += ` C${c1[0].toFixed(1)} ${c1[1].toFixed(1)} ${c2[0].toFixed(1)} ${c2[1].toFixed(1)} ${p2[0]} ${p2[1]}`;
+      }
+      return close ? `${d} L${W} ${H} Z` : d;
+    };
+    const far = [
+      [0, 126], [140, 96], [300, 114], [490, 74], [690, 108],
+      [890, 66], [1080, 98], [1260, 72], [1440, 102],
+    ];
+    const near = [
+      [0, 168], [180, 134], [380, 158], [600, 124],
+      [820, 152], [1040, 118], [1260, 146], [1440, 130],
+    ];
+    let ticks = "";
+    const cx = 720;
+    const cy = 860;
+    const R = 805;
+    for (let a = -38; a <= 38; a += 2) {
+      const rad = (a * Math.PI) / 180;
+      const major = a % 10 === 0;
+      const r1 = R;
+      const r2 = R - (major ? 10 : 5);
+      ticks += `<line x1="${(cx + r1 * Math.sin(rad)).toFixed(1)}" y1="${(cy - r1 * Math.cos(rad)).toFixed(1)}" x2="${(cx + r2 * Math.sin(rad)).toFixed(1)}" y2="${(cy - r2 * Math.cos(rad)).toFixed(1)}" stroke="rgba(155,122,67,${major ? 0.34 : 0.16})" stroke-width="${major ? 0.9 : 0.6}"/>`;
+    }
+    horizon.innerHTML = `<svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="xMidYMax slice">
+  <defs>
+    <linearGradient id="wash-far" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#ded8ca" stop-opacity=".8"/>
+      <stop offset=".75" stop-color="#eae5d9" stop-opacity=".42"/>
+      <stop offset="1" stop-color="#f6f3ec" stop-opacity="0"/>
+    </linearGradient>
+    <linearGradient id="wash-near" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#d2cab9" stop-opacity=".72"/>
+      <stop offset=".68" stop-color="#e5dfd1" stop-opacity=".35"/>
+      <stop offset="1" stop-color="#f6f3ec" stop-opacity="0"/>
+    </linearGradient>
+    <linearGradient id="mist" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#f6f3ec" stop-opacity="0"/>
+      <stop offset="1" stop-color="#f6f3ec" stop-opacity="1"/>
+    </linearGradient>
+  </defs>
+  <circle cx="${cx}" cy="${cy}" r="${R}" fill="none" stroke="rgba(155,122,67,0.3)" stroke-width="0.8"/>
+  <circle cx="${cx}" cy="${cy}" r="${R - 14}" fill="none" stroke="rgba(37,50,76,0.18)" stroke-width="0.65" stroke-dasharray="2 6"/>
+  ${ticks}
+  <path d="${curve(far, true)}" fill="url(#wash-far)"/>
+  <path d="${curve(far, false)}" fill="none" stroke="rgba(155,122,67,0.28)" stroke-width="0.8"/>
+  <path d="${curve(near, true)}" fill="url(#wash-near)"/>
+  <path d="${curve(near, false)}" fill="none" stroke="rgba(22,22,20,0.16)" stroke-width="0.8"/>
+  <rect x="0" y="${H - 76}" width="${W}" height="76" fill="url(#mist)"/>
+</svg>`;
+  }
+
+  const wm = $("#wm");
+  if (wm) {
+    const romans = ["I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X", "XI", "XII"];
+    let s = `<g fill="none" stroke="#9b7a43" stroke-width="0.9"><circle r="150"/><circle r="122"/><circle r="86"/><circle r="48"/></g>`;
+    romans.forEach((rm, i) => {
+      const a = i * 30;
+      s += `<line x1="0" y1="-122" x2="0" y2="-150" stroke="#9b7a43" stroke-width="0.7" transform="rotate(${a + 15})"/>`;
+      s += `<text transform="rotate(${a}) translate(0 -136)" text-anchor="middle" dominant-baseline="central" font-family="Garamond,Georgia,serif" font-size="14" fill="#9b7a43">${rm}</text>`;
+    });
+    wm.innerHTML = s;
+  }
+
+  renderMiniChart(null);
+}
+
+let lastAlmanacKey = null;
+let almanacReqVersion = 0;
+
+function refreshAskAlmanac(birth, force = false) {
+  const hasBirth = Boolean(birth?.date && birth?.location_id);
+  const key = hasBirth ? JSON.stringify(birth) : "plain";
+  if (!force && key === lastAlmanacKey) return;
+  lastAlmanacKey = key;
+  const version = ++almanacReqVersion;
+  const payload = hasBirth ? { birth } : {};
+  api("/api/almanac", { method: "POST", body: JSON.stringify(payload) })
+    .then((day) => {
+      if (version !== almanacReqVersion) return;
+      $("#today-line").textContent =
+        `${day.year_pillar}年 · ${day.lunar_date} · ${day.current_term}`;
+      if ($("#today-gregorian")) {
+        $("#today-gregorian").textContent = (day.date || "").replaceAll("-", " · ");
+      }
+      if ($("#today-year-pillar")) $("#today-year-pillar").textContent = day.year_pillar || "——";
+      if ($("#today-month-pillar")) $("#today-month-pillar").textContent = day.month_pillar || "——";
+      if ($("#today-day-pillar")) $("#today-day-pillar").textContent = day.day_pillar || "——";
+      if ($("#today-term")) $("#today-term").textContent = day.current_term || "—";
+      if ($("#today-moon-phase")) {
+        $("#today-moon-phase").textContent = day.sky?.moon_phase_zh || "—";
+      }
+      if ($("#today-sun-sign")) $("#today-sun-sign").textContent = day.sky?.sun_sign_zh || "—";
+      if ($("#today-mercury")) $("#today-mercury").textContent = day.sky?.mercury_status || "—";
+      renderBirthPreview(day.birth_preview || null);
+      const foot = $("#today-foot");
+      if (foot) {
+        foot.replaceChildren();
+        if (day.ten_god && day.day_master) {
+          foot.classList.add("personal");
+          foot.append(
+            document.createTextNode(`今日流日天干于你日主（${day.day_master}）为「`),
+            node("strong", "", day.ten_god),
+            document.createTextNode("」。"),
+          );
+        } else if (day.question) {
+          foot.classList.remove("personal");
+          foot.textContent = day.question;
+        } else {
+          foot.classList.remove("personal");
+          foot.textContent = "录入生辰后，这里会显示与你日主相关的流日十神。";
+        }
+      }
+    })
+    .catch(() => {
+      $("#today-line").textContent = "今日";
+    });
+}
+
 /* The 生辰档案 panel leads the page: an empty profile shows its form straight away, a saved one
    its summary, with the form behind 修改生辰. */
 function renderProfile(birth, editing = false) {
@@ -2100,6 +2934,7 @@ function renderProfile(birth, editing = false) {
   $("#hero-enroll").textContent = filled ? "查看生辰档案" : "录入生辰档案";
   $("#enroll-saved").hidden = !filled;
   $("#birth-details").hidden = filled && !editing;
+  if ($("#birth-dots")) $("#birth-dots").hidden = filled && !editing;
   $("#edit-birth").textContent = filled && editing ? "收起" : "修改生辰";
   const list = $("#profile-list");
   list.replaceChildren();
@@ -2107,7 +2942,6 @@ function renderProfile(birth, editing = false) {
   const rows = [
     ["公历", `${birth.date} ${formatBirthTime(birth)}`],
     ["出生地", birth.place || "地点待补充"],
-    ["口径", `${birth.true_solar_time ? "出生地真太阳时" : "不用真太阳时"} · ${birth.zishi_rule === "same_day" ? "0:00 换日" : "23:00 换日"}`],
   ];
   if (birth.gender) rows.push(["性别", birth.gender === "female" ? "女" : "男"]);
   const dl = node("dl", "profile-dl");
@@ -2120,7 +2954,13 @@ function renderRecent(history) {
   if (!list) return;
   list.replaceChildren();
   if (!history.length) {
-    list.append(node("p", "recent-empty", "还没有解读记录。从六术中择一门发问，解读会记在这里。"));
+    const empty = node("div", "empty");
+    empty.innerHTML =
+      '<svg viewBox="0 0 32 32" aria-hidden="true"><path d="M6 4h14l6 6v18H6z" /><path d="M20 4v6h6M10.5 15h11M10.5 19.5h11M10.5 24h6.5" /></svg>';
+    empty.append(
+      node("span", "", "还没有提问记录。录入生辰后，从任意一门进入发问，解读会留在这里。"),
+    );
+    list.append(empty);
     return;
   }
   history.slice(0, 5).forEach((item) => list.append(historyButton(item, "recent-item")));
@@ -3286,32 +4126,30 @@ const PAGES = {
   ask: {
     onState(next, first) {
       renderProfile(next.birth, !first && !$("#birth-details").hidden);
-      if (first)
-        api("/api/almanac", { method: "POST", body: "{}" })
-          .then((day) => {
-            $("#today-line").textContent =
-              `${day.year_pillar}年 · ${day.lunar_date} · ${day.current_term}`;
-          })
-          .catch(() => {
-            $("#today-line").textContent = "今日";
-          });
+      refreshAskAlmanac(next.birth, first);
     },
     onHistory: renderRecent,
-    onBirthSaved: renderProfile,
+    onBirthSaved(birth) {
+      renderProfile(birth, false);
+      refreshAskAlmanac(birth, true);
+    },
     // There is no dialogue here: a reading shows only when a record is opened from 足迹.
     onReading(reading) {
       $("#reading").hidden = !reading;
     },
     init() {
+      renderAskVisuals();
       $("#hero-enroll").addEventListener("click", (event) => {
         event.preventDefault();
         $("#enroll").scrollIntoView({ behavior: "smooth", block: "start" });
-        if (!$("#birth-details").hidden) $("#birth-date").focus({ preventScroll: true });
+        if (!$("#birth-details").hidden) {
+          ($("#birth-year") || $("#birth-date"))?.focus({ preventScroll: true });
+        }
       });
       $("#edit-birth").addEventListener("click", () => {
         const editing = $("#birth-details").hidden;
         renderProfile(state.birth, editing);
-        if (editing) $("#birth-date").focus();
+        if (editing) ($("#birth-year") || $("#birth-date"))?.focus();
       });
       $("#close-reading").addEventListener("click", () => renderReading(null));
     },

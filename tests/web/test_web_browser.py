@@ -298,8 +298,8 @@ def test_busy_session_on_ask_keeps_polling_without_a_transcript(site, chromium):
     page.route("**/api/session**", session)
     page.goto(f"{base}/ask?provider=demo")
     expect(page.locator("#messages")).to_have_count(0)
-    expect(page.locator("#birth-date")).to_be_disabled()
-    expect(page.locator("#birth-date")).to_be_enabled(timeout=10000)
+    expect(page.locator("#birth-year")).to_be_disabled()
+    expect(page.locator("#birth-year")).to_be_enabled(timeout=10000)
     expect(page.locator("#connection")).to_have_text("离线演示")
     expect(page.locator("#toast")).to_be_hidden()
     assert calls == [True, False]
@@ -520,7 +520,7 @@ def test_name_calculation_and_chosen_form_survive_navigation_and_reload(site, ch
 
 def register_from_entrance(page, base, email):
     page.goto(f"{base}/login?tab=account&next=/tarot")
-    page.click("[data-mode=register]")
+    page.click("#tab-register")
     page.fill("#account-name", email)
     page.fill("#account-password", "abc12345")
     page.fill("#account-confirm", "abc12345")
@@ -539,7 +539,7 @@ def test_registering_keeps_the_guest_reading_and_manages_history(site, chromium)
 
     page.goto(f"{base}/login?tab=account")
     expect(page.locator("#keep-guest-row")).to_contain_text("2 条解读")
-    page.click("[data-mode=register]")
+    page.click("#tab-register")
     page.fill("#account-name", "not-an-email")
     page.fill("#account-password", "abc12345")
     page.fill("#account-confirm", "abc12345")
@@ -632,7 +632,7 @@ def test_home_defaults_to_account_and_guests_only_use_demo(site, chromium, tmp_p
     expect(page.locator("#toast")).not_to_contain_text("请先登录账号使用真实模型")
     page.goto(base)
     expect(page.locator("#panel-account")).to_be_visible()
-    register_from_entrance(page, base, "模型浏览器")
+    register_from_entrance(page, base, "model-browser@example.com")
     expect(page.locator("#account-quota")).to_contain_text("250,000")
     expect(page.locator("#provider")).to_have_value("configured")
     expect(page.locator('#provider option[value="configured"]')).not_to_have_attribute(
@@ -727,7 +727,7 @@ def test_fact_seal_reserves_padding_for_birth_context_and_long_bubble_expands(si
     )
     page = context.new_page()
     # Server branch restricts /bazi model readings to signed-in accounts (guests return chart_only).
-    register_from_entrance(page, base, "解读留白测试")
+    register_from_entrance(page, base, "reading-pad@example.com")
     page.goto(f"{base}/bazi")
     expect(page.locator("#birth-country")).to_be_enabled()
     saved = page.request.put(
