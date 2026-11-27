@@ -14,8 +14,8 @@ import sqlite3
 import time
 from contextlib import AsyncExitStack, asynccontextmanager
 from dataclasses import dataclass, field
+from datetime import UTC, datetime, timedelta
 from datetime import date as CalendarDate
-from datetime import datetime, timedelta
 from http import HTTPStatus
 from pathlib import Path
 from typing import Literal
@@ -27,7 +27,7 @@ from fastapi import FastAPI, HTTPException, Query, Request, Response
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import FileResponse, JSONResponse, RedirectResponse, StreamingResponse
 from fastapi.staticfiles import StaticFiles
-from lunar_python import Solar
+from lunar_python import Lunar, LunarYear, Solar
 from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
 from starlette.exceptions import HTTPException as StarletteHTTPException
 from starlette.middleware.trustedhost import TrustedHostMiddleware
@@ -61,7 +61,7 @@ from memory.accounts import (
     verify_password,
 )
 from memory.store import Store
-from plugins.astro.calculator import natal_chart
+from plugins.astro.calculator import SIGN_ZH, SIGNS, julian, natal_chart, position
 from plugins.bazi.calculator import GAN, GAN_WX, WX, compute_bazi, ten_god
 from plugins.direct import birth_inputs
 from plugins.name.strokes import UnihanMissing
@@ -464,6 +464,78 @@ def checkpoint(path: Path) -> None:
         db.close()
 
 
+MOON_PHASES = (
+    ("new", "新月"),
+    ("waxing_crescent", "峨眉月"),
+    ("first_quarter", "上弦月"),
+    ("waxing_gibbous", "盈凸月"),
+    ("full", "满月"),
+    ("waning_gibbous", "亏凸月"),
+    ("last_quarter", "下弦月"),
+    ("waning_crescent", "残月"),
+)
+
+LUNAR_MONTH_LABELS = (
+    "",
+    "正月",
+    "二月",
+    "三月",
+    "四月",
+    "五月",
+    "六月",
+    "七月",
+    "八月",
+    "九月",
+    "十月",
+    "冬月",
+    "腊月",
+)
+
+
+def sky_snapshot(day: CalendarDate) -> dict | None:
+    """Western sky facts at local noon (Asia/Shanghai) via Swiss Ephemeris."""
+    try:
+        noon_utc = datetime(
+            day.year, day.month, day.day, 12, 0, 0, tzinfo=ZoneInfo("Asia/Shanghai")
+        ).astimezone(UTC)
+        tt, _ = julian(noon_utc)
+        sun = position(tt, "Sun")
+        moon = position(tt, "Moon")
+        mercury = position(tt, "Mercury")
+    except Exception:
+        return None
+    sign_idx = int(sun[0] // 30) % 12
+    angle = (moon[0] - sun[0]) % 360
+    phase_idx = int(((angle + 22.5) % 360) // 45)
+    phase_key, phase_zh = MOON_PHASES[phase_idx]
+    mercury_retro = mercury[3] < 0
+    return dict(
+        sun_sign=SIGNS[sign_idx],
+        sun_sign_zh=f"{SIGN_ZH[sign_idx]}座",
+        moon_phase=phase_key,
+        moon_phase_zh=phase_zh,
+        moon_phase_angle=round(angle, 1),
+        mercury_retrograde=mercury_retro,
+        mercury_status="水星逆行" if mercury_retro else "水星顺行",
+    )
+
+
+def lunar_year_months(year: int) -> list[dict]:
+    if not 1850 <= year <= datetime.now(ZoneInfo("Asia/Shanghai")).year:
+        raise ValueError("请输入 1850 年至今年的农历年份。")
+    ly = LunarYear.fromYear(year)
+    months = []
+    for item in ly.getMonthsInYear():
+        m = item.getMonth()
+        leap = m < 0
+        abs_m = abs(m)
+        if not 1 <= abs_m <= 12:
+            continue
+        label = ("闰" if leap else "") + LUNAR_MONTH_LABELS[abs_m]
+        months.append(dict(month=m, label=label, days=item.getDayCount(), leap=leap))
+    return months
+
+
 def almanac(day: CalendarDate, day_master: str | None, kb) -> dict:
     """Calendar facts for one day and its week; the day pillar is taken at local noon."""
 
@@ -503,6 +575,7 @@ def almanac(day: CalendarDate, day_master: str | None, kb) -> dict:
         day_element=day_element,
         day_element_note=entry["text"] if entry else None,
         day_master=day_master,
+        sky=sky_snapshot(day),
         week=[brief(monday + timedelta(days=offset)) for offset in range(7)],
         conventions=dict(
             day_pillar="流日取当地正午所在日柱",
@@ -2253,6 +2326,61 @@ def create_web_app(
         except ValueError as exc:
             raise HTTPException(404, str(exc)) from exc
 
+    @app.get("/api/calendar/lunar-year")
+    async def calendar_lunar_year(year: int = Query(..., ge=1850, le=2100)):
+        try:
+            return {"year": year, "months": lunar_year_months(year)}
+        except ValueError as exc:
+            raise HTTPException(422, str(exc)) from exc
+
+    @app.get("/api/calendar/lunar-to-solar")
+    async def calendar_lunar_to_solar(
+        year: int = Query(..., ge=1850, le=2100),
+        month: int = Query(..., ge=-12, le=12),
+        day: int = Query(..., ge=1, le=30),
+    ):
+        if month == 0:
+            raise HTTPException(422, "无效的农历月份。")
+        try:
+            months = lunar_year_months(year)
+            spec = next((item for item in months if item["month"] == month), None)
+            if spec is None or day > spec["days"]:
+                raise ValueError("所选农历日期不存在，请核对月份与日数。")
+            lunar = Lunar.fromYmd(year, month, day)
+            solar = lunar.getSolar()
+            gregorian = CalendarDate(solar.getYear(), solar.getMonth(), solar.getDay())
+            today = datetime.now(ZoneInfo("Asia/Shanghai")).date()
+            if not CalendarDate(1850, 1, 1) <= gregorian <= today:
+                raise ValueError("换算后的公历日期超出允许范围。")
+            month_cn = lunar.getMonthInChinese()
+            if lunar.getMonth() < 0 and not month_cn.startswith("闰"):
+                month_cn = "闰" + month_cn
+            label = f"{lunar.getYearInGanZhi()}年{month_cn}月{lunar.getDayInChinese()}"
+            return {
+                "solar": gregorian.isoformat(),
+                "lunar_label": label,
+            }
+        except ValueError as exc:
+            raise HTTPException(422, str(exc)) from exc
+
+    @app.get("/api/calendar/solar-to-lunar")
+    async def calendar_solar_to_lunar(date: CalendarDate):
+        today = datetime.now(ZoneInfo("Asia/Shanghai")).date()
+        if not CalendarDate(1850, 1, 1) <= date <= today:
+            raise HTTPException(422, "日期超出允许范围。")
+        lunar = Solar.fromYmdHms(date.year, date.month, date.day, 12, 0, 0).getLunar()
+        month_cn = lunar.getMonthInChinese()
+        if lunar.getMonth() < 0 and not month_cn.startswith("闰"):
+            month_cn = "闰" + month_cn
+        label = f"{lunar.getYearInGanZhi()}年{month_cn}月{lunar.getDayInChinese()}"
+        return {
+            "year": lunar.getYear(),
+            "month": lunar.getMonth(),
+            "day": lunar.getDay(),
+            "leap": lunar.getMonth() < 0,
+            "lunar_label": label,
+        }
+
     @app.post("/api/chart")
     async def chart(body: ChartInput, request: Request):
         session = get_session(request, body.system)
@@ -2336,7 +2464,7 @@ def create_web_app(
     async def day_almanac(body: AlmanacInput, request: Request):
         session = get_session(request, "daily")
         day = body.date or datetime.now(ZoneInfo("Asia/Shanghai")).date()
-        day_master, question = None, None
+        day_master, question, birth_preview = None, None, None
         if body.birth.date and body.birth.location_id:
             if session.runtime.session.safety_pending:
                 question = "请先在对话中确认此刻安全，再查看个人流日。"
@@ -2365,10 +2493,51 @@ def create_web_app(
                         effective = effective_birth_of(body.birth, almanac_resolved)
                     else:
                         effective = body.birth
-                    day_master = effective.chart("bazi")["result"]["day_master"] or None
+                    bazi_res = effective.chart("bazi")["result"]
+                    day_master = bazi_res["day_master"] or None
+                    astro_preview = None
+                    try:
+                        astro_res = effective.chart("astro")["result"]
+                        planets = astro_res.get("planets") or []
+                        sun = next((p for p in planets if p.get("body") == "Sun"), None)
+                        asc = astro_res.get("asc") if not body.birth.unknown_time else None
+                        aspects = sorted(
+                            astro_res.get("aspects") or [], key=lambda item: item.get("orb", 99)
+                        )[:8]
+                        astro_preview = {
+                            "sun_sign_zh": f"{sun['sign_zh']}座" if sun else None,
+                            "asc_sign_zh": f"{asc['sign_zh']}座" if asc else None,
+                            "asc_lon": round(asc["lon"], 1) if asc else 0.0,
+                            "planets": [
+                                {
+                                    "body": p["body"],
+                                    "lon": round(p["lon"], 1),
+                                    "sign_zh": p["sign_zh"],
+                                }
+                                for p in planets
+                            ],
+                            "aspects": [
+                                {"a": asp["a"], "b": asp["b"], "type": asp["type"]}
+                                for asp in aspects
+                            ],
+                        }
+                    except Exception:
+                        astro_preview = None
+                    birth_preview = {
+                        "bazi": {
+                            "pillars": bazi_res.get("pillars") or {},
+                            "day_master": day_master,
+                            "unknown_time": bool(body.birth.unknown_time),
+                        },
+                        "astro": astro_preview,
+                    }
                 except NeedsInput as exc:
                     question = exc.question
-        return {**almanac(day, day_master, session.runtime.kb), "question": question}
+        return {
+            **almanac(day, day_master, session.runtime.kb),
+            "question": question,
+            "birth_preview": birth_preview,
+        }
 
     @app.get("/")
     async def index(request: Request):
