@@ -1,177 +1,262 @@
-# 知命 · 事实可核验的多 Agent 命理咨询
+<p align="right">
+  <strong>English</strong> | <a href="README.zh-CN.md">简体中文</a>
+</p>
+
+# ZhiMing (知命) — Framework-Free Multi-Agent Harness with Verifiable Facts & MCP Server
 
 [![deterministic-tests](https://github.com/stanGSA/ZhiMing/actions/workflows/ci.yml/badge.svg)](https://github.com/stanGSA/ZhiMing/actions/workflows/ci.yml)
 ![Python 3.11](https://img.shields.io/badge/python-3.11-blue)
 [![License: AGPL v3](https://img.shields.io/badge/License-AGPL_v3-blue.svg)](LICENSE)
 [![Release](https://img.shields.io/github/v/release/stanGSA/ZhiMing)](https://github.com/stanGSA/ZhiMing/releases)
-[![在线体验](https://img.shields.io/badge/在线体验-zhiming.mom-c9a66b)](https://zhiming.mom)
-[![爱发电](https://img.shields.io/badge/爱发电-支持知命-946ce6)](https://afdian.com/a/zhiming_ai)
+[![MCP Server](https://img.shields.io/badge/MCP-10_Deterministic_Tools-0f766e)](#use-as-an-mcp-server-claude-desktop)
+[![Live Demo](https://img.shields.io/badge/Live_Demo-zhiming.mom-c9a66b)](https://zhiming.mom)
 
-一个不依赖 LangChain、LangGraph 等框架、从循环写起的 Agent Harness，以塔罗、西方占星、八字、姓名五格、解梦和每日运势六个体系为应用场景。**排盘、抽牌、流日等事实全部由确定性代码计算，模型只负责解读；回答里引用的每一条事实都由代码逐项核对，写错就退回重写。**
+> **Live Demo (zero install — real-time BaZi & Natal Chart calculation + offline Tarot demo):** [https://zhiming.mom](https://zhiming.mom)
+> Want a self-contained, zero-API-key cloud sandbox? See the Hugging Face Spaces offline Docker setup in [`deploy/hf-space/`](deploy/hf-space/README.md).
 
-选命理做场景，是因为它把大模型的两个难点放在了一起：事实部分（干支、行星落座、相位日期、牌名与正逆位）可以精确验证，模型最容易在这里编造；表达部分（分层推演、给出倾向和建议）又必须依赖语言模型。
+**ZhiMing** is a **framework-free LLM agent harness** written from scratch in Python (no LangChain, no LangGraph), built around six deterministic domain plugins: **Tarot, Western Astrology, BaZi (Chinese Four Pillars), Chinese Onomancy (Wuge), Dream Interpretation, and Daily Fortune**.
 
-评测结果见 [评测总表](reports/eval/summary.md)：`uv run python -m evals.report` 一条命令离线生成，不调用付费模型；真实模型的数字只读取已归档摘要，并注明模型、日期、评委与口径。
+**Every symbolic fact—ephemeris longitudes, house cusps, solar terms, stems/branches, and drawn cards—is computed by deterministic code. The LLM only synthesizes the reading, and every fact and `ref_id` cited in its answer is verified item-by-item by code; hallucinations are rejected and rewritten.**
 
-| 塔罗：从牌堆选牌、翻牌见意 | 八字：四柱、十神、藏干、五行 |
+### Why divination as an agent engineering benchmark?
+
+Divination puts two hard LLM challenges side-by-side:
+1. **Strict factual grounding** — planetary positions, exact transit dates, solar-term transitions, Kangxi stroke counts, and upright/reversed cards are mathematically verifiable, yet LLMs constantly fabricate them.
+2. **Nuanced narrative synthesis** — turning multi-system signals (including conflicting ones) into layered, honest guidance still requires a language model.
+
+All offline benchmarks are reproducible in ~10 seconds with one command (`uv run python -m evals.report`, zero API calls); full report in [`reports/eval/summary.md`](reports/eval/summary.md).
+
+| Tarot: Interactive Deck, Flip & Verifiable Reading | BaZi: Four Pillars, Ten Gods, Hidden Stems & WuXing |
 | --- | --- |
-| ![塔罗页](docs/assets/tarot.jpg) | ![八字页](docs/assets/bazi.jpg) |
-| **星盘：本命盘、宫位、相位** | **入口** |
-| ![星盘页](docs/assets/astro.jpg) | ![入口页](docs/assets/entry.jpg) |
+| ![Tarot UI](docs/assets/tarot.jpg) | ![BaZi UI](docs/assets/bazi.jpg) |
+| **Western Astrology: Natal Wheel, Houses & Aspects** | **Entry Portal (East & West Celestial Atlas)** |
+| ![Astrology UI](docs/assets/astro.jpg) | ![Entry UI](docs/assets/entry.jpg) |
 
-<sub>以上为本机「离线演示」模式截图，出生资料为合成数据。四柱与星盘由程序计算；塔罗的解读文字来自离线规则演示，不代表真实模型的解读质量。</sub>
+<sub>Captured in local offline demo mode using synthetic birth data. Charts and pillars are computed deterministically; offline tarot prose comes from a rule-based demo model rather than a live LLM.</sub>
 
-## 架构
+---
+
+## Architecture
 
 ```mermaid
 flowchart TB
-    U["用户：命令行 / 本机网页"] --> RT["运行时 app.py<br/>危机检查 · 日历基准 · 会话"]
+    U["User: CLI / Local Web UI / zhiming.mom"] --> RT["Runtime (app.py)<br/>Crisis Check · Calendar Baseline · Session"]
     RT --> O
-    subgraph AG["Agent 层"]
-        O["编排者（multi）/ 单 Agent（single）"]
-        S["体系专家 ×5<br/>各自隔离的子会话"]
-        R["宽松审校"]
-        O -- "consult_specialist（并行）" --> S
+    subgraph AG["Agent Layer"]
+        O["Orchestrator (multi) / Single Agent (single)"]
+        S["5 Domain Specialists<br/>Isolated Sub-Sessions"]
+        R["Lenient Reviewer"]
+        O -- "consult_specialist (parallel)" --> S
         O -- "submit_reading" --> R
     end
-    AG --> H["Harness（与领域无关）<br/>run_turn 循环 · Guard 校验 · 分层预算与截止时间 · 父子调用树 Trace"]
-    H --> P["确定性插件<br/>塔罗 · 占星 · 八字 · 姓名 · 解梦 · 每日运势"]
-    P --> KB[("只读知识库<br/>版本化 SQLite")]
-    P --> M["跨体系合并<br/>共振 / 张力"]
-    H --> DB[("业务库 SQLite<br/>画像 · 记录 · 缓存")]
+    AG --> H["Domain-Agnostic Harness<br/>run_turn Loop · Guard-before-Cache · Hierarchical Budget & Deadlines · Call Tree Trace"]
+    H --> P["Deterministic Plugins<br/>Tarot · Astrology · BaZi · Name · Dream · Daily"]
+    P --> KB[("Read-Only Knowledge Base<br/>Versioned SQLite + FTS5")]
+    P --> M["Cross-System Merge<br/>Resonance / Tension"]
+    H --> DB[("App Database (SQLite WAL)<br/>Profiles · Readings · Caches")]
 ```
 
-两种运行模式共用同一套 harness 和插件：
+Both execution modes share the exact same harness and plugins:
 
-- **single**（默认）：一个 Agent 直接调用全部工具，作为对照基线。
-- **multi**：编排者不碰任何计算工具，只负责理解问题、追问和写最终解读；五位体系专家在隔离子会话里并行计算并提交结构化报告；最终回答发出前由宽松审校看一遍。
+- **`single` (default):** One agent calls all tools directly — serves as the control baseline.
+- **`multi`:** An orchestrator with *zero* direct calculation tools understands the question, asks follow-ups, dispatches up to 5 isolated domain specialists in parallel (`consult_specialist`), merges cross-system resonance/tension in code, and passes the draft reading through a lenient reviewer before delivery.
 
-## 设计要点
+---
 
-- **自写 agent 循环**（[`harness/loop.py`](harness/loop.py)）：模型同一步发出的可并行工具调用用 `asyncio.TaskGroup` 并发执行，再按发出顺序把结果提交到会话状态。终止工具之后的调用不执行，但仍补齐工具响应；请求被取消时也会补齐未完成调用的响应，下一轮的消息协议始终完整。
-- **Guard 先于缓存**（[`harness/guard.py`](harness/guard.py)）：每次工具调用依次检查参数 JSON、工具注册、角色权限、体系分区、schema、所需画像字段、前置依赖和自定义校验，全部通过才读幂等缓存，缓存命中不会绕过权限。工具错误以结构化结果返回给模型自行修正。
-- **分层预算与准入控制**（[`harness/budget.py`](harness/budget.py)）：一次请求一个总预算，专家各有子预算。multi 模式下每次模型调用前按估算预占额度，并发的专家合计不会超支，也动不了编排者的保留额度，返回后按实际用量结算；整次请求另有墙钟上限，到期后返回的响应不再执行工具。
-- **事实绑定**（各插件的 `validation.py`、[`common/validation.py`](common/validation.py)）：牌名、正逆位、干支、落座宫位、相位与日期、引用的 `ref_id` 只能来自本次工具结果，写错由代码退回。免责声明、`<br>` 这类表达层问题由 [`common/output_policy.py`](common/output_policy.py) 自动修正，不退回，避免模型越改越含糊。
-- **专家隔离与状态一致**（[`agents/consult.py`](agents/consult.py)）：专家只能看到本体系的工具、释义分区和所需画像字段。成功的报告按体系原子替换信号与引用，失败的重试保留此前有效的报告；塔罗每条记录只抽一次，报告失败或请求取消都不能换牌重抽。子会话的 trace 通过 `ContextVar` 挂到发起它的那次工具调用下，可以重建完整调用树。
-- **跨体系张力由代码计算**（[`signals/merge.py`](signals/merge.py)）：各体系的信号按时间区间对齐后计算共振与张力，multi 模式的最终回答必须披露每一条张力；用户偏好的体系权重只改变综合倾向，不能把分歧藏起来。
-- **确定性插件的 MCP server**（[`mcp_server/`](mcp_server/)）：排盘、抽牌、五格、解梦匹配、每日运势和释义查询可由 Claude Desktop 等 MCP 客户端直接调用，不经过语言模型；调用方给出结构化参数，走与会话无关的计算入口 [`plugins/direct.py`](plugins/direct.py)，运行时的来源校验与 Guard 不变。配置见 [使用指南](docs/usage.md#mcp-server确定性插件)；Swiss Ephemeris 为 AGPL，对外提供服务前请先看其中的许可说明。
-- **安全边界**（[`common/safety.py`](common/safety.py)）：识别到危机表达立即停止占卜，用户单独确认安全后才恢复咨询；求助热线按用户所在地区选择。不对健康、法律、投资、生死作确定性预测。
+## Engineering Highlights
 
-更细的约束、计算口径与各阶段设计见 [设计与约定](docs/design.md)。
+- **Hand-written async agent loop** ([`harness/loop.py`](harness/loop.py)): Executes parallelizable tool calls within a turn concurrently via `asyncio.TaskGroup`, then commits results to session state in original call order. Calls after a terminal tool are skipped while still emitting protocol-complete tool responses; cancelled turns also backfill pending tool responses so OpenAI/Anthropic/DeepSeek message histories stay valid.
+- **Guard before cache** ([`harness/guard.py`](harness/guard.py)): Every tool call runs through JSON parsing, tool registry, role permissions, system partition checks, schema validation, required profile fields, prerequisites, and custom validators *before* consulting the idempotent cache — cache hits never bypass authorization. Errors return as structured payloads for model self-correction (with targeted partial self-repair and 3-strike identical-failure circuit breaking).
+- **Hierarchical token budget & admission control** ([`harness/budget.py`](harness/budget.py)): One request-level budget with per-specialist sub-budgets. Before each model call in `multi` mode, estimated tokens are reserved up front so concurrent specialists cannot overspend the parent budget or eat into the orchestrator's reserve, then settled against actual usage. Wall-clock deadlines stop tool execution once expired.
+- **Strict fact binding vs. lenient expression repair** (`plugins/*/validation.py`, [`common/validation.py`](common/validation.py), [`common/output_policy.py`](common/output_policy.py)): Every card name, orientation, pillar, planet sign/house, aspect date, and `ref_id` must trace to the current turn's tool outputs — mismatches are rejected by code. Formatting issues (disclaimers, `<br>` tags) are auto-normalized instead of forcing rewrite loops.
+- **Specialist isolation & atomic state** ([`agents/consult.py`](agents/consult.py)): Specialists only see tools, KB partitions, and profile fields for their own system. Successful reports atomically replace signals/citations; failed retries preserve the last valid report; tarot draws are immutable per reading. Child sub-session traces attach to their parent tool call via `ContextVar` to reconstruct full call trees.
+- **Code-computed cross-system tension** ([`signals/merge.py`](signals/merge.py)): Signals across systems are aligned by time horizon to compute resonance and tension deterministically. In `multi` mode, the final answer *must* disclose every tension — user-preferred system weights shift synthesis emphasis without hiding disagreements.
+- **Safety boundaries** ([`common/safety.py`](common/safety.py)): Crisis expressions immediately halt divination and surface region-matched emergency hotlines until the user explicitly confirms safety. Deterministic predictions on health, legal, financial investment, or mortality are disallowed.
 
-## 关键数据
+See [`docs/design.md`](docs/design.md) for full invariants, calculation conventions, and architectural notes.
 
-[评测总表](reports/eval/summary.md) 由一条命令离线生成，不调用任何付费模型，约 10 秒：
+---
+
+## Use as an MCP Server (Claude Desktop)
+
+[`mcp_server/`](mcp_server/) exposes **10 deterministic calculation and lookup tools** over standard [Model Context Protocol (MCP)](https://modelcontextprotocol.io) `stdio` transport — **zero LLM calls inside the server**, identical inputs yield identical outputs (with explicit `seed` for Tarot), and every meaning carries a `ref_id` and audit level (`review.confidence_cap`).
+
+### 1. Install dependencies & build local data
 
 ```bash
-uv run python -m evals.report    # 写出 reports/eval/summary.md 与 summary.json；有 make 时也可用 make eval
+uv sync --locked --extra mcp
+uv run python -m scripts.fetch_data   # SHA256-verified Swiss Ephemeris, JPL DE440s, GeoNames, Unihan (~70 MB)
+uv run python -m knowledge.build      # Build versioned read-only SQLite knowledge base
 ```
 
-**离线结果**（确定性代码与离线演示模型；标“草稿”的结果来自待审核数据集，不作验收结论）
+### 2. Add to `claude_desktop_config.json`
 
-| 项目 | 结果 | 说明 |
+**macOS / Linux** (`~/Library/Application Support/Claude/claude_desktop_config.json`):
+
+```json
+{
+  "mcpServers": {
+    "zhiming": {
+      "command": "/Users/<your-user>/.local/bin/uv",
+      "args": [
+        "--directory",
+        "/Users/<your-user>/ZhiMing",
+        "run",
+        "--extra",
+        "mcp",
+        "python",
+        "-m",
+        "mcp_server"
+      ]
+    }
+  }
+}
+```
+
+**Windows** (`%APPDATA%\Claude\claude_desktop_config.json`, using `setup.ps1`'s `.bootstrap\Scripts\uv.exe` or `where.exe uv`):
+
+```json
+{
+  "mcpServers": {
+    "zhiming": {
+      "command": "C:\\Users\\<your-user>\\ZhiMing\\.bootstrap\\Scripts\\uv.exe",
+      "args": ["--directory", "C:\\Users\\<your-user>\\ZhiMing", "run", "--extra", "mcp", "python", "-m", "mcp_server"],
+      "env": { "PYTHONUTF8": "1" }
+    }
+  }
+}
+```
+
+### Available MCP Tools
+
+| Tool | Description |
+| --- | --- |
+| `resolve_location` | Resolve birthplace to `location_id`, lat/lon & IANA timezone (returns candidates on ambiguity) |
+| `compute_natal_chart` | Western natal chart: planetary signs/houses, four angles, exact aspects (Swiss Ephemeris) |
+| `compute_transits` | Exact transit-to-natal aspects across a consultation date range and timezone |
+| `compute_bazi` | Four Pillars (BaZi), Ten Gods, hidden stems, NaYin, WuXing counts, and 10-year Dayun |
+| `compute_bazi_period` | Annual, solar-term monthly, or daily pillars with natal interactions |
+| `draw_tarot` | Reproducible SHA256-shuffled draws (`single`, `three_card`, `decision`) with `seed` / `picks` |
+| `analyze_name` | Unicode Unihan 18.0 Kangxi stroke counts, Wuge numerology, and Sancai five elements |
+| `lookup_dream_symbols` | Match dream symbols against the curated KB (unmatched symbols are explicitly reported) |
+| `daily_fortune` | Daily transits, day pillar & Ten Gods, and deterministic daily card |
+| `lookup_meaning` | Exact KB entry lookup by `(system, kind, key)` with audit metadata |
+
+> **AGPL-3.0 & Swiss Ephemeris notice:** Local `stdio` personal use in Claude Desktop is fine; exposing this MCP server or web app as a network service triggers AGPL-3.0 Section 13 (provide corresponding source code) unless you hold a commercial Swiss Ephemeris license from Astrodienst. See [`LICENSE`](LICENSE), [`NOTICE`](NOTICE), and [`docs/usage.md`](docs/usage.md#mcp-server确定性插件).
+
+---
+
+## Benchmarks & Radical Honesty
+
+Regenerate [`reports/eval/summary.md`](reports/eval/summary.md) completely offline (~10 seconds, zero API keys):
+
+```bash
+uv run python -m evals.report    # or: make eval
+```
+
+### Deterministic & Offline Verification
+
+| Benchmark | Result | Notes |
 | --- | --- | --- |
-| 参考星盘 | 11/11 通过，最大黄经误差 0.000110364° | Skyfield + JPL DE440s 独立交叉验证，最大差 0.000000611°（[第二周验收](docs/archive/week2-验收报告.md)） |
-| 八字边界 | 50/50 用例、57 个规则或追问变体通过 | 覆盖立春换年、节气换月、子时、真太阳时、夏令时、农历闰月（[第三周验收](docs/archive/week3-验收报告.md)） |
-| 姓名笔画 | 200/200 与数据集一致 | Unicode Unihan 18.0 康熙笔画；其中 19 字的金标待人工定稿（[第六周验收](docs/archive/week6-验收报告.md)） |
-| 每日运势 | 同一用户同一天跨会话 10/10 一致 | 结果按用户与日期缓存 |
-| 危机识别 | 5/5（草稿） | 识别到危机表达即停止占卜，给出求助回复 |
-| 高风险提示 | 代码层识别 3/25（草稿） | 只有命中关键词规则的题会被代码强制加安全说明，其余依赖模型自行标注 |
-| 审校离线基线 | 漏拦 6.7%，过度干预 6.7%（草稿） | 关键词规则基线，不是 LLM 审校 |
-| 工具选择 | 集合 F1 1.000，只适用 12/80 题（草稿） | 离线演示只回放塔罗题，验证流程，不代表模型的工具选择 |
-| 测试 | 1200+ 项离线测试 | Ubuntu 与 Windows CI，不调用付费模型（[测试说明](tests/README.md)） |
+| Reference Natal Charts | **11/11 passed**, max ecliptic error `0.000110364°` | Cross-verified against Skyfield + NASA JPL DE440s (max diff `0.000000611°`) |
+| BaZi Edge Cases | **50/50 cases**, 57 rule/follow-up variants passed | Lichun year rollover, solar-term months, Zishi hour, true solar time, DST, lunar leap months |
+| Kangxi Name Strokes | **200/200 matched** | Unicode Unihan 18.0 (19 gold entries pending human finalization) |
+| Daily Fortune Consistency | **10/10 cross-session identical** | Cached per user & consultation date |
+| Crisis Detection | **5/5** (draft dataset) | Halts divination and surfaces region-matched emergency hotlines |
+| Offline Test Suite | **1,200+ automated tests** | Ubuntu & Windows CI, zero paid API calls ([`tests/README.md`](tests/README.md)) |
 
-**真实模型**（P1 中转接口活动，20 题 × 3 次，只读[归档摘要](docs/verification/p1/README.md)）
+### Live LLM Benchmark (Archived — All Failures Preserved)
 
-| 日期 | 被测模型 | 版本 | 模式 | 任务完成 | 质量通过 | 严格综合 | P50 / P95 耗时 |
+20 questions × 3 runs (`deepseek-v4-flash`, judged by `deepseek-v4-pro`, rubric `v2-2026-10-24`; full archive in [`docs/verification/p1/README.md`](docs/verification/p1/README.md)):
+
+| Date | Model | Build | Mode | Task Done | Quality Pass | Strict Overall | P50 / P95 Latency |
 | --- | --- | --- | --- | ---: | ---: | ---: | ---: |
-| 2026-10-25 | deepseek-v4-flash | 当前实现（Final） | single | 37/60 | 24/60 | 10/60 | 92 / 280 秒 |
-| 2026-10-25 | deepseek-v4-flash | 当前实现（Final） | multi | 33/60 | 28/60 | 8/60 | 107 / 232 秒 |
-| 2026-10-24 | deepseek-v4-flash | P1 前基线（B0） | single | 34/60 | 24/60 | 9/60 | 74 / 164 秒 |
-| 2026-10-24 | deepseek-v4-flash | P1 前基线（B0） | multi | 37/60 | 25/60 | 14/60 | 139 / 253 秒 |
+| 2026-10-25 | `deepseek-v4-flash` | Final | `single` | 37/60 | 24/60 | 10/60 | 92 / 280 s |
+| 2026-10-25 | `deepseek-v4-flash` | Final | `multi` | 33/60 | 28/60 | 8/60 | 107 / 232 s |
+| 2026-10-24 | `deepseek-v4-flash` | Baseline (B0) | `single` | 34/60 | 24/60 | 9/60 | 74 / 164 s |
+| 2026-10-24 | `deepseek-v4-flash` | Baseline (B0) | `multi` | 37/60 | 25/60 | 14/60 | 139 / 253 s |
 
-评委为 `deepseek-v4-pro`，口径 `v2-2026-10-24`；评委与被测模型同厂商，人工校准尚未完成。“严格综合”要求全部工程检查与四项回答质量评审同时通过。真实模型的端到端质量尚未通过项目自定的验收关口，因此默认仍为 single；所有失败记录都保留，没有择优替换。更早的 20 题基线（2026-10-13 gpt-6.1-sol、2026-10-20 deepseek-flash）见 [第四周真实模型测试](docs/archive/week4-真实模型测试.md) 与 [阶段0验收](docs/verification/stage0/README.md)。
+*Why we publish these numbers as-is:* "Strict Overall" requires passing every engineering invariant **and** all four quality rubrics simultaneously (and the judge shares a vendor with the evaluated model, with human calibration still pending). Because live end-to-end quality has not yet cleared our self-imposed release bar, `single` remains the default mode and **every failure record is kept without cherry-picking**.
 
-## 快速开始
+---
 
-需要 [uv](https://docs.astral.sh/uv/getting-started/installation/)，它会自动准备 Python 3.11 和锁定版本的依赖。
+## Quick Start
 
-**Linux / macOS**
+Requires [uv](https://docs.astral.sh/uv/getting-started/installation/), which provisions Python 3.11 and locked dependencies automatically.
+
+### Linux / macOS
 
 ```bash
 git clone https://github.com/stanGSA/ZhiMing.git && cd ZhiMing
 uv sync --locked --extra llm --extra web
-uv run python -m scripts.fetch_data   # 下载并按 SHA256 校验星历、地名与 Unihan 数据，约 70 MB
-uv run python -m knowledge.build      # 构建只读知识库
-uv run python web.py                  # 打开 http://127.0.0.1:8765 ，选「离线演示」即可体验
+uv run python -m scripts.fetch_data   # SHA256-verified ephemeris, GeoNames & Unihan (~70 MB)
+uv run python -m knowledge.build      # Build read-only SQLite knowledge base
+uv run python web.py                  # Open http://127.0.0.1:8765 and click "离线演示" (Offline Demo)
 ```
 
-**Windows（PowerShell）**
+### Windows (PowerShell)
 
 ```powershell
-powershell -ExecutionPolicy Bypass -File .\setup.ps1   # 安装 uv、Python 3.11、依赖、数据与知识库
+powershell -ExecutionPolicy Bypass -File .\setup.ps1   # Installs uv, Python 3.11, deps, data & KB
 & .\.venv\Scripts\python.exe web.py
 ```
 
-**命令行**（离线演示不需要任何密钥）
+### CLI (Zero API Keys in Demo Mode)
 
 ```bash
-uv run python cli.py draw --question '下个月适合跳槽吗？' --spread three_card --provider demo --seed 42
-uv run python cli.py draw --question 'A 公司还是 B 公司？' --spread decision --mode multi --provider demo
+uv run python cli.py draw --question 'Should I switch jobs next month?' --spread three_card --provider demo --seed 42
+uv run python cli.py draw --question 'Company A or Company B?' --spread decision --mode multi --provider demo
 uv run python cli.py chat --provider demo
 ```
 
-**接入真实模型**：复制 `.env.example` 为 `.env` 并填写 `DEEPSEEK_API_KEY`，默认使用 `config.yaml` 中的 `deepseek-flash`。其他 OpenAI 兼容服务设置 `OPENAI_API_KEY` 与 `OPENAI_BASE_URL`；Anthropic 设置 `ANTHROPIC_API_KEY` 并使用 `--provider anthropic --model <模型名>`。
+### Connect a Live LLM
+
+Copy `.env.example` to `.env` and set `DEEPSEEK_API_KEY` (default model `deepseek-flash` in `config.yaml`). OpenAI-compatible APIs use `OPENAI_API_KEY` + `OPENAI_BASE_URL`; Anthropic uses `ANTHROPIC_API_KEY` with `--provider anthropic --model <model>`.
 
 ```bash
-uv run python cli.py chat                 # 单 Agent
-uv run python cli.py chat --mode multi    # 编排者 + 专家 + 审校
+uv run python cli.py chat                 # Single agent
+uv run python cli.py chat --mode multi    # Orchestrator + 5 Specialists + Reviewer
 ```
 
-**测试**
+### Run Tests & Diagnostics
 
 ```bash
-uv run pytest -q                        # 全部离线；浏览器回归需先运行 uv run playwright install chromium
-uv run python -m scripts.doctor         # 环境、数据与知识库自检
+uv run pytest -q                          # Fully offline (run `uv run playwright install chromium` for browser tests)
+uv run python -m scripts.doctor           # Verify Python, SQLite FTS5, ephemeris hashes & KB
 ```
 
-网页功能、账号与云端记录、朋友临时体验、对话命令和隐私说明见 [使用指南](docs/usage.md)；网页内的完整隐私说明在 `/privacy`（[源文件](web_static/privacy.html)）。
+---
 
-## 目录结构
+## Project Structure
 
-| 路径 | 内容 |
+| Path | Description |
 | --- | --- |
-| [`harness/`](harness/) | 与领域无关的 agent 运行时：循环、工具注册、Guard、预算、会话、trace、OpenAI/Anthropic 适配器 |
-| [`agents/`](agents/) | 编排者与专家提示词、专家咨询、宽松审校、离线演示模型 |
-| [`plugins/`](plugins/) | 六个确定性占术插件：计算、工具定义与输出校验；`direct.py` 为与会话无关的计算入口 |
-| [`mcp_server/`](mcp_server/) | 确定性插件的 MCP server（stdio） |
-| [`knowledge/`](knowledge/) | 释义源文件、规则、审核账本与知识库构建 |
-| [`signals/`](signals/) | 跨体系信号合并 |
-| [`common/`](common/) | 公共工具、地点解析、安全与回答校验 |
-| [`memory/`](memory/) | SQLite 业务库：画像、记录、缓存；网页账号与登录凭证（`accounts.py`） |
-| `app.py` `cli.py` `web.py` [`web_static/`](web_static/) | 运行时装配、命令行与本机网页 |
-| [`evals/`](evals/) | 评估数据集与离线评估 |
-| [`scripts/`](scripts/) | 数据下载、自检、真实模型评估、知识库审核流水线；[`scripts/archive/`](scripts/archive/) 为一次性脚本 |
-| [`tests/`](tests/) | 按模块分目录的离线测试 |
-| [`docs/`](docs/) | 设计、使用说明与验收记录 |
+| [`harness/`](harness/) | Domain-agnostic agent runtime: loop, tool registry, Guard, budget, session, tracer, OpenAI/Anthropic adapters |
+| [`agents/`](agents/) | Orchestrator & specialist prompts, isolated consultation, lenient reviewer, offline demo model |
+| [`plugins/`](plugins/) | Six deterministic divination plugins: calculators, tool specs, fact validators, and session-free `direct.py` |
+| [`mcp_server/`](mcp_server/) | FastMCP `stdio` server exposing the 10 deterministic tools |
+| [`knowledge/`](knowledge/) | Original KB YAML sources, merge rules, review ledger, and SQLite builder |
+| [`signals/`](signals/) | Cross-system time-horizon alignment and resonance/tension merge |
+| [`common/`](common/) | Location resolver, region hierarchy, safety boundaries, and output policy |
+| [`memory/`](memory/) | SQLite WAL store (profiles, readings, caches) and scrypt-backed web accounts (`accounts.py`) |
+| `app.py` `cli.py` `web.py` [`web_static/`](web_static/) | Runtime wiring, CLI, and editorial web UI |
+| [`evals/`](evals/) | Evaluation datasets and offline benchmark reporter |
+| [`deploy/hf-space/`](deploy/hf-space/) | Self-contained offline demo Docker deployment for Hugging Face Spaces |
+| [`tests/`](tests/) | Modular offline test suite (1,200+ tests) |
+| [`docs/`](docs/) | Design spec ([`design.md`](docs/design.md)), usage guide ([`usage.md`](docs/usage.md)), verification artifacts & [`archive/`](docs/archive/) |
 
-## 文档
+---
 
-- [设计与约定](docs/design.md)：运行路径、知识库、多 Agent、合并与审校、各插件的计算口径
-- [使用指南](docs/usage.md)：网页、朋友体验、命令行、真实模型、MCP server、隐私与限制
-- [项目计划书](docs/archive/占卜Agent项目计划书.md)：最初的范围、架构与评估设计
-- [文档索引](docs/README.md)：各阶段验收报告与评审整改记录
-- [验收材料](docs/verification/README.md)、[评估数据集](evals/README.md)
-- [开发记录](CHANGELOG.md)：按时间记录的阶段状态
+## Current Status & Limitations
 
-## 当前状态与限制
+- **Actively maintained (`v0.2.0`):** Recent updates include the full editorial web UI redesign, email accounts & cloud reading history, targeted harness partial self-repair, and automated external uptime monitoring (see [`CHANGELOG.md`](CHANGELOG.md)).
+- **Knowledge base review status:** All 1,171 entries are original: 451 dual-model cross-reviewed, 720 drafts, 0 human-reviewed. Output confidence is capped by the lowest review tier used (`low` for drafts, max `medium` for model-reviewed).
+- **Deployment model:** Local runs bind to `127.0.0.1` by default; the hosted live demo runs at [zhiming.mom](https://zhiming.mom), and a stateless offline-only Hugging Face Spaces Docker recipe is provided in [`deploy/hf-space/`](deploy/hf-space/README.md).
+- **Disclaimer:** Readings are for reflection and exploration only — never a substitute for medical, legal, or financial decisions.
 
-- **活跃维护中（最新 `v0.2.0`）**：近期已完成网页端视觉与交互重构、账号系统与云端足迹、Harness 局部自修复与校验加固，以及外网可用性巡检，详情见 [开发记录](CHANGELOG.md)（早期阶段暂停与复核历史亦归档于此）。
-- 知识库共 1171 条释义均为原创：451 条经双模型交叉审核，720 条为草稿，人工审核 0 条。解读置信度按所用释义的最低审核级别设上限（草稿为低，模型审核最高为中）。阶段1知识库验收未通过，见 [阶段1验收](docs/verification/stage1/20261022-acceptance/report.md)。
-- 真实模型端到端质量未达到项目自定验收关口，默认使用单 Agent（`single`）；多 Agent 模式可通过 `--mode multi` 或网页切换体验。
-- 开源版本默认启动为本机单进程服务（仅监听 `127.0.0.1`），线上体验版已部署于 [zhiming.mom](https://zhiming.mom)。访客记录闲置 12 小时后自动清除；注册账号后，生辰档案与解读记录保存在服务端，换设备或服务重启后登录即可恢复（账号不支持找回密码，进行中的对话窗口内容不跨重启保存）。
-- 所有解读仅供参考与自我反思，不是决策依据。
+---
 
-## 支持项目
+## License & Support
 
-「知命」已入驻爱发电，欢迎支持服务器与大模型算力维护：https://afdian.com/a/zhiming_ai
+- Released under **[AGPL-3.0-or-later](LICENSE)**; third-party data attributions (Swiss Ephemeris, NASA/JPL DE440s, GeoNames CC BY 4.0, Unicode Unihan 18.0) are documented in **[NOTICE](NOTICE)**.
+- Support server & compute costs on Afdian: https://afdian.com/a/zhiming_ai
