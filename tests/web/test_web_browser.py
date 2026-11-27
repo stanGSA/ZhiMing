@@ -520,7 +520,7 @@ def test_name_calculation_and_chosen_form_survive_navigation_and_reload(site, ch
 
 def register_from_entrance(page, base, email):
     page.goto(f"{base}/login?tab=account&next=/tarot")
-    page.click("[data-mode=register]")
+    page.click("#tab-register")
     page.fill("#account-name", email)
     page.fill("#account-password", "abc12345")
     page.fill("#account-confirm", "abc12345")
@@ -539,7 +539,7 @@ def test_registering_keeps_the_guest_reading_and_manages_history(site, chromium)
 
     page.goto(f"{base}/login?tab=account")
     expect(page.locator("#keep-guest-row")).to_contain_text("2 条解读")
-    page.click("[data-mode=register]")
+    page.click("#tab-register")
     page.fill("#account-name", "not-an-email")
     page.fill("#account-password", "abc12345")
     page.fill("#account-confirm", "abc12345")
