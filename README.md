@@ -28,8 +28,6 @@ Divination puts two hard LLM challenges side-by-side:
 1. **Strict factual grounding** — planetary positions, exact transit dates, solar-term transitions, Kangxi stroke counts, and upright/reversed cards are mathematically verifiable, yet LLMs constantly fabricate them.
 2. **Nuanced narrative synthesis** — turning multi-system signals (including conflicting ones) into layered, honest guidance still requires a language model.
 
-All offline benchmarks are reproducible in ~10 seconds with one command (`uv run python -m evals.report`, zero API calls); full report in [`reports/eval/summary.md`](reports/eval/summary.md).
-
 | Tarot: Interactive Deck, Flip & Verifiable Reading | BaZi: Four Pillars, Ten Gods, Hidden Stems & WuXing |
 | --- | --- |
 | ![Tarot UI](docs/assets/tarot.jpg) | ![BaZi UI](docs/assets/bazi.jpg) |
@@ -147,40 +145,6 @@ uv run python -m knowledge.build      # Build versioned read-only SQLite knowled
 | `lookup_meaning` | Exact KB entry lookup by `(system, kind, key)` with audit metadata |
 
 > **AGPL-3.0 & Swiss Ephemeris notice:** Local `stdio` personal use in Claude Desktop is fine; exposing this MCP server or web app as a network service triggers AGPL-3.0 Section 13 (provide corresponding source code) unless you hold a commercial Swiss Ephemeris license from Astrodienst. See [`LICENSE`](LICENSE), [`NOTICE`](NOTICE), and [`docs/usage.md`](docs/usage.md#mcp-server确定性插件).
-
----
-
-## Benchmarks & Radical Honesty
-
-Regenerate [`reports/eval/summary.md`](reports/eval/summary.md) completely offline (~10 seconds, zero API keys):
-
-```bash
-uv run python -m evals.report    # or: make eval
-```
-
-### Deterministic & Offline Verification
-
-| Benchmark | Result | Notes |
-| --- | --- | --- |
-| Reference Natal Charts | **11/11 passed**, max ecliptic error `0.000110364°` | Cross-verified against Skyfield + NASA JPL DE440s (max diff `0.000000611°`) |
-| BaZi Edge Cases | **50/50 cases**, 57 rule/follow-up variants passed | Lichun year rollover, solar-term months, Zishi hour, true solar time, DST, lunar leap months |
-| Kangxi Name Strokes | **200/200 matched** | Unicode Unihan 18.0 (19 gold entries pending human finalization) |
-| Daily Fortune Consistency | **10/10 cross-session identical** | Cached per user & consultation date |
-| Crisis Detection | **5/5** (draft dataset) | Halts divination and surfaces region-matched emergency hotlines |
-| Offline Test Suite | **1,200+ automated tests** | Ubuntu & Windows CI, zero paid API calls ([`tests/README.md`](tests/README.md)) |
-
-### Live LLM Benchmark (Archived — All Failures Preserved)
-
-20 questions × 3 runs (`deepseek-v4-flash`, judged by `deepseek-v4-pro`, rubric `v2-2026-10-24`; full archive in [`docs/verification/p1/README.md`](docs/verification/p1/README.md)):
-
-| Date | Model | Build | Mode | Task Done | Quality Pass | Strict Overall | P50 / P95 Latency |
-| --- | --- | --- | --- | ---: | ---: | ---: | ---: |
-| 2026-10-25 | `deepseek-v4-flash` | Final | `single` | 37/60 | 24/60 | 10/60 | 92 / 280 s |
-| 2026-10-25 | `deepseek-v4-flash` | Final | `multi` | 33/60 | 28/60 | 8/60 | 107 / 232 s |
-| 2026-10-24 | `deepseek-v4-flash` | Baseline (B0) | `single` | 34/60 | 24/60 | 9/60 | 74 / 164 s |
-| 2026-10-24 | `deepseek-v4-flash` | Baseline (B0) | `multi` | 37/60 | 25/60 | 14/60 | 139 / 253 s |
-
-*Why we publish these numbers as-is:* "Strict Overall" requires passing every engineering invariant **and** all four quality rubrics simultaneously (and the judge shares a vendor with the evaluated model, with human calibration still pending). Because live end-to-end quality has not yet cleared our self-imposed release bar, `single` remains the default mode and **every failure record is kept without cherry-picking**.
 
 ---
 
