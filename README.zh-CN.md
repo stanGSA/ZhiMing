@@ -13,7 +13,7 @@
 [![爱发电](https://img.shields.io/badge/爱发电-支持知命-946ce6)](https://afdian.com/a/zhiming_ai)
 
 > **在线体验（免安装、支持访客/离线演示与实时排盘）：[https://zhiming.mom](https://zhiming.mom)**
-> 亦可部署纯离线演示镜像至 Hugging Face Spaces，见 [`deploy/hf-space/`](deploy/hf-space/README.md)。
+> 亦可自托管纯离线演示 Docker 镜像（支持本机、Render/Koyeb 或 HF Spaces PRO），见 [`deploy/hf-space/`](deploy/hf-space/README.md)。
 
 <p align="center">
   <img src="docs/assets/demo.gif" alt="知命 v0.2.0 完整演示：入口页、问道天时、八字四柱排盘、西方本命星图绘制与塔罗翻牌解读" width="100%" />

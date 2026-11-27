@@ -12,7 +12,7 @@
 [![Live Demo](https://img.shields.io/badge/Live_Demo-zhiming.mom-c9a66b)](https://zhiming.mom)
 
 > **Live Demo (zero install — real-time BaZi & Natal Chart calculation + offline Tarot demo):** [https://zhiming.mom](https://zhiming.mom)
-> Want a self-contained, zero-API-key cloud sandbox? See the Hugging Face Spaces offline Docker setup in [`deploy/hf-space/`](deploy/hf-space/README.md).
+> Want to self-host a zero-API-key offline sandbox via Docker (local, Render/Koyeb, or HF Spaces PRO)? See [`deploy/hf-space/`](deploy/hf-space/README.md).
 
 <p align="center">
   <img src="docs/assets/demo.gif" alt="ZhiMing v0.2.0 interactive demo: Entry Portal, Ask Hall Almanac, Deterministic BaZi Four Pillars, Western Natal Chart, and Tarot Flip & Verifiable Reading" width="100%" />
