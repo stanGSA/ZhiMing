@@ -1,0 +1,192 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#f6f3ec" />
+    <meta
+      name="description"
+      content="知命 · 额度与充值：查看账号剩余额度、月度 Token 订阅方案（Zhiming Plus / ZhiMing Pro）及爱发电自助核验。"
+    />
+    <title>知命 · 额度与充值</title>
+    <link rel="icon" href="/static/favicon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="/static/base.css?v=20261127r7" />
+    <link rel="stylesheet" href="/static/theme-billing.css?v=20261127r7" />
+    <script src="/static/billing.js?v=20261127r7" defer></script>
+  </head>
+  <body data-page="billing">
+    <header class="zm-header">
+      <div class="wrap zm-bar">
+        <a class="zm-brand" href="/ask" aria-label="知命 · 问道">
+          <span class="zm-mark" aria-hidden="true">知<br />命</span>
+          <span class="zm-wordmark">知命</span>
+        </a>
+        <nav class="zm-nav" aria-label="六术">
+          <a href="/ask">问道</a>
+          <a href="/bazi">八字</a>
+          <a href="/astro">星盘</a>
+          <a href="/tarot">塔罗</a>
+          <a href="/name">姓名</a>
+          <a href="/dream">解梦</a>
+          <a href="/daily">运势</a>
+        </nav>
+        <div class="zm-tools" id="billing-header-tools">
+          <a class="btn btn-text" href="/billing" aria-current="page">额度与充值</a>
+          <a class="btn btn-text zm-account" id="billing-account-link" href="/login?tab=account&amp;next=/billing">
+            登录 / 注册
+          </a>
+        </div>
+      </div>
+    </header>
+
+    <main class="billing-main">
+      <section class="billing-hero" aria-labelledby="billing-title">
+        <div class="wrap billing-hero-inner">
+          <div class="billing-hero-copy">
+            <span class="kicker">QUOTA &amp; PLANS · 额度与充值</span>
+            <div class="billing-title-row">
+              <h1 id="billing-title">额度与月度充值</h1>
+              <span class="billing-seal" aria-hidden="true">量入<br />为出</span>
+            </div>
+            <p class="billing-lead" id="billing-lead">
+              注册即赠永久免费额度，历法排盘与离线演示不扣额度。需要更多大模型深度解读时，可通过爱发电自助订阅月度额度，支付完成后通常数秒自动到账。
+            </p>
+          </div>
+
+          <aside class="billing-account-card" id="billing-account-card" aria-live="polite">
+            <div class="billing-card-head">
+              <span class="kicker">当前账户</span>
+              <span class="billing-account-email" id="billing-account-email">正在加载…</span>
+            </div>
+            <div id="billing-badges" class="billing-badges" hidden></div>
+            <div id="billing-quota-detail" class="quota-breakdown" hidden></div>
+            <div id="billing-guest-box" class="billing-guest-box" hidden>
+              <p id="billing-guest-copy">
+                当前未登录。登录或注册账号后即可直接充值订阅，额度跨设备同步保存。
+              </p>
+              <div class="btn-row">
+                <a class="btn btn-primary" href="/login?tab=account&amp;next=/billing">登录账号</a>
+                <a class="btn btn-ghost" href="/login?tab=register&amp;next=/billing">免费注册领额度</a>
+              </div>
+            </div>
+            <div id="billing-account-actions" class="btn-row billing-account-actions" hidden>
+              <button class="btn btn-ghost" id="billing-refresh-btn" type="button">我已支付，刷新额度</button>
+              <a class="btn btn-text" href="/ask">返回问道</a>
+            </div>
+          </aside>
+        </div>
+      </section>
+
+      <div class="wrap billing-sections">
+        <section class="billing-block" aria-labelledby="plans-heading">
+          <div class="billing-section-head">
+            <div>
+              <span class="kicker">MONTHLY QUOTA · 月度额度套餐</span>
+              <h2 id="plans-heading">选择充值方案</h2>
+            </div>
+            <p class="billing-section-note">
+              按滚动月生效（订阅时刻起至下月同日），系统优先扣减月度额度，同周期重复订阅或升级直接叠加。
+            </p>
+          </div>
+
+          <div class="billing-disabled-box" id="billing-disabled-box" hidden>
+            <p>当前站点暂未开启爱发电在线充值。你仍可使用账号免费额度、历法排盘及离线演示；如需追加额度，请联系部署者。</p>
+          </div>
+
+          <div class="billing-sub-grid" id="billing-sub-plans">
+            <p class="quota-line-note">正在加载充值方案…</p>
+          </div>
+
+          <div class="billing-status-box billing-page-status" id="billing-status-box" role="status" hidden></div>
+
+          <div class="billing-self-help" id="billing-self-help" hidden>
+            <div class="billing-self-help-bar">
+              <div class="btn-row">
+                <button class="btn btn-ghost" id="billing-sync-btn" type="button">我已支付，刷新额度</button>
+                <a
+                  class="account-link"
+                  id="billing-creator-link"
+                  href="https://afdian.com/a/zhiming_ai"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  hidden
+                >
+                  前往爱发电主页 →
+                </a>
+              </div>
+              <span class="quota-line-note">支付后通常数秒自动入账；若延迟到账，可点击刷新或按订单号自助补录。</span>
+            </div>
+
+            <details class="billing-claim billing-page-claim" id="billing-claim-details">
+              <summary>已直接在爱发电赞助但未自动到账？输入订单号补录</summary>
+              <form class="billing-claim-form" id="billing-claim-form">
+                <label class="field">
+                  <span>爱发电订单号</span>
+                  <input
+                    id="billing-trade-input"
+                    type="text"
+                    maxlength="64"
+                    required
+                    placeholder="例如 20261127..."
+                  />
+                </label>
+                <button class="btn btn-primary" id="billing-claim-submit" type="submit">核验并补录</button>
+              </form>
+            </details>
+          </div>
+        </section>
+
+        <section class="billing-block" id="billing-tip-section" aria-labelledby="tip-heading" hidden>
+          <div class="billing-section-head">
+            <div>
+              <span class="kicker">SUPPORT · 纯赞赏支持</span>
+              <h2 id="tip-heading">请作者喝一盏清茶</h2>
+            </div>
+            <p class="billing-section-note">
+              此项为纯赞赏支持服务器与算力维护，不含额外 Token；赞赏后账号页将展示「一盏清茶」致谢徽章。
+            </p>
+          </div>
+          <div id="billing-tip-card"></div>
+        </section>
+
+        <section class="billing-block" id="billing-orders-section" aria-labelledby="orders-heading" hidden>
+          <div class="billing-section-head">
+            <div>
+              <span class="kicker">LEDGER · 历史记录</span>
+              <h2 id="orders-heading">赞赏与订阅记录</h2>
+            </div>
+          </div>
+          <ul class="billing-orders" id="billing-orders-list"></ul>
+        </section>
+
+        <section class="billing-block billing-rules-block" aria-labelledby="rules-heading">
+          <div class="billing-section-head">
+            <div>
+              <span class="kicker">RULES &amp; FAQ · 计费说明</span>
+              <h2 id="rules-heading">额度与扣费规则</h2>
+            </div>
+          </div>
+          <ul class="billing-rules-list" id="billing-rules-list">
+            <li>新注册账号赠送永久免费额度，不按月清零；离线演示、八字/星盘排盘与流日查询不消耗额度。</li>
+            <li>月度订阅额度自订阅时刻起至下月同日同时刻有效，系统优先扣减即将到期的月度额度，永久额度保留。</li>
+            <li>同周期内重复订阅或从 Plus 升级至 Pro，新额度会直接叠加到账户中；若购买多月则按月顺延依次生效。</li>
+            <li>模型调用的输入、输出及内部重试均按实际消耗计入；如需查看数据与隐私说明，可阅读隐私页。</li>
+          </ul>
+        </section>
+      </div>
+    </main>
+
+    <footer class="zm-footer">
+      <div class="wrap zm-bar">
+        <p>量入为出，明心见性 · 历法排盘与离线演示不扣额度</p>
+        <div class="zm-controls">
+          <a class="btn btn-text" href="/ask">返回问道</a>
+          <a class="btn btn-text" href="/login">账号登录</a>
+          <a class="btn btn-text" href="/privacy">隐私说明</a>
+        </div>
+      </div>
+    </footer>
+
+    <div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
+  </body>
+</html>

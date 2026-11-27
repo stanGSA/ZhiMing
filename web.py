@@ -2856,6 +2856,14 @@ def create_web_app(
     async def privacy():
         return FileResponse(STATIC / "privacy.html")
 
+    @app.get("/billing", include_in_schema=False)
+    async def billing_page():
+        return FileResponse(STATIC / "billing.html")
+
+    @app.get("/pricing", include_in_schema=False)
+    async def pricing_redirect():
+        return RedirectResponse("/billing", status_code=302)
+
     def page(filename):
         async def serve():
             return FileResponse(STATIC / filename)

@@ -7,9 +7,9 @@
     <meta name="description" content="知命 · 以历法为经，以星象为纬，陪你梳理当下。" />
     <title>知命 · 叩门问道</title>
     <link rel="icon" href="/static/favicon.svg" type="image/svg+xml" />
-    <link rel="stylesheet" href="/static/base.css?v=20261127r6" />
+    <link rel="stylesheet" href="/static/base.css?v=20261127r7" />
     <link rel="stylesheet" href="/static/theme-login.css?v=20261127r7" />
-    <script src="/static/login.js?v=20261127r6" defer></script>
+    <script src="/static/login.js?v=20261127r7" defer></script>
   </head>
   <body data-page="login">
     <main class="gate">
@@ -134,6 +134,7 @@
               </p>
               <p class="note" id="signed-quota"></p>
               <a class="btn btn-primary gate-enter" href="/ask">进入问道</a>
+              <a class="btn btn-ghost gate-demo" id="signed-billing" href="/billing">额度与充值方案</a>
               <button class="btn btn-ghost gate-demo" id="sign-out" type="button">退出登录</button>
               <p class="gate-error" id="signed-error" role="alert" hidden></p>
               <p class="note small">登录另一个账号前，请先退出当前账号。</p>
@@ -180,7 +181,7 @@
                   请填写有效邮箱（无需邮箱验证）；密码至少 8 位，含字母、数字、符号中的两类。目前暂不支持通过邮箱或短信找回密码，请妥善保管。
                 </p>
                 <p class="gate-rules" data-register hidden>
-                  新账号免费额度共 <span id="registration-allowance">以注册时设置为准</span> token，输入和输出均计入，不按月重置；离线演示不扣额度。同一 IP 下的同一设备，7 天内仅可注册一个账号。
+                  新账号免费额度共 <span id="registration-allowance">以注册时设置为准</span> token，输入和输出均计入，不按月重置；离线演示不扣额度。同一 IP 下的同一设备，7 天内仅可注册一个账号。<a href="/billing">查看月度充值方案 →</a>
                 </p>
                 <label class="check gate-check" id="keep-guest-row" hidden>
                   <input id="keep-guest" type="checkbox" checked />
@@ -206,7 +207,7 @@
           </div>
 
           <p class="foot">
-            命有万象，路在脚下 · 解读仅供参考与自我反思 · <a href="/privacy">隐私说明</a>
+            命有万象，路在脚下 · 解读仅供参考与自我反思 · <a href="/billing">额度与充值</a> · <a href="/privacy">隐私说明</a>
           </p>
         </div>
       </section>

@@ -292,6 +292,46 @@ async function fetchBillingPlans() {
   return billingPlansCache;
 }
 
+const LOW_QUOTA_THRESHOLD = 30000;
+
+function renderComposerQuotaBar() {
+  const form = $("#chat-form");
+  if (!form) return;
+  let bar = $("#composer-quota-bar");
+  const account = state?.account;
+  const quota = account?.quota;
+  const billing = account?.billing;
+  const show =
+    Boolean(account && quota && quota.limit !== null && state?.provider !== "demo") &&
+    quota.remaining <= LOW_QUOTA_THRESHOLD;
+  if (!show) {
+    if (bar) bar.hidden = true;
+    return;
+  }
+  if (!bar) {
+    bar = node("div", "composer-quota-bar");
+    bar.id = "composer-quota-bar";
+    bar.setAttribute("role", "status");
+    form.prepend(bar);
+  }
+  const empty = quota.remaining <= 0;
+  bar.classList.toggle("is-empty", empty);
+  const text = empty
+    ? "当前可用额度已用完，真实模型解读已暂停。"
+    : `当前剩余额度仅 ${quota.remaining.toLocaleString("zh-CN")} token，建议提前补充月度额度。`;
+  const actions = node("div", "composer-quota-actions");
+  if (billing?.enabled) {
+    const recharge = button(empty ? "立即充值额度" : "充值额度", "btn btn-primary");
+    recharge.addEventListener("click", () => openBilling());
+    actions.append(recharge);
+  }
+  const pageLink = node("a", "account-link", "查看方案 →");
+  pageLink.href = "/billing";
+  actions.append(pageLink);
+  bar.replaceChildren(node("span", "composer-quota-text", text), actions);
+  bar.hidden = false;
+}
+
 function renderAccount() {
   const chip = $("#account-button");
   if (!chip) return;
@@ -304,16 +344,19 @@ function renderAccount() {
     badge.type = "button";
     badge.id = "account-quota";
     badge.setAttribute("aria-live", "polite");
-    badge.addEventListener("click", () => {
-      if (state?.account) openAccount({ focusBilling: true });
-    });
+    badge.addEventListener("click", () => openBilling());
     chip.after(badge);
   }
   const quota = state?.account?.quota;
   const billing = state?.account?.billing;
   const sub = billing?.quota?.subscription;
   const perm = billing?.quota?.permanent;
+  const isLimited = Boolean(quota && quota.limit !== null);
+  const isEmpty = isLimited && quota.remaining <= 0;
+  const isLow = isLimited && !isEmpty && quota.remaining <= LOW_QUOTA_THRESHOLD;
   badge.hidden = !quota;
+  badge.classList.toggle("is-low", isLow);
+  badge.classList.toggle("is-empty", isEmpty);
   if (quota) {
     if (quota.limit === null) {
       badge.textContent = "账号额度不限";
@@ -323,10 +366,10 @@ function renderAccount() {
       const expiry = sub.earliest_expires_at ? `（至 ${formatShanghaiTime(sub.earliest_expires_at)}）` : "";
       badge.title =
         `当月订阅剩余 ${sub.remaining.toLocaleString("zh-CN")} token${expiry} · ` +
-        `永久额度剩余 ${(perm?.remaining ?? 0).toLocaleString("zh-CN")} token；优先扣减即将到期的月度额度。`;
+        `永久额度剩余 ${(perm?.remaining ?? 0).toLocaleString("zh-CN")} token；点击查看额度或充值。`;
     } else {
       badge.textContent = `免费剩余 ${quota.remaining.toLocaleString("zh-CN")} token`;
-      badge.title = "永久免费额度不按月清零；输入和输出均计入，离线演示不扣额度。点击查看额度与赞赏方案。";
+      badge.title = "永久免费额度不按月清零；输入和输出均计入，离线演示不扣额度。点击充值或查看月度方案。";
     }
   } else {
     badge.textContent = "";
@@ -335,17 +378,34 @@ function renderAccount() {
   let sponsorBtn = $("#account-sponsor-btn");
   if (billing?.enabled && state?.account) {
     if (!sponsorBtn) {
-      sponsorBtn = node("button", "quota-sponsor-btn", "赞赏");
+      sponsorBtn = node("button", "quota-sponsor-btn quota-recharge-btn", "充值额度");
       sponsorBtn.type = "button";
       sponsorBtn.id = "account-sponsor-btn";
-      sponsorBtn.title = "通过爱发电赞赏支持或升级月度 Token 额度";
-      sponsorBtn.addEventListener("click", () => openAccount({ focusBilling: true }));
+      sponsorBtn.addEventListener("click", () => openBilling());
       badge.after(sponsorBtn);
     }
+    sponsorBtn.textContent = isEmpty ? "立即充值" : "充值额度";
+    sponsorBtn.title = "充值月度 Token 额度（Plus 50万 / Pro 100万）或赞赏支持";
+    sponsorBtn.classList.toggle("is-low", isLow);
+    sponsorBtn.classList.toggle("is-empty", isEmpty);
     sponsorBtn.hidden = false;
   } else if (sponsorBtn) {
     sponsorBtn.hidden = true;
   }
+  let guestLink = $("#guest-billing-link");
+  if (!state?.account) {
+    if (!guestLink) {
+      guestLink = node("a", "quota-plans-link", "额度方案");
+      guestLink.id = "guest-billing-link";
+      guestLink.href = "/billing";
+      guestLink.title = "查看免费注册额度与月度充值方案";
+      chip.before(guestLink);
+    }
+    guestLink.hidden = false;
+  } else if (guestLink) {
+    guestLink.hidden = true;
+  }
+  renderComposerQuotaBar();
   $$("[data-storage-note]").forEach((note) => {
     note.textContent = storageNote();
   });
@@ -380,7 +440,7 @@ function applyBillingRefresh(result) {
   renderAccount();
 }
 
-function buildBillingSection(account, dialog, focusBilling) {
+function buildQuotaBreakdown(account) {
   const billing = account.billing;
   const container = node("div", "billing-panel");
 
@@ -448,16 +508,45 @@ function buildBillingSection(account, dialog, focusBilling) {
     }
     container.append(breakdown);
   }
+  return container;
+}
 
-  if (billing?.enabled) {
-    const sponsor = node("details", "account-section billing-sponsor");
-    sponsor.open = Boolean(focusBilling || (account.quota && account.quota.limit !== null && account.quota.remaining <= 20000));
-    sponsor.append(node("summary", "", "爱发电赞赏与月度额度"));
-    const body = node("div", "billing-sponsor-body");
-    const plansWrap = node("div", "billing-plans");
-    plansWrap.append(node("p", "quota-line-note", "正在加载方案…"));
-    const statusBox = node("div", "billing-status-box");
-    statusBox.hidden = true;
+function buildBillingOrders(account) {
+  const billing = account?.billing;
+  if (!billing?.orders?.length) return null;
+  const ordersDetails = node("details", "account-section");
+  ordersDetails.append(node("summary", "", `赞赏与订阅记录（${billing.orders.length}）`));
+  const list = node("ul", "billing-orders");
+  for (const order of billing.orders) {
+    const li = node("li", "billing-order-item");
+    const meta =
+      order.status === "tip_recorded"
+        ? `纯赞赏 · ¥${order.total_amount}`
+        : `+${Number(order.tokens_granted || 0).toLocaleString("zh-CN")} token · ¥${order.total_amount}` +
+          (order.expires_at ? ` · 至 ${formatShanghaiTime(order.expires_at)}` : "");
+    li.append(
+      node("div", "billing-order-main", `${order.plan_name}${order.month > 1 ? ` × ${order.month} 个月` : ""}`),
+      node("div", "billing-order-meta", `${meta} · ${formatShanghaiTime(order.at)}`),
+    );
+    list.append(li);
+  }
+  ordersDetails.append(list);
+  return ordersDetails;
+}
+
+function buildBillingPlansView(account, dialog) {
+  const billing = account?.billing;
+  const wrap = node("div", "billing-sponsor-body");
+  const plansWrap = node("div", "billing-plans");
+  plansWrap.append(node("p", "quota-line-note", "正在加载充值方案…"));
+  const tipWrap = node("div", "billing-tip-wrap");
+  tipWrap.hidden = true;
+  const statusBox = node("div", "billing-status-box");
+  statusBox.hidden = true;
+
+  wrap.append(plansWrap, tipWrap, statusBox);
+
+  if (account) {
     const syncRow = node("div", "btn-row billing-sync-row");
     const syncBtn = button("我已支付，刷新额度", "btn btn-ghost");
     syncBtn.addEventListener("click", async () => {
@@ -467,7 +556,7 @@ function buildBillingSection(account, dialog, focusBilling) {
         applyBillingRefresh(res);
         const added = (res.sync?.credited || 0) + (res.sync?.tip_recorded || 0);
         toast(added > 0 ? "已同步最新爱发电订单，额度已更新。" : "已完成同步，暂无新的待入账订单。");
-        openAccount({ focusBilling: true });
+        openBilling();
       } catch (error) {
         toast(error.message);
       } finally {
@@ -475,8 +564,8 @@ function buildBillingSection(account, dialog, focusBilling) {
       }
     });
     syncRow.append(syncBtn);
-    if (billing.creator_url) {
-      const homeLink = node("a", "account-link", "前往爱发电主页");
+    if (billing?.creator_url) {
+      const homeLink = node("a", "account-link", "前往爱发电主页 →");
       homeLink.href = billing.creator_url;
       homeLink.target = "_blank";
       homeLink.rel = "noopener noreferrer";
@@ -510,7 +599,7 @@ function buildBillingSection(account, dialog, focusBilling) {
             ? "感谢一盏清茶赞赏！记录已同步到你的账号。"
             : `订单已核验到账（+${Number(res.order?.tokens_granted || 0).toLocaleString("zh-CN")} token）。`,
         );
-        openAccount({ focusBilling: true });
+        openBilling();
       } catch (error) {
         toast(error.message);
       } finally {
@@ -518,84 +607,161 @@ function buildBillingSection(account, dialog, focusBilling) {
       }
     });
     claimDetails.append(claimForm);
-
-    body.append(plansWrap, statusBox, syncRow, claimDetails);
-    sponsor.append(body);
-    container.append(sponsor);
-
-    fetchBillingPlans().then((info) => {
-      if (!dialog.open) return;
-      plansWrap.replaceChildren();
-      if (!info?.plans?.length) {
-        plansWrap.append(node("p", "quota-line-note", "暂未获取到赞助方案，请稍后再试。"));
-        return;
-      }
-      for (const plan of info.plans) {
-        const card = node("div", `billing-plan billing-plan-${plan.key}`);
-        const head = node("div", "billing-plan-head");
-        head.append(node("strong", "", plan.name), node("span", "billing-plan-price", plan.price_display));
-        const desc = node("p", "billing-plan-desc", plan.description);
-        const go = button(plan.key === "tip" ? "赞赏一盏清茶" : `订阅 ${plan.name}`, "btn btn-primary");
-        go.addEventListener("click", async () => {
-          go.disabled = true;
-          try {
-            const checkout = await api("/api/billing/afdian/checkout", {
-              method: "POST",
-              body: JSON.stringify({ plan_key: plan.key }),
-            });
-            const opened = window.open(checkout.pay_url, "_blank", "noopener,noreferrer");
-            statusBox.hidden = false;
-            statusBox.replaceChildren(
-              node(
-                "p",
-                "",
-                opened
-                  ? `已在新标签页打开「${plan.name}」支付页。支付完成后通常数秒自动到账，也可点击下方「我已支付，刷新额度」。`
-                  : "浏览器拦截了新标签页，请点击下方链接前往爱发电完成支付：",
-              ),
-            );
-            const fallbackLink = node("a", "account-link", `前往爱发电完成「${plan.name}」支付 →`);
-            fallbackLink.href = checkout.pay_url;
-            fallbackLink.target = "_blank";
-            fallbackLink.rel = "noopener noreferrer";
-            statusBox.append(fallbackLink);
-          } catch (error) {
-            toast(error.message);
-          } finally {
-            go.disabled = false;
-          }
-        });
-        card.append(head, desc, go);
-        plansWrap.append(card);
-      }
-    });
+    wrap.append(syncRow, claimDetails);
   }
 
-  if (billing?.orders?.length) {
-    const ordersDetails = node("details", "account-section");
-    ordersDetails.append(node("summary", "", `赞赏与订阅记录（${billing.orders.length}）`));
-    const list = node("ul", "billing-orders");
-    for (const order of billing.orders) {
-      const li = node("li", "billing-order-item");
-      const meta =
-        order.status === "tip_recorded"
-          ? `纯赞赏 · ¥${order.total_amount}`
-          : `+${Number(order.tokens_granted || 0).toLocaleString("zh-CN")} token · ¥${order.total_amount}` +
-            (order.expires_at ? ` · 至 ${formatShanghaiTime(order.expires_at)}` : "");
-      li.append(
-        node("div", "billing-order-main", `${order.plan_name}${order.month > 1 ? ` × ${order.month} 个月` : ""}`),
-        node("div", "billing-order-meta", `${meta} · ${formatShanghaiTime(order.at)}`),
+  fetchBillingPlans().then((info) => {
+    if (!dialog.open) return;
+    plansWrap.replaceChildren();
+    tipWrap.replaceChildren();
+    if (!info?.enabled || !info?.plans?.length) {
+      plansWrap.append(
+        node("p", "quota-line-note", "当前站点暂未开启在线充值；如需追加额度，请联系部署者。"),
       );
-      list.append(li);
+      tipWrap.hidden = true;
+      return;
     }
-    ordersDetails.append(list);
-    container.append(ordersDetails);
+    const subPlans = info.plans.filter((p) => p.key !== "tip");
+    const tipPlan = info.plans.find((p) => p.key === "tip");
+
+    const bindCheckout = (plan, btn) => {
+      btn.addEventListener("click", async () => {
+        if (!state?.account) {
+          location.assign(`/login?tab=account&next=${encodeURIComponent("/billing")}`);
+          return;
+        }
+        btn.disabled = true;
+        try {
+          const checkout = await api("/api/billing/afdian/checkout", {
+            method: "POST",
+            body: JSON.stringify({ plan_key: plan.key }),
+          });
+          const opened = window.open(checkout.pay_url, "_blank", "noopener,noreferrer");
+          statusBox.hidden = false;
+          statusBox.replaceChildren(
+            node(
+              "p",
+              "",
+              opened
+                ? `已在新标签页打开「${plan.name}」支付页。支付完成后通常数秒自动到账，也可点击下方「我已支付，刷新额度」。`
+                : "浏览器拦截了新标签页，请点击下方链接前往爱发电完成支付：",
+            ),
+          );
+          const fallbackLink = node("a", "account-link", `前往爱发电完成「${plan.name}」支付 →`);
+          fallbackLink.href = checkout.pay_url;
+          fallbackLink.target = "_blank";
+          fallbackLink.rel = "noopener noreferrer";
+          statusBox.append(fallbackLink);
+        } catch (error) {
+          toast(error.message);
+        } finally {
+          btn.disabled = false;
+        }
+      });
+    };
+
+    for (const plan of subPlans) {
+      const card = node("div", `billing-plan billing-plan-${plan.key}`);
+      const head = node("div", "billing-plan-head");
+      const title = node("div", "billing-plan-title");
+      title.append(node("strong", "", plan.name));
+      if (plan.key === "pro") title.append(node("span", "billing-plan-badge", "推荐"));
+      head.append(title, node("span", "billing-plan-price", plan.price_display));
+      const quotaLine = node(
+        "p",
+        "billing-plan-quota",
+        `当月可用 ${Number(plan.tokens_per_month || 0).toLocaleString("zh-CN")} Tokens`,
+      );
+      const desc = node("p", "billing-plan-desc", plan.description);
+      const go = button(
+        state?.account ? `立即充值 · 订阅 ${plan.name}` : `登录后订阅 ${plan.name}`,
+        "btn btn-primary",
+      );
+      go.dataset.planKey = plan.key;
+      bindCheckout(plan, go);
+      card.append(head, quotaLine, desc, go);
+      plansWrap.append(card);
+    }
+
+    if (tipPlan) {
+      const tipCard = node("div", "billing-plan billing-plan-tip");
+      const head = node("div", "billing-plan-head");
+      head.append(
+        node("strong", "", `🍵 ${tipPlan.name}（纯赞赏 · 不含 Token）`),
+        node("span", "billing-plan-price", tipPlan.price_display),
+      );
+      const desc = node("p", "billing-plan-desc", tipPlan.description);
+      const go = button(
+        state?.account ? "赞赏一盏清茶" : "登录后赞赏一盏清茶",
+        "btn btn-ghost",
+      );
+      go.dataset.planKey = tipPlan.key;
+      bindCheckout(tipPlan, go);
+      tipCard.append(head, desc, go);
+      tipWrap.append(tipCard);
+      tipWrap.hidden = false;
+    }
+  });
+
+  return wrap;
+}
+
+function openBilling() {
+  const accountDialog = $("#account-dialog");
+  if (accountDialog?.open) accountDialog.close();
+  const dialog = $("#billing-dialog");
+  if (!dialog) {
+    location.assign("/billing");
+    return;
+  }
+  const account = state?.account;
+  const header = node("div", "billing-dialog-head");
+  const fullLink = node("a", "account-link", "打开完整方案页 →");
+  fullLink.href = "/billing";
+  header.append(node("h2", "", "额度与充值"), fullLink);
+
+  const close = button("关闭", "btn btn-ghost");
+  close.addEventListener("click", () => dialog.close());
+
+  if (!account) {
+    const login = node("a", "btn btn-primary", "登录 / 注册");
+    login.href = `/login?tab=account&next=${encodeURIComponent("/billing")}`;
+    const actions = node("div", "btn-row");
+    actions.append(login, close);
+    dialog.replaceChildren(
+      header,
+      node(
+        "p",
+        "",
+        "登录或注册账号即可领取永久免费额度，并可按需充值月度 Token 额度（Plus 50万 / Pro 100万）。",
+      ),
+      buildBillingPlansView(null, dialog),
+      actions,
+    );
+    if (!dialog.open) dialog.showModal();
+    return;
   }
 
-  return container;
+  const parts = [header, buildQuotaBreakdown(account), buildBillingPlansView(account, dialog)];
+  const orders = buildBillingOrders(account);
+  if (orders) parts.push(orders);
+  const actions = node("div", "btn-row");
+  const openAcct = button("账号设置", "btn btn-ghost");
+  openAcct.addEventListener("click", () => {
+    dialog.close();
+    openAccount();
+  });
+  actions.append(openAcct, close);
+  parts.push(actions);
+  dialog.replaceChildren(...parts);
+  if (!dialog.open) dialog.showModal();
 }
 
 function openAccount(options = {}) {
+  if (options.focusBilling) {
+    openBilling();
+    return;
+  }
   const dialog = $("#account-dialog");
   const account = state?.account;
   const close = button("关闭", "btn btn-ghost");
@@ -605,8 +771,10 @@ function openAccount(options = {}) {
   if (!account) {
     const login = node("a", "btn btn-primary", "登录 / 注册");
     login.href = loginUrl();
+    const billingLink = node("a", "btn btn-ghost", "查看额度方案");
+    billingLink.href = "/billing";
     const actions = node("div", "btn-row");
-    actions.append(login, close);
+    actions.append(login, billingLink, close);
     dialog.replaceChildren(
       node("h2", "", "访客身份"),
       node(
@@ -629,7 +797,19 @@ function openAccount(options = {}) {
         ? " 账号额度不限，累计用量正常记录；全站预算、并发和异常消耗保护仍生效。"
         : ""),
   );
-  const billingSection = buildBillingSection(account, dialog, Boolean(options.focusBilling));
+  const billingSection = buildQuotaBreakdown(account);
+  const billingCtaRow = node("div", "btn-row billing-account-cta");
+  if (account.billing?.enabled) {
+    const rechargeBtn = button("充值 / 订阅月度额度", "btn btn-primary");
+    rechargeBtn.addEventListener("click", () => openBilling());
+    billingCtaRow.append(rechargeBtn);
+  }
+  const billingPageLink = node("a", "btn btn-ghost", "完整额度与方案页 →");
+  billingPageLink.href = "/billing";
+  billingCtaRow.append(billingPageLink);
+  billingSection.append(billingCtaRow);
+  const ordersSection = buildBillingOrders(account);
+  if (ordersSection) billingSection.append(ordersSection);
   const exportLink = node("a", "btn btn-ghost", "导出我的记录");
   exportLink.href = "/api/export";
   exportLink.download = "";
@@ -823,11 +1003,14 @@ function injectChrome() {
   const account = node("dialog", "zm-dialog account-dialog");
   account.id = "account-dialog";
   account.setAttribute("aria-label", "账号");
-  document.body.append(toastBox, scrim, drawer, dialog, account);
+  const billingDialog = node("dialog", "zm-dialog billing-dialog");
+  billingDialog.id = "billing-dialog";
+  billingDialog.setAttribute("aria-label", "额度与充值");
+  document.body.append(toastBox, scrim, drawer, dialog, account, billingDialog);
   const chip = button("登录", "btn btn-text zm-account");
   chip.id = "account-button";
   chip.setAttribute("aria-haspopup", "dialog");
-  chip.addEventListener("click", openAccount);
+  chip.addEventListener("click", () => openAccount());
   $(".zm-tools")?.append(chip);
   if ($("#dialog")) document.body.append(askFab());
 }
@@ -890,15 +1073,59 @@ function scrollTranscript() {
   if (box) box.scrollTop = box.scrollHeight;
 }
 
+function quotaExhaustedActions() {
+  return [
+    ...(state?.account?.billing?.enabled
+      ? [{ label: "立即充值额度", className: "btn btn-primary", onClick: () => openBilling() }]
+      : []),
+    { label: "查看额度方案", className: "btn btn-ghost", href: "/billing" },
+  ];
+}
+
+function notifyQuotaExhausted() {
+  const noticeActions = [];
+  if (state?.account?.billing?.enabled) {
+    noticeActions.push(["立即充值额度", () => openBilling()]);
+  }
+  noticeActions.push(["查看额度方案", () => location.assign("/billing")]);
+  noticeActions.push(["切换离线演示", () => startNew("demo")]);
+  showNotice(
+    "当前可用额度已用完，无法继续调用真实模型。充值月度额度后数秒即可恢复，也可先切换离线演示。",
+    noticeActions,
+  );
+}
+
 function showMessage(message) {
+  const isQuotaExhausted =
+    message.status === "quota_exhausted" && message.failure?.reason === "free_quota_exhausted";
   const item = node(
     "article",
-    `msg msg-${message.role}${message.status === "error" ? " msg-error" : ""}`,
+    `msg msg-${message.role}${message.status === "error" || isQuotaExhausted ? " msg-error" : ""}`,
   );
   item.append(node("span", "msg-label", message.role === "user" ? "问" : "答"));
   const body = node("div", "msg-body");
   if (message.stale) body.append(node("p", "reading-confidence", "旧生辰记录"));
   body.append(node("p", "msg-text", message.text));
+  const actions = message.actions?.length
+    ? message.actions
+    : isQuotaExhausted
+      ? quotaExhaustedActions()
+      : [];
+  if (actions.length) {
+    const actionRow = node("div", "btn-row msg-actions");
+    for (const act of actions) {
+      if (act.href) {
+        const link = node("a", act.className || "btn btn-ghost", act.label);
+        link.href = act.href;
+        actionRow.append(link);
+      } else {
+        const btn = button(act.label, act.className || "btn btn-primary");
+        btn.addEventListener("click", act.onClick);
+        actionRow.append(btn);
+      }
+    }
+    body.append(actionRow);
+  }
   if (message.role === "assistant" && message.status === "submit_reading" && $("#reading")
     && message.text.length > 140) {
     body.classList.add("msg-long");
@@ -1077,8 +1304,12 @@ async function send({ message, extra = {} }, birth) {
     if (["auto", "bazi", "astro", "daily"].includes(SYSTEM) && !followupReadingId
       && next.messages.at(-1)?.status !== "crisis_support")
       acceptBirthVersion(next.birth_version);
-    const fresh = next.messages.at(-1)?.status === "submit_reading";
+    const lastMsg = next.messages.at(-1);
+    const fresh = lastMsg?.status === "submit_reading";
     applyState(next, false, false, fresh);
+    if (lastMsg?.status === "quota_exhausted" && lastMsg?.failure?.reason === "free_quota_exhausted") {
+      notifyQuotaExhausted();
+    }
     // A page may take over what happens next (塔罗 turns the view to its face-down cards).
     handled = fresh && Boolean(page.onAnswered?.());
     if (fresh && !handled) {
@@ -1091,11 +1322,18 @@ async function send({ message, extra = {} }, birth) {
   } catch (error) {
     $("#thinking")?.remove();
     clearInterval(trackClock);
-    showMessage({ role: "assistant", text: error.message, status: "error" });
+    const isQuotaExhausted = error.code === "free_quota_exhausted";
+    showMessage({
+      role: "assistant",
+      text: error.message,
+      status: "error",
+      actions: isQuotaExhausted ? quotaExhaustedActions() : [],
+    });
     $("#message").value = unsent;
     fitComposer();
     setBusy(false);
     toast(error.message);
+    if (isQuotaExhausted) notifyQuotaExhausted();
     page.onSendFailed?.();
     await handleBirthError(error);
   } finally {

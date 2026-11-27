@@ -4,7 +4,9 @@
 const $ = (selector) => document.querySelector(selector);
 const tabs = Array.from(document.querySelectorAll(".gate-tab"));
 const params = new URLSearchParams(location.search);
-const NEXT = /^\/(ask|bazi|astro|tarot|name|dream|daily|admin)$/.test(params.get("next") || "")
+const NEXT = /^\/(ask|bazi|astro|tarot|name|dream|daily|admin|billing|pricing)$/.test(
+  params.get("next") || "",
+)
   ? params.get("next")
   : "/ask";
 let mode = "login";
@@ -423,7 +425,7 @@ $("#sign-out").addEventListener("click", async () => {
 });
 
 renderAstrolabe();
-if (params.get("mode") === "register") select($("#tab-register"));
+if (params.get("mode") === "register" || params.get("tab") === "register") select($("#tab-register"));
 else if (params.get("tab") === "guest") select($("#tab-guest"));
 else select($("#tab-account"));
 load();

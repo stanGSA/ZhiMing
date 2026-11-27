@@ -467,3 +467,72 @@ async def test_checkout_webhook_security_idempotency_claim_and_admin_bind(projec
         assert overview["afdian"]["unmatched_orders"] == 0
         assert overview["afdian"]["fulfilled_orders"] == 4
         assert any(a["action"] == "afdian_bind_order" for a in overview["audit"])
+
+
+async def test_billing_page_redirects_csp_and_sitewide_entry_points(project):
+    config = make_afdian_config()
+    app = create_web_app(
+        root=project,
+        public_origin="https://testserver",
+        afdian_config=config,
+    )
+    async with (
+        app.router.lifespan_context(app),
+        browser_client(app, "203.0.113.20") as client,
+    ):
+        billing_resp = await client.get("/billing")
+        assert billing_resp.status_code == 200
+        billing_html = billing_resp.text
+        assert "style=" not in billing_html
+        assert "<script>" not in billing_html
+        for token in (
+            'id="billing-account-card"',
+            'id="billing-sub-plans"',
+            'id="billing-tip-section"',
+            'id="billing-claim-form"',
+            'id="billing-rules-list"',
+            "/static/theme-billing.css",
+            "/static/billing.js",
+        ):
+            assert token in billing_html
+
+        pricing_resp = await client.get("/pricing", follow_redirects=False)
+        assert pricing_resp.status_code == 302
+        assert pricing_resp.headers["location"] == "/billing"
+
+        for path in (
+            "/login",
+            "/ask",
+            "/bazi",
+            "/astro",
+            "/tarot",
+            "/name",
+            "/dream",
+            "/daily",
+            "/privacy",
+        ):
+            page = await client.get(path)
+            assert page.status_code == 200
+            assert 'href="/billing"' in page.text
+            assert "style=" not in page.text
+            assert "<script>" not in page.text
+
+        login_js = (await client.get("/static/login.js")).text
+        assert "daily|admin|billing|pricing" in login_js
+
+        app_js = (await client.get("/static/app.js")).text
+        for hook in (
+            "function openBilling()",
+            "billing-dialog",
+            "composer-quota-bar",
+            "free_quota_exhausted",
+            "立即充值额度",
+            "充值额度",
+        ):
+            assert hook in app_js
+
+        billing_js = (await client.get("/static/billing.js")).text
+        assert "/api/billing/plans" in billing_js
+        assert "/api/billing/afdian/checkout" in billing_js
+        assert "/api/billing/afdian/sync" in billing_js
+        assert "/api/billing/afdian/claim" in billing_js
