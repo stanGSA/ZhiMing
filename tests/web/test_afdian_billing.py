@@ -321,6 +321,10 @@ async def test_checkout_webhook_security_idempotency_claim_and_admin_bind(projec
         assert plans_data["enabled"] is True
         assert plans_data["free_registration_tokens"] == FREE_TOKENS
         assert [p["key"] for p in plans_data["plans"]] == ["tip", "plus", "pro"]
+        pro_plan = next(p for p in plans_data["plans"] if p["key"] == "pro")
+        assert pro_plan["price"] == "9.99"
+        assert pro_plan["price_display"] == "¥9.99 / 月"
+        assert any("知命注册邮箱" in rule for rule in plans_data["rules"])
 
         # Create checkout URL for Plus.
         co = await buyer.post("/api/billing/afdian/checkout", json={"plan_key": "plus"})
