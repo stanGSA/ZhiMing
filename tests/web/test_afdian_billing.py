@@ -486,6 +486,7 @@ async def test_billing_page_redirects_csp_and_sitewide_entry_points(project):
         assert "style=" not in billing_html
         assert "<script>" not in billing_html
         for token in (
+            'id="billing-back-btn"',
             'id="billing-account-card"',
             'id="billing-sub-plans"',
             'id="billing-tip-section"',
@@ -522,8 +523,8 @@ async def test_billing_page_redirects_csp_and_sitewide_entry_points(project):
 
         app_js = (await client.get("/static/app.js")).text
         for hook in (
+            "function billingUrl()",
             "function openBilling()",
-            "billing-dialog",
             "composer-quota-bar",
             "free_quota_exhausted",
             "立即充值额度",
@@ -532,6 +533,7 @@ async def test_billing_page_redirects_csp_and_sitewide_entry_points(project):
             assert hook in app_js
 
         billing_js = (await client.get("/static/billing.js")).text
+        assert "resolveBackTarget" in billing_js
         assert "/api/billing/plans" in billing_js
         assert "/api/billing/afdian/checkout" in billing_js
         assert "/api/billing/afdian/sync" in billing_js

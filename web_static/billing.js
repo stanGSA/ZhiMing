@@ -3,6 +3,68 @@
 /* Standalone quota & billing page (/billing). CSP-safe: no inline styles or scripts. */
 const $ = (selector, root = document) => root.querySelector(selector);
 
+const SAFE_BACK_RE = /^\/(ask|bazi|astro|tarot|name|dream|daily|login|privacy)$/;
+const BACK_LABELS = {
+  "/ask": "问道",
+  "/bazi": "八字",
+  "/astro": "星盘",
+  "/tarot": "塔罗",
+  "/name": "姓名",
+  "/dream": "解梦",
+  "/daily": "运势",
+  "/login": "登录页",
+  "/privacy": "隐私说明",
+};
+
+function resolveBackTarget() {
+  const params = new URLSearchParams(location.search);
+  const from = params.get("from") || "";
+  if (SAFE_BACK_RE.test(from)) {
+    try {
+      sessionStorage.setItem("zhiming.billing_from", from);
+    } catch {
+      // Ignore storage failures.
+    }
+    return from;
+  }
+  let stored = "";
+  try {
+    stored = sessionStorage.getItem("zhiming.billing_from") || "";
+  } catch {
+    stored = "";
+  }
+  if (document.referrer) {
+    try {
+      const ref = new URL(document.referrer);
+      if (ref.origin === location.origin && SAFE_BACK_RE.test(ref.pathname)) {
+        if (ref.pathname === "/login" && SAFE_BACK_RE.test(stored) && stored !== "/login") {
+          return stored;
+        }
+        try {
+          sessionStorage.setItem("zhiming.billing_from", ref.pathname);
+        } catch {
+          // Ignore storage failures.
+        }
+        return ref.pathname;
+      }
+    } catch {
+      // Ignore invalid referrer URL.
+    }
+  }
+  if (SAFE_BACK_RE.test(stored)) return stored;
+  return "/ask";
+}
+
+const backTarget = resolveBackTarget();
+const backBtn = $("#billing-back-btn");
+if (backBtn) {
+  const label = BACK_LABELS[backTarget];
+  if (label) backBtn.title = `返回${label}`;
+  backBtn.addEventListener("click", () => {
+    location.assign(backTarget);
+  });
+}
+
 let accountState = null;
 let plansData = null;
 let toastTimer = null;

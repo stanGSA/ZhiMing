@@ -99,10 +99,10 @@ def test_billing_page_modal_and_exhausted_quota_flow(billing_site, chromium):
     assert tier_titles == ["Zhiming Plus", "ZhiMing Pro"]
     expect(page.locator("#billing-tip-section")).to_be_visible()
 
-    # 2. Guest visits /ask: sees guest header link to /billing.
+    # 2. Guest visits /ask: sees guest header link to /billing?from=/ask.
     page.goto(f"{base}/ask?provider=demo")
     expect(page.locator("#guest-billing-link")).to_be_visible()
-    expect(page.locator("#guest-billing-link")).to_have_attribute("href", "/billing")
+    expect(page.locator("#guest-billing-link")).to_have_attribute("href", "/billing?from=%2Fask")
 
     # 3. Register an account via /login?tab=register&next=/billing -> lands back on /billing.
     page.goto(f"{base}/login?tab=register&next=/billing")
@@ -115,20 +115,23 @@ def test_billing_page_modal_and_exhausted_quota_flow(billing_site, chromium):
     expect(page.locator("#billing-account-email")).to_have_text("ux-buyer@example.com")
     expect(page.locator("#billing-guest-box")).to_be_hidden()
     expect(page.locator("#billing-self-help")).to_be_visible()
+    expect(page.locator("#billing-back-btn")).to_be_visible()
 
-    # 4. Signed-in user on /ask sees prominent "充值额度" button and opens standalone #billing-dialog.
-    page.goto(f"{base}/ask")
+    # 4. Signed-in user clicks "充值额度" on /bazi -> navigates straight to /billing?from=%2Fbazi
+    #    and top-left back button returns directly to /bazi.
+    page.goto(f"{base}/bazi")
     expect(page.locator("#account-sponsor-btn")).to_be_visible()
     expect(page.locator("#account-sponsor-btn")).to_have_text("充值额度")
     page.click("#account-sponsor-btn")
-    expect(page.locator("#billing-dialog")).to_be_visible()
-    expect(page.locator("#billing-dialog .billing-plans .billing-plan")).to_have_count(2)
-    modal_plans = page.locator("#billing-dialog .billing-plans .billing-plan strong").all_text_contents()
-    assert modal_plans == ["Zhiming Plus", "ZhiMing Pro"]
-    expect(page.locator("#billing-dialog .billing-plan-tip")).to_be_visible()
-    expect(page.locator('#billing-dialog a[href="/billing"]')).to_be_visible()
+    page.wait_for_url(f"{base}/billing?from=%2Fbazi")
+    expect(page.locator("#billing-back-btn")).to_be_visible()
+    expect(page.locator("#billing-back-btn")).to_have_text("← 返回上一页")
+    expect(page.locator("#billing-sub-plans .billing-tier")).to_have_count(2)
+    page.click("#billing-back-btn")
+    page.wait_for_url(f"{base}/bazi")
 
-    # 5. Exhaust account quota directly in DB -> composer bar & error guidance appear on /dream.
+    # 5. Exhaust account quota directly in DB -> composer bar & error guidance navigate to /billing
+    #    and back button returns directly to /dream.
     store = AccountStore(project / "data/app.db")
     try:
         creds = store.credentials("ux-buyer@example.com")
@@ -153,6 +156,9 @@ def test_billing_page_modal_and_exhausted_quota_flow(billing_site, chromium):
     expect(page.locator(".msg-error .msg-actions button")).to_have_text("立即充值额度")
     expect(page.locator("#notice")).to_be_visible()
     page.locator(".msg-error .msg-actions button").click()
-    expect(page.locator("#billing-dialog")).to_be_visible()
+    page.wait_for_url(f"{base}/billing?from=%2Fdream")
+    expect(page.locator("#billing-back-btn")).to_be_visible()
+    page.click("#billing-back-btn")
+    page.wait_for_url(f"{base}/dream")
 
     context.close()
