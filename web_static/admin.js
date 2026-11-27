@@ -37,6 +37,8 @@ const ACTIONS = {
   probe_interval: "修改模型检测周期",
   probe_model: "立即测试模型",
   revoke_logins: "强制下线",
+  afdian_sync: "同步爱发电订单",
+  afdian_bind_order: "手动绑定爱发电订单",
 };
 const EVENTS = {
   site_paused_auto: "异常消耗，已自动暂停全站模型调用",
@@ -45,6 +47,10 @@ const EVENTS = {
   site_resumed_auto: "自动暂停到期，已恢复模型调用",
   account_suspended_auto: "单账号异常消耗，已自动暂停该账号",
   budget_exhausted: "今日全站预算已用完",
+  afdian_order_credited: "爱发电订阅订单已到账",
+  afdian_tip_recorded: "收到爱发电一盏清茶赞赏",
+  afdian_order_unmatched: "爱发电订单暂未匹配账号（待人工绑定或自助认领）",
+  afdian_webhook_unverified: "收到未能通过爱发电查单核验的 Webhook 请求",
 };
 let data = null;
 let accountOffset = 0;
@@ -478,6 +484,9 @@ async function loadAccounts() {
     logout.addEventListener("click", () => accountAction(account, "logout"));
     actions.append(toggle, grant, logout);
     const quota = account.quota;
+    const extras = [];
+    if (quota.bonus) extras.push(`追加 ${number(quota.bonus)}`);
+    if (quota.subscription_limit) extras.push(`当月订阅剩 ${number(quota.subscription_remaining)}`);
     row.append(
       node("td", "", account.email),
       node("td", "", new Date(account.created_at).toLocaleDateString("zh-CN", { timeZone: ZONE })),
@@ -485,7 +494,7 @@ async function loadAccounts() {
       node(
         "td",
         "adm-num",
-        `${number(quota.used)} / ${quota.limit === null ? "不限额" : number(quota.limit)}${quota.bonus ? `（含追加 ${number(quota.bonus)}）` : ""}`,
+        `${number(quota.used)} / ${quota.limit === null ? "不限额" : number(quota.limit)}${extras.length ? `（${extras.join("，")}）` : ""}`,
       ),
       node("td", "adm-num", String(account.logins)),
       state,
@@ -621,6 +630,7 @@ async function load(force = false) {
   renderSystem();
   renderAccountSettings(force);
   renderProbe(force);
+  renderAfdianMeta(data.afdian);
 }
 
 function renderAccountSettings(force = false) {
@@ -705,6 +715,114 @@ $("#probe-run").addEventListener("click", async () => {
   finally { button.disabled = false; }
 });
 
+// ---------- afdian ----------
+
+const AFDIAN_STATUS_LABELS = {
+  credited: ["ok", "已到账"],
+  tip_recorded: ["info", "清茶赞赏"],
+  unmatched: ["warning", "待绑定"],
+  ignored: ["unknown", "已忽略"],
+};
+
+function renderAfdianMeta(stats) {
+  const meta = $("#afdian-meta");
+  if (!meta) return;
+  if (!stats || !stats.enabled) {
+    meta.textContent = "爱发电尚未配置（在服务器环境变量填入 AFDIAN_* 后启用）。";
+    return;
+  }
+  const syncNote = stats.last_sync_at
+    ? `上次同步 ${when(stats.last_sync_at)}${stats.last_sync_error ? `（失败：${stats.last_sync_error}）` : ""}`
+    : "尚未手动同步";
+  meta.textContent =
+    `共 ${number(stats.total_orders)} 单（已入账 ${number(stats.fulfilled_orders)}，待绑定 ${number(stats.unmatched_orders)}），` +
+    `累计发放 ${number(stats.total_tokens_granted)} token · Webhook ${stats.webhook_configured ? "已配密钥" : "未配密钥"} · ${syncNote}`;
+}
+
+async function loadAfdianOrders() {
+  const rows = $("#afdian-rows");
+  if (!rows) return;
+  const status = encodeURIComponent($("#afdian-status")?.value || "");
+  const query = encodeURIComponent($("#afdian-query")?.value.trim() || "");
+  const result = await call(`/api/admin/afdian/orders?status=${status}&q=${query}&limit=50`);
+  renderAfdianMeta(result.stats);
+  rows.replaceChildren();
+  for (const order of result.items) {
+    const row = node("tr");
+    const statusCell = node("td");
+    const [lvl, label] = AFDIAN_STATUS_LABELS[order.process_status] || ["unknown", order.process_status];
+    statusCell.append(badge(lvl, label));
+    if (order.tokens_granted > 0) {
+      statusCell.append(node("small", "adm-hint", ` +${number(order.tokens_granted)}`));
+    }
+    const actions = node("td", "adm-actions");
+    if (order.process_status === "unmatched") {
+      const bindBtn = node("button", "btn btn-text", "手动绑定");
+      bindBtn.type = "button";
+      bindBtn.addEventListener("click", async () => {
+        const target = prompt(`将订单 ${order.out_trade_no}（${order.plan_name} ¥${order.total_amount}）绑定到哪个知命账号（填写注册邮箱或 acct-...）：`, order.remark || "");
+        if (!target || !target.trim()) return;
+        try {
+          const res = await call(`/api/admin/afdian/orders/${encodeURIComponent(order.out_trade_no)}/bind`, {
+            method: "POST",
+            body: JSON.stringify({ account: target.trim() }),
+          });
+          $("#afdian-result").textContent = `订单 ${order.out_trade_no} 已绑定并入账（+${number(res.order?.tokens_granted || 0)} token）。`;
+          await Promise.all([load(), loadAccounts(), loadAfdianOrders()]);
+        } catch (error) {
+          showError(error.message);
+        }
+      });
+      actions.append(bindBtn);
+    } else {
+      actions.append(node("span", "adm-hint", "—"));
+    }
+    row.append(
+      node("td", "", order.out_trade_no),
+      node("td", "", order.plan_name),
+      node("td", "adm-num", `¥${order.total_amount} / ${order.month} 月`),
+      node("td", "", order.email || (order.user_id ? `${order.user_id}（已注销）` : "—")),
+      node("td", "", order.remark || "—"),
+      statusCell,
+      node("td", "", when(order.credited_at || order.received_at)),
+      actions,
+    );
+    rows.append(row);
+  }
+  if (!result.items.length) {
+    const row = node("tr");
+    const cell = node("td", "adm-empty", "暂无爱发电订单记录。");
+    cell.colSpan = 8;
+    row.append(cell);
+    rows.append(row);
+  }
+}
+
+$("#afdian-sync")?.addEventListener("click", async () => {
+  const btn = $("#afdian-sync");
+  btn.disabled = true;
+  $("#afdian-result").textContent = "正在从爱发电拉取近期订单…";
+  try {
+    const res = await call("/api/admin/afdian/sync", { method: "POST", body: "{}" });
+    const s = res.sync || {};
+    $("#afdian-result").textContent =
+      `同步完成：核查 ${number(s.checked)} 单，新到账 ${number((s.credited || 0) + (s.tip_recorded || 0))} 单，待绑定 ${number(s.unmatched)} 单，已存在跳过 ${number(s.replayed)} 单。`;
+    await Promise.all([load(), loadAccounts(), loadAfdianOrders()]);
+  } catch (error) {
+    showError(error.message);
+    $("#afdian-result").textContent = "";
+  } finally {
+    btn.disabled = false;
+  }
+});
+
+$("#afdian-filter")?.addEventListener("click", () => {
+  loadAfdianOrders().catch((error) => showError(error.message));
+});
+$("#afdian-status")?.addEventListener("change", () => {
+  loadAfdianOrders().catch((error) => showError(error.message));
+});
+
 function schedule() {
   clearInterval(timer);
   if ($("#auto-refresh").checked) timer = setInterval(() => load(), 30000);
@@ -713,8 +831,12 @@ function schedule() {
 $("#refresh").addEventListener("click", () => {
   load();
   loadAccounts().catch((error) => showError(error.message));
+  loadAfdianOrders().catch((error) => showError(error.message));
 });
 $("#auto-refresh").addEventListener("change", schedule);
 
-load(true).then(() => loadAccounts().catch((error) => showError(error.message)));
+load(true).then(() => {
+  loadAccounts().catch((error) => showError(error.message));
+  loadAfdianOrders().catch((error) => showError(error.message));
+});
 schedule();

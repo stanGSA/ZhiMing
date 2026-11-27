@@ -65,6 +65,11 @@ class ProbeInterval(BaseModel):
     minutes: int = Field(ge=0, le=10080)
 
 
+class BindAfdianOrder(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+    account: str = Field(min_length=1, max_length=254)
+
+
 @dataclass
 class AdminContext:
     accounts: Callable[[], AccountStore]
@@ -80,6 +85,7 @@ class AdminContext:
     data_dir: Path
     stats: Callable[[], dict]
     probe: object = None
+    afdian: object = None
 
 
 def parse_admin_ids(value: str | list[str] | None) -> frozenset[str]:
@@ -257,6 +263,7 @@ def install(app: FastAPI, ctx: AdminContext) -> None:
             "monitor": monitor,
             "registration_free_tokens": store.registration_allowance(),
             "model_probe": ctx.probe.snapshot() if ctx.probe else None,
+            "afdian": ctx.afdian.snapshot() if ctx.afdian else None,
             "system": {
                 **ctx.stats(),
                 "accounts": store.db.execute("SELECT COUNT(*) FROM accounts").fetchone()[0],
@@ -361,6 +368,44 @@ def install(app: FastAPI, ctx: AdminContext) -> None:
         ended = ctx.accounts().revoke_all(user_id, admin)
         await ctx.drop_logins(user_id, ended)
         return {"ended": len(ended)}
+
+    @app.get("/api/admin/afdian/orders")
+    async def list_afdian_orders(
+        request: Request,
+        status: str = Query("", max_length=24),
+        q: str = Query("", max_length=80),
+        offset: int = Query(0, ge=0, le=1_000_000),
+        limit: int = Query(50, ge=1, le=200),
+    ):
+        admin_of(request)
+        if ctx.afdian is None:
+            return {"items": [], "total": 0, "offset": offset, "stats": None}
+        items, total = ctx.afdian.billing().list_orders_admin(
+            status=status, query=q, offset=offset, limit=limit
+        )
+        return {"items": items, "total": total, "offset": offset, "stats": ctx.afdian.snapshot()}
+
+    @app.post("/api/admin/afdian/sync")
+    async def sync_afdian_orders(request: Request):
+        admin = admin_of(request)
+        if ctx.afdian is None:
+            raise HTTPException(
+                503, {"code": "afdian_not_configured", "message": "爱发电服务尚未配置。"}
+            )
+        summary = await ctx.afdian.sync_recent(max_pages=3)
+        with ctx.accounts().db:
+            ctx.accounts().costs.audit(admin, "afdian_sync", summary)
+        return {"sync": summary, "afdian": ctx.afdian.snapshot()}
+
+    @app.post("/api/admin/afdian/orders/{out_trade_no}/bind")
+    async def bind_afdian_order(out_trade_no: str, body: BindAfdianOrder, request: Request):
+        admin = admin_of(request)
+        if ctx.afdian is None:
+            raise HTTPException(
+                503, {"code": "afdian_not_configured", "message": "爱发电服务尚未配置。"}
+            )
+        result = ctx.afdian.billing().bind_order_admin(out_trade_no, body.account, admin)
+        return {"order": result, "afdian": ctx.afdian.snapshot()}
 
 
 def main(argv: list[str] | None = None) -> int:

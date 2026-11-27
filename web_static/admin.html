@@ -23,6 +23,7 @@
           <a href="#usage">用量</a>
           <a href="#controls">费用控制</a>
           <a href="#accounts">账号</a>
+          <a href="#afdian">爱发电</a>
           <a href="#system">系统</a>
         </nav>
         <div class="zm-tools">
@@ -160,6 +161,46 @@
         <div class="btn-row">
           <button class="btn btn-ghost" id="accounts-prev" type="button">上一页</button>
           <button class="btn btn-ghost" id="accounts-next" type="button">下一页</button>
+        </div>
+      </section>
+
+      <section id="afdian" class="adm-section" aria-labelledby="afdian-title">
+        <div class="adm-section-head">
+          <h2 id="afdian-title">爱发电订单与对账</h2>
+          <p class="adm-hint" id="afdian-meta">正在加载…</p>
+        </div>
+        <div class="adm-inline">
+          <button class="btn btn-primary" id="afdian-sync" type="button">立即同步爱发电订单</button>
+          <label class="field">
+            <span>状态筛选</span>
+            <select id="afdian-status">
+              <option value="">全部</option>
+              <option value="unmatched">待手动绑定（unmatched）</option>
+              <option value="credited">已到账（credited）</option>
+              <option value="tip_recorded">清茶赞赏（tip_recorded）</option>
+              <option value="ignored">已忽略（ignored）</option>
+            </select>
+          </label>
+          <label class="field"><span>搜索单号 / 邮箱 / 备注</span><input id="afdian-query" maxlength="80" /></label>
+          <button class="btn btn-ghost" id="afdian-filter" type="button">筛选</button>
+        </div>
+        <p id="afdian-result" role="status" aria-live="polite"></p>
+        <div class="adm-scroll">
+          <table class="adm-table">
+            <thead>
+              <tr>
+                <th scope="col">交易单号</th>
+                <th scope="col">方案</th>
+                <th scope="col">金额 / 月数</th>
+                <th scope="col">绑定账号</th>
+                <th scope="col">备注</th>
+                <th scope="col">状态 / 额度</th>
+                <th scope="col">时间</th>
+                <th scope="col">操作</th>
+              </tr>
+            </thead>
+            <tbody id="afdian-rows"></tbody>
+          </table>
         </div>
       </section>
 

@@ -15,7 +15,10 @@ from contextvars import ContextVar
 
 class QuotaExceeded(Exception):
     code = "free_quota_exhausted"
-    message = "免费额度已用完或不足以完成本次模型调用，可继续使用离线演示、排盘及查看历史记录。"
+    message = (
+        "当前可用额度已用完或不足以完成本次模型调用；可在账号中赞助升级获取月度额度，"
+        "或继续使用离线演示、排盘及查看历史记录。"
+    )
     retryable = False
 
 

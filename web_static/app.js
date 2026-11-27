@@ -267,6 +267,31 @@ function storageNote() {
     : "只保存在本次浏览器会话中，闲置 12 小时后清除；登录账号可长期保存。";
 }
 
+let billingPlansCache = null;
+
+function formatShanghaiTime(seconds) {
+  if (!seconds) return "";
+  return new Date(seconds * 1000).toLocaleString("zh-CN", {
+    timeZone: "Asia/Shanghai",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: false,
+  });
+}
+
+async function fetchBillingPlans() {
+  if (billingPlansCache) return billingPlansCache;
+  try {
+    billingPlansCache = await api("/api/billing/plans");
+  } catch {
+    return null;
+  }
+  return billingPlansCache;
+}
+
 function renderAccount() {
   const chip = $("#account-button");
   if (!chip) return;
@@ -275,17 +300,52 @@ function renderAccount() {
   chip.title = state?.account ? `${state.account.email} · 账号与云端记录` : "登录或注册，云端保存记录";
   let badge = $("#account-quota");
   if (!badge) {
-    badge = node("span", "quota-badge");
+    badge = node("button", "quota-badge");
+    badge.type = "button";
     badge.id = "account-quota";
     badge.setAttribute("aria-live", "polite");
+    badge.addEventListener("click", () => {
+      if (state?.account) openAccount({ focusBilling: true });
+    });
     chip.after(badge);
   }
   const quota = state?.account?.quota;
+  const billing = state?.account?.billing;
+  const sub = billing?.quota?.subscription;
+  const perm = billing?.quota?.permanent;
   badge.hidden = !quota;
-  badge.textContent = quota ? (quota.limit === null ? "账号额度不限" : `免费剩余 ${quota.remaining.toLocaleString("zh-CN")} token`) : "";
-  badge.title = quota?.limit === null
-    ? "此账号不受账号额度限制；全站预算、并发和异常消耗保护仍生效。"
-    : "账号额度累计使用，不按月重置；输入和输出均计入，离线演示不扣额度。";
+  if (quota) {
+    if (quota.limit === null) {
+      badge.textContent = "账号额度不限";
+      badge.title = "此账号不受账号额度限制；全站预算、并发和异常消耗保护仍生效。";
+    } else if (sub && sub.limit > 0) {
+      badge.textContent = `剩余 ${quota.remaining.toLocaleString("zh-CN")} token`;
+      const expiry = sub.earliest_expires_at ? `（至 ${formatShanghaiTime(sub.earliest_expires_at)}）` : "";
+      badge.title =
+        `当月订阅剩余 ${sub.remaining.toLocaleString("zh-CN")} token${expiry} · ` +
+        `永久额度剩余 ${(perm?.remaining ?? 0).toLocaleString("zh-CN")} token；优先扣减即将到期的月度额度。`;
+    } else {
+      badge.textContent = `免费剩余 ${quota.remaining.toLocaleString("zh-CN")} token`;
+      badge.title = "永久免费额度不按月清零；输入和输出均计入，离线演示不扣额度。点击查看额度与赞赏方案。";
+    }
+  } else {
+    badge.textContent = "";
+    badge.title = "";
+  }
+  let sponsorBtn = $("#account-sponsor-btn");
+  if (billing?.enabled && state?.account) {
+    if (!sponsorBtn) {
+      sponsorBtn = node("button", "quota-sponsor-btn", "赞赏");
+      sponsorBtn.type = "button";
+      sponsorBtn.id = "account-sponsor-btn";
+      sponsorBtn.title = "通过爱发电赞赏支持或升级月度 Token 额度";
+      sponsorBtn.addEventListener("click", () => openAccount({ focusBilling: true }));
+      badge.after(sponsorBtn);
+    }
+    sponsorBtn.hidden = false;
+  } else if (sponsorBtn) {
+    sponsorBtn.hidden = true;
+  }
   $$("[data-storage-note]").forEach((note) => {
     note.textContent = storageNote();
   });
@@ -313,7 +373,229 @@ function accountField(label, id, autocomplete) {
   return labelled(label, input);
 }
 
-function openAccount() {
+function applyBillingRefresh(result) {
+  if (!state?.account || !result) return;
+  if (result.quota) state.account.quota = result.quota;
+  if (result.billing) state.account.billing = result.billing;
+  renderAccount();
+}
+
+function buildBillingSection(account, dialog, focusBilling) {
+  const billing = account.billing;
+  const container = node("div", "billing-panel");
+
+  if (billing?.badges?.length) {
+    const badgesRow = node("div", "billing-badges");
+    for (const item of billing.badges) {
+      const pill = node("span", `billing-badge billing-badge-${item.key}`);
+      if (item.key === "tip") {
+        pill.textContent = item.count > 1 ? `🍵 一盏清茶 · 赞赏 ${item.count} 次` : "🍵 一盏清茶 · 感谢赞赏";
+      } else {
+        pill.textContent = `${item.label}${item.expires_at ? ` · 至 ${formatShanghaiTime(item.expires_at)}` : ""}`;
+      }
+      badgesRow.append(pill);
+    }
+    container.append(badgesRow);
+  }
+
+  const detail = billing?.quota;
+  if (detail && detail.limit !== null) {
+    const breakdown = node("div", "quota-breakdown");
+    const sub = detail.subscription;
+    const perm = detail.permanent;
+    if (sub && (sub.limit > 0 || sub.upcoming_grants?.length)) {
+      const subRow = node("div", "quota-line");
+      subRow.append(
+        node("span", "quota-line-label", "当月订阅额度"),
+        node(
+          "span",
+          "quota-line-value",
+          `${sub.remaining.toLocaleString("zh-CN")} / ${sub.limit.toLocaleString("zh-CN")} token`,
+        ),
+      );
+      breakdown.append(subRow);
+      if (sub.earliest_expires_at) {
+        const expText =
+          sub.latest_expires_at && sub.latest_expires_at !== sub.earliest_expires_at
+            ? `最早到期 ${formatShanghaiTime(sub.earliest_expires_at)}（最晚 ${formatShanghaiTime(sub.latest_expires_at)}）；同周期重复订阅已叠加，优先扣减最早到期额度。`
+            : `有效期至 ${formatShanghaiTime(sub.earliest_expires_at)}（订阅日起至下月同日），系统优先扣减此额度。`;
+        breakdown.append(node("p", "quota-line-note", expText));
+      }
+      if (sub.upcoming_grants?.length) {
+        breakdown.append(
+          node(
+            "p",
+            "quota-line-note",
+            `另有 ${sub.upcoming_grants.length} 期后续月度额度将在 ${formatShanghaiTime(sub.upcoming_grants[0].starts_at)} 起依次生效。`,
+          ),
+        );
+      }
+    }
+    if (perm && perm.limit !== null) {
+      const permRow = node("div", "quota-line");
+      permRow.append(
+        node("span", "quota-line-label", "永久免费/赠予额度"),
+        node(
+          "span",
+          "quota-line-value",
+          `${perm.remaining.toLocaleString("zh-CN")} / ${perm.limit.toLocaleString("zh-CN")} token`,
+        ),
+      );
+      breakdown.append(permRow);
+      breakdown.append(
+        node("p", "quota-line-note", "永久有效，不按月清零；输入、输出及内部重试均计入，离线演示不扣额度。"),
+      );
+    }
+    container.append(breakdown);
+  }
+
+  if (billing?.enabled) {
+    const sponsor = node("details", "account-section billing-sponsor");
+    sponsor.open = Boolean(focusBilling || (account.quota && account.quota.limit !== null && account.quota.remaining <= 20000));
+    sponsor.append(node("summary", "", "爱发电赞赏与月度额度"));
+    const body = node("div", "billing-sponsor-body");
+    const plansWrap = node("div", "billing-plans");
+    plansWrap.append(node("p", "quota-line-note", "正在加载方案…"));
+    const statusBox = node("div", "billing-status-box");
+    statusBox.hidden = true;
+    const syncRow = node("div", "btn-row billing-sync-row");
+    const syncBtn = button("我已支付，刷新额度", "btn btn-ghost");
+    syncBtn.addEventListener("click", async () => {
+      syncBtn.disabled = true;
+      try {
+        const res = await api("/api/billing/afdian/sync", { method: "POST", body: "{}" });
+        applyBillingRefresh(res);
+        const added = (res.sync?.credited || 0) + (res.sync?.tip_recorded || 0);
+        toast(added > 0 ? "已同步最新爱发电订单，额度已更新。" : "已完成同步，暂无新的待入账订单。");
+        openAccount({ focusBilling: true });
+      } catch (error) {
+        toast(error.message);
+      } finally {
+        syncBtn.disabled = false;
+      }
+    });
+    syncRow.append(syncBtn);
+    if (billing.creator_url) {
+      const homeLink = node("a", "account-link", "前往爱发电主页");
+      homeLink.href = billing.creator_url;
+      homeLink.target = "_blank";
+      homeLink.rel = "noopener noreferrer";
+      syncRow.append(homeLink);
+    }
+
+    const claimDetails = node("details", "billing-claim");
+    claimDetails.append(node("summary", "", "已直接赞助但未自动到账？输入订单号补录"));
+    const claimForm = node("form", "account-form");
+    const tradeInput = node("input");
+    tradeInput.type = "text";
+    tradeInput.maxLength = 64;
+    tradeInput.required = true;
+    tradeInput.placeholder = "例如 20261127...";
+    const claimSubmit = button("核验并补录", "btn btn-primary", "submit");
+    claimForm.append(labelled("爱发电订单号", tradeInput), claimSubmit);
+    claimForm.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      const tradeNo = tradeInput.value.trim();
+      if (!tradeNo) return;
+      claimSubmit.disabled = true;
+      try {
+        const res = await api("/api/billing/afdian/claim", {
+          method: "POST",
+          body: JSON.stringify({ out_trade_no: tradeNo }),
+        });
+        applyBillingRefresh(res);
+        tradeInput.value = "";
+        toast(
+          res.order?.process_status === "tip_recorded"
+            ? "感谢一盏清茶赞赏！记录已同步到你的账号。"
+            : `订单已核验到账（+${Number(res.order?.tokens_granted || 0).toLocaleString("zh-CN")} token）。`,
+        );
+        openAccount({ focusBilling: true });
+      } catch (error) {
+        toast(error.message);
+      } finally {
+        claimSubmit.disabled = false;
+      }
+    });
+    claimDetails.append(claimForm);
+
+    body.append(plansWrap, statusBox, syncRow, claimDetails);
+    sponsor.append(body);
+    container.append(sponsor);
+
+    fetchBillingPlans().then((info) => {
+      if (!dialog.open) return;
+      plansWrap.replaceChildren();
+      if (!info?.plans?.length) {
+        plansWrap.append(node("p", "quota-line-note", "暂未获取到赞助方案，请稍后再试。"));
+        return;
+      }
+      for (const plan of info.plans) {
+        const card = node("div", `billing-plan billing-plan-${plan.key}`);
+        const head = node("div", "billing-plan-head");
+        head.append(node("strong", "", plan.name), node("span", "billing-plan-price", plan.price_display));
+        const desc = node("p", "billing-plan-desc", plan.description);
+        const go = button(plan.key === "tip" ? "赞赏一盏清茶" : `订阅 ${plan.name}`, "btn btn-primary");
+        go.addEventListener("click", async () => {
+          go.disabled = true;
+          try {
+            const checkout = await api("/api/billing/afdian/checkout", {
+              method: "POST",
+              body: JSON.stringify({ plan_key: plan.key }),
+            });
+            const opened = window.open(checkout.pay_url, "_blank", "noopener,noreferrer");
+            statusBox.hidden = false;
+            statusBox.replaceChildren(
+              node(
+                "p",
+                "",
+                opened
+                  ? `已在新标签页打开「${plan.name}」支付页。支付完成后通常数秒自动到账，也可点击下方「我已支付，刷新额度」。`
+                  : "浏览器拦截了新标签页，请点击下方链接前往爱发电完成支付：",
+              ),
+            );
+            const fallbackLink = node("a", "account-link", `前往爱发电完成「${plan.name}」支付 →`);
+            fallbackLink.href = checkout.pay_url;
+            fallbackLink.target = "_blank";
+            fallbackLink.rel = "noopener noreferrer";
+            statusBox.append(fallbackLink);
+          } catch (error) {
+            toast(error.message);
+          } finally {
+            go.disabled = false;
+          }
+        });
+        card.append(head, desc, go);
+        plansWrap.append(card);
+      }
+    });
+  }
+
+  if (billing?.orders?.length) {
+    const ordersDetails = node("details", "account-section");
+    ordersDetails.append(node("summary", "", `赞赏与订阅记录（${billing.orders.length}）`));
+    const list = node("ul", "billing-orders");
+    for (const order of billing.orders) {
+      const li = node("li", "billing-order-item");
+      const meta =
+        order.status === "tip_recorded"
+          ? `纯赞赏 · ¥${order.total_amount}`
+          : `+${Number(order.tokens_granted || 0).toLocaleString("zh-CN")} token · ¥${order.total_amount}` +
+            (order.expires_at ? ` · 至 ${formatShanghaiTime(order.expires_at)}` : "");
+      li.append(
+        node("div", "billing-order-main", `${order.plan_name}${order.month > 1 ? ` × ${order.month} 个月` : ""}`),
+        node("div", "billing-order-meta", `${meta} · ${formatShanghaiTime(order.at)}`),
+      );
+      list.append(li);
+    }
+    ordersDetails.append(list);
+    container.append(ordersDetails);
+  }
+
+  return container;
+}
+
+function openAccount(options = {}) {
   const dialog = $("#account-dialog");
   const account = state?.account;
   const close = button("关闭", "btn btn-ghost");
@@ -343,10 +625,11 @@ function openAccount() {
     "p",
     "",
     `${Number.isNaN(since.getTime()) ? "" : `注册于 ${since.toLocaleDateString("zh-CN", { timeZone: "Asia/Shanghai" })} · `}生辰档案与解读记录已保存到账号，可在任意设备登录查看。` +
-      (account.quota ? (account.quota.limit === null
+      (account.quota && account.quota.limit === null
         ? " 账号额度不限，累计用量正常记录；全站预算、并发和异常消耗保护仍生效。"
-        : ` 免费额度剩余 ${account.quota.remaining.toLocaleString("zh-CN")} / ${account.quota.limit.toLocaleString("zh-CN")} token（累计，不按月重置）。输入、输出及内部重试均计入；离线演示不扣额度。`) : ""),
+        : ""),
   );
+  const billingSection = buildBillingSection(account, dialog, Boolean(options.focusBilling));
   const exportLink = node("a", "btn btn-ghost", "导出我的记录");
   exportLink.href = "/api/export";
   exportLink.download = "";
@@ -432,8 +715,16 @@ function openAccount() {
     }
   });
   removal.append(removalForm);
-  dialog.replaceChildren(node("h2", "", account.email), intro, actions, password, removal, privacy);
-  dialog.showModal();
+  dialog.replaceChildren(
+    node("h2", "", account.email),
+    intro,
+    billingSection,
+    actions,
+    password,
+    removal,
+    privacy,
+  );
+  if (!dialog.open) dialog.showModal();
 }
 
 /* Resolves true when the person confirms; one dialog serves every destructive action. */

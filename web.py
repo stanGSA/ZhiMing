@@ -65,6 +65,13 @@ from memory.accounts import (
     token_digest,
     verify_password,
 )
+from memory.billing import (
+    AfdianClient,
+    AfdianConfig,
+    AfdianService,
+    BillingError,
+    BillingStore,
+)
 from memory.store import Store
 from ops.admin import AdminContext, parse_admin_ids
 from ops.admin import install as install_admin
@@ -336,6 +343,16 @@ class PasswordConfirmation(BaseModel):
     password: str = Field(min_length=1, max_length=256)
 
 
+class AfdianCheckoutInput(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+    plan_key: Literal["tip", "plus", "pro"]
+
+
+class AfdianClaimInput(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+    out_trade_no: str = Field(min_length=8, max_length=64)
+
+
 # Every error the browser receives has the shape {"detail": {"code": ..., "message": ...}}.
 STATUS_CODES = {
     400: "bad_request",
@@ -568,6 +585,8 @@ def create_web_app(
     monitor_token: str | None = None,
     monitor_status: Path | None = None,
     release_file: Path | None = None,
+    afdian_config: AfdianConfig | None = None,
+    afdian_client: AfdianClient | None = None,
 ) -> FastAPI:
     """Keep local access as the default; public HTTPS may use an optional sharing password.
 
@@ -614,8 +633,10 @@ def create_web_app(
     instance = secrets.token_hex(4)
     extended: dict[str, float] = {}
     account_db: list[AccountStore] = []
+    billing_db: list[BillingStore] = []
     checkpoints: dict[str, object] = {"task": None, "again": False}
     started = time.time()
+    resolved_afdian = afdian_config if afdian_config is not None else AfdianConfig.from_env()
 
     def accounts() -> AccountStore:
         if not account_db:
@@ -626,12 +647,18 @@ def create_web_app(
             )
         return account_db[0]
 
+    def billing() -> BillingStore:
+        if not billing_db:
+            billing_db.append(BillingStore(accounts(), resolved_afdian))
+        return billing_db[0]
+
     # Site-wide bound on simultaneous model requests; the admin page can change it live.
     gate = ConcurrencyGate(
         lambda: accounts().costs.settings()["max_concurrent_calls"],
         lambda: accounts().costs.settings()["queue_wait_s"],
     )
     probe = ProbeService(accounts, gate, config)
+    afdian = AfdianService(billing, resolved_afdian, client=afdian_client)
 
     def live_roots():
         roots = {id(s): s for s in [*sessions.values(), *accounts_live.values()]}
@@ -742,10 +769,12 @@ def create_web_app(
             logger.warning("Administrator ids without an account: %s", ", ".join(missing))
         cleanup = asyncio.create_task(reap())
         probe_task = asyncio.create_task(probe.schedule())
+        afdian_task = asyncio.create_task(afdian.schedule())
         yield
         cleanup.cancel()
         probe_task.cancel()
-        await asyncio.gather(cleanup, probe_task, return_exceptions=True)
+        afdian_task.cancel()
+        await asyncio.gather(cleanup, probe_task, afdian_task, return_exceptions=True)
         for root_session in live_roots():
             for context in family(root_session):
                 await close(context)
@@ -753,6 +782,7 @@ def create_web_app(
         accounts_live.clear()
         if checkpoints["task"] is not None:
             await asyncio.gather(checkpoints["task"], return_exceptions=True)
+        billing_db.clear()
         if account_db:
             account_db.pop().close()
 
@@ -823,6 +853,7 @@ def create_web_app(
     async def local_requests(request: Request, call_next):
         # Quoted in unexpected-error replies and the server log, so a report can be traced.
         request.state.request_id = secrets.token_hex(6)
+        is_webhook = request.url.path.startswith("/api/webhooks/afdian/")
         device = request.cookies.get(DEVICE_COOKIE, "")
         identity, _, signature = device.partition(".")
         secret = accounts().device_secret()
@@ -836,7 +867,7 @@ def create_web_app(
             device = identity + "." + signature
         request.state.device = identity
         response = await respond(request, call_next)
-        if fresh_device:
+        if fresh_device and not is_webhook:
             response.set_cookie(
                 DEVICE_COOKIE,
                 device,
@@ -857,7 +888,8 @@ def create_web_app(
         return response
 
     async def respond(request: Request, call_next):
-        if share_credentials is not None:
+        is_webhook = request.url.path.startswith("/api/webhooks/afdian/")
+        if share_credentials is not None and not is_webhook:
             scheme, _, token = request.headers.get("authorization", "").partition(" ")
             try:
                 credentials = base64.b64decode(token, validate=True)
@@ -872,7 +904,7 @@ def create_web_app(
                     "请输入朋友体验的用户名和访问口令。",
                     headers={"WWW-Authenticate": 'Basic realm="ZhiMing Friends", charset="UTF-8"'},
                 )
-        if request.method not in ("GET", "HEAD", "OPTIONS"):
+        if request.method not in ("GET", "HEAD", "OPTIONS") and not is_webhook:
             origin = request.headers.get("origin")
             expected_origin = public_origin or str(request.base_url).rstrip("/")
             if origin and origin != expected_origin:
@@ -965,6 +997,10 @@ def create_web_app(
             return problem(503, exc.code, exc.message, headers={"Retry-After": "60"})
         return problem(403, exc.code, exc.message)
 
+    @app.exception_handler(BillingError)
+    async def billing_refused(request: Request, exc: BillingError):
+        return problem(exc.status_code, exc.code, exc.message)
+
     def keep_login(key):
         """Slide an account login's expiry; written at most every five minutes."""
         now = time.monotonic()
@@ -1051,6 +1087,7 @@ def create_web_app(
             "email": account["email"],
             "created_at": account["created_at"],
             "quota": accounts().quota(account["user_id"]),
+            "billing": billing().user_summary(account["user_id"]),
         }
 
     def restore_birth(root_session):
@@ -1386,7 +1423,11 @@ def create_web_app(
         return {
             "system": session.system,
             "instance": instance,
-            "account": {**owner.account, "quota": accounts().quota(owner.user_id)}
+            "account": {
+                **owner.account,
+                "quota": accounts().quota(owner.user_id),
+                "billing": billing().user_summary(owner.user_id),
+            }
             if owner.account
             else None,
             "session_epoch": session.runtime.session.id,
@@ -2253,7 +2294,11 @@ def create_web_app(
             }
         if current.account is not None:
             return {
-                "account": {**current.account, "quota": accounts().quota(current.user_id)},
+                "account": {
+                    **current.account,
+                    "quota": accounts().quota(current.user_id),
+                    "billing": billing().user_summary(current.user_id),
+                },
                 "guest": None,
                 "registration_free_tokens": accounts().registration_allowance(),
             }
@@ -2392,6 +2437,84 @@ def create_web_app(
         response = JSONResponse({"ok": True})
         response.delete_cookie(COOKIE, secure=public_origin is not None, samesite="strict")
         return response
+
+    # ---------- Billing (Afdian) ----------
+
+    @app.get("/api/billing/plans")
+    async def billing_plans():
+        return {
+            "enabled": resolved_afdian.enabled,
+            "creator_url": resolved_afdian.creator_url,
+            "plans": resolved_afdian.public_plans(),
+            "free_registration_tokens": accounts().registration_allowance(),
+            "rules": [
+                f"新注册账号赠送永久 {accounts().registration_allowance():,} Tokens，不按月清零。",
+                "Zhiming Plus / ZhiMing Pro 额度自订阅时刻起至下月同日同时刻有效，系统优先扣减即将到期的月度额度。",
+                "同周期内重复订阅或升级，新额度将直接叠加到账户中；一盏清茶为纯赞赏支持（0 Token），账号页展示致谢徽章。",
+            ],
+        }
+
+    @app.get("/api/billing/status")
+    async def billing_status(request: Request):
+        session = get_session(request, "auto")
+        owner = require_account(session)
+        return {
+            "quota": accounts().quota(owner.user_id),
+            "billing": billing().user_summary(owner.user_id),
+            "plans": resolved_afdian.public_plans(),
+        }
+
+    @app.post("/api/billing/afdian/checkout")
+    async def afdian_checkout(body: AfdianCheckoutInput, request: Request):
+        session = get_session(request, "auto")
+        owner = require_account(session)
+        key = "afdian-checkout:" + owner.user_id
+        throttle((key, 20, 600))
+        limiter.record(key)
+        return billing().create_checkout(owner.user_id, body.plan_key)
+
+    @app.post("/api/billing/afdian/sync")
+    async def afdian_user_sync(request: Request):
+        session = get_session(request, "auto")
+        owner = require_account(session)
+        key = "afdian-sync:" + owner.user_id
+        throttle((key, 3, 60))
+        limiter.record(key)
+        summary = await afdian.sync_recent(max_pages=1)
+        return {
+            "sync": summary,
+            "quota": accounts().quota(owner.user_id),
+            "billing": billing().user_summary(owner.user_id),
+        }
+
+    @app.post("/api/billing/afdian/claim")
+    async def afdian_claim(body: AfdianClaimInput, request: Request):
+        session = get_session(request, "auto")
+        owner = require_account(session)
+        key = "afdian-claim:" + owner.user_id
+        throttle((key, 8, 900))
+        limiter.record(key)
+        result = await afdian.claim_order(owner.user_id, owner.account["email"], body.out_trade_no)
+        return {
+            "order": result,
+            "quota": accounts().quota(owner.user_id),
+            "billing": billing().user_summary(owner.user_id),
+        }
+
+    @app.post("/api/webhooks/afdian/{secret}", include_in_schema=False)
+    async def afdian_webhook(secret: str, request: Request):
+        if not resolved_afdian.verify_webhook_secret(secret):
+            raise HTTPException(404)
+        client_key = "afdian-webhook:" + client_of(request)
+        throttle((client_key, 120, 60))
+        limiter.record(client_key)
+        try:
+            payload = await request.json()
+        except Exception:
+            payload = {}
+        if not isinstance(payload, dict):
+            payload = {}
+        return await afdian.handle_webhook(payload)
 
     @app.get("/api/locations")
     async def locations(parent: str | None = None):
@@ -2570,6 +2693,7 @@ def create_web_app(
             drop_logins=drop_logins,
             gate=gate,
             probe=probe,
+            afdian=afdian,
             admins=admins,
             monitor_token=monitor_token,
             monitor_status=monitor_status,
