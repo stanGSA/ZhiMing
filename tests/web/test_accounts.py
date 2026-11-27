@@ -17,6 +17,7 @@ from memory.store import Store
 from web import ACCOUNT_IDLE, MAX_IDLE, create_web_app
 
 HEADERS = {"X-Zhiming-Client": "web", "Origin": "http://testserver"}
+EMAIL = "cloud@example.com"
 PASSWORD = "abc12345"
 BIRTH = {"date": "2001-11-25", "time": "10:11", "location_id": "1803361"}
 
@@ -42,11 +43,11 @@ async def site(project):
             yield client, app, runtimes
 
 
-async def register(client, username="云端用户", keep=False, **extra):
+async def register(client, email=EMAIL, keep=False, **extra):
     return await client.post(
         "/api/account/register",
         json={
-            "username": username,
+            "email": email,
             "password": PASSWORD,
             "accept_privacy": True,
             "keep_guest_records": keep,
@@ -55,10 +56,10 @@ async def register(client, username="云端用户", keep=False, **extra):
     )
 
 
-async def login(client, username="云端用户", password=PASSWORD, keep=False):
+async def login(client, email=EMAIL, password=PASSWORD, keep=False):
     return await client.post(
         "/api/account/login",
-        json={"username": username, "password": password, "keep_guest_records": keep},
+        json={"email": email, "password": password, "keep_guest_records": keep},
     )
 
 
@@ -90,14 +91,14 @@ async def test_register_keeps_guest_records_and_birth(site, project):
 
     created = await register(client, keep=True)
     assert created.status_code == 201
-    assert created.json()["account"]["username"] == "云端用户"
+    assert created.json()["account"]["email"] == EMAIL
     assert created.json()["moved_readings"] == 1
     cookie = created.headers["set-cookie"]
     assert "HttpOnly" in cookie and "SameSite=strict" in cookie
     assert f"Max-Age={ACCOUNT_IDLE}" in cookie
 
     state = (await client.get("/api/session")).json()
-    assert state["account"]["username"] == "云端用户"
+    assert state["account"]["email"] == EMAIL
     assert state["birth"]["date"] == BIRTH["date"]
     assert [item["reading_id"] for item in state["history"]] == [reading_id]
     assert state["history_total"] == 1
@@ -159,27 +160,48 @@ async def test_account_records_survive_a_restart(project):
         assert restored["stale"] is False
 
 
-async def test_account_rules_and_duplicate_names(site):
+async def test_account_rules_and_duplicate_emails(site):
     client, _, _ = site
     for body, code in (
-        ({"username": "a"}, "invalid_username"),
-        ({"username": "有 空格"}, "invalid_username"),
-        ({"username": "合规名字", "password": "short1"}, "weak_password"),
-        ({"username": "合规名字", "password": "onlyletters"}, "weak_password"),
-        ({"username": "合规名字", "accept_privacy": False}, "privacy_consent_required"),
+        ({"email": "a"}, "invalid_email"),
+        ({"email": "云端用户"}, "invalid_email"),
+        ({"email": "user@localhost"}, "invalid_email"),
+        ({"email": "user @example.com"}, "invalid_email"),
+        ({"email": ".user@example.com"}, "invalid_email"),
+        ({"email": "user..a@example.com"}, "invalid_email"),
+        ({"email": "user@example.c"}, "invalid_email"),
+        ({"email": "valid@example.com", "password": "short1"}, "weak_password"),
+        ({"email": "valid@example.com", "password": "onlyletters"}, "weak_password"),
+        ({"email": "valid1@example.com", "password": "valid1@example.com"}, "weak_password"),
+        ({"email": "valid@example.com", "accept_privacy": False}, "privacy_consent_required"),
     ):
         response = await client.post(
             "/api/account/register",
-            json={"username": "x", "password": PASSWORD, "accept_privacy": True, **body},
+            json={"email": "x@example.com", "password": PASSWORD, "accept_privacy": True, **body},
         )
         assert response.status_code == 422, body
         assert response.json()["detail"]["code"] == code
-    assert (await register(client, "Stan_1")).status_code == 201
+    created = await register(client, "Stan_1@Example.com")
+    assert created.status_code == 201
+    assert created.json()["account"]["email"] == "stan_1@example.com"
     await client.post("/api/account/logout")
-    # Names are unique regardless of case and full-width forms.
-    taken = await register(client, "ｓｔａｎ_1")
-    assert taken.status_code == 409 and taken.json()["detail"]["code"] == "username_taken"
-    assert (await login(client, "STAN_1")).status_code == 200
+    # Emails are unique regardless of case and full-width forms.
+    taken = await register(client, "ｓｔａｎ_1@example.com")
+    assert taken.status_code == 409 and taken.json()["detail"]["code"] == "email_taken"
+    assert (await login(client, "STAN_1@EXAMPLE.COM")).status_code == 200
+
+
+async def test_legacy_non_email_account_can_still_sign_in(site, project):
+    client, _, _ = site
+    accounts = AccountStore(project / "data/app.db")
+    try:
+        accounts.create("老用户", hash_password(PASSWORD))
+    finally:
+        accounts.close()
+    signed = await login(client, "老用户")
+    assert signed.status_code == 200
+    assert signed.json()["account"]["email"] == "老用户"
+    assert (await client.get("/api/session")).json()["account"]["email"] == "老用户"
 
 
 async def test_failed_sign_ins_are_limited(site):
@@ -191,13 +213,13 @@ async def test_failed_sign_ins_are_limited(site):
         assert failed.status_code == 401
         assert failed.json()["detail"] == {
             "code": "invalid_credentials",
-            "message": "账号或密码不正确。",
+            "message": "邮箱或密码不正确。",
         }
     limited = await login(client)
     assert limited.status_code == 429
     assert int(limited.headers["retry-after"]) > 0
     assert limited.json()["detail"]["code"] == "rate_limited"
-    unknown = await login(client, "从未注册")
+    unknown = await login(client, "never@example.com")
     assert unknown.json()["detail"]["code"] == "invalid_credentials"
 
 
@@ -228,7 +250,7 @@ async def test_two_browsers_share_an_account_until_the_password_changes(site):
         assert refused.json()["detail"]["code"] == "session_expired"
         # Reloading the page there starts a guest session; the account is not reachable.
         assert (await phone.get("/api/session")).json()["account"] is None
-    assert (await client.get("/api/session")).json()["account"]["username"] == "云端用户"
+    assert (await client.get("/api/session")).json()["account"]["email"] == EMAIL
     await client.post("/api/account/logout")
     assert (await login(client)).status_code == 401
     assert (await login(client, password="newpass123")).status_code == 200
@@ -612,7 +634,7 @@ async def test_export_states_its_scope_and_the_consent(site):
     assert data["format_version"] == 2
     assert "不是备份" in data["scope"]["purpose"]
     assert any("运行日志" in item for item in data["scope"]["excluded"])
-    assert data["account"]["username"] == "云端用户"
+    assert data["account"]["email"] == EMAIL
     assert data["account"]["privacy_version"] == PRIVACY_VERSION
     assert data["account"]["privacy_accepted_at"]
     assert "user_id" not in data["account"]

@@ -263,16 +263,16 @@ function sessionExpired() {
 
 function storageNote() {
   return state?.account
-    ? `已保存到账号「${state.account.username}」，换设备登录也能看到。`
+    ? `已保存到账号「${state.account.email}」，换设备登录也能看到。`
     : "只保存在本次浏览器会话中，闲置 12 小时后清除；登录账号可长期保存。";
 }
 
 function renderAccount() {
   const chip = $("#account-button");
   if (!chip) return;
-  chip.textContent = state?.account ? state.account.username : "登录";
+  chip.textContent = state?.account ? state.account.email : "登录";
   chip.classList.toggle("signed", Boolean(state?.account));
-  chip.title = state?.account ? "账号与云端记录" : "登录或注册，云端保存记录";
+  chip.title = state?.account ? `${state.account.email} · 账号与云端记录` : "登录或注册，云端保存记录";
   $$("[data-storage-note]").forEach((note) => {
     note.textContent = storageNote();
   });
@@ -416,7 +416,7 @@ function openAccount() {
     }
   });
   removal.append(removalForm);
-  dialog.replaceChildren(node("h2", "", account.username), intro, actions, password, removal, privacy);
+  dialog.replaceChildren(node("h2", "", account.email), intro, actions, password, removal, privacy);
   dialog.showModal();
 }
 
@@ -1175,7 +1175,7 @@ function applyState(next, first = false, background = false, fresh = false) {
     && next.reading?.reading_id !== currentReading.reading_id ? currentReading : null;
   const selectedFollowup = followupReadingId;
   state = next;
-  if (next.account) remember("zhiming.account", next.account.username);
+  if (next.account) remember("zhiming.account", next.account.email);
   renderAccount();
   if (restarted) announceRestart();
   followupReadingId = next.followup_reading_id

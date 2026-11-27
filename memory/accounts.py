@@ -19,9 +19,11 @@ from datetime import UTC, datetime
 from pathlib import Path
 
 # Bump when the privacy notice (web_static/privacy.html) changes in substance.
-PRIVACY_VERSION = "2026-10-29"
+PRIVACY_VERSION = "2026-11-27"
 SCRYPT = {"n": 2**14, "r": 8, "p": 1}
-USERNAME = re.compile(r"[0-9A-Za-z_\-\u4e00-\u9fff]{2,32}")
+EMAIL_LOCAL = re.compile(r"[A-Za-z0-9.!#$%&'*+/=?^_`{|}~-]+")
+EMAIL_LABEL = re.compile(r"[A-Za-z0-9](?:[A-Za-z0-9-]{0,61}[A-Za-z0-9])?")
+EMAIL_TLD = re.compile(r"(?:[A-Za-z]{2,}|xn--[A-Za-z0-9-]{2,})")
 
 
 class AccountError(ValueError):
@@ -33,22 +35,38 @@ class AccountError(ValueError):
         self.message = message
 
 
-def username_key(value: str) -> str:
-    """Account names are unique regardless of case and full/half width."""
+def email_key(value: str) -> str:
+    """Account emails (and legacy usernames) are unique regardless of case and full/half width."""
     return unicodedata.normalize("NFKC", value).strip().casefold()
 
 
-def check_username(value: str) -> str:
-    name = unicodedata.normalize("NFKC", value).strip()
-    if not USERNAME.fullmatch(name):
-        raise AccountError(
-            "invalid_username",
-            "账号名需为 2–32 个字符，只能包含汉字、字母、数字、下划线或连字符。",
-        )
-    return name
+username_key = email_key
 
 
-def check_password(password: str, username: str = "") -> None:
+def check_email(value: str) -> str:
+    email = unicodedata.normalize("NFKC", value).strip().lower()
+    local, sep, domain = email.partition("@")
+    if (
+        not sep
+        or "@" in domain
+        or len(email) > 254
+        or not (1 <= len(local) <= 64)
+        or local.startswith(".")
+        or local.endswith(".")
+        or ".." in local
+        or not EMAIL_LOCAL.fullmatch(local)
+        or "." not in domain
+    ):
+        raise AccountError("invalid_email", "请输入有效的邮箱地址。")
+    labels = domain.split(".")
+    if not all(EMAIL_LABEL.fullmatch(label) for label in labels) or not EMAIL_TLD.fullmatch(
+        labels[-1]
+    ):
+        raise AccountError("invalid_email", "请输入有效的邮箱地址。")
+    return email
+
+
+def check_password(password: str, email: str = "") -> None:
     if len(password) < 8:
         raise AccountError("weak_password", "密码至少需要 8 个字符。")
     if len(password) > 128:
@@ -56,8 +74,8 @@ def check_password(password: str, username: str = "") -> None:
     kinds = sum(bool(re.search(p, password)) for p in (r"[A-Za-z]", r"\d", r"[^A-Za-z\d]"))
     if kinds < 2:
         raise AccountError("weak_password", "密码需包含字母、数字、符号中的至少两类。")
-    if username and username_key(password) == username_key(username):
-        raise AccountError("weak_password", "密码不能与账号名相同。")
+    if email and email_key(password) == email_key(email):
+        raise AccountError("weak_password", "密码不能与邮箱相同。")
 
 
 def hash_password(password: str) -> str:
@@ -128,13 +146,13 @@ class AccountStore:
     def public(row) -> dict:
         return {
             "user_id": row["user_id"],
-            "username": row["username"],
+            "email": row["username"],
             "created_at": row["created_at"],
             "privacy_version": row["privacy_version"],
             "privacy_accepted_at": row["privacy_accepted_at"],
         }
 
-    def create(self, username: str, password_hash: str) -> dict:
+    def create(self, email: str, password_hash: str) -> dict:
         now = datetime.now(UTC).isoformat()
         user_id = "acct-" + uuid.uuid4().hex
         try:
@@ -143,8 +161,8 @@ class AccountStore:
                     "INSERT INTO accounts VALUES(?,?,?,?,?,?,?,?)",
                     (
                         user_id,
-                        username,
-                        username_key(username),
+                        email,
+                        email_key(email),
                         password_hash,
                         PRIVACY_VERSION,
                         now,
@@ -153,16 +171,16 @@ class AccountStore:
                     ),
                 )
         except sqlite3.IntegrityError as exc:
-            raise AccountError("username_taken", "该账号名已被使用，请换一个。") from exc
+            raise AccountError("email_taken", "该邮箱已被注册，请直接登录或换一个邮箱。") from exc
         return self.get(user_id)
 
     def get(self, user_id: str) -> dict | None:
         row = self.db.execute("SELECT * FROM accounts WHERE user_id=?", (user_id,)).fetchone()
         return self.public(row) if row else None
 
-    def credentials(self, username: str) -> tuple[dict, str] | None:
+    def credentials(self, identifier: str) -> tuple[dict, str] | None:
         row = self.db.execute(
-            "SELECT * FROM accounts WHERE username_key=?", (username_key(username),)
+            "SELECT * FROM accounts WHERE username_key=?", (email_key(identifier),)
         ).fetchone()
         return (self.public(row), row["password_hash"]) if row else None
 
