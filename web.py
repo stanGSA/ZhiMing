@@ -628,6 +628,9 @@ def create_web_app(
     *,
     public_origin: str | None = None,
     share_password: str | None = None,
+    demo_only: bool = False,
+    extra_hosts: tuple[str, ...] = (),
+    embed_ancestors: tuple[str, ...] = (),
 ) -> FastAPI:
     """Keep local access as the default; sharing requires an exact HTTPS origin and password."""
     if (public_origin is None) != (share_password is None):
@@ -650,6 +653,26 @@ def create_web_app(
         ):
             raise ValueError("分享地址必须为 HTTPS 域名，访问口令至少 16 个字符")
         allowed_hosts.append(parsed.hostname)
+    for host_pattern in extra_hosts:
+        cleaned = host_pattern.strip()
+        if not cleaned or any(ch.isspace() for ch in cleaned):
+            raise ValueError("额外允许的主机名不能为空或包含空白字符")
+        if cleaned not in allowed_hosts:
+            allowed_hosts.append(cleaned)
+    cleaned_ancestors: list[str] = []
+    for ancestor in embed_ancestors:
+        item = ancestor.strip().rstrip("/")
+        if (
+            not item.startswith("https://")
+            or any(ch.isspace() for ch in item)
+            or ";" in item
+            or "'" in item
+        ):
+            raise ValueError("允许嵌入的父页面来源必须为合法 HTTPS 地址")
+        cleaned_ancestors.append(item)
+    frame_ancestors = " ".join(("'self'", *cleaned_ancestors)) if cleaned_ancestors else "'none'"
+    cookie_secure = public_origin is not None or bool(cleaned_ancestors)
+    cookie_samesite: Literal["strict", "none"] = "none" if cleaned_ancestors else "strict"
     share_credentials = f"friend:{share_password}".encode() if share_password else None
     # Cookie key -> root session. A guest key lives only in memory; an account key is also a
     # login token in the database, so several browsers (and restarts) reach one account.
@@ -860,7 +883,8 @@ def create_web_app(
         response.headers["Referrer-Policy"] = "same-origin"
         response.headers["Content-Security-Policy"] = (
             "default-src 'self'; img-src 'self' data:; style-src 'self'; "
-            "script-src 'self'; connect-src 'self'; frame-ancestors 'none'; form-action 'self'"
+            f"script-src 'self'; connect-src 'self'; frame-ancestors {frame_ancestors}; "
+            "form-action 'self'"
         )
         if request.url.path.startswith("/api/"):
             response.headers["Cache-Control"] = "no-store"
@@ -915,8 +939,8 @@ def create_web_app(
                 COOKIE,
                 key,
                 httponly=True,
-                secure=public_origin is not None,
-                samesite="strict",
+                secure=cookie_secure,
+                samesite=cookie_samesite,
                 max_age=ACCOUNT_IDLE if session.account else MAX_IDLE,
             )
         return response
@@ -970,10 +994,14 @@ def create_web_app(
             extended[key] = now
             accounts().extend_session(key, time.time() + ACCOUNT_IDLE)
 
+    def effective_provider(provider: str) -> Literal["configured", "demo"]:
+        return "demo" if (demo_only or provider == "demo") else "configured"
+
     def build(user_id, provider):
+        chosen = effective_provider(provider)
         try:
             return runtime_factory(
-                root=root, user_id=user_id, provider="demo" if provider == "demo" else None
+                root=root, user_id=user_id, provider="demo" if chosen == "demo" else None
             )
         except Exception as exc:
             logger.exception("Could not start browser runtime")
@@ -1017,7 +1045,8 @@ def create_web_app(
         if session is None:
             if len(live_roots()) >= 64:
                 raise HTTPException(503, {"code": "busy", "message": "当前会话过多，请稍后再试。"})
-            session = BrowserSession(user_id, build(user_id, provider), provider)
+            chosen = effective_provider(provider)
+            session = BrowserSession(user_id, build(user_id, chosen), chosen)
             session.account = public_account(account)
             attach_progress(session)
             restore_birth(session)
@@ -1388,21 +1417,22 @@ def create_web_app(
         provider: Literal["configured", "demo"] = "configured",
         system: SystemName = "auto",
     ):
-        session = resolve(request.cookies.get(COOKIE, ""), provider)
+        chosen = effective_provider(provider)
+        session = resolve(request.cookies.get(COOKIE, ""), chosen)
         if session is None:
             if len(live_roots()) >= 64:
                 raise HTTPException(503, {"code": "busy", "message": "当前会话过多，请稍后再试。"})
             key = secrets.token_urlsafe(32)
             user_id = "web-" + secrets.token_hex(16)
-            session = BrowserSession(user_id, build(user_id, provider), provider)
+            session = BrowserSession(user_id, build(user_id, chosen), chosen)
             attach_progress(session)
             sessions[key] = session
             response.set_cookie(
                 COOKIE,
                 key,
                 httponly=True,
-                secure=public_origin is not None,
-                samesite="strict",
+                secure=cookie_secure,
+                samesite=cookie_samesite,
                 max_age=MAX_IDLE,
             )
         touch(session)
@@ -1776,13 +1806,14 @@ def create_web_app(
 
     async def restart(session, provider):
         """Start this feature's conversation afresh; the caller holds its lock."""
-        replacement = build(session.user_id, provider)
+        chosen = effective_provider(provider)
+        replacement = build(session.user_id, chosen)
         replacement.session.safety_pending = session.runtime.session.safety_pending
         await close(session)
         session.runtime = replacement
         session.session_revision += 1
         attach_progress(session)
-        session.provider = provider
+        session.provider = chosen
         session.messages.clear()
         session.last_birth = ""
         session.reading = None
@@ -2176,8 +2207,8 @@ def create_web_app(
             COOKIE,
             token,
             httponly=True,
-            secure=public_origin is not None,
-            samesite="strict",
+            secure=cookie_secure,
+            samesite=cookie_samesite,
             max_age=ACCOUNT_IDLE,
         )
         return response
@@ -2539,6 +2570,10 @@ def create_web_app(
             "birth_preview": birth_preview,
         }
 
+    @app.get("/healthz", include_in_schema=False)
+    async def healthz():
+        return {"ok": True, "mode": "demo" if demo_only else "standard"}
+
     @app.get("/")
     async def index(request: Request):
         # A live browser session or a kept login skips the entrance and returns to the hall.
@@ -2575,9 +2610,32 @@ if __name__ == "__main__":
     import uvicorn
 
     parser = argparse.ArgumentParser(description="知命 · 本地网页版")
+    parser.add_argument("--host", default="127.0.0.1", help="监听地址（默认 127.0.0.1）")
     parser.add_argument("--port", type=int, default=8765)
     parser.add_argument("--public-origin", help="朋友体验的 HTTPS 地址（不含路径）")
     parser.add_argument("--share-password-file", type=Path, help="本地访问口令文件")
+    parser.add_argument(
+        "--demo-only",
+        action="store_true",
+        help="强制全部会话使用离线演示模式（不调用任何付费大模型，适合公开沙盒或 HF Spaces）",
+    )
+    parser.add_argument(
+        "--allow-host",
+        action="append",
+        default=[],
+        help="额外允许的 Host 头（可重复，例如 '*.hf.space'）",
+    )
+    parser.add_argument(
+        "--embed-ancestor",
+        action="append",
+        default=[],
+        help="允许以 iframe 嵌入本服务的 HTTPS 来源（可重复，例如 https://huggingface.co）",
+    )
+    parser.add_argument(
+        "--forwarded-allow-ips",
+        default="127.0.0.1",
+        help="允许信任 X-Forwarded-* 头的反向代理地址（默认 127.0.0.1）",
+    )
     args = parser.parse_args()
     password = (
         args.share_password_file.read_text(encoding="utf-8").strip()
@@ -2585,9 +2643,15 @@ if __name__ == "__main__":
         else None
     )
     uvicorn.run(
-        create_web_app(public_origin=args.public_origin, share_password=password),
-        host="127.0.0.1",
+        create_web_app(
+            public_origin=args.public_origin,
+            share_password=password,
+            demo_only=args.demo_only,
+            extra_hosts=tuple(args.allow_host),
+            embed_ancestors=tuple(args.embed_ancestor),
+        ),
+        host=args.host,
         port=args.port,
         proxy_headers=True,
-        forwarded_allow_ips="127.0.0.1",
+        forwarded_allow_ips=args.forwarded_allow_ips,
     )
