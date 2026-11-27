@@ -39,7 +39,7 @@ async def signed_browser(browser):
     client, _, _ = browser
     created = await client.post(
         "/api/account/register",
-        json={"username": "模型测试账号", "password": "test-pass123", "accept_privacy": True},
+        json={"email": "model-test@example.com", "password": "test-pass123", "accept_privacy": True},
     )
     assert created.status_code == 201
     return browser

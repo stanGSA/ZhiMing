@@ -518,16 +518,16 @@ def test_name_calculation_and_chosen_form_survive_navigation_and_reload(site, ch
     page.close()
 
 
-def register_from_entrance(page, base, username):
+def register_from_entrance(page, base, email):
     page.goto(f"{base}/login?tab=account&next=/tarot")
     page.click("[data-mode=register]")
-    page.fill("#account-name", username)
+    page.fill("#account-name", email)
     page.fill("#account-password", "abc12345")
     page.fill("#account-confirm", "abc12345")
     page.check("#accept-privacy")
     with page.expect_navigation(url=f"{base}/tarot"):
         page.click("#account-submit")
-    expect(page.locator("#account-button")).to_have_text(username)
+    expect(page.locator("#account-button")).to_have_text(email.lower())
 
 
 def test_registering_keeps_the_guest_reading_and_manages_history(site, chromium):
@@ -540,15 +540,15 @@ def test_registering_keeps_the_guest_reading_and_manages_history(site, chromium)
     page.goto(f"{base}/login?tab=account")
     expect(page.locator("#keep-guest-row")).to_contain_text("2 条解读")
     page.click("[data-mode=register]")
-    page.fill("#account-name", "云")
+    page.fill("#account-name", "not-an-email")
     page.fill("#account-password", "abc12345")
     page.fill("#account-confirm", "abc12345")
     page.click("#account-submit")
     expect(page.locator("#account-error")).to_have_text("请先阅读并同意《隐私说明》。")
     page.check("#accept-privacy")
     page.click("#account-submit")
-    expect(page.locator("#account-error")).to_contain_text("账号名需为 2–32 个字符")
-    register_from_entrance(page, base, "云端浏览器")
+    expect(page.locator("#account-error")).to_contain_text("请输入有效的邮箱地址")
+    register_from_entrance(page, base, "browser@example.com")
     expect(page.locator("#toast")).to_contain_text("2 条访客记录已保存到账号")
     expect(page.locator("#history-list .history-item")).to_have_count(2)
 
@@ -577,10 +577,10 @@ def test_an_expired_login_says_so_and_offers_to_sign_in_again(site, chromium):
     page = context.new_page()
     page.goto(f"{base}/ask")
     expect(page.locator("#account-button")).to_have_text("登录")
-    register_from_entrance(page, base, "过期用户")
+    register_from_entrance(page, base, "expired@example.com")
     page.goto(f"{base}/ask")
     page.click("#account-button")
-    expect(page.locator("#account-dialog h2")).to_have_text("过期用户")
+    expect(page.locator("#account-dialog h2")).to_have_text("expired@example.com")
     page.keyboard.press("Escape")
     context.clear_cookies()
     page.reload()

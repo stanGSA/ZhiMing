@@ -87,10 +87,10 @@ def client(app, ip="203.0.113.1"):
     )
 
 
-async def register(browser, name):
+async def register(browser, email):
     return await browser.post(
         "/api/account/register",
-        json={"username": name, "password": "test-pass123", "accept_privacy": True},
+        json={"email": email, "password": "test-pass123", "accept_privacy": True},
     )
 
 
@@ -106,24 +106,24 @@ async def test_same_ip_device_blocks_for_seven_days_but_other_devices_are_allowe
         assert "HttpOnly" in initial.headers["set-cookie"]
         device = first.cookies.get(DEVICE_COOKIE)
         assert device
-        assert (await register(first, "设备一")).status_code == 201
-        blocked = await register(first, "重复设备")
+        assert (await register(first, "device1@example.com")).status_code == 201
+        blocked = await register(first, "repeat@example.com")
         assert blocked.status_code == 429
         assert blocked.json()["detail"]["code"] == "registration_limited"
         assert int(blocked.headers["retry-after"]) == REGISTRATION_WINDOW
         # Headers supplied by the caller cannot change the ASGI client IP.
         first.headers["X-Forwarded-For"] = "198.51.100.77"
-        assert (await register(first, "伪造地址")).status_code == 429
-        assert (await register(second, "设备二")).status_code == 201
+        assert (await register(first, "spoof@example.com")).status_code == 429
+        assert (await register(second, "device2@example.com")).status_code == 201
         async with client(app, "203.0.113.2") as moved:
             moved.cookies.update({DEVICE_COOKIE: device})
-            assert (await register(moved, "不同地址")).status_code == 201
+            assert (await register(moved, "other-ip@example.com")).status_code == 201
         # Deletion of the account cannot release the seven-day registration claim.
         deleted = await first.post("/api/account/delete", json={"password": "test-pass123"})
         assert deleted.status_code == 200
-        assert (await register(first, "注销后重领")).status_code == 429
+        assert (await register(first, "reclaim@example.com")).status_code == 429
         now[0] += REGISTRATION_WINDOW
-        assert (await register(first, "七天后")).status_code == 201
+        assert (await register(first, "after7d@example.com")).status_code == 201
 
 
 async def test_web_quota_is_shared_by_features_devices_and_restart(project):
@@ -139,14 +139,14 @@ async def test_web_quota_is_shared_by_features_devices_and_restart(project):
 
     app = create_web_app(root=project, public_origin="https://testserver", runtime_factory=factory)
     async with app.router.lifespan_context(app), client(app) as browser:
-        created = await register(browser, "额度联通")
+        created = await register(browser, "quota@example.com")
         assert created.status_code == 201
         assert created.json()["account"]["quota"]["remaining"] == FREE_TOKENS
         await browser.get("/api/session")
         result = await browser.post("/api/chat", json={"message": "你好"})
         assert result.json()["account"]["quota"]["used"] == 1100
         store = store_for(project)
-        user = store.credentials("额度联通")[0]["user_id"]
+        user = store.credentials("quota@example.com")[0]["user_id"]
         # Account changes and history deletion must not reset credit.
         await browser.delete("/api/readings")
         assert store.quota(user)["used"] == 1100
@@ -336,7 +336,8 @@ async def test_concurrent_registration_rechecks_pair_after_password_hashing(proj
     async with app.router.lifespan_context(app), client(app) as browser:
         await browser.get("/api/account")
         results = await asyncio.gather(
-            register(browser, "并发注册一"), register(browser, "并发注册二")
+            register(browser, "concurrent1@example.com"),
+            register(browser, "concurrent2@example.com"),
         )
         assert sorted(r.status_code for r in results) == [201, 429]
         store = store_for(project)

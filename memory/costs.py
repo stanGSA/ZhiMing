@@ -441,7 +441,7 @@ class CostControl:
             (since, limit),
         ).fetchall()
         return [
-            {"user_id": r[0], "username": r[1], "tokens": int(r[2] or 0), "calls": r[3]}
+            {"user_id": r[0], "email": r[1], "tokens": int(r[2] or 0), "calls": r[3]}
             for r in rows
         ]
 

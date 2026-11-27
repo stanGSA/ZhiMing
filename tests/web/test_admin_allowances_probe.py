@@ -195,7 +195,7 @@ async def test_new_admin_endpoints_permissions_validation_and_defaults(project):
             assert (await browser.request(method, url, json=body)).status_code == 404
         assert (
             await browser.post(
-                "/api/account/login", json={"username": "stan", "password": "test-pass123"}
+                "/api/account/login", json={"email": "stan", "password": "test-pass123"}
             )
         ).status_code == 200
         assert (

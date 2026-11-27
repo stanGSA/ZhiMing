@@ -68,7 +68,7 @@ def test_current_dayun_button_displays_completed_report(site, chromium, width):
     registered = page.request.post(
         f"{base}/api/account/register",
         data={
-            "username": "大运测试",
+            "email": "dayun@example.com",
             "password": "test-pass123",
             "accept_privacy": True,
             "keep_guest_records": True,

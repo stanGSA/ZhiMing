@@ -37,6 +37,7 @@ function setMode(next) {
   document.querySelectorAll("[data-register]").forEach((element) => {
     element.hidden = next !== "register";
   });
+  $("#account-name").autocomplete = next === "register" ? "email" : "username";
   $("#account-password").autocomplete = next === "register" ? "new-password" : "current-password";
   $("#account-submit").textContent = next === "register" ? "注册并登入" : "登　入";
   showError("");
@@ -77,9 +78,9 @@ async function call(path, options = {}) {
 }
 
 function validate() {
-  const name = $("#account-name").value.trim();
+  const email = $("#account-name").value.trim();
   const password = $("#account-password").value;
-  if (!name) return "请填写账号名。";
+  if (!email) return "请填写邮箱。";
   if (!password) return "请填写密码。";
   if (mode === "register") {
     if (password.length < 8) return "密码至少需要 8 个字符。";
@@ -101,7 +102,7 @@ async function submit(event) {
   $("#account-submit").disabled = true;
   showError("");
   const body = {
-    username: $("#account-name").value.trim(),
+    email: $("#account-name").value.trim(),
     password: $("#account-password").value,
     keep_guest_records: !$("#keep-guest-row").hidden && $("#keep-guest").checked,
   };
@@ -109,10 +110,10 @@ async function submit(event) {
   try {
     const result = await call(`/api/account/${mode}`, { method: "POST", body: JSON.stringify(body) });
     try {
-      localStorage.setItem("zhiming.account", result.account.username);
+      localStorage.setItem("zhiming.account", result.account.email);
       sessionStorage.setItem(
         "zhiming.notice",
-        (mode === "register" ? "账号已创建" : `欢迎回来，${result.account.username}`) +
+        (mode === "register" ? "账号已创建" : `欢迎回来，${result.account.email}`) +
           (result.moved_readings ? `，${result.moved_readings} 条访客记录已保存到账号。` : "。"),
       );
     } catch {
@@ -137,7 +138,7 @@ async function load() {
   }
   if (Number.isInteger(info.registration_free_tokens)) $("#registration-allowance").textContent = info.registration_free_tokens.toLocaleString("zh-CN");
   if (info.account) {
-    $("#signed-name").textContent = info.account.username;
+    $("#signed-name").textContent = info.account.email;
     if (info.account.quota)
       $("#signed-quota").textContent = info.account.quota.limit === null
         ? "账号额度不限；全站预算、并发和异常消耗保护仍生效。"

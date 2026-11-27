@@ -89,8 +89,8 @@ def parse_admin_ids(value: str | list[str] | None) -> frozenset[str]:
     if invalid:
         # Names are refused outright: after a deletion a name can belong to someone else.
         raise ValueError(
-            "管理员必须以账号 ID（acct-…）指定，不接受账号名；"
-            "用 python -m ops.admin resolve 账号名 查询"
+            "管理员必须以账号 ID（acct-…）指定，不接受邮箱或账号名；"
+            "用 python -m ops.admin resolve 邮箱 查询"
         )
     return ids
 
@@ -185,7 +185,7 @@ def install(app: FastAPI, ctx: AdminContext) -> None:
         user_id = getattr(session, "user_id", None)
         if not account or user_id not in ctx.admins or ctx.accounts().get(user_id) is None:
             raise not_found()
-        return account["username"]
+        return account["email"]
 
     def known(user_id: str) -> None:
         if ctx.accounts().get(user_id) is None:
@@ -366,8 +366,8 @@ def install(app: FastAPI, ctx: AdminContext) -> None:
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description="知命管理员账号 ID 查询")
     commands = parser.add_subparsers(dest="command", required=True)
-    resolve = commands.add_parser("resolve", help="按账号名查询账号 ID，输出逗号分隔的 ID")
-    resolve.add_argument("names", nargs="+", help="已注册的管理员账号名")
+    resolve = commands.add_parser("resolve", help="按邮箱或旧账号名查询账号 ID，输出逗号分隔的 ID")
+    resolve.add_argument("names", nargs="+", help="已注册的管理员邮箱或旧账号名")
     resolve.add_argument("--db", type=Path, default=Path("data/app.db"), help="业务库路径")
     args = parser.parse_args(argv)
     try:

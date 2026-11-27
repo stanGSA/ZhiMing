@@ -228,10 +228,10 @@ def client(app, ip="203.0.113.9"):
     )
 
 
-async def register(browser, name):
+async def register(browser, email):
     response = await browser.post(
         "/api/account/register",
-        json={"username": name, "password": "test-pass123", "accept_privacy": True},
+        json={"email": email, "password": "test-pass123", "accept_privacy": True},
     )
     assert response.status_code == 201
     return response
@@ -247,7 +247,7 @@ async def test_paused_site_turns_chat_into_a_retryable_refusal(project):
 
     app = create_web_app(root=project, public_origin="https://testserver", runtime_factory=factory)
     async with app.router.lifespan_context(app), client(app) as browser:
-        await register(browser, "暂停中")
+        await register(browser, "paused@example.com")
         await browser.get("/api/session")
         store = store_for(project)
         store.costs.manual_pause("维护", "管理员")
@@ -258,13 +258,13 @@ async def test_paused_site_turns_chat_into_a_retryable_refusal(project):
         else:
             assert reply.status_code == 503
             assert reply.json()["detail"]["code"] == "model_paused"
-        assert store.quota(store.credentials("暂停中")[0]["user_id"])["used"] == 0
+        assert store.quota(store.credentials("paused@example.com")[0]["user_id"])["used"] == 0
         store.close()
 
 
-async def login(browser, name):
+async def login(browser, email):
     response = await browser.post(
-        "/api/account/login", json={"username": name, "password": "test-pass123"}
+        "/api/account/login", json={"email": email, "password": "test-pass123"}
     )
     assert response.status_code == 200
     return response
@@ -312,7 +312,7 @@ async def test_admin_console_is_hidden_from_everyone_but_named_admins(project, t
         assert (await stranger.get("/admin")).status_code == 303
         assert (await stranger.get("/api/admin/overview")).status_code == 404
 
-        await register(user, "普通用户")
+        await register(user, "normal@example.com")
         assert (await user.get("/admin")).status_code == 404
         assert (await user.get("/api/admin/overview")).status_code == 404
         assert (await user.post("/api/admin/models/pause", json={})).status_code == 404
@@ -358,8 +358,9 @@ async def test_admin_console_is_hidden_from_everyone_but_named_admins(project, t
         assert (await admin.post("/api/admin/models/resume")).json() == {"paused": None}
 
         # Accounts: list, suspend, grant, end logins.
-        listed = (await admin.get("/api/admin/accounts", params={"q": "普通"})).json()
+        listed = (await admin.get("/api/admin/accounts", params={"q": "normal@"})).json()
         assert listed["total"] == 1
+        assert listed["items"][0]["email"] == "normal@example.com"
         target = listed["items"][0]["user_id"]
         assert (await admin.post(f"/api/admin/accounts/{target}/suspend", json={})).json()
         store = store_for(project)
@@ -389,18 +390,18 @@ def test_admin_and_monitor_settings_are_checked_at_startup(project):
 
 
 async def test_a_deleted_admins_name_registered_again_gains_no_rights(project):
-    admin_id = admin_account(project, "站长")
+    admin_id = admin_account(project, "owner@example.com")
     app = create_web_app(root=project, public_origin="https://testserver", admin_ids=[admin_id])
     async with (
         app.router.lifespan_context(app),
         client(app) as original,
         client(app, "198.51.100.20") as newcomer,
     ):
-        await login(original, "站长")
+        await login(original, "owner@example.com")
         assert (await original.get("/api/admin/overview")).status_code == 200
         deleted = await original.post("/api/account/delete", json={"password": "test-pass123"})
         assert deleted.status_code == 200
-        await register(newcomer, "站长")
+        await register(newcomer, "owner@example.com")
         assert (await newcomer.get("/admin")).status_code == 404
         assert (await newcomer.get("/api/admin/overview")).status_code == 404
         assert (await newcomer.post("/api/admin/models/pause", json={})).status_code == 404
@@ -409,14 +410,14 @@ async def test_a_deleted_admins_name_registered_again_gains_no_rights(project):
         root=project, public_origin="https://testserver", admin_ids=[admin_id]
     )
     async with restarted.router.lifespan_context(restarted), client(restarted) as newcomer:
-        await login(newcomer, "站长")
+        await login(newcomer, "owner@example.com")
         assert (await newcomer.get("/api/admin/overview")).status_code == 404
     from ops.admin import main as admin_cli
     from ops.admin import resolve_admins
 
-    new_id = resolve_admins(project / "data/app.db", ["站长"])
+    new_id = resolve_admins(project / "data/app.db", ["owner@example.com"])
     assert new_id != [admin_id] and len(new_id) == 1
-    assert admin_cli(["resolve", "--db", str(project / "data/app.db"), "无此人"]) == 1
+    assert admin_cli(["resolve", "--db", str(project / "data/app.db"), "nobody@example.com"]) == 1
 
 
 async def test_budget_refusal_below_100_percent_is_reported_until_raised_or_midnight(

@@ -231,12 +231,14 @@
             </div>
             <form class="gate-form" id="account-form" novalidate>
               <label class="field"
-                ><span>账号名</span
+                ><span>邮箱</span
                 ><input
                   id="account-name"
-                  name="username"
+                  name="email"
+                  type="email"
                   autocomplete="username"
-                  maxlength="32"
+                  placeholder="name@example.com"
+                  maxlength="254"
                   required
               /></label>
               <label class="field"
@@ -259,7 +261,7 @@
                   maxlength="128"
               /></label>
               <p class="gate-rules" data-register hidden>
-                账号名 2–32 个字符，可用汉字、字母、数字、下划线或连字符；密码至少 8 位，含字母、数字、符号中的两类。目前不能通过邮箱或短信找回密码，请妥善保管。
+                请填写有效邮箱（无需邮箱验证）；密码至少 8 位，含字母、数字、符号中的两类。目前暂不支持通过邮箱或短信找回密码，请妥善保管。
               </p>
               <p class="gate-rules" data-register hidden>
                 新账号免费额度共 <span id="registration-allowance">以注册时设置为准</span> token，输入和输出均计入，不按月重置；离线演示不扣额度。同一 IP 下的同一设备，7 天内仅可注册一个账号。

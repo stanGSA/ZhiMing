@@ -57,12 +57,12 @@ from harness.trace import Tracer
 from memory.accounts import (
     AccountError,
     AccountStore,
+    check_email,
     check_password,
-    check_username,
     dummy_verify,
+    email_key,
     hash_password,
     token_digest,
-    username_key,
     verify_password,
 )
 from memory.store import Store
@@ -315,7 +315,7 @@ class AlmanacInput(BaseModel):
 
 class Credentials(BaseModel):
     model_config = ConfigDict(extra="forbid")
-    username: str = Field(min_length=1, max_length=64)
+    email: str = Field(min_length=1, max_length=254)
     password: str = Field(min_length=1, max_length=256)
     # Move this browser's guest records into the account instead of deleting them.
     keep_guest_records: bool = False
@@ -366,7 +366,7 @@ FIELD_LABELS = {
     "spread": "牌阵",
     "picks": "所选的牌",
     "provider": "体验模式",
-    "username": "账号名",
+    "email": "邮箱",
     "password": "密码",
     "current_password": "当前密码",
     "new_password": "新密码",
@@ -451,7 +451,7 @@ class AttemptLimiter:
 EXPORT_SCOPE = {
     "purpose": "个人数据副本，供查阅与留存；不是备份，本服务不提供导入。",
     "included": [
-        "账号名、注册时间、同意的隐私说明版本与同意时间",
+        "邮箱、注册时间、同意的隐私说明版本与同意时间",
         "生辰档案、画像及其修改记录（含当时的原话依据）",
         "全部解读：问题、正文、牌面、计算结果、信号、跨体系合并表、专家报告、审校意见与历次追问",
     ],
@@ -552,7 +552,7 @@ class BrowserSession:
     active_birth_requests: set[str] = field(default_factory=set)
     birth_stale: bool = False
     session_revision: int = 0
-    # The signed-in account ({"username", "created_at"}); None for a guest. Root sessions only.
+    # The signed-in account ({"email", "created_at"}); None for a guest. Root sessions only.
     account: dict | None = None
     # Server-private sampled HH:MM when the user chose a fuzzy time period. Root sessions only.
     resolved_birth: dict | None = None
@@ -954,7 +954,7 @@ def create_web_app(
             429
             if exc.code == "registration_limited"
             else 409
-            if exc.code == "username_taken"
+            if exc.code in ("email_taken", "username_taken")
             else 422
         )
         return problem(status, exc.code, exc.message)
@@ -1048,7 +1048,7 @@ def create_web_app(
 
     def public_account(account):
         return {
-            "username": account["username"],
+            "email": account["email"],
             "created_at": account["created_at"],
             "quota": accounts().quota(account["user_id"]),
         }
@@ -2273,12 +2273,12 @@ def create_web_app(
                 422,
                 {"code": "privacy_consent_required", "message": "请先阅读并同意《隐私说明》。"},
             )
-        username = check_username(body.username)
-        check_password(body.password, username)
-        # Counted from here: typos above are free, probing for taken names is not.
+        email = check_email(body.email)
+        check_password(body.password, email)
+        # Counted from here: typos above are free, probing for taken emails is not.
         limiter.record(client)
-        if accounts().credentials(username):
-            raise AccountError("username_taken", "该账号名已被使用，请换一个。")
+        if accounts().credentials(email):
+            raise AccountError("email_taken", "该邮箱已被注册，请直接登录或换一个邮箱。")
         pair = registration_pair(request)
         wait = accounts().registration_wait(pair, time.time())
         if wait:
@@ -2294,14 +2294,14 @@ def create_web_app(
         # From here on nothing awaits until the records have moved.
         guest = idle_guest(request)
         account = accounts().create(
-            username, password_hash, pair_hash=pair, registered_at=time.time()
+            email, password_hash, pair_hash=pair, registered_at=time.time()
         )
         key = request.cookies.get(COOKIE, "")
         previous = sessions.get(key)
         try:
             moved = hand_over(guest, account["user_id"], body.keep_guest_records)
         except BaseException:
-            # Nothing moved: remove the new, empty account so the name can be used again.
+            # Nothing moved: remove the new, empty account so the email can be used again.
             accounts().undo_registration(account["user_id"])
             raise
         if guest is not None:
@@ -2313,17 +2313,17 @@ def create_web_app(
 
     @app.post("/api/account/login")
     async def sign_in(body: Credentials, request: Request):
-        name = "login:" + username_key(body.username)
+        name = "login:" + email_key(body.email)
         client = "login-client:" + client_of(request)
         throttle((name, 5, 900), (client, 20, 900))
-        found = accounts().credentials(body.username)
+        found = accounts().credentials(body.email)
         if found is None:
             await asyncio.to_thread(dummy_verify, body.password)
         if found is None or not await asyncio.to_thread(verify_password, body.password, found[1]):
             limiter.record(name)
             limiter.record(client)
             raise HTTPException(
-                401, {"code": "invalid_credentials", "message": "账号或密码不正确。"}
+                401, {"code": "invalid_credentials", "message": "邮箱或密码不正确。"}
             )
         limiter.reset(name)
         account = found[0]
@@ -2360,7 +2360,7 @@ def create_web_app(
         if not await asyncio.to_thread(verify_password, body.current_password, current):
             limiter.record(attempts)
             raise HTTPException(403, {"code": "wrong_password", "message": "当前密码不正确。"})
-        check_password(body.new_password, owner.account["username"])
+        check_password(body.new_password, owner.account["email"])
         new_hash = await asyncio.to_thread(hash_password, body.new_password)
         accounts().set_password(owner.user_id, new_hash)
         limiter.reset(attempts)

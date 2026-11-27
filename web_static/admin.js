@@ -335,7 +335,7 @@ function renderUsage() {
   for (const account of data.top_accounts) {
     const row = node("tr");
     row.append(
-      node("td", "", account.username || "（已注销）"),
+      node("td", "", account.email || "（已注销）"),
       node("td", "adm-num", number(account.tokens)),
       node("td", "adm-num", number(account.calls)),
     );
@@ -479,7 +479,7 @@ async function loadAccounts() {
     actions.append(toggle, grant, logout);
     const quota = account.quota;
     row.append(
-      node("td", "", account.username),
+      node("td", "", account.email),
       node("td", "", new Date(account.created_at).toLocaleDateString("zh-CN", { timeZone: ZONE })),
       node("td", "adm-num", number(account.tokens_today)),
       node(
@@ -510,12 +510,12 @@ async function accountAction(account, action) {
   const base = `/api/admin/accounts/${encodeURIComponent(account.user_id)}`;
   let body = {};
   if (action === "suspend") {
-    const reason = prompt(`暂停账号「${account.username}」的模型调用。原因（可选）：`, "");
+    const reason = prompt(`暂停账号「${account.email}」的模型调用。原因（可选）：`, "");
     if (reason === null) return;
     body = { reason };
   } else if (action === "grant") {
     const raw = prompt(
-      `为账号「${account.username}」追加额度（token，可为负数以收回追加部分）：`,
+      `为账号「${account.email}」追加额度（token，可为负数以收回追加部分）：`,
       "100000",
     );
     if (raw === null) return;
@@ -526,7 +526,7 @@ async function accountAction(account, action) {
     }
     body = { tokens };
   } else if (action === "logout") {
-    if (!confirm(`结束账号「${account.username}」在所有设备上的登录？`)) return;
+    if (!confirm(`结束账号「${account.email}」在所有设备上的登录？`)) return;
   }
   try {
     await call(`${base}/${action}`, { method: "POST", body: JSON.stringify(body) });

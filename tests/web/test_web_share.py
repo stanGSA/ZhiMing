@@ -100,7 +100,7 @@ async def test_shared_chat_secure_cookie_origins_and_separate_browsers(project, 
 
 async def test_public_account_registration_and_login_without_sharing_password(project):
     app = create_web_app(root=project, public_origin=ORIGIN)
-    credentials = {"username": "公开注册用户", "password": "account-pass123"}
+    credentials = {"email": "public@example.com", "password": "account-pass123"}
     async with (
         app.router.lifespan_context(app),
         httpx.AsyncClient(
@@ -113,10 +113,10 @@ async def test_public_account_registration_and_login_without_sharing_password(pr
             "/api/account/register", json={**credentials, "accept_privacy": True}
         )
         assert created.status_code == 201
-        assert created.json()["account"]["username"] == credentials["username"]
+        assert created.json()["account"]["email"] == credentials["email"]
         assert "Secure" in created.headers["set-cookie"]
         assert (await client.post("/api/account/logout")).status_code == 200
         signed_in = await client.post("/api/account/login", json=credentials)
         assert signed_in.status_code == 200
-        assert signed_in.json()["account"]["username"] == credentials["username"]
+        assert signed_in.json()["account"]["email"] == credentials["email"]
         assert "www-authenticate" not in signed_in.headers

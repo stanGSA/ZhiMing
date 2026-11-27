@@ -54,7 +54,7 @@ async def test_accounts_can_use_models_and_logout_returns_to_offline(public_site
     client, _, providers = public_site
     await client.get("/api/session?provider=configured")
     assert providers == ["demo"]
-    credentials = {"username": "模型账号", "password": "model-pass123"}
+    credentials = {"email": "model@example.com", "password": "model-pass123"}
     created = await client.post(
         "/api/account/register", json={**credentials, "accept_privacy": True}
     )
@@ -62,7 +62,7 @@ async def test_accounts_can_use_models_and_logout_returns_to_offline(public_site
     for system in SYSTEMS:
         state = await client.get(f"/api/session?system={system}")
         assert state.json()["provider"] == "configured"
-        assert state.json()["account"]["username"] == credentials["username"]
+        assert state.json()["account"]["email"] == credentials["email"]
     assert providers.count(None) == len(SYSTEMS)
     home = await client.get("/", follow_redirects=False)
     assert home.status_code == 303
