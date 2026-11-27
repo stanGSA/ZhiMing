@@ -14,6 +14,10 @@
 > **Live Demo (zero install — real-time BaZi & Natal Chart calculation + offline Tarot demo):** [https://zhiming.mom](https://zhiming.mom)
 > Want a self-contained, zero-API-key cloud sandbox? See the Hugging Face Spaces offline Docker setup in [`deploy/hf-space/`](deploy/hf-space/README.md).
 
+<p align="center">
+  <img src="docs/assets/demo.gif" alt="ZhiMing v0.2.0 interactive demo: Entry Portal, Ask Hall Almanac, Deterministic BaZi Four Pillars, Western Natal Chart, and Tarot Flip & Verifiable Reading" width="100%" />
+</p>
+
 **ZhiMing** is a **framework-free LLM agent harness** written from scratch in Python (no LangChain, no LangGraph), built around six deterministic domain plugins: **Tarot, Western Astrology, BaZi (Chinese Four Pillars), Chinese Onomancy (Wuge), Dream Interpretation, and Daily Fortune**.
 
 **Every symbolic fact—ephemeris longitudes, house cusps, solar terms, stems/branches, and drawn cards—is computed by deterministic code. The LLM only synthesizes the reading, and every fact and `ref_id` cited in its answer is verified item-by-item by code; hallucinations are rejected and rewritten.**
