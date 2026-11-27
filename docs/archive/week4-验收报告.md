@@ -60,7 +60,7 @@
 | CLI | `cli.py draw --mode multi --provider demo` 正常提交，`scripts.trace_tree` 输出调用树、无问题 | |
 | 真实模型 | **未验证** | 原因见上 |
 
-脱敏证据在 [verification/week4](verification/week4/README.md)：`pytest.json` 列出每项测试状态和环境原因，`offline.json` 是离线评估汇总。
+脱敏证据在 [verification/week4](../verification/week4/README.md)：`pytest.json` 列出每项测试状态和环境原因，`offline.json` 是离线评估汇总。
 
 ## PR #2 评审整改（第二轮）
 

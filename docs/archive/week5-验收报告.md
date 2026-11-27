@@ -86,7 +86,7 @@
 | 审校离线基线（`--provider demo`） | 漏拦率 2/30 = 0.0667，过度干预率 1/15 = 0.0667，打回理由与类别一致率 1.000，被代码过滤的“免责/更谨慎”请求 0 | 关键词规则，**不是 LLM 审校，不能作为关口结果** |
 | 真实模型 | **未验证** | 原因见上 |
 
-脱敏证据在 [verification/week5](verification/week5/README.md)。
+脱敏证据在 [verification/week5](../verification/week5/README.md)。
 
 ### 审校离线基线的逐份结果（首次运行，未按数据集调参）
 

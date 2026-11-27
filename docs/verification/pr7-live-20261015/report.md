@@ -78,7 +78,7 @@
 
 ## 解释与人工阅读
 
-详见 [合并后修复报告](../../pr7-合并后校验修复.md)。`submitted` 只表示成功提交结构化结果，不代表完整满足用户要求：新旧 multi 的 combined-timing 均只完成八字部分。依据占比来自结构化正文与 evidence 文本长度，不是屏幕占比；事实拒绝次数只计 submit_reading/submit_report 校验，不包括预算、网络和所有计算工具错误。
+详见 [合并后修复报告](../../archive/pr7-合并后校验修复.md)。`submitted` 只表示成功提交结构化结果，不代表完整满足用户要求：新旧 multi 的 combined-timing 均只完成八字部分。依据占比来自结构化正文与 evidence 文本长度，不是屏幕占比；事实拒绝次数只计 submit_reading/submit_report 校验，不包括预算、网络和所有计算工具错误。
 
 每个子目录的 results.json 保存固定合成资料、完整最终回复、结构化输出、工具与指标。原始 trace 和运行时数据留在本机 reports 目录，不随文档提交。可用 compare_layers.py report 对四个子目录重新生成指标。
 

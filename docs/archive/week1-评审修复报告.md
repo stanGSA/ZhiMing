@@ -6,17 +6,17 @@
 
 | 检查 | 实测结果 | 证据 |
 |---|---|---|
-| 自动化回归 | 85/85通过；比原65项新增20项 | [JUnit](verification/pytest-summary.json) |
-| 原第一周离线轨迹 | 12/12通过，其余68题属于后续体系 | [离线报告](verification/offline-summary.json) |
-| gpt-6.1-sol严格测试 | 17/17通过，零工具错误；10个场景调用真实模型，7个危机场景由应用拦截 | [场景汇总](verification/README.md) · [断言汇总](verification/live-final-summary.json) |
-| 门禁与trace重放 | 所有门禁通过，23次工具调用重放通过 | [门禁](verification/gate-summary.json) · [回放汇总](verification/gate-summary.json) |
-| 知识覆盖 | 156牌面状态+7牌位=163条，覆盖100%，审核率0% | [build、自检、SQLite/API证据](verification/gate-summary.json) |
+| 自动化回归 | 85/85通过；比原65项新增20项 | [JUnit](../verification/pytest-summary.json) |
+| 原第一周离线轨迹 | 12/12通过，其余68题属于后续体系 | [离线报告](../verification/offline-summary.json) |
+| gpt-6.1-sol严格测试 | 17/17通过，零工具错误；10个场景调用真实模型，7个危机场景由应用拦截 | [场景汇总](../verification/README.md) · [断言汇总](../verification/live-final-summary.json) |
+| 门禁与trace重放 | 所有门禁通过，23次工具调用重放通过 | [门禁](../verification/gate-summary.json) · [回放汇总](../verification/gate-summary.json) |
+| 知识覆盖 | 156牌面状态+7牌位=163条，覆盖100%，审核率0% | [build、自检、SQLite/API证据](../verification/gate-summary.json) |
 | Ruff与Git差异空白检查 | check、format --check、diff --check通过 | 按README命令可复现 |
-| 凭据检查 | 工作文件、报告与trace未发现真实密钥，.env不纳入Git | [归档范围说明](verification/README.md) |
+| 凭据检查 | 工作文件、报告与trace未发现真实密钥，.env不纳入Git | [归档范围说明](../verification/README.md) |
 
 ## 对照评审落实的改动
 
-1. **种子与重抽**：生产原本已有随机默认值，问题来自旧测试给所有会话注入42。新真实测试不注入固定seed；显式fixture只控制首次抽牌。每次新记录/重抽使用secrets.randbits，记录seed并核对parent_reading_id。纯函数固定seed仍可复现。100次独立生产抽牌和不同seed分布均通过，分布指标见[分布汇总](verification/gate-summary.json)。
+1. **种子与重抽**：生产原本已有随机默认值，问题来自旧测试给所有会话注入42。新真实测试不注入固定seed；显式fixture只控制首次抽牌。每次新记录/重抽使用secrets.randbits，记录seed并核对parent_reading_id。纯函数固定seed仍可复现。100次独立生产抽牌和不同seed分布均通过，分布指标见[分布汇总](../verification/gate-summary.json)。
 2. **追问持久化**：read_reading恢复原reading、seed、牌面、信号、facts、引用范围和原KB版本。submit_reading将追问单独保存到新增reading_responses，保留原结论；同会话/跨会话均复用原记录，无start或draw。原记录归属检查、追问用户隔离与forget删除均通过。已有SQLite自动增建表，实际9张业务表，schema版本2。
 3. **严格断言**：每题保存原问题、全部命名断言、seed、reading/parent/response标识、结构化输出及trace路径。任何工具错误或模型失败都会判失败，即使最终文本看似可用；核对实际数据库值，不能只检查有文字。用户明确指定牌阵时，start返回requested_spread且Guard禁止替换。
 4. **正面回答与呈现**：决策第一句须明确A/B暂定倾向与现实前提；跳槽时机第一句须直接回应下个月是否适合。提示词要求围绕用户问题解释牌面并给可执行步骤。内部审核原因仍保存在confidence.reason，正常正文只显示低置信度；无高风险时隐藏多余safety说明。免责声明只由渲染层添加一次，正文包含内部保存错误或重复免责声明会被拦截。
@@ -27,7 +27,7 @@
 
 ## 是否正面回答用户的问题
 
-以下为最终真实响应的首句，完整依据与建议已在本地逐条核对，仓库只保存[脱敏验收摘要](verification/README.md)：
+以下为最终真实响应的首句，完整依据与建议已在本地逐条核对，仓库只保存[脱敏验收摘要](../verification/README.md)：
 
 > 跳槽：下个月有条件适合跳槽：先确认新岗位能改善负担与管理方式，拿到书面录用并核实薪酬、职责后再辞职。
 
@@ -56,7 +56,7 @@
 
 旧“9/9”结论已撤回：跨会话追问没有保存结构化回答，固定42重抽没有独立随机性，旧断言漏检。旧JSON/trace保持原样供复核。
 
-本次第一轮严格测试为15/17：[失败结果](verification/live-initial-summary.json)。投资题指定三张却被模型改成decision；跳槽题提交阶段APITimeoutError，未形成解读。补上显式牌阵约束与提示，并将可配置单次超时从30秒调整为90秒后，完整复测17/17。第一轮证据包正确判为[门禁失败](verification/gate-summary.json)，最终证据包通过；没有覆写失败或降低通过标准。
+本次第一轮严格测试为15/17：[失败结果](../verification/live-initial-summary.json)。投资题指定三张却被模型改成decision；跳槽题提交阶段APITimeoutError，未形成解读。补上显式牌阵约束与提示，并将可配置单次超时从30秒调整为90秒后，完整复测17/17。第一轮证据包正确判为[门禁失败](../verification/gate-summary.json)，最终证据包通过；没有覆写失败或降低通过标准。
 
 本次两轮测试返回usage合计输入285806、输出8624 token。统计只包含实际返回的usage，不计算服务未返回usage的超时请求；费用取决于第三方计费。
 

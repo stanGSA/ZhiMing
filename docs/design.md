@@ -76,7 +76,7 @@ SQLite FTS5 已构建并检查可用；第一周精确查找不依赖分词或�
   - 专家需要补充资料时由编排者统一追问，追问结果不缓存；
   - 专家超时、异常或预算用尽时返回失败报告，最终回答不能把该体系列入 `systems_used`，必须在置信度说明里写明缺少哪个体系；
   - 同一体系重试失败时保留仍有效的报告（标记 `retained_previous`）。新解读提交前核对专家所依赖的画像字段快照，出生资料等依赖更正后必须重新咨询所有受影响的专家；只更新姓名不使排盘失效。成功报告按体系原子替换信号、引用和计算事实，历史记录追问继续使用原快照；
-  - 塔罗在同一记录内只抽一次：抽牌成功即在当前会话保留牌面和牌阵，随后报告失败、请求取消或超时都不能换牌阵重抽。连续重试沿用原计算快照；未提交的会话状态不提供进程重启恢复。见[合并后状态恢复修复](week4-合并后状态恢复修复.md)；
+  - 塔罗在同一记录内只抽一次：抽牌成功即在当前会话保留牌面和牌阵，随后报告失败、请求取消或超时都不能换牌阵重抽。连续重试沿用原计算快照；未提交的会话状态不提供进程重启恢复。见[合并后状态恢复修复](archive/week4-合并后状态恢复修复.md)；
   - `read_reading` 恢复历史记录时同时恢复该记录的专家报告，不带入当前记录的状态；
   - 追问原记录不再咨询专家。
 - **预算**：一次请求一个预算（`request_token_budget`），编排者与专家共享；每位专家另有 `specialist_token_budget`、`specialist_timeout_s`、`specialist_max_steps`。当前数值是初值，需按真实运行重新标定。
@@ -85,7 +85,7 @@ SQLite FTS5 已构建并检查可用；第一周精确查找不依赖分词或�
 - **trace**：子会话写各自的 JSONL，带 `parent_session_id` 和 `parent_call_id`，创建即记 `session_started`，正常、超时或取消都记 `session_finished`；父会话记录 `specialist_queued`、`specialist_started`（获得并发许可后）和 `specialist_finished`。`python -m scripts.trace_tree --user <用户> --reading <记录>` 重建调用树并检查完整性。
 - **评估**：
   - `python -m evals.run --suite week1 --mode multi` 是 demo 模型的离线流程回放；
-  - `python -m scripts.archive.live_v2_review --suite baseline --mode multi` 用真实模型串行跑 20 题，结果附带专家越权、报告合规率（≥98% 关口口径）、首次通过率、修正后通过率、实际并发度、排队时间和调用树完整性。指标口径见 [第四周验收](week4-验收报告.md)，原始完整批次、评审服务错误和独立复评见[真实模型测试](week4-真实模型测试.md)，不拼接通过率。
+  - `python -m scripts.archive.live_v2_review --suite baseline --mode multi` 用真实模型串行跑 20 题，结果附带专家越权、报告合规率（≥98% 关口口径）、首次通过率、修正后通过率、实际并发度、排队时间和调用树完整性。指标口径见 [第四周验收](archive/week4-验收报告.md)，原始完整批次、评审服务错误和独立复评见[真实模型测试](archive/week4-真实模型测试.md)，不拼接通过率。
 
 
 ## 第五周：交叉解读与审校
