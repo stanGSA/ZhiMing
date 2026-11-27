@@ -98,6 +98,10 @@ async def test_login_and_ask_pages_csp_and_required_production_hooks(client):
         'id="keep-guest-row"',
         'id="account-error"',
         'id="astrolabe"',
+        'id="gate-github-link"',
+        'href="https://github.com/stanGSA/ZhiMing"',
+        'id="gate-afdian-link"',
+        'href="https://afdian.com/a/zhiming_ai"',
     ):
         assert token in login_html
 

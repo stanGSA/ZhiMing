@@ -675,9 +675,106 @@ body[data-page="login"] :focus-visible {
   border-bottom: 1px solid rgba(155, 122, 67, 0.35);
   white-space: nowrap;
 }
+.gate-support {
+  margin-top: 26px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.gate-links {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+.gate-link {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  padding: 13px 14px 12px;
+  border: 1px solid var(--line-mid);
+  border-radius: 2px;
+  background: var(--bg-warm);
+  color: var(--ink);
+  transition:
+    border-color 0.2s ease,
+    background-color 0.2s ease,
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+.gate-link:hover,
+.gate-link:focus-visible {
+  transform: translateY(-1px);
+  color: var(--ink);
+  box-shadow: 0 8px 20px rgba(22, 22, 20, 0.08);
+}
+.gate-link-github:hover,
+.gate-link-github:focus-visible {
+  border-color: var(--ink);
+  background: var(--surface);
+}
+.gate-link-afdian {
+  border-color: rgba(155, 122, 67, 0.34);
+  background: linear-gradient(180deg, rgba(155, 122, 67, 0.06) 0%, var(--bg-warm) 100%);
+}
+.gate-link-afdian:hover,
+.gate-link-afdian:focus-visible {
+  border-color: var(--bronze);
+  background: var(--surface);
+}
+.gate-link-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+.gate-link-ico {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  color: var(--ink);
+}
+.gate-link-afdian .gate-link-ico {
+  color: var(--bronze);
+}
+.gate-link-badge {
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  line-height: 1;
+  padding: 3px 7px;
+  border-radius: 2px;
+  border: 1px solid var(--line-mid);
+  color: var(--muted);
+  background: var(--surface);
+  transition: border-color 0.2s ease, color 0.2s ease;
+}
+.gate-link-github:hover .gate-link-badge,
+.gate-link-github:focus-visible .gate-link-badge {
+  border-color: var(--bronze);
+  color: var(--bronze);
+}
+.gate-link-afdian .gate-link-badge {
+  border-color: rgba(155, 122, 67, 0.38);
+  color: var(--bronze);
+}
+.gate-link-title {
+  margin-top: 2px;
+  font-family: var(--font-serif);
+  font-size: 14.5px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  color: var(--ink);
+}
+.gate-link-sub {
+  font-size: 11.5px;
+  letter-spacing: 0.04em;
+  color: var(--muted);
+  line-height: 1.45;
+}
 .foot {
-  margin: 34px 0 0;
-  padding-top: 20px;
+  margin: 26px 0 0;
+  padding-top: 18px;
   border-top: 1px solid var(--line);
   font-size: 12px;
   letter-spacing: 0.1em;
@@ -748,5 +845,10 @@ body[data-page="login"] :focus-visible {
   }
   .panel {
     padding: 40px 20px 32px;
+  }
+}
+@media (max-width: 380px) {
+  .gate-links {
+    grid-template-columns: minmax(0, 1fr);
   }
 }
