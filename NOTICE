@@ -1,0 +1,55 @@
+ZhiMing (知命)
+Copyright (C) 2026 stanGSA and contributors
+
+This project is licensed under the GNU Affero General Public License v3.0 or
+later (AGPL-3.0-or-later). See the LICENSE file in the repository root for the
+full license text.
+
+Under Section 13 of AGPL-3.0, if you modify this program and allow users to
+interact with it remotely through a computer network (including web deployments
+and network-exposed MCP servers), you must provide those users with a prominent
+opportunity to receive the Corresponding Source of your version.
+
+--------------------------------------------------------------------------------
+THIRD-PARTY COMPONENTS AND DATA ATTRIBUTIONS
+--------------------------------------------------------------------------------
+
+1. Swiss Ephemeris (pyswisseph & ephemeris data files sepl_18.se1, semo_18.se1)
+   - Provider: Astrodienst AG (https://www.astro.com/swisseph/)
+   - Upstream: https://github.com/aloistr/swisseph
+   - License: Dual-licensed under GNU Affero General Public License v3.0
+     (AGPL-3.0) and the Swiss Ephemeris Professional License (commercial).
+   - Usage: Astronomical ephemeris calculations for Western astrology charts
+     and transits. This repository uses Swiss Ephemeris under the AGPL-3.0.
+
+2. GeoNames Geographical Data (common/region_data/regions.json.gz & cities15000)
+   - Provider: GeoNames (https://www.geonames.org/)
+   - Sources: GeoNames data dumps (https://download.geonames.org/export/dump/)
+     and cities15000.json / countries.json from geonamescache 3.0.2 (MIT).
+   - License: Creative Commons Attribution 4.0 International (CC BY 4.0)
+     https://creativecommons.org/licenses/by/4.0/
+   - Changes made: Filtered administrative hierarchies, selected Chinese
+     aliases, and compressed into a read-only snapshot (see
+     common/region_data/README.md). Use of this data does not imply endorsement
+     by GeoNames.
+
+3. Unicode Unihan Database 18.0.0
+   - Provider: Unicode, Inc. (https://www.unicode.org/)
+   - Files: kRSUnicode.txt, kTraditionalVariant.txt, kTotalStrokes.txt
+     (unicode-org/unicodetools, Unihan 18.0.0)
+   - License: Unicode License v3 (https://www.unicode.org/license.txt)
+   - Usage: Kangxi stroke counts and character variant lookups for name
+     numerology.
+
+4. NASA / JPL Planetary Ephemeris DE440s (de440s.bsp)
+   - Provider: Jet Propulsion Laboratory, California Institute of Technology /
+     NASA (https://ssd.jpl.nasa.gov/ftp/eph/planets/bsp/)
+   - License: U.S. Government public data (public domain).
+   - Usage: Independent cross-validation of planetary longitudes via Skyfield.
+
+5. Python Package Dependencies
+   - Core and optional Python packages declared in pyproject.toml (including
+     pydantic, pyyaml, python-dotenv, httpx, tenacity, typer, rich, tzdata,
+     skyfield, lunar-python, openai, anthropic, fastapi, uvicorn, and mcp) are
+     subject to their respective open-source licenses (MIT, BSD, Apache-2.0,
+     etc.), all compatible with AGPL-3.0-or-later.

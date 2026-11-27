@@ -3,6 +3,8 @@ name = "zhiming-agent"
 version = "0.1.0"
 description = "Tarot, astrology, bazi, name numerology, dream interpretation and daily fortune with a traceable agent harness"
 readme = "README.md"
+license = "AGPL-3.0-or-later"
+license-files = ["LICENSE", "NOTICE"]
 requires-python = ">=3.11,<3.12"
 dependencies = [
   "pydantic>=2.10,<3",
@@ -23,6 +25,11 @@ llm = ["openai>=1.90,<3", "anthropic>=0.60,<1"]
 web = ["fastapi>=0.115,<1", "uvicorn>=0.34,<1"]
 # FastMCP lives in mcp 1.x; mcp 2 renamed it (MCPServer) and changed the API.
 mcp = ["mcp>=1.30.0,<2"]
+
+[project.urls]
+Homepage = "https://zhiming.mom"
+Repository = "https://github.com/stanGSA/ZhiMing"
+Issues = "https://github.com/stanGSA/ZhiMing/issues"
 
 [dependency-groups]
 dev = ["pytest>=8,<10", "pytest-asyncio>=0.25,<2", "ruff>=0.12,<1", "playwright>=1.56,<2"]

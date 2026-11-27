@@ -176,8 +176,8 @@ Windows（`setup.ps1` 把 uv 装在仓库的 `.bootstrap` 里；自行安装的 
 
 - 按 AGPL-3.0 第 13 条，须向通过网络与服务交互的用户提供完整的对应源代码（含你的修改），整体以 AGPL 兼容的条款提供；不愿公开源码则需向 Astrodienst 购买商业许可；
 - 把程序或修改版分发给他人时，同样须附源码并保留许可声明；
-- 本仓库目前没有 LICENSE 文件（《项目完善计划书》F6），对外提供服务前应先确定项目许可；
-- 其他数据：GeoNames 地名为 CC BY 4.0，须署名；Unicode Unihan 按 Unicode License；JPL DE440s 为美国政府公开数据。
+- 本仓库已采用 **AGPL-3.0-or-later** 开源协议（见根目录 [LICENSE](../LICENSE)），第三方组件与数据署名见 [NOTICE](../NOTICE)；对外部署服务时须在页面显著位置提供源码获取地址（网页页脚与 `/privacy` 页面已默认附带）；
+- 其他数据：GeoNames 地名为 CC BY 4.0（已于 `NOTICE` 与 `common/region_data/README.md` 署名）；Unicode Unihan 18.0 按 Unicode License v3；JPL DE440s 为美国政府公开数据。
 
 以上是使用时的注意事项，不是法律意见。
 

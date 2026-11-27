@@ -2,6 +2,9 @@
 
 [![deterministic-tests](https://github.com/stanGSA/ZhiMing/actions/workflows/ci.yml/badge.svg)](https://github.com/stanGSA/ZhiMing/actions/workflows/ci.yml)
 ![Python 3.11](https://img.shields.io/badge/python-3.11-blue)
+[![License: AGPL v3](https://img.shields.io/badge/License-AGPL_v3-blue.svg)](LICENSE)
+[![Release](https://img.shields.io/github/v/release/stanGSA/ZhiMing)](https://github.com/stanGSA/ZhiMing/releases)
+[![在线体验](https://img.shields.io/badge/在线体验-zhiming.mom-c9a66b)](https://zhiming.mom)
 [![爱发电](https://img.shields.io/badge/爱发电-支持知命-946ce6)](https://afdian.com/a/zhiming_ai)
 
 一个不依赖 LangChain、LangGraph 等框架、从循环写起的 Agent Harness，以塔罗、西方占星、八字、姓名五格、解梦和每日运势六个体系为应用场景。**排盘、抽牌、流日等事实全部由确定性代码计算，模型只负责解读；回答里引用的每一条事实都由代码逐项核对，写错就退回重写。**
